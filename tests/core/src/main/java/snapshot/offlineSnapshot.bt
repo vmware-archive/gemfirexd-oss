@@ -1,0 +1,32 @@
+// offline export only available for persistent regions (possibly concurrent ops during import)
+// not supported for 7.0 (but test supports with exportStrategy= cmdLineTool)
+snapshot/exportImport.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=dataStore dataStoreHosts=2 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   regionConfigName = persistentReplicateRegion, persistentPartitionRegion
+   exportStrategy = cmdLineTool executeConcurrentOps = true, false executeConcurrentRebalance = false
+   redundantCopies = 2
+
+// offline export only available for persistent regions
+snapshot/exportImport.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   regionConfigName = persistentReplicateRegion, persistentPartitionRegion
+   exportStrategy = cmdLineTool executeConcurrentOps = true, false executeConcurrentRebalance = false
+   redundantCopies = 2
+
+// offline export only available for persistent regions (possibly concurrent ops during import)
+snapshot/exportImportPdxPersist.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=dataStore dataStoreHosts=2 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   regionConfigName = persistentReplicateRegion, persistentPartitionRegion
+   exportStrategy = cmdLineTool executeConcurrentOps = true, false executeConcurrentRebalance = false
+   redundantCopies = 1
+
+// offline export only available for persistent regions
+snapshot/exportImportPdxPersist.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   regionConfigName = persistentReplicateRegion, persistentPartitionRegion
+   exportStrategy = cmdLineTool executeConcurrentOps = true, false executeConcurrentRebalance = false
+   redundantCopies = 1

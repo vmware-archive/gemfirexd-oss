@@ -1,0 +1,41 @@
+# scope (distributedNoAck, distributedAck)
+scope = distributedNoAck 
+
+# number of iterations to do in a task
+batchSize = 5000
+
+# characters in message payload string (this is half the byte size)
+messageSize = 0
+
+# whether to sleep before updating cache entries
+sleepBeforeOp = false
+
+# how many operations to do per sleep
+sleepOpCount = 1
+
+# low end of random sleep range
+putSleepMsMin = 5
+
+# high end of random sleep range
+putSleepMsMax = 5
+
+# total number of hosts (must equal pubHosts + subHosts)
+hydra.numHosts = 3
+
+# number of publisher hosts
+pubHosts = 1
+
+# number of publisher vms per host
+pubVMs = 1
+
+# number of threads per publisher vm
+pubThreads = 1
+
+# number of subscriber hosts
+subHosts = 1
+
+# number of subscriber vms per host
+subVMs = 1
+
+# number of threads per subscriber vm
+subThreads = 1

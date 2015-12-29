@@ -1,0 +1,6 @@
+This is the list of functional tests for tools.
+
+The following tests are run with a local.conf, as noted:
+diskRecovery/pre65ConversionTo65.bt    (use -Dlocal.conf=$productCheckoutDir/tests/diskRecovery/local.pre65Convert.conf and edit appropriately)
+diskRecovery/pre65Conversion.bt        (use -Dlocal.conf=$productCheckoutDir/tests/diskRecovery/local.pre65Convert.conf and edit appropriately)
+

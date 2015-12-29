@@ -1,0 +1,217 @@
+parReg/fixedPartitioning/fixedPartitioningWithOps.conf
+  A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=5
+  B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+  numKeys=10000 byteArraySize=5000 redundantCopies=0,1,2,3
+
+parReg/fixedPartitioning/fixedPartitioningWithOpsHA.conf
+   A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+   numKeys=50000 byteArraySize=500 redundantCopies=1 numVMsToStop=1
+   
+parReg/fixedPartitioning/fixedPartitioningWithOpsHA.conf
+   A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+   numKeys=50000 byteArraySize=500 redundantCopies=2 numVMsToStop=2 
+   
+parReg/fixedPartitioning/fixedPartitioningWithOpsHA.conf
+   A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+   numKeys=50000 byteArraySize=500 redundantCopies=3 numVMsToStop=3          
+   
+/*commenting out for Cheetah release
+parReg/fixedPartitioning/hct_fixedPartitioningWithOps.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=4
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=10000 byteArraySize=500 redundancy=2
+   redundantCopies=0,1,2,3
+
+parReg/fixedPartitioning/hct_fixedPartitioningWithOpsHA.conf
+    edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=4
+    bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+    numKeys=10000 byteArraySize=500 redundancy=2 numVMsToStop=1
+    redundantCopies=1,2,3 */
+   
+parReg/fixedPartitioning/verifyFixedPartitioningHABehavior.conf
+   A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+   numKeys=10000 byteArraySize=500 redundantCopies=3    
+
+parReg/fixedPartitioning/keyCallBackResolver_HA.conf
+   A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+   numKeys=10000 byteArraySize=5000 redundantCopies=3 numVMsToStop=3
+   routingFunction=key
+
+parReg/fixedPartitioning/keyCallBackResolver_HA.conf
+   A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+   numKeys=10000 byteArraySize=5000 redundantCopies=3 numVMsToStop=2
+   routingFunction=key   
+   
+/*commenting out for Cheetah release
+parReg/fixedPartitioning/hct_keyCallBackResolverHA.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=4
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=4000 byteArraySize=500 redundancy=3 numVMsToStop=3
+   redundantCopies=3  routingFunction=key 
+   
+parReg/fixedPartitioning/hct_keyCallBackResolverHA.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=4
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=4000 byteArraySize=500 redundancy=2 numVMsToStop=2
+   redundantCopies=3  routingFunction=key      
+   
+parReg/fixedPartitioning/hct_fixedPartitioningWithOps.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=4
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=10000 byteArraySize=500 redundancy=1
+   redundantCopies=0,1,2,3 */
+   
+parReg/fixedPartitioning/colocationWithOps.conf
+   A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+   numKeys=10000 byteArraySize=5000 redundantCopies=0,1,2,3  
+
+parReg/fixedPartitioning/colocationWithOpsHA.conf
+   A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+   numKeys=30000 byteArraySize=500 redundantCopies=1 numVMsToStop=1    
+   
+parReg/fixedPartitioning/colocationWithOpsHA.conf
+   A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+   numKeys=30000 byteArraySize=500 redundantCopies=2 numVMsToStop=2
+   
+parReg/fixedPartitioning/colocationWithOpsHA.conf
+   A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+   numKeys=30000 byteArraySize=500 redundantCopies=3 numVMsToStop=3  
+   
+/*commenting out for Cheetah release
+parReg/fixedPartitioning/hct_colocationWithOps.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=4
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=10000 byteArraySize=500 redundancy=2
+   redundantCopies=0,1,2,3  
+
+parReg/fixedPartitioning/hct_colocationWithOpsHA.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=4
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=10000 byteArraySize=500 redundancy=2 numVMsToStop=1
+   redundantCopies=1 
+   
+parReg/fixedPartitioning/hct_colocationWithOpsHA.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=4
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=10000 byteArraySize=500 redundancy=2 numVMsToStop=2
+   redundantCopies=2
+   
+parReg/fixedPartitioning/hct_colocationWithOpsHA.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=4
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=10000 byteArraySize=500 redundancy=3 numVMsToStop=3
+   redundantCopies=3 */
+   
+parReg/fixedPartitioning/mixedRegionWithRebalance.conf
+A = peer peerHosts=2 peerVMsPerHost=2 peerThreadsPerVM=10 
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1 
+   numKeys=10000 byteArraySize=5000 redundantCopies=0,1,2,3
+   
+parReg/fixedPartitioning/mixedRegionWithHA.conf
+A = peer peerHosts=2 peerVMsPerHost=2 peerThreadsPerVM=10 
+B = accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=1 
+   numKeys=10000 byteArraySize=5000 redundantCopies=1  numVMsToStop=1   
+   
+parReg/fixedPartitioning/mixedRegionWithHA.conf
+A = peer peerHosts=2 peerVMsPerHost=2 peerThreadsPerVM=10 
+B = accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=1 
+   numKeys=10000 byteArraySize=5000 redundantCopies=2  numVMsToStop=2
+   
+parReg/fixedPartitioning/mixedRegionWithHA.conf
+A = peer peerHosts=2 peerVMsPerHost=2 peerThreadsPerVM=10 
+B = accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=1 
+   numKeys=10000 byteArraySize=5000 redundantCopies=3  numVMsToStop=3 
+
+// --- FPR Expiration tests --- //    
+parReg/fixedPartitioning/parRegEventExpiration.conf hydra.numHosts=4  
+
+/*commenting out for Cheetah release
+parReg/fixedPartitioning/hct_parRegEventExpiration.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=8
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 */
+
+// --- FPR Eviction tests --- //
+//Each test verifies all eviction algorithms
+parReg/fixedPartitioning/fprEvictionLocalDestroy.conf
+   A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+   redundantCopies=1
+
+parReg/fixedPartitioning/fprEvictionOverFlowToDisk.conf
+   A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+   numKeys=10000 byteArraySize=5000 redundantCopies=3
+   
+// -- FPR Function execution tests -- //
+
+/*commenting out for Cheetah release
+parReg/fixedPartitioning/hct_randomFunctionExecutionHA.conf
+   edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=500 byteArraySize=500 redundantCopies=3 numVMsToStop=3 */
+
+parReg/fixedPartitioning/randomFunctionExecutionHA.conf
+   A=accessor accessorHosts=3 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=500 byteArraySize=5000 redundantCopies=3 numVMsToStop=3   
+     
+//---- FPR Transaction tests ---- //
+//disabled for #44146
+//parReg/fixedPartitioning/concParRegTx.conf peerHosts=2 peerVMsPerHost=2 peerThreadsPerVM=10 redundantCopies=0
+//parReg/fixedPartitioning/concParRegTx.conf peerHosts=2 peerVMsPerHost=2 peerThreadsPerVM=10 redundantCopies=1
+//parReg/fixedPartitioning/concParRegTx.conf peerHosts=2 peerVMsPerHost=2 peerThreadsPerVM=10 redundantCopies=2
+//parReg/fixedPartitioning/concParRegTx.conf peerHosts=2 peerVMsPerHost=2 peerThreadsPerVM=10 redundantCopies=3
+                       
+//parReg/fixedPartitioning/concParRegTxHA.conf
+//   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+//   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+//   redundantCopies=1 numVMsToStop=1
+   
+//parReg/fixedPartitioning/concParRegTxHA.conf
+//   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+//   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+//   redundantCopies=2 numVMsToStop=2
+   
+//parReg/fixedPartitioning/concParRegTxHA.conf
+//   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+//   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+//   redundantCopies=3 numVMsToStop=3 
+
+//---- FPR With Persistence tests ---//
+parReg/fixedPartitioning/persistentPRWithOpsHA.conf
+   A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+   numKeys=50000 byteArraySize=500 redundantCopies=3 numVMsToStop=3 
+
+/*commenting out for Cheetah release
+parReg/fixedPartitioning/hct_persistentPRWithOpsHA.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=4
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=10000 byteArraySize=500 redundancy=2 numVMsToStop=1
+   redundantCopies=1,2,3 */
+  
+parReg/fixedPartitioning/concParRegHAPersist.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   redundantCopies=1 numVMsToStop=1
+
+parReg/fixedPartitioning/concParRegHAPersist.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   redundantCopies=2 numVMsToStop=2
+
+parReg/fixedPartitioning/concParRegHAPersist.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   redundantCopies=3 numVMsToStop=3   
+   

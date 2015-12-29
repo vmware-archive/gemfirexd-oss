@@ -1,0 +1,107 @@
+parReg/colocation/customPartitioning.conf routingFunction=key redundantCopies=0,1,2,3
+parReg/colocation/customPartitioning.conf routingFunction=callbackarg redundantCopies=0,1,2,3
+parReg/colocation/colocation.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=1 numOfAccessors=1 redundantCopies=0,1,2,3
+parReg/colocation/colocationWithFailOver.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=1 numOfAccessors=1 redundantCopies= 2,3
+/*commenting out for Cheetah release
+parReg/colocation/hct_colocation.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=3
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=3
+   redundantCopies=0,1,2,3 */
+parReg/colocation/colocationWithOps.conf peerHosts=5 peerVMsPerHost=2 peerThreadsPerVM=20 numKeys=1000 byteArraySize=5 redundantCopies=0,1,2,3
+parReg/colocation/colocationWithOpsHA.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=7 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=10000 byteArraySize=5000 redundantCopies=1 numVMsToStop=1
+parReg/colocation/colocationWithOpsHA.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=7 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=10000 byteArraySize=5000 redundantCopies=2 numVMsToStop=2
+parReg/colocation/colocationWithOpsHA.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=7 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=10000 byteArraySize=5000 redundantCopies=3 numVMsToStop=3
+/*commenting out for Cheetah release
+parReg/colocation/hct_colocationWithOps.conf
+   edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=1000 byteArraySize=500 redundancy=3 numVMsToStop=3
+   redundantCopies=0,1,2,3
+parReg/colocation/hct_colocationWithOpsHA.conf
+   edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=1000 byteArraySize=500 redundancy=3 numVMsToStop=1
+     redundantCopies=1   
+parReg/colocation/hct_colocationWithOpsHA.conf
+   edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=1000 byteArraySize=500 redundancy=3 numVMsToStop=2
+   redundantCopies=2   
+parReg/colocation/hct_colocationWithOpsHA.conf
+   edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=1000 byteArraySize=500 redundancy=3 numVMsToStop=3
+   redundantCopies=3  */
+   /// HA colocation scenarios ///
+ 
+//scenario1: one node goes down, redundancy is unsatisfied, no bucket movement, only primary on failed node reselected
+parReg/colocation/colocationwithoutnodeup.conf 
+	peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=1 
+	numOfAccessors=0 redundantCopies=3 totalNumBuckets=12
+
+//scenario2: one node goes down, comes back, redundancy is satisfied, bucket movement
+parReg/colocation/colocationwithnodeup.conf 
+	peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=1 
+	numOfAccessors=0 redundantCopies=3 totalNumBuckets=12
+
+//scenario3: one node goes down, redundancy is satisfied, no bucket movement, only primary on failed node reselected
+parReg/colocation/colocationwithoutnodeupRC.conf 
+	peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=1 
+	numOfAccessors=0 redundantCopies=2 totalNumBuckets=12
+
+//scenario4: one node goes down, comes back , redundancy is satisfied, bucket movement
+parReg/colocation/colocationwithnodeup.conf 
+	peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=1 
+	numOfAccessors=0 redundantCopies=2 totalNumBuckets=12
+
+
+
+//scenario5: one node goes down, redundancy is unsatisfied, no bucket movement, only primary on failed node reselected, ops are on during and after failover
+parReg/colocation/colocationwithoutnodeupWithOps.conf 
+	peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=1 
+	numOfAccessors=0 redundantCopies=3 totalNumBuckets=12
+
+//scenario6: one node goes down, comes back, redundancy is satisfied, bucket movement,ops are on during and after failover
+parReg/colocation/colocationwithnodeupWithOps.conf 
+	peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=1 
+	numOfAccessors=0 redundantCopies=3 totalNumBuckets=12
+
+//scenario7: one node goes down, redundancy is satisfied, no bucket movement, only primary on failed node reselected,ops are on during and after failover
+parReg/colocation/colocationwithoutnodeupWithOpsRC.conf 
+	peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=1 
+	numOfAccessors=0 redundantCopies=2 totalNumBuckets=12
+
+//scenario8: one node goes down, comes back , redundancy is satisfied, bucket movement, ops are on during and after failover
+parReg/colocation/colocationwithnodeupWithOps.conf 
+	peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=1 
+	numOfAccessors=0 redundantCopies=2 totalNumBuckets=12  
+	
+	///Colocation using pr listeners - may be moved from this bt in the future///
+
+parReg/colocation/prColocationWithListener.conf  
+   peerHosts=5 peerVMsPerHost=2 peerThreadsPerVM=20 
+   numKeys=5000 byteArraySize=5 redundantCopies=3
+
+/*commenting out for Cheetah release
+parReg/colocation/prColocationWithListenerHA.conf
+   A=edge edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   B=bridge bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=10000 byteArraySize=5000 redundantCopies=1 numVMsToStop=1
+   redundancy=3	*/
+	
+parReg/colocation/prColocationWithListenerRebalance.conf
+  A = peer peerHosts=4 peerVMsPerHost=2 peerThreadsPerVM=5
+  B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1
+  numKeys=2000 redundantCopies=0
+	
+include $JTESTS/parReg/partitionMan/partitionMan.bt
+

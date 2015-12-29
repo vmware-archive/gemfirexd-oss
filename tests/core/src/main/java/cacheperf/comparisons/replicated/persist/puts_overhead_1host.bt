@@ -1,0 +1,58 @@
+// ============================================================
+// measure put performance for persistent replicate regions
+// Note: add hydra.DiskStorePrms-autoCompact=false to local.conf
+
+// persist only
+cacheperf/comparisons/replicated/persist/peerDataPut.conf
+  peerHosts =  1 peerVMsPerHost = 1 peerThreadsPerVM = 8
+  maxKeys = 4194304 objectSize = 1024
+  perffmwk.comparisonKey = put_02x01x01
+  heapMB=6000
+
+// no persist
+cacheperf/comparisons/replicated/peerDataPut.conf
+  peerHosts =  1 peerVMsPerHost = 1 peerThreadsPerVM = 8
+  maxKeys = 4194304 objectSize = 1024
+  perffmwk.comparisonKey = put_02x01x01
+  heapMB=6000
+
+// 1.5G heap
+// persist only
+cacheperf/comparisons/replicated/persist/peerDataPut.conf
+  peerHosts =  1 peerVMsPerHost = 1 peerThreadsPerVM = 8
+  maxKeys = 1000000 objectSize = 1024
+  perffmwk.comparisonKey = put_02x01x01
+
+// no persist
+cacheperf/comparisons/replicated/peerDataPut.conf
+  peerHosts =  1 peerVMsPerHost = 1 peerThreadsPerVM = 8
+  maxKeys = 1000000 objectSize = 1024
+  perffmwk.comparisonKey = put_02x01x01
+  
+// 100 bytes comparison
+// no persist
+cacheperf/comparisons/replicated/peerDataPut.conf
+  peerHosts =  1 peerVMsPerHost = 1 peerThreadsPerVM = 8
+  maxKeys = 4800000 objectSize = 100
+  perffmwk.comparisonKey = put_02x01x01
+
+// persist only
+// runs put test with current version
+cacheperf/comparisons/replicated/persist/peerDataPut.conf
+  peerHosts =  1 peerVMsPerHost = 1 peerThreadsPerVM = 8
+  maxKeys = 3800000 objectSize = 100
+  perffmwk.comparisonKey = put_02x01x01
+
+// 100k comparison
+// no persist
+cacheperf/comparisons/replicated/peerDataPut.conf
+  peerHosts =  1 peerVMsPerHost = 1 peerThreadsPerVM = 8
+  maxKeys = 11000 objectSize = 102400
+  perffmwk.comparisonKey = put_02x01x01
+
+// persist only
+// runs put test with current version
+cacheperf/comparisons/replicated/persist/peerDataPut.conf
+  peerHosts =  1 peerVMsPerHost = 1 peerThreadsPerVM = 8
+  maxKeys = 11000 objectSize = 102400
+  perffmwk.comparisonKey = put_02x01x01

@@ -1,0 +1,137 @@
+// to recreate the data, uncomment out reloadRDB.conf (this will also dump the table contents)
+//cacheLoader/hc/reloadRDB.conf 
+
+// to dump the contents of the existing table, uncomment out dumpTable.conf
+//cacheLoader/hc/dumpTable.conf
+
+cacheLoader/hc/getNoCC.conf validate=true
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 5
+cacheLoader/hc/getLRU1.conf validate=true
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 5
+cacheLoader/hc/getLRU2.conf validate=true
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 5
+cacheLoader/hc/getLRU3.conf validate=true
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 5
+cacheLoader/hc/getMemLRU1.conf validate=true
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 5
+cacheLoader/hc/getMemLRU2.conf validate=true
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 5
+cacheLoader/hc/getMemLRU3.conf validate=true
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 5
+
+cacheLoader/hc/getTimeoutNoCC.conf validate=true
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+cacheLoader/hc/getTimeoutL1.conf validate=true
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+cacheLoader/hc/getTimeoutL2.conf validate=true
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+cacheLoader/hc/getTimeoutL3.conf validate=true
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+cacheLoader/hc/getTimeoutM1.conf validate=true
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+cacheLoader/hc/getTimeoutM2.conf validate=true
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+cacheLoader/hc/getTimeoutM3.conf validate=true
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+
+cacheLoader/hc/mixNoCC.conf validate=true
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 5
+cacheLoader/hc/mixLRU1.conf validate=true
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 5
+cacheLoader/hc/mixLRU2.conf validate=true
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 5
+cacheLoader/hc/mixLRU3.conf validate=true
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 5
+cacheLoader/hc/mixMemLRU1.conf validate=true
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 5
+cacheLoader/hc/mixMemLRU2.conf validate=true
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 5
+cacheLoader/hc/mixMemLRU3.conf validate=true
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 5
+
+cacheLoader/hc/getNoCC.conf validate=false
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 5
+cacheLoader/hc/getLRU1.conf validate=false
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 5
+cacheLoader/hc/getLRU2.conf validate=false
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 5
+cacheLoader/hc/getLRU3.conf validate=false
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 5
+cacheLoader/hc/getMemLRU1.conf validate=false
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 5
+cacheLoader/hc/getMemLRU2.conf validate=false
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 5
+cacheLoader/hc/getMemLRU3.conf validate=false
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 5
+
+cacheLoader/hc/getTimeoutNoCC.conf validate=false
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+cacheLoader/hc/getTimeoutL1.conf validate=false
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+cacheLoader/hc/getTimeoutL2.conf validate=false
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+cacheLoader/hc/getTimeoutL3.conf validate=false
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+cacheLoader/hc/getTimeoutM1.conf validate=false
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+cacheLoader/hc/getTimeoutM2.conf validate=false
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+cacheLoader/hc/getTimeoutM3.conf validate=false
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+
+cacheLoader/hc/mixNoCC.conf validate=false
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 5
+cacheLoader/hc/mixLRU1.conf validate=false
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 5
+cacheLoader/hc/mixLRU2.conf validate=false
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 5
+cacheLoader/hc/mixLRU3.conf validate=false
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 5
+cacheLoader/hc/mixMemLRU1.conf validate=false
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 5
+cacheLoader/hc/mixMemLRU2.conf validate=false
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 5
+cacheLoader/hc/mixMemLRU3.conf validate=false
+  bridgeHosts = 1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 5

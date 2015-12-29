@@ -1,0 +1,113 @@
+// VIEW tests (client/server variant/REPLICATE)
+csTx/tx/distSerialView.conf
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  3 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+
+// c/s distIntegrity (REPLICATE regions)
+// Kill Committing VM during commit
+csTx/tx/distIntegrity.conf commitStateTrigger=afterSendCommit commitPercentage=100
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  3 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 2
+   
+csTx/tx/distIntegrity.conf commitStateTrigger=afterSendRollback commitPercentage=0
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  3 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 2
+   
+csTx/tx/distIntegrityKillDelegate.conf commitStateTrigger=afterSendCommit commitPercentage=100
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  3 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 2
+   
+csTx/tx/distIntegrityKillDelegate.conf commitStateTrigger=afterSendRollback commitPercentage=0
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  3 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 2
+   
+csTx/tx/distIntegrityKillNonDelegateServer.conf commitStateTrigger=afterSendCommit commitPercentage=100
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  3 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 2
+   
+csTx/tx/distIntegrityKillNonDelegateServer.conf commitStateTrigger=afterSendRollback commitPercentage=0
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  3 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 2
+   
+// tx conflict tests
+csTx/tx/serialConflict.conf 
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   totalTaskTimeSec=1800
+
+csTx/tx/serialConflict.conf 
+   edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   totalTaskTimeSec=1800
+
+csTx/tx/proxySerialConflict.conf 
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   totalTaskTimeSec=1800
+
+csTx/tx/serialParRegConflict.conf 
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   redundantCopies = 0 totalTaskTimeSec=1800
+
+csTx/tx/serialParRegConflict.conf 
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   redundantCopies = 1 totalTaskTimeSec=1800
+
+csTx/tx/serialParRegConflict.conf 
+   edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   redundantCopies = 0 totalTaskTimeSec=1800
+
+csTx/tx/serialConflictTxOnly.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   totalTaskTimeSec=1800
+
+csTx/tx/serialConflictTxOnly.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   totalTaskTimeSec=1800
+
+csTx/tx/serialConflictTxOnly.conf
+   edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   totalTaskTimeSec=1800
+
+csTx/tx/concConflict.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+
+csTx/tx/concNoConflict.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+
+csTx/tx/serialConflictTxCheck.conf
+   edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=3
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   totalTaskTimeSec=300
+
+csTx/tx/serialConflictPrTxCheck.conf 
+   edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=3
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+
+csTx/tx/serialRepeatableRead.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   totalTaskTimeSec=1800
+
+csTx/tx/serialRepeatableRead.conf
+   edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   totalTaskTimeSec=1800
+
+// Collections Tests
+csTx/tx/collectionsTest.conf
+   edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+
+csTx/tx/prCollectionsTest.conf
+   edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+

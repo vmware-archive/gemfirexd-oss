@@ -1,0 +1,12 @@
+A = bridge
+bridgeHosts        = 1
+bridgeVMsPerHost   = 3
+bridgeThreadsPerVM = 1
+B = edge
+edgeHosts          = 1
+edgeVMsPerHost     = 1
+edgeThreadsPerVM   = 1
+
+regionName = AssetAccounts
+
+perffmwk.comparisonKey = perf090

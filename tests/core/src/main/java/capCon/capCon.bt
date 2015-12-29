@@ -1,0 +1,31 @@
+capCon/serialLRUTest.conf vmQuantities = 1 vmThreads = 50
+capCon/serialLRUEvict.conf vmQuantities = 1 vmThreads = 50
+capCon/serialMemLRUTest.conf  vmQuantities = 1 vmThreads = 50
+capCon/serialMemLRUEvict.conf  vmQuantities = 1 vmThreads = 50
+capCon/serialLRUDynamic.conf  vmQuantities = 1 vmThreads = 50
+capCon/serialMemLRUDynamic.conf  vmQuantities = 1 vmThreads = 50
+capCon/concLRUDynamic.conf  vmQuantities = 1 vmThreads = 50
+capCon/concMemLRUDynamic.conf  vmQuantities = 1 vmThreads = 50
+capCon/concLRUTest.conf hydra.numHosts = 1 vmQuantities = 10 vmThreads = 5 
+capCon/concMemLRUTest.conf hydra.numHosts = 1 vmQuantities = 10 vmThreads = 5 
+capCon/docExamples.conf
+capCon/memLRUSpikesVMReg.conf vmQuantities = 1 vmThreads = 20 
+capCon/memLRUStressSmall.conf hydra.numHosts = 1 vmQuantities = 5 vmThreads = 10 
+capCon/memLRUStressLarge.conf hydra.numHosts = 1 vmQuantities = 2 vmThreads = 2 
+capCon/concEntryEventMemLRU.conf hydra.numHosts = 1 vmQuantities = 5 vmThreads = 10 
+capCon/concEntryEventLRU.conf hydra.numHosts = 1 vmQuantities = 5 vmThreads = 10 
+capCon/concRegEventLRU.conf hydra.numHosts = 1 vmQuantities = 5 vmThreads = 10 
+capCon/concRegEventMemLRU.conf hydra.numHosts = 1 vmQuantities = 5 vmThreads = 10 
+
+// memLRU for off-heap works a little different than heap memLRU, so run the off-heap memLRU tests separate
+// for entry LRU off-heap is randomized in the tests above
+capCon/serialMemLRUTestOffHeap.conf  vmQuantities = 1 vmThreads = 50
+capCon/serialMemLRUEvictOffHeap.conf  vmQuantities = 1 vmThreads = 50
+capCon/serialMemLRUDynamicOffHeap.conf  vmQuantities = 1 vmThreads = 50
+capCon/concMemLRUDynamicOffHeap.conf  vmQuantities = 1 vmThreads = 50
+capCon/concMemLRUTestOffHeap.conf hydra.numHosts = 1 vmQuantities = 10 vmThreads = 5 
+capCon/memLRUSpikesVMRegOffHeap.conf vmQuantities = 1 vmThreads = 20 
+capCon/memLRUStressSmallOffHeap.conf hydra.numHosts = 1 vmQuantities = 5 vmThreads = 10 
+capCon/memLRUStressLargeOffHeap.conf hydra.numHosts = 1 vmQuantities = 2 vmThreads = 2 
+capCon/concEntryEventMemLRUOffHeap.conf hydra.numHosts = 1 vmQuantities = 5 vmThreads = 10 
+capCon/concRegEventMemLRUOffHeap.conf hydra.numHosts = 1 vmQuantities = 5 vmThreads = 10 

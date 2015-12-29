@@ -1,0 +1,73 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<BODY bgcolor="#ffffff"><HTML>
+ <IMG SRC="../../../../docs/VMwareLogo.png" BORDER="0">
+ <HEAD>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+  <META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+  <LINK REL="STYLESHEET" HREF="DocIndex.css" CHARSET="ISO-8859-1" TYPE="text/css">
+<H1 align="center">
+vFabric<FONT size=6><b><sup><font size=-0>&#8482;</font></sup></b></FONT></font> GemFire<FONT size=6><b><sup><font size=-0>&#174;</font></sup></b></FONT></font></H1>
+     </b></FONT>
+  <H1 align="center">Querying Partitioned Regions</H1>
+<H2 align="center">Query execution using Function API Example </H2>
+
+<hr color="#cc0000" size="2" align="left">
+
+<P>This <a href="Client.java">example</a> demonstrates how to execute a query on a Partitioned Region using function from a client by setting a filter in the function call. The example consists of two servers with partitioned region and a client. The servers register a function which executes a query. The client invokes the function on one of the servers based on the filter provided to the function call. For information on Partitioned Region Querying, see the <I>GemFire User's Guide.</I> </P>
+<p><B>The Configuration Files </B> <BR>
+The cacheserver uses the <code>server.xml</code> cache configuration file. The client does not use any configuration files. </p>
+<p><B>The Client/Server Processes  </B> <BR>
+  The processes used for this example are: </p>
+<UL>
+  <LI>Two cacheserver processes.</LI>
+  <BR>
+<LI>The client process. All client configuration is done inside the application. The client runs outside of the server distributed system as a standalone application. In its cache configuration, the client defines a server connection pool, which specifies  the servers' address and port to connect. At startup, the client connects to the two server processes.
+</UL>
+
+<B>Running the Examples</B><BR>
+Follow these instructions to run the configuration examples.<BR>
+<OL>
+  <p><I>When you run the examples, if you get a startup failure with a message indicating socket creation failure or that the port   is already in use, make sure you are not starting a second copy of the same GemFire process, with the same port configuration. If you are not, then the port specification probably conflicts with some other non-GemFire application. Follow the instructions in <a href="#ChangingPorts" target="_self">Changing the ports used in the examples</a> for the process that is failing to start. </I></p>
+</OL>
+<p>
+You need three terminal sessions: two for the two cacheservers,  and one for client.  For all the sessions, make sure the environment is set
+according to the instructions in <a href="../../EnvSetup.html">examples/EnvSetup.html</a>.</p>
+<ol>
+  <li>Change directory to <code>examples/dist/partitionedRegionQuerying</code>. 
+    The example instructions assume you are starting from that  directory.<br></li>
+	<br>
+  <li>Create two directories <code>server1</code> and <code>server2</code> for the two servers.<br></li>
+	<br>
+  <li>In one session, start a server.</li>
+ <blockquote>
+    <strong><code>cacheserver start -dir=server1 mcast-port=10334 cache-xml-file=../server.xml -server-port=40404</code></strong>  </blockquote>
+  
+ <li>In another session, start another server with different port.</li>
+  <blockquote>
+    <strong><code>cacheserver start -dir=server2 mcast-port=10334 cache-xml-file=../server.xml -server-port=40405</code></strong>  </blockquote>
+ 
+ <li>In third session, run the client.</li>
+
+  <blockquote>
+  <strong><code>java partitionedRegionQuerying.Client</code></strong>  </blockquote>
+  The client starts, connects to the two servers, inserts data and executes a query.
+  
+  <p>When the client finishes it returns.</p>
+  <li>In the other two sessions, stop the two cacheservers:</li>
+  <pre>
+    <strong>cacheserver stop -dir=server1</strong> 
+    <strong>cacheserver stop -dir=server2</strong> 
+    </pre>
+  <li>You can verify that the query has been executed on only one server by looking at the <code>cacheserver.log</code> files in the <code>server1</code> and <code>server2</code> directories.</li></pre>
+	
+	</OL>
+	<pre>
+<B><a name="ChangingPorts"></a>Changing the ports used in the examples</B>
+
+If you run the servers on some other ports, change the server ports for the client to connect in the following way:
+<pre>
+  Add <code>-Dserver1Port=</code>&lt;<em>yourPortNumber</em>&gt; and/or <code>-Dserver2Port=</code>&lt;<em>yourPortNumber</em>&gt; to the <code>java</code> command-line invocation for the client to connect to the servers on these ports, like this:<BR>
+     <strong>java -Dserver1Port=40100 -Dserver2Port=40101 partitionedRegionQuerying.Client</strong></pre>
+ </HTML>
+

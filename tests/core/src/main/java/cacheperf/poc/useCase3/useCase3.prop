@@ -1,0 +1,10 @@
+bridgeHosts = 1
+bridgeVMsPerHost = 1
+bridgeThreadsPerVM = 1
+edgeHosts = 1
+edgeVMsPerHost = 1
+edgeThreadsPerVM = 1
+
+maxKeys = 50000
+putsBetweenQueries = 0
+sleepMs =0

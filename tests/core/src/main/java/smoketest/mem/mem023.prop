@@ -1,0 +1,19 @@
+locatorHosts        = 1
+locatorVMsPerHost   = 1
+locatorThreadsPerVM = 1
+A = putter
+putterHosts        = 1
+putterVMsPerHost   = 1
+putterThreadsPerVM = 1
+dataPolicy=partitioned
+scope=default
+statisticsEnabled=false
+totalNumBuckets=113
+redundantCopies=0
+numberOfEntries=100000
+sampleInterval=50000
+trimStart=50000
+autoCompact=false
+synchronous=true
+
+perffmwk.comparisonKey = mem023

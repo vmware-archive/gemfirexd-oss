@@ -1,0 +1,36 @@
+
+###################################################################
+
+The suite can be run from the ssl.bt file.
+
+###################################################################
+
+The hydra tests in this directory are scaled down wrappers around other 
+GemFire tests.
+
+They each enabled ssl for the test.
+
+Each is set to run for 5 minutes.
+
+sslSerialEntryEvent.conf - wrap events/serialEntryEvent.conf
+
+sslHierachy.conf         - wrap hct/hierarchy.conf
+
+###################################################################
+
+Non hydra tests need two parameters: JTESTS and GEMFIRE, in that order.
+
+ssltest.sh               - test ssl parameters through command line tools.
+bridgetest.sh            - test bridge loader and bridge server...
+
+cd to the parent directory of where you want a result tree.
+
+  run: ...../ssltest.sh $JTESTS $GEMFIRE
+
+
+###################################################################
+
+The trust store and key store used is checked in, was generated on July 1, 2004
+and is good for 10 years from that date... If by chance it expires, run
+createstores.sh to create new keystores good for another 10 years.
+

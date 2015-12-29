@@ -1,0 +1,15 @@
+# wan scaleout
+wanSites = 3
+locatorHostsPerSite = 1
+locatorVMsPerHost = 1
+locatorThreadsPerVM = 1
+dataStoreHostsPerSite = 3
+dataStoreVMsPerHost = 1
+dataStoreThreadsPerVM = 2
+accessorHostsPerSite = 2
+accessorVMsPerHost = 1
+accessorThreadsPerVM = 1
+
+# memory for peers
+dataStoreMem = 256m
+accessorMem = 256m

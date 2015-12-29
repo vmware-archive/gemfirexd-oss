@@ -1,0 +1,27 @@
+cacheperf/comparisons/gemfirexd/largeobject/peerClient/createTest.conf
+  api = GFXD
+  clientHosts=4 clientVMsPerHost=1 clientThreadsPerVM=4
+  serverHosts=4 serverVMsPerHost=1 serverThreadsPerVM=1
+  numLargeObjectsPerServer = 750000 heapMB = 4096
+  redundantCopies = 1
+  txIsolation = read_committed
+  enableHistogram = true
+  perffmwk.comparisonKey = create
+cacheperf/comparisons/gemfirexd/largeobject/peerClient/putTest.conf
+  api = GFXD
+  clientHosts=4 clientVMsPerHost=1 clientThreadsPerVM=4
+  serverHosts=4 serverVMsPerHost=1 serverThreadsPerVM=1
+  numLargeObjectsPerServer = 75000
+  redundantCopies = 1
+  txIsolation = read_committed
+  enableHistogram = true
+  perffmwk.comparisonKey = put
+cacheperf/comparisons/gemfirexd/largeobject/peerClient/updateTest.conf
+  api = GFXD
+  clientHosts=4 clientVMsPerHost=1 clientThreadsPerVM=4
+  serverHosts=4 serverVMsPerHost=1 serverThreadsPerVM=1
+  numLargeObjectsPerServer = 75000
+  redundantCopies = 1
+  txIsolation = read_committed
+  enableHistogram = true
+  perffmwk.comparisonKey = update

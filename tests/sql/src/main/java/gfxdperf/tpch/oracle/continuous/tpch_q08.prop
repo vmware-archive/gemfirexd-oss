@@ -1,0 +1,19 @@
+A=client
+clientHosts=1
+clientVMsPerHost=1
+clientThreadsPerVM=1
+
+B=server
+serverHosts=1
+serverVMsPerHost=1
+serverThreadsPerVM=1
+
+clientHeap = 2g
+serverHeap = 2g
+
+batchSeconds = 600
+warmupSeconds = 0
+workSeconds = 300
+warmupIterations = 0
+
+perffmwk.comparisonKey = tpch_q08

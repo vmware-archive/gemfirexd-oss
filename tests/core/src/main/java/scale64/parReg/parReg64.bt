@@ -1,0 +1,32 @@
+//
+// VOLUME TESTING
+//
+// Scaled up 64-bit functional tests with large heaps and lots of data.
+//
+// Run these tests on sufficient 64-bit hosts with a minimum of 8 GB RAM to
+// avoid swapping.  Run BatteryTest with -DmasterHeapMB=3000 to support larger
+// blackboards.  Also run with -DmoveRemoteDirs=true and with system directories
+// local to each VM to accommodate overflow.
+//
+// To collect more complete logs, set hydra.log.LogPrms-file_maxKBPerVM to a
+// very large value.  It is currently set to 25000 KB in all tests.
+//
+
+scale64/parReg/concKnownKeys64.conf
+  peerHosts=3 peerVMsPerHost=1 peerThreadsPerVM=20
+  numKeys=4000000 byteArraySize=2048
+
+/*commenting out for Cheetah release
+scale64/parReg/bridge/concParRegBridge64.conf
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=10
+   edgeHosts=2 edgeVMsPerHost=2 edgeThreadsPerVM=10
+   redundantCopies=0 numAccessors=0 numEmptyClients=0 numThinClients=0
+   bridgeOrderingWorkaround=uniqueKeys
+   upperThreshold=3000000 elementSize=2000
+
+scale64/parReg/bridge/concParRegBridge64.conf
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=10
+   edgeHosts=2 edgeVMsPerHost=2 edgeThreadsPerVM=10
+   redundantCopies=1 numAccessors=0 numEmptyClients=0 numThinClients=0
+   bridgeOrderingWorkaround=uniqueKeys
+   upperThreshold=1500000 elementSize=2000 */

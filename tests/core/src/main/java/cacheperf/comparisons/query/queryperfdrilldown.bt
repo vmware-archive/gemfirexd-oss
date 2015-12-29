@@ -1,0 +1,35 @@
+cacheperf/comparisons/query/queryperf.conf
+  scope=Ack dataPolicy=replicate
+  hydra.numHosts=2 vmQuantities=1 vmThreads=1
+  objectType=parReg.query.NewPortfolio
+  createIndex=false
+  maxKeys=10000
+  executeQueryNum=3
+
+
+cacheperf/comparisons/query/queryperf.conf
+  scope=Ack dataPolicy=replicate
+  hydra.numHosts=2 vmQuantities=1 vmThreads=1
+  objectType=parReg.query.NewPortfolio
+  createIndex=true
+  maxKeys=10000
+  executeQueryNum=3
+
+
+cacheperf/comparisons/query/queryperfpartition.conf
+  scope=default dataPolicy=partition
+  hydra.numHosts=2 vmQuantities=1 vmThreads=1
+  objectType=parReg.query.NewPortfolio
+  createIndex=false
+  maxKeys=10000
+  executeQueryNum=3
+
+
+cacheperf/comparisons/query/queryperfpartition.conf
+  scope=default dataPolicy=partition
+  hydra.numHosts=2 vmQuantities=1 vmThreads=1
+  objectType=parReg.query.NewPortfolio
+  createIndex=true
+  maxKeys=10000
+  executeQueryNum=3
+

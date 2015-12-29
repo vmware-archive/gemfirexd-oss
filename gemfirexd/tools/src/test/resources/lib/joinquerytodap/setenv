@@ -1,0 +1,5 @@
+#!/bin/bash
+
+#edit to provide correct build location
+export S_HOME=/rdiyewar1/output-build/gemfirexd_rebrand_Dec13/linux
+echo S_HOME=$S_HOME

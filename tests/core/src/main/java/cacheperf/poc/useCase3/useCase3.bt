@@ -1,0 +1,8 @@
+cacheperf/poc/useCase3/useCase3.conf
+  bridgeHosts =    2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHosts   = 1000 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+  maxKeys = 500000 numPutsBetweenQueries = 0 sleepMs = 0
+cacheperf/poc/useCase3/useCase3.conf
+  bridgeHosts =    2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHosts   = 1000 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+  maxKeys = 500000 numPutsBetweenQueries = 1 sleepMs = 500

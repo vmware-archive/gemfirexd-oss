@@ -1,0 +1,27 @@
+cacheperf/comparisons/connection/ds.conf
+        handshakePoolSize = 100
+        peerHosts = 100
+        peerVMsPerHost = 1 peerThreadsPerVM = 1
+
+cacheperf/comparisons/connection/dsSeq.conf
+        handshakePoolSize = 100
+        peerHosts = 100
+        peerVMsPerHost = 1 peerThreadsPerVM = 1
+
+cacheperf/comparisons/connection/dsMcast.conf
+        handshakePoolSize = 100
+        peerHosts = 100
+        peerVMsPerHost = 1 peerThreadsPerVM = 1
+
+cacheperf/comparisons/connection/dsMcastSeq.conf
+        handshakePoolSize = 100
+        peerHosts = 100
+        peerVMsPerHost = 1 peerThreadsPerVM = 1
+
+cacheperf/comparisons/connection/cycle.conf
+        handshakePoolSize = 100
+        prOneHosts = 50 prTwoHosts = 50
+
+cacheperf/comparisons/connection/cycleMean.conf
+        handshakePoolSize = 100
+        prOneHosts = 50 prTwoHosts = 50

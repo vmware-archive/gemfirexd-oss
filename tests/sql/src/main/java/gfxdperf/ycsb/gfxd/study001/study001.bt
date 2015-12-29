@@ -1,0 +1,24 @@
+//
+// STUDY001
+//
+// This study compares the performance of YCSB with HDFS with and without a persistent table.
+// The purpose is to guide decisions about whether to make HDFS tables persistent by default.
+
+gfxdperf/ycsb/gfxd/study001/ycsb_no_persist_table.conf
+  offHeap = 230g
+  serverHeap=26g
+  newSize=4g
+  recordCount=50000000
+  workSeconds=1800
+gfxdperf/ycsb/gfxd/study001/ycsb_persist_table.conf
+  offHeap = 230g
+  serverHeap=26g
+  newSize=4g
+  recordCount=50000000
+  workSeconds=1800
+gfxdperf/ycsb/gfxd/study001/ycsb_persist_table_async.conf
+  offHeap = 230g
+  serverHeap=26g
+  newSize=4g
+  recordCount=50000000
+  workSeconds=1800

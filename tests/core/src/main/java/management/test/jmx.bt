@@ -1,0 +1,7 @@
+INCLUDE $JTESTS/management/test/jmx/jmxMbeanDiscoveryAndReadOps.bt
+INCLUDE $JTESTS/management/test/jmx/jmxResourceLifeCycle.bt
+INCLUDE $JTESTS/management/test/jmx/jmxMgmtService.bt
+INCLUDE $JTESTS/management/test/jmx/jmxMembershipEvents.bt
+
+INCLUDE $JTESTS/management/test/jmx/jmxManagerTransitions.bt
+//INCLUDE $JTESTS/management/test/jmx/jmxManagerSecurity.bt

@@ -1,0 +1,38 @@
+﻿<Window x:Class="ado_net_gemfirexd_client.Views.SingleTableSelecView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="SingleTableSelecView" Height="761" Width="600"
+        Background="Beige">
+    <Grid>
+        <StackPanel>
+            <Border Width="Auto" Height="Auto" BorderBrush="#FF000000" BorderThickness="0,0,0,1" Padding="0,0,0,5">
+                <StackPanel Orientation="Horizontal">
+                    <Label Width="148" Height="Auto" Content="Select a database schema:" />
+                    <ComboBox x:Name="databases" Width="219" Height="23" SelectionChanged="Database_SelectionChanged" SelectedIndex="0"
+                            ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Window,Mode=FindAncestor}, Path=SchemaData}" DisplayMemberPath="name" SelectedValuePath="rownum" />
+                </StackPanel>
+            </Border>
+            <StackPanel Orientation="Vertical" Height="181">
+                <Label Width="94" Height="Auto" Content="Tables" />
+                <ListBox x:Name="tables" Width="Auto" Height="155" SelectionChanged="Table_SelectionChanged" 
+                                    SelectedIndex="0" />
+            </StackPanel>
+            <StackPanel Height="392">
+                <Label Width="93" Height="28" Content="DataRows" />
+                <DataGrid Name="DataRow" Grid.Column="1" AutoGenerateColumns="True" 
+                    SelectedItem="{Binding Path=SelectedGroup, Mode=TwoWay}" 
+                    ItemsSource="{Binding Path=., Mode=OneWay}" Height="340">
+                </DataGrid>
+            </StackPanel>
+            <StackPanel Height="118" Orientation="Horizontal" HorizontalAlignment="Center">
+               <StackPanel.Resources>
+                    <Style TargetType="{x:Type Button}">
+                    <Setter Property="Margin" Value="20,20,20,20"/>
+                </Style>
+                </StackPanel.Resources>
+                <Button Name="InsertBulkRows" Content="Insert Bulk Rows" Height="27" Click="InsertBulkRows_Click" />
+                <Button Name="DeleteBulkRows" Content="Delete Bulk Rows" Height="27" Click="DeleteBulkRows_Click" />
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>

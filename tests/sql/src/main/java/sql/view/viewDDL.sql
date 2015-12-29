@@ -1,0 +1,10 @@
+create view trade.securities_vw (sec_id, symbol, exchange) as select sec_id, symbol, exchange from trade.securities;
+create view trade.cust_networth_vw (cid, cust_name, cash, securities) as select t1.cid, t1.cust_name, t2.cash, t2.securities from trade.customers t1, trade.networth t2 where t1.cid=t2.cid;
+create view trade.cust_emp_vw (cid, name, eid, ssn) as select t1.cid, t1.cust_name, t2.eid, t2.ssn from trade.customers t1, emp.employees t2 where t1.cust_name = t2.emp_name;
+create view trade.buy_history_vw (oid, cid, qty, ordertime, price) as select t1.oid, t1.cid, t1.qty, t1.ordertime, t2.price from trade.buyorders t1, trade.txhistory t2 where t1.ordertime = t2.ordertime and t2.type = 'buy';
+create view trade.emp_trade_vw (eid, name, tradedate) as select t1.eid, t1.emp_name, t2.tradedate from emp.employees t1, trade.trades t2 where t1.eid = t2.eid;
+create view trade.cust_trade_vw (cid, name, tradedate) as select t1.cid, t1.cust_name, t2.tradedate from trade.customers t1, trade.trades t2 where t1.cid = t2.cid;
+create view trade.cust_count_since2010_vw (since_date, cust_count) as select since, count(*) from trade.customers group by since having since > '2010-01-01';
+create view trade.cust_networth_trade_vw (cid, name, cash, tradedate) as select v1.cid, v1.name, t1.cash, v1.tradedate from trade.cust_trade_vw v1, trade.networth t1 where v1.cid = t1.cid;
+create view trade.cust_networth_trade_alltables_vw (cid, name, cash, tradedate) as select t1.cid, t1.cust_name, t2.cash, t3.tradedate from trade.customers t1, trade.networth t2, trade.trades t3 where t1.cid = t2.cid and t2.cid = t3.cid;
+create view trade.cust_tradeCount_with5KNetworth_vw (cid, name, cash, trade_count) as select t1.cid, t1.cust_name, t2.cash, count(t3.tradedate) from trade.customers t1, trade.networth t2, trade.trades t3 where t1.cid = t2.cid and t2.cid = t3.cid group by t1.cid, t1.cust_name, t2.cash having t2.cash > 5000;

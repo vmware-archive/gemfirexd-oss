@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<configuration>
+
+<!-- Site specific YARN configuration properties -->
+
+      <property>
+         <name>yarn.resourcemanager.address</name>
+         <value>${yarn.resourcemanager.address}</value>
+     </property>
+
+     <property>
+         <name>yarn.resourcemanager.resource-tracker.address</name>
+         <value>${yarn.resourcemanager.resource-tracker.address}</value>
+     </property>
+
+     <property>
+         <name>yarn.resourcemanager.scheduler.address</name>
+         <value>${yarn.resourcemanager.scheduler.address}</value>
+     </property>
+
+     <property>
+         <name>yarn.nodemanager.aux-services</name>
+         <value>mapreduce_shuffle</value>
+     </property>
+
+     <property>
+         <name>yarn.nodemanager.local-dirs</name>
+         <value>${yarn.nodemanager.local-dirs}</value>
+     </property>
+
+     <property>
+         <name>yarn.nodemanager.log-dirs</name>
+         <value>${yarn.nodemanager.log-dirs}</value>
+     </property>
+     
+     <!--  Workaround for for bug 48608 - the tarball distribution
+     of pivotal hd sets yarn.application.classpath to a classpath
+     that only works with the ICM installed pivotal HD -->
+     <property>
+    	<description>CLASSPATH for YARN applications. A comma-separated list
+    	of CLASSPATH entries</description>
+     	<name>yarn.application.classpath</name>
+     	<value>$HADOOP_CONF_DIR,$HADOOP_COMMON_HOME/share/hadoop/common/*,$HADOOP_COMMON_HOME/share/hadoop/common/lib/*,$HADOOP_HDFS_HOME/share/hadoop/hdfs/*,$HADOOP_HDFS_HOME/share/hadoop/hdfs/lib/*,$HADOOP_YARN_HOME/share/hadoop/yarn/*,$HADOOP_YARN_HOME/share/hadoop/yarn/lib/*,$HADOOP_YARN_HOME/*,$HADOOP_YARN_HOME/lib/*</value>
+  	</property>
+
+  <!-- ResourceManager security configs -->
+  <property>
+    <name>yarn.resourcemanager.keytab</name>
+    <value>${yarn.secure.keytab.file}</value></property>
+  <property>
+    <name>yarn.resourcemanager.principal</name>   
+    <value>yarn/_HOST@GEMSTONE.COM</value></property>
+
+  <!-- NodeManager security configs -->
+  <property>
+    <name>yarn.nodemanager.keytab</name>
+    <value>${yarn.secure.keytab.file}</value></property>
+  <property>
+    <name>yarn.nodemanager.principal</name>       
+    <value>yarn/_HOST@GEMSTONE.COM</value></property>     
+  <property>
+    <name>yarn.nodemanager.container-executor.class</name>        
+    <value>org.apache.hadoop.yarn.server.nodemanager.LinuxContainerExecutor</value></property>     
+  <property>
+    <name>yarn.nodemanager.linux-container-executor.group</name>
+    <value>yarn</value></property>
+
+</configuration>

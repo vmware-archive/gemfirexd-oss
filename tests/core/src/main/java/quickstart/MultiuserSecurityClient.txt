@@ -1,0 +1,33 @@
+Please select your option.
+ Enter 1 for put and get operations.
+ Enter 2 for executing functions.
+ Enter 3 for executing Continuous Query \(CQs\).
+ Your selection: 
+-----------------------------------------------------
+Setting security properties for client...
+-----------------------------------------------------
+User 'writer0' is authorized to do a PUT operation, but not a GET operation.
+User 'reader1' is authorized to do a GET operation, but not a PUT operation.
+-----------------------------------------------------
+Press Enter to continue.
+
+\[writer0\] Performing put and get operations...
+\[writer0\] Putting values in the cache...
+\[writer0\] Putting entry: key1, value1
+\[writer0\] Putting entry: key2, value2
+\[writer0\] Getting entry: key1
+\[writer0\] Got expected NotAuthorizedException: Not authorized to perform GET operation on region \[/exampleRegion\]
+\[writer0\] Closed the cache for this user.
+Press Enter to continue.
+
+\[reader1\] Performing put and get operations...
+\[reader1\] Putting values in the cache...
+\[reader1\] Putting entry: key1, value1
+\[reader1\] Got expected NotAuthorizedException: Not authorized to perform PUT operation on region /exampleRegion
+\[reader1\] Getting entry: key1
+\[reader1\] Got value for key1: value1
+\[reader1\] Closed the cache for this user.
+Press Enter to continue.
+
+MultiuserSecurityClient closed.
+-----------------------------------------------------

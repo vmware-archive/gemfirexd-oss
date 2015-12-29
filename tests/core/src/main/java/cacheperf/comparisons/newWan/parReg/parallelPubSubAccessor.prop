@@ -1,0 +1,22 @@
+wanSites = 2
+
+locatorHostsPerSite = 1 
+locatorVMsPerHost   = 1 
+locatorThreadsPerVM = 1
+
+A = data 
+dataHostsPerSite  = 1 
+dataVMsPerHost    = 2 
+dataThreadsPerVM  = 1
+
+B = accessor 
+accessorHostsPerSite = 1 
+accessorVMsPerHost   = 2 
+accessorThreadsPerVM = 3
+
+objectSize = 1024 
+redundancy = 0 
+dataMem    = 1g 
+
+trimSeconds            = 60 
+perffmwk.comparisonKey = vm2

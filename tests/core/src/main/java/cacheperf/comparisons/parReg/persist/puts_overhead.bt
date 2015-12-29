@@ -1,0 +1,38 @@
+// ============================================================
+// measure put performance for persistent partitioned regions
+// Note: add hydra.DiskStorePrms-autoCompact=false to local.conf
+
+// persist only
+// maxKeys of 2097152 means each vm (2) puts 2097152 keys for a PR
+// total of 4M keys, heap size is 6G
+cacheperf/comparisons/parReg/persist/peerDataPut.conf
+  peerHosts =  2 peerVMsPerHost = 1 peerThreadsPerVM = 8
+  redundantCopies = 1
+  maxKeys = 2097152 objectSize = 1024
+  perffmwk.comparisonKey = put_02x01x01
+  heapMB=6000
+
+// no persist
+cacheperf/comparisons/parReg/peerDataPut.conf
+  peerHosts =  2 peerVMsPerHost = 1 peerThreadsPerVM = 8
+  redundantCopies = 1
+  maxKeys = 2097152 objectSize = 1024
+  perffmwk.comparisonKey = put_02x01x01
+  heapMB=6000
+
+// persist only
+// maxKeys of 500,000 means each vm (2) puts 500,000 keys for a PR
+// total of 1000,000 keys, heap size is 1.5G
+cacheperf/comparisons/parReg/persist/peerDataPut.conf
+  peerHosts =  2 peerVMsPerHost = 1 peerThreadsPerVM = 8
+  redundantCopies = 1
+  maxKeys = 500000 objectSize = 1024
+  perffmwk.comparisonKey = put_02x01x01
+
+// no persist
+cacheperf/comparisons/parReg/peerDataPut.conf
+  peerHosts =  2 peerVMsPerHost = 1 peerThreadsPerVM = 8
+  redundantCopies = 1
+  maxKeys = 500000 objectSize = 1024
+  perffmwk.comparisonKey = put_02x01x01
+

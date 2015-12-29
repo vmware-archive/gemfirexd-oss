@@ -1,0 +1,3 @@
+hydratest/version/partition/partition.conf version1 = default version2 = 100
+hydratest/version/partition/partition.conf version1 = default version2 = 130
+hydratest/version/partition/partition.conf version1 = default version2 = 131

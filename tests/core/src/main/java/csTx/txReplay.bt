@@ -1,0 +1,16 @@
+// I would start with these three tests first ... once they are working ... move on to the others
+csTx/parReg/concKnownKeysHABridge.conf bridgeHosts=3 bridgeThreadsPerVM=5 bridgeVMsPerHost=1 byteArraySize=1000 edgeHosts=2 edgeThreadsPerVM=3 edgeVMsPerHost=1 edgeVmSize=600 numKeys=180000 numVMsToStop=1 redundantCopies=1 serverVmSize=700
+csTx/parReg/concKnownKeysHABridge.conf bridgeHosts=5 bridgeThreadsPerVM=5 bridgeVMsPerHost=1 byteArraySize=1000 edgeHosts=2 edgeThreadsPerVM=3 edgeVMsPerHost=1 edgeVmSize=400 numKeys=100000 numVMsToStop=2 redundantCopies=2 serverVmSize=550
+csTx/parReg/concKnownKeysHABridge.conf bridgeHosts=7 bridgeThreadsPerVM=5 bridgeVMsPerHost=1 byteArraySize=1000 edgeHosts=2 edgeThreadsPerVM=3 edgeVMsPerHost=1 edgeVmSize=350 numKeys=75000 numVMsToStop=3 redundantCopies=3 serverVmSize=450
+
+csTx/cq/serialCQBridgeHA.conf bridgeHosts=5 bridgeThreadsPerVM=2 bridgeVMsPerHost=1 edgeHosts=3 edgeThreadsPerVM=2 edgeVMsPerHost=1 redundancyLevel=4
+csTx/cq/concCQBridgeHA.conf bridgeHosts=5 bridgeThreadsPerVM=5 bridgeVMsPerHost=1 edgeHosts=3 edgeThreadsPerVM=5 edgeVMsPerHost=1 redundancyLevel=4
+
+csTx/delta/serialDeltaCQBridgePRHA.conf bridgeHosts=7 bridgeThreadsPerVM=2 bridgeVMsPerHost=1 cloningEnabled=true edgeHosts=3 edgeThreadsPerVM=2 edgeVMsPerHost=1 redundancyLevel=3 redundantCopies=3
+csTx/delta/concDeltaCQBridgeHA.conf bridgeHosts=5 bridgeThreadsPerVM=5 bridgeVMsPerHost=1 cloningEnabled=true edgeHosts=3 edgeThreadsPerVM=5 edgeVMsPerHost=1 redundancyLevel=4
+csTx/delta/concDeltaCQBridgePRHA.conf bridgeHosts=7 bridgeThreadsPerVM=5 bridgeVMsPerHost=1 cloningEnabled=true edgeHosts=3 edgeThreadsPerVM=5 edgeVMsPerHost=1 redundancyLevel=3 redundantCopies=3
+
+csTx/fixedPartitioning/hct_fixedPartitioningWithTxOpsHA.conf bridgeHosts=4 bridgeThreadsPerVM=5 bridgeVMsPerHost=1 byteArraySize=500 edgeHosts=2 edgeThreadsPerVM=4 edgeVMsPerHost=1 numKeys=10000 numVMsToStop=1 redundancy=2 redundantCopies=1
+csTx/fixedPartitioning/hct_fixedPartitioningWithTxOpsHA.conf bridgeHosts=4 bridgeThreadsPerVM=5 bridgeVMsPerHost=1 byteArraySize=500 edgeHosts=2 edgeThreadsPerVM=4 edgeVMsPerHost=1 numKeys=10000 numVMsToStop=1 redundancy=2 redundantCopies=2
+csTx/fixedPartitioning/hct_fixedPartitioningWithTxOpsHA.conf bridgeHosts=4 bridgeThreadsPerVM=5 bridgeVMsPerHost=1 byteArraySize=500 edgeHosts=2 edgeThreadsPerVM=4 edgeVMsPerHost=1 numKeys=10000 numVMsToStop=1 redundancy=2 redundantCopies=3
+

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/hadoop"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/hadoop http://www.springframework.org/schema/hadoop/spring-hadoop.xsd">
+
+	<context:property-placeholder location="hadoop.properties" />
+
+	<configuration >
+		fs.default.name=${hd.fs}
+    gemfire.mapreduce.io.input.homedir=${homedir}
+    gemfire.mapreduce.io.input.tablename=${tablename}
+    gemfire.mapreduce.io.input.includesnapshot=false
+  </configuration>
+
+  <script id="inlined-js" language="javascript" run-at-startup="true">
+    fsh.rmr("${flights.intermediate.path}")
+    fsh.rmr("${flights.output.path}")
+  </script>
+
+	<job id="busyAirportsJob"
+       libs="${LIB_DIR}/gemfirexd-mapreduce-1.0-SNAPSHOT.jar,${LIB_DIR}/appassembler/repo/gemfirexd-1.5.Beta-SNAPSHOT.jar"
+       input-format="com.pivotal.gemfirexd.internal.engine.hadoop.mapreduce.EventInputFormat"
+       output-path="${flights.intermediate.path}"
+       mapper="demo.gfxd.mr2.BusyAirports.SampleMapper"
+       combiner="org.apache.hadoop.mapreduce.lib.reduce.IntSumReducer"
+       reducer="org.apache.hadoop.mapreduce.lib.reduce.IntSumReducer"
+  />
+
+  <job id="topBusyAirportJob"
+       libs="${LIB_DIR}/gemfirexd-mapreduce-1.0-SNAPSHOT.jar"
+       input-path="${flights.intermediate.path}"
+       output-path="${flights.output.path}"
+       mapper="demo.gfxd.mr2.TopBusyAirport.TopBusyAirportMapper"
+       reducer="demo.gfxd.mr2.TopBusyAirport.TopBusyAirportReducer"
+       number-reducers="1"
+  />
+
+  <job-runner id="runner" run-at-startup="true"  job-ref="busyAirportsJob,topBusyAirportJob" />
+
+</beans:beans>

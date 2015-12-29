@@ -1,0 +1,51 @@
+query/context/queryRegionFunctionContextHCT.conf
+edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=1
+bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   numKeys=1000 redundancy=0
+   redundantCopies=0
+objectsPerRegion=1000
+
+query/context/concOpsQueryRegionFunctionContextHCT.conf
+edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=1
+bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   numKeys=1000 redundancy=0
+   redundantCopies=0
+objectsPerRegion=1000
+
+   
+query/context/queryRegionFunctionContextP2P.conf
+objectsPerRegion=1000
+
+query/context/concOpsQueryRegionFunctionContextP2P.conf
+objectsPerRegion=1000
+
+query/context/queryRegionFunctionContextHCTColocate.conf
+edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=1
+bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   numKeys=1000 redundancy=0
+   redundantCopies=0
+   objectsPerRegion=1000
+
+query/context/queryRegionFunctionContextPRAndRRHCT.conf
+edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=3
+bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   numKeys=1000 redundancy=0
+   redundantCopies=0
+   objectsPerRegion=1000
+
+query/context/queryRegionFunctionContextHCTBucketRebalance.conf
+edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=1
+bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   numKeys=1000 redundancy=0
+   redundantCopies=0
+   objectsPerRegion=1000
+
+//TODO: Need to come up with a way to invoke rebalance in concurrent environment
+// This query test does not work currently and the mechanism used also needs 
+// to be revisited.
+//query/context/concOpsQueryRegionFunctionContextHCTRebalanceTask.conf
+//edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=1
+//bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+//   numKeys=1000 redundancy=0
+//   redundantCopies=1
+//   objectsPerRegion=1000

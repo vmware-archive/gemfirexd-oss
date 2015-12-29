@@ -1,0 +1,74 @@
+INCLUDE $JTESTS/wan/wan.bt 
+
+// parReg/wan
+parReg/wan/hct_explicit.conf
+// Linux,Windows version - uses sync distribution for gateway
+parReg/wan/hct.conf
+       wanSites=1,2,3 bridgeVMsPerHost=2 edgeVMsPerHost=1 edgeThreadsPerVm=1
+       onlyOnPlatforms=Linux,Windows,AIX
+// Solaris - uses async-distribution for gateway (accomodates slower systems)
+parReg/wan/hct_async.conf
+       wanSites=1,2,3 bridgeVMsPerHost=2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+       onlyOnPlatforms=SunOS
+// Linux,Windows version - uses sync distribution for gateway
+parReg/wan/hct.conf
+       wanSites=1,2,3 bridgeVMsPerHost=2 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       onlyOnPlatforms=Linux,Windows,AIX
+// Solaris - uses async-distribution for gateway (accomodates slower systems)
+parReg/wan/hct_async.conf
+       wanSites=1,2 bridgeVMsPerHost=2 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       onlyOnPlatforms=SunOS
+parReg/wan/hct_async.conf
+       wanSites=3 bridgeVMsPerHost=2 edgeVMsPerHost=2 edgeThreadsPerVM=2
+       onlyOnPlatforms=SunOS
+// p2p WAN tests
+parReg/wan/p2p.conf
+       wanSites=2,3 peerVMsPerHost=3 peerThreadsPerVM=2
+parReg/wan/p2pkill.conf
+       wanSites=2   peerVMsPerHost=3 peerThreadsPerVM=2
+
+// parReg/persist (wan)
+// ParReg wan tests
+parReg/persistence/hct_explicitPersist.conf
+                                                       
+// Linux,Windows version - uses sync distribution for gateway
+parReg/persistence/hctPersist.conf
+       wanSites=1,2,3 bridgeVMsPerHost=2 edgeVMsPerHost=1 edgeThreadsPerVm=1      
+       onlyOnPlatforms=Linux,Windows,AIX
+// Solaris - uses async-distribution for gateway (accomodates slower systems) 
+parReg/persistence/hct_asyncPersist.conf
+       wanSites=1,2,3 bridgeVMsPerHost=2 edgeVMsPerHost=1 edgeThreadsPerVM=1 
+       onlyOnPlatforms=SunOS
+// Linux,Windows version - uses sync distribution for gateway 
+parReg/persistence/hctPersist.conf
+       wanSites=1,2,3 bridgeVMsPerHost=2 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       onlyOnPlatforms=Linux,Windows,AIX
+// Solaris - uses async-distribution for gateway (accomodates slower systems)
+parReg/persistence/hct_asyncPersist.conf
+       wanSites=1,2 bridgeVMsPerHost=2 edgeVMsPerHost=3 edgeThreadsPerVM=2      
+       onlyOnPlatforms=SunOS
+parReg/persistence/hct_asyncPersist.conf
+       wanSites=3 bridgeVMsPerHost=2 edgeVMsPerHost=2 edgeThreadsPerVM=2      
+       onlyOnPlatforms=SunOS
+// p2p WAN tests
+parReg/persistence/p2pPersist.conf
+       wanSites=2,3 peerVMsPerHost=3 peerThreadsPerVM=2
+parReg/persistence/p2pkillPersist.conf
+       wanSites=2   peerVMsPerHost=3 peerThreadsPerVM=2
+
+// wan hct related tests extended to exercise CQs
+INCLUDE $JTESTS/cq/wan/wan.bt
+
+// security
+security/wan_p2p.conf
+validWanSites=3 invalidWanSites=3 locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1 bridgeHostsPerSite=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHostsPerSite=1 edgeVMsPerHost=1 edgeThreadsPerVM=1 peerMem = 256m
+
+security/wan_hct.conf
+validWanSites=3 invalidWanSites=3 locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1 bridgeHostsPerSite=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHostsPerSite=1 edgeVMsPerHost=2 edgeThreadsPerVM=1 peerMem = 256m
+
+security/wan_authorization.conf
+writerWanSites=3 readerWanSites=3 locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1 bridgeHostsPerSite=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHostsPerSite=1 edgeVMsPerHost=1 edgeThreadsPerVM=1 peerMem = 256m
+
+// Backward compatibility
+INCLUDE $JTESTS/wan/wanBackwardCompatibility.bt
+

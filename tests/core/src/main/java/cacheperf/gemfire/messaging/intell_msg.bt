@@ -1,0 +1,10 @@
+
+cacheperf/gemfire/messaging/gets_low.conf hydra.numHosts=3 numExtra=1 
+cacheperf/gemfire/messaging/gets_low.conf hydra.numHosts=4 numExtra=2 
+cacheperf/gemfire/messaging/gets_low.conf hydra.numHosts=6 numExtra=4 
+
+cacheperf/gemfire/messaging/gets_high.conf hydra.numHosts=3 numExtra=1 
+cacheperf/gemfire/messaging/gets_high.conf hydra.numHosts=4 numExtra=2 
+cacheperf/gemfire/messaging/gets_high.conf hydra.numHosts=6 numExtra=4 
+
+

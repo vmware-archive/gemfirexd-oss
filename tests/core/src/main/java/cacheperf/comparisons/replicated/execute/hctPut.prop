@@ -1,0 +1,20 @@
+locatorHosts = 1
+locatorVMsPerHost = 1
+locatorThreadsPerVM = 1
+
+bridgeHosts = 1
+bridgeVMsPerHost = 1
+bridgeThreadsPerVM = 1
+
+edgeHosts = 1
+edgeVMsPerHost = 1
+edgeThreadsPerVM = 1
+
+heapMB = 1500
+maxKeys = 500000
+objectSize = 1024
+conserveSockets = false
+
+version = default
+
+perffmwk.comparisonKey=hctPut

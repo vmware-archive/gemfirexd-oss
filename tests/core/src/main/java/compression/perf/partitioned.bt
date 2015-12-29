@@ -1,0 +1,50 @@
+// Partitioned (create, get, put, update, mixed getPut (30/70), mixed getPut (70/30)
+// redundantCopies = 0
+compression/perf/partitionedPeerCreate.conf
+  redundantCopies = 0
+  perffmwk.comparisonKey = partitionedPeerCreate_rc0
+
+compression/perf/partitionedPeerGet.conf
+  redundantCopies = 0
+  perffmwk.comparisonKey = partitionedPeerGet_rc0
+
+compression/perf/partitionedPeerPut.conf
+  redundantCopies = 0
+  perffmwk.comparisonKey = partitionedPeerPut_rc0
+
+compression/perf/partitionedPeerUpdate.conf
+  redundantCopies = 0    
+  perffmwk.comparisonKey = partitionedPeerUpdate_rc0
+
+compression/perf/partitionedPeerMixGetPut.conf
+  putPercentage = 30 redundantCopies = 0
+  perffmwk.comparisonKey = partitionedPeerMixGetPut30_rc0
+
+compression/perf/partitionedPeerMixGetPut.conf
+  putPercentage = 70 redundantCopies = 0
+  perffmwk.comparisonKey = partitionedPeerMixGetPut70_rc0
+
+// redundantCopies = 1 (note maxKeys = 50,000 vs. 100,000 to account for the redundant copies)
+compression/perf/partitionedPeerCreate.conf
+  redundantCopies = 1  maxKeys = 50000
+  perffmwk.comparisonKey = partitionedPeerCreate_rc1
+
+compression/perf/partitionedPeerGet.conf
+  redundantCopies = 1  maxKeys = 50000
+  perffmwk.comparisonKey = partitionedPeerGet_rc1
+
+compression/perf/partitionedPeerPut.conf
+  redundantCopies = 1  maxKeys = 50000
+  perffmwk.comparisonKey = partitionedPeerPut_rc1
+
+compression/perf/partitionedPeerUpdate.conf
+  redundantCopies = 1     maxKeys = 50000
+  perffmwk.comparisonKey = partitionedPeerUpdate_rc1
+
+compression/perf/partitionedPeerMixGetPut.conf
+  putPercentage = 30 redundantCopies = 1  maxKeys = 50000
+  perffmwk.comparisonKey = partitionedPeerMixGetPut_30_rc1
+
+compression/perf/partitionedPeerMixGetPut.conf
+  putPercentage = 70 redundantCopies = 1  maxKeys = 50000
+  perffmwk.comparisonKey = partitionedPeerMixGetPut_70_rc1

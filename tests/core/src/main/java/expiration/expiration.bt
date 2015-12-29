@@ -1,0 +1,4 @@
+expiration/entryExpirActionVMReg.conf hydra.numHosts=6
+expiration/regionExpirActionVMReg.conf hydra.numHosts=6
+expiration/testBug30828.conf
+expiration/testBug30943.conf

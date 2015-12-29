@@ -1,0 +1,7 @@
+locatorHosts = 1
+locatorVMsPerHost = 1
+locatorThreadsPerVM = 1
+A = client
+clientHosts = 3
+clientVMsPerHost = 3
+clientThreadsPerVM = 5

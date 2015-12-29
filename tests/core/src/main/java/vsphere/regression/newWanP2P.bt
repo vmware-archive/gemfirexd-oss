@@ -1,0 +1,128 @@
+//wanSerialP2P
+
+newWan/p2pKillPersist.conf
+      wanSites = 2,3,4 maxOps=15000 resultWaitSec=600
+      peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5
+      threadGroupsName=peer
+      
+newWan/p2pRing.conf 
+      wanSites = 2,3,4 maxOps=50000 resultWaitSec=600 
+      locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+      peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+      threadGroupsName=peer
+        
+parReg/newWan/serial/p2pHubAndSpoke.conf 
+      wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+      locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+      peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+      threadGroupsName=peer  
+            
+ parReg/newWan/serial/colocation/p2pKillParRegColocationPersist.conf
+      wanSites = 2,3,4 maxOps=15000 resultWaitSec=600
+      peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+      threadGroupsName=peer
+      
+parReg/newWan/serial/discovery/wanLocatorsPeerHAP2P.conf
+      wanSites = 2,3,4 maxOps=100 resultWaitSec=600
+      locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+      threadGroupsName=locator
+      
+parReg/newWan/serial/colocation/concKnownKeysWANp2pPersist.conf wanSites=2,3,4
+      locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+      peerHostsPerSite=4 peerVMsPerHost=1 peerThreadsPerVM=5
+      numKeys = 10000  
+      threadGroupsName=verifyThreads
+
+parReg/newWan/serial/colocation/senderOperationsP2pParRegColocationPersist.conf
+      wanSites = 2,3,4 maxOps=5000 resultWaitSec=600
+      locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+      peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+      threadGroupsName=peer
+        
+newWan/serial/eviction/queueEvictionP2pPersist.conf
+      wanSites = 2,3,4 maxOps=50000 resultWaitSec=3600
+      locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+      peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+      threadGroupsName=peer
+      
+parReg/newWan/serial/multiVersionP2P.conf 
+      threadGroupsName=peersite1
+
+newWan/serial/filters/p2pEventTransportFilterHA.conf
+      wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+      peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5   
+      threadGroupsName=peer
+
+parReg/newWan/serial/tx/p2pKill.conf
+      wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+      peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5 
+      threadGroupsName=peer 
+
+parReg/newWan/serial/pdx/p2pKillPdx.conf
+      wanSites = 2,3,4 maxOps=1000 resultWaitSec=600
+      peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5
+      threadGroupsName=peer
+      
+newWan/accessorP2PHA.conf 
+      wanSites=2,3,4 maxOps=300 resultWaitSec=600 
+      threadGroupsName=peer
+    
+// wanParallelP2P
+    
+        
+parReg/newWan/parallel/colocation/p2pKillParRegColocationPersist.conf
+      wanSites = 2,3,4 maxOps=15000 resultWaitSec=600 redundantCopies = 2
+      peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+      threadGroupsName=peer  
+            
+parReg/newWan/parallel/lazyReceiverP2p.conf
+      wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+      peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5        
+      threadGroupsName=peer
+
+parReg/newWan/parallel/persistence/p2pRing.conf 
+      wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+      locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+      peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+      threadGroupsName=peer
+      
+parReg/newWan/parallel/concKnownKeysWANp2pWithCacheServer.conf wanSites=2,3,4
+      locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+      peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+      numKeys = 20000
+      threadGroupsName=newCapacityThreads
+      
+parReg/newWan/parallel/colocation/senderOperationsP2pKillParRegColocationPersist.conf
+      wanSites = 2,3,4 maxOps=5000 resultWaitSec=600 redundantCopies = 2
+      locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+      peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+      threadGroupsName=peer
+      
+parReg/newWan/parallel/colocation/queueEvictionP2p.conf 
+      wanSites = 2,3,4 maxOps=50000 resultWaitSec=3600 
+      locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+      peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+      threadGroupsName=peer  
+
+parReg/newWan/parallel/discovery/wanLocatorsAllP2P.conf
+      wanSites = 2,3,4 maxOps=300 resultWaitSec=600
+      locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1   
+      threadGroupsName=locator
+      
+parReg/newWan/parallel/multiVersionP2P.conf
+      threadGroupsName=peersite1
+      
+parReg/newWan/parallel/tx/p2pKill.conf
+      wanSites = 2,3,4 maxOps=15000 resultWaitSec=600 redundantCopies = 2
+      peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5
+      threadGroupsName=peer
+      
+parReg/newWan/parallel/filters/p2pEventTransportFilterHA.conf
+      wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+      peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5      
+      threadGroupsName=peer
+      
+parReg/newWan/parallel/pdx/p2pKillPdx.conf
+      wanSites = 2,3,4 maxOps=1000 resultWaitSec=600
+      peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5
+      threadGroupsName=peer

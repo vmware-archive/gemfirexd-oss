@@ -1,0 +1,164 @@
+#!/bin/sh
+
+if [ -z "$1" ]
+then
+  echo "No path to largeobject01 was specified."
+  exit 0
+fi
+echo "Using path to largeobject01 = " + $1
+
+#-------------------------------------------------------------------------------
+# p2p
+#-------------------------------------------------------------------------------
+
+echo "Doing ratio comparison of NON-TX GFE to TX GFE for p2p..."
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m \
+  -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE \
+  -DomitFailedTests=true -DaddTestKey=true -DcompareByKey=true \
+  -Dmode=ratio -DcompReportFile=p2p.nontx.gfe.v.tx.gfe.ratio.txt \
+  perffmwk.PerfComparer \
+  $1/p2p.gfe p2p.gfe
+
+echo "Doing raw comparison of NON-TX GFE to TX GFE for p2p..."
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m \
+  -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE \
+  -DomitFailedTests=true -DaddTestKey=true -DcompareByKey=true \
+  -Dmode=raw -DcompReportFile=p2p.nontx.gfe.v.tx.gfe.raw.txt \
+  perffmwk.PerfComparer \
+  $1/p2p.gfe p2p.gfe
+
+echo "Doing ratio comparison of NON-TX GFXD to TX GFXD for p2p..."
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m \
+  -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE \
+  -DomitFailedTests=true -DaddTestKey=true -DcompareByKey=true \
+  -Dmode=ratio -DcompReportFile=p2p.nontx.gfxd.v.tx.gfxd.ratio.txt \
+  perffmwk.PerfComparer \
+  $1/p2p.gfxd p2p.gfxd
+
+echo "Doing raw comparison of NON-TX GFXD to TX GFXD for p2p..."
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m \
+  -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE \
+  -DomitFailedTests=true -DaddTestKey=true -DcompareByKey=true \
+  -Dmode=raw -DcompReportFile=p2p.nontx.gfxd.v.tx.gfxd.raw.txt \
+  perffmwk.PerfComparer \
+  $1/p2p.gfxd p2p.gfxd
+
+echo "Doing ratio comparison of GFE to GFXD for p2p..."
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m \
+  -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE \
+  -DomitFailedTests=true -DaddTestKey=true -DcompareByKey=true \
+  -Dmode=ratio -DcompReportFile=p2p.gfe.v.gfxd.ratio.txt \
+  perffmwk.PerfComparer \
+  p2p.gfe p2p.gfxd
+
+echo "Doing raw comparison of GFE to GFXD for p2p..."
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m \
+  -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE \
+  -DomitFailedTests=true -DaddTestKey=true -DcompareByKey=true \
+  -Dmode=raw -DcompReportFile=p2p.gfe.v.gfxd.raw.txt \
+  perffmwk.PerfComparer \
+  p2p.gfe p2p.gfxd
+
+#-------------------------------------------------------------------------------
+# peerClient
+#-------------------------------------------------------------------------------
+
+echo "Doing ratio comparison of NON-TX GFE to TX GFE for peerClient..."
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m \
+  -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE \
+  -DomitFailedTests=true -DaddTestKey=true -DcompareByKey=true \
+  -Dmode=ratio -DcompReportFile=peerClient.nontx.gfe.v.tx.gfe.ratio.txt \
+  perffmwk.PerfComparer \
+  $1/peerClient.gfe peerClient.gfe
+
+echo "Doing raw comparison of NON-TX GFE to TX GFE for peerClient..."
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m \
+  -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE \
+  -DomitFailedTests=true -DaddTestKey=true -DcompareByKey=true \
+  -Dmode=raw -DcompReportFile=peerClient.nontx.gfe.v.tx.gfe.raw.txt \
+  perffmwk.PerfComparer \
+  $1/peerClient.gfe peerClient.gfe
+
+echo "Doing ratio comparison of NON-TX GFXD to TX GFXD for peerClient..."
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m \
+  -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE \
+  -DomitFailedTests=true -DaddTestKey=true -DcompareByKey=true \
+  -Dmode=ratio -DcompReportFile=peerClient.nontx.gfxd.v.tx.gfxd.ratio.txt \
+  perffmwk.PerfComparer \
+  $1/peerClient.gfxd peerClient.gfxd
+
+echo "Doing raw comparison of NON-TX GFXD to TX GFXD for peerClient..."
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m \
+  -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE \
+  -DomitFailedTests=true -DaddTestKey=true -DcompareByKey=true \
+  -Dmode=raw -DcompReportFile=peerClient.nontx.gfxd.v.tx.gfxd.raw.txt \
+  perffmwk.PerfComparer \
+  $1/peerClient.gfxd peerClient.gfxd
+
+echo "Doing ratio comparison of GFE to GFXD for peerClient..."
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m \
+  -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE \
+  -DomitFailedTests=true -DaddTestKey=true -DcompareByKey=true \
+  -Dmode=ratio -DcompReportFile=peerClient.gfe.v.gfxd.ratio.txt \
+  perffmwk.PerfComparer \
+  peerClient.gfe peerClient.gfxd
+
+echo "Doing raw comparison of GFE to GFXD for peerClient..."
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m \
+  -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE \
+  -DomitFailedTests=true -DaddTestKey=true -DcompareByKey=true \
+  -Dmode=raw -DcompReportFile=peerClient.gfe.v.gfxd.raw.txt \
+  perffmwk.PerfComparer \
+  peerClient.gfe peerClient.gfxd
+
+#-------------------------------------------------------------------------------
+# thinClient
+#-------------------------------------------------------------------------------
+
+echo "Doing ratio comparison of NON-TX GFE to TX GFE for thinClient..."
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m \
+  -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE \
+  -DomitFailedTests=true -DaddTestKey=true -DcompareByKey=true \
+  -Dmode=ratio -DcompReportFile=thinClient.nontx.gfe.v.tx.gfe.ratio.txt \
+  perffmwk.PerfComparer \
+  $1/thinClient.gfe thinClient.gfe
+
+echo "Doing raw comparison of NON-TX GFE to TX GFE for thinClient..."
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m \
+  -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE \
+  -DomitFailedTests=true -DaddTestKey=true -DcompareByKey=true \
+  -Dmode=raw -DcompReportFile=thinClient.nontx.gfe.v.tx.gfe.raw.txt \
+  perffmwk.PerfComparer \
+  $1/thinClient.gfe thinClient.gfe
+
+echo "Doing ratio comparison of NON-TX GFXD to TX GFXD for thinClient..."
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m \
+  -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE \
+  -DomitFailedTests=true -DaddTestKey=true -DcompareByKey=true \
+  -Dmode=ratio -DcompReportFile=thinClient.nontx.gfxd.v.tx.gfxd.ratio.txt \
+  perffmwk.PerfComparer \
+  $1/thinClient.gfxd thinClient.gfxd
+
+echo "Doing raw comparison of NON-TX GFXD to TX GFXD for thinClient..."
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m \
+  -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE \
+  -DomitFailedTests=true -DaddTestKey=true -DcompareByKey=true \
+  -Dmode=raw -DcompReportFile=thinClient.nontx.gfxd.v.tx.gfxd.raw.txt \
+  perffmwk.PerfComparer \
+  $1/thinClient.gfxd thinClient.gfxd
+
+echo "Doing ratio comparison of GFE to GFXD to MYSQLC for thinClient..."
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m \
+  -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE \
+  -DomitFailedTests=true -DaddTestKey=true -DcompareByKey=true \
+  -Dmode=ratio -DcompReportFile=thinClient.gfe.v.gfxd.v.mysqlc.ratio.txt \
+  perffmwk.PerfComparer \
+  thinClient.gfe thinClient.gfxd thinClient.mysqlc
+
+echo "Doing raw comparison of GFE to GFXD to MYSQLC for thinClient..."
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m \
+  -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE \
+  -DomitFailedTests=true -DaddTestKey=true -DcompareByKey=true \
+  -Dmode=raw -DcompReportFile=thinClient.gfe.v.gfxd.v.mysqlc.raw.txt \
+  perffmwk.PerfComparer \
+  thinClient.gfe thinClient.gfxd thinClient.mysqlc

@@ -1,0 +1,39 @@
+// one host (and deploy dir) per peer member
+management/test/cli/serialPeerDeploySeparate.conf
+      locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+      A=peer peerHosts=6 peerVMsPerHost=1 peerThreadsPerVM=1
+      B=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+      C=cli cliHosts=2 cliVMsPerHost=1 cliThreadsPerVM=1
+      redundantCopies=2
+      numManagers=1,3
+      registerFunctions=false,true
+
+// some peers have a command deploy dir and others are separate
+management/test/cli/serialPeerDeploySeparate.conf
+      locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+      A=peer peerHosts=2 peerVMsPerHost=3 peerThreadsPerVM=1
+      B=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+      C=cli cliHosts=2 cliVMsPerHost=1 cliThreadsPerVM=1
+      redundantCopies=2
+      numManagers=1,3
+      registerFunctions=false,true
+management/test/cli/serialPeerDeploySeparate.conf
+      locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+      A=peer peerHosts=3 peerVMsPerHost=2 peerThreadsPerVM=1
+      B=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+      C=cli cliHosts=2 cliVMsPerHost=1 cliThreadsPerVM=1
+      redundantCopies=2
+      numManagers=1,3
+      registerFunctions=false,true
+
+management/test/cli/createAsyncEventQueueAndDiskStoreCommandMultiHost.conf
+      locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+      A=peer peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=1
+      B=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+      C=cli cliHosts=1 cliVMsPerHost=1 cliThreadsPerVM=1
+      redundantCopies=2
+      
+
+
+      
+

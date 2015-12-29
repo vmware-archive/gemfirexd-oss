@@ -1,0 +1,406 @@
+gfxd> --
+--   Licensed to the Apache Software Foundation (ASF) under one or more
+--   contributor license agreements.  See the NOTICE file distributed with
+--   this work for additional information regarding copyright ownership.
+--   The ASF licenses this file to You under the Apache License, Version 2.0
+--   (the "License"); you may not use this file except in compliance with
+--   the License.  You may obtain a copy of the License at
+--
+--      http://www.apache.org/licenses/LICENSE-2.0
+--
+--   Unless required by applicable law or agreed to in writing, software
+--   distributed under the License is distributed on an "AS IS" BASIS,
+--   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+--   See the License for the specific language governing permissions and
+--   limitations under the License.
+--
+-- tests for synonym support
+-- When we decide to convert this test to junit test, the converted tests can 
+-- go in existing SynonymTest.java
+set schema APP;
+0 rows inserted/updated/deleted
+gfxd> -- negative tests
+----- Create a synonym to itself. Error.
+create synonym syn for syn;
+ERROR 42916: Synonym 'SYN' cannot be created for 'APP.SYN' as it would result in a circular synonym chain.
+gfxd> create synonym syn for APP.syn;
+ERROR 42916: Synonym 'SYN' cannot be created for 'APP.SYN' as it would result in a circular synonym chain.
+gfxd> create synonym APP.syn for syn;
+ERROR 42916: Synonym 'APP.SYN' cannot be created for 'APP.SYN' as it would result in a circular synonym chain.
+gfxd> create synonym APP.syn for APP.syn;
+ERROR 42916: Synonym 'APP.SYN' cannot be created for 'APP.SYN' as it would result in a circular synonym chain.
+gfxd> -- Create a simple synonym loop. Error.
+create synonym synonym1 for synonym;
+0 rows inserted/updated/deleted
+WARNING 01522: The newly defined synonym 'SYNONYM1' resolved to the object 'APP.SYNONYM' which is currently undefined. : 
+gfxd> create synonym synonym for synonym1;
+ERROR 42916: Synonym 'SYNONYM' cannot be created for 'SYNONYM1' as it would result in a circular synonym chain.
+gfxd> drop synonym synonym1;
+0 rows inserted/updated/deleted
+gfxd> -- Create a larger synonym loop.
+create synonym ts1 for ts;
+0 rows inserted/updated/deleted
+WARNING 01522: The newly defined synonym 'TS1' resolved to the object 'APP.TS' which is currently undefined. : 
+gfxd> create synonym ts2 for ts1;
+0 rows inserted/updated/deleted
+WARNING 01522: The newly defined synonym 'TS2' resolved to the object 'APP.TS' which is currently undefined. : 
+gfxd> create synonym ts3 for ts2;
+0 rows inserted/updated/deleted
+WARNING 01522: The newly defined synonym 'TS3' resolved to the object 'APP.TS' which is currently undefined. : 
+gfxd> create synonym ts4 for ts3;
+0 rows inserted/updated/deleted
+WARNING 01522: The newly defined synonym 'TS4' resolved to the object 'APP.TS' which is currently undefined. : 
+gfxd> create synonym ts5 for ts4;
+0 rows inserted/updated/deleted
+WARNING 01522: The newly defined synonym 'TS5' resolved to the object 'APP.TS' which is currently undefined. : 
+gfxd> create synonym ts6 for ts5;
+0 rows inserted/updated/deleted
+WARNING 01522: The newly defined synonym 'TS6' resolved to the object 'APP.TS' which is currently undefined. : 
+gfxd> create synonym ts for ts6;
+ERROR 42916: Synonym 'TS' cannot be created for 'TS6' as it would result in a circular synonym chain.
+gfxd> drop synonym App.ts1;
+0 rows inserted/updated/deleted
+gfxd> drop synonym "APP".ts2;
+0 rows inserted/updated/deleted
+gfxd> drop synonym TS3;
+0 rows inserted/updated/deleted
+gfxd> drop synonym ts4;
+0 rows inserted/updated/deleted
+gfxd> drop synonym ts5;
+0 rows inserted/updated/deleted
+gfxd> drop synonym app.ts6;
+0 rows inserted/updated/deleted
+gfxd> -- Synonyms and table/view share same namespace. Negative tests for this.
+create table table1 (i int, j int);
+0 rows inserted/updated/deleted
+gfxd> insert into table1 values (1,1), (2,2);
+2 rows inserted/updated/deleted
+gfxd> create view view1 as select i, j from table1;
+0 rows inserted/updated/deleted
+gfxd> create synonym table1 for t1;
+ERROR X0Y68: Table/View 'TABLE1' already exists.
+gfxd> create synonym APP.Table1 for t1;
+ERROR X0Y68: Table/View 'TABLE1' already exists.
+gfxd> create synonym app.TABLE1 for "APP"."T";
+ERROR X0Y68: Table/View 'TABLE1' already exists.
+gfxd> create synonym APP.VIEW1 for v1;
+ERROR X0Y68: Table/View 'VIEW1' already exists.
+gfxd> create synonym "APP"."VIEW1" for app.v;
+ERROR X0Y68: Table/View 'VIEW1' already exists.
+gfxd> -- Synonyms can't be created on temporary tables
+declare global temporary table session.t1 (c1 int) not logged;
+0 rows inserted/updated/deleted
+gfxd> create synonym synForTemp for session.t1;
+ERROR XCL51: The requested function can not reference tables in SESSION schema.
+gfxd> create synonym synForTemp for session."T1";
+ERROR XCL51: The requested function can not reference tables in SESSION schema.
+gfxd> -- Synonyms can't be created in session schemas
+create synonym session.table1 for APP.table1;
+ERROR XCL51: The requested function can not reference tables in SESSION schema.
+gfxd> -- Creating a table or a view when a synonym of that name is present. Error.
+create synonym myTable for table1;
+0 rows inserted/updated/deleted
+gfxd> create table myTable(i int, j int);
+ERROR X0Y32: Table/View 'MYTABLE' already exists in Schema 'APP'.
+gfxd> create view myTable as select * from table1;
+ERROR X0Y32: Table/View 'MYTABLE' already exists in Schema 'APP'.
+gfxd> -- Positive test cases
+----- Using synonym in DML
+select * from myTable;
+ERROR X0Y79: Statement.executeUpdate() cannot be called with a statement that returns a ResultSet.
+gfxd> select * from table1;
+I |J          
+-----
+1 |1          
+2 |2          
+gfxd> insert into myTable values (3,3), (4,4);
+2 rows inserted/updated/deleted
+gfxd> select * from mytable;
+I |J          
+-----
+1 |1          
+2 |2          
+3 |3          
+4 |4          
+gfxd> update myTable set i=3 where j=4;
+1 row inserted/updated/deleted
+gfxd> select * from mytable;
+I |J          
+-----
+1 |1          
+2 |2          
+3 |3          
+3 |4          
+gfxd> select * from table1;
+I |J          
+-----
+1 |1          
+2 |2          
+3 |3          
+3 |4          
+gfxd> delete from myTable where i> 2;
+2 rows inserted/updated/deleted
+gfxd> select * from "APP"."MYTABLE";
+I |J          
+-----
+1 |1          
+2 |2          
+gfxd> select * from APP.table1;
+I |J          
+-----
+1 |1          
+2 |2          
+gfxd> -- Try some cursors
+get cursor c1 as 'select * from myTable';
+gfxd> next c1;
+I |J          
+-----
+1 |1          
+gfxd> next c1;
+I |J          
+-----
+2 |2          
+gfxd> close c1;
+gfxd> -- Try updatable cursors
+autocommit off;
+gfxd> get cursor c2 as 'select * from myTable for update';
+gfxd> next c2;
+I |J          
+-----
+1 |1          
+gfxd> update myTable set i=5 where current of c2;
+1 row inserted/updated/deleted
+gfxd> close c2;
+gfxd> autocommit on;
+gfxd> select * from table1;
+I |J          
+-----
+5 |1          
+2 |2          
+gfxd> -- Try updatable cursors, with synonym at the top, base table inside.
+autocommit off;
+gfxd> get cursor c2 as 'select * from app.table1 for update';
+gfxd> next c2;
+I |J          
+-----
+5 |1          
+gfxd> update myTable set i=6 where current of c2;
+1 row inserted/updated/deleted
+gfxd> close c2;
+gfxd> autocommit on;
+gfxd> select * from table1;
+I |J          
+-----
+6 |1          
+2 |2          
+gfxd> -- trigger tests
+create table table2 (i int, j int);
+0 rows inserted/updated/deleted
+gfxd> -- Should fail
+create trigger tins after insert on myTable referencing new_table as new for each statement insert into table2 select i,j from table1;
+ERROR 42Y55: 'CREATE TRIGGER' cannot be performed on 'MYTABLE' because it does not exist.
+gfxd> -- Should pass
+create trigger tins after insert on table1 referencing new_table as new for each statement insert into table2 select i,j from table1;
+0 rows inserted/updated/deleted
+gfxd> drop trigger tins;
+0 rows inserted/updated/deleted
+gfxd> create trigger triggerins after insert on table2 referencing new_table as new for each statement insert into myTable select i,j from new;
+0 rows inserted/updated/deleted
+gfxd> select * from myTable;
+I |J          
+-----
+6 |1          
+2 |2          
+gfxd> insert into table2 values (5, 5);
+1 row inserted/updated/deleted
+gfxd> select * from myTable;
+I |J          
+-----
+6 |1          
+2 |2          
+5 |5          
+gfxd> drop table table2;
+0 rows inserted/updated/deleted
+gfxd> -- Try referential constraints. Synonyms should not be allowed there.
+create table primaryTab (i int not null primary key, j int, c char(10));
+0 rows inserted/updated/deleted
+gfxd> create synonym synPrimary for primaryTab;
+0 rows inserted/updated/deleted
+gfxd> -- Should fail
+create table foreignTab(i int, j int references synPrimary(i));
+ERROR X0Y46: Constraint 'xxxxGENERATED-IDxxxx' is invalid: referenced table SYNPRIMARY does not exist.
+gfxd> create table foreignTab(i int, j int references primaryTab(i));
+0 rows inserted/updated/deleted
+gfxd> drop table foreignTab;
+0 rows inserted/updated/deleted
+gfxd> drop table primaryTab;
+0 rows inserted/updated/deleted
+gfxd> drop synonym synPrimary;
+0 rows inserted/updated/deleted
+gfxd> -- Tests with non existant schemas
+----- Implicitly creates junkSchema
+create synonym junkSchema.syn1 for table2;
+0 rows inserted/updated/deleted
+WARNING 01522: The newly defined synonym 'SYN1' resolved to the object 'JUNKSCHEMA.TABLE2' which is currently undefined. : 
+gfxd> select * from junkSchema.syn1;
+ERROR 42X05: Table/View 'JUNKSCHEMA.TABLE2' does not exist.
+gfxd> set schema junkSchema;
+0 rows inserted/updated/deleted
+gfxd> create table table2(c char(10));
+0 rows inserted/updated/deleted
+gfxd> select * from syn1;
+C         
+-----
+gfxd> set schema APP;
+0 rows inserted/updated/deleted
+gfxd> -- Should resolve to junkSchema.table2
+select * from junkSchema.syn1;
+C         
+-----
+gfxd> drop table junkSchema.table2;
+0 rows inserted/updated/deleted
+gfxd> -- Should fail. Need to drop synonym first
+drop schema junkSchema restrict;
+ERROR X0Y54: Schema 'JUNKSCHEMA' cannot be dropped because it is not empty.
+gfxd> drop synonym junkSchema.syn1;
+0 rows inserted/updated/deleted
+gfxd> drop schema junkSchema restrict;
+0 rows inserted/updated/deleted
+gfxd> -- Test with target schema missing
+create synonym mySynonym for notPresent.t1;
+0 rows inserted/updated/deleted
+WARNING 01522: The newly defined synonym 'MYSYNONYM' resolved to the object 'NOTPRESENT.T1' which is currently undefined. : 
+gfxd> select * from mySynonym;
+ERROR 42Y07: Schema 'NOTPRESENT' does not exist
+gfxd> create table notPresent.t1(j int, c char(10));
+0 rows inserted/updated/deleted
+gfxd> insert into notPresent.t1 values (100, 'satheesh');
+1 row inserted/updated/deleted
+gfxd> -- Should resolve now
+select * from mySynonym;
+J |C         
+-----
+100 |satheesh  
+gfxd> drop table notPresent.t1;
+0 rows inserted/updated/deleted
+gfxd> drop synonym mySynonym;
+0 rows inserted/updated/deleted
+gfxd> -- Positive test case with three levels of synonym chaining
+create schema synonymSchema;
+0 rows inserted/updated/deleted
+gfxd> create synonym synonymSchema.mySynonym1 for APP.table1;
+0 rows inserted/updated/deleted
+gfxd> create synonym APP.mySynonym2 for "SYNONYMSCHEMA"."MYSYNONYM1";
+0 rows inserted/updated/deleted
+gfxd> create synonym mySynonym for mySynonym2;
+0 rows inserted/updated/deleted
+gfxd> select * from table1;
+I |J          
+-----
+6 |1          
+2 |2          
+5 |5          
+gfxd> select * from mySynonym;
+I |J          
+-----
+6 |1          
+2 |2          
+5 |5          
+gfxd> insert into mySynonym values (6,6);
+1 row inserted/updated/deleted
+gfxd> insert into mySynonym select * from mySynonym where i<2;
+0 rows inserted/updated/deleted
+gfxd> select * from mySynonym;
+I |J          
+-----
+6 |1          
+2 |2          
+5 |5          
+6 |6          
+gfxd> update mySynonym set j=5;
+4 rows inserted/updated/deleted
+gfxd> update mySynonym set j=4 where i=5;
+1 row inserted/updated/deleted
+gfxd> delete from mySynonym where j=6;
+0 rows inserted/updated/deleted
+gfxd> select * from mySynonym;
+I |J          
+-----
+6 |5          
+2 |5          
+5 |4          
+6 |5          
+gfxd> select * from table1;
+I |J          
+-----
+6 |5          
+2 |5          
+5 |4          
+6 |5          
+gfxd> -- cursor on mySynonym
+get cursor c1 as 'select * from mySynonym';
+gfxd> next c1;
+I |J          
+-----
+6 |5          
+gfxd> next c1;
+I |J          
+-----
+2 |5          
+gfxd> next c1;
+I |J          
+-----
+5 |4          
+gfxd> close c1;
+gfxd> -- More negative tests to check dependencies
+select * from mySynonym;
+I |J          
+-----
+6 |5          
+2 |5          
+5 |4          
+6 |5          
+gfxd> drop synonym mySynonym;
+0 rows inserted/updated/deleted
+gfxd> -- Previously compiled cached statement should get invalidated
+select * from mySynonym;
+ERROR 42X05: Table/View 'MYSYNONYM' does not exist.
+gfxd> -- drop and recreate schema test
+create schema testSchema;
+0 rows inserted/updated/deleted
+gfxd> create synonym multiSchema for testSchema.testtab;
+0 rows inserted/updated/deleted
+WARNING 01522: The newly defined synonym 'MULTISCHEMA' resolved to the object 'TESTSCHEMA.TESTTAB' which is currently undefined. : 
+gfxd> select * from multiSchema;
+ERROR 42X05: Table/View 'TESTSCHEMA.TESTTAB' does not exist.
+gfxd> create table testSchema.testtab(i int, c char(10));
+0 rows inserted/updated/deleted
+gfxd> insert into testSchema.testtab values (1, 'synonym');
+1 row inserted/updated/deleted
+gfxd> select * from multiSchema;
+I |C         
+-----
+1 |synonym   
+gfxd> drop table testSchema.testtab;
+0 rows inserted/updated/deleted
+gfxd> drop schema testSchema restrict;
+0 rows inserted/updated/deleted
+gfxd> create schema testSchema;
+0 rows inserted/updated/deleted
+gfxd> create table testSchema.testtab(j int, c1 char(10), c2 char(20));
+0 rows inserted/updated/deleted
+gfxd> insert into testSchema.testtab values (1, 'synonym', 'test');
+1 row inserted/updated/deleted
+gfxd> select * from multiSchema;
+J |C1 |C2                  
+-----
+1 |synonym |test                
+gfxd> drop synonym multiSchema;
+0 rows inserted/updated/deleted
+gfxd> drop table testSchema.testtab;
+0 rows inserted/updated/deleted
+gfxd> drop view view1;
+0 rows inserted/updated/deleted
+gfxd> drop table table1;
+0 rows inserted/updated/deleted
+gfxd> 

@@ -1,0 +1,16 @@
+A = putter
+putterHosts        = 1
+putterVMsPerHost   = 1
+putterThreadsPerVM = 1
+dataPolicy=partitioned
+scope=default
+statisticsEnabled=false
+totalNumBuckets=113
+redundantCopies=0
+numberOfEntries=100000
+sampleInterval=1000
+trimStart=50000
+autoCompact=false
+synchronous=true
+
+perffmwk.comparisonKey = memory

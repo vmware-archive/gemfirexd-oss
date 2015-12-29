@@ -1,0 +1,21 @@
+locatorHosts = 1
+locatorVMsPerHost = 1
+locatorThreadsPerVM = 1
+
+A = peer
+peerHosts = 4
+peerVMsPerHost = 1
+peerThreadsPerVM = 1
+
+dataPolicy = partitioned
+
+heapMB = 1500
+maxKeys = 100000
+objectSize = 1024
+conserveSockets = false
+bucketsPerDatahost = 10
+
+version = default
+
+perffmwk.comparisonKey=partitionedPeerMixGetPut
+

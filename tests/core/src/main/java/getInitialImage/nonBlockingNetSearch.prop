@@ -1,0 +1,19 @@
+#===============================================================================
+#  TEST CONFIGURATION VARIABLES
+#===============================================================================
+
+  hydra.numHosts = 2
+  # see hydraconfig/systemparamsN.inc (number of hosts)
+
+  dataPolicy = replicate
+  scope = distributedAck
+  # see hydra.RegionPrms
+
+  trimIterations = 0
+  # see cacheperf.CachePerfPrms-trimIterations
+
+  workIterations = 500000
+  # see cacheperf.CachePerfPrms-workIterations
+
+  batchSize = 50000
+  # see cacheperf.CachePerfPrms-batchSize

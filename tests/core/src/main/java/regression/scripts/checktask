@@ -1,0 +1,37 @@
+#!/bin/sh -f
+# loop through regression directories ...
+# for each regrdir, find the most recently modified directory
+# tail batterytest.log for that directory
+if [ -e ~/bin/regrdirs ]; then
+  for i in `cat ~/bin/regrdirs`
+  do
+    cd $i
+    echo $i
+    latest=
+    # loop to get the most recently modified directory
+    for j in `ls -tr`
+    do
+      if [ -d $j ]; then
+        latest=$j
+      fi
+    done
+    # if latest is set (non-null), tail the taskmaster log
+    # wait for acknowledgement before continuing
+    if [ latest ]; then
+      clear
+      cd ${i}/${latest}
+      echo `pwd` ": The current time is" `date`
+      tail -5 `find . -name batterytest.log`
+      echo "Enter q to quit, <enter> to continue ..."
+      read cmd
+      if [ -z $cmd ]; then
+        cmd=continue
+      fi
+      if [ $cmd = q ]; then
+        exit
+      fi
+    fi
+  done
+else 
+  echo "Usage: checktask requires a list of directories in ~/bin/regrdirs"
+fi

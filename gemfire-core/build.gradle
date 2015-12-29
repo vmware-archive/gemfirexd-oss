@@ -1,0 +1,126 @@
+sourceSets {
+  jca {
+    compileClasspath += configurations.compile
+    runtimeClasspath += configurations.runtime
+  }
+}
+
+configurations {
+  //declaring new configuration that will be used to associate with artifacts
+  archives
+}
+
+dependencies {
+  provided files("${System.getProperty('java.home')}/../lib/tools.jar")
+  provided 'antlr:antlr:2.7.7'
+  compile 'commons-io:commons-io:2.4'
+  compile 'commons-logging:commons-logging:1.1.1'
+  compile 'commons-lang:commons-lang:2.6'
+  compile 'commons-modeler:commons-modeler:2.0'
+  compile 'commons-cli:commons-cli:1.2'
+  compile 'javax.mail:javax.mail-api:1.4.5'
+  compile 'javax.resource:javax.resource-api:1.7'
+  compile 'javax.transaction:javax.transaction-api:1.2'
+  compile 'mx4j:mx4j:3.0.2'
+  compile 'mx4j:mx4j-remote:3.0.2'
+  compile 'mx4j:mx4j-tools:3.0.1'
+  provided 'net.sourceforge.jline:jline:1.0.S2-B'
+  provided "org.eclipse.jetty:jetty-http:${jettyVersion}"
+  provided "org.eclipse.jetty:jetty-io:${jettyVersion}"
+  provided "org.eclipse.jetty:jetty-security:${jettyVersion}"
+  provided "org.eclipse.jetty:jetty-server:${jettyVersion}"
+  provided "org.eclipse.jetty:jetty-servlet:${jettyVersion}"
+  provided "org.eclipse.jetty:jetty-util:${jettyVersion}"
+  provided "org.eclipse.jetty:jetty-webapp:${jettyVersion}"
+  provided "org.eclipse.jetty:jetty-xml:${jettyVersion}"
+  compile 'org.codehaus.jackson:jackson-core-asl:1.9.13'
+  provided "org.springframework:spring-aop:${springVersion}"
+  provided "org.springframework:spring-beans:${springVersion}"
+  provided "org.springframework:spring-context:${springVersion}"
+  provided "org.springframework:spring-context-support:${springVersion}"
+  provided "org.springframework:spring-core:${springVersion}"
+  provided "org.springframework:spring-expression:${springVersion}"
+  provided "org.springframework:spring-web:${springVersion}"
+  provided "org.springframework:spring-webmvc:${springVersion}"
+  provided "org.springframework:spring-tx:${springVersion}"
+  provided 'org.springframework.shell:spring-shell:1.0.0.RELEASE'
+  compile 'org.xerial.snappy:snappy-java:1.1.2'
+  provided "org.apache.hadoop:hadoop-annotations:${hadoopVersion}"
+  provided "org.apache.hadoop:hadoop-auth:${hadoopVersion}"
+  provided "org.apache.hadoop:hadoop-common:${hadoopVersion}"
+  provided "org.apache.hadoop:hadoop-hdfs:${hadoopVersion}"
+  provided "org.apache.hadoop:hadoop-mapreduce-client-core:${hadoopVersion}"
+  provided "org.apache.hbase:hbase:${hbaseVersion}"
+  compile 'com.google.guava:guava:14.0.1'
+  compile 'xom:xom:1.2.5'
+  provided 'com.jcraft:jsch:0.1.53'
+  provided "org.apache.ant:ant:${antVersion}"
+
+  compile project(subprojectBase + 'gemfire-jgroups')
+  compile project(subprojectBase + 'gemfire-joptsimple')
+  compile project(subprojectBase + 'gemfire-json')
+  compile project(subprojectBase + 'gemfire-shared')
+
+  testCompile 'org.apache.bcel:bcel:5.2'
+
+  jcaCompile sourceSets.main.output
+
+  provided project(path: subprojectBase + 'gemfire-junit', configuration: 'testOutput')
+}
+
+// Creates the version properties file and writes it to the classes dir
+task createVersionPropertiesFile {
+  def propertiesDir = file("${buildDir}/resources/main/com/gemstone/gemfire/internal")
+  outputs.file "${propertiesDir}/GemFireVersion.properties"
+  inputs.dir compileJava.destinationDir
+
+  doLast {
+    def props = [
+      "Product-Name"      : GEMFIRE_PRODUCT,
+      "Product-Version"   : GEMFIRE_VERSION,
+      "Build-Id"          : System.env.USER + ' ' + buildNumber,
+      "Build-Date"        : buildDate,
+      "Build-Platform"    : "${osName.getName()} ${osVersion} ${osArch}",
+      "Build-Java-Version": jdkVersion,
+      "Source-Date"       : sourceDate,
+      "Source-Revision"   : commitId,
+      "Source-Repository" : gitBranch
+    ]
+
+    writeProperties(propertiesDir, 'GemFireVersion.properties',
+        "Properties that control what version ${GEMFIRE_PRODUCT} will think it is. Changing these values may cause ${GEMFIRE_PRODUCT} to no longer function.", props)
+  }
+}
+
+jar {
+  from sourceSets.main.output
+  from sourceSets.jca.output
+
+  exclude 'com/gemstone/gemfire/management/internal/web/**'
+  exclude 'com/gemstone/gemfire/internal/i18n/StringIdResourceBundle_ja.txt'
+  exclude 'com/gemstone/gemfire/admin/doc-files/ds4_0.dtd'
+}
+
+task webJar (type: Jar, dependsOn: classes) {
+  description 'Assembles the jar archive containing the gemfire management web classes.'
+  from sourceSets.main.output
+  baseName 'gemfire-web'
+  include 'com/gemstone/gemfire/management/internal/web/**'
+}
+
+task raJar (type: Jar, dependsOn: classes) {
+  description 'Assembles the jar archive that contains the JCA classes'
+  from sourceSets.jca.output
+  exclude 'com/gemstone/gemfire/ra/**'
+  archiveName 'ra.jar'
+}
+
+task jcaJar (type: Jar, dependsOn: raJar) {
+  description 'Assembles the jar archive that contains the JCA bundle'
+  baseName 'gemfire-jca'
+  extension 'rar'
+  metaInf { from 'src/jca/ra.xml' }
+  from raJar.archivePath
+}
+
+compileJava.dependsOn createVersionPropertiesFile

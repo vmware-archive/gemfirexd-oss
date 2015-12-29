@@ -1,0 +1,19 @@
+This example demonstrates delta propagation. This program is a server,
+listening on a port for client requests. The client program connects and
+requests data. The client in this example is also configured to produce/consume
+information on data destroys and updates.
+To stop the program, press Ctrl c in console.
+Connecting to the distributed system and creating the cache...
+Connected to the distributed system.
+Created the cache.
+Please press Enter to stop the server.
+ServerListener received afterCreate Region : exampleRegion: 0->Value -> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+ServerListener received afterCreate Region : exampleRegion: 1->Value -> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+ServerListener received afterUpdate Region : exampleRegion: 0->Value -> 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 
+ServerListener received afterUpdate Region : exampleRegion: 1->Value -> 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 
+ServerListener received afterUpdate Region : exampleRegion: 0->Value -> 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 
+ServerListener received afterUpdate Region : exampleRegion: 1->Value -> 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 
+ServerListener received afterUpdate Region : exampleRegion: 0->Value -> 0, 3, 0, 3, 0, 3, 0, 3, 0, 3, 
+ServerListener received afterUpdate Region : exampleRegion: 1->Value -> 0, 3, 0, 3, 0, 3, 0, 3, 0, 3, 
+ServerListener received afterUpdate Region : exampleRegion: 0->Value -> 0, 4, 0, 4, 0, 4, 0, 4, 0, 4, 
+ServerListener received afterUpdate Region : exampleRegion: 1->Value -> 0, 4, 0, 4, 0, 4, 0, 4, 0, 4, 

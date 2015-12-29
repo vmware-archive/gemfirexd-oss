@@ -1,0 +1,75 @@
+// tests with persistent region without conflict resolver. Thus uses internal default resolver
+// maxOps is num of wan events to be resolved to terminated the test
+versioning/newWan/serialSenderHct.conf
+    wanSites = 4 maxOps=20000 resultWaitSec=1200
+    locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 2
+    bridgeHostsPerSite = 3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+    edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+    serverMem = 256m clientMem = 256m enableFailover=false,true
+    
+versioning/newWan/parRegSerialSenderHct.conf
+    wanSites = 4 maxOps=20000 resultWaitSec=1200
+    locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 2
+    bridgeHostsPerSite = 3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+    edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+    serverMem = 256m clientMem = 256m 
+    redundantCopies=1 enableFailover=false,true
+
+versioning/newWan/parRegParallelSenderHct.conf
+    wanSites = 4 maxOps=20000 resultWaitSec=1200
+    locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 2
+    bridgeHostsPerSite = 3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+    edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+    serverMem = 256m clientMem = 256m 
+    redundantCopies=1 enableFailover=false,true
+    
+// tests with replicated and partitioned region with custom conflict resolver.
+versioning/newWan/serialSenderResolverHct.conf
+    wanSites = 4 maxOps=1000 resultWaitSec=1200
+    locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 2
+    bridgeHostsPerSite = 3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+    edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+    serverMem = 256m clientMem = 256m enableFailover=false,true
+
+versioning/newWan/parRegSerialSenderResolverHct.conf
+    wanSites = 4 maxOps=1000 resultWaitSec=1200
+    locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 2
+    bridgeHostsPerSite = 3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+    edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+    serverMem = 256m clientMem = 256m
+    redundantCopies=1 enableFailover=false,true
+
+versioning/newWan/parRegParallelSenderResolverHct.conf
+    wanSites = 4 maxOps=1000 resultWaitSec=1200
+    locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 2
+    bridgeHostsPerSite = 3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+    edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+    serverMem = 256m clientMem = 256m
+    redundantCopies=1 enableFailover=false,true
+    
+// Test without conflict resolver but each wan site operates on separate key set so that wan resolver does not get invoked. 
+// This tests ensures that concurrent operations in a ds does not create conflicts across wan.
+// maxOps is num of entry operations done on regions in the test
+versioning/newWan/serialSenderKeysPerWanHct.conf
+    wanSites = 4 maxOps=20000 resultWaitSec=1200
+    locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 2
+    bridgeHostsPerSite = 3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+    edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+    serverMem = 256m clientMem = 256m enableFailover=false,true
+
+versioning/newWan/parRegSerialSenderKeysPerWanHct.conf
+    wanSites = 4 maxOps=20000 resultWaitSec=1200
+    locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 2
+    bridgeHostsPerSite = 3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+    edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+    serverMem = 256m clientMem = 256m
+    redundantCopies=1 enableFailover=false,true
+
+versioning/newWan/parRegParallelSenderKeysPerWanHct.conf
+    wanSites = 4 maxOps=20000 resultWaitSec=1200
+    locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 2
+    bridgeHostsPerSite = 3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+    edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+    serverMem = 256m clientMem = 256m
+    redundantCopies=1 enableFailover=false,true
+

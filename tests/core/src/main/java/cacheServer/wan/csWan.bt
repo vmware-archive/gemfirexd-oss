@@ -1,0 +1,24 @@
+// These p2p tests really just test hydra support for cache xml generation (in peers)
+// they don't use gemfire/bin/cacheserver start/stop
+cacheServer/wan/p2pXml.conf
+       wanSites=1,2,3 peerVMsPerHost=1 peerThreadsPerVM=1
+cacheServer/wan/p2pXml.conf
+       wanSites=1,2,3 peerVMsPerHost=3 peerThreadsPerVM=2
+
+cacheServer/wan/hctXml.conf
+       wanSites=1,2,3 edgeVMsPerHost=1 edgeThreadsPerVM=1
+cacheServer/wan/hctXml.conf
+       wanSites=1,2,3 edgeVMsPerHost=3 edgeThreadsPerVM=2
+
+// Linux,Windows version - uses sync distribution for gateway
+cacheServer/wan/hctXml.conf
+       wanSites=1,2,3 bridgeVMsPerHost=2 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       onlyOnPlatforms=Linux,Windows,AIX
+
+// Solaris - uses async-distribution for gateway (accomodates slower systems)
+cacheServer/wan/hctXml_async.conf
+       wanSites=1,2 bridgeVMsPerHost=2 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       onlyOnPlatforms=SunOS
+cacheServer/wan/hctXml_async.conf
+       wanSites=3 bridgeVMsPerHost=2 edgeVMsPerHost=2 edgeThreadsPerVM=2
+       onlyOnPlatforms=SunOS

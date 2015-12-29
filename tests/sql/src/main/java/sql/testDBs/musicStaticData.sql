@@ -1,0 +1,43 @@
+insert into music.artist(artist_id, artist_name) values (1,'Pink Floyd');
+insert into music.artist(artist_id, artist_name) values (2,'The Beatles');
+insert into music.artist(artist_id, artist_name) values (3,'Fine Young Cannibals');
+insert into music.artist(artist_id, artist_name) values (4,'Genesis');
+insert into music.artist(artist_id, artist_name) values (5,'Barry Manilow');
+insert into music.album values (1,'Animals',1,'1976-01-01');
+insert into music.album values (2,'Dark Side',1,'1974-01-01');
+insert into music.album values(3,'Sgt. Pepper',2, '1970-01-01');
+insert into music.album values(4,'FYC',3, '1990-01-01');
+insert into music.album values(5,'Selling England',4, '1974-01-01');
+insert into music.album values(6,'Lamb Lies Down',4, '1975-01-01');
+insert into music.copyright_owner values (1,'Lennon/McCartney');
+insert into music.copyright_owner values (2,'Gabriel');
+insert into music.copyright_owner values (3,'Waters');
+insert into music.copyright_owner values (4,'JoeSchmoe');
+insert into music.song(song_id, artist_id, song_name, version, copyright_owner_id, rating) values (1,1,'Dogs','Studio',3,3);
+insert into music.song(song_id, artist_id, song_name, version, copyright_owner_id, rating) values (2,1,'Sheep','Studio',3,4);
+insert into music.song(song_id, artist_id, song_name, version, copyright_owner_id, rating) values (3,1,'Time','Studio',3,4);
+insert into music.song(song_id, artist_id, song_name, version, copyright_owner_id, rating) values (4,1,'Money','Studio',3,4);
+insert into music.song(song_id, artist_id, song_name, version, copyright_owner_id, rating) values (5,2,'Sgt. Pepper','Studio',1,3);
+insert into music.song(song_id, artist_id, song_name, version, copyright_owner_id, rating) values (6,3,'She Drives Me Crazy','Funky Remix',4,2);
+insert into music.song(song_id, artist_id, song_name, version, copyright_owner_id, rating) values (7,4,'I Know What I Like','Studio',2,4);
+insert into music.song(song_id, artist_id, song_name, version, copyright_owner_id, rating) values (8,4,'Carpet Crawlers','Studio',2,4);
+insert into music.copyright values (1,1,3,100, NULL);
+insert into music.copyright values (2,2,3,100, NULL);
+insert into music.copyright values (3,3,3,111, NULL);
+insert into music.copyright values (4,3,3,111, NULL);
+insert into music.copyright values (5,4,1,150,'John is dead so talk to Paul');
+-- Note: schema was revised to use integer genre_id as Bug42503 workaround
+insert into music.genre values (1,'Rock');
+insert into music.genre values (2,'Alternative');
+insert into music.genre values (3,'Country');
+insert into music.genre values (4,'Lounge');
+-- Note: schema was revised to use integer genre_id as Bug42503 workaround
+insert into music.tracks(album_id, disk_number, track_number, duration_secs, song_id, genre_id, track_price_cents, track_price_to_copyright_owner_cents, track_price_to_artist_cents) values (1,1,1,800,1,1,99,10,25);
+insert into music.tracks(album_id, disk_number, track_number, duration_secs, song_id, genre_id, track_price_cents, track_price_to_copyright_owner_cents, track_price_to_artist_cents) values (1,1,2,500,2,1,99,10,25);
+insert into music.tracks(album_id, disk_number, track_number, duration_secs, song_id, genre_id, track_price_cents, track_price_to_copyright_owner_cents, track_price_to_artist_cents) values (2,1,1,300,3,1,99,10,25);
+insert into music.tracks(album_id, disk_number, track_number, duration_secs, song_id, genre_id, track_price_cents, track_price_to_copyright_owner_cents, track_price_to_artist_cents) values (2,1,2,300,4,1,99,10,25);
+insert into music.tracks(album_id, disk_number, track_number, duration_secs, song_id, genre_id, track_price_cents, track_price_to_copyright_owner_cents, track_price_to_artist_cents) values (3,1,1,180,5,1,99,10,25);
+insert into music.tracks(album_id, disk_number, track_number, duration_secs, song_id, genre_id, track_price_cents, track_price_to_copyright_owner_cents, track_price_to_artist_cents) values (4,1,1,180,6,1,99,10,25);
+insert into music.tracks(album_id, disk_number, track_number, duration_secs, song_id, genre_id, track_price_cents, track_price_to_copyright_owner_cents, track_price_to_artist_cents) values (5,1,3,300,7,1,99,10,25);
+insert into music.tracks(album_id, disk_number, track_number, duration_secs, song_id, genre_id, track_price_cents, track_price_to_copyright_owner_cents, track_price_to_artist_cents) values (6,2,3,400,8,1,99,10,25);
+

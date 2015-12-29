@@ -1,0 +1,14 @@
+A = bridgeA
+bridgeAHosts        = 2
+bridgeAVMsPerHost   = 1
+bridgeAThreadsPerVM = 2
+
+B = bridgeB
+bridgeBHosts        = 2
+bridgeBVMsPerHost   = 1
+bridgeBThreadsPerVM = 2
+
+C = edge
+edgeHosts           = 1
+edgeVMsPerHost      = 2
+edgeThreadsPerVM    = 2

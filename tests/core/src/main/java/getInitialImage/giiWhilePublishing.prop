@@ -1,0 +1,16 @@
+#===============================================================================
+#  TEST CONFIGURATION VARIABLES
+#===============================================================================
+
+  hydra.numHosts = 2
+  # see hydraconfig/systemparamsN.inc (number of hosts)
+
+  scope = distributedAck
+
+  trimIterations = 0
+  # see cacheperf.CachePerfPrms-trimIterations
+
+  workIterations = 250000
+  # see cacheperf.CachePerfPrms-workIterations
+
+  numGiiClients = 30

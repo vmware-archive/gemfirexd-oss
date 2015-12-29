@@ -1,0 +1,171 @@
+// client/Server tests with concurrencyChecksEnabled (multiple writers allowed)
+// replicated regions
+/*commenting out for Cheetah release
+versioning/concInterestPolicyConcurrencyChecksEnabled.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 3
+      useOwnKeys = false
+
+versioning/concInterestPolicyLateOpsConcurrencyChecksEnabled.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+      useOwnKeys = false
+
+// clientServer tests with concurrencyChecksEnabled (mutiple writers allowed)
+// PARTITIONED REGIONS
+versioning/concParRegBridge.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=0,1,2,3 numAccessors=1 numEmptyClients=1 numThinClients=1
+   bridgeOrderingWorkaround=none
+
+// HA testing - concurrent (stop 1 VM at a time)
+versioning/concParRegHABridge.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=2 numVMsToStop=1
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+
+// HA testing - concurrent (stop 2 VMs at a time)
+versioning/concParRegHABridge.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=3 numVMsToStop=2
+   numAccessors=1 numEmptyClients=1 numThinClients=1 */
+
+// peers with replicated regions with multiple writers and concurrencyCheckedEnabled
+versioning/p2pConcurrencyChecks.conf
+      peerHosts = 3 peerVMsPerHost = 2 peerThreadsPerVM = 3
+      useOwnKeys = false
+      concurrencyChecksEnabled = true
+
+// peers (1 empty, remainder replicated) with multiple writers and concurrencyChecksEnabled
+versioning/p2pConcurrencyChecksWithEmptyPeer.conf
+      A=empty emptyHosts = 1 emptyVMsPerHost = 1 emptyThreadsPerVM = 3
+      B=replicate replicateHosts = 3 replicateVMsPerHost = 2 replicateThreadsPerVM = 3
+      useOwnKeys = false
+      concurrencyChecksEnabled = true 
+
+
+//////////////////// old-WAN versioning tests are commented out as support for this has been removed
+//////////////////// from the product
+
+// multiple writers in multiple wan sites with concurrencyChecks enabled (partitionedRegions)
+//versioning/wan/p2pParReg.conf
+//   wanSites = 2 dataStoreMem=768m  
+//   A=gateway gatewayHostsPerSite=2 gatewayVMsPerHost=1 gatewayThreadsPerVM=2
+//   B=dataStore dataStoreHostsPerSite=2 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+//   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+//   redundantCopies=1 
+
+//versioning/wan/p2pParRegGatewayFailover.conf
+//   wanSites = 2 dataStoreMem=768m  
+//   A=gateway gatewayHostsPerSite=2 gatewayVMsPerHost=1 gatewayThreadsPerVM=2
+//   B=dataStore dataStoreHostsPerSite=2 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+//   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+//   redundantCopies=1 
+
+//versioning/wan/p2pParRegHA.conf
+//   wanSites = 2 dataStoreMem=768m  
+//   A=gateway gatewayHostsPerSite=2 gatewayVMsPerHost=1 gatewayThreadsPerVM=2
+//   B=dataStore dataStoreHostsPerSite=2 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+//   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+//   redundantCopies=1 numVMsToStop=1
+
+// multiple writers in multiple wan sites with concurrencyChecks enabled (replicated regions)
+//versioning/wan/p2pConcurrencyChecks.conf
+//      wanSites = 3 peerMem=768m
+//      A=gateway gatewayHostsPerSite=2 gatewayVMsPerHost=1 gatewayThreadsPerVM=2
+//      B=peer peerHostsPerSite=2 peerVMsPerHost=1 peerThreadsPerVM=2
+//      locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+//      useOwnKeys = false
+//      concurrencyChecksEnabled = true
+
+// multiple writers in multiple wan sites with concurrencyChecks enabled (client/server with replicated regions)
+//versioning/wan/hctConcurrencyChecks.conf
+//      wanSites = 3 serverMem=768m edgeMem=250m
+//      A=bridge bridgeHostsPerSite=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+//      B=edge edgeHostsPerSite=2 edgeVMsPerHost=1 edgeThreadsPerVM=2
+//      locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+//      useOwnKeys = false
+//      concurrencyChecksEnabled = true
+
+// multiple writers in multiple wan sites with concurrencyChecks enabled (client/server with partitioned regions)
+//versioning/wan/hctParReg.conf
+//      wanSites = 3 serverMem=768m edgeMem=250m
+//      A=bridge bridgeHostsPerSite=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+//      B=edge edgeHostsPerSite=2 edgeVMsPerHost=1 edgeThreadsPerVM=2
+//      locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+//      redundantCopies = 1
+
+// wan versioning tests p2p and hct with persistent regions
+// multiple writers in multiple wan sites with concurrencyChecks enabled (partitionedRegions)
+//versioning/wan/p2pParRegPersist.conf
+//   wanSites = 2 dataStoreMem=768m  
+//   A=gateway gatewayHostsPerSite=2 gatewayVMsPerHost=1 gatewayThreadsPerVM=2
+//   B=dataStore dataStoreHostsPerSite=2 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+//   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+//   redundantCopies=1 
+
+// multiple writers in multiple wan sites with concurrencyChecks enabled (replicated regions)
+//versioning/wan/p2pPersistentReplicate.conf
+//      wanSites = 3 peerMem=768m
+//      A=gateway gatewayHostsPerSite=2 gatewayVMsPerHost=1 gatewayThreadsPerVM=2
+//      B=peer peerHostsPerSite=2 peerVMsPerHost=1 peerThreadsPerVM=2
+//      locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+//      useOwnKeys = false
+//      concurrencyChecksEnabled = true
+
+// multiple writers in multiple wan sites with concurrencyChecks enabled (client/server with replicated regions)
+//versioning/wan/hctPersistentReplicate.conf
+//      wanSites = 3 serverMem=768m edgeMem=250m
+//      A=bridge bridgeHostsPerSite=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+//      B=edge edgeHostsPerSite=2 edgeVMsPerHost=1 edgeThreadsPerVM=2
+//      locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+//      useOwnKeys = false
+//      concurrencyChecksEnabled = true
+
+// multiple writers in multiple wan sites with concurrencyChecks enabled (client/server with partitioned regions)
+//versioning/wan/hctParRegPersist.conf
+//      wanSites = 3 serverMem=768m edgeMem=250m
+//      A=bridge bridgeHostsPerSite=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+//      B=edge edgeHostsPerSite=2 edgeVMsPerHost=1 edgeThreadsPerVM=2
+//      locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+//      redundantCopies = 1
+
+//versioning/wan/p2pParRegPersistGatewayFailover.conf
+//   wanSites = 2 dataStoreMem=768m
+//   A=gateway gatewayHostsPerSite=2 gatewayVMsPerHost=1 gatewayThreadsPerVM=2
+//   B=dataStore dataStoreHostsPerSite=2 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+//   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+//   redundantCopies=1
+
+//versioning/wan/p2pParRegPersistHA.conf
+//   wanSites = 2 dataStoreMem=768m
+//   A=gateway gatewayHostsPerSite=2 gatewayVMsPerHost=1 gatewayThreadsPerVM=2
+//   B=dataStore dataStoreHostsPerSite=2 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+//   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+//   redundantCopies=1 numVMsToStop=1
+
+// concurrency tests for newwan with conflict resolver 
+INCLUDE $JTESTS/versioning/newWan/wanVersioning.bt
+
+// Verify we don't fire events (which were conflated by conflict resolution)
+versioning/p2pConflictedOps.conf
+      peerHosts = 3 peerVMsPerHost = 2 peerThreadsPerVM = 3
+      regionConfigName = replicateRegion, persistentReplicateRegion, partitionRegion, persistentPartitionRegion
+      redundantCopies = 3
+
+/*commenting out for Cheetah release
+versioning/hctConflictedOps.conf
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  4 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 3
+      regionConfigName = replicateRegion, persistentReplicateRegion, partitionRegion, persistentPartitionRegion
+      redundantCopies = 0 */
+
+// Verify we don'tfire events (which were conflated by conflict resolution) in WAN configurations
+//versioning/wan/wanConflictedOps.conf
+      //wanSites = 3 peerMem=768m
+      //A=gateway gatewayHostsPerSite=2 gatewayVMsPerHost=1 gatewayThreadsPerVM=2
+      //B=peer peerHostsPerSite=2 peerVMsPerHost=1 peerThreadsPerVM=2
+      //locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1

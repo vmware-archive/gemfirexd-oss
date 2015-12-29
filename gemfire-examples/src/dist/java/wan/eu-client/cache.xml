@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE client-cache PUBLIC
+  "-//GemStone Systems, Inc.//GemFire Declarative Caching 6.5//EN"
+  "http://www.gemstone.com/dtd/cache6_5.dtd">
+  
+<client-cache>
+  <pool name="client" subscription-enabled="true">
+    <server host="localhost" port="44444"/>
+  </pool>
+
+  <region-attributes id="clientAttributes" pool-name="client" refid="CACHING_PROXY">
+      <cache-listener>
+        <class-name>wan.WANCacheListener</class-name>
+      </cache-listener>
+  </region-attributes>
+
+  <region name="trades" refid="clientAttributes"/>
+</client-cache>

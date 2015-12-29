@@ -1,0 +1,20 @@
+// Replicated (create, get, put, update, mixed getPut (30/70), mixed getPut (70/30))
+compression/perf/replicatedPeerCreate.conf
+  perffmwk.comparisonKey = replicatedPeerCreate
+
+compression/perf/replicatedPeerGet.conf
+  perffmwk.comparisonKey = replicatedPeerGet
+
+compression/perf/replicatedPeerPut.conf
+  perffmwk.comparisonKey = replicatedPeerPut
+
+compression/perf/replicatedPeerUpdate.conf
+  perffmwk.comparisonKey = replicatedPeerUpdate
+
+compression/perf/replicatedPeerMixGetPut.conf
+  putPercentage = 30
+  perffmwk.comparisonKey = replicatedPeerMixGetPut_30
+
+compression/perf/replicatedPeerMixGetPut.conf
+  putPercentage = 70
+  perffmwk.comparisonKey = replicatedPeerMixGetPut_70

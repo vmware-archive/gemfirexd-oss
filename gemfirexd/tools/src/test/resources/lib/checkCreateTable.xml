@@ -1,0 +1,480 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlResults PUBLIC "-//GemStone Systems, Inc.//GemFireXD Test Results 1.0//EN"
+          "sqlResults1_0.dtd">
+<sqlResults>
+	<!-- The empty result set -->
+	<resultSet id="empty" />
+
+	<!--
+		Result set expected in replicated table junit test.
+	-->
+	<resultSet id="replicated_test">
+		<row>
+			<field name="ID">1</field>
+			<field name="SECONDID">2</field>
+			<field name="THIRDID">3</field>
+		</row>
+		<row>
+			<field name="ID">2</field>
+			<field name="SECONDID">1</field>
+			<field name="THIRDID">4</field>
+		</row>
+		<row>
+			<field name="ID">4</field>
+			<field name="SECONDID">3</field>
+			<field name="THIRDID">3</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for constraint check 1.
+	-->
+	<resultSet id="emp_constr1">
+		<row>
+			<field name="CONSTRAINTNAME">HOTELAVAIL_PK</field>
+			<field name="TABLENAME">AVAILABILITY</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for constraint check 2.
+	-->
+	<resultSet id="emp_constr2">
+		<row>
+			<field name="CONSTRAINTNAME">HOTEL_CK</field>
+			<field name="TABLENAME">AVAILABILITY2</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for constraint check 3.
+	-->
+	<resultSet id="emp_constr3">
+		<row>
+			<field name="CONSTRAINTNAME">HOTELAVAIL_PK2</field>
+			<field name="TABLENAME">AVAILABILITY2</field>
+		</row>
+		<row>
+			<field name="CONSTRAINTNAME">HOTELAVAIL_PK</field>
+			<field name="TABLENAME">AVAILABILITY</field>
+		</row>
+		<row>
+			<field name="CONSTRAINTNAME">HOTEL_CK</field>
+			<field name="TABLENAME">AVAILABILITY2</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for foreign key constraint check 1.
+	-->
+	<resultSet id="emp_fkconstr1">
+		<row>
+			<field name="CONSTRAINTNAME">PART_PK</field>
+			<field name="TABLENAME">PARTITIONTESTTABLE</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for foreign key constraint check 2.
+	-->
+	<resultSet id="emp_fkconstr2">
+		<row>
+			<field name="CONSTRAINTNAME">PART2_PK</field>
+			<field name="TABLENAME">PARTITIONTESTTABLE2</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for foreign key constraint check 3.
+	-->
+	<resultSet id="emp_fkconstr3">
+		<row>
+			<field name="CONSTRAINTNAME">PART3_PK</field>
+			<field name="TABLENAME">PARTITIONTESTTABLE3</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for foreign key constraint check 4.
+	-->
+	<resultSet id="emp_fkconstr4">
+		<row>
+			<field name="CONSTRAINTNAME">PART3_FK</field>
+			<field name="TABLENAME">PARTITIONTESTTABLE3</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for foreign key constraint check 5.
+	-->
+	<resultSet id="emp_fkconstr5">
+		<row>
+			<field name="CONSTRAINTNAME">PORTF_PK</field>
+			<field name="TABLENAME">PORTFOLIO</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for foreign key constraint check 6.
+	-->
+	<resultSet id="emp_fkconstr6">
+		<row>
+			<field name="CONSTRAINTNAME">CUST_PORT_FK</field>
+			<field name="TABLENAME">PORTFOLIO</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for foreign key constraint check 7.
+	-->
+	<resultSet id="emp_fkconstr7">
+		<row>
+			<field name="CONSTRAINTNAME">PORTF_FK</field>
+			<field name="TABLENAME">SELLORDERS</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for various PARTITION BY schemes.
+	-->
+	<resultSet id="emp_partitionby_sel">
+		<row>
+			<field name="ID">10</field>
+			<field name="DESCRIPTION">First</field>
+		</row>
+		<row>
+			<field name="ID">20</field>
+			<field name="DESCRIPTION">Second</field>
+		</row>
+		<row>
+			<field name="ID">30</field>
+			<field name="DESCRIPTION">Third</field>
+		</row>
+		<row>
+			<field name="ID">40</field>
+			<field name="DESCRIPTION">Fourth</field>
+		</row>
+		<row>
+			<field name="ID">50</field>
+			<field name="DESCRIPTION">Fifth</field>
+		</row>
+		<row>
+			<field name="ID">60</field>
+			<field name="DESCRIPTION">Sixth</field>
+		</row>
+		<row>
+			<field name="ID">70</field>
+			<field name="DESCRIPTION">Seventh</field>
+		</row>
+		<row>
+			<field name="ID">75</field>
+			<field name="DESCRIPTION">Eighth</field>
+		</row>
+	</resultSet>
+
+	<resultSet id="emp_partitionby_list">
+		<row>
+			<field name="ID">10</field>
+			<field name="DESCRIPTION">First</field>
+		</row>
+		<row>
+			<field name="ID">20</field>
+			<field name="DESCRIPTION">Second</field>
+		</row>
+		<row>
+			<field name="ID">50</field>
+			<field name="DESCRIPTION">Third</field>
+		</row>
+		<row>
+			<field name="ID">60</field>
+			<field name="DESCRIPTION">Fourth</field>
+		</row>
+		<row>
+			<field name="ID">12</field>
+			<field name="DESCRIPTION">Fifth</field>
+		</row>
+		<row>
+			<field name="ID">34</field>
+			<field name="DESCRIPTION">Sixth</field>
+		</row>
+		<row>
+			<field name="ID">45</field>
+			<field name="DESCRIPTION">Seventh</field>
+		</row>
+		<row>
+			<field name="ID">11</field>
+			<field name="DESCRIPTION">Eighth</field>
+		</row>
+		<row>
+			<field name="ID">13</field>
+			<field name="DESCRIPTION">Ninth</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected when selecting a single test row from
+		trade.customers table.
+	-->
+	<resultSet id="trade_insert">
+		<row>
+			<field name="CID">1</field>
+			<field name="CUST_NAME">XXXX1</field>
+			<field name="SINCE">1</field>
+			<field name="ADDR">BEAV1</field>
+			<field name="TID">1</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected when selecting a single test row from
+		trade.customers table after update.
+	-->
+	<resultSet id="trade_update">
+		<row>
+			<field name="CID">1</field>
+			<field name="CUST_NAME">XXXX1</field>
+			<field name="SINCE">2</field>
+			<field name="ADDR">BEAV1</field>
+			<field name="TID">1</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected when selecting a single test row from
+		trade.customers table after update of two columns.
+	-->
+	<resultSet id="trade_update2">
+		<row>
+			<field name="CID">1</field>
+			<field name="CUST_NAME">XXXX3</field>
+			<field name="SINCE">3</field>
+			<field name="ADDR">BEAV1</field>
+			<field name="TID">1</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected when selecting a single test row from
+		trade.customers table after another update of three columns.
+	-->
+	<resultSet id="trade_update3">
+		<row>
+			<field name="CID">1</field>
+			<field name="CUST_NAME">XXXX2</field>
+			<field name="SINCE">2</field>
+			<field name="ADDR">BEAV1</field>
+			<field name="TID">2</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected when selecting a single test row from
+		trade.customers table after another update of three columns.
+	-->
+	<resultSet id="trade_update4">
+		<row>
+			<field name="CID">1</field>
+			<field name="CUST_NAME">XXXX4</field>
+			<field name="SINCE">4</field>
+			<field name="ADDR">BEAV1</field>
+			<field name="TID">4</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected from trade.customers after initial inserts.
+	-->
+	<resultSet id="cust_insert">
+		<row>
+			<field name="CID">1</field>
+		</row>
+		<row>
+			<field name="CID">2</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected from trade.securities after initial inserts.
+	-->
+	<resultSet id="sec_insert">
+		<row>
+			<field name="SEC_ID">4</field>
+			<field name="SEC_NAME">SEC1</field>
+		</row>
+		<row>
+			<field name="SEC_ID">5</field>
+			<field name="SEC_NAME">SEC2</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected from trade.portfolio after initial inserts.
+	-->
+	<resultSet id="port_insert">
+		<row>
+			<field name="CID">1</field>
+			<field name="SID">4</field>
+			<field name="TID">5</field>
+			<field name="QTY">10</field>
+			<field name="AVAILQTY">20</field>
+			<field name="SUBTOTAL">100.00000000000000000000</field>
+		</row>
+		<row>
+			<field name="CID">2</field>
+			<field name="SID">5</field>
+			<field name="TID">6</field>
+			<field name="QTY">20</field>
+			<field name="AVAILQTY">25</field>
+			<field name="SUBTOTAL">200.00000000000000000000</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected from trade.securities after updates.
+	-->
+	<resultSet id="sec_update">
+		<row>
+			<field name="SEC_ID">4</field>
+			<field name="SEC_NAME">SEC4</field>
+		</row>
+		<row>
+			<field name="SEC_ID">5</field>
+			<field name="SEC_NAME">SEC5</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected from trade.portfolio after updates.
+	-->
+	<resultSet id="port_update">
+		<row>
+			<field name="CID">1</field>
+			<field name="SID">4</field>
+			<field name="TID">4</field>
+			<field name="QTY">10</field>
+			<field name="AVAILQTY">20</field>
+			<field name="SUBTOTAL">100.00000000000000000000</field>
+		</row>
+		<row>
+			<field name="CID">2</field>
+			<field name="SID">5</field>
+			<field name="TID">5</field>
+			<field name="QTY">20</field>
+			<field name="AVAILQTY">25</field>
+			<field name="SUBTOTAL">200.00000000000000000000</field>
+		</row>
+	</resultSet>
+
+	<!--
+		SYSTABLES result expected for trade.customers with server groups
+	-->
+	<resultSet id="cust_sg">
+		<row>
+			<field name="SCHEMANAME">TRADE</field>
+			<field name="TABLENAME">CUSTOMERS</field>
+			<field name="SERVERGROUPS">SG1,SG2</field>
+		</row>
+	</resultSet>
+
+	<!--
+		SYSTABLES result expected for trade.securities with server groups
+	-->
+	<resultSet id="sec_sg">
+		<row>
+			<field name="SCHEMANAME">TRADE</field>
+			<field name="TABLENAME">SECURITIES</field>
+			<field name="SERVERGROUPS">SG1,SG2</field>
+		</row>
+	</resultSet>
+
+	<!--
+		SYSTABLES result expected for trade.portfolio with server groups
+	-->
+	<resultSet id="port_sg">
+		<row>
+			<field name="SCHEMANAME">TRADE</field>
+			<field name="TABLENAME">PORTFOLIO</field>
+			<field name="SERVERGROUPS">SG2</field>
+		</row>
+	</resultSet>
+	
+	<!--
+		Result set expected in GfxdLoaderDUnit test.
+	-->
+	<resultSet id="loader_get1">
+		<row>
+			<field name="THIRDID">1</field>
+		</row>
+	</resultSet>
+	
+	<resultSet id="loader_get2">
+		<row>
+			<field name="THIRDID">2</field>
+		</row>
+	</resultSet>
+	
+	<resultSet id="loader_get3">
+		<row>
+			<field name="THIRDID">3</field>
+		</row>
+	</resultSet>
+	
+	<resultSet id="loader_get">
+		<row>
+			<field name="ID">1</field>
+			<field name="SECONDID">1</field>
+			<field name="THIRDID">1</field>
+		</row>
+		<row>
+			<field name="ID">2</field>
+			<field name="SECONDID">2</field>
+			<field name="THIRDID">2</field>
+		</row>
+		<row>
+			<field name="ID">3</field>
+			<field name="SECONDID">3</field>
+			<field name="THIRDID">3</field>
+		</row>
+	</resultSet>
+	
+	<resultSet id="listenerWriter_Test1">
+		<row>
+			<field name="ID">2</field>
+			<field name="SECONDID">4</field>
+			<field name="THIRDID">6</field>
+		</row>
+		<row>
+			<field name="ID">4</field>
+			<field name="SECONDID">6</field>
+			<field name="THIRDID">8</field>
+		</row>
+		<row>
+			<field name="ID">6</field>
+			<field name="SECONDID">8</field>
+			<field name="THIRDID">10</field>
+		</row>
+	</resultSet>
+	
+	<resultSet id="listenerWriter_Test2">
+		<row>
+			<field name="ID">2</field>
+			<field name="SECONDID">4</field>
+			<field name="THIRDID">6</field>
+		</row>
+		<row>
+			<field name="ID">4</field>
+			<field name="SECONDID">6</field>
+			<field name="THIRDID">8</field>
+		</row>
+		<row>
+			<field name="ID">6</field>
+			<field name="SECONDID">8</field>
+			<field name="THIRDID">10</field>
+		</row>
+		<row>
+			<field name="ID">15</field>
+			<field name="SECONDID">18</field>
+			<field name="THIRDID">21</field>
+		</row>
+	</resultSet>
+</sqlResults>

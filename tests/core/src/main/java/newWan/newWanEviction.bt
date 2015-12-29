@@ -1,0 +1,102 @@
+//serial
+newWan/serial/eviction/queueEvictionP2p.conf
+        wanSites = 2,3 maxOps=70000 resultWaitSec=3600
+        locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+        peerHostsPerSite = 3 peerVMsPerHost = 1 peerThreadsPerVM = 5
+        
+newWan/serial/eviction/queueEvictionP2pPersist.conf
+        wanSites = 2,3 maxOps=70000 resultWaitSec=3600
+        locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+        peerHostsPerSite = 3 peerVMsPerHost = 1 peerThreadsPerVM = 5
+                
+parReg/newWan/serial/queueEvictionP2p.conf 
+        wanSites = 2,3 maxOps=70000 resultWaitSec=3600
+        locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+        peerHostsPerSite = 3 peerVMsPerHost = 1 peerThreadsPerVM = 5
+
+parReg/newWan/serial/persistence/queueEvictionP2pPersist.conf 
+        wanSites = 2,3 maxOps=70000 resultWaitSec=3600
+        locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+        peerHostsPerSite = 3 peerVMsPerHost = 1 peerThreadsPerVM = 5
+        
+parReg/newWan/serial/colocation/queueEvictionP2p.conf 
+        wanSites = 2,3 maxOps=70000 resultWaitSec=3600
+        locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+        peerHostsPerSite = 3 peerVMsPerHost = 1 peerThreadsPerVM = 5
+
+parReg/newWan/serial/colocation/queueEvictionP2pPersist.conf 
+        wanSites = 2,3 maxOps=70000 resultWaitSec=3600
+        locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+        peerHostsPerSite = 3 peerVMsPerHost = 1 peerThreadsPerVM = 5
+
+newWan/serial/eviction/queueEvictionHct.conf
+        wanSites = 2,3 maxOps=70000 resultWaitSec=3600
+        bridgeHostsPerSite = 3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+        edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 3
+
+newWan/serial/eviction/queueEvictionHctPersist.conf
+        wanSites = 2,3 maxOps=70000 resultWaitSec=3600        
+        bridgeHostsPerSite = 3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+        edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 3
+        
+parReg/newWan/serial/queueEvictionHct.conf
+        wanSites = 2,3 maxOps=70000 resultWaitSec=3600        
+        bridgeHostsPerSite = 3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+        edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 3
+
+parReg/newWan/serial/persistence/queueEvictionHctPersist.conf
+        wanSites = 2,3 maxOps=70000 resultWaitSec=3600
+        bridgeHostsPerSite = 3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+        edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 3
+
+parReg/newWan/serial/colocation/queueEvictionHct.conf
+        wanSites = 2,3 maxOps=70000 resultWaitSec=3600
+        bridgeHostsPerSite = 3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+        edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 3
+        
+parReg/newWan/serial/colocation/queueEvictionHctPersist.conf
+        wanSites = 2,3 maxOps=70000 resultWaitSec=3600
+        bridgeHostsPerSite = 3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+        edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 3
+        
+//parallel
+parReg/newWan/parallel/queueEvictionP2p.conf 
+         wanSites = 2,3 maxOps=70000 resultWaitSec=3600 
+         locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+         peerHostsPerSite = 3 peerVMsPerHost = 1 peerThreadsPerVM = 5
+
+parReg/newWan/parallel/persistence/queueEvictionP2pPersist.conf 
+         wanSites = 2,3 maxOps=70000 resultWaitSec=3600
+         locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+         peerHostsPerSite = 3 peerVMsPerHost = 1 peerThreadsPerVM = 5
+
+parReg/newWan/parallel/colocation/queueEvictionP2p.conf 
+         wanSites = 2,3 maxOps=70000 resultWaitSec=3600 
+         locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+         peerHostsPerSite = 3 peerVMsPerHost = 1 peerThreadsPerVM = 5
+
+parReg/newWan/parallel/colocation/queueEvictionP2pPersist.conf 
+         wanSites = 2,3 maxOps=70000 resultWaitSec=3600 
+         locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+        peerHostsPerSite = 3 peerVMsPerHost = 1 peerThreadsPerVM = 5
+        
+parReg/newWan/parallel/queueEvictionHct.conf
+        wanSites = 2,3 maxOps=70000 resultWaitSec=3600
+        bridgeHostsPerSite = 3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+        edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 3
+        
+parReg/newWan/parallel/persistence/queueEvictionHctPersist.conf
+        wanSites = 2,3 maxOps=70000 resultWaitSec=3600        
+        bridgeHostsPerSite = 3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+        edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 3
+        
+parReg/newWan/parallel/colocation/queueEvictionHct.conf
+        wanSites = 2,3 maxOps=70000 resultWaitSec=3600
+        bridgeHostsPerSite = 3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+        edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 3
+        
+parReg/newWan/parallel/colocation/queueEvictionHctPersist.conf
+        wanSites = 2,3 maxOps=70000 resultWaitSec=3600
+        bridgeHostsPerSite = 3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+        edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 3
+

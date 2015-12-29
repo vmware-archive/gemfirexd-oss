@@ -1,0 +1,1138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlResults PUBLIC "-//GemStone Systems, Inc.//GemFireXD Test Results 1.0//EN"
+          "sqlResults1_0.dtd">
+<sqlResults>
+	<!-- The empty result set -->
+	<resultSet id="empty" />
+
+	<!--
+		Result set expected for first scan query.
+	-->
+	<resultSet id="scan_query1">
+		<row>
+			<field name="ID">3</field>
+			<field name="TID">5</field>
+		</row>
+		<row>
+			<field name="ID">3</field>
+			<field name="TID">40</field>
+		</row>
+		<row>
+			<field name="ID">5</field>
+			<field name="TID">30</field>
+		</row>
+		<row>
+			<field name="ID">4</field>
+			<field name="TID">20</field>
+		</row>
+		<row>
+			<field name="ID">8</field>
+			<field name="TID">5</field>
+		</row>
+		<row>
+			<field name="ID">5</field>
+			<field name="TID">200</field>
+		</row>
+		<row>
+			<field name="ID">6</field>
+			<field name="TID">30</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for second scan query.
+	-->
+	<resultSet id="scan_query2">
+		<row>
+			<field name="ID">5</field>
+			<field name="TID">30</field>
+		</row>
+		<row>
+			<field name="ID">5</field>
+			<field name="TID">200</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for third scan query.
+	-->
+	<resultSet id="scan_query3">
+		<row>
+			<field name="ID">8</field>
+			<field name="TID">5</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for first scan query after update.
+	-->
+	<resultSet id="scan_query1_update">
+		<row>
+			<field name="ID">3</field>
+			<field name="TID">5</field>
+		</row>
+		<row>
+			<field name="ID">3</field>
+			<field name="TID">40</field>
+		</row>
+		<row>
+			<field name="ID">5</field>
+			<field name="TID">30</field>
+		</row>
+		<row>
+			<field name="ID">4</field>
+			<field name="TID">20</field>
+		</row>
+		<row>
+			<field name="ID">8</field>
+			<field name="TID">5</field>
+		</row>
+		<row>
+			<field name="ID">5</field>
+			<field name="TID">200</field>
+		</row>
+		<row>
+			<field name="ID">5</field>
+			<field name="TID">30</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for first scan query after second update.
+	-->
+	<resultSet id="scan_query1_update2">
+		<row>
+			<field name="ID">10</field>
+			<field name="TID">5</field>
+		</row>
+		<row>
+			<field name="ID">3</field>
+			<field name="TID">40</field>
+		</row>
+		<row>
+			<field name="ID">5</field>
+			<field name="TID">30</field>
+		</row>
+		<row>
+			<field name="ID">4</field>
+			<field name="TID">20</field>
+		</row>
+		<row>
+			<field name="ID">10</field>
+			<field name="TID">5</field>
+		</row>
+		<row>
+			<field name="ID">5</field>
+			<field name="TID">200</field>
+		</row>
+		<row>
+			<field name="ID">5</field>
+			<field name="TID">30</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for second scan query after update.
+	-->
+	<resultSet id="scan_query2_update">
+		<row>
+			<field name="ID">5</field>
+			<field name="TID">30</field>
+		</row>
+		<row>
+			<field name="ID">5</field>
+			<field name="TID">200</field>
+		</row>
+		<row>
+			<field name="ID">5</field>
+			<field name="TID">30</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for third scan query after update.
+	-->
+	<resultSet id="scan_query4_update">
+		<row>
+			<field name="ID">10</field>
+			<field name="TID">5</field>
+		</row>
+		<row>
+			<field name="ID">10</field>
+			<field name="TID">5</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for first scan query on txhistory.
+	-->
+	<resultSet id="hist_query1">
+		<row>
+			<field name="CID">8</field>
+			<field name="SID">70</field>
+			<field name="TID">5</field>
+			<field name="TYPE">sell</field>
+		</row>
+		<row>
+			<field name="CID">5</field>
+			<field name="SID">160</field>
+			<field name="TID">30</field>
+			<field name="TYPE">sell</field>
+		</row>
+		<row>
+			<field name="CID">6</field>
+			<field name="SID">80</field>
+			<field name="TID">30</field>
+			<field name="TYPE">buy</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for distributed delete tests in customers table.
+	-->
+	<resultSet id="dd_cust_insert">
+		<row>
+			<field name="CID">1000</field>
+			<field name="TID">1</field>
+			<field name="ADDR">ADDR_ONE</field>
+		</row>
+		<row>
+			<field name="CID">1100</field>
+			<field name="TID">2</field>
+			<field name="ADDR">ADDR_TWO</field>
+		</row>
+		<row>
+			<field name="CID">1200</field>
+			<field name="TID">3</field>
+			<field name="ADDR">ADDR_THREE</field>
+		</row>
+		<row>
+			<field name="CID">1300</field>
+			<field name="TID">4</field>
+			<field name="ADDR">ADDR_FOUR</field>
+		</row>
+		<row>
+			<field name="CID">1400</field>
+			<field name="TID">5</field>
+			<field name="ADDR">ADDR_FIVE</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for distributed delete tests in networth table.
+	-->
+	<resultSet id="dd_netw_insert">
+		<row>
+			<field name="CID">1000</field>
+			<field name="TID">1</field>
+			<field name="SECURITIES">100.30000000000000000000</field>
+			<field name="LOANLIMIT">10000</field>
+		</row>
+		<row>
+			<field name="CID">1100</field>
+			<field name="TID">2</field>
+			<field name="SECURITIES">111.30000000000000000000</field>
+			<field name="LOANLIMIT">11111</field>
+		</row>
+		<row>
+			<field name="CID">1200</field>
+			<field name="TID">3</field>
+			<field name="SECURITIES">112.30000000000000000000</field>
+			<field name="LOANLIMIT">12222</field>
+		</row>
+		<row>
+			<field name="CID">1300</field>
+			<field name="TID">4</field>
+			<field name="SECURITIES">113.30000000000000000000</field>
+			<field name="LOANLIMIT">13333</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for distributed delete tests in customers table
+		after deletes.
+	-->
+	<resultSet id="dd_cust_delete">
+		<row>
+			<field name="CID">1100</field>
+			<field name="TID">2</field>
+			<field name="ADDR">ADDR_TWO</field>
+		</row>
+		<row>
+			<field name="CID">1200</field>
+			<field name="TID">3</field>
+			<field name="ADDR">ADDR_THREE</field>
+		</row>
+		<row>
+			<field name="CID">1400</field>
+			<field name="TID">5</field>
+			<field name="ADDR">ADDR_FIVE</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for distributed delete tests in networth table.
+	-->
+	<resultSet id="dd_netw_delete">
+		<row>
+			<field name="CID">1100</field>
+			<field name="TID">2</field>
+			<field name="SECURITIES">111.30000000000000000000</field>
+			<field name="LOANLIMIT">11111</field>
+		</row>
+		<row>
+			<field name="CID">1200</field>
+			<field name="TID">3</field>
+			<field name="SECURITIES">112.30000000000000000000</field>
+			<field name="LOANLIMIT">12222</field>
+		</row>
+	</resultSet>
+    <!--
+        Result set expected for test_40290 in GfxdAllPartitionResolversAPIDUnit.
+    -->
+    <resultSet id="test_40290">
+        <row>
+            <field name="CID">51</field>
+            <field name="CUST_NAME">NAME51</field>
+            <field name="ADDR">ADDRESS IS NAME51</field>
+            <field name="CTID">4</field>
+            <field name="CID">51</field>
+            <field name="CASH">51</field>
+            <field name="SECURITIES">0</field>
+            <field name="LOANLIMIT">51000</field>
+            <field name="AVAILLOAN">10000</field>
+            <field name="TID">2</field>
+        </row>
+        <row>
+            <field name="CID">415</field>
+            <field name="CUST_NAME">NAME415</field>
+            <field name="ADDR">ADDRESS IS NAME415</field>
+            <field name="CTID">12</field>
+            <field name="CID">415</field>
+            <field name="CASH">415</field>
+            <field name="SECURITIES">0</field>
+            <field name="LOANLIMIT">41500</field>
+            <field name="AVAILLOAN">10000</field>
+            <field name="TID">2</field>
+        </row>
+        <row>
+            <field name="CID">408</field>
+            <field name="CUST_NAME">NAME408</field>
+            <field name="ADDR">ADDRESS IS NAME408</field>
+            <field name="CTID">12</field>
+            <field name="CID">408</field>
+            <field name="CASH">408</field>
+            <field name="SECURITIES">0</field>
+            <field name="LOANLIMIT">40800</field>
+            <field name="AVAILLOAN">10000</field>
+            <field name="TID">2</field>
+        </row>
+        <row>
+            <field name="CID">383</field>
+            <field name="CUST_NAME">NAME383</field>
+            <field name="ADDR">ADDRESS IS NAME383</field>
+            <field name="CTID">16</field>
+            <field name="CID">383</field>
+            <field name="CASH">383</field>
+            <field name="SECURITIES">0</field>
+            <field name="LOANLIMIT">38300</field>
+            <field name="AVAILLOAN">10000</field>
+            <field name="TID">2</field>
+        </row>
+        <row>
+            <field name="CID">380</field>
+            <field name="CUST_NAME">NAME380</field>
+            <field name="ADDR">ADDRESS IS NAME380</field>
+            <field name="CTID">16</field>
+            <field name="CID">380</field>
+            <field name="CASH">380</field>
+            <field name="SECURITIES">0</field>
+            <field name="LOANLIMIT">38000</field>
+            <field name="AVAILLOAN">10000</field>
+            <field name="TID">2</field>
+        </row>
+    </resultSet>
+        <!--
+        Result set expected for test_40290 in GfxdAllPartitionResolversAPIDUnit.
+    -->
+    <resultSet id="test__40290">
+        <row>
+            <field name="CTID">4</field>
+            <field name="NTID">2</field>
+        </row>
+    </resultSet>
+
+	<!--
+		Result set expected for initial SQL tests for portfolio table.
+	-->
+	<resultSet id="is_port">
+		<row>
+			<field name="CID">1000</field>
+			<field name="TID">1</field>
+			<field name="QTY">100</field>
+		</row>
+		<row>
+			<field name="CID">1100</field>
+			<field name="TID">2</field>
+			<field name="QTY">80</field>
+		</row>
+		<row>
+			<field name="CID">1300</field>
+			<field name="TID">4</field>
+			<field name="QTY">55</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for initial SQL tests for join of customers
+		and portfolio tables.
+	-->
+	<resultSet id="is_cust_port">
+		<row>
+			<field name="CID">1100</field>
+			<field name="TID">2</field>
+			<field name="CUST_NAME">CUST2</field>
+			<field name="AVAILQTY">60</field>
+		</row>
+		<row>
+			<field name="CID">1000</field>
+			<field name="TID">1</field>
+			<field name="CUST_NAME">CUST1</field>
+			<field name="AVAILQTY">50</field>
+		</row>
+		<row>
+			<field name="CID">1300</field>
+			<field name="TID">4</field>
+			<field name="CUST_NAME">CUST4</field>
+			<field name="AVAILQTY">20</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expect for query on COFFEES table for bug41002.
+	-->
+	<resultSet id="bug41002_coffees">
+		<row>
+			<field name="SUP_ID">49</field>
+			<field name="COF_NAME">French Roast</field>
+			<field name="SALES">0</field>
+			<field name="TOTAL">0</field>
+			<field name="PRICE">8.99</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expect for query on SUPPLIERS table for bug41002.
+	-->
+	<resultSet id="bug41002_suppliers">
+		<row>
+			<field name="SUP_NAME">Nestle</field>
+			<field name="SUP_ID">49</field>
+			<field name="STREET">Street1</field>
+			<field name="CITY">City1</field>
+			<field name="STATE">OR</field>
+			<field name="ZIP">40000</field>
+		</row>
+	</resultSet>
+	
+	<resultSet id="leftouterJoin_one">
+	    <row>
+	        <field name="LNAME">Jones</field>
+	        <field name="DID1">33</field>
+	        <field name="DEPNAME">engineering</field>
+	        <field name="DID2">33</field>
+	    </row>
+	    <row>
+	        <field name="LNAME">Rafferty</field>
+	        <field name="DID1">31</field>
+	        <field name="DEPNAME">sales</field>
+	        <field name="DID2">31</field>
+	    </row>
+	    <row>
+	        <field name="LNAME">Robinson</field>
+	        <field name="DID1">34</field>
+	        <field name="DEPNAME">clerical</field>
+	        <field name="DID2">34</field>
+	    </row>
+	    <row>
+	        <field name="LNAME">Smith</field>
+	        <field name="DID1">34</field>
+	        <field name="DEPNAME">clerical</field>
+	        <field name="DID2">34</field>
+	    </row>
+	    <row>
+	        <field name="LNAME">John</field>
+	        <field name="DID1">NULL</field>
+	        <field name="DEPNAME">NULL</field>
+	        <field name="DID2">NULL</field>
+	    </row>
+	    <row>
+	        <field name="LNAME">Steinberg</field>
+	        <field name="DID1">33</field>
+	        <field name="DEPNAME">engineering</field>
+	        <field name="DID2">33</field>
+	    </row>
+	</resultSet>
+	
+	<resultSet id="rightouterJoin_one">
+	    <row>
+	        <field name="LNAME">Jones</field>
+	        <field name="DID1">33</field>
+	        <field name="DEPNAME">engineering</field>
+	        <field name="DID2">33</field>
+	    </row>
+	    <row>
+	        <field name="LNAME">Rafferty</field>
+	        <field name="DID1">31</field>
+	        <field name="DEPNAME">sales</field>
+	        <field name="DID2">31</field>
+	    </row>
+	    <row>
+	        <field name="LNAME">Robinson</field>
+	        <field name="DID1">34</field>
+	        <field name="DEPNAME">clerical</field>
+	        <field name="DID2">34</field>
+	    </row>
+	    <row>
+	        <field name="LNAME">Smith</field>
+	        <field name="DID1">34</field>
+	        <field name="DEPNAME">clerical</field>
+	        <field name="DID2">34</field>
+	    </row>
+	    <row>
+	        <field name="LNAME">NULL</field>
+	        <field name="DID1">NULL</field>
+	        <field name="DEPNAME">marketing</field>
+	        <field name="DID2">35</field>
+	    </row>
+	    <row>
+	        <field name="LNAME">Steinberg</field>
+	        <field name="DID1">33</field>
+	        <field name="DEPNAME">engineering</field>
+	        <field name="DID2">33</field>
+	    </row>
+	</resultSet>
+	
+	
+	<resultSet id="twoTableOJ_RRPR">
+	    <row>
+	        <field name="NAME">404</field>
+	        <field name="BID">1</field>
+	        <field name="PERSON">graham</field>
+	        <field name="BID">1</field>
+	        <field name="RID">101</field>
+	    </row>
+	    
+	    <row>
+	        <field name="NAME">404</field>
+	        <field name="BID">1</field>
+	        <field name="PERSON">lisa</field>
+	        <field name="BID">1</field>
+	        <field name="RID">102</field>
+	    </row>
+	    
+	    <row>
+	        <field name="NAME">405</field>
+	        <field name="BID">2</field>
+	        <field name="PERSON">NULL</field>
+	        <field name="BID">NULL</field>
+	        <field name="RID">NULL</field>
+	         </row>
+	</resultSet>
+	<resultSet id="threeTableOJ_PRPRPR">
+	    <row>
+	        <field name="NAME">404</field>
+	        <field name="BID">1</field>
+	        <field name="PERSON">graham</field>
+	        <field name="BID">1</field>
+	        <field name="RID">101</field>
+	        <field name="DOMAIN">www.grahamellis.co.uk</field>
+	        <field name="BID">1</field>
+	        <field name="RID">101</field>
+	    </row>
+	    
+	    <row>
+	        <field name="NAME">404</field>
+	        <field name="BID">1</field>
+	        <field name="PERSON">lisa</field>
+	        <field name="BID">1</field>
+	        <field name="RID">102</field>
+	        <field name="DOMAIN">www.grahamellis.co.uk</field>
+	        <field name="BID">1</field>
+	        <field name="RID">101</field>
+	    </row>
+	    
+	    <row>
+	        <field name="NAME">405</field>
+	        <field name="BID">2</field>
+	        <field name="PERSON">NULL</field>
+	        <field name="BID">NULL</field>
+	        <field name="RID">NULL</field>
+	        <field name="DOMAIN">NULL</field>
+	        <field name="BID">NULL</field>
+	        <field name="RID">NULL</field>
+	    </row>
+	</resultSet>
+	
+	<resultSet id="ThreeTableOJ_RR_RR_PR">
+	    <row>
+	        <field name="NAME">404</field>
+	        <field name="BID">1</field>
+	        <field name="PERSON">graham</field>
+	        <field name="BID">1</field>
+	        <field name="RID">101</field>
+	        <field name="DOMAIN">NULL</field>
+	        <field name="BID">NULL</field>
+	        <field name="RID">NULL</field>
+	    </row>
+	    <row>
+	        <field name="NAME">404</field>
+	        <field name="BID">1</field>
+	        <field name="PERSON">lisa</field>
+	        <field name="BID">1</field>
+	        <field name="RID">102</field>
+	        <field name="DOMAIN">NULL</field>
+	        <field name="BID">NULL</field>
+	        <field name="RID">NULL</field>
+	    </row>
+	    <row>
+	        <field name="NAME">405</field>
+	        <field name="BID">2</field>
+	        <field name="PERSON">NULL</field>
+	        <field name="BID">NULL</field>
+	        <field name="RID">NULL</field>
+	        <field name="DOMAIN">NULL</field>
+	        <field name="BID">NULL</field>
+	        <field name="RID">NULL</field>
+	    </row>
+  </resultSet>
+
+  <resultSet id="ThreeTableOJ_RR_RR_PR2">
+    <row>
+      <field name="CUST_CID">2</field>
+      <field name="CUST_NAME">name2</field>
+      <field name="CUST_TID">2</field>
+      <field name="PORT_CID">2</field>
+      <field name="PORT_SID">2</field>
+      <field name="PORT_QTY">200</field>
+      <field name="PORT_TID">1</field>
+      <field name="SELL_OID">1</field>
+      <field name="SELL_CID">2</field>
+      <field name="SELL_SID">2</field>
+      <field name="SELL_QTY">100</field>
+    </row>
+    <row>
+      <field name="CUST_CID">1</field>
+      <field name="CUST_NAME">name1</field>
+      <field name="CUST_TID">1</field>
+      <field name="PORT_CID">1</field>
+      <field name="PORT_SID">1</field>
+      <field name="PORT_QTY">100</field>
+      <field name="PORT_TID">1</field>
+      <field name="SELL_OID">NULL</field>
+      <field name="SELL_CID">NULL</field>
+      <field name="SELL_SID">NULL</field>
+      <field name="SELL_QTY">NULL</field>
+    </row>
+    <row>
+      <field name="CUST_CID">1</field>
+      <field name="CUST_NAME">name1</field>
+      <field name="CUST_TID">1</field>
+      <field name="PORT_CID">1</field>
+      <field name="PORT_SID">2</field>
+      <field name="PORT_QTY">150</field>
+      <field name="PORT_TID">1</field>
+      <field name="SELL_OID">NULL</field>
+      <field name="SELL_CID">NULL</field>
+      <field name="SELL_SID">NULL</field>
+      <field name="SELL_QTY">NULL</field>
+    </row>
+  </resultSet>
+
+	    
+	<resultSet id="Three_tableOJ_RR_PR_PR">
+	    <row>
+	        <field name="NAME">bdg1</field>
+	        <field name="BID">1</field>
+	        <field name="PERSON">res4</field>
+	        <field name="BID">1</field>
+	        <field name="RID">104</field>
+	        <field name="DOMAIN">NULL</field>
+	        <field name="BID">NULL</field>
+	        <field name="RID">NULL</field>
+	    </row>
+	    <row>
+	        <field name="NAME">bdg1</field>
+	        <field name="BID">1</field>
+	        <field name="PERSON">res1</field>
+	        <field name="BID">1</field>
+	        <field name="RID">101</field>
+	        <field name="DOMAIN">dom1</field>
+	        <field name="BID">7</field>
+	        <field name="RID">101</field>
+	    </row>
+	     <row>
+	        <field name="NAME">bdg2</field>
+	        <field name="BID">2</field>
+	        <field name="PERSON">res2</field>
+	        <field name="BID">2</field>
+	        <field name="RID">102</field>
+	        <field name="DOMAIN">dom2</field>
+	        <field name="BID">8</field>
+	        <field name="RID">102</field>
+	    </row>
+	      <row>
+	        <field name="NAME">bdg2</field>
+	        <field name="BID">2</field>
+	        <field name="PERSON">res5</field>
+	        <field name="BID">2</field>
+	        <field name="RID">105</field>
+	        <field name="DOMAIN">NULL</field>
+	        <field name="BID">NULL</field>
+	        <field name="RID">NULL</field>
+	    </row>
+	    <row>
+	        <field name="NAME">bdg3</field>
+	        <field name="BID">3</field>
+	        <field name="PERSON">res3</field>
+	        <field name="BID">3</field>
+	        <field name="RID">103</field>
+	        <field name="DOMAIN">dom3</field>
+	        <field name="BID">9</field>
+	        <field name="RID">103</field>
+	    </row>
+	     <row>
+	        <field name="NAME">bdg3</field>
+	        <field name="BID">3</field>
+	        <field name="PERSON">res6</field>
+	        <field name="BID">3</field>
+	        <field name="RID">106</field>
+	        <field name="DOMAIN">NULL</field>
+	        <field name="BID">NULL</field>
+	        <field name="RID">NULL</field>
+	    </row>
+	   <row>
+	        <field name="NAME">bdg4</field>
+	        <field name="BID">1</field>
+	        <field name="PERSON">res1</field>
+	        <field name="BID">1</field>
+	        <field name="RID">101</field>
+	        <field name="DOMAIN">dom1</field>
+	        <field name="BID">7</field>
+	        <field name="RID">101</field>
+	    </row>
+	    <row>
+	        <field name="NAME">bdg4</field>
+	        <field name="BID">1</field>
+	        <field name="PERSON">res4</field>
+	        <field name="BID">1</field>
+	        <field name="RID">104</field>
+	        <field name="DOMAIN">NULL</field>
+	        <field name="BID">NULL</field>
+	        <field name="RID">NULL</field>
+	    </row>
+	    <row>
+	        <field name="NAME">bdg5</field>
+	        <field name="BID">2</field>
+	        <field name="PERSON">res2</field>
+	        <field name="BID">2</field>
+	        <field name="RID">102</field>
+	        <field name="DOMAIN">dom2</field>
+	        <field name="BID">8</field>
+	        <field name="RID">102</field>
+	    </row>
+	     <row>
+	        <field name="NAME">bdg5</field>
+	        <field name="BID">2</field>
+	        <field name="PERSON">res5</field>
+	        <field name="BID">2</field>
+	        <field name="RID">105</field>
+	        <field name="DOMAIN">NULL</field>
+	        <field name="BID">NULL</field>
+	        <field name="RID">NULL</field>
+	    </row>
+	   <row>
+	        <field name="NAME">bdg6</field>
+	        <field name="BID">3</field>
+	        <field name="PERSON">res3</field>
+	        <field name="BID">3</field>
+	        <field name="RID">103</field>
+	        <field name="DOMAIN">dom3</field>
+	        <field name="BID">9</field>
+	        <field name="RID">103</field>
+	    </row>
+	   <row>
+	        <field name="NAME">bdg6</field>
+	        <field name="BID">3</field>
+	        <field name="PERSON">res6</field>
+	        <field name="BID">3</field>
+	        <field name="RID">106</field>
+	        <field name="DOMAIN">NULL</field>
+	        <field name="BID">NULL</field>
+	        <field name="RID">NULL</field>
+	    </row>
+	</resultSet>
+	<resultSet id="multInsert">
+	    <row>
+	        <field name="LASTNAME">Jones</field>
+	        <field name="DEPID">33</field>
+	    </row>
+	    
+	    <row>
+	        <field name="LASTNAME">Rafferty</field>
+	        <field name="DEPID">31</field>
+	    </row>
+	    
+	    <row>
+	        <field name="LASTNAME">Robinson</field>
+	        <field name="DEPID">34</field>
+	    </row>
+	    
+	    <row>
+	        <field name="LASTNAME">Steinberg</field>
+	        <field name="DEPID">33</field>
+	    </row>
+	    
+	    <row>
+	        <field name="LASTNAME">Smith</field>
+	        <field name="DEPID">34</field>
+	    </row>
+	    
+	    <row>
+	        <field name="LASTNAME">John</field>
+	        <field name="DEPID">NULL</field>
+	    </row>
+	</resultSet>
+	<resultSet id="singleInsertBatch">
+	    <row>
+	        <field name="LASTNAME">Jones</field>
+	        <field name="DEPID">33</field>
+	    </row>
+	</resultSet>
+	<resultSet id="trigone">
+	    <row>
+	        <field name="FLIGHT_ID">4</field>
+	        <field name="AIRCRAFT">lalta</field>
+	        <field name="STATUS">INSERTED FROM trig1</field>
+	    </row>
+	    <row>
+	        <field name="FLIGHT_ID">3</field>
+	        <field name="AIRCRAFT">delta</field>
+	        <field name="STATUS">INSERTED FROM trig1</field>
+	    </row>
+	 </resultSet>
+
+	<resultSet id="trigone_1">
+	    <row>
+	        <field name="FLIGHT_ID">4</field>
+	        <field name="AIRCRAFT">lalta</field>
+	        <field name="STATUS">status1</field>
+	    </row>
+	    <row>
+	        <field name="FLIGHT_ID">3</field>
+	        <field name="AIRCRAFT">delta</field>
+	        <field name="STATUS">status2</field>
+	    </row>
+	 </resultSet>
+
+	 <resultSet id="trigone_2">
+	    <row>
+	        <field name="FLIGHT_ID">1</field>
+	        <field name="AIRCRAFT">delta</field>
+	        <field name="STATUS">INSERTED FROM trig2</field>
+	    </row>
+	    <row>
+	        <field name="FLIGHT_ID">2</field>
+	        <field name="AIRCRAFT">palta</field>
+	        <field name="STATUS">INSERTED FROM trig2</field>
+	    </row>
+	    <row>
+	        <field name="FLIGHT_ID">3</field>
+	        <field name="AIRCRAFT">delta</field>
+	        <field name="STATUS">INSERTED FROM trig2</field>
+	    </row>
+	    <row>
+	        <field name="FLIGHT_ID">4</field>
+	        <field name="AIRCRAFT">lalta</field>
+	        <field name="STATUS">INSERTED FROM trig2</field>
+	    </row>
+	 </resultSet>
+
+	 <resultSet id="trigone_3">
+	    <row>
+	        <field name="FLIGHT_ID">1</field>
+	        <field name="AIRCRAFT">delta</field>
+	        <field name="STATUS">INSERTED FROM trig3</field>
+	    </row>
+	    <row>
+	        <field name="FLIGHT_ID">2</field>
+	        <field name="AIRCRAFT">palta</field>
+	        <field name="STATUS">INSERTED FROM trig3</field>
+	    </row>
+	    <row>
+	        <field name="FLIGHT_ID">3</field>
+	        <field name="AIRCRAFT">delta</field>
+	        <field name="STATUS">INSERTED FROM trig3</field>
+	    </row>
+	    <row>
+	        <field name="FLIGHT_ID">4</field>
+	        <field name="AIRCRAFT">lalta</field>
+	        <field name="STATUS">INSERTED FROM trig3</field>
+	    </row>
+	 </resultSet>
+
+	 <resultSet id="trigtwo">
+	    <row>
+	        <field name="FLIGHT_ID">3</field>
+	        <field name="AIRCRAFT">delta</field>
+	        <field name="STATUS">status2</field>
+	    </row>
+	 </resultSet>
+
+	 <resultSet id="trigStmntBeforeUpdate">
+	    <row>
+	        <field name="FLIGHT_ID">1</field>
+	        <field name="SEGMENT_NUMBER">10</field>
+	        <field name="AIRCRAFT">delta</field>
+	    </row>
+	    <row>
+	        <field name="FLIGHT_ID">2</field>
+	        <field name="SEGMENT_NUMBER">10</field>
+	        <field name="AIRCRAFT">palta</field>
+	    </row>
+	    <row>
+	        <field name="FLIGHT_ID">3</field>
+	        <field name="SEGMENT_NUMBER">20</field>
+	        <field name="AIRCRAFT">delta</field>
+	    </row>
+	    <row>
+	        <field name="FLIGHT_ID">4</field>
+	        <field name="SEGMENT_NUMBER">20</field>
+	        <field name="AIRCRAFT">lalta</field>
+	    </row>
+	 </resultSet>
+
+	 <resultSet id="trigStmntAfterUpdate">
+	    <row>
+	        <field name="FLIGHT_ID">1</field>
+	        <field name="SEGMENT_NUMBER">1000</field>
+	        <field name="AIRCRAFT">delta</field>
+	    </row>
+	    <row>
+	        <field name="FLIGHT_ID">2</field>
+	        <field name="SEGMENT_NUMBER">1000</field>
+	        <field name="AIRCRAFT">palta</field>
+	    </row>
+	    <row>
+	        <field name="FLIGHT_ID">3</field>
+	        <field name="SEGMENT_NUMBER">1000</field>
+	        <field name="AIRCRAFT">delta</field>
+	    </row>
+	    <row>
+	        <field name="FLIGHT_ID">4</field>
+	        <field name="SEGMENT_NUMBER">1000</field>
+	        <field name="AIRCRAFT">lalta</field>
+	    </row>
+	 </resultSet>
+
+	 <resultSet id="tran_uniq">
+	    <row>
+            <field name="C1">0</field>
+            <field name="C2">0</field>
+            <field name="C3">2</field>
+        </row>
+        <row>
+            <field name="C1">4</field>
+            <field name="C2">5</field>
+            <field name="C3">6</field>
+        </row>
+     </resultSet>
+
+     <resultSet id="equal_bonus">
+    	<row>
+	    	<field name="FIRSTNAME">neeraj</field>
+		    <field name="LASTNAME">kumar</field>
+		    <field name="WORKDEPT">rnd</field>
+		    <field name="BONUS">10</field>
+	    </row>
+	    <row>
+		    <field name="FIRSTNAME">asif</field>
+		    <field name="LASTNAME">shahid</field>
+		    <field name="WORKDEPT">rnd</field>
+		    <field name="BONUS">10</field>
+	    </row>
+	    <row>
+		    <field name="FIRSTNAME">sum</field>
+		    <field name="LASTNAME">wale</field>
+		    <field name="WORKDEPT">rnd</field>
+		    <field name="BONUS">10</field>
+	    </row>
+	    <row>
+		    <field name="FIRSTNAME">dada</field>
+		    <field name="LASTNAME">ji</field>
+		    <field name="WORKDEPT">rnd</field>
+		    <field name="BONUS">10</field>
+	    </row>
+     </resultSet>
+     <resultSet id="result_t1">
+     	<row>
+     		<field name="ID">5</field>
+     		<field name="NAME">name5</field>
+     		<field name="ADDRESS">addr5</field>
+     	</row>
+     	<row>
+     		<field name="ID">6</field>
+     		<field name="NAME">name6</field>
+     		<field name="ADDRESS">addr6</field>
+     	</row>
+     	<row>
+     		<field name="ID">7</field>
+     		<field name="NAME">name7</field>
+     		<field name="ADDRESS">addr7</field>
+     	</row>
+     	<row>
+     		<field name="ID">8</field>
+     		<field name="NAME">name8</field>
+     		<field name="ADDRESS">addr8</field>
+     	</row>
+     </resultSet>
+     <resultSet id="result_48725">
+        <row>
+                <field name="ID">1</field>
+                <field name="FID">1</field>
+                <field name="NAME">name1</field>
+                <field name="ADDRESS">addr1</field>
+        </row>
+        <row>
+                <field name="ID">2</field>
+                <field name="FID">2</field>
+                <field name="NAME">name2</field>
+                <field name="ADDRESS">addr2</field>
+        </row>
+        <row>
+                <field name="ID">3</field>
+                <field name="FID">3</field>
+                <field name="NAME">name31</field>
+                <field name="ADDRESS">addr31</field>
+        </row>
+        <row>
+                <field name="ID">4</field>
+                <field name="FID">4</field>
+                <field name="NAME">name41</field>
+                <field name="ADDRESS">addr41</field>
+        </row>
+     </resultSet>
+     <resultSet id="non_equal_bonus">
+    	<row>
+	    	<field name="FIRSTNAME">neeraj</field>
+		    <field name="LASTNAME">kumar</field>
+		    <field name="WORKDEPT">rnd</field>
+		    <field name="BONUS">3000</field>
+	    </row>
+	    <row>
+		    <field name="FIRSTNAME">asif</field>
+		    <field name="LASTNAME">shahid</field>
+		    <field name="WORKDEPT">rnd</field>
+		    <field name="BONUS">2000</field>
+	    </row>
+	    <row>
+		    <field name="FIRSTNAME">sum</field>
+		    <field name="LASTNAME">wale</field>
+		    <field name="WORKDEPT">rnd</field>
+		    <field name="BONUS">2000</field>
+	    </row>
+	    <row>
+		    <field name="FIRSTNAME">dada</field>
+		    <field name="LASTNAME">ji</field>
+		    <field name="WORKDEPT">rnd</field>
+		    <field name="BONUS">2000</field>
+	    </row>
+     </resultSet>
+     
+     <resultSet id="insert_as_select">
+    	<row>
+	    	<field name="ID">20</field>
+		    <field name="DESCRIPTION">Second</field>
+	    </row>
+	    <row>
+	    	<field name="ID">30</field>
+		    <field name="DESCRIPTION">Third</field>
+	    </row>
+	    <row>
+	    	<field name="ID">40</field>
+		    <field name="DESCRIPTION">Fourth</field>
+	    </row>
+	    <row>
+	    	<field name="ID">60</field>
+		    <field name="DESCRIPTION">Sixth</field>
+	    </row>
+	    <row>
+	    	<field name="ID">70</field>
+		    <field name="DESCRIPTION">Seventh</field>
+	    </row>
+	    <row>
+	    	<field name="ID">75</field>
+		    <field name="DESCRIPTION">Eighth</field>
+	    </row>
+	  </resultSet>
+	  
+	  <resultSet id="datapolicy_createTableTableExpr">
+    	<row>
+	    	<field name="TABLENAME">EMPLOYEE</field>
+		    <field name="DATAPOLICY">REPLICATE</field>
+	    </row>
+	    
+	    <row>
+	    	<field name="TABLENAME">DEPT1</field>
+		    <field name="DATAPOLICY">PARTITION</field>
+	    </row>
+	    
+	    <row>
+	    	<field name="TABLENAME">DEPT</field>
+		    <field name="DATAPOLICY">PARTITION</field>
+	    </row>
+	    
+	    <row>
+	    	<field name="TABLENAME">DEPT3</field>
+		    <field name="DATAPOLICY">REPLICATE</field>
+	    </row>
+	  </resultSet>
+
+	  <resultSet id="before_xa_commit">
+		<row>
+			<field name="INTCOL">1</field>
+			<field name="TEXT">ONE</field>
+		</row>
+	  </resultSet>
+
+	  <resultSet id="after_xa_commit">
+		<row>
+			<field name="INTCOL">1</field>
+			<field name="TEXT">ONE</field>
+		</row>
+
+		<row>
+			<field name="INTCOL">2</field>
+			<field name="TEXT">TWO</field>
+		</row>
+	  </resultSet>
+
+	  <resultSet id="result_51427">
+	    <row>
+	        <field name="CID">1</field>
+	        <field name="TID">1</field>
+	        <field name="SID">2</field>
+	        <field name="QTY">1</field>
+	        <field name="AVAILQTY">1</field>
+	        <field name="SUBTOTAL">1</field>
+	    </row>
+	    <row>
+	        <field name="CID">2</field>
+	        <field name="TID">1</field>
+	        <field name="SID">1</field>
+	        <field name="QTY">1</field>
+	        <field name="AVAILQTY">1</field>
+	        <field name="SUBTOTAL">1</field>
+	    </row>
+     </resultSet>
+</sqlResults>

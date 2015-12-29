@@ -1,0 +1,11 @@
+Runs modestly scaled multihost Sector query tests with several topologies using GFXD, and using MYSQLC for thin clients only.  Partitioned tables use 1 redundant copy.  Runs with result size 3.
+
+The suite can be used to compare:
+
+-- peerClient vs. thinClient for GFXD
+
+-- GFXD vs. MYSQLC (thin client only) 
+
+Note that GFE and GFXD are non-transactional, while MYSQLC is read-uncommitted.
+
+Note that tests that usually partition-by-column use partition-by-primary-key instead, unless they colocate, in which case the MYSQLC comparison is not a perfect match.

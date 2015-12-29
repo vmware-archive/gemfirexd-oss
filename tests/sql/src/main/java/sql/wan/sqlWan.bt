@@ -1,0 +1,3 @@
+include $JTESTS/sql/wan/sqlWanOnePublisher.bt
+
+include $JTESTS/sql/wan/sqlWanMultiPublishers.bt

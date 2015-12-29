@@ -1,0 +1,152 @@
+//------------------------------------------------------------------------------
+// notifyAll, notifyBySubscription/InterestList
+//------------------------------------------------------------------------------
+
+hct/serialBridgeNotify.conf
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+hct/serialBridgeNotifyAllKeys.conf
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+hct/concBridgeNotify.conf
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+hct/concBridgeNotifyAllKeys.conf
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+hct/bridgeNotifyFailover.conf
+      bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  3 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+hct/concBridgeNotifyFailover.conf
+      bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  3 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+hct/concBridgeNotifyXml.conf
+      bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  3 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+
+//------------------------------------------------------------------------------
+// interest policy
+//------------------------------------------------------------------------------
+
+hct/staticInterestPolicyList.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+hct/staticInterestPolicyAllKeys.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+hct/staticInterestPolicyRegex.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+hct/staticInterestPolicySingle.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+hct/staticInterestPolicyPartialList.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+hct/dynamicInterestPolicyList.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+hct/dynamicInterestPolicyAllKeys.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+hct/dynamicInterestPolicyRegex.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+hct/dynamicInterestPolicySingle.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+hct/dynamicInterestPolicyPartialList.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+hct/serialInterestPolicy.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 2
+
+hct/concInterestPolicy.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 3
+                                                    useOwnKeys = true
+hct/staticInterestPolicyListLateOps.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+hct/staticInterestPolicyAllKeysLateOps.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+hct/staticInterestPolicyRegexLateOps.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+hct/staticInterestPolicySingleLateOps.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+hct/staticInterestPolicyPartialListLateOps.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+hct/concInterestPolicyLateOps.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                    useOwnKeys = true
+
+//------------------------------------------------------
+// mixed interest with receiveValues flag true and false
+//------------------------------------------------------
+
+nbsTests/nbsTest.conf
+A=bridge      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+B=clientOn      clientOnHosts   = 4 clientOnVMsPerHost   = 1 clientOnThreadsPerVM   = 1
+C=clientOff      clientOffHosts   = 4 clientOffVMsPerHost   = 1 clientOffThreadsPerVM   = 1
+D=feeder      feederHosts   = 1 feederVMsPerHost   = 1 feederThreadsPerVM   = 1
+E=durableClientOn      durableClientOnHosts   = 4 durableClientOnVMsPerHost   = 1 durableClientOnThreadsPerVM   = 1
+F=durableClientOff      durableClientOffHosts   = 4 durableClientOffVMsPerHost   = 1 durableClientOffThreadsPerVM   = 1
+
+//------------------------------------------------------------------------------
+// mixed interest (all_keys, keyList, singleKey & noInterest)
+//------------------------------------------------------------------------------
+
+hct/serialBridgeNotifyMixedInterests.conf
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  5 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+
+//------------------------------------------------------------------------------
+// putAll with mixed interest (all_keys, keyList, singleKey & noInterest)
+//------------------------------------------------------------------------------
+
+hct/putAllBridgeNotifyMixedInterests.conf
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  7 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 4
+
+hct/putAllBridgeNotifyMixedInterestsPR.conf
+      bridgeHosts =  4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  7 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 4
+
+hct/putAllBridgeNotifyMixedInterestsHA.conf
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  7 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 4
+
+hct/putAllBridgeNotifyMixedInterestsPRHA.conf
+      bridgeHosts =  4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  7 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 4
+
+// verify PR adjunct messaging with TX (with HA)
+nbsTests/nbsTestPR.conf
+A=bridge      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+B=clientOn      clientOnHosts   = 4 clientOnVMsPerHost   = 1 clientOnThreadsPerVM   = 1
+C=clientOff      clientOffHosts   = 4 clientOffVMsPerHost   = 1 clientOffThreadsPerVM   = 1
+D=feeder      feederHosts   = 1 feederVMsPerHost   = 1 feederThreadsPerVM   = 1
+E=durableClientOn      durableClientOnHosts   = 4 durableClientOnVMsPerHost   = 1 durableClientOnThreadsPerVM   = 1
+F=durableClientOff      durableClientOffHosts   = 4 durableClientOffVMsPerHost   = 1 durableClientOffThreadsPerVM   = 1
+

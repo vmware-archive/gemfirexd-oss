@@ -1,0 +1,6 @@
+sql/memscale/offHeapFragmentsInsDelWan.conf
+    wanSites=2
+    A=server serverHostsPerSite=2 serverVMsPerHost=1 serverThreadsPerVM=1
+    B=client clientHostsPerSite=2 clientVMsPerHost=1 clientThreadsPerVM=2
+    locatorHostsPerSite = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+

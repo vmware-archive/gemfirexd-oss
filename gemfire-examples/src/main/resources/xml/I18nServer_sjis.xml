@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="Shift-JIS"?>
+<!DOCTYPE cache PUBLIC
+    "-//GemStone Systems, Inc.//GemFire Declarative Caching 6.5//EN"
+    "http://www.gemstone.com/dtd/cache6_5.dtd">
+
+<!--
+  | I18nServer.xml
+  |
+  | Configures a cache to serve clients at port 40404.
+  | The example region is populated with utf8 encoded Japanese keys. 
+ -->
+<cache>
+	<bridge-server port="40404"/>
+	<region name="ÆïX"> <!-- furniture store -->
+			<region-attributes scope="distributed-no-ack" data-policy="normal" />
+			<entry>
+				<key>
+					<string>Öq</string>
+				</key>
+				<value>
+					<string>10.676\</string>
+				</value>
+			</entry>
+			<entry>
+				<key>
+					<string>e[u</string>
+				</key>
+				<value>
+					<string>98.834\</string>
+				</value>
+			</entry>
+			<entry>
+				<key>
+					<string>zc</string>
+				</key>
+				<value>
+					<string>71.419\</string>
+				</value>
+			</entry>
+	</region>
+</cache>

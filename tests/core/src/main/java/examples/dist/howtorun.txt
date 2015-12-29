@@ -1,0 +1,8 @@
+To run this example manually start the example application. You will be 
+prompted for stock symbols to enter. The example is case sensitive, so 
+symbols are expected to be in uppercase. Try a few such as SUNW, IBM, 
+COLM, UNTD. When finished entering symbols, enter a return at the prompt 
+to gracefuly exit the example. This command starts the example.
+
+java -classpath $GEMFIRE/../hidden/examples/dist/classes:$GEMFIRE/lib/gemfire.jar flashcache.Quote
+

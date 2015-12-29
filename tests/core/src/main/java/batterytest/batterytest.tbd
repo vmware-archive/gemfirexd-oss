@@ -1,0 +1,34 @@
+//==============================================================================
+//                              BATTERYTEST TBD
+//==============================================================================
+
+//==============================================================================
+// GRID SCHEDULER
+//==============================================================================
+
+Goal: Run a set of batterytests in minimal time in the easiest possible way.
+-- provide a list of tests, local.confs, hosts, and host-filesystem map
+-- schedule a test per host, keeping all hosts busy
+-- allow hosts to be dynamically added and removed from the host list
+-- handle multi-host tests: reserve required hardware as it becomes available
+-- allow different local.conf files for individual tests or batterytest suites
+-- allow test files to be forced onto one host
+-- keep a master oneliner.txt containing .bt file, test path, and result path
+-- organize results on each host to minimize clutter
+-- integrate with regression result reporting
+-- integrate with runBT.sh
+
+Implementation notes:
+-- keep a queue per host, usually empty unless reserved for multihost test or
+   test subset must run on same host
+-- read available host list at each scheduling to pick up dynamic changes
+-- create grid test config object that includes parent .bt file and local.conf
+
+//==============================================================================
+// OTHER
+//==============================================================================
+
+-- grepForErrors
+-- support rerunning failed tests
+-- support rerunning successful tests
+-- complain about unused properties?

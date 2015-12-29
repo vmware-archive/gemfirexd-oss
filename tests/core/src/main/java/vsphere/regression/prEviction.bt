@@ -1,0 +1,112 @@
+//parReg/eviction/prEntryEvictionLocalDestroy.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=1 numOfAccessors=1 redundantCopies=0,1,2,3
+//threadGroupsName=default
+parReg/eviction/prHeapEvictionOverflowToDisk.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=1 numOfAccessors=1 redundantCopies=0,1,2,3
+threadGroupsName=default
+//parReg/eviction/prMemEvictionLocalDestroy.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=1 numOfAccessors=1 redundantCopies=0,1,2,3
+//threadGroupsName=default
+//parReg/eviction/prMemEvictionOveflowToDisk.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=1 numOfAccessors=1 redundantCopies=0,1,2,3
+//threadGroupsName=default
+parReg/eviction/concKnownKeys_withEviction.conf peerHosts=5 peerVMsPerHost=2 peerThreadsPerVM=20 numKeys=10000 byteArraySize=5
+threadGroupsName=default
+/*parReg/eviction/concKnownKeysHA_withMemLRUEviction.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=50000 byteArraySize=15000 redundantCopies=3 numVMsToStop=2
+   threadGroupsName=default
+
+parReg/eviction/concKnownKeysHA_withHeapLRUEviction.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=50000 byteArraySize=15000 redundantCopies=3 numVMsToStop=2
+   threadGroupsName=default*/
+
+//parReg/eviction/parRegEventExpiration.conf hydra.numHosts=4
+//threadGroupsName=default
+
+/*parReg/eviction/heapEvictionWithRRAndPR.conf peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=2 redundantCopies=3
+threadGroupsName=default
+
+parReg/eviction/prEvictionWithQuery.conf peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=2 redundantCopies=0
+threadGroupsName=default*/
+
+// eviction with pr persistence
+parReg/eviction/persistence/prEntryEvictionLocalDestroyPersist.conf
+   peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=1
+   numOfAccessors=1 redundantCopies=unused
+   threadGroupsName=default
+
+parReg/eviction/persistence/prEntryEvictionOverflowToDiskPersist.conf
+   peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=1
+   numOfAccessors=1 redundantCopies=unused
+   threadGroupsName=default
+
+parReg/eviction/persistence/prHeapEvictionLocalDestroyPersist.conf
+   peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=1
+   numOfAccessors=1 redundantCopies=unused
+   threadGroupsName=default
+
+/*parReg/eviction/persistence/prMemEvictionOverflowToDiskPersist.conf
+   peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=1
+   numOfAccessors=1 redundantCopies=unused
+   threadGroupsName=default*/
+
+parReg/eviction/persistence/concKnownKeysHA_withEntryEvictionPersist.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=50000 byteArraySize=5000 redundantCopies=3 numVMsToStop=2
+   threadGroupsName=accessorVMThreads
+
+parReg/eviction/persistence/concKnownKeysHA_withMemLRUEvictionPersist.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=50000 byteArraySize=15000 redundantCopies=3 numVMsToStop=2
+   threadGroupsName=accessorVMThreads
+
+parReg/eviction/persistence/concKnownKeysHA_withHeapLRUEvictionPersist.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=50000 byteArraySize=15000 redundantCopies=3 numVMsToStop=2
+   threadGroupsName=accessorVMThreads
+
+
+
+parReg/eviction/persistence/heapEvictionWithRRAndPRPersist.conf
+   peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=2 redundantCopies=3
+   threadGroupsName=default
+
+parReg/eviction/persistence/prEvictionWithQueryPersist.conf
+   peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=2 redundantCopies=0
+   threadGroupsName=default
+
+
+//NRI Customer scenarios
+parReg/eviction/multiPRHeapEvictionBehavior.conf peerHosts=1 peerVMsPerHost=1 peerThreadsPerVM=1
+threadGroupsName=default
+
+parReg/eviction/concKnownKeysHA_withMemLRUEvictionDelta.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=50000 byteArraySize=15000 redundantCopies=3 numVMsToStop=2
+   threadGroupsName=accessorVMThreads
+
+//bridge
+/*parReg/eviction/hct_parRegExpiration.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=8
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   threadGroupsName=bridge*/
+
+//bridgeThreads
+parReg/eviction/persistence/prEvictionWithSlowReceiverPersist.conf
+   edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=10
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=10
+   redundantCopies=2
+   bridgeOrderingWorkaround=registerInterest
+   threadGroupsName=bridgeThreads
+
+/*parReg/eviction/prEvictionWithSlowReceiver.conf
+   edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=10
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=10
+   redundantCopies=2
+   bridgeOrderingWorkaround=registerInterest
+   threadGroupsName=bridgeThreads*/
+                                                       

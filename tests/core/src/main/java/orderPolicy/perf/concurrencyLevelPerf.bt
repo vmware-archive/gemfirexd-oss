@@ -1,0 +1,32 @@
+orderPolicy/perf/perf084.conf 
+   wanSites=2 peerHostsPerSite=1 peerVMsPerHost=1 peerThreadsPerVM=100
+   concurrencyLevel=3,5,10
+
+orderPolicy/perf/perf084PlusPeer.conf 
+   wanSites=2 peerHostsPerSite=1 peerVMsPerHost=2 peerThreadsPerVM=100
+   concurrencyLevel=3,5,10
+
+orderPolicy/perf/perf085.conf dataSize=1024
+   wanSites=2 peerHostsPerSite=1 peerVMsPerHost=1 peerThreadsPerVM=100
+   concurrencyLevel=3,5,10
+
+orderPolicy/perf/perf087.conf
+   wanSites=1 peerHostsPerSite=1 peerVMsPerHost=1 peerThreadsPerVM=100
+   concurrencyLevel=3,5,10
+
+orderPolicy/perf/perf094.conf
+   wanSites=2 peerHostsPerSite=1 peerVMsPerHost=2 peerThreadsPerVM=100
+   concurrencyLevel=3,5,10
+
+orderPolicy/perf/perf095.conf 
+   wanSites=1 peerHostsPerSite=1 peerVMsPerHost=2 peerThreadsPerVM=100
+   concurrencyLevel=3,5,10
+
+// same as perf094, but with client/server topology in WAN Sites
+orderPolicy/perf/hct094.conf
+   wanSites=2
+   bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+   edgeHostsPerSite=4 edgeVMsPerHost=1 edgeThreadsPerVM=100
+   concurrencyLevel=10,25,50
+
+

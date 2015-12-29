@@ -1,0 +1,37 @@
+//capCon/serialLRUTest.conf vmQuantities = 1 vmThreads = 50
+//capCon/serialLRUEvict.conf vmQuantities = 1 vmThreads = 50
+/*capCon/serialMemLRUTest.conf  vmQuantities = 1 vmThreads = 50
+threadGroupsName=default
+capCon/serialMemLRUEvict.conf  vmQuantities = 1 vmThreads = 50
+threadGroupsName=default
+//capCon/serialLRUDynamic.conf  vmQuantities = 1 vmThreads = 50
+capCon/serialMemLRUDynamic.conf  vmQuantities = 1 vmThreads = 50
+threadGroupsName=default*/
+//capCon/concLRUDynamic.conf  vmQuantities = 1 vmThreads = 50
+/*capCon/concMemLRUDynamic.conf  vmQuantities = 1 vmThreads = 50
+capCon/concLRUTest.conf hydra.numHosts = 1 vmQuantities = 10 vmThreads = 5 
+capCon/concLRUTest.conf hydra.numHosts = 4 vmQuantities = 2  vmThreads = 5 
+capCon/concMemLRUTest.conf hydra.numHosts = 1 vmQuantities = 10 vmThreads = 5 */
+capCon/concMemLRUTest.conf hydra.numHosts = 4 vmQuantities = 2  vmThreads = 5 
+threadGroupsName=default
+//capCon/docExamples.conf
+//threadGroupsName=default
+capCon/memLRUSpikesVMReg.conf vmQuantities = 1 vmThreads = 20 
+threadGroupsName=default
+//capCon/memLRUStressSmall.conf hydra.numHosts = 1 vmQuantities = 5 vmThreads = 10 
+capCon/memLRUStressSmall.conf hydra.numHosts = 5 vmQuantities = 2 vmThreads = 10 
+threadGroupsName=default
+capCon/memLRUStressLarge.conf hydra.numHosts = 1 vmQuantities = 2 vmThreads = 2
+threadGroupsName=default
+//capCon/concEntryEventMemLRU.conf hydra.numHosts = 1 vmQuantities = 5 vmThreads = 10 
+capCon/concEntryEventMemLRU.conf hydra.numHosts = 5 vmQuantities = 2 vmThreads = 10
+threadGroupsName=default
+/*capCon/concEntryEventLRU.conf hydra.numHosts = 1 vmQuantities = 5 vmThreads = 10 
+capCon/concEntryEventLRU.conf hydra.numHosts = 5 vmQuantities = 2 vmThreads = 10 
+capCon/concRegEventLRU.conf hydra.numHosts = 1 vmQuantities = 5 vmThreads = 10 */
+capCon/concRegEventLRU.conf hydra.numHosts = 5 vmQuantities = 2 vmThreads = 10 
+threadGroupsName=default
+//capCon/concRegEventMemLRU.conf hydra.numHosts = 1 vmQuantities = 5 vmThreads = 10 
+capCon/concRegEventMemLRU.conf hydra.numHosts = 5 vmQuantities = 2 vmThreads = 10
+threadGroupsName=default
+

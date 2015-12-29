@@ -1,0 +1,6 @@
+sql/joins/thinClient/concJoinTablesUniqThinClient.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=1 serverVMsPerHost=2 serverThreadsPerVM=1
+    clientHosts = 1 clientVMsPerHost=5 clientThreadsPerVM=5
+
+    

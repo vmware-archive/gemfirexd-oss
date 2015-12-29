@@ -1,0 +1,9 @@
+Run one of the batterytest files:
+
+	-- create.bt
+	-- mirrorcreate.bt
+
+or configure your own test using any of the test configuration variables
+illustrated in the .prop files and/or a local.conf.
+
+The test self-validates that entries pushed to clients contain correct data.

@@ -1,0 +1,97 @@
+// serial sender
+newWan/discovery/wanLocatorsP2P.conf
+	wanSites = 2,3,4 maxOps=100 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1	
+
+newWan/discovery/wanLocatorsAllP2P.conf
+	wanSites = 2,3,4 maxOps=100 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1	
+
+newWan/discovery/wanLocatorsPeerHAP2P.conf
+	wanSites = 2,3,4 maxOps=100 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+
+newWan/discovery/wanAdminLocatorsPeerHAP2P.conf
+	wanSites = 2,3,4 maxOps=100 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1	
+
+parReg/newWan/serial/discovery/wanLocatorsP2P.conf
+	wanSites = 2,3,4 maxOps=100 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1 	
+
+parReg/newWan/serial/discovery/wanLocatorsAllP2P.conf
+	wanSites = 2,3,4 maxOps=100 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1	
+
+parReg/newWan/serial/discovery/wanLocatorsPeerHAP2P.conf
+	wanSites = 2,3,4 maxOps=100 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+
+parReg/newWan/serial/discovery/wanAdminLocatorsPeerHAP2P.conf
+	wanSites = 2,3,4 maxOps=100 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1	
+
+newWan/discovery/wanLocatorsHct.conf
+	wanSites = 2,3,4 maxOps=300 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1	
+
+newWan/discovery/wanLocatorsAllHct.conf
+	wanSites = 2,3,4 maxOps=300 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1	
+
+newWan/discovery/wanLocatorsPeerHAHct.conf
+	wanSites = 2,3,4 maxOps=300 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	
+newWan/discovery/wanAdminLocatorsPeerHAHct.conf
+	wanSites = 2,3,4 maxOps=300 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1		
+
+parReg/newWan/serial/discovery/wanLocatorsHct.conf
+	wanSites = 2,3,4 maxOps=300 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1	
+
+parReg/newWan/serial/discovery/wanLocatorsAllHct.conf
+	wanSites = 2,3,4 maxOps=300 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1	
+
+parReg/newWan/serial/discovery/wanLocatorsPeerHAHct.conf
+	wanSites = 2,3,4 maxOps=300 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+
+parReg/newWan/serial/discovery/wanAdminLocatorsPeerHAHct.conf
+	wanSites = 2,3,4 maxOps=300 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1	
+
+// parallel sender
+parReg/newWan/parallel/discovery/wanLocatorsP2P.conf
+	wanSites = 2,3,4 maxOps=300 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1	
+
+parReg/newWan/parallel/discovery/wanLocatorsAllP2P.conf
+	wanSites = 2,3,4 maxOps=300 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1	
+
+parReg/newWan/parallel/discovery/wanLocatorsPeerHAP2P.conf
+	wanSites = 2,3,4 maxOps=300 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+
+parReg/newWan/parallel/discovery/wanAdminLocatorsPeerHAP2P.conf
+	wanSites = 2,3,4 maxOps=300 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1	
+
+parReg/newWan/parallel/discovery/wanLocatorsHct.conf
+	wanSites = 2,3,4 maxOps=200 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1	
+
+parReg/newWan/parallel/discovery/wanLocatorsAllHct.conf
+	wanSites = 2,3,4 maxOps=200 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1	
+
+parReg/newWan/parallel/discovery/wanLocatorsPeerHAHct.conf
+	wanSites = 2,3,4 maxOps=200 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+
+parReg/newWan/parallel/discovery/wanAdminLocatorsPeerHAHct.conf
+	wanSites = 2,3,4 maxOps=200 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1	

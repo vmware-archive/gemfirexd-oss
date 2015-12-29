@@ -1,0 +1,6 @@
+hydratest/version/replication/replication.conf version1 = default version2 = 100
+hydratest/version/replication/replication.conf version1 = default version2 = 130
+hydratest/version/replication/replication.conf version1 = default version2 = 131
+hydratest/version/replication/replication2.conf version1 = default version2 = 100
+hydratest/version/replication/replication2.conf version1 = default version2 = 130
+hydratest/version/replication/replication2.conf version1 = default version2 = 131

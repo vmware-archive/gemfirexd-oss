@@ -1,0 +1,17 @@
+
+vsphere/regression/p2pKillParRegColocation.conf
+  wanSites = 2 maxOps=15000 resultWaitSec=600 redundantCopies = 1
+  peerHostsPerSite = 2 peerVMsPerHost = 1 peerThreadsPerVM = 1
+  locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  peerMem = 256m threadGroupName=peer
+  enableVMotionTask=enableVMotionDuringStopStart
+  disableVMotionTask=disableVMotionDuringStopStart
+
+
+vsphere/regression/wanLocatorsPeerHAP2P.conf
+  wanSites = 2 maxOps=300 resultWaitSec=600 redundantCopies = 1
+  locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  peerHostsPerSite = 2 peerVMsPerHost = 2 peerThreadsPerVM = 1
+  peerMem = 256m threadGroupName=locator
+  enableVMotionTask=enableVMotionDuringLocatorStopStart
+  disableVMotionTask=disableVMotionDuringLocatorStopStart

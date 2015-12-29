@@ -1,0 +1,10 @@
+LIBRARY	"gemfirexdodbcSetup"
+
+
+SECTIONS
+
+EXPORTS
+
+
+    ConfigDSN               @1
+    ConfigDriver			@2

@@ -1,0 +1,8 @@
+hydratest/hdfs/hdfs.conf onlyOnPlatforms=Linux
+hydratest/hdfs/hdfsdefault.conf onlyOnPlatforms=Linux
+hydratest/hdfs/hdfsrep.conf onlyOnPlatforms=Linux
+hydratest/hdfs/hdfsColocated.conf onlyOnPlatforms=Linux
+hydratest/hdfs/hdfsMultiRegion.conf onlyOnPlatforms=Linux
+hydratest/hdfs/hdfsQueueAndRegionPersist.conf onlyOnPlatforms=Linux
+hydratest/hdfs/hdfsQueuePersist.conf onlyOnPlatforms=Linux
+hydratest/hdfs/yarn.conf onlyOnPlatforms=Linux

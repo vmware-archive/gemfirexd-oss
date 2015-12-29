@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN"><HTML>
+<HEAD>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+  <META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+  <LINK REL="STYLESHEET" HREF="DocIndex.css" CHARSET="ISO-8859-1" TYPE="text/css">
+  <TITLE>Programming Examples Environment Settings for vFabric GemFire</TITLE>
+</HEAD>
+<BODY bgcolor="#ffffff">
+     <IMG SRC="../../docs/VMwareLogo.png" BORDER="0">
+     <h1 align="center">
+     vFabric<FONT size=6><b><sup><font size=-0>&#8482;</font></sup></b></FONT></font> GemFire<FONT size=6><b><sup><font size=-0>&#174;</font></sup></b></FONT></font></H1>
+     </b></FONT>
+  <H1 align="center">Environment Settings</H1>
+<H2 align="center">Java Caching API Programming Example </H2>
+
+<hr color="#cc0000" width="75%" size="2" align="left">
+
+<p>
+Access the GemFire Release Notes and the GemFire User's Guide at the <a href="https://www.vmware.com/support/pubs/vfabric-gemfire.html" target="_blank"><b>vFabric GemFire Product Page</b></a>. 
+<p>Before running the programming examples, make sure your environment is set 
+according to the specifications listed here.
+<p>The general environment settings referred to below 
+are documented in <em>Set up GemFire</em> in the <em>Getting Started</em> section of the <em>GemFire User's Guide</em>.
+The commands and settings listed  are generally Unix-centric, so adjust as necessary 
+for other operating systems.
+<ol>
+  <li>Temporarily disable your firewall while you are running the examples. This ensures that the examples will perform as expected. <br>
+  <br>
+  <li>Change directory to the top-level GemFire product directory. If you are in the top-level product directory, you should see a number of subdirectories, including <code>bin</code>, <code>defaultConfigs</code>, <code>docs</code>, <code>lib</code>, and <code>DiskConverter</code>. <br>
+    <br>
+  <li>Set the environment variable <code>GF_JAVA</code> to point to the <code>JAVA</code> executable in your Java JDK or JRE runtime environment.  The <code>GF_JAVA</code> setting is for the GemFire scripts. You must have a compatible JDK or JRE installed on your system and you must set <code>GF_JAVA</code>  to point to the <code>JAVA</code> executable in it. You can download the appropriate JDK or JRE from <a href="http://java.sun.com" target="_blank">http://java.sun.com</a>.  
+
+    <p>These are example <code>GF_JAVA</code> configurations. In these examples, <em><code>yourJRE</code></em> or <em><code>yourJDK</code></em> points to the top-level JRE or JDK directory. </p>
+    <p><strong>Solaris&reg;, Linux&reg;, and AIX&reg; Bourne and Korn shells (sh, ksh, bash)</strong></p>
+    <blockquote>
+      <p>If just the JRE runtime is installed: <code>GF_JAVA=<em>yourJRE</em>/bin/java;export GF_JAVA</code></p>
+      <p>If the full Java JDK is installed: <code>GF_JAVA=<em>yourJDK</em>/jre/bin/java;export GF_JAVA</code></p>
+    </blockquote>
+    <p><strong>Windows&reg;</strong></p>
+    <blockquote>
+      <p>If just the JRE runtime is installed: <code>set GF_JAVA=<em>yourJRE</em>/bin/java.exe</code></p>
+      <p>If the full Java JDK is installed: <code>set GF_JAVA=<em>yourJDK</em>/jre/bin/java.exe</code></p>
+    </blockquote>
+  <li>Add   
+    <em>&lt;Path to GemFire product dir&gt;</em><code>/bin</code> to 
+    your <code>PATH</code>.
+	<br><br>
+  <li>Add <em>&lt;Path to GemFire product dir&gt;</em><code>/examples/dist/classes</code> to 
+    your <code>CLASSPATH</code>.<br>
+    For example, this could be <code>C:\GemFireXX/examples/dist/classes</code>, where <code>GemFireXX</code> is the GemFire top-level product directory.
+    <br><br>
+  <li>Add <em>&lt;Path to GemFire product dir&gt;</em><code>/lib/gemfire.jar</code> to the <code>CLASSPATH</code>.
+   <br><br>  
+  <li>Add <em>&lt;Path to GemFire product dir&gt;</em><code>/lib/antlr.jar</code> to the <code>CLASSPATH</code>. <br>
+    <br>
+  <li>If you are running the security exercises in the <code>clientServerConfigs</code> example, include this setting:
+    <br>
+      Add <em>&lt;Path to GemFire product dir&gt;</em><code>/lib/gfSecurityImpl.jar</code> to <code>CLASSPATH</code>.  </li>
+</ol>
+<hr color="#cc0000" width="75%" size="2" align="left">
+</BODY>
+</HTML>

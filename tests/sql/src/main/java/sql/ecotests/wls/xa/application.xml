@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.4">
+  <description>GemFireXD XA Tests with Weblogic</description>
+  <display-name>GemFireXD XA Tests with Weblogic</display-name>
+  <module>
+    <ejb>GemFireXDXATestEjb</ejb>
+  </module>
+</application>

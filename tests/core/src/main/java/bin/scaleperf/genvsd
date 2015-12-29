@@ -1,0 +1,5 @@
+#!/bin/bash
+
+trap 'exit 1' 2 #traps Ctrl-C (signal 2)
+
+java -cp $JTESTS:$GEMFIRE/lib/gemfire.jar hydra.TestFileUtil genVSD statarchives

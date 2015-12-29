@@ -1,0 +1,33 @@
+<configuration>
+
+ <property>
+    <name>ipc.client.ping</name>
+    <value>false</value>
+ </property>
+
+ <property>
+    <name>ipc.ping.interval</name>
+    <value>5000</value>
+ </property>
+
+ <property>
+    <name>ipc.client.connect.timeout</name>
+    <value>500</value>
+ </property>
+
+ <property>
+    <name>ipc.client.connect.max.retries</name>
+    <value>2</value>
+ </property>
+
+ <property>
+    <name>ipc.client.connect.max.retries.on.timeouts</name>
+    <value>0</value>
+ </property>
+
+ <property>
+   <name>dfs.client.socket-timeout</name>
+   <value>30000</value>
+ </property>
+
+</configuration>

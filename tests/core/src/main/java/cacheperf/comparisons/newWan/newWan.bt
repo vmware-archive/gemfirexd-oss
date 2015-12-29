@@ -1,0 +1,17 @@
+cacheperf/comparisons/newWan/p2pSerialSender.conf
+cacheperf/comparisons/newWan/hctSerialSender.conf
+
+cacheperf/comparisons/newWan/parReg/p2pSerialSender.conf
+cacheperf/comparisons/newWan/parReg/p2pParallelSender.conf
+
+cacheperf/comparisons/newWan/parReg/hctSerialSender.conf
+cacheperf/comparisons/newWan/parReg/hctParallelSender.conf
+
+cacheperf/comparisons/newWan/parReg/p2pSerialSenderQueuePersistent.conf
+cacheperf/comparisons/newWan/parReg/p2pSerialSenderQueueEviction.conf
+cacheperf/comparisons/newWan/parReg/p2pSerialSenderConflation.conf
+
+cacheperf/comparisons/newWan/parReg/p2pParallelSenderQueuePersistent.conf
+cacheperf/comparisons/newWan/parReg/p2pParallelSenderQueueEviction.conf
+cacheperf/comparisons/newWan/parReg/p2pParallelSenderConflation.conf
+

@@ -1,0 +1,227 @@
+<HTML>
+<BODY>
+
+<P>Contains unit tests that form a "compatibility test suite" of sorts
+for the GemFire 3.0 distributed caching API.  It was developed using a
+"clean room" technique in which someone other than the cache API
+implementation wrote the unit tests.  These tests are intended to find
+bugs in both the implementation and the documentation of the cache
+API.</P>
+
+<P>In hopes of keeping the tests organized, there is a hierarchy of
+<code>abstract</code> TestCase classes.  Each class in the hierarchy
+contains tests for a certain class ({@link
+com.gemstone.gemfire.cache30.RegionTestCase}, for example) or group of
+classes ({@link
+com.gemstone.gemfire.cache30.RegionAttributesTestCase}, for
+example).</P>
+
+<HR>
+
+<P>Below are descriptions of functionality and scenarios that need to
+be tested by unit tests.</P>
+
+<P><B>Search Load and Write Unit tests</B></P>
+
+<OL>
+
+<LI>Create a local region with no loader. Do region.get. Verify that
+null is returned.</LI>
+
+  <UL>
+  <LI>Addressed by {@link
+  com.gemstone.gemfire.cache30.RegionTestCase#testBadRegionAccess}</LI>
+  </UL>
+
+<LI>Create a local region with a cache loader that returns a canned
+value in the load method.  Do region.get and verify that you get the
+canned value</LI>
+
+  <UL>
+  <LI>Addressed by {@link
+  com.gemstone.gemfire.cache30.CacheLoaderTestCase#testCacheLoader}</LI>
+  </UL>
+
+<LI>Create a local region with a cache loader that tries to do a
+netSearch.  Do region.get and verify that a cacheLoader exception is
+thrown and the message.  Reads, ``Cannot netSearch on Scope.LOCAL
+object''</LI>
+
+  <UL>
+  <LI>Addressed by {@link
+  com.gemstone.gemfire.cache30.LocalRegionTest#testLocalLoaderNetSearch}</LI>
+  </UL>
+
+<LI>Create a local region with a cache loader and a cache writer.
+Do a get, verify that the cacheLoader is called. Verify that that
+changes to the callbackArgument are passed back and onto the cache
+writer. Verify that the cache writer beforeCreate is called.</LI>
+
+  <UL>
+  <LI>Addressed by: {@link
+  com.gemstone.gemfire.cache30.LocalRegionTest#testLocalCreateModifiedCallbackArgument} </LI>
+  <LI>See also {@link
+  com.gemstone.gemfire.cache30.CacheWriterTestCase#testCacheWriterBeforeCreate}</LI>
+  </UL>
+
+<LI>Create a local region with a cache loader and a cache
+writer. Create an entry.  Do a get, verify that the cacheLoader is
+called. Verify that that changes to the callbackArgument are passed
+back and onto the cache writer. Verify that the cache writer
+beforeUpdate is called.</LI>
+
+  <UL>
+  <LI>Addressed by: {@link
+  com.gemstone.gemfire.cache30.LocalRegionTest#testLocalUpdateModifiedCallbackArgument} </LI>
+  <LI>See also {@link
+  com.gemstone.gemfire.cache30.CacheWriterTestCase#testCacheWriterBeforeUpdate}</LI>
+  </UL>
+
+<LI>Create a local region with a cache writer. Put a value twice.
+Verify that cacheWriter beforeCreate is called the first time.  Verify
+that cacheWriter.beforeUpdate is called the second time.</LI>
+
+  <UL>
+  <LI>Addressed by {@link
+  com.gemstone.gemfire.cache30.CacheWriterTestCase#testCacheWriterBeforeUpdate}</LI>
+  </UL>
+
+<LI>Create a local region with no cache writer. Put a value.  Verify
+that put succeeds.</LI>
+
+  <UL>
+  <LI>Addressed by {@link com.gemstone.gemfire.cache30.RegionTestCase#testContainsKey}</LI>
+  </UL>
+
+</OL>
+
+<B>Distributed Region</B>
+
+<OL>
+
+<LI>Create a mirrored distributed region with a local loader. Do a get
+on a new key. Verify that local load is invoked.</LI>
+
+<LI>Create a mirrored distributed region with no local loader. Do a
+get on a new key. Verify that net load is invoked.</LI>
+
+<LI>Create a distributed region with GLOBAL scope and local loader. Do
+a get on a new key. Verify that local load is invoked. Manually verify
+that netSearch was called and returned null.</LI>
+
+  <UL>
+  <LI>Addressed by {@link
+  com.gemstone.gemfire.cache30.MultiVMRegionTestCase#testLocalCacheLoader}</LI>
+  </UL>
+
+<LI>Create a distributed region with GLOBAL scope and remote
+loader. Do a get on a new key. Verify that net load is
+invoked. Manually verify that netSearch was called and returned
+null.</LI>
+
+  <UL>
+  <LI>Addressed by {@link
+  com.gemstone.gemfire.cache30.MultiVMRegionTestCase#testRemoteCacheLoader}</LI>
+  <LI>We do not verify that <code>netSearch</code> was called.  We
+  rely on tests like {@link com.gemstone.gemfire.cache30.GlobalRegionTest#testRemoteFetch} to
+  demonstrate that it was.</LI>
+  </UL>
+
+<LI>Create a distributed region with GLOBAL scope and local and remote
+loader. Do a get on a new key. Verify that local load is invoked.
+Manually verify that netSearch was called and returned null.</LI>
+
+  <UL>
+  <LI>Addressed by {@link
+  com.gemstone.gemfire.cache30.MultiVMRegionTestCase#testLocalCacheLoader}</LI>
+  </UL>
+
+<LI>Create a distributed region with GLOBAL scope and local and remote
+loader. Do a put on the second VM. Do a get on the key that was put
+into the remote VM. Verify that local load is not invoked. Verify that
+netSearch was called and returns the expected value.</LI>
+
+  <UL>
+  <LI>Address by: {@link com.gemstone.gemfire.cache30.GlobalRegionTest#testRemoteFetch}</LI>
+  </UL>
+
+<LI>Create a distributed region with DISTRIBUTED-ACK scope and remote
+cache writer. Do a create on the local VM. Verify that remote cache
+writer beforeCreate is invoked.</LI>
+
+  <UL>
+  <LI>Addressed by: {@link com.gemstone.gemfire.cache30.MultiVMRegionTestCase#testRemoteCacheWriter}</LI>
+  </UL>
+
+<LI>Create a distributed region with DISTRIBUTED-ACK scope and remote
+cache writer. Do a put on the local VM. Verify that remote cache
+writer beforeUpdate is invoked.</LI>
+
+  <UL>
+  <LI>Addressed by: {@link com.gemstone.gemfire.cache30.MultiVMRegionTestCase#testRemoteCacheWriter}</LI>
+  </UL>
+
+<LI>Create a distributed region with DISTRIBUTED-ACK scope and remote
+cache loader. Do a get on the local VM. Verify that remote cache
+loader is invoked. Have the loader call netSearch. Verify that the
+remote cache loader returns null.</LI>
+
+  <UL>
+  <LI>Addressed by: {@link
+  com.gemstone.gemfire.cache30.MultiVMRegionTestCase#testRemoteLoaderNetSearch}</LI> 
+  </UL>
+
+<LI>Create a distributed region with DISTRIBUTED-ACK scope and remote
+cache writer. Do a destroy on the local VM. Verify that remote cache
+writer is invoked.</LI>
+
+  <UL>
+  <LI>Addressed by: {@link
+  com.gemstone.gemfire.cache30.MultiVMRegionTestCase#testRemoteCacheWriter}</LI> 
+  </UL>
+
+<LI>Create a distributed region with DISTRIBUTED-ACK scope and local
+and remote cache writer. Perform an operation, which triggers cache
+writer operations. Verify that local cache writer is invoked every
+time.</LI>
+
+  <UL>
+  <LI>Addressed by: {@link
+  com.gemstone.gemfire.cache30.MultiVMRegionTestCase#testLocalAndRemoteCacheWriters}</LI>
+  </UL>
+
+</OL>
+
+<B>Race conditions:</B>
+
+<OL>
+
+<LI>Create a distributed region with DISTRIBUTED-ACK scope and local
+and remote cache writer ( The test should have 3 VMs in the
+system). Do a get , which should trigger a netSearch. Randomly kill
+one of the other 2 VMs. Verify that netSearch returns the value if
+there is at least one system that can serve up the request.</LI>
+
+  <UL>
+  <LI>Note: The DUnit framework isn't well-suited for "killing off"
+  VMs.  This functionality may have to be tested using a standard
+  hydra test.</LI>
+  </UL>
+
+<LI>Create a distributed region with DISTRIBUTED-ACK scope and remote
+cache writers (The test should have 3 VMs in the system). Do a put,
+which should trigger a netWrite. Randomly kill one of the other two
+VMs. Do this in a loop and verify that the cacheWrite succeeds if
+there is at least one system that can serve the request within the
+timeout period.</LI>
+
+  <UL>
+  <LI>Note: The DUnit framework isn't well-suited for "killing off"
+  VMs.  This functionality may have to be tested using a standard
+  hydra test.</LI>
+  </UL>
+
+</OL>
+
+</BODY>
+</HTML>

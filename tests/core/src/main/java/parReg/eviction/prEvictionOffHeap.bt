@@ -1,0 +1,32 @@
+// tests that do off-heap eviction with the resource manager
+parReg/eviction/prOffHeapEvictionLocalDestroy.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=1 numOfAccessors=1 redundantCopies=0,1,2,3
+parReg/eviction/prOffHeapEvictionOverflowToDisk.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=1 numOfAccessors=1 redundantCopies=0,1,2,3     
+parReg/eviction/concKnownKeysHA_withOffHeapLRUEviction.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=50000 byteArraySize=15000 redundantCopies=3 numVMsToStop=2 
+parReg/eviction/multiPROffHeapEviction.conf peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=2
+parReg/eviction/offHeapEvictionWithRRAndPR.conf peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=2 redundantCopies=3
+parReg/eviction/prEvictionWithQueryOffHeap.conf peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=2 redundantCopies=0
+parReg/eviction/verifyOffHeapEvictionBehavior.conf peerHosts=1 peerVMsPerHost=4 peerThreadsPerVM=2 redundantCopies=3
+parReg/eviction/persistence/prOffHeapEvictionLocalDestroyPersist.conf 
+   peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=1 
+   numOfAccessors=1 redundantCopies=unused
+parReg/eviction/persistence/prOffHeapEvictionOverflowToDiskPersist.conf 
+   peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=1 
+   numOfAccessors=1 redundantCopies=unused
+parReg/eviction/persistence/concKnownKeysHA_withOffHeapLRUEvictionPersist.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=50000 byteArraySize=15000 redundantCopies=3 numVMsToStop=2 
+parReg/eviction/persistence/multiPROffHeapEvictionPersist.conf 
+   peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=2
+parReg/eviction/persistence/offHeapEvictionWithRRAndPRPersist.conf 
+   peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=2 redundantCopies=3
+parReg/eviction/persistence/prEvictionWithQueryPersistOffHeap.conf 
+   peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=2 redundantCopies=0
+parReg/eviction/persistence/verifyOffHeapEvictionBehaviorPersist.conf 
+   peerHosts=1 peerVMsPerHost=4 peerThreadsPerVM=2 redundantCopies=3
+parReg/eviction/verifyUniformOffHeapEviction.conf peerHosts=1 peerVMsPerHost=1 peerThreadsPerVM=1
+parReg/eviction/verifyIncrementalOffHeapEviction.conf peerHosts=1 peerVMsPerHost=1 peerThreadsPerVM=1
+parReg/eviction/multiPROffHeapEvictionBehavior.conf peerHosts=1 peerVMsPerHost=1 peerThreadsPerVM=1   

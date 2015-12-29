@@ -1,0 +1,33 @@
+//==============================================================================
+//                              CACHEPERF TBD
+//==============================================================================
+
+-- improve latency calculations
+
+-- make timing stats optional
+
+-- make CachePerfClient methods batched within regular batch size (i.e., be able
+   to configure doing 5 puts before checking the batch terminator)
+
+-- move cacheperf.CachePerfClient.sync() to hydra.RemoteTestModule, optimize,
+   remove TaskSyncBlackboard, reset for reuse
+
+-- generalize CachePerfClient tasks to avoid duplicate code
+
+-- support hydra thread locals on a per-task basis in CachePerfClient so that
+   everything works when a particular client thread does more than one kind of
+   TASK
+
+-- write non-distcache-based version
+
+//==============================================================================
+// TESTS
+//==============================================================================
+
+-- review and clean up spec files
+
+-- make sure all edge clients use local scope for optimal performance
+
+-- port iteration-based tests to time-based, where possible
+
+-- run with serialized object types vs. byte array

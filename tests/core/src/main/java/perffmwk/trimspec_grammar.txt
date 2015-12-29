@@ -1,0 +1,45 @@
+================================================================================
+TRIM SPECIFICATION GRAMMAR
+================================================================================
+
+USAGE:
+
+Prepare a trim specification file following the syntax and grammar
+described later in this file.  For token values, see TrimSpecTokens.java.
+
+Before running a hydra test using your file, test it by setting up your
+environment as you would for a test run (see hydra/MasterController.java).
+Then execute and examine the result to make sure you are getting the settings
+you expect.  For example:
+
+  java -cp $GEMFIRE/lib/gemfire.jar:$CLASSPATH   \
+       -DJTESTS=$JTESTS                          \
+       -Dgemfire.home=$GEMFIRE                   \
+        perffmwk.TrimSpecParser <filename>
+
+================================================================================
+
+specfile :=
+        (stmt SEMI)*
+
+stmt :=
+        trimSpec
+
+================================================================================
+
+trimSpec:=
+        TRIMSPEC trimSpecName trimSpecParams
+
+trimSpecName :=
+        idstring
+
+trimSpecParams :=
+        ( START EQUALS time )? ( END EQUALS time )?
+        // default is the full time the stat is live
+
+time :=
+        // absolute time in long file format with System.currentTimeMillis()
+	// e.g., 2009/06/11 11:06:30.127 PDT (1244743590127)
+
+idstring :=
+        // any printable character string

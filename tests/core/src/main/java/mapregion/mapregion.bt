@@ -1,0 +1,25 @@
+// Map API tests
+// serial tests
+mapregion/mapregion.conf serialExecution = true scope = global dataPolicy = replicate
+mapregion/mapregion.conf serialExecution = true scope = ack dataPolicy = replicate
+mapregion/mapregion.conf serialExecution = true scope = noAck dataPolicy = normal
+mapregion/mapregion.conf serialExecution = true scope = local dataPolicy = normal
+
+// concurrent tests
+mapregion/mapregion.conf serialExecution = false scope = global dataPolicy = replicate
+mapregion/mapregion.conf serialExecution = false scope = ack dataPolicy = replicate
+mapregion/mapregion.conf serialExecution = false scope = noAck dataPolicy = normal
+mapregion/mapregion.conf serialExecution = false scope = local dataPolicy = normal
+
+// ConcurrentMap (with map operations) API tests (not supported for DataPolicy.NORMAL)
+// serial tests
+mapregion/cmRegion.conf serialExecution = true scope = global dataPolicy = replicate
+mapregion/cmRegion.conf serialExecution = true scope = ack dataPolicy = replicate
+
+// concurrent tests (DataPolicy.normal not supported)
+mapregion/cmRegion.conf serialExecution = false scope = global dataPolicy = replicate
+mapregion/cmRegion.conf serialExecution = false scope = ack dataPolicy = replicate
+
+// partitionedRegions
+mapregion/parRegCMRegion.conf serialExecution = true scope = default dataPolicy = partitioned
+mapregion/parRegCMRegion.conf serialExecution = false scope = default dataPolicy = partitioned

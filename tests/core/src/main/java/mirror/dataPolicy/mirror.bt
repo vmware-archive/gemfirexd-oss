@@ -1,0 +1,5 @@
+mirror/dataPolicy/mirrorKeysValuesDist.conf
+//mirror/dataPolicy/mirrorKeysValuesLocal.conf
+mirror/dataPolicy/mirrorNoneDist.conf
+mirror/dataPolicy/mirrorNoneLocal.conf
+mirror/dataPolicy/serialMirrorKeysValuesDist.conf

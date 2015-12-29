@@ -1,0 +1,90 @@
+// ============================================================
+// measure put performance for persistent partitioned regions
+
+// 1. persist only
+// runs put test with current version
+// maxKeys of 500,000 means each vm (2) puts 500,000 keys for a PR
+// total of 1,000,000
+cacheperf/comparisons/parReg/persist/peerDataPut.conf
+  peerHosts =  2 peerVMsPerHost = 1 peerThreadsPerVM = 1
+  redundantCopies = 1
+  maxKeys = 500000 objectSize = 1024
+  perffmwk.comparisonKey = put_02x01x01
+  synchronous = false queueSize = 1000
+
+// runs put test with current version
+// maxKeys of 500,000 means each vm (8) puts 500,000 keys for a PR
+// total of 4,000,000
+cacheperf/comparisons/parReg/persist/peerDataPut.conf
+  peerHosts =  8 peerVMsPerHost = 1 peerThreadsPerVM = 1
+  redundantCopies = 1
+  maxKeys = 500000 objectSize = 1024
+  perffmwk.comparisonKey = put_02x01x01
+  synchronous = false queueSize = 1000
+
+// 2. overflow only
+// 2 hosts
+cacheperf/comparisons/parReg/persist/peerDataPutOverflow.conf
+  peerHosts =  2 peerVMsPerHost = 1 peerThreadsPerVM = 1
+  redundantCopies = 1
+  maxKeys = 500000 objectSize = 1024
+  perffmwk.comparisonKey = put_02x01x01
+  dataPolicy = partition
+  synchronous = false queueSize = 1000
+
+cacheperf/comparisons/parReg/persist/peerDataPutOverflow.conf
+  peerHosts =  8 peerVMsPerHost = 1 peerThreadsPerVM = 1
+  redundantCopies = 1
+  maxKeys = 500000 objectSize = 1024
+  perffmwk.comparisonKey = put_02x01x01
+  dataPolicy = partition
+  synchronous = false queueSize = 1000
+
+// 4. persist and overflow
+// 2 hosts
+cacheperf/comparisons/parReg/persist/peerDataPutOverflow.conf
+  peerHosts =  2 peerVMsPerHost = 1 peerThreadsPerVM = 1
+  redundantCopies = 1
+  maxKeys = 500000 objectSize = 1024
+  perffmwk.comparisonKey = put_02x01x01
+  dataPolicy = persistentPartition
+  synchronous = false queueSize = 1000
+
+// 8 hosts
+cacheperf/comparisons/parReg/persist/peerDataPutOverflow.conf
+  peerHosts =  8 peerVMsPerHost = 1 peerThreadsPerVM = 1
+  redundantCopies = 1
+  maxKeys = 500000 objectSize = 1024
+  perffmwk.comparisonKey = put_02x01x01
+  dataPolicy = persistentPartition
+  synchronous = false queueSize = 1000
+
+// 5. no persist
+// 2 hosts
+cacheperf/comparisons/parReg/peerDataPut.conf
+  peerHosts =  2 peerVMsPerHost = 1 peerThreadsPerVM = 1
+  redundantCopies = 1
+  maxKeys = 500000 objectSize = 1024
+  perffmwk.comparisonKey = put_02x01x01
+
+cacheperf/comparisons/parReg/peerDataPut.conf
+  peerHosts =  8 peerVMsPerHost = 1 peerThreadsPerVM = 1
+  redundantCopies = 1
+  maxKeys = 500000 objectSize = 1024
+  perffmwk.comparisonKey = put_02x01x01
+
+// 6. one host comparison
+// persist only
+cacheperf/comparisons/parReg/persist/peerDataPut.conf
+  peerHosts =  1 peerVMsPerHost = 1 peerThreadsPerVM = 1
+  redundantCopies = 0
+  maxKeys = 500000 objectSize = 1024
+  perffmwk.comparisonKey = put_02x01x01
+  synchronous = false queueSize = 1000
+
+// no persist
+cacheperf/comparisons/parReg/peerDataPut.conf
+  peerHosts =  1 peerVMsPerHost = 1 peerThreadsPerVM = 1
+  redundantCopies = 0
+  maxKeys = 500000 objectSize = 1024
+  perffmwk.comparisonKey = put_02x01x01

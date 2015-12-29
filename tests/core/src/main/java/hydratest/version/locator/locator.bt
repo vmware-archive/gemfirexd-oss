@@ -1,0 +1,5 @@
+hydratest/version/locator/topology_hct_locator.conf
+  locatorHosts = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  bridgeHosts  = 2 bridgeVMsPerHost  = 1 bridgeThreadsPerVM  = 1
+  edgeHosts    = 2 edgeVMsPerHost    = 1 edgeThreadsPerVM    = 1
+  version = default, 100, 130, 131

@@ -1,0 +1,5 @@
+scale64/diskRecovery/compaction64.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persistent persistentHosts=1 persistentVMsPerHost=1 persistentThreadsPerVM=10
+   C=replicate replicateHosts=1 replicateVMsPerHost=1 replicateThreadsPerVM=10
+

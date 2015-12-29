@@ -1,0 +1,18 @@
+This example shows persistence of region data to disk.
+
+Connecting to the distributed system and creating the cache.
+
+Example region "/exampleRegion" created in cache. 
+
+Look in persistData1 to see the files used for region 
+persistence.
+
+Getting value for key1
+Get returned value: value1
+
+Putting entry: key1, value2
+
+Closing the cache and disconnecting.
+
+Each time you run this program, if the disk files are available, they
+will be used to initialize the region.

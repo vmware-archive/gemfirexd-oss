@@ -1,0 +1,32 @@
+// new tests (not ready for JMX)
+admin/recycleConn.conf 
+locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+A=client clientHosts=3 clientVMsPerHost=1 clientThreadsPerVM=1
+B=admin  adminHosts=1  adminVMsPerHost=1  adminThreadsPerVM=1
+
+// run tests with admin API
+admin/adminCache.conf 
+
+// concRegion.conf - default is 3 hosts, each with 1 vm
+admin/concRegion.conf hydra.numHosts=3 vmQuantities=1 
+admin/concRegion.conf hydra.numHosts=3 vmQuantities=2
+admin/concRegion.conf hydra.numHosts=3 vmQuantities=4
+
+admin/concRegion.conf hydra.numHosts=4 vmQuantities=1
+admin/concRegion.conf hydra.numHosts=4 vmQuantities=2
+admin/concRegion.conf hydra.numHosts=4 vmQuantities=4
+
+// run tests with JMX
+admin/jmxAdminCache.conf 
+admin/jmxConcRegion.conf hydra.numHosts=4 vmQuantities=4
+
+admin/systemMemberCacheListener.conf
+
+include $JTESTS/admin/dataPolicy/admin.bt
+
+admin/shutDownAllMembers_1DS.conf
+   locatorHosts=1 locatorVMsPerHost=2 locatorThreadsPerVM=1
+   A=groupA groupAHosts=1 groupAVMsPerHost=2 groupAThreadsPerVM=1
+   B=groupB groupBHosts=1 groupBVMsPerHost=2 groupBThreadsPerVM=1
+   C=overlap overlapHosts=1 overlapVMsPerHost=2 overlapThreadsPerVM=1
+   D=admin adminHosts=2 adminVMsPerHost=1 adminThreadsPerVM=2

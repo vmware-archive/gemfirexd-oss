@@ -1,0 +1,12 @@
+A = updater
+updaterHosts        = 1
+updaterVMsPerHost   = 1
+updaterThreadsPerVM = 1
+
+# about 975 bytes
+dataWidth = 2
+dataDepth = 3
+dataSize = unused
+maxKeys = 500000
+
+perffmwk.comparisonKey = perf033

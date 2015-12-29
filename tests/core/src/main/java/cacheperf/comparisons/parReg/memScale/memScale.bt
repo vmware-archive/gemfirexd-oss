@@ -1,0 +1,40 @@
+// How to turn the knobs on this test:
+//   Controlling the number of entries per member
+//      If maxKeys is N, then each member (designated with peerHosts/peerVMsPerHost)
+//      will create N entries. The total for the PR will be maxKeys * num members.
+//      For example, with maxKeys=100 and 2 members, each member creates 100 entries,
+//      and the PR will have 200 entries.
+
+//////////////// Peers
+// heap
+cacheperf/comparisons/parReg/memScale/peerDataPut.conf
+   peerHosts = 1 peerVMsPerHost = 1 peerThreadsPerVM = 8
+   heapMB = 30000
+   maxKeys = 26214400 objectSize = 1024 // 25G of payload in 1 member
+   redundantCopies=0
+
+// off heap
+cacheperf/comparisons/parReg/memScale/peerDataPutOffHeap.conf
+   peerHosts = 1 peerVMsPerHost = 1 peerThreadsPerVM = 8
+   heapMB = 4000
+   offHeapSize = 26g
+   maxKeys = 26214400 objectSize = 1024 // 25G of payload in 1 member
+   redundantCopies=0
+
+//////////////// Client/server
+// heap
+cacheperf/comparisons/parReg/memScale/hctGet.conf
+   bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+   edgeHosts   =  2 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+   heapMB = 30000
+   maxKeys = 26214400 objectSize = 1024 // 25G of payload in 1 member
+   redundantCopies=0
+
+// off heap
+cacheperf/comparisons/parReg/memScale/hctGetOffHeap.conf
+   bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+   edgeHosts   =  2 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+   heapMB = 4000
+   offHeapSize = 26g
+   maxKeys = 26214400 objectSize = 1024 // 25G of payload in 1 member
+   redundantCopies=0

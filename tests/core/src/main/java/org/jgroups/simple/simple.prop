@@ -1,0 +1,31 @@
+numVMs = 1
+numThreads = 1
+task = get
+duration = 60
+sleepTime = 0
+summary=../summary.tsv
+
+jgTx=UDP(mcast_addr=224.10.10.10;mcast_port=5555;ip_ttl=32;mcast_send_buf_size=150000;mcast_recv_buf_size=80000)
+jgPing=PING(timeout=2000;num_initial_members=3)
+jgMerge=MERGE2(min_interval=5000;max_interval=10000)
+jgFd=FD_SOCK
+jgVerify=VERIFY_SUSPECT(timeout=1500)
+jgStable=pbcast.STABLE(desired_avg_gossip=20000)
+jgNakAck=pbcast.NAKACK(gc_lag=50;retransmit_timeout=300,600,1200,2400,4800)
+jgUnicast=UNICAST(timeout=5000)
+jgFrag=FRAG(frag_size=4096;down_thread=false;up_thread=false)
+jgGms=pbcast.GMS(join_timeout=5000;join_retry_timeout=2000;shun=false;print_local_addr=false)
+jgMisc=pbcast.STATE_TRANSFER
+
+jg1=UDP(ip_mcast=true;mcast_port=23456;use_packet_handler=false;mcast_addr=224.0.0.0;ip_ttl=32)
+jg2=PING(timeout=1000;num_initial_members=2)
+jg3=FD_SOCK(start_port=0)
+jg4=VERIFY_SUSPECT(timeout=1500;down_thread=false;up_thread=false)
+jg5=pbcast.NAKACK(max_xmit_size=4096;down_thread=false;gc_lag=50;up_thread=false;retransmit_timeout=300,600,1200,2400,4800)
+jg6=UNICAST(timeout=5000;down_thread=false)
+jg7=pbcast.STABLE(desired_avg_gossip=20000;down_thread=false;up_thread=false)
+jg8=FRAG(frag_size=4096;down_thread=false;up_thread=false)
+jg9=pbcast.GMS(print_local_addr=false;join_timeout=5000;join_retry_timeout=2000;shun=false)
+jg10=pbcast.STATE_TRANSFER(down_thread=false;up_thread=false)
+jg11=
+

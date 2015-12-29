@@ -1,0 +1,20 @@
+#!/bin/sh -f
+# displays all processes for user running script on hosts listed in regrhosts.
+#
+if [ -e ~/bin/regrhosts ]; then
+  for i in `cat  ~/bin/regrhosts`
+  do
+    echo "Displaying all processes for " `whoami` " on " $i
+    ssh $i ps -Hu `whoami` 2> /dev/null
+    echo "Hit q to quit, <enter> to continue ..."
+    read cmd
+    if [ -z $cmd ]; then
+      cmd=continue
+    fi
+    if [ $cmd = q ]; then
+      exit
+    fi
+  done
+else 
+  echo "Usage: regrps requires a list of hosts in ~/bin/regrhosts"
+fi

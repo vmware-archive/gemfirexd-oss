@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlResults PUBLIC "-//GemStone Systems, Inc.//GemFireXD Test Results 1.0//EN"
+          "sqlResults1_0.dtd">
+<sqlResults>
+	<resultSet id="empty"/>
+
+	<resultSet id="ddl-dist1">
+		<row>
+			<field name="NAME">TEST</field>
+		</row>
+	</resultSet>
+	<resultSet id="ddl-dist2">
+		<row>
+			<field name="NAME">TEST</field>
+		</row>
+		<row>
+			<field name="NAME">GFXD-DEFAULT-DISKSTORE</field>
+		</row>
+		<row>
+			<field name="NAME">GFXD-DD-DISKSTORE</field>
+		</row>
+	</resultSet>
+	<resultSet id="ddl-dist3">
+		<row>
+			<field name="NAME">TESTSTORE1</field>
+		</row>
+	</resultSet>
+	<resultSet id="ddl-dist4">
+		<row>
+			<field name="NAME">TEST</field>
+		</row>
+		<row>
+			<field name="NAME">TESTSTORE1</field>
+		</row>
+		<row>
+			<field name="NAME">GFXD-DEFAULT-DISKSTORE</field>
+		</row>
+		<row>
+			<field name="NAME">GFXD-DD-DISKSTORE</field>
+		</row>
+	</resultSet>
+	<resultSet id="ddl-dist5">
+		<row>
+			<field name="ID">1</field>
+			<field name="NAME">name1</field>
+			<field name="CONFIG">d1</field>
+		</row>
+		<row>
+			<field name="ID">2</field>
+			<field name="NAME">name2</field>
+			<field name="CONFIG">d2</field>
+		</row>
+		<row>
+			<field name="ID">3</field>
+			<field name="NAME">name3</field>
+			<field name="CONFIG">d3</field>
+		</row>
+		<row>
+			<field name="ID">4</field>
+			<field name="NAME">name4</field>
+			<field name="CONFIG">d4</field>
+		</row>
+	</resultSet>
+</sqlResults>

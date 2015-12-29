@@ -1,0 +1,10 @@
+A = pub
+B = def
+pubHosts = 1
+pubVMsPerHost = 1
+pubThreadsPerVM = 1
+defHosts = 1
+defVMsPerHost = 1
+defThreadsPerVM = 1
+scope = ack
+perffmwk.comparisonKey = perf004

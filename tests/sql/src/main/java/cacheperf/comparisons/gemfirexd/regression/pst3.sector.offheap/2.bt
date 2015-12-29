@@ -1,0 +1,155 @@
+/*
+cacheperf/comparisons/gemfirexd/sector/thinClient/instrumentIn.conf
+api=GFXD
+clientHosts=2 clientVMsPerHost=1 clientThreadsPerVM=10
+serverHosts=2 serverVMsPerHost=1 serverThreadsPerVM=1
+numSectorsPerServer = 2048
+numInstrumentsPerSector = 500
+numPositionsPerInstrument = 10
+numMarketCapValues = 20 numBookValues = 10 numRiskValues = 5 numSymbolValues = 4
+redundantCopies = 1
+queryPlanFrequency = 0
+enableHistogram = true
+heapMB = 10000
+perffmwk.comparisonKey = join_instrument_in
+
+cacheperf/comparisons/gemfirexd/sector/thinClient/joinInstrumentAndPositionIn.conf
+api=GFXD
+clientHosts=2 clientVMsPerHost=1 clientThreadsPerVM=10
+serverHosts=2 serverVMsPerHost=1 serverThreadsPerVM=1
+numSectorsPerServer = 2048
+numInstrumentsPerSector = 500
+numPositionsPerInstrument = 10
+numMarketCapValues = 20 numBookValues = 10 numRiskValues = 5 numSymbolValues = 4
+redundantCopies = 1
+queryPlanFrequency = 0
+enableHistogram = true
+heapMB = 10000
+perffmwk.comparisonKey = join_instrument_in_and_position_in
+*/
+
+cacheperf/comparisons/gemfirexd/sector/thinClient/joinPruneByPositionAmountAndInstrumentName.conf
+api=GFXD
+clientHosts=2 clientVMsPerHost=1 clientThreadsPerVM=10
+serverHosts=2 serverVMsPerHost=1 serverThreadsPerVM=1
+numSectorsPerServer = 2048
+numInstrumentsPerSector = 500
+numPositionsPerInstrument = 10
+numMarketCapValues = 20 numBookValues = 10 numRiskValues = 5 numSymbolValues = 4
+redundantCopies = 1
+queryPlanFrequency = 0
+enableHistogram = true
+heapMB = 10000
+perffmwk.comparisonKey = join_prune_by_position_amount_and_instrument_name
+
+cacheperf/comparisons/gemfirexd/sector/thinClient/joinPruneByPositionAmountAndInstrumentNameAndSectorName.conf
+api=GFXD
+clientHosts=2 clientVMsPerHost=1 clientThreadsPerVM=10
+serverHosts=2 serverVMsPerHost=1 serverThreadsPerVM=1
+numSectorsPerServer = 2048
+numInstrumentsPerSector = 500
+numPositionsPerInstrument = 10
+numMarketCapValues = 20 numBookValues = 10 numRiskValues = 5 numSymbolValues = 4
+redundantCopies = 1
+queryPlanFrequency = 0
+enableHistogram = true
+heapMB = 10000
+perffmwk.comparisonKey = join_prune_by_position_amount_and_instrument_name_and_sector_name
+
+cacheperf/comparisons/gemfirexd/sector/thinClient/positionFilterIn.conf
+api=GFXD
+clientHosts=2 clientVMsPerHost=1 clientThreadsPerVM=10
+serverHosts=2 serverVMsPerHost=1 serverThreadsPerVM=1
+numSectorsPerServer = 2048
+numInstrumentsPerSector = 500
+numPositionsPerInstrument = 10
+numMarketCapValues = 20 numBookValues = 10 numRiskValues = 5 numSymbolValues = 4
+redundantCopies = 1
+queryPlanFrequency = 0
+enableHistogram = true
+heapMB = 10000
+perffmwk.comparisonKey = position_filter
+
+cacheperf/comparisons/gemfirexd/sector/thinClient/randomPositionPK.conf
+api=GFXD
+clientHosts=2 clientVMsPerHost=1 clientThreadsPerVM=10
+serverHosts=2 serverVMsPerHost=1 serverThreadsPerVM=1
+numSectorsPerServer = 2048
+numInstrumentsPerSector = 500
+numPositionsPerInstrument = 10
+numMarketCapValues = 20 numBookValues = 10 numRiskValues = 5 numSymbolValues = 4
+redundantCopies = 1
+queryPlanFrequency = 0
+enableHistogram = true
+heapMB = 10000
+perffmwk.comparisonKey = pk_lookup
+
+cacheperf/comparisons/gemfirexd/sector/thinClient/sectorFilterIn.conf
+api=GFXD
+clientHosts=2 clientVMsPerHost=1 clientThreadsPerVM=10
+serverHosts=2 serverVMsPerHost=1 serverThreadsPerVM=1
+numSectorsPerServer = 2048
+numInstrumentsPerSector = 500
+numPositionsPerInstrument = 10
+numMarketCapValues = 20 numBookValues = 10 numRiskValues = 5 numSymbolValues = 4
+redundantCopies = 1
+queryPlanFrequency = 0
+enableHistogram = true
+heapMB = 10000
+perffmwk.comparisonKey = instrument_filter
+
+cacheperf/comparisons/gemfirexd/sector/thinClient/sectorFilterInAndMarketCap.conf
+api=GFXD
+clientHosts=2 clientVMsPerHost=1 clientThreadsPerVM=10
+serverHosts=2 serverVMsPerHost=1 serverThreadsPerVM=1
+numSectorsPerServer = 2048
+numInstrumentsPerSector = 500
+numPositionsPerInstrument = 10
+numMarketCapValues = 20 numBookValues = 10 numRiskValues = 5 numSymbolValues = 4
+redundantCopies = 1
+queryPlanFrequency = 0
+enableHistogram = true
+heapMB = 10000
+perffmwk.comparisonKey = instrument_and_market_cap_filter
+
+cacheperf/comparisons/gemfirexd/sector/thinClient/selectPositionPruneByInstrument.conf
+api=GFXD
+clientHosts=2 clientVMsPerHost=1 clientThreadsPerVM=10
+serverHosts=2 serverVMsPerHost=1 serverThreadsPerVM=1
+numSectorsPerServer = 2048
+numInstrumentsPerSector = 500
+numPositionsPerInstrument = 10
+numMarketCapValues = 20 numBookValues = 10 numRiskValues = 5 numSymbolValues = 4
+redundantCopies = 1
+queryPlanFrequency = 0
+enableHistogram = true
+heapMB = 10000
+perffmwk.comparisonKey = prune_by_instrument
+
+cacheperf/comparisons/gemfirexd/sector/thinClient/selectPositionPruneByInstrumentAndFilterSymbolAndOwner.conf
+api=GFXD
+clientHosts=2 clientVMsPerHost=1 clientThreadsPerVM=10
+serverHosts=2 serverVMsPerHost=1 serverThreadsPerVM=1
+numSectorsPerServer = 2048
+numInstrumentsPerSector = 500
+numPositionsPerInstrument = 10
+numMarketCapValues = 20 numBookValues = 10 numRiskValues = 5 numSymbolValues = 4
+redundantCopies = 1
+queryPlanFrequency = 0
+enableHistogram = true
+heapMB = 10000
+perffmwk.comparisonKey = prune_by_instrument_and_filter_by_symbol_and_owner
+
+cacheperf/comparisons/gemfirexd/sector/thinClient/selectPositionPruneByInstrumentAndPositionAmount.conf
+api=GFXD
+clientHosts=2 clientVMsPerHost=1 clientThreadsPerVM=10
+serverHosts=2 serverVMsPerHost=1 serverThreadsPerVM=1
+numSectorsPerServer = 2048
+numInstrumentsPerSector = 500
+numPositionsPerInstrument = 10
+numMarketCapValues = 20 numBookValues = 10 numRiskValues = 5 numSymbolValues = 4
+redundantCopies = 1
+queryPlanFrequency = 0
+enableHistogram = true
+heapMB = 10000
+perffmwk.comparisonKey = prune_by_instrument_and_position_amount

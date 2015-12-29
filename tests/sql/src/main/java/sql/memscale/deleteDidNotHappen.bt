@@ -1,0 +1,137 @@
+sql/sqlEviction/evictionOverflowHA.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=9
+   accessorVMsPerHost=2
+   dropIndex=true
+   maxHeapSize=100
+   redundantCopies=1
+   setCriticalHeap=false
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=2
+   useHeapPercentage=false
+sql/sqlDAP/multiTablesNonUniqDAPWithAccessorsHA.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=5
+   accessorVMsPerHost=5
+   redundantCopies=3
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=2
+sql/sqlDAP/multiTablesUniqDAPWithAccessorsHA.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=5
+   accessorVMsPerHost=5
+   redundantCopies=3
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=3
+sql/sqlEviction/evictionOverflow.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=9
+   accessorVMsPerHost=2
+   maxHeapSize=64
+   setCriticalHeap=false
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=2
+   useHeapPercentage=true
+sql/sqlDisk/randomPartitionOfflinePersistTablesHA.conf
+   A=store
+   B=accessor
+   accessorHosts=1
+   accessorThreadsPerVM=6
+   accessorVMsPerHost=3
+   dropIndex=true
+   redundantCopies=3
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=4
+sql/sqlDisk/randomPartitionOfflinePersistTablesHA.conf
+   A=store
+   B=accessor
+   accessorHosts=1
+   accessorThreadsPerVM=6
+   accessorVMsPerHost=3
+   dropIndex=true
+   redundantCopies=2
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=4
+sql/sqlEviction/evictionOverflowHA.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=10
+   accessorVMsPerHost=2
+   dropIndex=true
+   maxHeapSize=128
+   redundantCopies=2
+   setCriticalHeap=false
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=2
+   useHeapPercentage=false
+sql/sqlEviction/evictionOverflowHA.conf
+   A=store
+   B=accessor
+   accessorHosts=1
+   accessorThreadsPerVM=10
+   accessorVMsPerHost=6
+   dropIndex=true
+   maxHeapSize=128
+   redundantCopies=3
+   setCriticalHeap=false
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=3
+   useHeapPercentage=false
+sql/sqlTx/concMultiTablesTxIndexWithAccessorsHA.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=8
+   accessorVMsPerHost=3
+   dropIndex=true
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   redundantCopies=1
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=3
+sql/sqlTx/multiTablesTxIndexWithAccessorsHA.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=3
+   accessorVMsPerHost=3
+   dropIndex=true
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   redundantCopies=1
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=2
+   workIterationsPerThread=500
+sql/sqlDisk/randomPartitionOfflinePersistTablesHA.conf
+   A=store
+   B=accessor
+   accessorHosts=1
+   accessorThreadsPerVM=6
+   accessorVMsPerHost=3
+   dropIndex=true
+   redundantCopies=1
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=3
+

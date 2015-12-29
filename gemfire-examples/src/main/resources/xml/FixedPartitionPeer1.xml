@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE cache PUBLIC
+    "-//GemStone Systems, Inc.//GemFire Declarative Caching 6.6//EN"
+    "http://www.gemstone.com/dtd/cache6_6.dtd">
+
+<!--
+  | FixedPartitionPeer1.xml
+  |
+ -->
+<cache>
+	<region name="exampleRegion">
+		<region-attributes refid="PARTITION">
+			<partition-attributes local-max-memory="50" redundant-copies="1">
+				<partition-resolver name="QuarterPartitionResolver">
+					<class-name>quickstart.QuarterPartitionResolver</class-name>
+				</partition-resolver>
+				<fixed-partition-attributes partition-name="Q1" is-primary="true" num-buckets="6"/>
+				<fixed-partition-attributes partition-name="Q2" is-primary="false" num-buckets="6"/>
+			</partition-attributes>
+		</region-attributes>
+	</region>
+</cache>

@@ -1,0 +1,6 @@
+locatorHosts        = 2
+locatorVMsPerHost   = 1
+locatorThreadsPerVM = 2
+peerHosts           = 2
+peerVMsPerHost      = 1
+peerThreadsPerVM    = 2

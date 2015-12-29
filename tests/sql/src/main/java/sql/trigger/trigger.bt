@@ -1,0 +1,44 @@
+sql/trigger/afterInsertTrigger.conf
+A=peer peerHosts=1 peerVMsPerHost=3 peerThreadsPerVM=10
+
+//bug42467
+sql/trigger/afterUpdateTrigger.conf
+A=peer peerHosts=1 peerVMsPerHost=1 peerThreadsPerVM=2
+
+//bug42467
+sql/trigger/afterDeleteTrigger.conf
+A=peer peerHosts=1 peerVMsPerHost=1 peerThreadsPerVM=2
+
+sql/trigger/beforeRowTrigger.conf
+A=peer peerHosts=1 peerVMsPerHost=3 peerThreadsPerVM=10
+
+sql/trigger/beforeStmtTrigger.conf
+A=peer peerHosts=1 peerVMsPerHost=3 peerThreadsPerVM=10
+
+//bug42480
+sql/trigger/afterStmtTrigger.conf
+A=peer peerHosts=1 peerVMsPerHost=1 peerThreadsPerVM=2
+
+sql/trigger/dropTrigger.conf
+A=peer peerHosts=1 peerVMsPerHost=1 peerThreadsPerVM=2
+
+//bug42535
+sql/trigger/multiDropTriggers.conf
+A=peer peerHosts=1 peerVMsPerHost=2 peerThreadsPerVM=10
+
+sql/trigger/multiTriggers.conf
+A=peer peerHosts=1 peerVMsPerHost=3 peerThreadsPerVM=10
+
+//bug42494
+sql/trigger/recursiveTrigger.conf
+A=peer peerHosts=1 peerVMsPerHost=1 peerThreadsPerVM=5
+
+sql/trigger/beforeUpdateWriter.conf
+A=peer peerHosts=1 peerVMsPerHost=1 peerThreadsPerVM=2
+
+sql/trigger/beforeDeleteWriter.conf
+A=peer peerHosts=1 peerVMsPerHost=1 peerThreadsPerVM=2
+
+sql/trigger/concBeforeInsertWriter.conf
+A=peer peerHosts=1 peerVMsPerHost=3 peerThreadsPerVM=10
+

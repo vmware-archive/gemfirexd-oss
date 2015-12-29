@@ -1,0 +1,87 @@
+
+
+##########
+#
+#
+######
+#
+#
+##########  xamples
+
+
+
+The easiest way to configure a system or participant to use SSL is to create 
+a 'gemfire.properties' file in the working directory for that process.
+
+A gemfire.properties is created automatically when a GemFire system manager
+is created.
+
+The minimum required contents for the gemfire properties are:
+
+  ssl-enabled=true
+  mcast-port=0
+  locators=localhost[10334]
+
+This turns ssl on, disables multicast, and specifies a locator to use
+when finding peers.
+
+To use SSL credentials must be supplied. For sake of this example we'll use
+a keystore created by the java 'keytool' application. This same keystore will
+also be used as our truststore, indicating that our SSL connections only 
+trust ourselves.
+
+To create the keystore, run the following:
+
+  keytool -genkey \
+   -alias self \
+   -dname "CN=trusted" \
+   -validity 3650 \
+   -keypass password \
+   -keystore ./trusted.keystore \
+   -storepass password \
+   -storetype JKS
+
+Now, before starting the cache applications or system managers, the
+locator must be started. NOTE: for the process to know to use the keystore
+that was just created, the JKS provider requires system properties to be
+set describing how to access the keystore and truststore. (this is not ideal
+as secrets are on the command line... third party providers support more
+secure signon mechanisms.)
+
+  gemfire start-locator -dir=`pwd` -Djavax.net.ssl.keyStore=./trusted.keystore \
+    -Djavax.net.ssl.keyStorePassword=password -Djavax.net.ssl.trustStore=./trusted.keystore \
+    -Djavax.net.ssl.trustStorePassword=password
+    
+You can verify that the locator is started with SSL by connecting with telnet to port 10334
+on the locator's host. Type a couple lines of garbage, and the locator.log 
+should show an exception stating that an SSL handshake failed as a result of
+a PlainSocket connection.
+    
+Next, create and start a system manager. We'll specify the ssl config on the
+command line to the create. This will store the options in the gemfire.properties
+file under the gfmanager directory.
+
+  gemfire create mcast-port=0 ssl-enabled=true locators=localhost\[10334\] \
+    -dir=`pwd`/gfmanager
+    
+Before starting the manager the gfmanager/sysconfig.xml needs to be configured
+to tell the process about the keystore and truststore.
+
+Edit the sysconfig.xml file and add the following before the </sysconfig> closing tag:
+
+  <manager-parameter>-Djavax.net.ssl.keyStore=./trusted.keystore</manager-parameter>
+  <manager-parameter>-Djavax.net.ssl.keyStorePassword=password</manager-parameter>
+  <manager-parameter>-Djavax.net.ssl.trustStore=./trusted.keystore</manager-parameter>
+  <manager-parameter>-Djavax.net.ssl.trustStorePassword=password</manager-parameter>
+  
+Now we can start the manager:
+
+  gemfire start -dir=`pwd`/gfmanager
+  
+Now for client applications on the same host or other machines, if they use
+the same keystore and ssl parameters in the gemfire.properties they will be
+able to participate in the distributed system.
+
+
+  
+  

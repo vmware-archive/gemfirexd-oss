@@ -1,0 +1,60 @@
+// expiration tests
+tx/expiration/entryExpirActionTx.conf hydra.numHosts = 6
+tx/expiration/regionExpirActionTx.conf hydra.numHosts = 6
+tx/expiration/testBug30828Tx.conf
+tx/expiration/concExpirNoConflict.conf
+
+// mirroring
+tx/mirror/txSerialMirrorKeysDist.conf
+tx/mirror/txSerialMirrorKeysValuesDist.conf
+tx/mirror/txMirrorKeysDist.conf
+tx/mirror/txMirrorKeysValuesDist.conf
+tx/mirror/txMirrorNoneDist.conf
+tx/mirror/txMirrorNoneLocal.conf
+
+// eviction controller tests
+tx/capCon/serialLRUTxTest.conf vmQuantities = 1 vmThreads = 5
+tx/capCon/serialMemLRUTxTest.conf vmQuantities = 1 vmThreads = 5
+tx/capCon/concLRUTxTest.conf hydra.numHosts = 1 vmQuantities = 10 vmThreads = 5 
+tx/capCon/concLRUTxTest.conf hydra.numHosts = 4 vmQuantities = 2  vmThreads = 5 
+tx/capCon/concMemLRUTxTest.conf hydra.numHosts = 1 vmQuantities = 10 vmThreads = 5 
+tx/capCon/concMemLRUTxTest.conf hydra.numHosts = 4 vmQuantities = 2  vmThreads = 5 
+tx/capCon/serialLRUDynamicTx.conf vmQuantities = 1 vmThreads = 5
+tx/capCon/serialMemLRUDynamicTx.conf vmQuantities = 1 vmThreads = 5
+tx/capCon/concLRUDynamicTx.conf vmQuantities = 1 vmThreads = 5
+tx/capCon/concMemLRUDynamicTx.conf vmQuantities = 1 vmThreads = 5
+tx/capCon/serialLRUEvictTx.conf vmQuantities = 1 vmThreads = 5
+tx/capCon/serialMemLRUEvictTx.conf vmQuantities = 1 vmThreads = 5
+tx/capCon/concLRUNoConflict.conf 
+tx/capCon/concMemLRUNoConflict.conf 
+tx/capCon/concHeapNoConflict.conf 
+
+// event tests
+tx/event/serialEntryEvent.conf
+tx/event/concEntryEvent.conf
+// With 6.5, region ops are no longer supported within tx
+// todo@lhughes - enable if/when supported by product
+//tx/event/serialRegionEvent.conf
+//tx/event/concRegionEvent.conf
+tx/event/serialCMEvent.conf
+tx/event/concCMEvent.conf
+
+// proxy event tests
+tx/event/proxySerialEntryEvent.conf
+tx/event/proxyConcEntryEvent.conf
+
+// getInitialImage tests (entryOps performed transactionally)
+tx/gii/concGiiPreferenceVMReg.conf hydra.numHosts=5
+tx/gii/giiPreferenceVMReg.conf hydra.numHosts=5
+
+tx/gii/giiCacheLoader.conf 
+
+tx/gii/nonBlockingNetWrites.conf
+  hydra.numHosts=3 
+  dataPolicy=replicate scope=distributedAck
+  workIterations=250000 batchSize=25000
+
+tx/gii/destroyIntegrity.conf
+  dataPolicy=replicate scope=distributedAck
+  workIterations=250000 batchSize=25000
+

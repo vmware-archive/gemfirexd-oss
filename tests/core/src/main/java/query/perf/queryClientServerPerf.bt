@@ -1,0 +1,16 @@
+// This battery test contains all the query performance tests
+// with client server topology
+// Please refer the entire test matrix at below link:
+// https://wiki.gemstone.com/display/Query/Test+matrix+for+performance+tests+for+querying+and+region+operations+with+indexes
+smoketest/query/query002.conf numBuckets=10
+smoketest/query/query004.conf numBuckets=10
+smoketest/query/query006.conf numBuckets=10
+smoketest/query/query008.conf numBuckets=10
+smoketest/query/query010.conf numBuckets=10
+smoketest/query/query012.conf numBuckets=10
+smoketest/query/query014.conf numBuckets=10
+smoketest/query/query016.conf numBuckets=10
+smoketest/query/query018.conf numBuckets=10
+smoketest/query/query020.conf numBuckets=10
+smoketest/query/query022.conf numBuckets=10
+smoketest/query/query024.conf numBuckets=10

@@ -1,0 +1,31 @@
+// new tests (not ready for JMX)
+admin/recycleConn.conf 
+locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+A=client clientHosts=3 clientVMsPerHost=1 clientThreadsPerVM=1
+B=admin  adminHosts=1  adminVMsPerHost=1  adminThreadsPerVM=1
+threadGroupsName=client
+
+// run tests with admin API
+admin/adminCache.conf 
+threadGroupsName=default
+
+// concRegion.conf - default is 3 hosts, each with 1 vm
+admin/concRegion.conf hydra.numHosts=3 vmQuantities=2
+threadGroupsName=admin
+
+admin/concRegion.conf hydra.numHosts=4 vmQuantities=4
+threadGroupsName=admin
+
+// run tests with JMX
+admin/dataPolicy/jmxAdminCache.conf 
+threadGroupsName=default
+admin/jmxConcRegion.conf hydra.numHosts=4 vmQuantities=4
+threadGroupsName=admin
+
+admin/dataPolicy/recycleConn.conf
+threadGroupsName=default
+admin/dataPolicy/concRegion.conf hydra.numHosts=3 vmQuantities=4
+threadGroupsName=admin
+
+admin/dataPolicy/concRegion.conf hydra.numHosts=4 vmQuantities=1
+threadGroupsName=admin

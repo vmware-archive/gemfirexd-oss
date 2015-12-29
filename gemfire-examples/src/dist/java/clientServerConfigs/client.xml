@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<!-- Initializes a client that uses a locator at port 41111 for server discovery. 
+     Loads values and sends updates to the server.  -->
+
+<!DOCTYPE client-cache PUBLIC
+  "-//GemStone Systems, Inc.//GemFire Declarative Caching 6.5//EN"
+  "http://www.gemstone.com/dtd/cache6_5.dtd">
+<client-cache>
+  <pool name="client" subscription-enabled="true">
+    <locator host="localhost" port="41111"/>
+  </pool>
+  <region-attributes id="clientAttributes" pool-name="client" refid="CACHING_PROXY"/> 
+  <region name="root">
+    <region-attributes scope="local"/>
+    <region name="cs_region">
+      <region-attributes refid="clientAttributes"/>
+    </region>
+  </region>
+</client-cache>

@@ -1,0 +1,59 @@
+#!/bin/bash
+
+compareperf()
+{
+  echo "Running $1 using default statspec..."
+  java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx1024m -DomitFailedTests=true \
+        -DgenerateCSVFile=false -DcsvFile=$1.$2.csv \
+        -DcompReportFile=$1.$2.txt -Dmode=$1 -DcompareByKey=true -DJTESTS=$JTESTS \
+        -Dgemfire.home=$GEMFIRE -DaddTestKey=true perffmwk.PerfComparer \
+        $3 $4 $5 $6 $7 $8
+}
+
+########################## HORIZONTAL SCALE ############################
+
+versus()
+{
+  for i in ratio raw
+  do
+    compareperf $i 5.versus 5.peer.gfe 5.thin.gfe 5.peer 5.thin.onehop 5.thin.twohop 5.thin.twohop.gfe
+    compareperf $i 4.versus 4.peer.gfe 4.thin.gfe 4.peer 4.thin.onehop 4.thin.twohop 4.thin.twohop.gfe
+    compareperf $i 3.versus 3.peer.gfe 3.thin.gfe 3.peer 3.thin.onehop 3.thin.twohop 3.thin.twohop.gfe
+    compareperf $i 2.versus 2.peer.gfe 2.thin.gfe 2.peer 2.thin.onehop 2.thin.twohop 2.thin.twohop.gfe
+  done
+}
+
+pst3()
+{
+  for i in ratio raw
+  do
+    compareperf $i 5.thin 5.thin.twohop 5.thin.onehop
+    compareperf $i 4.thin 4.thin.twohop 4.thin.onehop
+    compareperf $i 3.thin 3.thin.twohop 3.thin.onehop
+    compareperf $i 2.thin 2.thin.twohop 2.thin.onehop
+  done
+}
+
+scale()
+{
+  for i in ratio raw
+  do
+    #compareperf $i scale.thin.twohop 2.thin.twohop 3.thin.twohop 4.thin.twohop 5.thin.twohop
+    #compareperf $i scale.thin.onehop 2.thin.onehop 3.thin.onehop 4.thin.onehop 5.thin.onehop
+    #compareperf $i scale.peer 2.peer 3.peer 4.peer 5.peer
+    #compareperf $i scale.peer.gfe 2.peer.gfe 3.peer.gfe 4.peer.gfe 5.peer.gfe
+    #compareperf $i scale.thin.gfe 2.thin.gfe 3.thin.gfe 4.thin.gfe 5.thin.gfe
+    compareperf $i scale.thin.twohop.gfe 2.thin.twohop.gfe 3.thin.twohop.gfe 4.thin.twohop.gfe 5.thin.twohop.gfe
+  done
+}
+
+########################## COMPARE ############################
+
+trap 'exit 1' 2 #traps Ctrl-C (signal 2)
+
+#echo "Running reports for pst3..."
+#pst3
+#echo "Running reports for scale..."
+#scale
+echo "Running reports for versus..."
+versus

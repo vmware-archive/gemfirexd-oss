@@ -1,0 +1,16 @@
+// small-scale test
+cacheperf/comparisons/diskRegion/diskRegion.conf
+  pubHosts        = 1 pubVMsPerHost   = 1 pubThreadsPerVM = 4
+  subHosts        = 1 subVMsPerHost   = 1 subThreadsPerVM = 1
+
+  evictionLimit = 1024
+  maxKeys = 5000000 dataSize = 1024 // about 5 GB
+  synchronous = true,false
+
+// large-scale test
+//cacheperf/comparisons/diskRegion/diskRegion.conf
+//  pubHosts        = 1 pubVMsPerHost   = 1 pubThreadsPerVM = 4
+//  subHosts        = 1 subVMsPerHost   = 1 subThreadsPerVM = 1
+//  evictionLimit = 1024
+//  maxKeys = 5000000 dataSize = 10240 // about 50 GB
+//  synchronous = true,false

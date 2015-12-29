@@ -1,0 +1,17 @@
+CDSDBA.XML_IDX_20_1.IDX_COL1 = ::start 1000, increment 1000
+
+CDSDBA.XML_DOC_3.XML_DOC_ID_NBR = ::start 0, increment 1000
+CDSDBA.XML_DOC_3.STRUCTURE_ID_NBR = ::foreach CDSDBA.XML_DOC_3.XML_DOC_ID_NBR, start 1000, increment 1000, number 50-100
+
+CDSDBA.XML_IDX_65_1.IDX_COL1 = ::start 1000, increment 1000
+CDSDBA.XML_IDX_65_1.IDX_COL3 = ::foreach CDSDBA.XML_IDX_65_1.IDX_COL1, start 1000, increment 1000, number 50-100
+CDSDBA.XML_IDX_65_1.IDX_COL4 = ::foreach CDSDBA.XML_IDX_65_1.IDX_COL3, start 1000, increment 1000, number 50-100
+
+CDSDBA.XML_IDX_79_1.IDX_COL1 = ::start 1000, increment 1000
+CDSDBA.XML_IDX_79_1.IDX_COL2 = ::foreach CDSDBA.XML_IDX_79_1.IDX_COL1, start 1000, increment 1000, number 50-100
+CDSDBA.XML_IDX_79_1.IDX_COL3 = ::foreach CDSDBA.XML_IDX_79_1.IDX_COL2, start 1000, increment 1000, number 50-100
+
+CDSDBA.XML_IDX_25_2.IDX_COL1 = ::start 1000, increment 1000
+CDSDBA.XML_IDX_25_2.IDX_COL2 = ::foreach CDSDBA.XML_IDX_25_2.IDX_COL1, start 10, increment 10, number 10-20
+CDSDBA.XML_IDX_25_2.IDX_COL3 = ::foreach CDSDBA.XML_IDX_25_2.IDX_COL2, start 10, increment 10, number 10-20
+CDSDBA.XML_IDX_25_2.IDX_COL5 = ::foreach CDSDBA.XML_IDX_25_2.IDX_COL3, start 1000, increment 1000, number 10-20

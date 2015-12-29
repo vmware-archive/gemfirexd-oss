@@ -1,0 +1,639 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta content="Apache Forrest" name="Generator">
+<meta name="Forrest-version" content="0.7">
+<meta name="Forrest-skin-name" content="tigris">
+<style type="text/css">
+          /*  */
+          @import "../skin/tigris.css";
+          @import "../skin/quirks.css";
+          @import "../skin/inst.css";
+         /*   */
+        </style>
+<link media="print" href="../skin/print.css" type="text/css" rel="stylesheet">
+<link href="../skin/forrest.css" type="text/css" rel="stylesheet">
+<link rel="shortcut icon" href="../">
+<script type="text/javascript" src="../skin/tigris.js"></script><script src="../skin/menu.js" language="javascript" type="text/javascript"></script>
+<title>PostgreSQL</title>
+<meta content="text/css" http-equiv="Content-style-type">
+</head>
+<body class="composite" onload="focus()">
+<div id="banner">
+<table width="100%" cellpadding="8" cellspacing="0" border="0">
+<tr>
+<td align="left">
+<div>
+<a href="http://db.apache.org"><img class="logoImage" alt="Apache DB" src="../images/db-logo.png"></a>
+</div>
+<span class="alt">Apache DB</span></td><td align="center">
+<div>
+<a href="http://db.apache.org/ddlutils">DdlUtils</a>
+</div>
+</td><td valign="top" align="right">
+<div class="right" align="right" id="login">
+<form target="_blank" action="http://www.google.com/search" method="get">
+<select name="as_sitesearch"><option value="">Search...</option><option value="http://db.apache.org/ddlutils">The DdlUtils site</option><option value="">The web</option></select> for
+		      <input size="15" name="as_q" id="query" type="text"><input name="Search" value="Go" type="submit">
+</form>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div id="toptabs" class="tabs">
+<table border="0" cellspacing="0" cellpadding="4">
+<tr>
+<th><a class="base-selected" href="../index.html">Home</a></th>
+</tr>
+</table>
+</div>
+<table width="100%" border="0" cellpadding="0" cellspacing="0" id="breadcrumbs">
+<tr>
+<td></td><td>
+<div align="right">
+<script type="text/javascript" language="JavaScript"><!--
+                 document.write("Published: " + document.lastModified);
+                 //  --></script>
+</div>
+</td>
+</tr>
+</table>
+<table id="main" width="100%" cellpadding="4" cellspacing="0" border="0">
+<tr valign="top">
+<td width="20%" id="leftcol">
+<div id="navcolumn">
+<div class="toolgroup" id="projecttools">
+<div class="label">
+<strong>Section</strong>
+</div>
+<div class="menu">
+<div class="body">
+<div>
+<a href="">About</a>
+    
+<div>
+<a href="../index.html">Home</a>
+</div>
+    
+<div>
+<a class="external" href="http://issues.apache.org/jira/browse/DDLUTILS?report=com.atlassian.jira.plugin.system.project:changelog-panel">Release Notes</a>
+</div>
+    
+<div>
+<a href="../mail-lists.html">Mailing lists</a>
+</div>
+    
+<div>
+<a class="external" href="http://issues.apache.org/jira/secure/BrowseProject.jspa?id=10731">Bug database (JIRA)</a>
+</div>
+  
+</div>
+<div>
+<a href="">How to get</a>
+    
+<div>
+<a href="../download.html">Binaries &amp; Source</a>
+</div>
+    
+<div>
+<a class="external" href="http://svn.apache.org/viewvc/db/ddlutils/trunk/">View source repository</a>
+</div>
+    
+<div>
+<a href="../svn-info.html">Source repository info</a>
+</div>
+  
+</div>
+<div>
+<a href="">Documentation</a>
+    
+<div>
+<a href="../documentation.html">Summary</a>
+</div>
+    
+<div>
+<a href="">Support for databases</a>
+      
+<div>
+<a href="../database-support.html">General info</a>
+</div>
+      
+<div>
+<a href="../databases/axion.html">Axion</a>
+</div>
+      
+<div>
+<a href="../databases/db2.html">DB2</a>
+</div>
+      
+<div>
+<a href="../databases/derby.html">Derby/Cloudscape</a>
+</div>
+      
+<div>
+<a href="../databases/firebird.html">Firebird</a>
+</div>
+      
+<div>
+<a href="../databases/hsqldb.html">HSQLDB</a>
+</div>
+      
+<div>
+<a href="../databases/interbase.html">Interbase</a>
+</div>
+      
+<div>
+<a href="../databases/maxdb.html">MaxDB/SapDB</a>
+</div>
+      
+<div>
+<a href="../databases/mckoi.html">McKoi</a>
+</div>
+      
+<div>
+<a href="../databases/mysql.html">MySql</a>
+</div>
+      
+<div>
+<a href="../databases/oracle.html">Oracle</a>
+</div>
+      
+<div>
+<a href="../databases/postgresql.html">PostgreSQL</a>
+</div>
+      
+<div>
+<a href="../databases/gemfirexd.html">GemFireXD</a>
+</div>
+      
+<div>
+<a href="../databases/sqlserver.html">SQL Server</a>
+</div>
+      
+<div>
+<a href="../databases/sybase.html">Sybase</a>
+</div>
+    
+</div>
+    
+<div>
+<a href="../schema/">The XML schema format</a>
+</div>
+    
+<div>
+<a href="../schema.html">Using the API</a>
+</div>
+    
+<div>
+<a href="../ant/">The Ant tasks</a>
+</div>
+    
+<div>
+<a href="../api-usage.html">Using the API</a>
+</div>
+    
+<div>
+<a href="../api/">Javadoc</a>
+</div>
+  
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="strut">&nbsp;</div>
+</td><td>
+<div class="content">
+<div align="right" id="topmodule">
+<table width="100%" cellpadding="3" cellspacing="0" border="0">
+<tr>
+<td class="tasknav"><a href="http://www.apache.org/">apache.org</a> &gt; <a href="http://db.apache.org/">db</a> &gt; <a href="http://db.apache.org/ddlutils">ddlutils</a><script src="../skin/breadcrumbs.js" language="JavaScript" type="text/javascript"></script></td><td class="tasknav" id="issueid">
+<div align="right">
+<div title="Portable Document Format" class="pdflink">
+<a class="dida" href="postgresql.pdf"><img alt="PDF -icon" src="../skin/images/pdfdoc.gif" class="skin"><br>
+        PDF</a>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div id="bodycol">
+<div id="apphead">
+<h2>
+<em>PostgreSQL</em>
+</h2>
+</div>
+<div class="app" id="projecthome"> 
+    
+<p>
+      DdlUtils supports <a class="external" href="http://www.postgresql.org/">PostgreSQL</a> version <strong>7.2.8</strong> and newer. SQL syntax
+      details and supported datatypes are described in the <a class="external" href="http://www.postgresql.org/docs/7.4/interactive/index.html">Manual</a>.
+    </p>
+    
+<p>&nbsp;</p>
+    
+<p>
+      Platform identifier:
+    </p>
+    
+<ul>
+      
+<li>
+<span class="codefrag">PostgreSql</span>
+</li>
+    
+</ul>
+    
+<p>&nbsp;</p>
+    
+<p>
+      Recognized JDBC driver:
+    </p>
+    
+<ul>
+      
+<li>
+<span class="codefrag">org.postgresql.Driver</span>
+</li>
+    
+</ul>
+    
+<p>&nbsp;</p>
+    
+<p>
+      Recognized JDBC sub protocol:
+    </p>
+    
+<ul>
+      
+<li>
+<span class="codefrag">jdbc:postgresql</span>
+</li>
+    
+</ul>
+    
+<p>&nbsp;</p>
+    
+<div class="h4">
+<table class="grid" width="100%" cellpadding="3" cellspacing="2" border="1">
+      
+<tr>
+        
+<td class="platformPropName" colspan="1" rowspan="1">The database supports SQL comments</td>
+        <td class="platformPropValue" colspan="1" rowspan="1">yes</td>
+      
+</tr>
+      
+<tr>
+        
+<td class="platformPropName" colspan="1" rowspan="1">The database supports delimited identifiers</td>
+        <td class="platformPropValue" colspan="1" rowspan="1">yes</td>
+      
+</tr>
+      
+<tr>
+        
+<td class="platformPropName" colspan="1" rowspan="1">The database's maximum identifier length</td>
+        <td class="platformPropValue" colspan="1" rowspan="1">31</td>
+      
+</tr>
+      
+<tr>
+        
+<td class="platformPropName" colspan="1" rowspan="1">The database supports default values for <span class="codefrag">LONG</span> types</td>
+        <td class="platformPropValue" colspan="1" rowspan="1">yes</td>
+      
+</tr>
+      
+<tr>
+        
+<td class="platformPropName" colspan="1" rowspan="1">DdlUtils uses sequences for identity columns</td>
+        <td class="platformPropValue" colspan="1" rowspan="1">yes</td>
+      
+</tr>
+      
+<tr>
+        
+<td class="platformPropName" colspan="1" rowspan="1">The database supports non-primary key columns as identity columns</td>
+        <td class="platformPropValue" colspan="1" rowspan="1">yes</td>
+      
+</tr>
+      
+<tr>
+        
+<td class="platformPropName" colspan="1" rowspan="1">The database allows INSERT/UPDATE statements to set values for identity columns</td>
+        <td class="platformPropValue" colspan="1" rowspan="1">yes</td>
+      
+</tr>
+      
+<tr>
+        
+<td class="platformPropName" colspan="1" rowspan="1">DdlUtils can read back the auto-generated value of an identity column</td>
+        <td class="platformPropValue" colspan="1" rowspan="1">yes</td>
+      
+</tr>
+      
+<tr>
+        
+<td class="platformPropName" colspan="1" rowspan="1">The database supports non-unique indices</td>
+        <td class="platformPropValue" colspan="1" rowspan="1">yes</td>
+      
+</tr>
+      
+<tr>
+        
+<td class="platformPropName" colspan="1" rowspan="1">DdlUtils can create a database via JDBC</td>
+        <td class="platformPropValue" colspan="1" rowspan="1">yes</td>
+      
+</tr>
+      
+<tr>
+        
+<td class="platformPropName" colspan="1" rowspan="1">DdlUtils can drop a database via JDBC</td>
+        <td class="platformPropValue" colspan="1" rowspan="1">yes</td>
+      
+</tr>
+    
+</table>
+</div>
+    
+<p>&nbsp;</p>
+    
+<div class="h4">
+<table class="grid" width="100%" cellpadding="3" cellspacing="2" border="1">
+      
+<tr>
+        
+<th class="typeMappingJdbcType" colspan="1" rowspan="1">JDBC Type</th>
+        <th class="typeMappingNativeType" colspan="1" rowspan="1">Database Type</th>
+        <th class="typeMappingComments" colspan="1" rowspan="1">Additional comments</th>
+      
+</tr>
+      
+<tr>
+        
+<td colspan="1" rowspan="1">ARRAY</td>
+        <td colspan="1" rowspan="1">BYTEA</td>
+        <td colspan="1" rowspan="1">Will be read back as LONGVARBINARY</td>
+      
+</tr>
+      
+<tr>
+        
+<td colspan="1" rowspan="1">BIGINT</td>
+        <td colspan="1" rowspan="1">BIGINT</td>
+        <td colspan="1" rowspan="1"></td>
+      
+</tr>
+      
+<tr>
+        
+<td colspan="1" rowspan="1">BINARY</td>
+        <td colspan="1" rowspan="1">BYTEA</td>
+        <td colspan="1" rowspan="1">Will be read back as LONGVARBINARY</td>
+      
+</tr>
+      
+<tr>
+        
+<td colspan="1" rowspan="1">BIT</td>
+        <td colspan="1" rowspan="1">BOOLEAN</td>
+        <td colspan="1" rowspan="1"></td>
+      
+</tr>
+      
+<tr>
+        
+<td colspan="1" rowspan="1">BLOB</td>
+        <td colspan="1" rowspan="1">BYTEA</td>
+        <td colspan="1" rowspan="1"></td>
+      
+</tr>
+      
+<tr>
+        
+<td colspan="1" rowspan="1">BOOLEAN</td>
+        <td colspan="1" rowspan="1">BOOLEAN</td>
+        <td colspan="1" rowspan="1">Will be read back as BIT</td>
+      
+</tr>
+      
+<tr>
+        
+<td colspan="1" rowspan="1">CHAR</td>
+        <td colspan="1" rowspan="1">CHAR</td>
+        <td colspan="1" rowspan="1"></td>
+      
+</tr>
+      
+<tr>
+        
+<td colspan="1" rowspan="1">CLOB</td>
+        <td colspan="1" rowspan="1">TEXT</td>
+        <td colspan="1" rowspan="1">Will be read back as LONGVARCHAR</td>
+      
+</tr>
+      
+<tr>
+        
+<td colspan="1" rowspan="1">DATALINK</td>
+        <td colspan="1" rowspan="1">BYTEA</td>
+        <td colspan="1" rowspan="1">Will be read back as LONGVARBINARY</td>
+      
+</tr>
+      
+<tr>
+        
+<td colspan="1" rowspan="1">DATE</td>
+        <td colspan="1" rowspan="1">DATE</td>
+        <td colspan="1" rowspan="1"></td>
+      
+</tr>
+      
+<tr>
+        
+<td colspan="1" rowspan="1">DECIMAL</td>
+        <td colspan="1" rowspan="1">NUMERIC</td>
+        <td colspan="1" rowspan="1">Will be read back as NUMERIC</td>
+      
+</tr>
+      
+<tr>
+        
+<td colspan="1" rowspan="1">DISTINCT</td>
+        <td colspan="1" rowspan="1">BYTEA</td>
+        <td colspan="1" rowspan="1">Will be read back as LONGVARBINARY</td>
+      
+</tr>
+      
+<tr>
+        
+<td colspan="1" rowspan="1">DOUBLE</td>
+        <td colspan="1" rowspan="1">DOUBLE PRECISION</td>
+        <td colspan="1" rowspan="1"></td>
+      
+</tr>
+      
+<tr>
+        
+<td colspan="1" rowspan="1">FLOAT</td>
+        <td colspan="1" rowspan="1">DOUBLE PRECISION</td>
+        <td colspan="1" rowspan="1">Will be read back as DOUBLE</td>
+      
+</tr>
+      
+<tr>
+        
+<td colspan="1" rowspan="1">INTEGER</td>
+        <td colspan="1" rowspan="1">INTEGER</td>
+        <td colspan="1" rowspan="1"></td>
+      
+</tr>
+      
+<tr>
+        
+<td colspan="1" rowspan="1">JAVA_OBJECT</td>
+        <td colspan="1" rowspan="1">BYTEA</td>
+        <td colspan="1" rowspan="1">Will be read back as LONGVARBINARY</td>
+      
+</tr>
+      
+<tr>
+        
+<td colspan="1" rowspan="1">LONGVARBINARY</td>
+        <td colspan="1" rowspan="1">BYTEA</td>
+        <td colspan="1" rowspan="1"></td>
+      
+</tr>
+      
+<tr>
+        
+<td colspan="1" rowspan="1">LONGVARCHAR</td>
+        <td colspan="1" rowspan="1">TEXT</td>
+        <td colspan="1" rowspan="1"></td>
+      
+</tr>
+      
+<tr>
+        
+<td colspan="1" rowspan="1">NULL</td>
+        <td colspan="1" rowspan="1">BYTEA</td>
+        <td colspan="1" rowspan="1">Will be read back as LONGVARBINARY</td>
+      
+</tr>
+      
+<tr>
+        
+<td colspan="1" rowspan="1">NUMERIC</td>
+        <td colspan="1" rowspan="1">NUMERIC</td>
+        <td colspan="1" rowspan="1"></td>
+      
+</tr>
+      
+<tr>
+        
+<td colspan="1" rowspan="1">OTHER</td>
+        <td colspan="1" rowspan="1">BYTEA</td>
+        <td colspan="1" rowspan="1">Will be read back as LONGVARBINARY</td>
+      
+</tr>
+      
+<tr>
+        
+<td colspan="1" rowspan="1">REAL</td>
+        <td colspan="1" rowspan="1">REAL</td>
+        <td colspan="1" rowspan="1"></td>
+      
+</tr>
+      
+<tr>
+        
+<td colspan="1" rowspan="1">REF</td>
+        <td colspan="1" rowspan="1">BYTEA</td>
+        <td colspan="1" rowspan="1">Will be read back as LONGVARBINARY</td>
+      
+</tr>
+      
+<tr>
+        
+<td colspan="1" rowspan="1">SMALLINT</td>
+        <td colspan="1" rowspan="1">SMALLINT</td>
+        <td colspan="1" rowspan="1"></td>
+      
+</tr>
+      
+<tr>
+        
+<td colspan="1" rowspan="1">STRUCT</td>
+        <td colspan="1" rowspan="1">BYTEA</td>
+        <td colspan="1" rowspan="1">Will be read back as LONGVARBINARY</td>
+      
+</tr>
+      
+<tr>
+        
+<td colspan="1" rowspan="1">TIME</td>
+        <td colspan="1" rowspan="1">TIME</td>
+        <td colspan="1" rowspan="1"></td>
+      
+</tr>
+      
+<tr>
+        
+<td colspan="1" rowspan="1">TIMESTAMP</td>
+        <td colspan="1" rowspan="1">TIMESTAMP</td>
+        <td colspan="1" rowspan="1"></td>
+      
+</tr>
+      
+<tr>
+        
+<td colspan="1" rowspan="1">TINYINT</td>
+        <td colspan="1" rowspan="1">SMALLINT</td>
+        <td colspan="1" rowspan="1">Will be read back as SMALLINT</td>
+      
+</tr>
+      
+<tr>
+        
+<td colspan="1" rowspan="1">VARBINARY</td>
+        <td colspan="1" rowspan="1">BYTEA</td>
+        <td colspan="1" rowspan="1">Will be read back as LONGVARBINARY</td>
+      
+</tr>
+      
+<tr>
+        
+<td colspan="1" rowspan="1">VARCHAR</td>
+        <td colspan="1" rowspan="1">VARCHAR</td>
+        <td colspan="1" rowspan="1"></td>
+      
+</tr>
+    
+</table>
+</div>
+  
+</div>
+</div>
+</div>
+</td>
+</tr>
+</table>
+<div id="footer">
+<table cellpadding="4" cellspacing="0" border="0">
+<tr>
+<td>
+          Copyright &copy; 2005-2007 Apache Software Foundation.
+      All rights reserved.
+            <br>
+<script type="text/javascript" language="JavaScript"><!--
+              document.write(" - "+"Last Published: " + document.lastModified);
+              //  --></script></td><td nowrap="nowrap" class="footerLogos"></td>
+</tr>
+</table>
+</div>
+</body>
+</html>

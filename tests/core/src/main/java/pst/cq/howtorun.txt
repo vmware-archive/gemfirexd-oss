@@ -1,0 +1,54 @@
+--------------------------------------------------------------------------------
+
+              Register Interest and Continuous Query PST
+
+--------------------------------------------------------------------------------
+                                 how to run
+--------------------------------------------------------------------------------
+
+Reserve as many Linux hosts as possible.  If comparing to previous runs,
+either use the same hosts in the same way or rerun the baseline using the
+available hardware.
+
+Select a host for MasterController that has at least 4 CPUs for scheduling
+large numbers of clients, for example, newton or a jade.
+
+Set up a local.conf as instructed below.
+
+Run cq.bt on the master host.  Be sure to invoke batterytest with these
+properties:
+        -DnukeHungTest=true
+        -DmoveRemoteDirs=true
+The last argument causes batterytest to move directories to the test result
+directory from the remote hosts after the test concludes, or when the test
+is nuked.
+
+Analyze the results as instructed below.
+
+--------------------------------------------------------------------------------
+                             sample local.conf
+--------------------------------------------------------------------------------
+
+See tests/cacheperf/comparisons/cq/local.conf.
+
+--------------------------------------------------------------------------------
+                               how to compare
+--------------------------------------------------------------------------------
+
+In all tests, verify that the feeder put rate does not fall below 1000/second.
+
+Check the scalability of register interest and continuous query by comparing
+riReplicate* to itself for each value of edgeHosts.  Same for cqReplicate*,
+riPartition*, and cqPartition*.
+
+Compare register interest to continous query by comparing the register interest
+tests riReplicate* to the continuous query tests cqReplicate*, and riPartition*
+to cqPartition*, for each value of edgeHosts.  Continuous query latency should
+be comparable to register interest latency.
+
+Compare the multiple continuous query tests, cqsReplicate* and cqsPartition*,
+to the single continuous query tests, cqReplicate* and cqPartition*, with the
+same host-VM mapping.  Multiple continuous queries that register and deregister
+should cause no more than a 20% degradation in performance.
+
+--------------------------------------------------------------------------------

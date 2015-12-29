@@ -1,0 +1,34 @@
+#!/bin/bash
+# Is the file a symbolic link?
+if [ -L $0 ]; then
+    LINK=$( ls -la $0 | awk '{print $NF}' )
+    # Is the link an absolute path?
+    if [[ $(echo $LINK | grep '^/') ]]; then
+        GFSCRIPT=$LINK
+    else
+        GFSCRIPT=$( dirname $0 )/$LINK
+    fi
+    GFPATH=$( cd $(dirname $GFSCRIPT)/..; pwd )
+else
+    GFPATH=$( cd $(dirname $0)/..; pwd )
+fi
+
+# Set GEMFIRE to the product toplevel directory
+GEMFIRE=$GFPATH
+
+if [ "x$WINDIR" != "x" ]; then
+  echo "ERROR: The variable WINDIR is set indicating this script is running in a Windows OS, please use the .bat file version instead."
+  exit 1
+fi
+
+if [ ! -f $GEMFIRE/lib/gemfire.jar ]; then
+  echo "ERROR: Could not determine GEMFIRE location."
+  exit 1
+fi
+
+GEMFIRE_JARS=$GEMFIRE/lib/agent-dependencies.jar
+if [ "x$CLASSPATH" != "x" ]; then
+  GEMFIRE_JARS=$GEMFIRE_JARS:$CLASSPATH
+fi
+
+${GF_JAVA:-java} ${JAVA_ARGS} -classpath ${GEMFIRE_JARS} -Xmx128m com.gemstone.gemfire.admin.jmx.internal.AgentLauncher "$@"

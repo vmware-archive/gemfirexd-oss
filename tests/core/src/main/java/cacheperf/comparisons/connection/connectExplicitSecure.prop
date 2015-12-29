@@ -1,0 +1,34 @@
+locatorHosts = 1
+locatorVMsPerHost = 1
+locatorThreadsPerVM = 1
+
+A = archiver
+archiverHosts        = 1
+archiverVMsPerHost   = 1
+archiverThreadsPerVM = 1
+
+B = bridge
+bridgeHosts = 1
+bridgeVMsPerHost = 1
+bridgeThreadsPerVM = 1
+
+C = edge
+edgeHosts = 1
+edgeVMsPerHost = 1
+edgeThreadsPerVM = 1
+# the config file always sets edgeThreadsPerVM = 1
+
+sleepMs = 20
+trimSeconds = 20
+workSeconds = 60
+
+securityScheme = noop
+sslScheme = none
+
+logLevel = warning
+logTimes = false
+deleteSystemFiles = true
+
+useCacheXml = false
+
+vmType = client

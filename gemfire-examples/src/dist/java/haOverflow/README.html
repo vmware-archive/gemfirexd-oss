@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<BODY bgcolor="#ffffff"><HTML>
+ <IMG SRC="../../../../docs/VMwareLogo.png" BORDER="0">
+ <HEAD>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+  <META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+  <LINK REL="STYLESHEET" HREF="DocIndex.css" CHARSET="ISO-8859-1" TYPE="text/css">
+<H1 align="center">
+vFabric<FONT size=6><b><sup><font size=-0>&#8482;</font></sup></b></FONT></font> GemFire<FONT size=6><b><sup><font size=-0>&#174;</font></sup></b></FONT></font></H1>
+     </b></FONT>
+  <H1 align="center">HA Overflow</H1>
+<H2 align="center">Java Caching API Programming Example </H2>
+
+<hr color="#cc0000" size="2" align="left">
+
+<BODY TEXT="#000000" LINK="#0000B0" VLINK="#666699" BGCOLOR="#FFFFFF">
+<P>The <b>haOverflow</b> <a href="HACacheServer.java">example</a> has a CacheServer 
+that allows HA queue overflow. The server starts with <code>eviction-policy</code> as <code>entry</code>, implying
+that eviction of the client HA queues is based on the number of entries. Other options for
+this parameter include <code>mem</code>, or memory, which means the queue eviction is based on the
+memory/size of the client HA queue.</P>
+<P>Available specifications for this parameter are as follows :
+<ul>
+   <li><code>none </code> implying no overflow</li>
+   <li><code>mem </code>implying memory-based overflow, threshold in MB</li>
+   <li><code>entry </code> implying entry-based overflow, threshold as number of entries</li>
+</ul>
+<P>The capacity parameter dictates the queue capacity, before the queue is faulted to
+the disk. It should be set to "Number of Entries" for policy as <code>entry</code>, and "Memory size in MB"
+for <code>mem</code> eviction. The disk directory for overflow is specified with the <code>overflow-directory</code> parameter, and is set to <code>$CWD/backupDirectory</code>. You can check the contents of this overflow directory as the example executes.</P>
+<P>The <code>haOverflow</code> example is located in the GemFire installation under <code>examples/dist/haOverflow</code>.</P>
+<P>Start two terminal sessions, or shells. In each shell, configure your 
+environment according to the instructions provided in 
+  <a href="../../EnvSetup.html">examples/EnvSetup.html</a>. </P>
+<P>Once your environment is set, change to the <code>examples/dist/haOverflow</code>
+directory in both shells to run the application. You may wish to configure the example
+to run with non-default connection properties (to use a unique mcast-port, 
+for example). To do this, change the <code>mcast-port</code> value
+in the <code>server_gemfire.properties</code> file.</P>
+
+<P>The application takes a cache server configuration file in input. You can use the example 
+configuration files provided in the example directory, or you can create and test your own. 
+This sample uses <code>examples/haOverflow/server.xml</code> file for
+cache initialization.
+<P>Start the server in one shell using this command, entered on a single line:
+<pre>
+       java -DgemfirePropertyFile=server_gemfire.properties haOverflow.HACacheServer server.xml
+</pre>
+
+<p>Once started, the server waits for clients to connect. It is set up to create an overflow for
+HA event queues that can include <code>get</code> and <code>put</code> events, for example.
+The following examples guide you through a simple exercise using entry overflow, 
+but you are encouraged to try your own.</P>
+
+<p> <B>Running the Durable Client Manager to simulate an event downflow</B>
+<P>Start the <code>HADurableClientMgr</code> in the other shell using this command, entered on a single line: 
+<pre>
+       java -DgemfirePropertyFile=client_gemfire.properties haOverflow.HADurableClientMgr client.xml
+</p>
+</pre>
+<P>The <code>HADurableClientMgr</code> example runs three cache clients sequentially in the same distributed system.
+The cache clients define the same cache region, named <code>cs_region</code>.</P>
+<P>The first cache client is a durable client, which registers with the server and disconnects
+with a <code>keepalive</code> option. This in effect lets the server keep the event queues for the durable
+client open. The default timeout for the queues is 300 seconds.</P>
+<P>Subsequently, the second cache client connects and feeds data into the <code>cs_region</code> region. This
+data population gets events populated in the queues for the durable clients. The queue overflows
+to the disk once the threshold set earlier in the server is breached.</P>
+<P>Finally, the third cache client connects and starts the durable client again. This causes the server to fetch all applicable events from the disk and flush them to the client.</P>
+<P>To end this example, press <code>CTRL-C</code> in the server and client shells, then enter <code>exit</code> in both shells to close them. </P>
+<p>&nbsp;</p>
+<p>Optionally, you can start <code>HADurableClient</code> and <code>HAFeederClient</code>, each in a separate shell, and have more control over when the overflow happens.</p>
+<b>Running the HADurableClient and HAFeederClient separately</b>
+<ul>
+<li><p> <B>Running the Durable Client</B></p>
+<P>To try out <code>HADurableClient</code> with these configuration files, run:
+<pre>
+       java -DgemfirePropertyFile=durable_client_gemfire.properties haOverflow.HADurableClient client.xml
+</pre>
+</li>
+<li><B>Running the Feeder Client</B>
+  <P>To try out <code>HAFeederClient</code> with these configuration files, run:
+<pre>
+       java -DgemfirePropertyFile=client_gemfire.properties haOverflow.HAFeederClient client.xml</pre></li>
+</ul>
+<p>This starts the cache client and initializes their caches.</p>
+<hr color="#cc0000" size="2" align="left">
+</BODY>
+</HTML>
+

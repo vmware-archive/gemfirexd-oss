@@ -1,0 +1,14 @@
+cacheperf/comparisons/gemfirexd/sector/thinClient/drop.conf
+  api = MYSQL
+  clientHosts=1 clientVMsPerHost=1 clientThreadsPerVM=1
+  serverHosts=1 serverVMsPerHost=1 serverThreadsPerVM=1
+  numSectorsPerServer = 6144
+  numInstrumentsPerSector = 500
+  numPositionsPerInstrument = 10
+  numMarketCapValues = 20 numBookValues = 10 numRiskValues = 5 numSymbolValues = 4
+  redundantCopies = 0
+  queryPlanFrequency = 0
+  enableHistogram = true
+  heapMB = 256
+  perffmwk.comparisonKey = drop
+

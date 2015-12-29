@@ -1,0 +1,3 @@
+com.pivotal.gemfirexd.internal.iapi.store.access.conglomerate
+com.pivotal.gemfirexd.internal.impl.services.cache
+com.pivotal.gemfirexd.internal.impl.store.access.btree

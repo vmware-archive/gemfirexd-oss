@@ -1,0 +1,65 @@
+// functional tests
+parReg/serialParReg.conf peerHosts=3 peerVMsPerHost=3 peerThreadsPerVM=2 redundantCopies=0
+   threadGroupsName=default
+parReg/serialParReg.conf peerHosts=3 peerVMsPerHost=3 peerThreadsPerVM=2 redundantCopies=3
+   threadGroupsName=default
+// serialParRegLoader sets its own redundantCopies, but inherits the batterytest arg redundantCopies
+parReg/serialParRegLoader.conf peerHosts=3 peerVMsPerHost=3 peerThreadsPerVM=2 redundantCopies=unused
+   threadGroupsName=default
+parReg/concParReg.conf peerHosts=3 peerVMsPerHost=3 peerThreadsPerVM=10 redundantCopies=0
+   threadGroupsName=default
+parReg/concParReg.conf peerHosts=3 peerVMsPerHost=3 peerThreadsPerVM=10 redundantCopies=1
+   threadGroupsName=default
+parReg/parRegCreateDestroy.conf peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=20 
+   threadGroupsName=default
+parReg/fillParReg.conf
+   threadGroupsName=dataStoreThreads
+parReg/concKnownKeys.conf peerHosts=5 peerVMsPerHost=2 peerThreadsPerVM=20 numKeys=1000000 byteArraySize=5 
+   threadGroupsName=default
+parReg/event/serialParRegEvent.conf
+   threadGroupsName=default
+parReg/event/concParRegEvent.conf
+   threadGroupsName=default
+parReg/event/serialParRegCMEvent.conf
+   threadGroupsName=default
+parReg/event/concParRegCMEvent.conf
+   threadGroupsName=default
+
+// tests that expect data loss 
+parReg/concParRegStopStart.conf peerHosts=9 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies = 0 numVMsToStop = 3
+   threadGroupsName=default
+parReg/concParRegStopStart.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies = 2 numVMsToStop = 3
+   threadGroupsName=default
+
+// ParReg wan tests
+//parReg/wan/hct_explicit.conf
+//   threadGroupsName=edge
+                                                                                
+// Solaris - uses async-distribution for gateway (accomodates slower systems) 
+/*parReg/wan/hct_async.conf
+       wanSites=1,2,3 bridgeVMsPerHost=2 edgeVMsPerHost=1 edgeThreadsPerVM=1 
+       onlyOnPlatforms=SunOS
+       threadGroupsName=edge*/
+	   
+// Linux,Windows version - uses sync distribution for gateway 
+/*parReg/wan/hct.conf
+       wanSites=1,2,3 bridgeVMsPerHost=2 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       onlyOnPlatforms=Linux,Windows,AIX                                                                                 
+       threadGroupsName=edge*/
+	   
+// ParReg EntryEvent (Listener) tests
+parReg/event/serialParRegEntryEvent.conf
+   threadGroupsName=default
+parReg/event/concParRegEntryEventStopStart.conf
+   threadGroupsName=default
+parReg/event/serialMultiListener.conf
+   threadGroupsName=default
+   
+// p2p WAN tests
+/*parReg/wan/p2p.conf
+       wanSites=2,3 peerVMsPerHost=3 peerThreadsPerVM=2
+	   threadGroupsName=peer
+parReg/wan/p2pkill.conf
+       wanSites=2   peerVMsPerHost=3 peerThreadsPerVM=2
+	   threadGroupsName=peer*/
+

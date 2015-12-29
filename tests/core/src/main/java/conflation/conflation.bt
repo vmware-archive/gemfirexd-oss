@@ -1,0 +1,53 @@
+conflation/conflation.conf
+  bridgeHosts = 1 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 4
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+  maxKeys = 10   dataSize = 10
+  enableSubscriptionConflation = true
+conflation/monotonic.conf
+  bridgeHosts = 1 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 4
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+  maxKeys = 10   dataSize = 10
+  enableSubscriptionConflation = true
+conflation/strict.conf
+  bridgeHosts = 1 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 4
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+  maxKeys = 10   dataSize = 10
+  enableSubscriptionConflation = false
+conflation/destroy.conf
+  bridgeHosts = 1 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 4
+  edgeHosts   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+  maxKeys = 10   dataSize = 10
+  enableSubscriptionConflation = true
+conflation/edgeconflation.conf
+  bridgeHosts = 1 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 4
+  edgeHosts   = 1 edgeVMsPerHost   = 3 edgeThreadsPerVM   = 4
+  maxKeys = 10   dataSize = 10
+  enableSubscriptionConflation = true
+conflation/edgemonotonic.conf
+  bridgeHosts = 1 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 4
+  edgeHosts   = 1 edgeVMsPerHost   = 3 edgeThreadsPerVM   = 4
+  maxKeys = 10   dataSize = 10
+  enableSubscriptionConflation = true
+conflation/edgedestroy.conf
+  bridgeHosts = 1 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 4
+  edgeHosts   = 1 edgeVMsPerHost   = 3 edgeThreadsPerVM   = 4
+  maxKeys = 10   dataSize = 10
+  enableSubscriptionConflation = true
+conflation/wanconflation.conf
+  wanSites = 3
+  bridgeHostsPerSite = 1 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+  edgeHostsPerSite   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+  maxKeys = 20   dataSize = 10
+  enableSubscriptionConflation = false batchConflation = true
+conflation/wanmonotonic.conf
+  wanSites = 3
+  bridgeHostsPerSite = 1 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+  edgeHostsPerSite   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+  maxKeys = 20   dataSize = 10
+  enableSubscriptionConflation = false batchConflation = true
+conflation/wanstrict.conf
+  wanSites = 3
+  bridgeHostsPerSite = 1 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+  edgeHostsPerSite   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+  maxKeys = 20   dataSize = 10
+  enableSubscriptionConflation = false batchConflation = false

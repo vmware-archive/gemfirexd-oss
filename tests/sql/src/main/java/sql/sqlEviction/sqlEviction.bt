@@ -1,0 +1,192 @@
+sql/sqlEviction/evictionOverflow.conf
+  A=store storeHosts=2 storeVMsPerHost=2 storeThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=2 accessorThreadsPerVM=9
+  useHeapPercentage=false
+  maxHeapSize=256
+  setCriticalHeap = false
+  
+sql/sqlEviction/evictionOverflow.conf
+  A=store storeHosts=2 storeVMsPerHost=2 storeThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=2 accessorThreadsPerVM=9
+  useHeapPercentage=true
+  maxHeapSize=128
+  setCriticalHeap = false
+
+sql/sqlEviction/evictionOverflowHA.conf
+  A=store storeHosts=2 storeVMsPerHost=2 storeThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=2 accessorThreadsPerVM=9
+  redundantCopies = 1
+  dropIndex = true
+  useHeapPercentage = false 
+  maxHeapSize=256 
+  setCriticalHeap = false
+  
+sql/sqlEviction/evictionOverflowHA.conf
+  A=store storeHosts=2 storeVMsPerHost=2 storeThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=2 accessorThreadsPerVM=10
+  redundantCopies = 2
+  dropIndex = true
+  useHeapPercentage = false 
+  maxHeapSize=256
+  setCriticalHeap = false
+  
+sql/sqlEviction/evictionOverflowHA.conf
+  A=store storeHosts=2 storeVMsPerHost=3 storeThreadsPerVM=1
+  B=accessor accessorHosts=1 accessorVMsPerHost=6 accessorThreadsPerVM=10
+  redundantCopies = 3
+  dropIndex = true
+  useHeapPercentage = false 
+  maxHeapSize=256
+  setCriticalHeap = false
+  
+sql/sqlEviction/evictionOverflowHA.conf
+  A=store storeHosts=2 storeVMsPerHost=2 storeThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=2 accessorThreadsPerVM=9
+  redundantCopies = 1
+  dropIndex = true
+  useHeapPercentage = true 
+  maxHeapSize=128
+  setCriticalHeap = false
+
+sql/sqlEviction/evictionOverflowHA.conf
+  A=store storeHosts=2 storeVMsPerHost=2 storeThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=2 accessorThreadsPerVM=10
+  redundantCopies = 2
+  dropIndex = true
+  useHeapPercentage = true 
+  maxHeapSize=128
+  setCriticalHeap = false
+
+sql/sqlEviction/evictionOverflowHA.conf
+  A=store storeHosts=2 storeVMsPerHost=3 storeThreadsPerVM=1
+  B=accessor accessorHosts=1 accessorVMsPerHost=6 accessorThreadsPerVM=10
+  redundantCopies = 3
+  dropIndex = true
+  useHeapPercentage = true 
+  maxHeapSize=128
+  setCriticalHeap = false
+/* thest two tests are replaced by evictionOverflowCriticalHeap and evictionOverflowCriticalHeapHA  
+sql/sqlEviction/evictionOverflow.conf
+  A=store storeHosts=2 storeVMsPerHost=2 storeThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=2 accessorThreadsPerVM=9
+  useHeapPercentage=true
+  maxHeapSize=128 
+  setCriticalHeap = true
+  
+sql/sqlEviction/evictionOverflowHA.conf
+  A=store storeHosts=2 storeVMsPerHost=3 storeThreadsPerVM=1
+  B=accessor accessorHosts=1 accessorVMsPerHost=6 accessorThreadsPerVM=10
+  redundantCopies = 3
+  dropIndex = true
+  useHeapPercentage = true 
+  maxHeapSize=256
+  setCriticalHeap = true
+*/
+
+sql/sqlEviction/evictionOverflowCriticalHeap.conf
+  locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+  A=store storeHosts=2 storeVMsPerHost=2 storeThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=2 accessorThreadsPerVM=9
+  C=newstore newstoreHosts=2 newstoreVMsPerHost=2 newstoreThreadsPerVM=1
+  useHeapPercentage=true
+  maxHeapSize=128
+
+sql/sqlEviction/evictionOverflowCriticalHeapHA.conf
+  locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+  A=store storeHosts=2 storeVMsPerHost=3 storeThreadsPerVM=1
+  B=accessor accessorHosts=1 accessorVMsPerHost=6 accessorThreadsPerVM=10
+  C=newstore newstoreHosts=2 newstoreVMsPerHost=2 newstoreThreadsPerVM=1
+  useHeapPercentage=true
+  maxHeapSize=256
+  redundantCopies = 3
+  dropIndex = true
+
+sql/sqlEviction/evictionOverflowTx.conf
+  locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+  A=store storeHosts=2 storeVMsPerHost=2 storeThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=2 accessorThreadsPerVM=9
+  C=newstore newstoreHosts=2 newstoreVMsPerHost=2 newstoreThreadsPerVM=1
+  useHeapPercentage=true
+  maxHeapSize=128
+  setCriticalHeap = true
+  
+sql/sqlEviction/multiTablesJoinUniqWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=7 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=4 accessorThreadsPerVM=9
+
+sql/sqlEviction/multiTablesJoinUniqHAWithAccessors.conf
+    A=store storeHosts=2 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=4 accessorThreadsPerVM=6
+    redundantCopies= 1, 2, 3
+    
+sql/sqlEviction/multiTablesUniqDAPWithAccessors.conf
+    A=store storeHosts=2 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=5 accessorThreadsPerVM=5
+
+sql/sqlEviction/multiTablesUniqDAPWithAccessorsHA.conf
+    A=store storeHosts=2 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=5 accessorThreadsPerVM=5
+    redundantCopies=1
+
+sql/sqlEviction/multiTablesUniqDAPWithAccessorsHA.conf
+    A=store storeHosts=2 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=5 accessorThreadsPerVM=5
+    redundantCopies=2
+
+// offHeap variants of the above tests
+sql/sqlEviction/evictionOverflowOffHeap.conf
+  A=store storeHosts=2 storeVMsPerHost=2 storeThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=2 accessorThreadsPerVM=9
+  useHeapPercentage=false
+  maxHeapSize=250 offHeapMemorySize=350m
+  setCriticalHeap = false
+  
+sql/sqlEviction/evictionOverflowOffHeap.conf
+  A=store storeHosts=2 storeVMsPerHost=2 storeThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=2 accessorThreadsPerVM=9
+  useHeapPercentage=true
+  maxHeapSize=250 offHeapMemorySize=1m
+  setCriticalHeap = false
+
+sql/sqlEviction/evictionOverflowOffHeap.conf
+  A=store storeHosts=2 storeVMsPerHost=2 storeThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=2 accessorThreadsPerVM=9
+  useHeapPercentage=true
+  maxHeapSize=250   offHeapMemorySize=1m
+  setCriticalHeap = true
+  
+sql/sqlEviction/evictionOverflowHAOffHeap.conf
+  A=store storeHosts=2 storeVMsPerHost=2 storeThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=2 accessorThreadsPerVM=9
+  redundantCopies = 1
+  dropIndex = true
+  useHeapPercentage = false 
+  maxHeapSize=350 offHeapMemorySize=50m
+  setCriticalHeap = false
+  
+sql/sqlEviction/evictionOverflowHAOffHeap.conf
+  A=store storeHosts=2 storeVMsPerHost=3 storeThreadsPerVM=1
+  B=accessor accessorHosts=1 accessorVMsPerHost=6 accessorThreadsPerVM=10
+  redundantCopies = 3
+  dropIndex = true
+  useHeapPercentage = false 
+  maxHeapSize=350 offHeapMemorySize=50m
+  setCriticalHeap = false
+  
+sql/sqlEviction/evictionOverflowHAOffHeap.conf
+  A=store storeHosts=2 storeVMsPerHost=2 storeThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=2 accessorThreadsPerVM=9
+  redundantCopies = 1
+  dropIndex = true
+  useHeapPercentage = true 
+  maxHeapSize=350 offHeapMemorySize=1m
+  setCriticalHeap = false
+
+sql/sqlEviction/evictionOverflowHAOffHeap.conf
+  A=store storeHosts=2 storeVMsPerHost=3 storeThreadsPerVM=1
+  B=accessor accessorHosts=1 accessorVMsPerHost=6 accessorThreadsPerVM=10
+  redundantCopies = 3
+  dropIndex = true
+  useHeapPercentage = true 
+  maxHeapSize=350 offHeapMemorySize=1m
+  setCriticalHeap = true

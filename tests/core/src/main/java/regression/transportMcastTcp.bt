@@ -1,0 +1,4 @@
+// Use with -Dlocal.conf=local.mcast.tcp.conf
+// est. runtime: 6 hrs
+
+include $JTESTS/regression/transport.bt

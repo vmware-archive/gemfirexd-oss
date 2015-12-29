@@ -1,0 +1,21 @@
+cacheperf/memory/default.conf
+cacheperf/memory/two_vms.conf
+cacheperf/memory/default.conf scope=ack dataPolicy=normal
+cacheperf/memory/default.conf scope=global
+cacheperf/memory/two_vms.conf scope=global
+cacheperf/memory/default.conf statisticsEnabled=true
+cacheperf/memory/idle_entries.conf
+cacheperf/memory/time_to_live.conf
+cacheperf/memory/eviction.conf
+cacheperf/memory/eviction.conf action=overflowToDisk
+cacheperf/memory/eviction.conf action=overflowToDisk entryCount=1
+cacheperf/memory/eviction.conf action=overflowToDisk dataPolicy=persistent_replicate
+cacheperf/memory/default.conf dataPolicy=persistent_replicate
+cacheperf/memory/partitioned.conf
+cacheperf/memory/partitioned.conf totalNumBuckets=499
+cacheperf/memory/index.conf
+cacheperf/memory/index.conf indexCardinality=5
+cacheperf/memory/index.conf indexCardinality=500
+cacheperf/memory/index.conf numIndexedValues=5
+cacheperf/memory/index.conf numIndexedValues=5 indexCardinality=5
+cacheperf/memory/index.conf numIndexedValues=5 indexCardinality=500

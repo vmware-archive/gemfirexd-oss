@@ -1,0 +1,9 @@
+A = locker
+lockerHosts        = 1
+lockerVMsPerHost   = 2
+lockerThreadsPerVM = 2
+
+dataSize = 1024
+keyAllocation = sameKey
+
+perffmwk.comparisonKey = perf012

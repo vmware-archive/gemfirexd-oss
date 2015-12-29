@@ -1,0 +1,9 @@
+INCLUDE $JTESTS/sql/rollingUpgrade/sqlDisk/sqlDiskRollingUpgrade.bt
+INCLUDE $JTESTS/sql/rollingUpgrade/sqlBridge/sqlBridgeRollingUpgrade.bt
+INCLUDE $JTESTS/sql/rollingUpgrade/sqlCallback/sqlCallbackRollingUpgrade.bt
+INCLUDE $JTESTS/sql/rollingUpgrade/sqlDAP/sqlDAPRollingUpgrade.bt
+INCLUDE $JTESTS/sql/rollingUpgrade/sqlTx/sqlTxRollingUpgrade.bt
+INCLUDE $JTESTS/sql/rollingUpgrade/hdfs/sqlHdfsRollingUpgrade.bt
+
+
+

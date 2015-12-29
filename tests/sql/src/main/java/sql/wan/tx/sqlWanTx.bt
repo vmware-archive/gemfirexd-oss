@@ -1,0 +1,10 @@
+sql/wan/tx/wanp2pRandomPTAccessorsGfxdOnlyTx.conf
+    wanSites= 3, 4, 5
+    A=datastore datastoreHostsPerSite=2 datastoreVMsPerHost=3 datastoreThreadsPerVM=1
+    B=accessor accessorHostsPerSite=1 accessorVMsPerHost=5 accessorThreadsPerVM=10
+    locatorHostsPerSite = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    enableQueueConflation=false
+    useSamePartitionAllWanSites=true
+    testUniqueKeys = false
+    testWanUniqueness = true
+    withReplicatedTables = true

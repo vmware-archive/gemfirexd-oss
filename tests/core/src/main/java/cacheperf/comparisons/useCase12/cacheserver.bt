@@ -1,0 +1,13 @@
+cacheperf/comparisons/useCase12/cacheserver.conf  
+cacheperf/comparisons/useCase12/cacheserver.conf
+  bridgeHosts = 1 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 10
+cacheperf/comparisons/useCase12/cacheserver.conf
+  bridgeHosts = 1 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHosts   = 2 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+cacheperf/comparisons/useCase12/cacheserver.conf
+  bridgeHosts = 1 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHosts   = 2 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 10
+cacheperf/comparisons/useCase12/cacheserver.conf
+  bridgeHosts = 2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHosts   = 2 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 10

@@ -1,0 +1,21 @@
+A = feed
+feedHosts          = 1
+feedVMsPerHost     = 1
+feedThreadsPerVM   = 1
+B = bridge
+bridgeHosts        = 1
+bridgeVMsPerHost   = 2
+bridgeThreadsPerVM = 1
+C = edge
+edgeHosts          = 1
+edgeVMsPerHost     = 2
+edgeThreadsPerVM   = 1
+
+dataSize   = 1024
+totalBytes = 102400000
+
+interestPercentage = 20
+
+trimSeconds = 60
+
+perffmwk.comparisonKey = perf018

@@ -1,0 +1,263 @@
+resumeTx/resumableApi.conf
+   A=worker workerHosts=1 workerVMsPerHost=1 workerThreadsPerVM=1
+   B=extra extraHosts=1 extraVMsPerHost=1 extraThreadsPerVM=1
+
+resumeTx/concPeerResumableTx.conf
+   peerHosts=2 peerVMsPerHost=1 peerThreadsPerVM=12 redundantCopies=1
+
+resumeTx/concBridgeResumableTx.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=1
+
+resumeTx/concSuspend.conf
+   A=worker workerHosts=1 workerVMsPerHost=1 workerThreadsPerVM=1
+
+resumeTx/concKnownKeysPeerResumable.conf
+   A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=4
+   B=dataStore dataStoreHosts=5 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=4
+   redundantCopies=1
+
+resumeTx/concKnownKeysBridgeResumable.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=4
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=4
+   redundantCopies=1
+
+// dataStores and accessors (single PR with entries colocated via PartitionResolver)
+resumeTx/serialPRwithFE.conf
+   A=dataStore dataStoreHosts=5 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=1
+   B=accessor accessorHosts=3 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   redundantCopies = 0 totalTaskTimeSec=600
+
+resumeTx/serialPRwithFE.conf
+   A=dataStore dataStoreHosts=5 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=1
+   B=accessor accessorHosts=3 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   redundantCopies = 1 totalTaskTimeSec=600
+
+resumeTx/serialPRHAwithFE.conf
+   A=dataStore dataStoreHosts=5 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=1
+   B=accessor accessorHosts=3 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   redundantCopies = 2 numVMsToStop = 2 totalTaskTimeSec=600
+
+resumeTx/serialColoWithFE.conf
+   A=dataStore dataStoreHosts=5 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=1
+   B=accessor accessorHosts=3 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   redundantCopies = 0 totalTaskTimeSec=600
+
+resumeTx/serialColoWithFE.conf
+   A=dataStore dataStoreHosts=5 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=1
+   B=accessor accessorHosts=3 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   redundantCopies = 1 totalTaskTimeSec=600
+
+resumeTx/serialColoHAwithFE.conf
+   A=dataStore dataStoreHosts=5 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=1
+   B=accessor accessorHosts=3 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   redundantCopies = 2 numVMsToStop = 2 totalTaskTimeSec=600
+
+// client/server topology with a single PR (entries colocated via PartitionResolver)
+resumeTx/serialPRBridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 0 totalTaskTimeSec=600
+
+resumeTx/serialPRBridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 1 totalTaskTimeSec=600
+
+resumeTx/serialPRBridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 2 totalTaskTimeSec=600
+
+resumeTx/serialPRBridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 3 totalTaskTimeSec=600
+
+resumeTx/serialPRHABridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 1 numVMsToStop = 1 totalTaskTimeSec=600
+
+resumeTx/serialPRHABridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 2 numVMsToStop = 2 totalTaskTimeSec=600
+
+resumeTx/serialPRHABridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 3 numVMsToStop = 3 totalTaskTimeSec=600
+
+// client/server topology with a multiple Colocated PRs (also with PartitionedResolver)
+resumeTx/serialColoBridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 0 totalTaskTimeSec=600
+
+resumeTx/serialColoBridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 1 totalTaskTimeSec=600
+
+resumeTx/serialColoBridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 2 totalTaskTimeSec=600
+
+resumeTx/serialColoBridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 3 totalTaskTimeSec=600
+
+resumeTx/serialColoHABridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 1 numVMsToStop = 1 totalTaskTimeSec=600
+
+resumeTx/serialColoHABridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 2 numVMsToStop = 2 totalTaskTimeSec=600
+
+resumeTx/serialColoHABridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 3 numVMsToStop = 3 totalTaskTimeSec=600
+
+// peers with replicated regions
+resumeTx/serialRRwithFE.conf
+   peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=5
+   totalTaskTimeSec=600
+
+resumeTx/serialRRHAwithFE.conf
+   peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=5
+   numVMsToStop = 2 totalTaskTimeSec=600
+
+// client/server topology with replicated region
+resumeTx/serialRRBridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   totalTaskTimeSec=600
+
+resumeTx/serialRRHABridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   numVMsToStop = 2 totalTaskTimeSec=600
+
+// peers with replicated regions
+resumeTx/concRRwithFE.conf
+   peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=5
+   totalTaskTimeSec=600
+
+resumeTx/concRRPersistWithFE.conf
+   peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=5
+   totalTaskTimeSec=600
+
+resumeTx/concRRHAwithFE.conf
+   A=client clientHosts=3 clientVMsPerHost=1 clientThreadsPerVM=1
+   B=opClient opClientHosts=3 opClientVMsPerHost=1 opClientThreadsPerVM=5
+   numVMsToStop = 2 totalTaskTimeSec=600
+
+// peers with partitioned regions
+resumeTx/concPRwithFE.conf
+   A=dataStore dataStoreHosts=5 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=1
+   B=accessor accessorHosts=3 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   redundantCopies = 2 totalTaskTimeSec=600
+
+resumeTx/concPRPersistWithFE.conf
+   A=dataStore dataStoreHosts=5 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=1
+   B=accessor accessorHosts=3 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   redundantCopies = 2 totalTaskTimeSec=600
+
+resumeTx/concPRHAwithFE.conf
+   A=dataStore dataStoreHosts=5 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=1
+   B=accessor accessorHosts=3 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   redundantCopies = 2 numVMsToStop = 2 totalTaskTimeSec=600
+
+resumeTx/concColoWithFE.conf
+   A=dataStore dataStoreHosts=5 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=1
+   B=accessor accessorHosts=3 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   redundantCopies = 2 totalTaskTimeSec=600
+
+resumeTx/concColoPersistWithFE.conf
+   A=dataStore dataStoreHosts=5 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=1
+   B=accessor accessorHosts=3 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   redundantCopies = 2 totalTaskTimeSec=600
+
+resumeTx/concColoHAwithFE.conf
+   A=dataStore dataStoreHosts=5 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=1
+   B=accessor accessorHosts=3 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   redundantCopies = 2 numVMsToStop = 2 totalTaskTimeSec=600
+
+// client/server topology with replicated region
+resumeTx/concRRBridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   totalTaskTimeSec=600
+
+resumeTx/concRRBridgePersistWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   totalTaskTimeSec=600
+
+resumeTx/concRRHABridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   numVMsToStop = 2 totalTaskTimeSec=600
+
+// client/server topology with partitioned regions
+resumeTx/concPRBridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 2 totalTaskTimeSec=600
+
+resumeTx/concPRBridgePersistWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 2 totalTaskTimeSec=600
+
+resumeTx/concPRHABridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 2 numVMsToStop = 2 totalTaskTimeSec=600
+
+resumeTx/concColoBridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 2 totalTaskTimeSec=600
+
+resumeTx/concColoBridgePersistWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 2 totalTaskTimeSec=600
+
+resumeTx/concColoHABridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 2 numVMsToStop = 2 totalTaskTimeSec=600
+
+// peers with partitioned regions
+resumeTx/tryResumeWithWait.conf
+   A=dataStore dataStoreHosts=5 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=1
+   B=accessor accessorHosts=3 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   redundantCopies = 2 totalTaskTimeSec=600
+
+// client/server topology with partitioned regions
+resumeTx/tryResumeWithWaitBridge.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 2 totalTaskTimeSec=600
+
+resumeTx/concBridgeResumableTxNoAck.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=1
+
+resumeTx/concKnownKeysBridgeResumableNoAck.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=2 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   redundantCopies=1
+
+

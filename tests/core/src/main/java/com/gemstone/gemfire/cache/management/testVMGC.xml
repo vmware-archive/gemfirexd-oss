@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This is the Ant build file for testing various VM GC behaviors -->
+
+<project default="usage" name="test_gc_usage">
+  <description>Tests VM Garbage Collectors</description>
+
+  <target depends="usage" name="help"/> 
+
+  <target name="usage">
+    <description>Prints information about what can be built</description>
+    <echo>
+Commonly used targets:
+  32bit             Tests all 32 bit VMs
+  64bit             Tests all 64 bit VMs
+  all               Tests all 32 and 64 bit VMs
+    </echo>
+  </target>
+
+  <condition property="platform_prefix" value="//samba" else="/export">
+    <os family="windows"/>
+  </condition>
+  <property name="build-artifacts" value="${platform_prefix}/pippin2/users/mthomas/prRebalancing/build-artifacts"/>
+
+  <!-- Supported platforms -->
+  <condition property="platform" value="sol">
+    <os name="SunOs"/>
+  </condition>
+  <condition property="platform" value="mac">
+    <os family="mac"/>
+  </condition>
+  <condition property="platform" value="aix">
+    <os name="AIX"/>
+  </condition>
+  <condition property="platform" value="linux">
+    <os name="Linux"/>
+  </condition>
+  <condition property="platform" value="win">
+    <os family="windows"/>
+  </condition>
+ 
+
+  <property name="product.dir" value="${build-artifacts}/${platform}/product"/>
+  <property name="test.classes" value="${build-artifacts}/${platform}/tests/classes"/>
+
+  <!-- All tests target -->
+  <target name="all" depends="32bit, 64bit"/>
+
+  <target name="32bit">
+    <antcall target="${platform}_32bit"/>
+  </target>
+
+  <target name="64bit">
+    <antcall target="${platform}_64bit"/>
+  </target>
+
+  <!-- Linux VMs -->
+  <target name="linux_32bit">
+    <!-- Linux Sun 1.5 JDK -->
+    <antcall target="testgc">
+      <param name="testJVM" value="/gcm/where/jdk/1.5.0_17/x86.linux/jre/bin/java"/>
+      <param name="vm.args" value="-server -Xmx512M"/>
+      <param name="result.dir" value="sun-linux_32bit-1.5.0_17-server"/>
+    </antcall>
+
+    <antcall target="testgc">
+      <param name="testJVM" value="/gcm/where/jdk/1.5.0_17/x86.linux/jre/bin/java"/>
+      <param name="vm.args" value="-XX:+UseConcMarkSweepGC -Xmx512M"/>
+      <param name="result.dir" value="sun-linux_32bit-1.5.0_17-cms"/>
+    </antcall>
+
+    <!-- Linux Sun 1.6 JDK -->
+    <antcall target="testgc">
+      <param name="testJVM" value="/gcm/where/jdk/1.6.0_10/x86.linux/jre/bin/java"/>
+      <param name="vm.args" value="-server -Xmx512M"/>
+      <param name="result.dir" value="sun-linux_32bit-1.6.0_10-server"/>
+    </antcall>
+
+    <antcall target="testgc">
+      <param name="testJVM" value="/gcm/where/jdk/1.6.0_10/x86.linux/jre/bin/java"/>
+      <param name="vm.args" value="-XX:+UseConcMarkSweepGC -Xmx512M"/>
+      <param name="result.dir" value="sun-linux_32bit-1.6.0_10-cms"/>
+    </antcall>
+
+    <!-- Linux JRockit JRE -->
+    <antcall target="testgc">
+      <param name="testJVM" value="/gcm/where/java/jrockit/1.5.0_14/x86.linux/jre/bin/java"/>
+      <param name="vm.args" value="-server -Xmx512M"/>
+      <param name="result.dir" value="jrockit-linux_32bit-1.5.0_14"/>
+    </antcall>
+
+    <antcall target="testgc">
+      <param name="testJVM" value="/gcm/where/java/jrockit/1.6.0_3/x86.linux/jre/bin/java"/>
+      <param name="vm.args" value="-server -Xmx512M"/>
+      <param name="result.dir" value="jrockit-linux_32bit-1.6.0_3"/>
+    </antcall>
+
+    <!-- Linux Hitachi JRE -->
+    <antcall target="testgc">
+      <param name="testJVM" value="/gcm/where/jdk/1.5.0_05-hitachi/x86.linux/jre/bin/java"/>
+      <param name="vm.args" value="-server -Xmx512M"/>
+      <param name="result.dir" value="hitachi-linux_32bit-1.5.0_05"/>
+    </antcall>
+
+    <!-- Linux IBM JRE -->
+    <antcall target="testgc">
+      <param name="testJVM" value="/gcm/where/jre/1.5.0-ibm/x86.linux/bin/java"/>
+      <param name="vm.args" value="-Xmx512M"/>
+      <param name="result.dir" value="ibm-linux_32bit-1.5.0"/>
+    </antcall>
+
+    <antcall target="testgc">
+      <param name="testJVM" value="/gcm/where/jre/1.6.0-ibm/x86.linux/bin/java"/>
+      <param name="vm.args" value="-Xmx512M"/>
+      <param name="result.dir" value="ibm-linux_32bit-1.6.0"/>
+    </antcall>
+  </target>
+
+  <!-- Linux 64 bit VMs -->
+  <target name="linux_64bit">
+    <!-- Linux Sun 1.5 JDK -->
+    <antcall target="testgc">
+      <param name="testJVM" value="/gcm/where/jdk/1.5.0_17/x86_64.linux/jre/bin/java"/>
+      <param name="vm.args" value="-d64 -server -Xmx512M"/>
+      <param name="result.dir" value="sun-linux_64bit-1.5.0_17-server"/>
+    </antcall>
+
+    <antcall target="testgc">
+      <param name="testJVM" value="/gcm/where/jdk/1.5.0_17/x86_64.linux/jre/bin/java"/>
+      <param name="vm.args" value="-d64 -XX:+UseConcMarkSweepGC -Xmx512M"/>
+      <param name="result.dir" value="sun-linux_64bit-1.5.0_17-cms"/>
+    </antcall>
+
+    <!-- Linux Sun 1.6 JDK -->
+    <antcall target="testgc">
+      <param name="testJVM" value="/gcm/where/jdk/1.6.0_10/x86_64.linux/jre/bin/java"/>
+      <param name="vm.args" value="-d64 -server -Xmx512M"/>
+      <param name="result.dir" value="sun-linux_64bit-1.6.0_10-server"/>
+    </antcall>
+
+    <antcall target="testgc">
+      <param name="testJVM" value="/gcm/where/jdk/1.6.0_10/x86_64.linux/jre/bin/java"/>
+      <param name="vm.args" value="-d64 -XX:+UseConcMarkSweepGC -Xmx512M"/>
+      <param name="result.dir" value="sun-linux_64bit-1.6.0_10-cms"/>
+    </antcall>
+
+    <!-- Linux JRockit JRE -->
+    <antcall target="testgc">
+      <param name="testJVM" value="/gcm/where/java/jrockit/1.5.0_10/x86_64.linux/bin/java"/>
+      <param name="vm.args" value="-d64 -server -Xmx512M"/>
+      <param name="result.dir" value="jrockit-linux_64bit-1.5.0_10"/>
+    </antcall>
+
+    <antcall target="testgc">
+      <param name="testJVM" value="/gcm/where/java/jrockit/1.6.0_3/x86_64.linux/jre/bin/java"/>
+      <param name="vm.args" value="-d64 -server -Xmx512M"/>
+      <param name="result.dir" value="jrockit-linux_64bit-1.6.0_3"/>
+    </antcall>
+
+    <!-- Linux IBM JRE -->
+    <antcall target="testgc">
+      <param name="testJVM" value="/gcm/where/jre/1.5.0-ibm/x86_64.linux/bin/java"/>
+      <param name="vm.args" value="-Xmx512M"/>
+      <param name="result.dir" value="ibm-linux_64bit-1.5.0"/>
+    </antcall>
+
+    <antcall target="testgc">
+      <param name="testJVM" value="/gcm/where/jre/1.6.0-ibm/x86_64.linux/bin/java"/>
+      <param name="vm.args" value="-Xmx512M"/>
+      <param name="result.dir" value="ibm-linux_64bit-1.6.0"/>
+    </antcall>
+  </target>
+
+  <!-- Windows VMs -->
+  <target name="win_32bit">
+    <!-- Windows Sun 1.5 JDK -->
+    <antcall target="testgc">
+      <param name="testJVM" value="//filer/java/users/java_share/jdk/1.5.0_17/x86.Windows_NT/jre/bin/java.exe"/>
+      <param name="vm.args" value="-server -Xmx512M"/>
+      <param name="result.dir" value="sun-win_32bit-1.5.0_17-server"/>
+    </antcall>
+
+    <antcall target="testgc">
+      <param name="testJVM" value="//filer/java/users/java_share/jdk/1.5.0_17/x86.Windows_NT/jre/bin/java.exe"/>
+      <param name="vm.args" value="-XX:+UseConcMarkSweepGC -Xmx512M"/>
+      <param name="result.dir" value="sun-win_32bit-1.5.0_17-cms"/>
+    </antcall>
+
+    <!-- Windows Sun 1.6 JDK -->
+    <antcall target="testgc">
+      <param name="testJVM" value="//filer/java/users/java_share/jdk/1.6.0_10/x86.Windows_NT/jre/bin/java.exe"/>
+      <param name="vm.args" value="-server -Xmx512M"/>
+      <param name="result.dir" value="sun-win_32bit-1.6.0_10-server"/>
+    </antcall>
+
+    <antcall target="testgc">
+      <param name="testJVM" value="//filer/java/users/java_share/jdk/1.6.0_10/x86.Windows_NT/jre/bin/java.exe"/>
+      <param name="vm.args" value="-XX:+UseConcMarkSweepGC -Xmx512M"/>
+      <param name="result.dir" value="sun-win_32bit-1.6.0_10-cms"/>
+    </antcall>
+
+    <!-- Windows JRockit JRE -->
+    <antcall target="testgc">
+      <param name="testJVM" value="//filer/java/users/java_share/jrockit/1.5.0_12/x86.Windows_NT/bin/java.exe"/>
+      <param name="vm.args" value="-server -Xmx512M"/>
+      <param name="result.dir" value="jrockit-win_32bit-1.5.0_14"/>
+    </antcall>
+
+    <antcall target="testgc">
+      <param name="testJVM" value="//filer/java/users/java_share/jrockit/1.6.0_3/x86.Windows_NT/bin/java.exe"/>
+      <param name="vm.args" value="-server -Xmx512M"/>
+      <param name="result.dir" value="jrockit-win_32bit-1.6.0_3"/>
+    </antcall>
+
+    <!-- Windows Hitachi JRE -->
+    <antcall target="testgc">
+      <param name="testJVM" value="//filer/java/users/java_share/jdk/1.5.0_05-hitachi/x86.Windows_NT/jre/bin/java.exe"/>
+      <param name="vm.args" value="-server -Xmx512M"/>
+      <param name="result.dir" value="hitachi-win_32bit-1.5.0_05"/>
+    </antcall>
+
+    <!-- Windows IBM JRE -->
+    <antcall target="testgc">
+      <param name="testJVM" value="/gcm/where/jre/1.5.0-ibm/x86.Windows_NT/bin/java.exe"/>
+      <param name="vm.args" value="-Xmx512M"/>
+      <param name="result.dir" value="ibm-win_32bit-1.5.0"/>
+    </antcall>
+  </target>
+
+  <!-- Windows 64 bit VMs -->
+  <target name="win_64bit">
+    <!-- Windows Sun 1.5 JDK -->
+    <antcall target="testgc">
+      <param name="testJVM" value="//filer/java/users/java_share/jdk/1.5.0_17/x86_64.Windows_NT/jre/bin/java.exe"/>
+      <param name="vm.args" value="-d64 -server -Xmx512M"/>
+      <param name="result.dir" value="sun-win_64bit-1.5.0_17-server"/>
+    </antcall>
+
+    <antcall target="testgc">
+      <param name="testJVM" value="//filer/java/users/java_share/jdk/1.5.0_17/x86_64.Windows_NT/jre/bin/java.exe"/>
+      <param name="vm.args" value="-d64 -XX:+UseConcMarkSweepGC -Xmx512M"/>
+      <param name="result.dir" value="sun-win_64bit-1.5.0_17-cms"/>
+    </antcall>
+
+    <!-- Windows Sun 1.6 JDK -->
+    <antcall target="testgc">
+      <param name="testJVM" value="//filer/java/users/java_share/jdk/1.6.0_10/x86_64.Windows_NT/jre/bin/java.exe"/>
+      <param name="vm.args" value="-d64 -server -Xmx512M"/>
+      <param name="result.dir" value="sun-win_64bit-1.6.0_10-server"/>
+    </antcall>
+
+    <antcall target="testgc">
+      <param name="testJVM" value="//filer/java/users/java_share/jdk/1.6.0_10/x86_64.Windows_NT/jre/bin/java.exe"/>
+      <param name="vm.args" value="-d64 -XX:+UseConcMarkSweepGC -Xmx512M"/>
+      <param name="result.dir" value="sun-win_64bit-1.6.0_10-cms"/>
+    </antcall>
+
+    <!-- Windows JRockit JRE -->
+    <antcall target="testgc">
+      <param name="testJVM" value="//filer/java/users/java_share/jrockit/1.5.0_12/x86_64.Windows_NT/bin/java.exe"/>
+      <param name="vm.args" value="-d64 -server -Xmx512M"/>
+      <param name="result.dir" value="jrockit-win_64bit-1.5.0_10"/>
+    </antcall>
+
+    <antcall target="testgc">
+      <param name="testJVM" value="//filer/java/users/java_share/jrockit/1.6.0_3/x86_64.Windows_NT/bin/java.exe"/>
+      <param name="vm.args" value="-d64 -server -Xmx512M"/>
+      <param name="result.dir" value="jrockit-win_64bit-1.6.0_3"/>
+    </antcall>
+
+    <!-- Windows IBM JRE -->
+    <antcall target="testgc">
+      <param name="testJVM" value="/gcm/where/jre/1.5.0-ibm/x86_64.Windows_NT/bin/java.exe"/>
+      <param name="vm.args" value="-Xmx512M"/>
+      <param name="result.dir" value="ibm-win_64bit-1.5.0"/>
+    </antcall>
+  </target>
+
+  <!-- Solaris 32 bit VMs -->
+  <target name="sol_32bit">
+    <!-- Sun Sun 1.5 JDK -->
+    <antcall target="testgc">
+      <param name="testJVM" value="/gcm/where/jdk/1.5.0_17/sparc.Solaris/jre/bin/java"/>
+      <param name="vm.args" value="-d32 -server -Xmx512M"/>
+      <param name="result.dir" value="sun-sol_32bit-1.5.0_17-server"/>
+    </antcall>
+
+    <antcall target="testgc">
+      <param name="testJVM" value="/gcm/where/jdk/1.5.0_17/sparc.Solaris/jre/bin/java"/>
+      <param name="vm.args" value="-d32 -XX:+UseConcMarkSweepGC -Xmx512M"/>
+      <param name="result.dir" value="sun-sol_32bit-1.5.0_17-cms"/>
+    </antcall>
+
+    <!-- Sun Sun 1.6 JDK -->
+    <antcall target="testgc">
+      <param name="testJVM" value="/gcm/where/jdk/1.6.0_10/sparc.Solaris/jre/bin/java"/>
+      <param name="vm.args" value="-d32 -server -Xmx512M"/>
+      <param name="result.dir" value="sun-sol_32bit-1.6.0_10-server"/>
+    </antcall>
+
+    <antcall target="testgc">
+      <param name="testJVM" value="/gcm/where/jdk/1.6.0_10/sparc.Solaris/jre/bin/java"/>
+      <param name="vm.args" value="-d32 -XX:+UseConcMarkSweepGC -Xmx512M"/>
+      <param name="result.dir" value="sun-sol_32bit-1.6.0_10-cms"/>
+    </antcall>
+  </target>
+
+  <!-- Solaris 64 bit VMs -->
+  <target name="sol_64bit">
+    <!-- Sun Sun 1.5 JDK -->
+    <antcall target="testgc">
+      <param name="testJVM" value="/gcm/where/jdk/1.5.0_17/sparc.Solaris/jre/bin/java"/>
+      <param name="vm.args" value="-d64 -server -Xmx512M"/>
+      <param name="result.dir" value="sun-sol_64bit-1.5.0_17-server"/>
+    </antcall>
+
+    <antcall target="testgc">
+      <param name="testJVM" value="/gcm/where/jdk/1.5.0_17/sparc.Solaris/jre/bin/java"/>
+      <param name="vm.args" value="-d64 -XX:+UseConcMarkSweepGC -Xmx512M"/>
+      <param name="result.dir" value="sun-sol_64bit-1.5.0_17-cms"/>
+    </antcall>
+
+    <!-- Sun Sun 1.6 JDK -->
+    <antcall target="testgc">
+      <param name="testJVM" value="/gcm/where/jdk/1.6.0_10/sparc.Solaris/jre/bin/java"/>
+      <param name="vm.args" value="-d64 -server -Xmx512M"/>
+      <param name="result.dir" value="sun-sol_64bit-1.6.0_10-server"/>
+    </antcall>
+
+    <antcall target="testgc">
+      <param name="testJVM" value="/gcm/where/jdk/1.6.0_10/sparc.Solaris/jre/bin/java"/>
+      <param name="vm.args" value="-d64 -XX:+UseConcMarkSweepGC -Xmx512M"/>
+      <param name="result.dir" value="sun-sol_64bit-1.6.0_10-cms"/>
+    </antcall>
+  </target>
+
+
+  <!-- AIX 32 bit VMs -->
+  <target name="aix_32bit">
+    <!-- AIX 1.5 JDK -->
+    <antcall target="testgc">
+      <param name="testJVM" value="/usr/java5/jre/bin/java"/>
+      <param name="vm.args" value="-Xmx512M"/>
+      <param name="result.dir" value="ibm-aix_32bit-1.5.0"/>
+    </antcall>
+
+    <!-- AIX 1.6 JDK -->
+    <antcall target="testgc">
+      <param name="testJVM" value="/usr/java6/jre/bin/java"/>
+      <param name="vm.args" value="-Xmx512M"/>
+      <param name="result.dir" value="ibm-aix_32bit-1.6.0"/>
+    </antcall>
+  </target>
+
+  <!-- AIX 64 bit VMs -->
+  <target name="aix_64bit">
+    <!-- AIX 1.5 JDK -->
+    <antcall target="testgc">
+      <param name="testJVM" value="/usr/java5_64/jre/bin/java"/>
+      <param name="vm.args" value="-Xmx512M"/>
+      <param name="result.dir" value="ibm-aix_64bit-1.5.0"/>
+    </antcall>
+
+    <!-- AIX 1.6 JDK -->
+    <antcall target="testgc">
+      <param name="testJVM" value="/usr/java6_64/jre/bin/java"/>
+      <param name="vm.args" value="-Xmx512M"/>
+      <param name="result.dir" value="ibm-aix_64bit-1.6.0"/>
+    </antcall>
+  </target>
+
+
+  <target name="testgc">
+      <echo message="testJVM is ${testJVM}" level="info"/>
+      <echo message="test clases ${test.classes}" level="info"/>
+      <mkdir dir="${result.dir}"/>
+      <java classname="com.gemstone.gemfire.cache.management.MXMemoryPoolListenerExample" jvm="${testJVM}" fork="true" dir="${result.dir}" failonerror="false">
+        <jvmarg line="${vm.args}"/>
+        <classpath>
+           <pathelement location="${test.classes}"/>
+           <pathelement location="${product.dir}/lib/gemfire.jar"/>
+        </classpath>
+        <sysproperty key="gemfire.log-file" value="system.log"/>
+        <sysproperty key="gemfire.statistic-archive-file" value="statsArchive.gfs"/>
+      </java>
+
+  </target>
+</project>

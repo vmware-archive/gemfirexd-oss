@@ -1,0 +1,59 @@
+/*
+ * Copyright (c) 2010-2015 Pivotal Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you
+ * may not use this file except in compliance with the License. You
+ * may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * permissions and limitations under the License. See accompanying
+ * LICENSE file.
+ */
+package parReg.query;
+
+import util.PRObserver;
+import hydra.*;
+
+import com.gemstone.gemfire.CancelException;
+import com.gemstone.gemfire.cache.*;
+
+public class ConcQueryOnlyTest extends SerialQueryAndEntryOpsTest {
+  
+  /* hydra task methods */
+  /* ======================================================================== */
+  public synchronized static void HydraTask_initialize() {
+     if (queryTest == null) {
+        PRObserver.installObserverHook();
+        PRObserver.initialize(RemoteTestModule.getMyVmid());
+        queryTest = new ConcQueryOnlyTest();
+        queryTest.initialize();
+     }
+  }  
+
+  protected void doQuery(boolean logAddition) {
+    for (int i = 0; i < numOfRegions; i++) {
+      Cache aCache = CacheHelper.getCache();
+      Region aRegion;
+      if (aCache != null) {
+        aRegion = aCache.getRegion(REGION_NAME + ("" + i));
+      }
+      else
+        return;
+      try {
+        validateQuery(aRegion); 
+      } 
+      catch (CancelException e) {
+        Log.getLogWriter().info("Caught CancelException -- expected in concurrent query operation with stop start vm, continuing test: + cclex");
+        return;
+      }
+    } // check all regions
+       
+   long count = ParRegQueryBB.getBB().getSharedCounters().incrementAndRead(ParRegQueryBB.queryCount);
+    Log.getLogWriter().info("queryCount before restart is " + count);
+  }
+}

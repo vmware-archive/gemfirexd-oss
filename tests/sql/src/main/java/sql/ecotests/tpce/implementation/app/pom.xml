@@ -1,0 +1,42 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.pivotal.gemfirexd.app.tpce</groupId>
+  <artifactId>tpce-main</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <modules>
+  	<module>tpcedef</module>
+    <module>server/jpa</module>
+    <module>server/persistence</module>
+    <module>server/springjpa</module>
+    <module>server/ejb</module>
+  </modules>
+  <dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>com.pivotal.gemfirexd.app.tpce</groupId>
+            <artifactId>tpce-persistence</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.pivotal.gemfirexd.app.tpce</groupId>
+            <artifactId>tpce-jse</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.pivotal.gemfirexd.app.tpce</groupId>
+            <artifactId>tpce-springjpa</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>   
+        <dependency>
+            <groupId>com.pivotal.gemfirexd.app.tpce</groupId>
+            <artifactId>tpce-def</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>           
+    </dependencies>
+  </dependencyManagement>
+  <name>TPCE GemFireXD Application</name>
+  <organization>
+    <name>VMWare</name>
+  </organization>
+</project>

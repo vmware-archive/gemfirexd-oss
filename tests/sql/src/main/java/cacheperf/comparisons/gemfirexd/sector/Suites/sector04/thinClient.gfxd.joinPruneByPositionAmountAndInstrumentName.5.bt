@@ -1,0 +1,9 @@
+cacheperf/comparisons/gemfirexd/sector/thinClient/joinPruneByPositionAmountAndInstrumentName.conf
+clientHosts=6,9,12,15,18,21,24 clientVMsPerHost=1 clientThreadsPerVM=10
+serverHosts=5 serverVMsPerHost=1 serverThreadsPerVM=1
+heapMB = 4096
+numSectorsPerServer = 100 numInstrumentsPerSector = 100 numPositionsPerInstrument = 100
+numMarketCapValues = 20 numBookValues = 10
+numRiskValues = 5 numSymbolValues = 1
+redundantCopies = 1 enableHistogram = true
+perffmwk.comparisonKey = fromProps:clients:clientHosts:x:clientVMsPerHost:x:clientThreadsPerVM

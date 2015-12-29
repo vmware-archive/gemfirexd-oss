@@ -1,0 +1,3 @@
+// run with local.PdxInstance.conf
+
+include $JTESTS/pdx/parRegPdx.bt

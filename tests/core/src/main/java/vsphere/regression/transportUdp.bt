@@ -1,0 +1,1 @@
+include $JTESTS/vsphere/regression/transport.bt

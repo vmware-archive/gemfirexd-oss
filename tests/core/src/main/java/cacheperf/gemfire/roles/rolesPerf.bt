@@ -1,0 +1,23 @@
+// standard useCase17 test for 2 hosts: 1 publisher, 1 subscriber
+cacheperf/comparisons/useCase17/useCase17.conf
+  scope = ack
+  pubHosts = 1 pubVMsPerHost = 1 pubThreadsPerVM = 1
+  subHosts = 1 subVMsPerHost = 1 subThreadsPerVM = 1
+  messageSize = 512 sleepBeforeOp = false
+  perffmwk.comparisonKey = autogenerate
+
+cacheperf/gemfire/roles/useCase17WithRoles.conf
+  scope = distributedAck
+  batchSize = 1500000
+  hydra.numHosts = 2
+        pubHosts = 1 pubVMs = 1 pubThreads = 1
+        subHosts = 1 subVMs = 1 subThreads = 1
+  messageSize = 512 sleepBeforeOp = false
+
+cacheperf/gemfire/roles/useCase17WithRolesAndReliability.conf
+  scope = distributedAck
+  batchSize = 1500000
+  hydra.numHosts = 2
+        pubHosts = 1 pubVMs = 1 pubThreads = 1
+        subHosts = 1 subVMs = 1 subThreads = 1
+  messageSize = 512 sleepBeforeOp = false

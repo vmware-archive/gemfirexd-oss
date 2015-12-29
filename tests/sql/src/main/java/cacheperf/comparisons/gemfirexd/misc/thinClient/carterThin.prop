@@ -1,0 +1,31 @@
+locatorHosts=1
+locatorVMsPerHost=1
+locatorThreadsPerVM=1
+
+A=client
+clientHosts=1
+clientVMsPerHost=1
+clientThreadsPerVM=3
+
+B=server
+serverHosts=1
+serverVMsPerHost=1
+serverThreadsPerVM=1
+
+api=GFXD
+
+txIsolation = read_committed
+
+numProducts = 50
+numStores = 50
+numSalesRecords = 60000
+
+clientHeapMB = 256
+serverHeapMB = 3000
+
+trimSeconds =  60
+workSeconds = 180
+
+logQueries = false
+
+perffmwk.comparisonKey = carter

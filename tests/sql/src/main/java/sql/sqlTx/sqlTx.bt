@@ -1,0 +1,33 @@
+sql/sqlTx/randomPartitionNewTablesTxWithAccessors.conf
+    locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+    A=store storeHosts=2 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=3
+    workIterationsPerThread=500
+    
+sql/sqlTx/randomPartitionNewTablesTxWithAccessors.conf
+    locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+    A=store storeHosts=2 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=8
+    workIterationsPerThread=500
+    
+sql/sqlTx/randomPartitionNewTablesTxWithAccessorsHA.conf
+    locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+    A=store storeHosts=2 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=8
+    workIterationsPerThread=500
+    redundantCopies = 1
+
+sql/sqlTx/randomPartitionNewTablesTxWithAccessorsHA.conf
+    locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+    A=store storeHosts=2 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=6
+    workIterationsPerThread=500
+    redundantCopies = 2
+
+sql/sqlTx/randomPartitionNewTablesTxWithAccessorsHA.conf
+    locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+    A=store storeHosts=2 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=8
+    workIterationsPerThread=500
+    redundantCopies = 3
+    

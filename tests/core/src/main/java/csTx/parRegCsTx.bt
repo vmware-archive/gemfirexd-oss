@@ -1,0 +1,140 @@
+//-----------------------------------------------------------
+// parRegBridge tests
+// ----------------------------------------------------------
+// serialExecution
+// 1 EMPTY, 3 NORMAL (no EVICTION)
+csTx/parReg/serialParRegBridge.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=0 numAccessors=1 numEmptyClients=1 numThinClients=0
+
+// All EMPTY Clients
+csTx/parReg/serialParRegBridge.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=0 numAccessors=1 numEmptyClients=4 numThinClients=0
+
+// ALL NORMAL (no EVICTION) clients
+csTx/parReg/serialParRegBridge.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=0 numAccessors=1 numEmptyClients=0 numThinClients=0
+
+// concurrentExecution
+// 2 EMPTY, 2 NORMAL (no EVICTION)
+csTx/parReg/concParRegBridge.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=0 numAccessors=1 numEmptyClients=2 numThinClients=0
+   bridgeOrderingWorkaround=registerInterest,uniqueKeys
+
+// All EMPTY Clients
+csTx/parReg/concParRegBridge.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=0 numAccessors=1 numEmptyClients=4 numThinClients=0
+   bridgeOrderingWorkaround=registerInterest,uniqueKeys
+
+// ALL NORMAL (no EVICTION) clients
+csTx/parReg/concParRegBridge.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=0 numAccessors=1 numEmptyClients=0 numThinClients=0
+   bridgeOrderingWorkaround=registerInterest,uniqueKeys
+
+// HA testing - serial (stop 1 VM at a time)
+csTx/parReg/serialParRegHABridge.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   redundantCopies=1,2,3 numVMsToStop=1
+   numAccessors=1 numEmptyClients=1 numThinClients=0
+
+// HA testing - concurrent (stop 1 VM at a time)
+csTx/parReg/concParRegHABridge.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=1,2,3 numVMsToStop=1
+   numAccessors=1 numEmptyClients=1 numThinClients=0
+
+// ----------------------------------------------------------
+// HA testing - serial (stop 2 VMs at a time)
+csTx/parReg/serialParRegHABridge.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   redundantCopies=2,3 numVMsToStop=2
+   numAccessors=1 numEmptyClients=1 numThinClients=0
+
+// HA testing - concurrent (stop 2 VMs at a time)
+csTx/parReg/concParRegHABridge.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=2,3 numVMsToStop=2
+   numAccessors=1 numEmptyClients=1 numThinClients=0
+
+// ----------------------------------------------------------
+// HA testing - serial (stop 3 VMs at a time)
+csTx/parReg/serialParRegHABridge.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   redundantCopies=3 numVMsToStop=3
+   numAccessors=1 numEmptyClients=1 numThinClients=0
+csTx/parReg/concParRegHABridge.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=6 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=3 numVMsToStop=3
+   numAccessors=1 numEmptyClients=1 numThinClients=0
+
+// known keys ha testing
+csTx/parReg/concKnownKeysHABridge.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=3
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=180000 byteArraySize=1000 redundantCopies=1 numVMsToStop=1
+   edgeVmSize=600 serverVmSize=700
+csTx/parReg/concKnownKeysHABridge.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=3
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=100000 byteArraySize=1000 redundantCopies=2 numVMsToStop=2
+   edgeVmSize=400 serverVmSize=550
+csTx/parReg/concKnownKeysHABridge.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=3
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=75000 byteArraySize=1000 redundantCopies=3 numVMsToStop=3
+   edgeVmSize=350 serverVmSize=450
+
+// FunctionExecution (client/server w/tx)
+csTx/parReg/hctFuncExecWOCustomPartition.conf
+   edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=1000 byteArraySize=500 redundancy=1
+   redundantCopies=0,1,2,3
+
+csTx/parReg/hctFuncExecWithCustomPartitioning.conf
+   edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=1000 byteArraySize=500 redundancy=2
+   redundantCopies=0,1,2,3
+
+csTx/parReg/hctFuncExecWithColocation.conf
+   edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=1000 byteArraySize=500 redundancy=3
+   redundantCopies=0,1,2,3
+
+csTx/parReg/hctFuncExecWithColocationHA.conf
+   edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=10000 byteArraySize=500 redundancy=1 numVMsToStop=1
+   redundantCopies=1
+
+csTx/parReg/hctFuncExecWithColocationHA.conf
+   edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=10000 byteArraySize=500 redundancy=2 numVMsToStop=2
+   redundantCopies=2
+
+csTx/parReg/hctFuncExecWithColocationHA.conf
+   edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=10000 byteArraySize=500 redundancy=3 numVMsToStop=3
+   redundantCopies=3
+

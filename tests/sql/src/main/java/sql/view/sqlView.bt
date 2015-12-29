@@ -1,0 +1,35 @@
+sql/view/thinClientAccessorNoPartition.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=1 serverVMsPerHost=2 serverThreadsPerVM=1
+    clientHosts = 1 clientVMsPerHost=5 clientThreadsPerVM=5
+    
+sql/view/thinClientAccessorNoPartitionConc.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=1 serverVMsPerHost=2 serverThreadsPerVM=1
+    clientHosts = 1 clientVMsPerHost=5 clientThreadsPerVM=5
+    
+sql/view/thinClientAccessorPartition.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=1 serverVMsPerHost=2 serverThreadsPerVM=1
+    clientHosts = 1 clientVMsPerHost=5 clientThreadsPerVM=5
+    
+sql/view/thinClientAccessorPartitionConc.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=1 serverVMsPerHost=2 serverThreadsPerVM=1
+    clientHosts = 1 clientVMsPerHost=5 clientThreadsPerVM=5 
+    
+sql/view/peerClientAccessorNoPartition.conf
+    A=store storeHosts=1 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=3 accessorThreadsPerVM=3
+ 
+sql/view/peerClientAccessorNoPartitionConc.conf
+     A=store storeHosts=1 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=3 accessorThreadsPerVM=3
+    
+sql/view/peerClientAccessorPartition.conf
+    A=store storeHosts=1 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=3 accessorThreadsPerVM=3
+    
+sql/view/peerClientAccessorPartitionConc.conf
+    A=store storeHosts=1 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=3 accessorThreadsPerVM=3

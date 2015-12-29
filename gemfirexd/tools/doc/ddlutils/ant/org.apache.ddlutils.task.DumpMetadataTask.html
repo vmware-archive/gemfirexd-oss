@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title>dumpMetadata</title>
+<link href="styles.css" type="text/css" rel="stylesheet">
+</head>
+<body>
+<h2> dumpMetadata</h2>
+<fieldset class="taskDescription">
+<legend><a class="anchor" name="description">Description</a></legend>
+<p>Java type: <a href="../api/org/apache/ddlutils/task/DumpMetadataTask.html"><code>org.apache.ddlutils.task.DumpMetadataTask</code></a></p>
+<p>A simple helper task that dumps information about a database using JDBC.</p>
+</fieldset>
+<fieldset class="taskParameters">
+<legend><a class="anchor" name="parameters">Parameters</a></legend>
+  	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-columnpattern">columnpattern</a> : String
+  	</p>
+	<p class="taskParameterDescription">
+	Specifies the columns to be processed. For details and typical table types see {@link DatabaseMetaData#getColumns(String, String, String, String)}. <br/>
+        By default, all columns are read (value <code>%</code>).
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-schemapattern">schemapattern</a> : String
+  	</p>
+	<p class="taskParameterDescription">
+	Sets the schema pattern used when accessing the database. <br/>
+        Per default, no specific schema is used (value <code>%</code>).
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-tabletypes">tabletypes</a> : String
+  	</p>
+	<p class="taskParameterDescription">
+	Specifies the table types to be processed. For details and typical table types see {@link DatabaseMetaData#getTables(String, String, String, String[])}. <br/>
+        By default, all types of tables are read.
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-outputfile">outputfile</a> : File
+   <span class="requiredInfo">(required)</span> 	</p>
+	<p class="taskParameterDescription">
+	Specifies the output file to which the database metadata is written to. <br/>
+        
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-catalogpattern">catalogpattern</a> : String
+  	</p>
+	<p class="taskParameterDescription">
+	Sets the catalog pattern used when accessing the database. <br/>
+        Per default, no specific catalog is used (value <code>%</code>).
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-procedurepattern">procedurepattern</a> : String
+  	</p>
+	<p class="taskParameterDescription">
+	Specifies the procedures to be processed. For details and typical table types see {@link DatabaseMetaData#getProcedures(String, String, String)}. <br/>
+        By default, all procedures are read (value <code>%</code>).
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-dumpprocedures">dumpprocedures</a> : boolean
+  	</p>
+	<p class="taskParameterDescription">
+	Specifies whether procedures shall be read from the database. <br/>
+        By default, procedures are read.
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-outputencoding">outputencoding</a> : String
+  	</p>
+	<p class="taskParameterDescription">
+	Specifies the encoding of the output file. <br/>
+        Per default, <code>UTF-8</code> is used.
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-dumptables">dumptables</a> : boolean
+  	</p>
+	<p class="taskParameterDescription">
+	Specifies whether tables shall be read from the database. <br/>
+        By default, tables are read.
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-tablepattern">tablepattern</a> : String
+  	</p>
+	<p class="taskParameterDescription">
+	Specifies the table to be processed. For details see {@link DatabaseMetaData#getTables(String, String, String, String[])}. <br/>
+        By default, all tables are read (value <code>%</code>).
+  	</p>
+</fieldset>
+<fieldset class="taskNestedElements">
+<legend><a class="anchor" name="nestedElements">Nested elements</a></legend>
+  	<p class="taskNestedElementExternalRef">&rArr;&nbsp;<a href="http://jakarta.apache.org/commons/dbcp/apidocs/org/apache/commons/dbcp/BasicDataSource.html"><code>database</code> (an object of type <code>org.apache.commons.dbcp.BasicDataSource</code>)</a></p>
+  <div class="taskNestedElementSeparator"></div>
+  </fieldset>
+<p>&copy;2005-2007 Apache Software Foundation</p>
+</body>
+</html>

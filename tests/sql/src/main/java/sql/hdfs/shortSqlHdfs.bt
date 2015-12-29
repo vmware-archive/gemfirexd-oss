@@ -1,0 +1,503 @@
+sql/hdfs/hdfsWithoutEvictionCriteriaRW.conf
+  A=datastore datastoreHosts=4 datastoreVMsPerHost=1 datastoreThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=9
+  locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  redundantCopies=1
+  testMultiTableJoin=false
+  testUniqueKeys=true
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:random
+  employees=emp.employees:random
+    
+sql/hdfs/hdfsEvictionCriteriaRW.conf
+  A=datastore datastoreHosts=4 datastoreVMsPerHost=1 datastoreThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=9
+  locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  redundantCopies=1
+  testMultiTableJoin=false
+  testUniqueKeys=true
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:random
+  employees=emp.employees:random    
+   
+// HA tests
+sql/hdfs/hdfsWithoutEvictionCriteriaRWHA.conf
+  A=datastore datastoreHosts=4 datastoreVMsPerHost=1 datastoreThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=9
+  locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  redundantCopies=1
+  testMultiTableJoin=false
+  testUniqueKeys=true
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:replicate
+  employees=emp.employees:replicate
+  
+sql/hdfs/hdfsEvictionCriteriaRWHA.conf
+  A=datastore datastoreHosts=4 datastoreVMsPerHost=1 datastoreThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=9
+  locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  redundantCopies=1
+  testMultiTableJoin=false
+  testUniqueKeys=true
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:replicate
+  employees=emp.employees:replicate
+
+// with index
+sql/hdfs/hdfsRWIndex.conf
+  A=datastore datastoreHosts=4 datastoreVMsPerHost=1 datastoreThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=9
+  locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  redundantCopies=1
+  testUniqueKeys=true
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:random
+  employees=emp.employees:random  
+  setCriticalHeap = false
+  maxHeapSize=256
+  dropIndex=true
+
+// persist recovery
+sql/hdfs/hdfsRWPersistRecovery.conf
+    A=store storeHosts=1 storeVMsPerHost= 7 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=10
+    locatorHosts = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+    redundantCopies=2
+
+sql/hdfs/hdfsRWPersistRecoveryHA.conf
+    A=store storeHosts=1 storeVMsPerHost= 7 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=10
+    locatorHosts = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+    redundantCopies=2
+        
+// HA tests
+sql/hdfs/hdfsConcJoinTablesWithUniqHA.conf
+  A=datastore datastoreHosts=4 datastoreVMsPerHost=1 datastoreThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=9
+  locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  redundantCopies=1
+  testUniqueKeys=true  
+    
+sql/hdfs/hdfsPutDmlCommand.conf
+  A=datastore datastoreHosts=4 datastoreVMsPerHost=1 datastoreThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=9
+  locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  redundantCopies=1
+  testMultiTableJoin=false
+  testUniqueKeys=true
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:random
+  employees=emp.employees:random  
+
+sql/hdfs/hdfsMrWriteOnly.conf
+  A=datastore datastoreHosts=4 datastoreVMsPerHost=1 datastoreThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=9
+  locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  redundantCopies=1
+  testMultiTableJoin=false
+  testUniqueKeys=true
+  mapredVersion1=true
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:random
+  employees=emp.employees:random  
+     
+sql/hdfs/hdfsMrRW.conf
+  A=datastore datastoreHosts=4 datastoreVMsPerHost=1 datastoreThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=9
+  locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  redundantCopies=1
+  testMultiTableJoin=false
+  testUniqueKeys=true
+  mapredVersion1=true
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:random
+  employees=emp.employees:random  
+  
+sql/hdfs/parentAndChildWithoutHdfsStore.conf
+  A=datastore datastoreHosts=4 datastoreVMsPerHost=1 datastoreThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=9
+  locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  redundantCopies=1
+  testMultiTableJoin=false
+  testUniqueKeys=true
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:random
+  employees=emp.employees:random  
+  
+ // HDFS test using thin client - Start
+sql/hdfs/hdfsWithoutEvictionCriteriaRWClient.conf
+  A=server serverHosts=4 serverVMsPerHost=1 serverThreadsPerVM=1
+  B=client clientHosts=2 clientVMsPerHost=1 clientThreadsPerVM=9
+  locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  redundantCopies=1
+  testMultiTableJoin=false
+  testUniqueKeys=true
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:random
+  employees=emp.employees:random
+ 
+sql/hdfs/hdfsEvictionCriteriaRWClient.conf
+  A=server serverHosts=4 serverVMsPerHost=1 serverThreadsPerVM=1
+  B=client clientHosts=2 clientVMsPerHost=1 clientThreadsPerVM=9
+  locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  redundantCopies=1
+  testMultiTableJoin=false
+  testUniqueKeys=true
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:random
+  employees=emp.employees:random    
+   
+sql/hdfs/hdfsWithoutEvictionCriteriaRWHAClient.conf
+  A=server serverHosts=4 serverVMsPerHost=1 serverThreadsPerVM=1
+  B=client clientHosts=2 clientVMsPerHost=1 clientThreadsPerVM=9
+  locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  redundantCopies=1
+  testMultiTableJoin=false
+  testUniqueKeys=true
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:replicate
+  employees=emp.employees:replicate
+  
+sql/hdfs/hdfsEvictionCriteriaRWHAClient.conf
+  A=server serverHosts=4 serverVMsPerHost=1 serverThreadsPerVM=1
+  B=client clientHosts=2 clientVMsPerHost=1 clientThreadsPerVM=9
+  locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  redundantCopies=1
+  testMultiTableJoin=false
+  testUniqueKeys=true
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:replicate
+  employees=emp.employees:replicate
+
+sql/hdfs/hdfsPutDmlCommandThinClient.conf
+  A=server serverHosts=4 serverVMsPerHost=1 serverThreadsPerVM=1
+  B=client clientHosts=2 clientVMsPerHost=1 clientThreadsPerVM=9
+  locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  redundantCopies=1
+  testMultiTableJoin=false
+  testUniqueKeys=true
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:random
+  employees=emp.employees:random
+  
+sql/hdfs/hdfsMrWriteOnlyClient.conf
+  A=server serverHosts=4 serverVMsPerHost=1 serverThreadsPerVM=1
+  B=client clientHosts=2 clientVMsPerHost=1 clientThreadsPerVM=9
+  locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  redundantCopies=1
+  testMultiTableJoin=false
+  testUniqueKeys=true
+  mapredVersion1=true
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:random
+  employees=emp.employees:random
+
+sql/hdfs/hdfsMrRWClient.conf
+  A=server serverHosts=4 serverVMsPerHost=1 serverThreadsPerVM=1
+  B=client clientHosts=2 clientVMsPerHost=1 clientThreadsPerVM=9
+  locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  redundantCopies=1
+  testMultiTableJoin=false
+  testUniqueKeys=true
+  mapredVersion1=true
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:random
+  employees=emp.employees:random  
+ // HDFS test using thin client - End 
+      
+sql/hdfs/hdfsMrVerifyAllUpdateWriteOnly.conf
+  A=datastore datastoreHosts=4 datastoreVMsPerHost=1 datastoreThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=9
+  locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  redundantCopies=1
+  testMultiTableJoin=false
+  testUniqueKeys=true
+  mapredVersion1=true
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:random
+  employees=emp.employees:random
+  
+  sql/hdfs/hdfsMrVerifyAllUpdateWriteOnlyHA.conf
+  A=datastore datastoreHosts=4 datastoreVMsPerHost=1 datastoreThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=9
+  locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  redundantCopies=1
+  testMultiTableJoin=false
+  testUniqueKeys=true
+  mapredVersion1=true
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:replicate
+  employees=emp.employees:replicate    
+
+  // HA tests
+sql/hdfs/hdfsMrRWHA.conf  
+  A=datastore datastoreHosts=4 datastoreVMsPerHost=1 datastoreThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=9
+  locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  redundantCopies=1
+  testMultiTableJoin=false
+  testUniqueKeys=true
+  mapredVersion1=false
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:replicate
+  employees=emp.employees:replicate
+  
+sql/hdfs/hdfsMrWriteOnlyHA.conf  
+  A=datastore datastoreHosts=4 datastoreVMsPerHost=1 datastoreThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=9
+  locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  redundantCopies=1
+  testMultiTableJoin=false
+  testUniqueKeys=true
+  mapredVersion1=false
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:replicate
+  employees=emp.employees:replicate 
+  
+  sql/hdfs/hdfsMrVerifyAllUpdateWriteOnlyHA.conf
+  A=datastore datastoreHosts=4 datastoreVMsPerHost=1 datastoreThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=9
+  locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  redundantCopies=1
+  testMultiTableJoin=false
+  testUniqueKeys=true
+  mapredVersion1=false
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:replicate
+  employees=emp.employees:replicate    
+
+  sql/hdfs/hdfsMrWriteOnlyPersistent.conf
+  A=datastore datastoreHosts=4 datastoreVMsPerHost=1 datastoreThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=9
+  locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  redundantCopies=1
+  testMultiTableJoin=false
+  testUniqueKeys=true
+  mapredVersion1=false
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:random
+  employees=emp.employees:random 
+
+sql/hdfs/hdfsMultiPurposeStore.conf
+  A=datastore datastoreHosts=4 datastoreVMsPerHost=1 datastoreThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=9
+  locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  redundantCopies=1
+  testUniqueKeys=true
+  testMultiTableJoin=false
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:random
+  employees=emp.employees:random  
+  
+sql/hdfs/hdfsConcJoinTablesWithUniqAndMoreData.conf
+  A=datastore datastoreHosts=2 datastoreVMsPerHost=1 datastoreThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=9
+  locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  redundantCopies=1
+  testUniqueKeys=true
+  dropIndex = true 
+// Compaction
+sql/hdfs/hdfsCompaction.conf
+  A = datastore datastoreHosts = 1 datastoreVMsPerHost = 1 datastoreThreadsPerVM = 1
+  B = accessor  accessorHosts  = 1 accessorVMsPerHost  = 1 accessorThreadsPerVM  = 3
+  C = locator   locatorHosts   = 1 locatorVMsPerHost   = 1 locatorThreadsPerVM   = 1
+  redundantCopies    = 1
+  testUniqueKeys     = false
+  testMultiTableJoin = false
+  securities=trade.securities:0
+  hoplogJanitorIntervalSecs = 30
+  desiredMinorCompactions   = 100
+  desiredMajorCompactions   = 2
+
+// Compaction using SYS.HDFS_FORCE_COMPACTION vs. configuring major compactions
+sql/hdfs/hdfsCompactionProcedure.conf
+  A = datastore datastoreHosts = 1 datastoreVMsPerHost = 1 datastoreThreadsPerVM = 1
+  B = accessor  accessorHosts  = 1 accessorVMsPerHost  = 1 accessorThreadsPerVM  = 3
+  C = locator   locatorHosts   = 1 locatorVMsPerHost   = 1 locatorThreadsPerVM   = 1
+  redundantCopies    = 1
+  testUniqueKeys     = false
+  testMultiTableJoin = false
+  securities=trade.securities:0
+  hoplogJanitorIntervalSecs = 30
+  desiredMinorCompactions   = 1130
+  desiredMajorCompactions   = 226
+  
+sql/hdfs/testBug49002.conf
+  A=datastore datastoreHosts=4 datastoreVMsPerHost=1 datastoreThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=9
+  locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  redundantCopies=1
+  testMultiTableJoin=false
+  testUniqueKeys=true
+  mapredVersion1=true,false 
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:random
+  employees=emp.employees:random

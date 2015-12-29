@@ -1,0 +1,13 @@
+perffmwk.comparisonKey = scale101
+locatorHosts = 1
+locatorVMsPerHost = 1
+locatorThreadsPerVM = 1
+A = peer
+peerHosts = 4
+peerVMsPerHost = 1
+peerThreadsPerVM = 1
+conserveSockets = true
+heapMB = 1500
+maxKeys = 275000
+objectSize = unused
+version = default

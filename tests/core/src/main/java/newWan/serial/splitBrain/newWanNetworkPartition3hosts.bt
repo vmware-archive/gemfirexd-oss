@@ -1,0 +1,86 @@
+// Serial WAN sender
+// dataPolicy = normal, replicate, persistentReplicate
+newWan/serial/splitBrain/wan_p2pNetworkPartition1.conf 
+   onlyOnPlatforms=Linux
+
+newWan/serial/splitBrain/wan_p2pNetworkPartition2.conf 
+   onlyOnPlatforms=Linux
+
+newWan/serial/splitBrain/wan_p2pNetworkPartition3.conf 
+   onlyOnPlatforms=Linux
+
+newWan/serial/splitBrain/wan_p2pNetworkPartition4.conf 
+   onlyOnPlatforms=Linux
+
+newWan/serial/splitBrain/wan_bridgeNetworkPartition1.conf 
+   onlyOnPlatforms=Linux
+
+newWan/serial/splitBrain/wan_bridgeNetworkPartition2.conf 
+   onlyOnPlatforms=Linux
+
+newWan/serial/splitBrain/wan_bridgeNetworkPartition3.conf 
+   onlyOnPlatforms=Linux
+
+newWan/serial/splitBrain/wan_bridgeNetworkPartition4.conf 
+   onlyOnPlatforms=Linux   
+
+// dataPolicy = partition
+parReg/newWan/serial/splitBrain/wan_p2pNetworkPartition1.conf 
+   onlyOnPlatforms=Linux
+
+parReg/newWan/serial/splitBrain/wan_p2pNetworkPartition2.conf 
+   onlyOnPlatforms=Linux
+
+parReg/newWan/serial/splitBrain/wan_p2pNetworkPartition3.conf 
+   onlyOnPlatforms=Linux
+
+parReg/newWan/serial/splitBrain/wan_p2pNetworkPartition4.conf 
+   onlyOnPlatforms=Linux
+
+parReg/newWan/serial/splitBrain/wan_bridgeNetworkPartition1.conf 
+   onlyOnPlatforms=Linux
+
+parReg/newWan/serial/splitBrain/wan_bridgeNetworkPartition2.conf 
+   onlyOnPlatforms=Linux
+
+parReg/newWan/serial/splitBrain/wan_bridgeNetworkPartition3.conf 
+   onlyOnPlatforms=Linux
+
+parReg/newWan/serial/splitBrain/wan_bridgeNetworkPartition4.conf 
+   onlyOnPlatforms=Linux   
+
+// Parallel WAN sender
+// dataPolicy = partition
+parReg/newWan/parallel/splitBrain/wan_p2pNetworkPartition1.conf 
+   onlyOnPlatforms=Linux
+
+parReg/newWan/parallel/splitBrain/wan_p2pNetworkPartition2.conf 
+   onlyOnPlatforms=Linux
+
+parReg/newWan/parallel/splitBrain/wan_p2pNetworkPartition3.conf 
+   onlyOnPlatforms=Linux
+
+parReg/newWan/parallel/splitBrain/wan_p2pNetworkPartition4.conf 
+   onlyOnPlatforms=Linux
+
+parReg/newWan/parallel/splitBrain/wan_bridgeNetworkPartition1.conf 
+   onlyOnPlatforms=Linux
+
+parReg/newWan/parallel/splitBrain/wan_bridgeNetworkPartition2.conf 
+   onlyOnPlatforms=Linux
+
+parReg/newWan/parallel/splitBrain/wan_bridgeNetworkPartition3.conf 
+   onlyOnPlatforms=Linux
+
+parReg/newWan/parallel/splitBrain/wan_bridgeNetworkPartition4.conf 
+   onlyOnPlatforms=Linux 
+   
+// networkDown variant of mlRioSequentialKeys ***
+newWan/serial/splitBrain/mlRioNetDown.conf numRootRegions = 3 numDynamicRegions = 3
+   onlyOnPlatforms=Linux
+
+parReg/newWan/serial/splitBrain/mlRioNetDown.conf numRootRegions = 3 numDynamicRegions = 0
+   onlyOnPlatforms=Linux
+                       
+parReg/newWan/parallel/splitBrain/mlRioNetDown.conf numRootRegions = 1 numDynamicRegions = 0
+   onlyOnPlatforms=Linux   

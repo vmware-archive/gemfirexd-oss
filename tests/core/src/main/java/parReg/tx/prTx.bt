@@ -1,0 +1,266 @@
+// Simple test to confirm custom partitioning w/various resolvers
+parReg/tx/p2pCustomPartition-resolver.conf
+  locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+  peerHosts=3 peerVMsPerHost=2 peerThreadsPerVM=4
+
+parReg/tx/p2pCustomPartition-keyResolver.conf
+  locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+  peerHosts=3 peerVMsPerHost=2 peerThreadsPerVM=4
+
+parReg/tx/p2pCustomPartition-callbackResolver.conf
+  locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+  peerHosts=3 peerVMsPerHost=2 peerThreadsPerVM=4
+
+// Simple test to confirm that remote VMs only invoke TransactionListener
+// for Regions defined by that VM
+parReg/tx/multiRegionTxListener.conf
+  locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+  peerHosts=3 peerVMsPerHost=2 peerThreadsPerVM=4
+
+// Simple serial test that does PR transactions remotely within a 'Function'
+parReg/tx/serialPrTxFunctionExecution.conf
+  locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+  peerHosts=3 peerVMsPerHost=2 peerThreadsPerVM=4
+
+// Simple concurrent test that does PR transactions remotely within a 'Function' 
+parReg/tx/concPrTxFunctionExecution.conf
+  locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+  peerHosts=3 peerVMsPerHost=2 peerThreadsPerVM=4
+
+// Simple serial test which does PR transactions on entries local to this VM
+parReg/tx/serialPrTxLocalVm.conf
+  locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+  peerHosts=3 peerVMsPerHost=2 peerThreadsPerVM=4
+
+// Simple concurrent test which does PR transactions on entries local to this VM
+parReg/tx/concPrTxLocalVm.conf
+  locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+  peerHosts=3 peerVMsPerHost=2 peerThreadsPerVM=4
+
+// Simple (concurrent) test which does transactions on entries colocated the local VM
+parReg/tx/colocatedTxLocalVm.conf sameKeyColocatedRegions=true
+  locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+  peerHosts=3 peerVMsPerHost=2 peerThreadsPerVM=4
+
+parReg/tx/colocatedTxLocalVm.conf sameKeyColocatedRegions=false
+  locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+  peerHosts=3 peerVMsPerHost=2 peerThreadsPerVM=4
+
+// Simple (concurrent) test which does transactions on entries colocated on a remote VM
+parReg/tx/colocatedTxRemoteVm.conf sameKeyColocatedRegions=true
+  locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+  peerHosts=3 peerVMsPerHost=2 peerThreadsPerVM=4
+
+parReg/tx/colocatedTxRemoteVm.conf sameKeyColocatedRegions=false
+  locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+  peerHosts=3 peerVMsPerHost=2 peerThreadsPerVM=4
+
+// ParReg version of tx/distSerialView.conf
+parReg/tx/parRegSerialView.conf 
+   useLocalKeySet=true interestPolicy = cache_content redundantCopies = 0
+parReg/tx/parRegSerialView.conf 
+   useLocalKeySet=true interestPolicy = cache_content redundantCopies = 1
+parReg/tx/parRegSerialView.conf 
+   useLocalKeySet=true interestPolicy = all redundantCopies = 0
+parReg/tx/parRegSerialView.conf 
+   useLocalKeySet=true interestPolicy = all redundantCopies = 1
+
+parReg/tx/parRegSerialView.conf 
+   useLocalKeySet=false interestPolicy = cache_content redundantCopies = 0
+parReg/tx/parRegSerialView.conf 
+   useLocalKeySet=false interestPolicy = cache_content redundantCopies = 1
+parReg/tx/parRegSerialView.conf 
+   useLocalKeySet=false interestPolicy = all redundantCopies = 0
+parReg/tx/parRegSerialView.conf 
+   useLocalKeySet=false interestPolicy = all redundantCopies = 1
+
+parReg/tx/parRegSerialViewAlwaysFireLocalListeners.conf 
+   useLocalKeySet=true interestPolicy = cache_content redundantCopies = 0 
+parReg/tx/parRegSerialViewAlwaysFireLocalListeners.conf
+   useLocalKeySet=true interestPolicy = cache_content redundantCopies = 1
+parReg/tx/parRegSerialViewAlwaysFireLocalListeners.conf
+   useLocalKeySet=true interestPolicy = all redundantCopies = 0
+parReg/tx/parRegSerialViewAlwaysFireLocalListeners.conf
+   useLocalKeySet=true interestPolicy = all redundantCopies = 1
+
+parReg/tx/parRegSerialViewAlwaysFireLocalListeners.conf 
+   useLocalKeySet=false interestPolicy = cache_content redundantCopies = 0 
+parReg/tx/parRegSerialViewAlwaysFireLocalListeners.conf
+   useLocalKeySet=false interestPolicy = cache_content redundantCopies = 1
+parReg/tx/parRegSerialViewAlwaysFireLocalListeners.conf
+   useLocalKeySet=false interestPolicy = all redundantCopies = 0
+parReg/tx/parRegSerialViewAlwaysFireLocalListeners.conf
+   useLocalKeySet=false interestPolicy = all redundantCopies = 1
+
+// High Priority Use Case #1
+parReg/tx/prTxQuery.conf
+parReg/tx/distTxQuery.conf
+
+// mixed replicated/partitioned region tx view tests
+// ParReg version of tx/distSerialView.conf (local PR data)
+parReg/tx/mixedRegionSerialView.conf
+   useLocalKeySet=true interestPolicy = cache_content redundantCopies = 0
+parReg/tx/mixedRegionSerialView.conf
+   useLocalKeySet=true interestPolicy = cache_content redundantCopies = 1
+parReg/tx/mixedRegionSerialView.conf
+   useLocalKeySet=true interestPolicy = all redundantCopies = 0
+parReg/tx/mixedRegionSerialView.conf
+   useLocalKeySet=true interestPolicy = all redundantCopies = 1
+
+parReg/tx/mixedRegionSerialViewAlwaysFireLocalListeners.conf
+   useLocalKeySet=true interestPolicy = cache_content redundantCopies = 0
+parReg/tx/mixedRegionSerialViewAlwaysFireLocalListeners.conf
+   useLocalKeySet=true interestPolicy = cache_content redundantCopies = 1
+parReg/tx/mixedRegionSerialViewAlwaysFireLocalListeners.conf
+   useLocalKeySet=true interestPolicy = all redundantCopies = 0
+parReg/tx/mixedRegionSerialViewAlwaysFireLocalListeners.conf
+   useLocalKeySet=true interestPolicy = all redundantCopies = 1
+
+// mixed replicated/partitioned region tx view tests
+// ParReg version of tx/distSerialView.conf (remote PR data)
+parReg/tx/mixedRegionSerialView.conf
+   useLocalKeySet=false interestPolicy = cache_content redundantCopies = 0
+parReg/tx/mixedRegionSerialView.conf
+   useLocalKeySet=false interestPolicy = cache_content redundantCopies = 1
+parReg/tx/mixedRegionSerialView.conf
+   useLocalKeySet=false interestPolicy = all redundantCopies = 0
+parReg/tx/mixedRegionSerialView.conf
+   useLocalKeySet=false interestPolicy = all redundantCopies = 1
+
+// mixed replicated/partitioned region tx view tests (with TX Vm as an accessor)
+parReg/tx/mixedRegionSerialViewTxAccessor.conf
+   useLocalKeySet=false interestPolicy = cache_content redundantCopies = 0
+parReg/tx/mixedRegionSerialViewTxAccessor.conf
+   useLocalKeySet=false interestPolicy = cache_content redundantCopies = 1
+parReg/tx/mixedRegionSerialViewTxAccessor.conf
+   useLocalKeySet=false interestPolicy = all redundantCopies = 0
+parReg/tx/mixedRegionSerialViewTxAccessor.conf
+   useLocalKeySet=false interestPolicy = all redundantCopies = 1
+
+parReg/tx/mixedRegionSerialViewAlwaysFireLocalListeners.conf
+   useLocalKeySet=false interestPolicy = cache_content redundantCopies = 0
+parReg/tx/mixedRegionSerialViewAlwaysFireLocalListeners.conf
+   useLocalKeySet=false interestPolicy = cache_content redundantCopies = 1
+parReg/tx/mixedRegionSerialViewAlwaysFireLocalListeners.conf
+   useLocalKeySet=false interestPolicy = all redundantCopies = 0
+parReg/tx/mixedRegionSerialViewAlwaysFireLocalListeners.conf
+   useLocalKeySet=false interestPolicy = all redundantCopies = 1
+
+parReg/tx/mixedRegionSerialViewWithFE.conf
+   useLocalKeySet=true interestPolicy = cache_content redundantCopies = 0
+parReg/tx/mixedRegionSerialViewWithFE.conf
+   useLocalKeySet=true interestPolicy = cache_content redundantCopies = 1
+parReg/tx/mixedRegionSerialViewWithFE.conf
+   useLocalKeySet=false interestPolicy = cache_content redundantCopies = 0
+parReg/tx/mixedRegionSerialViewWithFE.conf
+   useLocalKeySet=false interestPolicy = cache_content redundantCopies = 1
+
+// pr versions of distIntegrity
+// Kill Committing VM during commit
+parReg/tx/parRegIntegrityLocal.conf hydra.numHosts=3 commitStateTrigger=afterReservation 
+parReg/tx/parRegIntegrityLocal.conf hydra.numHosts=3 commitStateTrigger=afterConflictCheck 
+parReg/tx/parRegIntegrityLocal.conf hydra.numHosts=3 commitStateTrigger=beforeSend 
+parReg/tx/parRegIntegrityLocal.conf hydra.numHosts=3 commitStateTrigger=duringIndividualSend 
+parReg/tx/parRegIntegrityLocal.conf hydra.numHosts=3 commitStateTrigger=afterIndividualSend 
+parReg/tx/parRegIntegrityLocal.conf hydra.numHosts=3 commitStateTrigger=duringIndividualCommit 
+parReg/tx/parRegIntegrityLocal.conf hydra.numHosts=3 commitStateTrigger=afterIndividualCommit 
+parReg/tx/parRegIntegrityLocal.conf hydra.numHosts=3 commitStateTrigger=afterApplyChanges 
+parReg/tx/parRegIntegrityLocal.conf hydra.numHosts=3 commitStateTrigger=afterReleaseLocalLocks 
+parReg/tx/parRegIntegrityLocal.conf hydra.numHosts=3 commitStateTrigger=afterSend 
+
+// Kill Committing VM during commit
+parReg/tx/parRegIntegrityRemote.conf hydra.numHosts=3 commitStateTrigger=afterReservation 
+parReg/tx/parRegIntegrityRemote.conf hydra.numHosts=3 commitStateTrigger=afterConflictCheck 
+parReg/tx/parRegIntegrityRemote.conf hydra.numHosts=3 commitStateTrigger=beforeSend 
+parReg/tx/parRegIntegrityRemote.conf hydra.numHosts=3 commitStateTrigger=duringIndividualSend 
+parReg/tx/parRegIntegrityRemote.conf hydra.numHosts=3 commitStateTrigger=afterIndividualSend 
+parReg/tx/parRegIntegrityRemote.conf hydra.numHosts=3 commitStateTrigger=duringIndividualCommit 
+parReg/tx/parRegIntegrityRemote.conf hydra.numHosts=3 commitStateTrigger=afterIndividualCommit 
+parReg/tx/parRegIntegrityRemote.conf hydra.numHosts=3 commitStateTrigger=afterApplyChanges 
+parReg/tx/parRegIntegrityRemote.conf hydra.numHosts=3 commitStateTrigger=afterReleaseLocalLocks 
+parReg/tx/parRegIntegrityRemote.conf hydra.numHosts=3 commitStateTrigger=afterSend 
+
+parReg/tx/parRegIntegrityRemoteKillTxVm.conf hydra.numHosts=3 commitStateTrigger=afterSendCommit commitPercentage=100
+parReg/tx/parRegIntegrityRemoteKillTxVm.conf hydra.numHosts=3 commitStateTrigger=afterSendRollback commitPercentage=0
+
+// parRegSerialView with putAll (cannot validate TxEvent ordering)
+parReg/tx/parRegSerialViewWithPutAll.conf
+   useLocalKeySet=true interestPolicy = cache_content redundantCopies = 0
+parReg/tx/parRegSerialViewWithPutAll.conf
+   useLocalKeySet=true interestPolicy = cache_content redundantCopies = 1
+parReg/tx/parRegSerialViewWithPutAll.conf
+   useLocalKeySet=true interestPolicy = all redundantCopies = 0
+parReg/tx/parRegSerialViewWithPutAll.conf
+   useLocalKeySet=true interestPolicy = all redundantCopies = 1
+
+parReg/tx/parRegSerialViewWithPutAll.conf
+   useLocalKeySet=false interestPolicy = cache_content redundantCopies = 0
+parReg/tx/parRegSerialViewWithPutAll.conf
+   useLocalKeySet=false interestPolicy = cache_content redundantCopies = 1
+parReg/tx/parRegSerialViewWithPutAll.conf
+   useLocalKeySet=false interestPolicy = all redundantCopies = 0
+parReg/tx/parRegSerialViewWithPutAll.conf
+   useLocalKeySet=false interestPolicy = all redundantCopies = 1
+
+parReg/tx/prBridgeSerialView.conf interestPolicy = cache_content redundantCopies = 0
+  bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+  edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=2
+parReg/tx/prBridgeSerialView.conf interestPolicy = cache_content redundantCopies = 1
+  bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+  edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=2
+parReg/tx/prBridgeSerialView.conf interestPolicy = all redundantCopies = 0
+  bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+  edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=2
+parReg/tx/prBridgeSerialView.conf interestPolicy = all redundantCopies = 1
+  bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+  edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=2
+
+parReg/tx/parRegBridgeIntegrityKillCommittor.conf
+  commitStateTrigger=afterSendCommit commitPercentage=100
+  bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+  edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=2
+
+parReg/tx/parRegBridgeIntegrityKillCommittor.conf
+  commitStateTrigger=afterSendRollback commitPercentage=0
+  bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+  edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=2
+
+parReg/tx/parRegBridgeIntegrityKillDelegate.conf
+  commitStateTrigger=afterSendCommit commitPercentage=100
+  bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+  edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=2
+
+parReg/tx/parRegBridgeIntegrityKillDelegate.conf
+  commitStateTrigger=afterSendRollback commitPercentage=0
+  bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+  edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=2
+
+// We can only have 2 bridgeServers in this test ... that way, the  only 
+// choice for the non-delegate is the dataHost itself
+parReg/tx/parRegBridgeIntegrityKillDataHost.conf
+  commitStateTrigger=afterSendCommit commitPercentage=100
+  bridgeHosts=2 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+  edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=2
+
+// We can only have 2 bridgeServers in this test ... that way, the  only 
+// choice for the non-delegate is the dataHost itself
+parReg/tx/parRegBridgeIntegrityKillDataHost.conf
+  commitStateTrigger=afterSendRollback commitPercentage=0
+  bridgeHosts=2 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+  edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=2
+
+// FunctionExecution (converted p2p test => client/server topology)
+parReg/tx/serialTxBridgeFunctionExecution.conf
+  locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+  bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+  edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=2
+
+// WBCL (event) tests (new in 6.6.2)
+parReg/tx/serialWBCLEvent.conf
+   A=wbcl wbclHosts=1 wbclVMsPerHost=1 wbclThreadsPerVM=2
+   B=peer peerHosts=1 peerVMsPerHost=3 peerThreadsPerVM=2
+
+parReg/tx/concWBCLEvent.conf
+   A=wbcl wbclHosts=1 wbclVMsPerHost=1 wbclThreadsPerVM=2
+   B=peer peerHosts=1 peerVMsPerHost=3 peerThreadsPerVM=2
+

@@ -1,0 +1,30 @@
+
+cq/hct/hierarchy.conf
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+        hc.serverMemSize = 350m
+cq/hct/objects1.conf
+      bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+        hc.serverMemSize = 400m
+cq/hct/objects2.conf
+      bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+        hc.serverMemSize = 500m
+cq/hct/objects3.conf
+      bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+        hc.serverMemSize = 750m
+cq/hct/bigbytearray.conf
+      bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+        hc.serverMemSize = 750m
+
+cq/hct/failover1.conf
+      bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+        hc.serverMemSize = 350m
+cq/hct/failover1.conf
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+        hc.serverMemSize = 350m

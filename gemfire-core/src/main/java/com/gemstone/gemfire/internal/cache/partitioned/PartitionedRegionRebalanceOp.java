@@ -1,0 +1,846 @@
+/*
+ * Copyright (c) 2010-2015 Pivotal Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you
+ * may not use this file except in compliance with the License. You
+ * may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * permissions and limitations under the License. See accompanying
+ * LICENSE file.
+ */
+package com.gemstone.gemfire.internal.cache.partitioned;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import com.gemstone.gemfire.cache.partition.PartitionMemberInfo;
+import com.gemstone.gemfire.cache.partition.PartitionRebalanceInfo;
+import com.gemstone.gemfire.distributed.internal.DM;
+import com.gemstone.gemfire.distributed.internal.MembershipListener;
+import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
+import com.gemstone.gemfire.i18n.LogWriterI18n;
+import com.gemstone.gemfire.internal.Assert;
+import com.gemstone.gemfire.internal.cache.BucketAdvisor;
+import com.gemstone.gemfire.internal.cache.ColocationHelper;
+import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
+import com.gemstone.gemfire.internal.cache.PartitionedRegion;
+import com.gemstone.gemfire.internal.cache.PartitionedRegion.RecoveryLock;
+import com.gemstone.gemfire.internal.cache.control.InternalResourceManager;
+import com.gemstone.gemfire.internal.cache.control.PartitionRebalanceDetailsImpl;
+import com.gemstone.gemfire.internal.cache.control.ResourceManagerStats;
+import com.gemstone.gemfire.internal.cache.partitioned.BecomePrimaryBucketMessage.BecomePrimaryBucketResponse;
+import com.gemstone.gemfire.internal.cache.partitioned.MoveBucketMessage.MoveBucketResponse;
+import com.gemstone.gemfire.internal.cache.partitioned.PartitionedRegionLoadModel.AddressComparor;
+import com.gemstone.gemfire.internal.cache.partitioned.PartitionedRegionLoadModel.BucketOperator;
+import com.gemstone.gemfire.internal.cache.partitioned.RemoveBucketMessage.RemoveBucketResponse;
+import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
+
+/**
+ * This class performs a rebalance on a single partitioned region. 
+ * @author dsmith
+ *
+ */
+@SuppressWarnings("synthetic-access")
+public class PartitionedRegionRebalanceOp {
+  private final boolean simulate;
+  private final boolean satisfyRedundancy;
+  private final boolean moveBuckets;
+  private final boolean movePrimaries;
+  private final boolean replaceOfflineData;
+  private final PartitionedRegion leaderRegion;
+  private final PartitionedRegion targetRegion;
+  private Collection<PartitionedRegion> colocatedRegions;
+  private final AtomicBoolean cancelled;
+  private final ResourceManagerStats stats;
+  private final boolean isRebalance; // true indicates a rebalance instead of recovery
+  
+  private volatile boolean membershipChange = false;
+  
+  /**
+   * Create a rebalance operation for a single region.
+   * @param region the region to rebalance
+   * @param simulate true to only simulate rebalancing, without actually doing anything
+   * @param satisfyRedundancy true to satisfy redundancy as part of the operation
+   * @param moveBuckets true to move buckets as part of the operation
+   * @param movePrimaries true to move primaries as part of the operation
+   * @param replaceOfflineData true to replace offline copies of buckets with new live copies of buckets
+   * @param isRebalance true if this op is a full rebalance instead of a more
+   * limited redundancy recovery
+   */
+  public PartitionedRegionRebalanceOp(PartitionedRegion region, boolean simulate, boolean satisfyRedundancy,
+      boolean moveBuckets, boolean movePrimaries, boolean replaceOfflineData, boolean isRebalance) {
+    this(region, simulate, satisfyRedundancy, moveBuckets, movePrimaries, replaceOfflineData,
+        isRebalance, new AtomicBoolean(), null);
+  }
+  
+  /**
+   * Create a rebalance operation for a single region.
+   * @param region the region to rebalance
+   * @param simulate true to only simulate rebalancing, without actually doing anything
+   * @param satisfyRedundancy true to satisfy redundancy as part of the operation
+   * @param moveBuckets true to move buckets as part of the operation
+   * @param movePrimaries true to move primaries as part of the operation
+   * @param replaceOfflineData true to replace offline copies of buckets with new live copies of buckets
+   * @param isRebalance true if this op is a full rebalance instead of a more
+   * limited redundancy recovery
+   * @param cancelled the AtomicBoolean reference used for cancellation; if
+   * any code sets the AB value to true then the rebalance will be cancelled
+   * @param stats the ResourceManagerStats to use for rebalancing stats
+   */
+  public PartitionedRegionRebalanceOp(PartitionedRegion region,
+      boolean simulate, boolean satisfyRedundancy, boolean moveBuckets,
+      boolean movePrimaries, boolean replaceOfflineData, boolean isRebalance,
+      AtomicBoolean cancelled, ResourceManagerStats stats) {
+    
+    PartitionedRegion leader = ColocationHelper.getLeaderRegion(region);
+    Assert.assertTrue(leader != null);
+    
+    //set the region we are rebalancing to be leader of the colocation group.
+    this.leaderRegion = leader;
+    this.targetRegion = region;
+    this.simulate = simulate;
+    this.satisfyRedundancy = satisfyRedundancy;
+    this.moveBuckets = moveBuckets;
+    this.movePrimaries = movePrimaries;
+    this.cancelled = cancelled;
+    this.replaceOfflineData = replaceOfflineData;
+    this.isRebalance = isRebalance;
+    this.stats = simulate ? null : stats;
+  }
+  
+  private LogWriterI18n getLogger() {
+    return leaderRegion.getLogWriterI18n();
+  }
+  
+  /**
+   * Do the actual rebalance
+   * @return the details of the rebalance.
+   */
+  public Set<PartitionRebalanceInfo> execute() {
+    long start = System.nanoTime();
+    InternalResourceManager resourceManager = InternalResourceManager.getInternalResourceManager(leaderRegion.getCache());
+    MembershipListener listener = new MembershipChangeListener();
+    if(isRebalance) {
+      InternalResourceManager.getResourceObserver().rebalancingStarted(targetRegion);
+    } else {
+      InternalResourceManager.getResourceObserver().recoveryStarted(targetRegion);
+    }
+    RecoveryLock lock = null;
+    try {
+      if(!checkAndSetColocatedRegions()) {
+        return Collections.emptySet();
+      }
+      
+      //Early out if this was an automatically triggered rebalance and we now 
+      //have full redundancy.
+      if (!isRebalanceNecessary()) { 
+        return Collections.emptySet();
+      }
+      
+      if (!simulate) {
+        lock = leaderRegion.getRecoveryLock();
+        lock.lock();
+      }
+      
+      //Check this again after getting the lock, because someone might
+      //have fixed it already.
+      if (!isRebalanceNecessary()) {
+        return Collections.emptySet();
+      }
+      
+      //register a listener to notify us if the new members leave or join.
+      //When a membership change occurs, we want to restart the rebalancing
+      //from the beginning.
+      //TODO rebalance - we should really add a membership listener to ALL of 
+      //the colocated regions. 
+      leaderRegion.getRegionAdvisor().addMembershipListener(listener);
+      PartitionedRegionLoadModel model = null;
+
+
+      GemFireCacheImpl cache = (GemFireCacheImpl) leaderRegion.getCache();
+      Map<PartitionedRegion, InternalPRInfo> detailsMap = fetchDetails(cache);
+      BucketOperatorWrapper operator = getBucketOperator(detailsMap);
+      model = buildModel(operator, detailsMap, resourceManager);
+      for(PartitionRebalanceDetailsImpl details : operator.getDetailSet()) {
+        details.setPartitionMemberDetailsBefore(model.getPartitionedMemberDetails(details.getRegionPath()));
+      }
+
+      for(;;) {
+        if(cancelled.get()) {
+          return Collections.emptySet();
+        }
+        if(membershipChange) {
+          membershipChange = false;
+          //refetch the partitioned region details after
+          //a membership change.
+          if (getLogger().fineEnabled()) {
+            getLogger().fine("Rebalancing " + leaderRegion + " detected membership changes. Refetching details");
+          }
+          if(this.stats != null) {
+            this.stats.incRebalanceMembershipChanges(1);
+          }
+          detailsMap = fetchDetails(cache);
+          model = buildModel(operator, detailsMap, resourceManager);
+        }
+
+        leaderRegion.checkClosed();
+        cache.getCancelCriterion().checkCancelInProgress(null);
+
+        if (getLogger().fineEnabled()) {
+          getLogger().fine("Rebalancing " + leaderRegion + " Model:\n" + model);
+        }
+        if (!model.nextStep()) {
+          //Stop when the model says we can't rebalance any more.
+          break;
+        }
+      }
+      
+      if (getLogger().fineEnabled()) {
+        getLogger().fine("Rebalancing " + leaderRegion + 
+            " complete. Model:\n" + model);
+      }
+      long end = System.nanoTime();
+      
+      for(PartitionRebalanceDetailsImpl details : operator.getDetailSet()) {
+        if(!simulate) {
+          details.setTime(end - start);
+        }
+        details.setPartitionMemberDetailsAfter(model.getPartitionedMemberDetails(details.getRegionPath()));
+      }
+
+      return Collections.<PartitionRebalanceInfo>unmodifiableSet(operator.getDetailSet());
+    } finally {
+      if(lock != null) {
+        try {
+          lock.unlock();
+        } catch(Exception e) {
+          getLogger().error(LocalizedStrings.PartitionedRegionRebalanceOp_UNABLE_TO_RELEASE_RECOVERY_LOCK, e);
+        }
+      }
+      try {
+        if(isRebalance) {
+          InternalResourceManager.getResourceObserver().rebalancingFinished(targetRegion);
+        } else {
+          InternalResourceManager.getResourceObserver().recoveryFinished(targetRegion);
+        }
+      } catch(Exception e) {
+        getLogger().error(LocalizedStrings.PartitionedRegionRebalanceOp_ERROR_IN_RESOURCE_OBSERVER, e);
+      }
+      
+      try {
+        leaderRegion.getRegionAdvisor().removeMembershipListener(listener);
+      } catch(Exception e) {
+        getLogger().error(LocalizedStrings.PartitionedRegionRebalanceOp_ERROR_IN_RESOURCE_OBSERVER, e);
+      }
+    }
+  }
+
+  /**
+   * Set the list of colocated regions, and check to make sure that colocation 
+   * is complete.
+   * @return true if colocation is complete.
+   */
+  protected boolean checkAndSetColocatedRegions() {
+    //Early out of this VM doesn't have all of  the regions that are 
+    //supposed to be colocated with this one.
+    //TODO rebalance - there is a race here between this check and the 
+    //earlier acquisition of the list
+    //of colocated regions. Really we should get a list of all colocated 
+    //regions on all nodes.
+    if(!ColocationHelper.checkMembersColocation(leaderRegion, 
+        leaderRegion.getDistributionManager().getDistributionManagerId())) {
+      return false;
+    }
+    
+  //find all of the regions which are colocated with this region
+    //TODO rebalance - this should really be all of the regions which are colocated
+    //anywhere I think. We need to make sure we don't do a rebalance unless we have
+    //all of the colocated regions others do.
+    Map<String, PartitionedRegion> colocatedRegionsMap = 
+        ColocationHelper.getAllColocationRegions(targetRegion);
+    colocatedRegionsMap.put(targetRegion.getFullPath(), targetRegion);
+    final LinkedList<PartitionedRegion> colocatedRegions =
+      new LinkedList<PartitionedRegion>();
+    for (PartitionedRegion colocatedRegion : colocatedRegionsMap.values()) {
+      
+      //Fix for 49340 - make sure all colocated regions are initialized, so
+      //that we know the region has recovered from disk
+      if(!colocatedRegion.isInitialized()) {
+        return false;
+      }
+      if (colocatedRegion.getColocatedWith() == null) {
+        colocatedRegions.addFirst(colocatedRegion);
+      }
+      else {
+        colocatedRegions.addLast(colocatedRegion);
+      }
+    }
+    this.colocatedRegions = colocatedRegions;
+
+    return true;
+  }
+
+  /**
+   * For FPR we will creatd buckets and make primaries as specified by FixedPartitionAttributes.
+   * We have to just create buckets and make primaries for the local node. 
+   * @return the details of the rebalance.
+   */
+  public Set<PartitionRebalanceInfo> executeFPA() {
+    LogWriterI18n logger = getLogger();
+    if (logger.fineEnabled()) {
+      logger.fine("Rebalancing buckets for fixed partitioned region "
+          + this.targetRegion);
+    }
+    
+    long start = System.nanoTime();
+    GemFireCacheImpl cache = (GemFireCacheImpl)leaderRegion.getCache();
+    InternalResourceManager resourceManager = InternalResourceManager
+        .getInternalResourceManager(cache);
+    InternalResourceManager.getResourceObserver().recoveryStarted(targetRegion);
+    try {
+      if(!checkAndSetColocatedRegions()) {
+        return Collections.emptySet();
+      }
+      // If I am a datastore of a FixedPartition, I will be hosting bucket so no 
+      // need of redundancy check.
+      // No need to attach listener as well, we know that we are just creating bucket
+      // for primary and secondary. We are not creating extra bucket for any of peers
+      // who goes down.
+
+      PartitionedRegionLoadModel model = null;
+      Map<PartitionedRegion, InternalPRInfo> detailsMap = fetchDetails(cache);
+      BucketOperatorWrapper operator = getBucketOperator(detailsMap);
+      
+      model = buildModel(operator, detailsMap, resourceManager);
+      for (PartitionRebalanceDetailsImpl details : operator.getDetailSet()) {
+        details.setPartitionMemberDetailsBefore(model
+            .getPartitionedMemberDetails(details.getRegionPath()));
+      }
+
+      /*
+       * We haen't taken the distributed recovery lock as only this node is
+       * creating bucket for itself. It will take bucket creation lock anyway.
+       * To move primary too, it has to see what all bucket it can host as
+       * primary and make them. We don't need to do all the calculation for fair
+       * balance between the nodes as this is a fixed partitioned region.
+       */
+
+      if (getLogger().fineEnabled()) {
+        getLogger().fine("Rebalancing FPR " + leaderRegion + " Model:\n" + model);
+      }
+
+      model.createBucketsAndMakePrimaries();
+      
+      if (getLogger().fineEnabled()) {
+        getLogger().fine(
+            "Rebalancing FPR " + leaderRegion + " complete. Model:\n" + model);
+      }
+      long end = System.nanoTime();
+
+      for (PartitionRebalanceDetailsImpl details : operator.getDetailSet()) {
+        if (!simulate) {
+          details.setTime(end - start);
+        }
+        details.setPartitionMemberDetailsAfter(model
+            .getPartitionedMemberDetails(details.getRegionPath()));
+      }
+
+      return Collections.<PartitionRebalanceInfo> unmodifiableSet(operator
+          .getDetailSet());
+    } finally {
+      try {
+        InternalResourceManager.getResourceObserver().recoveryFinished(
+            targetRegion);
+      } catch (Exception e) {
+        getLogger()
+            .error(
+                LocalizedStrings.PartitionedRegionRebalanceOp_ERROR_IN_RESOURCE_OBSERVER,
+                e);
+      }
+    }
+  }
+
+  private Map<PartitionedRegion, InternalPRInfo> fetchDetails(
+      GemFireCacheImpl cache) {
+    LoadProbe probe = cache.getResourceManager().getLoadProbe();
+    Map<PartitionedRegion, InternalPRInfo> detailsMap = 
+      new LinkedHashMap<PartitionedRegion, InternalPRInfo>(
+        colocatedRegions.size());
+    for (PartitionedRegion colocatedRegion: colocatedRegions) {
+      if (ColocationHelper.isColocationComplete(colocatedRegion)) {
+        InternalPRInfo info = colocatedRegion.getRedundancyProvider().buildPartitionedRegionInfo(true, probe);
+        detailsMap.put(colocatedRegion, info);
+      }
+    }
+    return detailsMap;
+  }
+
+  private BucketOperatorWrapper getBucketOperator(
+      Map<PartitionedRegion, InternalPRInfo> detailsMap) {
+    Set<PartitionRebalanceDetailsImpl> rebalanceDetails = 
+      new HashSet<PartitionRebalanceDetailsImpl>(detailsMap.size());
+    for (Map.Entry<PartitionedRegion, InternalPRInfo> entry: detailsMap.entrySet()) {
+      rebalanceDetails.add(new PartitionRebalanceDetailsImpl(entry.getKey()));
+    }
+    BucketOperator operator = simulate ? 
+        new PartitionedRegionLoadModel.SimulatedBucketOperator() 
+        : new BucketOperatorImpl();
+    BucketOperatorWrapper wrapper = new BucketOperatorWrapper(
+        operator, rebalanceDetails);
+    return wrapper;
+  }
+
+  /**
+   * Build a model of the load on the partitioned region, which can determine 
+   * which buckets to move, etc.
+   * @param detailsMap 
+   * @param resourceManager 
+   */
+  private PartitionedRegionLoadModel buildModel(BucketOperator operator, 
+      Map<PartitionedRegion, InternalPRInfo> detailsMap, InternalResourceManager resourceManager) {
+    PartitionedRegionLoadModel model;
+    
+    boolean enforceLocalMaxMemory = !leaderRegion.isEntryEvictionPossible();
+    final DM dm = leaderRegion.getDistributionManager();    
+    AddressComparor comparor = new AddressComparor() {
+      
+      public boolean areSameZone(InternalDistributedMember member1,
+          InternalDistributedMember member2) {
+        return dm.areInSameZone(member1, member2);
+      }
+
+      public boolean enforceUniqueZones() {
+        return dm.enforceUniqueZone();
+      }
+    };
+    
+    
+    int redundantCopies = leaderRegion.getRedundantCopies();
+    int totalNumberOfBuckets = leaderRegion.getTotalNumberOfBuckets();
+    Set<InternalDistributedMember> criticalMembers = resourceManager.getResourceAdvisor().adviseCritialMembers();;
+    boolean removeOverRedundancy = true;
+    model = new PartitionedRegionLoadModel(operator, redundantCopies, removeOverRedundancy, 
+        satisfyRedundancy, moveBuckets, movePrimaries,
+        totalNumberOfBuckets, comparor, getLogger(), enforceLocalMaxMemory, 
+        criticalMembers, leaderRegion);
+
+    for (Map.Entry<PartitionedRegion, InternalPRInfo> entry : detailsMap.entrySet()) {
+      PartitionedRegion region = entry.getKey();
+      InternalPRInfo details = entry.getValue();
+      getLogger().fine("Added Region to model region=" + region + "details=");
+      for(PartitionMemberInfo memberDetails: details.getPartitionMemberInfo()) {
+        getLogger().fine(
+            "Member: " + memberDetails.getDistributedMember() + "LOAD="
+                + ((InternalPartitionDetails) memberDetails).getPRLoad());
+      }
+      Set<InternalPartitionDetails> memberDetailSet = 
+          details.getInternalPartitionDetails();
+      OfflineMemberDetails offlineDetails;
+      if(replaceOfflineData) {
+        offlineDetails = OfflineMemberDetails.EMPTY_DETAILS;
+      } else {
+        offlineDetails = details.getOfflineMembers();
+      }
+      model.addRegion(region.getFullPath(), memberDetailSet, offlineDetails);
+    }
+    
+    return model;
+  }
+  /**
+   * Create a redundant bucket on the target member
+   * 
+   * @param target
+   *          the member on which to create the redundant bucket
+   * @param bucketId
+   *          the identifier of the bucket
+   * @param pr
+   *          the partitioned region which contains the bucket
+   * @param forRebalance
+   *          true if part of a rebalance operation
+   * @return true if the redundant bucket was created
+   */
+  public static boolean createRedundantBucketForRegion(
+      InternalDistributedMember target, int bucketId, PartitionedRegion pr,
+      boolean forRebalance, boolean replaceOfflineData) {
+    return pr.getRedundancyProvider().createBackupBucketOnMember(bucketId,
+        target, forRebalance, replaceOfflineData,null, true);
+  }
+  
+  /**
+   * Remove a redundant bucket on the target member
+   * 
+   * @param target
+   *          the member on which to create the redundant bucket
+   * @param bucketId
+   *          the identifier of the bucket
+   * @param pr
+   *          the partitioned region which contains the bucket
+   * @return true if the redundant bucket was removed
+   */
+  public static boolean removeRedundantBucketForRegion(
+      InternalDistributedMember target, int bucketId, PartitionedRegion pr) {
+    boolean removed = false;
+    if (pr.getDistributionManager().getId().equals(target)) {
+      // invoke directly on local member...
+      removed = pr.getDataStore().removeBucket(bucketId, false);
+    }
+    else {
+      // send message to remote member...
+      RemoveBucketResponse response = RemoveBucketMessage.send(target, pr,
+          bucketId, false);
+      if (response != null) {
+        removed = response.waitForResponse();
+      }
+    }
+    return removed;
+  }
+
+  /**
+   * Move the primary of a bucket to the target member
+   * 
+   * @param target
+   *          the member which should be primary
+   * @param bucketId
+   *          the identifier of the bucket
+   * @param pr
+   *          the partitioned region which contains the bucket
+   * @param forRebalance
+   *          true if part of a rebalance operation
+   * @return true if the move was successful
+   */
+  public static boolean movePrimaryBucketForRegion(
+      InternalDistributedMember target, int bucketId, PartitionedRegion pr,
+      boolean forRebalance) {
+    boolean movedPrimary = false;
+    if (pr.getDistributionManager().getId().equals(target)) {
+      // invoke directly on local member...
+      BucketAdvisor bucketAdvisor = pr.getRegionAdvisor().getBucketAdvisor(
+          bucketId);
+      if (bucketAdvisor.isHosting()) {
+        movedPrimary = bucketAdvisor.becomePrimary(forRebalance);
+      }
+    }
+    else {
+      // send message to remote member...
+      BecomePrimaryBucketResponse response = BecomePrimaryBucketMessage.send(
+          target, pr, bucketId, forRebalance);
+      if (response != null) {
+        movedPrimary = response.waitForResponse();
+      }
+    }
+    return movedPrimary;
+  }
+
+  /**
+   * Move a bucket from the provided source to the target
+   * 
+   * @param source
+   *          member that contains the bucket
+   * @param target
+   *          member which should receive the bucket
+   * @param bucketId
+   *          the identifier of the bucket
+   * @param pr
+   *          the partitioned region which contains the bucket
+   * @return true if the bucket was moved
+   */
+  public static boolean moveBucketForRegion(InternalDistributedMember source,
+      InternalDistributedMember target, int bucketId, PartitionedRegion pr) {
+    boolean movedBucket = false;
+    if (pr.getDistributionManager().getId().equals(target)) {
+      // invoke directly on local member...
+      movedBucket = pr.getDataStore().moveBucket(bucketId, source, false);
+    }
+    else {
+      // send message to remote member...
+      MoveBucketResponse response = MoveBucketMessage.send(target, pr,
+          bucketId, source);
+      if (response != null) {
+        movedBucket = response.waitForResponse();
+      }
+    }
+    return movedBucket;
+  } 
+  private boolean isRebalanceNecessary() {
+    //Fixed partitions will always be rebalanced.
+    //Persistent partitions that have recovered from disk will
+    //also need to rebalance primaries
+    return isRebalance 
+        || this.leaderRegion.getRedundancyProvider().isRedundancyImpaired() 
+        || leaderRegion.isFixedPartitionedRegion()
+        || movePrimaries && leaderRegion.getDataPolicy().withPersistence();
+  }
+  
+  private class MembershipChangeListener implements MembershipListener {
+
+    public void memberDeparted(InternalDistributedMember id, boolean crashed) {
+      getLogger().fine(
+          "PartitionedRegionRebalanceOP - membership changed, restarting rebalancing for region " + targetRegion);
+      membershipChange = true;
+    }
+
+    public void memberJoined(InternalDistributedMember id) {
+      getLogger().fine("PartitionedRegionRebalanceOP - membership changed, restarting rebalancing for region " + targetRegion);
+      membershipChange = true;
+    }
+
+    public void memberSuspect(InternalDistributedMember id,
+        InternalDistributedMember whoSuspected) {
+      // do nothing.
+    }
+    
+    public void quorumLost(Set<InternalDistributedMember> failures, List<InternalDistributedMember> remaining) {
+    }
+  }
+  
+  private class BucketOperatorImpl implements BucketOperator {
+
+    public boolean moveBucket(InternalDistributedMember source,
+        InternalDistributedMember target, int bucketId,
+        Map<String, Long> colocatedRegionBytes) {
+
+      InternalResourceManager.getResourceObserver().movingBucket(
+          leaderRegion, bucketId, source, target);
+      return moveBucketForRegion(source, target, bucketId, leaderRegion);
+    }
+
+    public boolean movePrimary(InternalDistributedMember source,
+        InternalDistributedMember target, int bucketId) {
+
+      InternalResourceManager.getResourceObserver().movingPrimary(
+          leaderRegion, bucketId, source, target);
+      return movePrimaryBucketForRegion(target, bucketId, leaderRegion, isRebalance); 
+    }
+
+    public boolean createRedundantBucket(
+        InternalDistributedMember targetMember, int bucketId,
+        Map<String, Long> colocatedRegionBytes) {
+      return createRedundantBucketForRegion(targetMember, bucketId,
+          leaderRegion, isRebalance,replaceOfflineData);
+    }
+
+    public boolean removeBucket(InternalDistributedMember targetMember, int bucketId,
+        Map<String, Long> colocatedRegionBytes) {
+      return removeRedundantBucketForRegion(targetMember, bucketId,
+          leaderRegion);
+    }
+  }
+
+  /**
+   * A wrapper class which delegates actual bucket operations to the enclosed BucketOperator,
+   * but keeps track of statistics about how many buckets are created, transfered, etc.
+   * @author dsmith
+   *
+   */
+  private class BucketOperatorWrapper implements 
+      PartitionedRegionLoadModel.BucketOperator {
+    private final PartitionedRegionLoadModel.BucketOperator delegate;
+    private final Set<PartitionRebalanceDetailsImpl> detailSet;
+    private final int regionCount;
+  
+    public BucketOperatorWrapper(
+        PartitionedRegionLoadModel.BucketOperator delegate,
+        Set<PartitionRebalanceDetailsImpl> rebalanceDetails) {
+      this.delegate = delegate;
+      this.detailSet = rebalanceDetails;
+      this.regionCount = detailSet.size();
+    }
+    
+    public boolean moveBucket(InternalDistributedMember sourceMember,
+        InternalDistributedMember targetMember, int id,
+        Map<String, Long> colocatedRegionBytes) {
+      long start = System.nanoTime();
+      boolean result = false;
+      long elapsed = 0;
+      long totalBytes = 0;
+
+
+      if (stats != null) {
+        stats.startBucketTransfer(regionCount);
+      }
+      try {
+        result = delegate.moveBucket(sourceMember, targetMember, id,
+            colocatedRegionBytes);
+        elapsed = System.nanoTime() - start;
+        if (result) {
+          if (getLogger().fineEnabled()) {
+            getLogger().fine(
+                "Rebalancing " + leaderRegion + " bucket " + id + " moved from "
+                + sourceMember + " to " + targetMember);
+          }
+          for (PartitionRebalanceDetailsImpl details : detailSet) {
+            String regionPath = details.getRegionPath();
+            Long regionBytes = colocatedRegionBytes.get(regionPath);
+            if(regionBytes != null) {
+            //only increment the elapsed time for the leader region
+              details.incTransfers(regionBytes.longValue(),
+                  details.getRegion().equals(leaderRegion) ? elapsed : 0);
+              totalBytes += regionBytes.longValue();
+            }
+          }
+        } else {
+          if (getLogger().fineEnabled()) {
+            getLogger()
+            .fine(
+                "Rebalancing " + leaderRegion + " bucket " + id
+                + " move failed from " + sourceMember + " to "
+                + targetMember);
+          }
+        }
+      } finally {
+        if(stats != null) {
+          stats.endBucketTransfer(regionCount, result, totalBytes, elapsed);
+        }
+      }
+      
+      return result;
+    }
+
+    public boolean createRedundantBucket(
+        InternalDistributedMember targetMember, int i, 
+        Map<String, Long> colocatedRegionBytes) {
+      boolean result = false;
+      long elapsed = 0;
+      long totalBytes = 0;
+      
+      
+      if(stats != null) {
+        stats.startBucketCreate(regionCount);
+      }
+      try {
+        long start = System.nanoTime();
+        result = delegate.createRedundantBucket(targetMember, i,  
+            colocatedRegionBytes);
+        elapsed= System.nanoTime() - start;
+        if (result) {
+          if(getLogger().fineEnabled()) {
+            getLogger().fine("Rebalancing " + leaderRegion + " redundant bucket " 
+                + i  + " created on " + targetMember);
+          }
+          for (PartitionRebalanceDetailsImpl details : detailSet) {
+            String regionPath = details.getRegionPath();
+            Long lrb = colocatedRegionBytes.get(regionPath);
+            if (lrb != null) { // region could have gone away - esp during shutdow
+              long regionBytes = lrb.longValue();
+              //Only add the elapsed time to the leader region.
+              details.incCreates(regionBytes, 
+                  details.getRegion().equals(leaderRegion) ? elapsed : 0);
+              totalBytes += regionBytes;
+            }
+          }
+        } else {
+          if (getLogger().fineEnabled()) {
+            getLogger().fine("Rebalancing " + leaderRegion + " redundant bucket " 
+                + i  + " failed creation on " + targetMember);
+          }
+        }
+      } finally {
+        if(stats != null) {
+          stats.endBucketCreate(regionCount, result, totalBytes, elapsed);
+        }
+      }
+      
+      return result;
+    }
+    
+    public boolean removeBucket(
+        InternalDistributedMember targetMember, int i, 
+        Map<String, Long> colocatedRegionBytes) {
+      boolean result = false;
+      long elapsed = 0;
+      long totalBytes = 0;
+      
+      
+      if(stats != null) {
+        stats.startBucketRemove(regionCount);
+      }
+      try {
+        long start = System.nanoTime();
+        result = delegate.removeBucket(targetMember, i,  
+            colocatedRegionBytes);
+        elapsed= System.nanoTime() - start;
+        if (result) {
+          if(getLogger().fineEnabled()) {
+            getLogger().fine("Rebalancing " + leaderRegion + " redundant bucket " 
+                + i  + " removed from " + targetMember);
+          }
+          for (PartitionRebalanceDetailsImpl details : detailSet) {
+            String regionPath = details.getRegionPath();
+            Long lrb = colocatedRegionBytes.get(regionPath);
+            if (lrb != null) { // region could have gone away - esp during shutdow
+              long regionBytes = lrb.longValue();
+              //Only add the elapsed time to the leader region.
+              details.incRemoves(regionBytes, 
+                  details.getRegion().equals(leaderRegion) ? elapsed : 0);
+              totalBytes += regionBytes;
+            }
+          }
+        } else {
+          if (getLogger().fineEnabled()) {
+            getLogger().fine("Rebalancing " + leaderRegion + " redundant bucket " 
+                + i  + " failed creation on " + targetMember);
+          }
+        }
+      } finally {
+        if(stats != null) {
+          stats.endBucketRemove(regionCount, result, totalBytes, elapsed);
+        }
+      }
+      
+      return result;
+    }
+  
+    public boolean movePrimary(InternalDistributedMember source,
+        InternalDistributedMember target, int bucketId) {
+      boolean result = false;
+      long elapsed = 0;
+      
+      if(stats != null) {
+        stats.startPrimaryTransfer(regionCount);
+      }
+
+      try {
+        long start = System.nanoTime();
+        result = delegate.movePrimary(source, target, bucketId);
+        elapsed = System.nanoTime() - start;
+        if (result) {
+          if (getLogger().fineEnabled()) {
+            getLogger().fine("Rebalancing " + leaderRegion + " primary bucket " 
+                + bucketId  + " moved from " + source + " to " + target);
+          }
+          for (PartitionRebalanceDetailsImpl details : detailSet) {
+            details.incPrimaryTransfers(details.getRegion().equals(leaderRegion) ? elapsed : 0);
+          }
+        } else {
+          if (getLogger().fineEnabled()) {
+            getLogger().fine("Rebalancing " + leaderRegion + " primary bucket " 
+                + bucketId  + " failed to move from " + source + " to " + target);
+          }
+        }
+    } finally {
+      if(stats != null) {
+        stats.endPrimaryTransfer(regionCount, result, elapsed);
+      }
+    }
+      
+      return result;
+    }
+
+    public Set<PartitionRebalanceDetailsImpl> getDetailSet() {
+      return this.detailSet;
+    }
+  }
+}

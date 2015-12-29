@@ -1,0 +1,16 @@
+#===============================================================================
+#  TEST CONFIGURATION VARIABLES
+#===============================================================================
+
+  trimIterations = 100000
+  # see cacheperf.CachePerfPrms-trimIterations
+
+  workIterations = 500000
+  # see cacheperf.CachePerfPrms-workIterations
+
+  batchSize = 1000
+  # see cacheperf.CachePerfPrms-batchSize
+
+  maxKeys = 10000
+  # see cacheperf.CachePerfPrms-maxKeys
+

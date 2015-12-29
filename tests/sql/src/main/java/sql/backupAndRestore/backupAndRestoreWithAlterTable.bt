@@ -1,0 +1,30 @@
+
+// Test Full and Incremental backups
+sql/backupAndRestore/testIncrementalBackupWithAlterTable.conf
+  A = server  serverHosts  = 4 serverVMsPerHost  = 1 serverThreadsPerVM  = 10
+  B = client  clientHosts  = 2 clientVMsPerHost  = 2 clientThreadsPerVM  = 10
+  C = locator locatorHosts = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  redundantCopies = 0,1
+  maxOplogSize    = 1
+  performOpsSec   = 60
+  nbrOfExecutions = 5
+
+// Test Full and Incremental backups with Restarts during test
+sql/backupAndRestore/testIncrementalBackupWithAlterTableRestarts.conf
+  A = server  serverHosts  = 1 serverVMsPerHost  = 1 serverThreadsPerVM  = 2
+  B = client  clientHosts  = 1 clientVMsPerHost  = 2 clientThreadsPerVM  = 10
+  C = locator locatorHosts = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  redundantCopies = 0,1
+  maxOplogSize    = 1
+  performOpsSec   = 60
+  nbrOfExecutions = 5
+
+// Stop and Restart a client VM during the test
+sql/backupAndRestore/testIncrementalBackupWithAlterTableVmStop.conf
+  A = server  serverHosts  = 4 serverVMsPerHost  = 1 serverThreadsPerVM  = 10
+  B = client  clientHosts  = 2 clientVMsPerHost  = 2 clientThreadsPerVM  = 5
+  C = locator locatorHosts = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  redundantCopies = 0,1
+  maxOplogSize    = 1
+  performOpsSec   = 60
+  nbrOfExecutions = 5

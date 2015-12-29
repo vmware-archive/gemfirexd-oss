@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<!-- Initializes a client of a cache server that runs on port 40450.
+     Loads values and sends updates to the server.  -->
+
+<!DOCTYPE client-cache PUBLIC
+  "-//GemStone Systems, Inc.//GemFire Declarative Caching 6.5//EN"
+  "http://www.gemstone.com/dtd/cache6_5.dtd">
+<client-cache>
+  <pool name="client2" subscription-enabled="true" subscription-redundancy="0">
+    <server host="localhost" port="40404"/>
+  </pool>
+  <region name="exampleRegion">
+    <region-attributes refid="CACHING_PROXY" statistics-enabled="true">
+    	<cache-listener>
+      		<class-name>quickstart.DeltaReceiverListener</class-name>
+      	</cache-listener>
+    </region-attributes>
+  </region>
+</client-cache>

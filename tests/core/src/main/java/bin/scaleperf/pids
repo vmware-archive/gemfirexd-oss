@@ -1,0 +1,20 @@
+#!/bin/bash
+
+#-------------------------------------------------------------------------------
+#
+# Lists relevant processes belonging to $USER on each of the $TEST_HOSTS.
+#
+#-------------------------------------------------------------------------------
+
+trap 'exit 1' 2 #traps Ctrl-C (signal 2)
+
+if [ -z "$TEST_HOSTS" ]
+then
+  echo "Environment variable TEST_HOSTS is not set."
+  exit 0
+fi
+
+for i in $TEST_HOSTS
+do
+  echo $i; ssh -q $i ps -edalf | grep $USER | grep -v "ps -edalf" | grep -v bash | grep -v csh | grep -v sshd | grep -v grep | grep -v pids
+done

@@ -1,0 +1,7 @@
+management/test/jmx/memberTransitions.conf 
+    managed_1_Hosts = 2 managed_1_VMsPerHost = 1 managed_1_ThreadsPerVM = 2
+	managed_2_Hosts = 2 managed_2_VMsPerHost = 1 managed_2_ThreadsPerVM = 2
+	locator_managing_Hosts = 1 locator_managing_VMsPerHost = 1 locator_managing_ThreadsPerVM = 3
+	managing_1_Hosts = 1 managing_1_VMsPerHost = 1 managing_1_ThreadsPerVM = 2
+	edge_Hosts = 1 edge_VMsPerHost = 1 edge_ThreadsPerVM = 2
+	jmxIterations = 10 duration = 600

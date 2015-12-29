@@ -1,0 +1,10 @@
+cacheperf/comparisons/gemfirexd/tinyobject/Suites/tinyobject01/p2p.rr.conf
+  api = GFXD
+  numTinyObjectsPerServer = 1000000 heapMB = 2048
+  redundantCopies = 0
+  enableHistogram = false
+cacheperf/comparisons/gemfirexd/tinyobject/Suites/tinyobject01/p2p.pr.conf
+  api = GFXD
+  numTinyObjectsPerServer = 1000000 heapMB = 2048
+  redundantCopies = 0
+  enableHistogram = false

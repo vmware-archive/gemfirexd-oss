@@ -1,0 +1,90 @@
+//join tests
+sql/joins/concJoinTablesUniq.conf
+    A=peer peerHosts=3 peerVMsPerHost=2 peerThreadsPerVM=10
+    
+sql/joins/concJoinCustSecPortfolioUniqHashPartitionOneRepl.conf
+    A=peer peerHosts=2 peerVMsPerHost=3 peerThreadsPerVM=8    
+    
+sql/joins/concJoinCustSecPortfolioUniqHashPartitionTwoRepl.conf
+    A=peer peerHosts=2 peerVMsPerHost=3 peerThreadsPerVM=10 
+    
+sql/joins/concJoinCustSecPortfolioUniqRangePartitionOneRepl.conf
+    A=peer peerHosts=3 peerVMsPerHost=2 peerThreadsPerVM=10 
+
+sql/joins/concJoinCustSecPortfSoUniqHashPartitionOneRepl.conf
+    A=peer peerHosts=3 peerVMsPerHost=2 peerThreadsPerVM=10 
+    
+//no uniq indexed join tests 
+sql/joins/serialJoinCustSecPortfolioNonUniqHashPartitionOneRepl.conf
+    A=peer peerHosts=3 peerVMsPerHost=3 peerThreadsPerVM=10 
+       
+sql/joins/concJoinIndexCustSecPortfolioNonUniqRangePartitionOneRepl.conf
+    A=peer peerHosts=3 peerVMsPerHost=5 peerThreadsPerVM=10    
+    dropIndex = true, false 
+    
+//accessor store config for join tests
+sql/joins/concJoinTablesUniqWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=1,7 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=5 accessorThreadsPerVM=6
+   
+sql/joins/testJoinServerGroupsUniqWithAccessors.conf
+    A=store storeHosts=6 storeVMsPerHost=2 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=5 accessorThreadsPerVM=10
+    SGvms1=1 SGvms2=2 SGvms3=2 SGvms4=2 SGvms5=3 SGvms6=2
+    SGList1="random" SGList2="random" SGList3="random"
+    SGList4="random" SGList5="random" SGList6="random"
+    securities=trade.securities:0:default,trade.securities:replicate:random
+    customers=trade.customers:0:default,trade.customers:6:default,trade.customers:replicate:random
+    networth=trade.networth:random:random
+    portfolio=trade.portfolio:random:random
+    sellorders=trade.sellorders:random:random
+    buyorders=trade.buyorders:random:random
+    txhistory=trade.txhistory:random:random
+    schemaSG=random
+       
+sql/joins/testJoinServerGroupsUniqWithAccessors.conf
+    A=store storeHosts=6 storeVMsPerHost=2 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=5 accessorThreadsPerVM=10
+    SGvms1=1 SGvms2=2 SGvms3=2 SGvms4=2 SGvms5=3 SGvms6=2
+    SGList1="random" SGList2="random" SGList3="random"
+    SGList4="random" SGList5="random" SGList6="random"
+    securities=trade.securities:random:random
+    customers=trade.customers:random:random
+    networth=trade.networth:random:random
+    portfolio=trade.portfolio:random:random
+    sellorders=trade.sellorders:random:random
+    buyorders=trade.buyorders:random:random
+    txhistory=trade.txhistory:random:random
+    schemaSG=random
+
+//no uniq indexed join tests    
+sql/joins/concJoinIndexReplicateTables.conf
+    A=peer peerHosts=3 peerVMsPerHost=3 peerThreadsPerVM=3    
+    dropIndex = false     
+
+sql/joins/concJoinReplicateTablesUniqWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=4 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=4 accessorThreadsPerVM=7
+    dropIndex = true
+
+sql/joins/multiTablesJoinUniqWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=1 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=5 accessorThreadsPerVM=9
+    
+sql/joins/multiTablesJoinUniqWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=7 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=4 accessorThreadsPerVM=9
+   
+sql/joins/multiTablesJoinUniqHAWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=4 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=4 accessorThreadsPerVM=6
+    redundantCopies= 1, 2, 3
+    
+sql/joins/multiTablesJoinTwoRepUniqWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=7 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=4 accessorThreadsPerVM=9   
+    
+sql/joins/multiTablesJoinTwoRepUniqHAWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=7 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=4 accessorThreadsPerVM=6
+    redundantCopies= 2 

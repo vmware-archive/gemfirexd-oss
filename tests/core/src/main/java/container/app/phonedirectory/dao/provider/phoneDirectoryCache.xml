@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!DOCTYPE cache PUBLIC
+    "-//GemStone Systems, Inc.//GemFire Declarative Caching 6.5//EN"
+    "http://www.gemstone.com/dtd/cache6_5.dtd">
+
+<cache>
+  <region name="phoneDirectory" refid="REPLICATE">
+    <region-attributes>
+      <cache-listener>
+        <class-name>container.app.phonedirectory.dao.provider.support.PhoneDirectoryCacheListener</class-name>
+      </cache-listener>
+    </region-attributes>
+  </region>
+</cache>

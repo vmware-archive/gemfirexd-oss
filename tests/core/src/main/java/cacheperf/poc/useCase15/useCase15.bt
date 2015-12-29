@@ -1,0 +1,8 @@
+cacheperf/poc/useCase15/queryLessThan.conf
+  bridgeHosts = 2 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+  maxKeys     = 2000000   range = 5
+cacheperf/poc/useCase15/queryRange.conf
+  bridgeHosts = 2 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+  maxKeys     = 2000000   range = 5

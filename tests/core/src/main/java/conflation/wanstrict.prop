@@ -1,0 +1,4 @@
+# memory for cache servers and clients
+serverMem = 400m
+clientMem = 256m
+

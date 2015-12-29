@@ -1,0 +1,95 @@
+hydra.Prms-testDescription = "
+This test is for testing co-located PRs with random operation on the known set of keys.
+This is a peer to peer test.
+";
+
+INCLUDE $JTESTS/hydraconfig/hydraparams1.inc;
+INCLUDE $JTESTS/hydraconfig/topology_p2p_2.inc;
+
+THREADGROUP verifyThreads totalThreads = fcn "${peerVMsPerHost} * ${peerHosts}" ncf
+                          totalVMs = fcn "${peerVMsPerHost} * ${peerHosts}" ncf;
+
+STARTTASK    taskClass     = parReg.colocation.ParRegColocation  taskMethod = StartTask_initialize;
+
+INITTASK     taskClass     = parReg.colocation.ParRegColocation  taskMethod = HydraTask_initialize
+			threadGroups = verifyThreads
+			 runMode = always;
+
+INITTASK     taskClass     = parReg.colocation.ParRegColocation  taskMethod = HydraTask_loadRegions
+             threadGroups = verifyThreads, default
+             batch;
+             
+INITTASK     taskClass     = parReg.colocation.ParRegColocation  taskMethod  = HydraTask_verifyPRMetaData
+             threadGroups = verifyThreads;
+
+INITTASK     taskClass     = parReg.colocation.ParRegColocation  taskMethod = HydraTask_verifyRegionSize
+             threadGroups = verifyThreads
+             ;      
+             
+TASK         taskClass     = parReg.colocation.ParRegColocation  taskMethod = HydraTask_doOps
+             threadGroups = verifyThreads, default;  
+             
+CLOSETASK    taskClass     = parReg.colocation.ParRegColocation  taskMethod  = HydraTask_verifyPrimaries
+             threadGroups = verifyThreads;
+
+CLOSETASK    taskClass     = parReg.colocation.ParRegColocation  taskMethod  = HydraTask_verifyPRMetaData
+             threadGroups = verifyThreads; 
+             
+CLOSETASK    taskClass     = parReg.colocation.ParRegColocation  taskMethod  = HydraTask_verifyColocatedRegions
+             threadGroups = verifyThreads;
+
+CLOSETASK    taskClass     = parReg.colocation.ParRegColocation  taskMethod  = HydraTask_verifyRegionContents
+             threadGroups = verifyThreads
+             ;
+
+CLOSETASK    taskClass     = parReg.colocation.ParRegColocation  taskMethod  = HydraTask_verifyBucketCopies
+             threadGroups = verifyThreads
+             ;
+             
+                                                       
+
+
+hydra.RegionPrms-names          = 
+      clientRegion1 clientRegion2 clientRegion3 clientRegion4 clientRegion5 clientRegion6 clientRegion7;
+
+hydra.RegionPrms-regionName     = 
+      clientRegion1 clientRegion2 clientRegion3 clientRegion4 clientRegion5 clientRegion6 clientRegion7;
+
+hydra.RegionPrms-dataPolicy     = partition;
+hydra.RegionPrms-partitionName  = pr1 pr2 pr3 pr4 pr5 pr6 pr7;
+hydra.PartitionPrms-names       = pr1 pr2 pr3 pr4 pr5 pr6 pr7;
+
+hydra.PartitionPrms-partitionResolver = parReg.colocation.MonthPartitionResolver;
+
+hydra.PartitionPrms-colocatedWith = none clientRegion1 clientRegion2 clientRegion3 clientRegion4 clientRegion5 clientRegion6;
+
+hydra.PartitionPrms-redundantCopies = 	 ${redundantCopies} ;
+
+hydra.VmPrms-extraVMArgs = "-Xmx1000m";
+
+hydra.Prms-totalTaskTimeSec = 14400; // test is workload based
+hydra.Prms-maxResultWaitSec = 800;
+
+util.TestHelperPrms-minTaskGranularitySec = 60;
+
+getInitialImage.InitImagePrms-numKeys = ${numKeys};
+// numNewKeys is 10% of the total number of keys
+getInitialImage.InitImagePrms-numNewKeys = fcn "${numKeys} * 0.1" ncf;
+getInitialImage.InitImagePrms-useCacheLoader=false;
+
+INCLUDE $JTESTS/util/randomValues.inc;
+util.RandomValuesPrms-objectType = byte[];
+util.RandomValuesPrms-elementSize = ONEOF 50 100 500 1000 2500 5000 FOENO;
+util.ValueHolderPrms-useExtraObject = true;
+
+hydra.GemFirePrms-conserveSockets = ONEOF true false FOENO;
+
+hydra.CachePrms-names           = cache1;
+hydra.CachePrms-searchTimeout   = 600;
+
+
+parReg.ParRegPrms-partitionResolverData = BB;
+parReg.ParRegPrms-isWithRoutingResolver = true;
+parReg.ParRegPrms-numberOfDataStore = fcn "${peerVMsPerHost} * ${peerHosts}" ncf;
+
+util.CachePrms-useDeclarativeXmlFile = true;

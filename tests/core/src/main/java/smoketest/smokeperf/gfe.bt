@@ -1,0 +1,61 @@
+smoketest/smokeperf/gfe/perf001.conf
+smoketest/smokeperf/gfe/perf002.conf
+smoketest/smokeperf/gfe/perf003.conf
+smoketest/smokeperf/gfe/perf004.conf
+smoketest/smokeperf/gfe/perf005.conf onlyOnPlatforms=Linux,SunOS,AIX
+smoketest/smokeperf/gfe/perf006.conf
+smoketest/smokeperf/gfe/perf008.conf
+smoketest/smokeperf/gfe/perf009.conf
+smoketest/smokeperf/gfe/perf014.conf
+smoketest/smokeperf/gfe/perf015.conf
+smoketest/smokeperf/gfe/perf019.conf
+smoketest/smokeperf/gfe/perf020.conf
+smoketest/smokeperf/gfe/perf021.conf onlyOnPlatforms=Linux,SunOS,AIX
+smoketest/smokeperf/gfe/perf022.conf
+smoketest/smokeperf/gfe/perf023.conf
+smoketest/smokeperf/gfe/perf024.conf
+smoketest/smokeperf/gfe/perf025.conf
+smoketest/smokeperf/gfe/perf026.conf
+smoketest/smokeperf/gfe/perf027.conf
+smoketest/smokeperf/gfe/perf028.conf
+smoketest/smokeperf/gfe/perf029.conf onlyOnPlatforms=Linux,SunOS,AIX
+smoketest/smokeperf/gfe/perf030.conf
+smoketest/smokeperf/gfe/perf031.conf onlyOnPlatforms=Linux,SunOS,AIX
+smoketest/smokeperf/gfe/perf032.conf
+smoketest/smokeperf/gfe/perf033.conf
+smoketest/smokeperf/gfe/perf034.conf
+smoketest/smokeperf/gfe/perf035.conf
+smoketest/smokeperf/gfe/perf036.conf
+smoketest/smokeperf/gfe/perf037.conf onlyOnPlatforms=Linux,SunOS,AIX
+smoketest/smokeperf/gfe/perf038.conf
+smoketest/smokeperf/gfe/perf039.conf
+smoketest/smokeperf/gfe/perf040.conf onlyOnPlatforms=Linux,SunOS,AIX
+smoketest/smokeperf/gfe/perf041.conf onlyOnPlatforms=Linux,SunOS,AIX
+smoketest/smokeperf/gfe/perf042.conf
+smoketest/smokeperf/gfe/perf043.conf
+smoketest/smokeperf/gfe/perf044.conf
+smoketest/smokeperf/gfe/perf045.conf onlyOnPlatforms=Linux,SunOS,AIX
+smoketest/smokeperf/gfe/perf046.conf
+smoketest/smokeperf/gfe/perf050.conf onlyOnPlatforms=Linux,SunOS,AIX
+smoketest/smokeperf/gfe/perf051.conf
+smoketest/smokeperf/gfe/perf052.conf
+smoketest/smokeperf/gfe/perf053.conf
+smoketest/smokeperf/gfe/perf054.conf onlyOnPlatforms=Linux,SunOS,AIX
+smoketest/smokeperf/gfe/perf055.conf
+smoketest/smokeperf/gfe/perf056.conf
+smoketest/smokeperf/gfe/perf057.conf
+smoketest/smokeperf/gfe/perf058.conf onlyOnPlatforms=Linux,SunOS,AIX
+smoketest/smokeperf/gfe/perf059.conf onlyOnPlatforms=Linux,SunOS,AIX
+smoketest/smokeperf/gfe/perf060.conf onlyOnPlatforms=Linux,SunOS,AIX
+smoketest/smokeperf/gfe/perf080.conf
+smoketest/smokeperf/gfe/perf081.conf onlyOnPlatforms=Linux,SunOS,AIX
+smoketest/smokeperf/gfe/perf093.conf
+smoketest/smokeperf/gfe/perf137.conf
+smoketest/smokeperf/gfe/perf139.conf
+smoketest/smokeperf/gfe/perf140.conf
+smoketest/smokeperf/gfe/perf141.conf
+smoketest/smokeperf/gfe/perf142.conf
+smoketest/smokeperf/gfe/perf143.conf
+smoketest/smokeperf/gfe/perf155.conf
+smoketest/smokeperf/gfe/perf156.conf
+smoketest/smokeperf/gfe/perf157.conf

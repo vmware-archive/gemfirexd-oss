@@ -1,0 +1,33 @@
+locatorHosts=1
+locatorVMsPerHost=1
+locatorThreadsPerVM=1
+
+A=client
+clientHosts=2
+clientVMsPerHost=1
+clientThreadsPerVM=2
+
+B=server
+serverHosts=2
+serverVMsPerHost=1
+serverThreadsPerVM=1
+
+api=GFXD
+
+txIsolation = none
+
+ddlFileName = useCase2.sql
+batchSize = 100
+numBatches = 100
+updatePercentage = 1
+
+clientHeapMB = 256
+serverHeapMB = 3500
+newSizeMB = 500
+
+trimSeconds =  60
+workSeconds = 180
+
+enableHistogram = true
+
+perffmwk.comparisonKey = useCase2

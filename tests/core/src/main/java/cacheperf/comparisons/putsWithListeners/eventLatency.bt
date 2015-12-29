@@ -1,0 +1,6 @@
+cacheperf/comparisons/putsWithListeners/eventLatency.conf
+  hydra.numHosts = 2 vmQuantities = 1 vmThreads = 4
+  scope = distributedAck conserveSockets = false
+  sleepBeforeOp = true sleepMs = 500 sleepOpCount = 1
+  messageSize = 512 batchSize = 1500000
+  perffmwk.comparisonKey = pNsN_2-1-4

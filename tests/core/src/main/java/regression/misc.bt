@@ -1,0 +1,9 @@
+/*commenting out for Cheetah release
+include $JTESTS/query/remote/remoteQuery.bt */
+//include $JTESTS/examples/dist/Flashcache.bt
+include $JTESTS/mapregion/mapregion.bt
+include $JTESTS/cacheLoader/smoke/dist.bt
+include $JTESTS/ssl/ssl.bt
+include $JTESTS/ssl/moreSSL.bt
+// we don't support p2p (700 <=> 7.5) backward compatiblity 
+//include $JTESTS/compatibility/putAllCompatibility.bt

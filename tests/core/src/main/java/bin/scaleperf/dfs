@@ -1,0 +1,35 @@
+#!/bin/bash
+
+#-------------------------------------------------------------------------------
+#
+# Checks the disk space on the $FILE_SYSTEM_NUMBER on each of the $TEST_HOSTS:
+#
+#    df /export/<test_host><file_system_number>
+#
+#-------------------------------------------------------------------------------
+
+trap 'exit 1' 2 #traps Ctrl-C (signal 2)
+
+if [ -z "$TEST_HOSTS" ]
+then
+  echo "Environment variable TEST_HOSTS is not set."
+  exit 0
+fi
+
+if [ -z "$FILE_SYSTEM_NUMBER" ]
+then
+  echo "Environment variable FILE_SYSTEM_NUMBER is not set."
+  exit 0
+fi
+
+j=$FILE_SYSTEM_NUMBER
+
+for i in $TEST_HOSTS
+do
+  df /export/$i$j | grep -v Mounted
+done
+
+for i in $TEST_HOSTS
+do
+  echo $i; ssh -q $i df | grep sda | grep -v nfs
+done

@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{92ADDD6F-BB36-428E-8C6D-E21FAAD79BF9}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>AdoNetTest.BIN</RootNamespace>
+    <AssemblyName>AdoNetTest.BIN</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>0</WarningLevel>
+    <DocumentationFile>bin\Release\AdoNetTest.BIN.XML</DocumentationFile>
+    <NoWarn>CS1591</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="Pivotal.Data.GemFireXD, Version=1.0.0.0, Culture=neutral, PublicKeyToken=126e6338d9f55e0c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(GEMFIREXD)\lib\adonet\Pivotal.Data.GemFireXD.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BusinessObjects\Address.cs" />
+    <Compile Include="BusinessObjects\BusinessObject.cs" />
+    <Compile Include="BusinessObjects\Category.cs" />
+    <Compile Include="BusinessObjects\Customer.cs" />
+    <Compile Include="BusinessObjects\ObjectFactory.cs" />
+    <Compile Include="BusinessObjects\ObjectType.cs" />
+    <Compile Include="BusinessObjects\Order.cs" />
+    <Compile Include="BusinessObjects\OrderDetail.cs" />
+    <Compile Include="BusinessObjects\Product.cs" />
+    <Compile Include="BusinessObjects\Supplier.cs" />
+    <Compile Include="BusinessRules\BusinessRule.cs" />
+    <Compile Include="BusinessRules\ValidateCompare.cs" />
+    <Compile Include="CommandBuilder\GenerateAndExecuteDeleteCommand.cs" />
+    <Compile Include="CommandBuilder\GenerateAndExecuteUpdateCommand.cs" />
+    <Compile Include="CommandBuilder\GenerateAndExecuteInsertCommand.cs" />
+    <Compile Include="Command\CommandDefaultPropertySettings.cs" />
+    <Compile Include="Command\CommandSelectFromSystemTables.cs" />
+    <Compile Include="Command\AddNamedParamsToParamsCollection.cs" />
+    <Compile Include="Command\AddRangeOfParamsToParamsCollection.cs" />
+    <Compile Include="Command\AddRangeOfObjectsToParamsCollection.cs" />
+    <Compile Include="Command\CreateTableWithAllSupportedGFXDTypes.cs" />
+    <Compile Include="Command\TableRowsColumnsCountWithSelectAllQuery.cs" />
+    <Compile Include="Command\AddDefaultParamsToParamsCollection.cs" />
+    <Compile Include="Concurrency\ConcurrentThreadsUpdateDiffRowsOnDiffConnections.cs" />
+    <Compile Include="Concurrency\ConcurrentThreadsUpdateDiffRowsOnSameConnection.cs" />
+    <Compile Include="Concurrency\ConcurrentThreadsQueryAllRowsSameConnection.cs" />
+    <Compile Include="Concurrency\ConcurrentThreadsQueryAllRowsDiffConnection.cs" />
+    <Compile Include="Concurrency\ConcurrentThreadsUpdateSameRowOnDiffConnections.cs" />
+    <Compile Include="Concurrency\ConcurrentThreadsUpdateSameRowOnSameConnection.cs" />
+    <Compile Include="Configuration\GFXDLocatorConfig.cs" />
+    <Compile Include="Configuration\GFXDDbDefaultConfig.cs" />
+    <Compile Include="Configuration\GFXDSchema.cs" />
+    <Compile Include="Configuration\GFXDServerGroupConfig.cs" />
+    <Compile Include="ConnectionFailover\PrimaryConnectionFailsDuringDbTransaction.cs" />
+    <Compile Include="Connection\GFXDTransactionWithoutIsolationLevel.cs" />
+    <Compile Include="Connection\CreateConnectionWithInvalidConnStr.cs" />
+    <Compile Include="Connection\CreateConnectionWithNoConnStr.cs" />
+    <Compile Include="Connection\GetSchemaIndexColumns.cs" />
+    <Compile Include="Connection\GetSchemaIndexes.cs" />
+    <Compile Include="Connection\GetSchemaForeignKeyColumns.cs" />
+    <Compile Include="Connection\GetSchemaForeignKeys.cs" />
+    <Compile Include="Connection\GetSchemaPrimaryKeyColumns.cs" />
+    <Compile Include="Connection\GetSchemaPrimaryKeys.cs" />
+    <Compile Include="Connection\GetSchemaProcedureParameters.cs" />
+    <Compile Include="Connection\GetSchemaProcedures.cs" />
+    <Compile Include="Connection\GetSchemaFunctionParameters.cs" />
+    <Compile Include="Connection\GetSchemaDataSourceInformation.cs" />
+    <Compile Include="Connection\GetSchemaMetaDataCollections.cs" />
+    <Compile Include="Connection\GetSchemaFunctions.cs" />
+    <Compile Include="Connection\GetSchemaViews.cs" />
+    <Compile Include="Connection\GetSchemaColumnPrivileges.cs" />
+    <Compile Include="Connection\GetSchemaColumns.cs" />
+    <Compile Include="Connection\GetSchemaTablePrivileges.cs" />
+    <Compile Include="Connection\GetSchemaSchemas.cs" />
+    <Compile Include="Connection\GetSchemaReservedWords.cs" />
+    <Compile Include="Connection\GetSchemaRestrictions.cs" />
+    <Compile Include="Connection\GetSchemaDataTypes.cs" />
+    <Compile Include="Connection\CreateMultipleMixedDDLCommands.cs" />
+    <Compile Include="Connection\CreateMultipleMixedDMLCommands.cs" />
+    <Compile Include="Connection\CreateMultipleSelectCommands.cs" />
+    <Compile Include="Connection\GetSchemaTables.cs" />
+    <Compile Include="Connection\GetSchema.cs" />
+    <Compile Include="Controllers\DbController.cs" />
+    <Compile Include="DataModel\DbCreateType.cs" />
+    <Compile Include="DataModel\TestDbDefaultStatementBuilders.cs" />
+    <Compile Include="DDLOperations\CreateDbDefaultTablesWithReplication.cs" />
+    <Compile Include="DDLOperations\CreateDbDefaultTablesPartitionOnPKey.cs" />
+    <Compile Include="DDLOperations\CreateDbDefaultTablesNoPartition.cs" />
+    <Compile Include="DDLOperations\CreateTableWithSameNameOnDiffSchema.cs" />
+    <Compile Include="DataAdapter\UpdateDataSetWithMultiTablesOnDiffAdapters.cs" />
+    <Compile Include="DataAdapter\UpdateDataSetWithMultiTablesOnSameAdapter.cs" />
+    <Compile Include="DataObjects\DataObject.cs" />
+    <Compile Include="DataReader\DataSetLoadsMultiTablesFromDataReader.cs" />
+    <Compile Include="DataReader\DataTableLoadsDataFromDataReader.cs" />
+    <Compile Include="JoinQuery\DataAdapterFillsDataTableWithAJoinQuery.cs" />
+    <Compile Include="JoinQuery\ExecuteDataReaderWithJoinQueryCommand.cs" />
+    <Compile Include="JoinQuery\DataAdapterFillsDataSetWithMultiJoinQueries.cs" />
+    <Compile Include="Logger.cs" />
+    <Compile Include="Parameter\SelectDateTimeColumnsAsParameters.cs" />
+    <Compile Include="DataAdapter\InsertMulipleNewRowsIntoDataTable.cs" />
+    <Compile Include="DataAdapter\UpdateAnArrayOfChangedDataRows.cs" />
+    <Compile Include="DataAdapter\UpdateDataTableWithMultipleChangedRows.cs" />
+    <Compile Include="DataAdapter\FillDataSetWithASingleTable.cs" />
+    <Compile Include="DataAdapter\FillDataTableWithAllTableRows.cs" />
+    <Compile Include="DataAdapter\FillDataSetWithMultipleTables.cs" />
+    <Compile Include="DataAdapter\CreateDataAdapterWithConstructor3.cs" />
+    <Compile Include="DataAdapter\CreateDataAdapterWithConstructor2.cs" />
+    <Compile Include="DataAdapter\CreateDataAdapterWithConstructor1.cs" />
+    <Compile Include="DataAdapter\CreateDataAdapterFromCommand.cs" />
+    <Compile Include="DataModel\DbTable.cs" />
+    <Compile Include="DataObjects\AddressDao.cs" />
+    <Compile Include="DataObjects\CategoryDao.cs" />
+    <Compile Include="DataObjects\CustomerDao.cs" />
+    <Compile Include="DataObjects\OrderDao.cs" />
+    <Compile Include="DataObjects\OrderDetailDao.cs" />
+    <Compile Include="DataObjects\ProductDao.cs" />
+    <Compile Include="DataObjects\GFXDDbi.cs" />
+    <Compile Include="DataObjects\SupplierDao.cs" />
+    <Compile Include="DataReader\UpdateReaderDataWithUpdateValueMethod.cs" />
+    <Compile Include="DataReader\ReadTableDataIntoMultipleResultSets.cs" />
+    <Compile Include="DataReader\UpdateReaderDataWithUpdateValuesMethod.cs" />
+    <Compile Include="DataReader\UpdateReaderDataWithTypeSpecificMethods.cs" />
+    <Compile Include="DataReader\ReadColumnDataWithGetValueMethod.cs" />
+    <Compile Include="DataReader\ReadColumnDataWithGetValuesMethod.cs" />
+    <Compile Include="DataReader\ReadColumnDataWithTypeSpecificMethods.cs" />
+    <Compile Include="DataReader\ReadColumnDataWithGetStringMethod.cs" />
+    <Compile Include="DataReader\ReadSchemaTableFromDataReader.cs" />
+    <Compile Include="DataReader\CreateDataReaderFromCommandObject.cs" />
+    <Compile Include="DDLOperations\CreateSchemaWithMultipleServerGroups.cs" />
+    <Compile Include="DDLOperations\CreateSchemaWithADefaultServerGroup.cs" />
+    <Compile Include="DataModel\DbDefault.cs" />
+    <Compile Include="DataModel\DbField.cs" />
+    <Compile Include="DataModel\DbRelation.cs" />
+    <Compile Include="DataModel\DbTypeMap.cs" />
+    <Compile Include="ProviderFactory\CreateGFXDDataAdapterFromFactory.cs" />
+    <Compile Include="ProviderFactory\CreateDbDataAdapterFromFactory.cs" />
+    <Compile Include="ProviderFactory\GetAllProviderFactoryClasses.cs" />
+    <Compile Include="ProviderFactory\CreateGFXDCommandFromFactory.cs" />
+    <Compile Include="ProviderFactory\CreateDbCommandFromFactory.cs" />
+    <Compile Include="ProviderFactory\CreateGFXDConnectionFromFactory.cs" />
+    <Compile Include="ProviderFactory\CreateDbConnectionFromFactory.cs" />
+    <Compile Include="GFXDTestRunner.cs" />
+    <Compile Include="Command\CreateCommandFromConstructor.cs" />
+    <Compile Include="Command\CreateCommandFromConnection.cs" />
+    <Compile Include="Configuration\GFXDClientConfig.cs" />
+    <Compile Include="Configuration\GFXDConfigManager.cs" />
+    <Compile Include="Configuration\GFXDServerConfig.cs" />
+    <Compile Include="Connection\UsingCloneGFXDConnection.cs" />
+    <Compile Include="Connection\CommitAnActiveGFXDTransaction.cs" />
+    <Compile Include="Connection\AttemptToCommitANonActiveTransaction.cs" />
+    <Compile Include="Connection\CreateMultipleCommandsFromConnection.cs" />
+    <Compile Include="Connection\DefaultAutoCommitOnNewConnection.cs" />
+    <Compile Include="Connection\DisableAutoCommitOnOpenedConnection.cs" />
+    <Compile Include="Connection\EnableAutoCommitOnClosedConnection.cs" />
+    <Compile Include="Connection\EnableAutoCommitOnOpenedConnection.cs" />
+    <Compile Include="Connection\CreateConnectionWithConnStrProperties.cs" />
+    <Compile Include="Connection\CreateConnectionWithValidConnStr.cs" />
+    <Compile Include="Connection\OpenConnectionWithValidConnString.cs" />
+    <Compile Include="GFXDTest.cs" />
+    <Compile Include="Helper\DbRandom.cs" />
+    <Compile Include="Helper\DbHelper.cs" />
+    <Compile Include="Helper\VerifyDbRandomCreation.cs" />
+    <Compile Include="JoinQuery\InnerJoinQueryOnPrimaryKeyPartionedTables.cs" />
+    <Compile Include="JoinQuery\InnerJoinQueryOnDefaultCoLocatedTables.cs" />
+    <Compile Include="JoinQuery\InnerJoinQueryOnDefaultPartitionedTables.cs" />
+    <Compile Include="Negative\DropSchemaWithExistingTables.cs" />
+    <Compile Include="Negative\ThreadClosesConnectionUsedByAnotherThread.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Template\AdoNetSamples.cs" />
+    <Compile Include="Template\GFXDTestTemplate.cs" />
+    <Compile Include="Transaction\ConcurrentTransactionsUpdateSameRowReadComit.cs" />
+    <Compile Include="Transaction\ConcurrentTransactionsUpdateSameRowChaos.cs" />
+    <Compile Include="Transaction\ConnectionClosedWhenTransactionIsActive.cs" />
+    <Compile Include="Transaction\RollBackAdapterUpdatesTransaction.cs" />
+    <Compile Include="Transaction\RollBackReaderUpdatesTransaction.cs" />
+    <Compile Include="Transaction\MultiConnectionUpdatesTransaction.cs" />
+    <Compile Include="Transaction\MixedAdapterReaderUpdatesTransaction.cs" />
+    <Compile Include="Transaction\MultiAdapterUpdatesTransaction.cs" />
+    <Compile Include="Transaction\MultiDataReaderUpdatesTransaction.cs" />
+    <Compile Include="Usability\ValidateOrderDetailInsertUpdateDelete.cs" />
+    <Compile Include="Usability\ValidateOrderInsertUpdateDelete.cs" />
+    <Compile Include="Usability\ValidateProductInsertUpdateDelete.cs" />
+    <Compile Include="Usability\ValidateCategoryInsertUpdateDelete.cs" />
+    <Compile Include="Usability\ValidateCustomerInsertUpdateDelete.cs" />
+    <Compile Include="Usability\RollbackAllTableInsertTransaction.cs" />
+    <Compile Include="Usability\DeleteAddressWithFKeyConstraint.cs" />
+    <Compile Include="Usability\CommitAllTableInsertTransaction.cs" />
+    <Compile Include="Usability\CreateCustomerAddressView.cs" />
+    <Compile Include="Usability\CreateProductSupplierView.cs" />
+    <Compile Include="Usability\CreateOrderCustomerView.cs" />
+    <Compile Include="Usability\DeleteOrderWithFKeyConstraint.cs" />
+    <Compile Include="Usability\CreateOrderDetailOrderView.cs" />
+    <Compile Include="Usability\CreateOrderDetailProductView.cs" />
+    <Compile Include="Usability\CreateProductCategoryView.cs" />
+    <Compile Include="Usability\DeleteCategoryWithFKeyConstraint.cs" />
+    <Compile Include="Usability\ProcessNewCustomerOrderTransaction.cs" />
+    <Compile Include="Usability\CreateSupplierAddressView.cs" />
+    <Compile Include="Usability\DeleteProductWithFKeyConstraint.cs" />
+    <Compile Include="Usability\ValidateSupplierInsertUpdateDelete.cs" />
+    <Compile Include="Usability\DeleteRowWithNoFKeyConstraint.cs" />
+    <Compile Include="Usability\UpdateAddressWithFKeyConstraint.cs" />
+    <Compile Include="Usability\ValidateAddressInsertUpdateDelete.cs" />
+    <Compile Include="Utils\GFXDLocator.cs" />
+    <Compile Include="Utils\CountryCodes.cs" />
+    <Compile Include="Utils\GFXDServer.cs" />
+    <Compile Include="Utils\GFXDServerMgr.cs" />
+    <Compile Include="Utils\QueryTypes.cs" />
+    <Compile Include="Utils\StateCodes.cs" />
+    <Compile Include="Utils\TestEventArgs.cs" />
+    <Compile Include="Utils\TestState.cs" />
+    <Compile Include="Utils\TestResult.cs" />
+    <Compile Include="Utils\GFXDState.cs" />
+    <Compile Include="Utils\TransAction.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="AdoNetTest.BIN.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MultiHost\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

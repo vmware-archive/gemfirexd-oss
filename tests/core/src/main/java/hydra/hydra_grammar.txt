@@ -1,0 +1,307 @@
+
+====== USAGE ====================================================================
+
+Prepare a hydra configuration configuration file following the syntax and
+grammar described later in this file.
+
+Before running a hydra test using your file, test it by setting up your
+environment as you would for a test run (see hydra/MasterController.java).
+
+Then execute:
+
+  java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS      \
+       -DJTESTS=$JTESTS                          \
+       -Dgemfire.home=$GEMFIRE                   \
+        hydra.ConfigParser <filename>
+
+See gemfire/tests/hydra/parse for an example.
+
+Examine the result to make sure you are getting the settings you expect.
+
+====== SYNTAX ===================================================================
+
+The hydra configuration file syntax is quite simple.  In the examples below,
+tokens resulting from a parameter setting are shown in angle brackets (<>).
+
+Both C and C++ style comments are supported.
+
+Tokens are delimited by equals (=), plusequals (+=), comma (,), semicolon (;),
+comments (//) and (/*) and (*/), and strings (").  A token containing a
+delimiter must be enclosed in double quotes (") to form a string, for example,
+
+    mypackage.MyPrms-str = "\"hello\"";          // <"hello">
+    mypackage.MyPrms-dir = "//host/d/frip";      // <//host/d/frip>
+
+White space, including newlines, is ignored except to separate tokens.  Tokens
+that include whitespace must be enclosed in double quotes (") to form a string.
+
+    mypackage.MyPrms-str = hello world ;         // <hello><world>
+    mypackage.MyPrms-str = "hello world ";       // <hello world >
+
+Backslash (\) outside a string is taken literally, for example,
+
+    mypackage.MyPrms-dir = h:\frip;              // <h:\frip>
+    mypackage.MyPrms-dir = \\host\d\frip;        // <\\host\d\frip>
+
+Backslash (\) inside a string is treated as an escape character.  A string
+containing a literal backslash must escape the backslash (\\), for example,
+
+    mypackage.MyPrms-dir = "h:\\frip";           // <h:\frip>
+    mypackage.MyPrms-dir = "\\\\host\\d\\user";  // <\\host\d\user>
+
+Equals (=) will override any previous parameter assignment.  Plusequals (+=)
+can be used instead, in appropriate parameter assignments only, to indicate
+that the value should be added to any value the parameter contains so far.
+If the current value and the += value are lists of different lengths, one is
+padded using its last element to be the same size as the other.  If one value
+is a list and the other is not, the non-list value is turned into a list with
+one element before being padded and combined.
+
+Examples:
+
+   CURRENT VALUE  += VALUE   NEW VALUE
+   a              b          [a b]
+   a b            c          [a b c]
+   a, b           c          [[a,c],[b,c]]
+   a b, c d       e f        [[a,b,e,f],[c,d,e,f]]
+   a b, c d       e, f       [[a,b,e],[c,d,f]]
+   a, b           c, d, e    [[a,c],[b,d],[b,e]]
+
+The variables $JAVA_HOME, $JTESTS, $GEMFIRE, can be included in known path
+values: include, randomInclude, includeIfPresent, hydra.*Prms-<parameter> where <parameter>
+is a path, and in custom parameters are fetched by clients at runtime
+using the ConfigHashtable.pathAt methods.  Expansion takes place using the
+caller's environment (set via system properties), and will follow the standard
+search order for os-specific, generic, and reverse-os settings in its attempt to
+succeed.
+
+System properties in the form ${PROPERTYNAME} can be included anywhere in the
+configuration file.  The property name cannot include whitespace.  Properties
+must be set either on the hydra command line or in the batterytest file.  See
+the javadocs for hydra.MasterController and batterytest/batterytest_grammar.txt
+for more information.  An example of setting properties in a batterytest file:
+
+    mypackage/mytest.conf mypackage.things=10 // run mytest with 10 things
+    mypackage/mytest.conf mypackage.things=20 // run mytest with 20 things
+
+Functions in the form FCN function NCF can be included almost anywhere in the
+configuration file.  The function is best specified as a string, with any string
+values inside being wrapped in escaped double quotes.  However, if no strings
+are involved, the function will be interpreted correctly without quotes.  For
+example:
+
+  include $JTESTS/hydraconfig/systemparamsN.inc;
+
+  hydra.ClientPrms-vmQuantities = ${test.vmQuantities};
+  hydra.ClientPrms-vmThreads    = ${test.vmThreads};
+
+  TASK taskClass     = hydratest.TaskClient     taskMethod  = tryItOut4
+       maxTimesToRun = fcn
+                           ${hydra.numHosts} *
+                           ${test.vmQuantities} *
+                           ${test.vmThreads}
+                       ncf;
+
+Also see tests/hydraconfig/systemparamsN.inc, hydratest/checkfcn.conf, and
+hydra/samples/distupdate.conf.
+
+====== GRAMMAR ==================================================================
+
+config =
+        (stmt SEMI)*
+
+stmt =
+        include
+        |
+        unittest
+        |
+        task
+        |
+        threadgroup
+        |
+        assignment
+
+include =
+        INCLUDE identifier
+        |
+        RANDOMINCLUDE identifier
+        |
+        INCLUDEIFPRESENT identifier
+
+unittest =
+        UNITTEST simpletask
+
+task =
+        STARTTASK simpletask (clientnames)? (assignment)?
+        |
+        INITTASK simpletask sequential? batch? (threadgroups)? (assignment)? (runmode)?
+        |
+        TASK simpletask taskparams (assignment)?
+        |
+        CLOSETASK simpletask sequential? batch? (threadgroups)? (assignment)? (runmode)?
+        |
+        ENDTASK simpletask (clientnames)? (assignment)?
+
+threadgroup =
+        THREADGROUP javaidentifier threadgroupparams
+
+assignment =
+        key EQUALS value
+
+simpletask =
+        TASKCLASS EQUALS javaidentifier TASKMETHOD EQUALS javaidentifier
+
+sequential =
+        SEQUENTIAL
+
+batch =
+        BATCH
+
+clientnames =
+        CLIENTNAMES EQUALS commalist
+
+runmode =
+        RUNMODE EQUALS ( ALWAYS | ONCE | DYNAMIC )
+
+taskparams =
+        (
+            THREADGROUP EQUALS javaidentifier
+            |
+            MAXTIMESTORUN EQUALS int
+            |
+            MAXTHREADS EQUALS int
+            |
+            WEIGHT EQUALS int
+            |
+            STARTINTERVAL EQUALS int
+            |
+            ENDINTERVAL EQUALS int
+        )*
+
+threadgroupparams =
+        (threadgroupspec)+
+
+threadgroupspec =
+        TOTALTHREADS EQUALS int
+        ( TOTALVMS    EQUALS int )?
+        ( CLIENTNAMES EQUALS commalist )?
+
+key =
+        <any field in a subclass of BasePrms.java>
+
+value = // @todo lises perhaps allow no value and treat that as unsetting the parameter
+        list ( COMMA list )*
+
+javaidentifierlist = ( javaidentifier )+
+
+commalist = javaidentifier ( COMMA javaidentifier )*
+
+list = ( listelement )+
+
+listelement =
+        fcn
+        |
+        range
+        |
+        oneof
+        |
+        robing
+        |
+        number
+        |
+        boolean
+        |
+        identifier
+
+fcn = FCN function NCF
+
+range = RANGE number number EGNAR
+
+oneof = ONEOF ( identifier | number )( identifier | number )+ FOENO
+
+robing = ROBING ( identifier | number )( identifier | number )+ GNIBOR
+
+number = int | long | float | double
+         |
+         function that evaluates to a number
+
+boolean = TRUE | FALSE
+          |
+          function that evaluates to a boolean
+
+identifier = any sequence of non-white-space characters
+             |
+             function that evaluates to an identifier
+             // @todo lises separate out numbers and booleans
+
+javaidentifier = java-style identifier // @todo lises enforce this
+
+function = anything interpretable by beanshell
+
+int    = <a Java int>
+
+long   = <a Java long>
+
+float  = <a Java float>
+
+double = <a Java double>
+
+====== TOKENS ===================================================================
+
+Tokens are treated in a case-insensitive fashion.  The cases used below are
+arbitrary, chosen for readability.
+
+INCLUDE         = "include"
+RANDOMINCLUDE   = "randomInclude"
+INCLUDEIFPRESENT= "includeIfPresent"
+
+UNITTEST        = "unittest"
+
+STARTTASK       = "starttask"
+INITTASK        = "inittask"
+TASK            = "task"
+CLOSETASK       = "closetask"
+ENDTASK         = "endtask"
+
+TASKCLASS       = "taskClass"
+TASKMETHOD      = "taskMethod"
+
+SEQUENTIAL      = "sequential"
+BATCH           = "batch"
+
+CLIENTNAMES     = "clientNames"
+
+MAXTIMESTORUN   = "maxTimesToRun"
+MAXTHREADS      = "maxThreads"
+WEIGHT          = "weight"
+STARTINTERVAL   = "startInterval"
+ENDINTERVAL     = "endInterval"
+
+RUNMODE         = "runMode"
+ALWAYS          = "always"
+ONCE            = "once"
+DYNAMIC         = "dynamic"
+
+THREADGROUP     = "threadGroup"
+
+TOTALVMS        = "totalVMs"
+TOTALTHREADS    = "totalThreads"
+
+ANY             = "any"
+
+FCN             = "fcn"
+NCF             = "ncf"
+
+ONEOF           = "oneof"
+FOENO           = "foeno"
+ROBING          = "robing"
+GNIBOR          = "gnibor"
+RANGE           = "range"
+EGNAR           = "egnar"
+
+EQUALS          = "="
+COMMA           = ","
+SEMI            = ";"
+
+TRUE            = "true"
+FALSE           = "false"

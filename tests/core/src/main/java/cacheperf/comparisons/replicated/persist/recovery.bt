@@ -1,0 +1,36 @@
+// ============================================================
+// measure recovery performance for persistent replicate region
+// NOTE: these must run with 64 bit vms for Linux with 3 hosts
+// one for the MasterController and one for each of 2 vms
+
+// 6G of memory, 4G of payload
+// recover with values
+cacheperf/comparisons/replicated/persist/peerDataRecoverWithValues.conf
+  peerHosts =  2 peerVMsPerHost = 1 peerThreadsPerVM = 1
+  maxKeys = 2097152 objectSize = 1024
+  perffmwk.comparisonKey = recovery
+  heapMB=6000
+
+// 6G of memory, 4G of payload
+// recover WITHOUT values
+cacheperf/comparisons/replicated/persist/peerDataRecoverNoValues.conf
+  peerHosts =  2 peerVMsPerHost = 1 peerThreadsPerVM = 1
+  maxKeys = 2097152 objectSize = 1024
+  perffmwk.comparisonKey = recovery
+  heapMB=6000
+
+// ============================================================
+// measure recovery performance for overflow-to-disk regions
+cacheperf/comparisons/replicated/persist/peerDataRecoverOverflowWithValues.conf
+  peerHosts =  2 peerVMsPerHost = 1 peerThreadsPerVM = 1
+  maxKeys = 2097152 objectSize = 1024
+  perffmwk.comparisonKey = recovery
+  heapMB=6000
+
+// 6G of memory, 4G of payload
+// recover WITHOUT values
+cacheperf/comparisons/replicated/persist/peerDataRecoverOverflowNoValues.conf
+  peerHosts =  2 peerVMsPerHost = 1 peerThreadsPerVM = 1
+  maxKeys = 2097152 objectSize = 1024
+  perffmwk.comparisonKey = recovery
+  heapMB=6000

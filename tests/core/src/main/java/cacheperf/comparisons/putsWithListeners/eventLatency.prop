@@ -1,0 +1,29 @@
+# scope (distributedNoAck, distributedAck)
+scope = distributedAck 
+
+# conserveSockets (true, false)
+conserveSockets = true
+
+# number of iterations to do in a task
+batchSize = 5000
+
+# characters in message payload string (this is half the byte size)
+messageSize = 0
+
+# whether to sleep before updating cache entries
+sleepBeforeOp = false
+
+# how many operations to do per sleep
+sleepOpCount = 1
+
+# ms to sleep before performing sleepOpCount operations
+sleepMs = 250
+
+# total number of hosts 
+hydra.numHosts = 2
+
+# number of threads per vm
+vmThreads = 1
+
+# number of vms per host
+vmQuantities = 1

@@ -1,0 +1,16 @@
+cacheperf/comparisons/parReg/recovery/hctGet.conf
+  bridgeHosts  = 8 bridgeVMsPerHost  = 1 bridgeThreadsPerVM  = 1
+  edgeHosts    = 8 edgeVMsPerHost    = 1 edgeThreadsPerVM    = 5
+  maxKeys = 500000 objectSize = 1024 heapMB = 1500
+  redundantCopies = 1
+  conserveSockets = false
+  workSeconds = 600
+  perffmwk.comparisonKey = pr1_get_08_08_05
+cacheperf/comparisons/parReg/recovery/hctPut.conf
+  bridgeHosts  = 8 bridgeVMsPerHost  = 1 bridgeThreadsPerVM  = 1
+  edgeHosts    = 8 edgeVMsPerHost    = 1 edgeThreadsPerVM    = 5
+  maxKeys = 500000 objectSize = 1024 heapMB = 1500
+  redundantCopies = 1
+  conserveSockets = false
+  workSeconds = 600
+  perffmwk.comparisonKey = pr1_put_08_08_05

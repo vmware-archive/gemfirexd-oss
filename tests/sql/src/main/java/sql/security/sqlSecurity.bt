@@ -1,0 +1,70 @@
+sql/security/multiTablesUniqAccessUsers.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    A=store storeHosts=1 storeVMsPerHost=2 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=5
+
+sql/security/turnOnGfxdAuthorizationUsingSystemProperty.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    A=store storeHosts=1 storeVMsPerHost=2 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=5
+
+sql/security/multiTablesUniqAuthWithDiffSystemUsers.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    A=store storeHosts=1 storeVMsPerHost=5 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=5
+
+sql/security/multiTablesUniqAuthWithAccessors.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    A=store storeHosts=1 storeVMsPerHost=2 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=5
+    usePublicAsGrantees = true, false
+
+sql/security/multiTablesProceduresUniqAuthWithAccessors.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    A=store storeHosts=1 storeVMsPerHost=2 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=5
+    usePublicAsGrantees = true, false
+
+//non unique keys without verification
+sql/security/multiTablesNonUniqAuthWithAccessors.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    A=store storeHosts=1 storeVMsPerHost=2 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=5
+    usePublicAsGrantees = false
+
+sql/security/multiTablesProceduresNonUniqAuthWithAccessors.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    A=store storeHosts=1 storeVMsPerHost=2 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=5
+    usePublicAsGrantees = false
+
+sql/security/multiTablesLdapUniqAuthWithAccessors.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    A=store storeHosts=1 storeVMsPerHost=2 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=5 accessorThreadsPerVM=5
+    usePublicAsGrantees = true, false
+
+sql/security/multiTablesProceduresLdapUniqAuthWithAccessors.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    A=store storeHosts=1 storeVMsPerHost=2 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=5 accessorThreadsPerVM=5
+    usePublicAsGrantees = true, false
+    
+sql/security/multiTablesUniqAuthClient.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=1 serverVMsPerHost=5 serverThreadsPerVM=1
+    clientHosts = 1 clientVMsPerHost =5 clientThreadsPerVM = 12
+    usePublicAsGrantees = true, false
+
+sql/security/multiTablesLdapUniqAuthClient.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=1 serverVMsPerHost=5 serverThreadsPerVM=1
+    clientHosts = 1 clientVMsPerHost =5 clientThreadsPerVM = 12
+    usePublicAsGrantees = true, false
+
+sql/security/multiTablesLdapHAUniqAuthClient.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=1 serverVMsPerHost=5 serverThreadsPerVM=1
+    clientHosts = 1 clientVMsPerHost =5 clientThreadsPerVM = 12
+    usePublicAsGrantees = false
+    redundantCopies=1, 2

@@ -1,0 +1,228 @@
+echo
+chrgn portfolios
+ls
+exec \
+-- This file contains most of the queries that are listed in the \
+-- GemFire User's Guide, in the order presented. \
+-- Occasional comments indicate the corresponding sections of the guide. \
+-- \
+-- Querying the Portfolios Region \
+/root/portfolios.name
+
+exec /root/portfolios.isDestroyed
+
+exec \
+SELECT DISTINCT * FROM /root/portfolios WHERE status = 'active'
+
+exec \
+SELECT DISTINCT * FROM /root/portfolios \
+WHERE status = 'active' AND "type" = 'XYZ'
+
+exec \
+IMPORT cacheRunner.Position; \
+SELECT DISTINCT id, status FROM /root/portfolios \
+WHERE NOT (SELECT DISTINCT * FROM positions.values posnVal TYPE Position \
+WHERE posnVal.secId='YYY').isEmpty
+
+
+exec \
+IMPORT cacheRunner.Position; \
+SELECT DISTINCT posnVal \
+FROM /root/portfolios, positions.values posnVal TYPE Position \
+WHERE status = 'active' AND posnVal.mktValue >= 25.00
+
+exec \
+IMPORT cacheRunner.Position; \
+SELECT DISTINCT posnVal \
+FROM /root/portfolios, positions.values posnVal TYPE Position \
+WHERE posnVal.mktValue >= 25.00
+
+exec \
+IMPORT cacheRunner.Position; \
+SELECT DISTINCT key, posnVal \
+FROM /root/portfolios.entries, value.positions.values posnVal TYPE Position \
+WHERE posnVal.mktValue >= 25.00
+
+exec \
+-- Querying Object Data \
+IMPORT cacheRunner.Position; \
+SELECT DISTINCT posnVal.mktValue \
+FROM /root/portfolios, positions.values posnVal TYPE Position \
+WHERE status='active'
+
+exec \
+IMPORT cacheRunner.Position; \
+SELECT DISTINCT posnVal.mktValue \
+FROM /root/portfolios, positions.values posnVal TYPE Position
+
+exec \
+-- Data Accessibility  \
+IMPORT cacheRunner.Position; \
+SELECT DISTINCT posnVal.mktValue \
+FROM /root/portfolios, \
+positions.values posnVal TYPE Position \
+WHERE status='active' 
+
+exec \
+-- Accessing Cached Data \
+SELECT DISTINCT positions FROM /root/portfolios
+
+exec \
+SELECT DISTINCT * FROM /root/portfolios.keys
+
+exec \
+SELECT DISTINCT * \
+FROM /root/portfolios \
+WHERE status = 'active'
+
+exec \
+IMPORT cacheRunner.Position; \
+SELECT DISTINCT "type" \
+FROM /root/portfolios, positions.values posnVal TYPE Position \
+WHERE posnVal.qty > 1000.00
+
+exec \
+-- Attribute Visibility \
+SELECT DISTINCT * FROM /root/portfolios.keys
+
+exec \
+SELECT DISTINCT * FROM /root/portfolios.toArray
+
+exec \
+SELECT DISTINCT positions FROM /root/portfolios
+
+exec \
+IMPORT cacheRunner.Position; \
+SELECT DISTINCT posnVal \
+FROM /root/portfolios, positions.values posnVal TYPE Position \
+WHERE posnVal.mktValue >= 25.00
+
+exec \
+-- Nested Query Scopes \
+IMPORT cacheRunner.Position; \
+SELECT DISTINCT * FROM /root/portfolios \
+WHERE NOT \
+(SELECT DISTINCT * FROM positions.values posnVal TYPE Position \
+WHERE posnVal.secId='YYY').isEmpty
+
+exec \
+-- What is a Query String? \
+/root/portfolios.size > 100
+
+exec \
+/root.fullPath
+
+exec \
+/root/portfolios[98].id = 12
+
+exec \
+-- Iterator Variables \
+IMPORT cacheRunner.Position; \
+SELECT DISTINCT pflo."type", posnVal.qty \
+FROM /root/portfolios pflo, positions.values posnVal TYPE Position \
+WHERE pflo.status = 'active' and posnVal.mktValue > 25.00
+
+exec \
+-- Using IMPORT and Typecasting for Object Typing \
+IMPORT cacheRunner.Position; \
+SELECT DISTINCT value.mktValue FROM /root/portfolios, \
+(map<string,Position>)positions \
+WHERE value.mktValue > 25.00
+
+exec \
+IMPORT cacheRunner.Position; \
+SELECT DISTINCT mktValue FROM /root/portfolios, \
+(collection<Position>)positions.values \
+WHERE mktValue > 25.00
+
+exec \
+-- The SELECT Projection List \
+SELECT DISTINCT key: entry.key, id: entry.value.id, secId: posnVal.secId \
+FROM /root/portfolios.entries entry, entry.value.positions.values posnVal \
+WHERE entry.value."type" = 'xyz' AND posnVal.secId = 'XXX'
+
+exec \
+-- SELECT Statement Query Results \
+SELECT DISTINCT * \
+FROM /root/portfolios \
+WHERE status = 'active'
+
+exec \
+IMPORT cacheRunner.Position; \
+SELECT DISTINCT secId \
+FROM /root/portfolios, positions.values TYPE Position \
+WHERE status = 'active'
+
+exec \
+IMPORT cacheRunner.Position; \
+SELECT DISTINCT secIdFieldName:secId \
+FROM /root/portfolios, positions.values TYPE Position \
+WHERE status = 'active'
+
+exec \
+SELECT DISTINCT "type", positions \
+FROM /root/portfolios \
+WHERE status = 'active'
+
+exec \
+IMPORT cacheRunner.Position; \
+SELECT DISTINCT * \
+FROM /root/portfolios, positions TYPE Position \
+WHERE status = 'active'
+
+exec \
+-- Method Invocation \
+SELECT DISTINCT * FROM /root/portfolios WHERE positions.isEmpty
+
+exec \
+-- Comparison Operators \
+SELECT DISTINCT * FROM /root/portfolios WHERE positions.size >= 2
+
+exec \
+SELECT DISTINCT * FROM /root/portfolios WHERE status = 'active'
+
+exec \
+SELECT DISTINCT * FROM /root/portfolios WHERE id <> 'XYZ-1'
+
+exec \
+-- Logical Operators \
+SELECT DISTINCT * FROM /root/portfolios \
+WHERE id = 'XYZ-1' OR id = 'ABC-1'
+
+exec \
+IMPORT cacheRunner.Position; \
+SELECT DISTINCT * FROM /root/portfolios, positions.values TYPE Position \
+WHERE mktValue > 30.00 \
+AND (id = 'XYZ-1' OR id = 'ABC-1')
+
+exec \
+-- Unary Operators \
+IMPORT cacheRunner.Position; \
+SELECT DISTINCT * FROM /root/portfolios WHERE NOT positions.isEmpty
+
+exec \
+-- Functions \
+-- Note: this _should_ fail with FunctionDomainException unless the SELECT \
+-- statement returns a collection with exactly one element \
+ELEMENT(SELECT DISTINCT * FROM /root/portfolios \
+WHERE id = '1').status = 'active'
+
+exec \
+-- Here is the SELECT statement of the prior query, so you can check: \
+SELECT DISTINCT * FROM /root/portfolios \
+WHERE id = '1'
+
+exec \
+SELECT DISTINCT * FROM /root/portfolios \
+WHERE IS_UNDEFINED(status)
+
+exec \
+-- Comments \
+SELECT DISTINCT * FROM /root/portfolios /* here is a comment */ \
+WHERE status = 'active'
+
+exec \
+SELECT DISTINCT * FROM /root/portfolios \
+WHERE status = 'active'-- here is another comment
+
+exit

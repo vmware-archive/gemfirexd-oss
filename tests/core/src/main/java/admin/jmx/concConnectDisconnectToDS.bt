@@ -1,0 +1,13 @@
+
+//------------------------------------------------
+//Call connectToDS on the agent from 5 jmx clients
+//------------------------------------------------
+admin/jmx/concConnectToDS.conf jmxClients=5
+
+
+//----------------------------------------------
+//local.conf set to 
+//     hydra.ClientPrms-vmThreads = 1 20;
+//     hydra.ClientPrms-vmQuantities = 2 3;
+//admin/dataPolicy/jmxAdminCache.conf
+//----------------------------------------------

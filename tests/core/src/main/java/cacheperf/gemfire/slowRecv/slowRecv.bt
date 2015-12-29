@@ -1,0 +1,6 @@
+cacheperf/gemfire/slowRecv/slowRecv.conf
+  pubHosts = 1      pubVMsPerHost = 1    pubThreadsPerVM = 1
+  subHosts = 3      subVMsPerHost = 1    subThreadsPerVM = 1
+  messageSize = 512 sleepBeforeOp = false
+  listenerSleepTimeMs = 2
+  perffmwk.comparisonKey = 1pub_3sub

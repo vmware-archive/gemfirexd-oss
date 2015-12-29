@@ -1,0 +1,58 @@
+// Test a Full Backup
+sql/backupAndRestore/testBackupRestore.conf
+  A = datastore datastoreHosts = 1 datastoreVMsPerHost = 1 datastoreThreadsPerVM = 1
+  B = accessor  accessorHosts  = 1 accessorVMsPerHost  = 1 accessorThreadsPerVM  = 3
+  C = locator   locatorHosts   = 1 locatorVMsPerHost   = 1 locatorThreadsPerVM   = 1
+  ddlThreads      = 1
+  redundantCopies = 0,1
+  performOpsSec   = 60
+
+// Test Full and Incremental backups
+sql/backupAndRestore/testIncrementalBackup.conf
+  A = server  serverHosts  = 1 serverVMsPerHost  = 1 serverThreadsPerVM  = 2
+  B = client  clientHosts  = 1 clientVMsPerHost  = 2 clientThreadsPerVM  = 10
+  C = locator locatorHosts = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  redundantCopies = 0,1
+  maxOplogSize    = 1
+  performOpsSec   = 60
+  nbrOfExecutions = 5
+
+// Test Full and Incremental backups with Restarts during test
+sql/backupAndRestore/testIncrementalBackupWithRestarts.conf
+  A = server  serverHosts  = 1 serverVMsPerHost  = 1 serverThreadsPerVM  = 2
+  B = client  clientHosts  = 1 clientVMsPerHost  = 2 clientThreadsPerVM  = 10
+  C = locator locatorHosts = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  redundantCopies = 0,1
+  maxOplogSize    = 1
+  performOpsSec   = 60
+  nbrOfExecutions = 5
+
+// Stop and Restart a client VM during the test
+sql/backupAndRestore/testIncrementalBackupWithVmStop.conf
+  A = server  serverHosts  = 1 serverVMsPerHost  = 1 serverThreadsPerVM  = 2
+  B = client  clientHosts  = 2 clientVMsPerHost  = 2 clientThreadsPerVM  = 5
+  C = locator locatorHosts = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  redundantCopies = 0,1
+  maxOplogSize    = 1
+  performOpsSec   = 60
+  nbrOfExecutions = 5
+
+// This test will 10.5 GB of data while performing backups and validate all of the data after a restart & restore
+sql/backupAndRestore/testIncrementalBackupBigData.conf
+  A = normal  normalserverHosts = 1 normalserverVMsPerHost = 4 normalserverThreadsPerVM = 1
+  B = backup  backupserverHosts = 1 backupserverVMsPerHost = 1 backupserverThreadsPerVM = 1
+  C = client  clientHosts       = 1 clientVMsPerHost       = 2 clientThreadsPerVM       = 10
+  D = locator locatorHosts      = 1 locatorVMsPerHost      = 1 locatorThreadsPerVM      = 1
+  javaHeapStartGB        = 3
+  javaHeapMaxGB          = 5
+  maxOplogSize           = 15
+  initialDataMB          = 512
+  desiredDataOpsMB       = 10240
+  backupAfterMBofData    = 512
+  nbrTables              = 15
+  nbrLobColumns          = 5
+  evictionHeapPercentage = 70
+  insertPercent          = 80
+  updatePercent          = 10
+  deletePercent          = 10
+  maxValidationErrors    = 50

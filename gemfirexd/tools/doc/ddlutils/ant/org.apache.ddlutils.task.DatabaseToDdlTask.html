@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title>databaseToDdl</title>
+<link href="styles.css" type="text/css" rel="stylesheet">
+</head>
+<body>
+<h2> databaseToDdl</h2>
+<fieldset class="taskDescription">
+<legend><a class="anchor" name="description">Description</a></legend>
+<p>Java type: <a href="../api/org/apache/ddlutils/task/DatabaseToDdlTask.html"><code>org.apache.ddlutils.task.DatabaseToDdlTask</code></a></p>
+<p>Task for getting structural info and data from a live database. Eg. it has sub tasks for
+ writing the schema of the live database or the data currently in it to an XML file, for
+ creating the DTDs for these data files, and for generating SQL to creating a schema in the
+ database to a file.
+ <br/>
+ Example:<br/>
+ <pre>
+ &lt;taskdef classname="org.apache.ddlutils.task.DatabaseToDdlTask"
+          name="databaseToDdl"
+          classpathref="project-classpath" /&gt;
+ 
+ &lt;databaseToDdl usedelimitedsqlidentifiers="true"
+                modelname="example"&gt;
+   &lt;database driverclassname="org.apache.derby.jdbc.ClientDriver"
+             url="jdbc:derby://localhost/ddlutils"
+             username="ddlutils"
+             password="ddlutils"/&gt; 
+ 
+   &lt;writeschematofile outputfile="schema.xml"/&gt; 
+   &lt;writedatatofile outputfile="data.xml"
+                    encoding="ISO-8859-1"/&gt; 
+ &lt;/databaseToDdl&gt; 
+ </pre>
+ This reads the schema and data from the database and writes them to XML files.</p>
+</fieldset>
+<fieldset class="taskParameters">
+<legend><a class="anchor" name="parameters">Parameters</a></legend>
+  	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-schemapattern">schemapattern</a> : String
+  	</p>
+	<p class="taskParameterDescription">
+	Specifies a pattern that defines which database schemas to use. For some
+ more info on schema patterns and JDBC, see
+ <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/sql/DatabaseMetaData.html">java.sql.DatabaseMetaData</a>. <br/>
+        Per default no specific schema is used.
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-tabletypes">tabletypes</a> : String
+  	</p>
+	<p class="taskParameterDescription">
+	Specifies the table types to be processed. More precisely, all tables that are of a
+ type not in this list, will be ignored by the task and its sub tasks. For details and
+ typical table types see
+ <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/sql/DatabaseMetaData.html#getTables(java.lang.String,%20java.lang.String,%20java.lang.String,%20java.lang.String[])">java.sql.DatabaseMetaData#getTables</a>. <br/>
+        By default, only tables of type <code>TABLE</code> are used by the task.
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-modelname">modelname</a> : String
+  	</p>
+	<p class="taskParameterDescription">
+	Specifies the name of the model that is read from the database. This is mostly useful
+ for the the <code>writeSchemaToFile</code> sub-task as it ensures that the generated
+ XML defines a valid model. <br/>
+        By default, DldUtils uses the schema name returned from the database
+                   or <code>"default"</code> if no schema name was returned by the database.
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-catalogpattern">catalogpattern</a> : String
+  	</p>
+	<p class="taskParameterDescription">
+	Specifies a pattern that defines which database catalogs to use. For some
+ more info on catalog patterns and JDBC, see
+ <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/sql/DatabaseMetaData.html">java.sql.DatabaseMetaData</a>. <br/>
+        Per default no specific catalog is used.
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-sortforeignkeys">sortforeignkeys</a> : boolean
+  	</p>
+	<p class="taskParameterDescription">
+	Specifies whether DdlUtils shall sort the foreign keys of a table read from a live database or
+ leave them in the order in which they are returned by the database/JDBC driver. Note that
+ the sort is case sensitive only if delimited identifier mode is on
+ (<code>useDelimitedSqlIdentifiers</code> is set to <code>true</code>). <br/>
+        Default is <code>false</code>.
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-usedelimitedsqlidentifiers">usedelimitedsqlidentifiers</a> : boolean
+  	</p>
+	<p class="taskParameterDescription">
+	Specifies whether DdlUtils shall use delimited (quoted) identifiers (such as table and column
+ names). Most databases convert undelimited identifiers to uppercase and ignore the case of
+ identifiers when performing any SQL command. Undelimited identifiers also cannot be reserved
+ words and can only contain alphanumerical characters and the underscore.<br/>
+ These limitations do not exist for delimited identifiers where identifiers have to be enclosed
+ in double quotes. Delimited identifiers can contain unicode characters, and even reserved
+ words can be used as identifiers. Please be aware though, that they always have to enclosed
+ in double quotes, and that the case of the identifier will be important in every SQL command
+ executed against the database. <br/>
+        Default is <code>false</code>.
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-verbosity">verbosity</a> : String ["FATAL", "ERROR", "WARN", "INFO", "DEBUG", "fatal", "error", "warn", "info", "debug"]
+  	</p>
+	<p class="taskParameterDescription">
+	Specifies the verbosity of the task's debug output. <br/>
+        Default is <code>INFO</code>.
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-shutdowndatabase">shutdowndatabase</a> : boolean
+  	</p>
+	<p class="taskParameterDescription">
+	Specifies whether DdlUtils shall shut down the database after the task has finished.
+ This is mostly useful for embedded databases. <br/>
+        Default is <code>false</code>.
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-includetables">includetables</a> : String
+  	</p>
+	<p class="taskParameterDescription">
+	Sets the names of the tables that shall be read, as a comma-separated list. Escape a
+ comma via '\,' if it is part of the table name. Please note that table names are
+ not trimmed which means that whitespace characters should only be present in
+ this string if they are actually part of the table name (i.e. in delimited
+ identifer mode). <br/>
+        If no table filter is specified, then all tables will be read unless
+                   <code>excludeTables</code> or <code>excludeTableFilter</code> is
+                   specifed
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-excludetables">excludetables</a> : String
+  	</p>
+	<p class="taskParameterDescription">
+	Sets the names of the tables that shall be ignored, as a comma-separated list. Escape a
+ comma via '\,' if it is part of the table name. Please note that table names are
+ not trimmed which means that whitespace characters should only be present in
+ this string if they are actually part of the table name (i.e. in delimited
+ identifer mode). <br/>
+        If no table filter is specified, then all tables will be read unless
+                   <code>includeTables</code> or <code>includeTableFilter</code> is
+                   specifed
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-includetablefilter">includetablefilter</a> : String
+  	</p>
+	<p class="taskParameterDescription">
+	Sets the regular expression matching the names of the tables that shall be read.
+ For case insensitive matching, an uppercase name can be assumed. <br/>
+        If no table filter is specified, then all tables will be read unless
+                   <code>excludeTables</code> or <code>excludeTableFilter</code> is
+                   specifed
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-simplelogging">simplelogging</a> : boolean
+  	</p>
+	<p class="taskParameterDescription">
+	Specifies whether simple logging (configured by the task via the <code>verbosity</code>
+ setting) shall be used, or whether logging is configured outside of the task
+ (e.g. via a log4j properties file). <br/>
+        Per default, simple logging is enabled.
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-databasetype">databasetype</a> : String
+  	</p>
+	<p class="taskParameterDescription">
+	Specifies the database type. You should only need to set this if DdlUtils is not able to
+ derive the setting from the name of the used jdbc driver or the jdbc connection url.
+ If you have to specify this, please post your jdbc driver and connection url combo
+ to the user mailing list so that DdlUtils can be enhanced to support this combo.<br/>
+ Valid values are currently:<br/><code>axion, cloudscape, db2, derby, firebird, hsqldb, interbase,
+ maxdb, mckoi, mssql, mysql, mysql5, oracle, oracle9, oracle10, oracle11, postgresql, sapdb, gemfirexd, sybase</code> <br/>
+        Per default, DdlUtils tries to determine the database type via JDBC.
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-excludetablefilter">excludetablefilter</a> : String
+  	</p>
+	<p class="taskParameterDescription">
+	Sets the regular expression matching the names of the tables that shall be ignored.
+ For case insensitive matching, an uppercase name can be assumed. <br/>
+        If no table filter is specified, then all tables will be read unless
+                   <code>includeTables</code> or <code>includeTableFilter</code> is
+                   specifed
+  	</p>
+</fieldset>
+<fieldset class="taskNestedElements">
+<legend><a class="anchor" name="nestedElements">Nested elements</a></legend>
+        	<p class="taskNestedElementExternalRef">&rArr;&nbsp;<a href="http://jakarta.apache.org/commons/dbcp/apidocs/org/apache/commons/dbcp/BasicDataSource.html"><code>database</code> (an object of type <code>org.apache.commons.dbcp.BasicDataSource</code>)</a></p>
+        <div class="taskNestedElementSeparator"></div>
+  	<p class="taskNestedElementRef">&rArr;&nbsp;<a href="org.apache.ddlutils.task.WriteDataToFileCommand.html"><code>writedatatofile</code></a></p>
+    	<p class="taskNestedElementRef">&rArr;&nbsp;<a href="org.apache.ddlutils.task.WriteSchemaSqlToFileCommand.html"><code>writeschemasqltofile</code></a></p>
+    	<p class="taskNestedElementRef">&rArr;&nbsp;<a href="org.apache.ddlutils.task.WriteDataToDatabaseCommand.html"><code>writedatatodatabase</code></a></p>
+      	<p class="taskNestedElementRef">&rArr;&nbsp;<a href="org.apache.ddlutils.task.DropTablesCommand.html"><code>droptables</code></a></p>
+    	<p class="taskNestedElementRef">&rArr;&nbsp;<a href="org.apache.ddlutils.task.WriteSchemaToFileCommand.html"><code>writeschematofile</code></a></p>
+    	<p class="taskNestedElementRef">&rArr;&nbsp;<a href="org.apache.ddlutils.task.WriteDtdToFileCommand.html"><code>writedtdtofile</code></a></p>
+  </fieldset>
+<p>&copy;2005-2007 Apache Software Foundation</p>
+</body>
+</html>

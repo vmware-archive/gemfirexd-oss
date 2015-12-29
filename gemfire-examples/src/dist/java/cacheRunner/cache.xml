@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!DOCTYPE cache PUBLIC "-//GemStone Systems, Inc.//GemFire Declarative Caching 6.5//EN" "http://www.gemstone.com/dtd/cache6_5.dtd">
+<cache>
+  <!-- You can define templates for region attributes that can be applied to
+  multiple regions-->
+  <region-attributes id="attTemplate" refid="LOCAL">
+    <key-constraint>java.lang.String</key-constraint>
+  </region-attributes>
+  <region name="root">
+    <region-attributes refid="attTemplate" scope="distributed-no-ack">
+    <!-- These setting demonstrate different ways that regions
+    can be configured to expire entries. Uncomment one 
+    ore more of them to allow entries to expire-->
+    <!--
+      <region-time-to-live>
+        <expiration-attributes timeout="5" action="invalidate"/>
+      </region-time-to-live>
+      <region-idle-time>
+        <expiration-attributes timeout="5" action="invalidate"/>
+      </region-idle-time>
+      <entry-time-to-live>
+        <expiration-attributes timeout="5" action="invalidate"/>
+      </entry-time-to-live>
+      <entry-idle-time>
+        <expiration-attributes timeout="5" action="invalidate"/>
+      </entry-idle-time>
+    -->
+    </region-attributes>
+    <!-- You can add entries to the cache in the cache.xml. This puts
+    an entry into the root region when the region is created -->
+    <entry>
+      <key><string>Application Version</string></key>
+      <value><string>1.0</string></value>
+    </entry>
+    <region name="rlocal" refid="attTemplate"/>
+    <region name="rdistnoack" refid="attTemplate">
+      <region-attributes scope="distributed-no-ack"/>
+    </region>
+    <region name="rglobalreplication" refid="attTemplate">
+      <region-attributes scope="global" data-policy="replicate"/>
+    </region>
+  </region>
+</cache>

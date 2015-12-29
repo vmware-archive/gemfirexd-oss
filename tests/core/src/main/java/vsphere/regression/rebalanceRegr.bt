@@ -1,0 +1,316 @@
+// StopStart tests (with extra rebalance vm)
+rebalance/concParRegStopStartWithRebalance.conf
+A = peer peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies = 0 numVMsToStop = 2
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1
+threadGroupsName=rebalance
+
+/*rebalance/concParRegStopStartWithRebalance.conf
+A = peer peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies = 1 numVMsToStop = 2
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1*/
+
+rebalance/concParRegStopStartWithRebalance.conf
+A = peer peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies = 2 numVMsToStop = 2
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1
+threadGroupsName=rebalance
+
+/*rebalance/concParRegStopStartWithRebalance.conf
+A = peer peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies = 3 numVMsToStop = 2
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1*/
+
+// StopStart tests with cacheserver -rebalance
+rebalance/concParRegStopStartWithCacheServer.conf
+A = peer peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies = 0 numVMsToStop = 2
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1
+threadGroupsName=peer
+
+/*rebalance/concParRegStopStartWithCacheServer.conf
+A = peer peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies = 1 numVMsToStop = 2
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1*/
+
+rebalance/concParRegStopStartWithCacheServer.conf
+A = peer peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies = 2 numVMsToStop = 2
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1
+threadGroupsName=peer
+
+/*rebalance/concParRegStopStartWithCacheServer.conf
+A = peer peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies = 3 numVMsToStop = 2
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1*/
+
+// concKnownKeys tests
+rebalance/concKnownKeysSerialRebalance.conf 
+A = peer peerHosts=5 peerVMsPerHost=2 peerThreadsPerVM=10 numKeys=10000 
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1 
+startupRecoveryDelay = 0
+threadGroupsName=verifyThreads
+
+/*rebalance/concKnownKeysSerialRebalance.conf 
+A = peer peerHosts=5 peerVMsPerHost=2 peerThreadsPerVM=10 numKeys=10000 
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1 
+startupRecoveryDelay = -1*/ 
+
+/*rebalance/concKnownKeysConcRebalance.conf 
+A = peer peerHosts=5 peerVMsPerHost=2 peerThreadsPerVM=10 numKeys=10000 
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1 
+startupRecoveryDelay = 0
+
+rebalance/concKnownKeysConcRebalance.conf 
+A = peer peerHosts=5 peerVMsPerHost=2 peerThreadsPerVM=10 numKeys=10000 
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1 
+startupRecoveryDelay = -1
+threadGroupsName=rebalancei*/
+
+// concKnownKeys with cacheserver start -rebalance
+/*rebalance/concKnownKeysWithCacheServer.conf 
+A = peer peerHosts=3 peerVMsPerHost=2 peerThreadsPerVM=20 numKeys=10000 
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1 
+startupRecoveryDelay = -1*/
+
+rebalance/concKnownKeysWithCacheServer.conf 
+A = peer peerHosts=4 peerVMsPerHost=2 peerThreadsPerVM=20 numKeys=500000 
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1 
+startupRecoveryDelay = -1
+threadGroupsName=rebalance
+
+// FunctionExecution and Colocation tests
+rebalance/funcExecWithColocationSerialRebalance.conf 
+A = peer peerHosts=2 peerVMsPerHost=2 peerThreadsPerVM=10 
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1 
+numKeys=10000 redundantCopies=0,2
+threadGroupsName=verifyThreads
+
+rebalance/funcExecWithColocationConcRebalance.conf 
+A = peer peerHosts=2 peerVMsPerHost=2 peerThreadsPerVM=10 
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1 
+numKeys=10000 redundantCopies=0,2
+threadGroupsName=verifyThreads
+
+rebalance/randomFunctionExecutionWithRebalance.conf 
+A = peer peerHosts=2 peerVMsPerHost=2 peerThreadsPerVM=10 
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1 
+numKeys=10000 redundantCopies=0,2
+threadGroupsName=rebalance
+
+rebalance/hct_randomFunctionExecutionWithRebalance.conf
+   locatorHosts=1  locatorVMsPerHost=1 locatorThreadsPerVM=1
+   A=rebalance rebalancebridgeHosts=1 rebalancebridgeVMsPerHost=1 rebalancebridgeThreadsPerVM=1
+   B=dataStore dataStorebridgeHosts=4 dataStorebridgeVMsPerHost=1 dataStorebridgeThreadsPerVM=5
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   numKeys=10000 byteArraySize=50 redundantCopies=0,2 numVMsToStop=0
+   threadGroupsName=rebalance
+   
+rebalance/colocationWithOpsWithRebalance.conf 
+A = peer peerHosts=4 peerVMsPerHost=2 peerThreadsPerVM=5
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1 
+numKeys=10000 redundantCopies=3
+threadGroupsName=rebalance
+
+// concKnownKeysHA (to check primary recovery)
+rebalance/concKnownKeysRecovery.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=2 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=100000 byteArraySize=5000 redundantCopies=1 numVMsToStop=1
+   threadGroupsName=accessorVMThreads
+
+// concKnownKeysHA with co-located regions (to check primary recovery)
+rebalance/concKnownKeysColocatedRecovery.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=2 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=1000 byteArraySize=50 redundantCopies=1 numVMsToStop=1
+   threadGroupsName=controllerThread
+   
+rebalance/wanRecoverySequentialKeys.conf wanSites=2
+       locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite = 2 bridgeVMsPerHost=1 bridgeThreadsPerVM = 1
+       edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+       threadGroupsName=edge
+
+rebalance/wanRecoveryWithConflation.conf wanSites=2
+       locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite = 2 bridgeVMsPerHost=1 bridgeThreadsPerVM = 1
+       edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+       threadGroupsName=edge
+// parReg/hct failover tests 
+/*rebalance/hct_failover.conf
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+        hc.serverMemSize = 512m
+rebalance/hct_failover.conf
+      bridgeHosts =  4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+      hc.serverMemSize = 512m
+      threadGroupsName=edgeInit*/
+      
+rebalance/hct_randomLB.conf
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  1 edgeVMsPerHost   = 3 edgeThreadsPerVM   = 1
+      hc.serverMemSize = 512m
+      threadGroupsName=edgeInit
+/*rebalance/hct_randomLB.conf
+      bridgeHosts =  4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+        hc.serverMemSize = 512m*/
+
+// Eviction
+rebalance/concKnownKeysSerialRebalanceEntryLRU.conf
+A = peer peerHosts=3 peerVMsPerHost=2 peerThreadsPerVM=10 numKeys=50000
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1
+startupRecoveryDelay = 0
+threadGroupsName=verifyThreads
+
+/*rebalance/concKnownKeysSerialRebalanceMemLRU.conf
+A = peer peerHosts=3 peerVMsPerHost=2 peerThreadsPerVM=10 numKeys=50000
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1
+startupRecoveryDelay = 0*/
+
+rebalance/concKnownKeysSerialRebalanceHeapLRU.conf
+A = peer peerHosts=3 peerVMsPerHost=2 peerThreadsPerVM=10 numKeys=100000
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1
+startupRecoveryDelay = 0
+threadGroupsName=verifyThreads
+/*rebalance/concKnownKeysConcRebalanceEntryLRU.conf
+A = peer peerHosts=3 peerVMsPerHost=2 peerThreadsPerVM=10 numKeys=50000
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1
+startupRecoveryDelay = 0
+
+rebalance/concKnownKeysConcRebalanceMemLRU.conf
+A = peer peerHosts=3 peerVMsPerHost=2 peerThreadsPerVM=10 numKeys=50000
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1
+startupRecoveryDelay = 0
+threadGroupsName=verifyThreads*/
+/*rebalance/concKnownKeysConcRebalanceHeapLRU.conf
+A = peer peerHosts=3 peerVMsPerHost=2 peerThreadsPerVM=10 numKeys=100000
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1
+startupRecoveryDelay = 0*/
+
+// HA tests - concKnownKeys based (rebalancer recycled, redundantCopies = 1)
+/*rebalance/killRebalancerVm.conf
+A = peer peerHosts=5 peerVMsPerHost=2 peerThreadsPerVM=10 numKeys=10000
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1
+startupRecoveryDelay = 0
+threadGroupsName=rebalance
+
+rebalance/killRebalancerVm.conf
+A = peer peerHosts=5 peerVMsPerHost=2 peerThreadsPerVM=10 numKeys=10000
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1
+startupRecoveryDelay = -1*/
+
+// HA tests - concParRegStopStart based (rebalancer and src & dest VMs recycled)
+rebalance/killTargetVm.conf
+A = peer peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=10 
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1
+targetEvent = rebalancingStarted actionDelay=5
+threadGroupsName=rebalance
+
+/*rebalance/killTargetVm.conf
+A = peer peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=10 
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1
+targetEvent = movingBucket actionDelay=0*/
+
+rebalance/killTargetVm.conf
+A = peer peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=10 
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1
+targetEvent = movingPrimary actionDelay=0
+threadGroupsName=rebalance
+
+rebalance/cancelRebalance.conf
+A = peer peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=10 
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1
+targetEvent = rebalancingStarted actionDelay=5
+threadGroupsName=rebalance
+
+rebalance/cancelRebalance.conf
+A = peer peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=10 
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1
+targetEvent = movingBucket actionDelay=0
+threadGroupsName=rebalance
+
+/*rebalance/cancelRebalance.conf
+A = peer peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=10 
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1
+targetEvent = movingPrimary actionDelay=0*/
+
+// Stress test for start/cancel
+rebalance/rebalanceStartCancel.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=5
+threadGroupsName=default
+
+// parRegCreateDestroy (with rebalance via Cache API) 
+rebalance/parRegCreateDestroyWithRebalance.conf 
+A = peer peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=20
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1
+threadGroupsName=rebalance
+
+// parRegCreateDestroy (with rebalance via CacheServer start -rebalance)
+rebalance/parRegCreateDestroyWithCacheServer.conf 
+A = peer peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=20
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1
+threadGroupsName=rebalance
+
+// CQ Tests (WithRebalance/WithCacheServer)
+// Note that concCQBridgePR.conf (cq.bt) also executes rebalance during concOps
+/*rebalance/knownKeysCQPRWithRebalance.conf
+   locatorHosts=1  locatorVMsPerHost=1 locatorThreadsPerVM=1
+   A=newCapacity newCapacitybridgeHosts=1 newCapacitybridgeVMsPerHost=1 newCapacitybridgeThreadsPerVM=5
+   B=initial initialbridgeHosts=3 initialbridgeVMsPerHost=1 initialbridgeThreadsPerVM=5
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   numKeys = 10000
+   threadGroupsName=oneThreadPerNewCapacityBridge
+   
+rebalance/knownKeysCQPRWithCacheServer.conf
+   locatorHosts=1  locatorVMsPerHost=1 locatorThreadsPerVM=1
+   A=newCapacity newCapacitybridgeHosts=1 newCapacitybridgeVMsPerHost=1 newCapacitybridgeThreadsPerVM=5
+   B=initial initialbridgeHosts=3 initialbridgeVMsPerHost=1 initialbridgeThreadsPerVM=5
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   numKeys = 10000
+   threadGroupsName=oneThreadPerNewCapacityBridge
+
+rebalance/concKnownKeysBridgeWithRebalance.conf
+   locatorHosts=1  locatorVMsPerHost=1 locatorThreadsPerVM=1
+   A=newCapacity newCapacitybridgeHosts=1 newCapacitybridgeVMsPerHost=1 newCapacitybridgeThreadsPerVM=3
+   B=initial initialbridgeHosts=3 initialbridgeVMsPerHost=1 initialbridgeThreadsPerVM=5
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=3
+   numKeys = 50000 edgeVmSize=400 serverVmSize=500
+   threadGroupsName=oneThreadPerNewCapacityBridge 
+   
+rebalance/concKnownKeysWANbridge.conf wanSites=2
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   bridgeHostsPerSite = 4 bridgeVMsPerHost=1 bridgeThreadsPerVM = 3
+   edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=3
+   numKeys = 30000 edgeVmSize=300 serverVmSize=350*/
+
+/*rebalance/concKnownKeysWANp2p.conf wanSites=2
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   peerHostsPerSite=4 peerVMsPerHost=1 peerThreadsPerVM=3
+   numKeys = 50000*/ 
+
+// Bridge and WAN tests with cacheserve start -rebalance
+/*rebalance/concKnownKeysBridgeWithCacheServer.conf
+   locatorHosts=1  locatorVMsPerHost=1 locatorThreadsPerVM=1
+   A=newCapacity newCapacitybridgeHosts=1 newCapacitybridgeVMsPerHost=1 newCapacitybridgeThreadsPerVM=3
+   B=initial initialbridgeHosts=3 initialbridgeVMsPerHost=1 initialbridgeThreadsPerVM=5
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=3
+   numKeys = 50000 edgeVmSize=400 serverVmSize=500
+   threadGroupsName=oneThreadPerNewCapacityBridge
+   
+rebalance/concKnownKeysWANbridgeWithCacheServer.conf wanSites=2
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   bridgeHostsPerSite = 4 bridgeVMsPerHost=1 bridgeThreadsPerVM = 3
+   edgeHostsPerSite = 3 edgeVMsPerHost=1 edgeThreadsPerVM=3
+   numKeys = 30000 edgeVmSize=300 serverVmSize=350
+   threadGroupsName=oneThreadPerNewCapacityBridge
+
+rebalance/concKnownKeysWANp2pWithCacheServer.conf wanSites=2
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   peerHostsPerSite=4 peerVMsPerHost=1 peerThreadsPerVM=3
+   numKeys = 50000 
+   threadGroupsName=oneThreadPerNewCapacityVM*/
+
+// Placeholder with basic test framework for Admin/JMX admin rebalance tests
+//rebalance/concParRegStopStartWithAdminVm.conf 
+//A = peer peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies = 1 numVMsToStop = 3 
+//B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1 
+
+//rebalance/concParRegStopStartWithJMXAgent.conf 
+//A = peer peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies = 1 numVMsToStop = 3 
+//B = rebalance rebalanceHosts=2 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1 
+
+

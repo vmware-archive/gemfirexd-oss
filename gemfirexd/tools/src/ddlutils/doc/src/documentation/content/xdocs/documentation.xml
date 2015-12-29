@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="ISO-8859-15"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+-->
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+<document> 
+  <header> 
+    <title>Overview</title> 
+  </header> 
+  <body> 
+    <section>
+      <title>What is DdlUtils</title>
+      <p>
+        In short, DdlUtils is both a library and a set of <a href="ext:ant">Ant</a> tasks that allows
+        the manipulation of schemas in a database. It allows to create and drop complete databases,
+        and the creation, alteration and removal of tables.<br/>
+        Additionally, it provides an easy way to insert data that is specified in XML, into a database
+        and the reverse, extracting data from a database into an XML file.
+      </p>
+      <p>
+        DdlUtils strives to be database independent. The schemas are specified in the database-agnostic
+        Turbine XML format that is for instance also used by <a href="ext:torque">Torque</a> and
+        <a href="ext:ojb">OJB</a>.
+      </p>
+    </section>
+    <section>
+      <title>Where to start</title>
+      <p>
+        There are basically two ways to use  DdlUtils which are explained in these sections:
+      </p>
+      <ul>
+        <li>
+          Examples of how to use the <strong>API</strong> are shown
+          <a href="site:documentation/api-usage">here</a>. The Javadoc documentation for the API can be
+          found <a href="ext:ddlutils/javadoc">here</a>.
+        </li>
+        <li>
+          The <strong>Ant tasks</strong> are explained in detail in
+          <a href="ext:ddlutils/antdoc/">this document</a>.
+        </li>
+      </ul>
+    </section>
+  </body>
+</document>

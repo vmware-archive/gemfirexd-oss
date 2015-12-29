@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE cache PUBLIC
+  "-//GemStone Systems, Inc.//GemFire Declarative Caching 6.5//EN"
+  "http://www.gemstone.com/dtd/cache6_5.dtd">
+  
+<cache>
+  <gateway-hub id="EU" port="33333">
+    <gateway id="US">
+      <gateway-endpoint id="US-1" host="localhost" port="11111"/>
+      <gateway-queue overflow-directory="overflow" maximum-queue-memory="50" batch-size="100" batch-time-interval="1000"/>
+    </gateway>
+  </gateway-hub>
+
+  <cache-server port="44444"/>
+
+  <region name="trades" refid="REPLICATE">
+    <region-attributes enable-gateway="true"/>
+  </region>
+</cache>

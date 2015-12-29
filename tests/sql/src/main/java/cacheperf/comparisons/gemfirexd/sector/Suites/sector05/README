@@ -1,0 +1,7 @@
+This suite runs the joinPruneByPositionAmountAndInstrumentName query on a single host (monster) and scales the result set sizes, client threads, and servers.
+
+The suite can be used to compare GFXD peerClient to GFXD thinClient, and GFXD thinClient to MYSQL thinClient.
+
+Changes the Sector data policy from REPLICATE to PARTITION.  Uses redundance when there is more than one server.
+
+@todo Rerun with this changed back to REPLICATE, since it matters not to MYSQL.

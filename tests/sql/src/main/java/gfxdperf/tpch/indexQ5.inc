@@ -1,0 +1,15 @@
+gfxdperf.tpch.TPCHPrms-indexes = 
+  "CREATE INDEX q5_index1 ON customer (c_custkey)"
+  "CREATE INDEX q5_index2 ON orders (o_custkey)"
+  "CREATE INDEX q5_index3 ON lineitem (l_orderkey)"
+  "CREATE INDEX q5_index4 ON orders (o_orderkey)"
+  "CREATE INDEX q5_index5 ON lineitem (l_suppKey)"
+  "CREATE INDEX q5_index6 ON supplier (s_suppKey)"
+  "CREATE INDEX q5_index7 ON customer (c_nationkey)"
+  "CREATE INDEX q5_index8 ON supplier (s_nationkey)"
+  "CREATE INDEX q5_index9 ON nation (n_nationkey)"
+  "CREATE INDEX q5_index10 ON nation (n_regionkey)"
+  "CREATE INDEX q5_index11 ON region (r_regionkey)"
+  "CREATE INDEX q5_index12 ON region (r_name)"
+  "CREATE INDEX q5_index13 ON orders (o_orderdate)"
+;

@@ -1,0 +1,23 @@
+# do not change wanSites. Test is configured to use 3 sites.
+wanSites = 3 
+
+locatorHostsPerSite = 2
+locatorVMsPerHost = 1
+locatorThreadsPerVM = 2
+
+bridgeHostsPerSite = 2
+bridgeVMsPerHost = 1
+bridgeThreadsPerVM = 2
+
+edgeHostsPerSite = 2
+edgeVMsPerHost = 1
+edgeThreadsPerVM = 2
+
+# memory for cache servers and clients
+serverMem = 256m
+clientMem = 256m
+
+# Set version1 and version2 to 7.0 or above, and version3 to 6.5 or below 
+version1 = default
+version2 = default
+version3 = 651

@@ -1,0 +1,242 @@
+
+                                HOW TO RUN SCALEPERF
+
+*) Reserve the required hosts at the data center as far in advance as possible.
+
+     Hosts: w2-2013-lin-08 w2-2013-lin-09 w2-2013-lin-10 w2-2013-lin-11
+            w2-2013-lin-12 w2-2013-lin-13 w2-2013-lin-14 w2-2013-lin-15
+
+     Duration: around 13 hours as of 39542.trunk but it is best to
+               allocate more in case of hangs and/or performance problems,
+               and also note that the number of tests is always growing
+
+     -- Go to https://reserve.gemstone.com/
+     -- Click on Bookings
+     -- Click on the desired calendar date
+     -- Click on the square corresponding to a host and start time
+     -- Select the desired stop time in the pop-up window
+     -- Click Save
+     -- Repeat for each host
+
+     Be sure to cancel your reservation if it turns out you will not use it.
+
+*) Wait for the date and start time for your reservation
+
+*) Make sure the target build is at the data center
+
+*) Set the TEST_HOSTS environment variable to the same hosts used in
+   smoketest/scale/local.conf. This is used by the helper scripts in
+   $JTESTS/bin/scale.
+
+     setenv TEST_HOSTS "w2-2013-lin-08 w2-2013-lin-09 w2-2013-lin-10 w2-2013-lin-11 w2-2013-lin-12 w2-2013-lin-13 w2-2013-lin-14 w2-2013-lin-15"
+
+*) Set the FILE_SYSTEM_NUMBER environment variable to the desired file system
+  (typically "d"). This is used by the helper scripts in $JTESTS/bin/scale.
+
+     setenv FILE_SYSTEM_NUMBER d
+
+*) Verify hosts are ready for the test run
+
+     Add $JTESTS/bin/scaleperf to your path or append it to each command
+     described below.
+
+     pids
+        Checks whether you have left processes running.  If you have, use the
+        "killpids" command to clean up, then use "pids" to check that everything
+        was killed.  If not, ssh to each host and use kill or kill -9.
+
+     whopids
+        Checks whether other users have left processes running.  If they have,
+        first use the reservation system to double-check that this really is
+        your reservation day and time.  Also check email to make sure there
+        is no emergency override due to a customer issue.  Then contact the
+        culprit(s) to clean up, or necessary, submit an IS help request titled
+        "need users cleaned off w2-2013-lin-11", for example, and list which
+        users need to be cleaned off.  Wait for IS to respond, then use
+        "whopids" to verify that the hosts are indeed clean.
+
+     uptimes
+        Checks uptime on each host.  Use this to make sure host load is low,
+        which it should be if you and others have no processes running.  If
+        a host is carrying an unexpected load, ssh to the host, run top, and
+        type P to list processes in order of CPU use.  Contact IS if there
+        are processes that needs to be stopped.
+
+     dfs
+        Checks the disk space on each host.  If a disk is full or very close
+        to full, find the culprit(s)s, contact them, and ask them to clean up
+        before starting the test run.  Scaleperf tests do not require large
+        amounts of disk (10 GB for /export/w2-2013-lin-*d on each host should
+        be sufficient).  But there are some disk tests that need space, and
+        w2-2013-lin-08d needs room for the test result directories to accumulate
+        during the test run. Also, if /export/w2-2013-lin-08d is not full but /
+        is, gemfire cannot write the license file. Delete what you can from
+        /tmp, and if gemfire still cannot start, contact IS to make space.
+
+     frees
+        Checks available memory on each host.  Use this if VMs have trouble
+        starting due to insufficient memory.  If free + cached is low (less
+        than 5 GB), ssh to the host, run top, and type M to list processes
+        in order of memory use.  Contact IS if there is process that needs
+        to be stopped.
+
+     lsdirs
+        Checks whether you have leftover system directories in the scratch
+        directories used by scaleperf (explained below).  If so, use "cleandirs"
+        to remove them.
+
+     cleandirs
+        Removes any lefover system directories in the scratch directories used
+        by scaleperf (explained below).
+
+*) Run timecheck
+
+     The time check is used to make sure that all hosts used in a scaleperf
+     run have their clocks relatively in sync.  This ensures that the times
+     in the statarchives will line up properly for viewing in VSD and for
+     generating performance reports.  Hydra relies on NTP (Network Time
+     Protocol) for this.
+   
+     -- cd to the desired test result directory in /export/w2-2013-lin-08d/users
+     -- Create a subdirectory called timecheck and cd to it.
+     -- Run smoketest/scale/timecheck.bt using smoketest/scale/local.conf
+     -- If it fails, look at the hostagentmgr logs to see what happened.
+        If needed, contact IS to restart NTP on problem hosts.
+     -- You can delete the timecheck directory once all is well.  Do not
+        keep it around and archive it in the same directory as scaleperf
+        test results (this will confuse the performance comparison tools).
+
+*) Run scaleperf
+
+     Scaleperf runs with the hydra master host and locators on w2-2013-lin-08.
+     It uses a local.conf that maps the hydra client VMs to w2-2013-lin-08
+     through w2-2013-lin-15. The local.conf also uses the resource directory
+     base map file $JTESTS/bin/scaleperf/dirmap.prop to map system directories
+     to the directory "scratch" on the local file system for each host.
+     As a result, you will not see system directories in the test result
+     directory until the test completes.  At that time, batterytest uses
+     "movedirs.sh" to move the system directories to the test result directory
+     on w2-2013-lin-08.
+
+     -- cd to the desired directory in /export/w2-2013-lin-08d/users/$USER
+     -- Run smoketest/scale/scale.bt using smoketest/scale/local.conf using
+        the scaleperf run script:
+        
+            $JTESTS/bin/scaleperf/run.sh <path_to_build>.
+
+*) Check processes and directories
+
+     -- Use "pids" to make sure all processes are stopped.  If not, use
+        "killpids" and check that they stopped.
+
+     -- Use "lsdirs" to make sure all remote system directories were copied
+        to the test result directories.  If some are left behind, cd into
+        the test result directory by the same name and run "movedirs.sh".
+        Then check with "lsdirs" again.  Note that "movedirs.sh" will not work
+        if the master test directory has been moved.  You will need to move
+        it back where it started or edge "movedirs.sh" or manually copy the
+        system directories.  If you do not want to keep the directories (such
+        as after a kill and restart), use "cleandirs".
+
+*) Check test functional results
+
+     -- Check for test failures, reporting new failures as needed.  Use Trac
+        query 91 "Active GFE Scaleperf Tickets (including verifying)" to see
+        bugs already filed against scaleperf tests.  Add the "scaleperf"
+        keyword to any bugs seen by tests in this suite.  Also add the
+        "gfe_perf" keyword if the problem is with performance, scalability,
+        or memory.
+
+     -- Check whether any result directories are abnormally large. The total
+        disk usage for the result set should be roughly 320 MB. If a test run
+        is overly large, first diagnose the problem.  If it has already been
+        reported, delete the abnormally large log files.  If not, try to
+        reproduce the problem with a scaled down run on a single box, file a
+        bug, save the one large test result to a bug directory, then delete
+        the large files before doing the next step to avoid excess download
+        time and disk space usage in the archive (see next step).
+
+*) Archive results in the data center performance archive
+
+     -- Move results to the archive at:
+            /export/perf/users/gemfire/scaleperf/<svn_revision>.<branch>
+
+        For example, to archive run using aspen_dev_Apr12 r36127:
+
+            mv /export/w2-2013-lin-08d/users/$USER/scaleperf /export/perf/users/gemfire/scaleperf/36127.aspen_dev_Apr12
+
+     -- Check that the archive is complete.
+
+*) Do final clean up
+
+     -- Use "pids" and "killpids" to make sure your run is stopped.
+     -- Use "lsdirs" and "cleandirs" to make sure your files are gone.
+     -- Make sure you cleaned up your run directory in /export/w2-2013-lin-08d/users/$USER
+
+*) Compare results
+
+     -- Compare the desired builds to each other, using the desired baseline.
+
+            $JTESTS/bin/scaleperf/compareperf.sh <build1> <build2> ... <buildN>
+
+*) Post results to the wiki at:
+
+     -- https://wiki/gemstone.com/display/PST/Scaleperf
+
+//------------------------------------------------------------------------------
+// ISSUES
+//
+
+*) One or more of the hosts is unavailable due to a reservation conflict,
+   full disk, leftover processes, or machine crash.
+
+   Try to resolve the issue through the relevant parties and Helpzilla. If
+   there is absolutely no other choice, and the issue is full disk on one
+   or more machines, you can change the FILE_SYSTEM_NUMBER from "d" to a set
+   of disks that are not full. Then repeat the checks before starting.
+   
+   If the problem is leftover processes, first try to kill them using "sudo
+   pkill java". If this fails (and you have already tried everything else),
+   you can substitute machines from the w2-2013-lin* group. This requires
+   you to:
+   -- Copy and edit the local.conf file to use the alternate hosts. Make
+      absolutely sure that you use 8 distinct machines.
+   -- Copy and edit dirmap.prop to use the alternate hosts.
+   -- Edit local.conf to point to the new dirmap.prop file.
+   -- Copy and edit $JTESTS/bin/run.sh script to use the new local.conf file.
+   -- Change $TEST_HOSTS to use the alternate hosts.
+   -- Run through the full scaleperf checklist.
+   -- Run scaleperf using the edited run.sh script. Look carefully at the runs
+      to make sure they are running as intended.
+
+*) Need to kill the current test and continue on to the next test.
+
+   Go to the test directory of the current test as shown in batterytest.log.
+   Execute "nukerun.sh" to kill the processes.  Wait for batterytest to detect
+   the loss of the hydra master controller.  It will automatically execute
+   "movedirs.sh" to move the remote system directories to the test directory
+   before starting the next test.  It will report the test in oneliner.txt as
+   a hang.
+
+*) Need to kill the batterytest early.
+
+   First kill the script you are using to run the batterytest(s).  Go to the
+   test directory of the current test as shown in batterytest.log.  Execute
+   "nukerun.sh" to kill the processes, then use "movedirs.sh" to move the remote
+   system directories to the test directory.  Alternatively, use "killpids" and
+   "cleandirs" to just kill all processes and clean up the remote directories,
+   then delete the partially completed test directory.
+
+*) Need to use VSD on the statarchives for the current test.
+
+   Since the system directories are remote, you cannot simply go to the test
+   directory and execute vsd */statArchive.gfs.  Howver, hydra provides a
+   utility for generating a script that brings up VSD on remote archives.
+
+        cd to test directory
+        genvsd (this is in $JTESTS/scaleperf/bin with the other scripts)
+        ./vsd.sh &
+
+   Note that this perturbs the performance of the system, but is useful when
+   debugging or doing quick checks on the progress of long-running or highly
+   scaled tests.

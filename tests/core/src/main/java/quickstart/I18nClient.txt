@@ -1,0 +1,9 @@
+Connecting to the distributed system and creating the cache.
+Example region, /家具店, created in cache.
+
+Getting values from the server...
+item: テーブル price: 98.834¥
+item: 布団 price: 71.419¥
+item: 椅子 price: 10.676¥
+
+Closing the cache and disconnecting.

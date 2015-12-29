@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE cache PUBLIC
+    "-//GemStone Systems, Inc.//GemFire Declarative Caching 6.5//EN"
+    "http://www.gemstone.com/dtd/cache6_5.dtd">
+
+<!--
+  | DistributedLocking.xml
+  | 
+  | Configures a cache with a loader and listener. 
+ -->
+<cache>
+	<region name="exampleRegion" refid="REPLICATE">
+		<entry>
+			<key>
+				<string>key1</string>
+			</key>
+			<value>
+				<string>value1</string>
+			</value>
+		</entry>
+	</region>
+</cache>

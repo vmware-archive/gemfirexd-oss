@@ -1,0 +1,27 @@
+cacheperf/comparisons/gemfirexd/sector/thinClient/joinPruneByPositionAmountAndInstrumentName.conf
+  api = GFXD
+  clientHosts=6 clientVMsPerHost=1 clientThreadsPerVM=1,4,16
+  serverHosts=1 serverVMsPerHost=1 serverThreadsPerVM=1
+  heapMB = 4096
+  numSectorsPerServer = 128
+  numInstrumentsPerSector = 100
+  numPositionsPerInstrument = 100
+  numMarketCapValues = 20 numBookValues = 10 numRiskValues = 5 numSymbolValues = 1
+  numAmountsPerRangeClause = 1,6,12,18
+  redundantCopies = 0
+  enableHistogram = true
+  perffmwk.comparisonKey = fromProps:clients:clientHosts:x:clientVMsPerHost:x:clientThreadsPerVM:servers:serverHosts:size:numAmountsPerRangeClause
+
+cacheperf/comparisons/gemfirexd/sector/thinClient/joinPruneByPositionAmountAndInstrumentName.conf
+  api = GFXD
+  clientHosts=6 clientVMsPerHost=1 clientThreadsPerVM=1,4,16
+  serverHosts=4 serverVMsPerHost=1 serverThreadsPerVM=1
+  heapMB = 2048
+  numSectorsPerServer = 32
+  numInstrumentsPerSector = 100
+  numPositionsPerInstrument = 100
+  numMarketCapValues = 20 numBookValues = 10 numRiskValues = 5 numSymbolValues = 1
+  numAmountsPerRangeClause = 1,6,12,18
+  redundantCopies = 1
+  enableHistogram = true
+  perffmwk.comparisonKey = fromProps:clients:clientHosts:x:clientVMsPerHost:x:clientThreadsPerVM:servers:serverHosts:size:numAmountsPerRangeClause

@@ -1,0 +1,79 @@
+
+This example demonstrates querying on a set of data in a GemFire 
+region. The data represents Portfolios containing Positions. 
+
+Connecting to the distributed system and creating the cache.
+Example region, /exampleRegion, created in cache. 
+
+Executing query:
+\tSELECT DISTINCT \* FROM /exampleRegion
+Query result:
+	
+\tPortfolio \[id=\d status=[in]*active type=type\d
+\t\t[\w]+:Position \[secId=[\w]+ qty=[\d]+\.0 mktValue=[\d]+\.[\d]+\], 
+\t\t[\w]+:Position \[secId=[\w]+ qty=[\d]+\.0 mktValue=[\d]+\.[\d]+\]\]
+	
+\tPortfolio \[id=\d status=[in]*active type=type\d
+\t\t[\w]+:Position \[secId=[\w]+ qty=[\d]+\.0 mktValue=[\d]+\.[\d]+\], 
+\t\t[\w]+:Position \[secId=[\w]+ qty=[\d]+\.0 mktValue=[\d]+\.[\d]+\]\]
+	
+\tPortfolio \[id=\d status=[in]*active type=type\d
+\t\t[\w]+:Position \[secId=[\w]+ qty=[\d]+\.0 mktValue=[\d]+\.[\d]+\], 
+\t\t[\w]+:Position \[secId=[\w]+ qty=[\d]+\.0 mktValue=[\d]+\.[\d]+\]\]
+	
+\tPortfolio \[id=\d status=[in]*active type=type\d
+\t\t[\w]+:Position \[secId=[\w]+ qty=[\d]+\.0 mktValue=[\d]+\.[\d]+\], 
+\t\t[\w]+:Position \[secId=[\w]+ qty=[\d]+\.0 mktValue=[\d]+\.[\d]+\]\]
+	
+\tPortfolio \[id=\d status=[in]*active type=type\d
+\t\t[\w]+:Position \[secId=[\w]+ qty=[\d]+\.0 mktValue=[\d]+\.[\d]+\], 
+\t\t[\w]+:Position \[secId=[\w]+ qty=[\d]+\.0 mktValue=[\d]+\.[\d]+\]\]
+	
+\tPortfolio \[id=\d status=[in]*active type=type\d
+\t\t[\w]+:Position \[secId=[\w]+ qty=[\d]+\.0 mktValue=[\d]+\.[\d]+\], 
+\t\t[\w]+:Position \[secId=[\w]+ qty=[\d]+\.0 mktValue=[\d]+\.[\d]+\]\]
+	
+
+Press Enter to continue to next query...
+
+Executing query:
+\t/exampleRegion.isDestroyed
+Query result:
+\tfalse
+
+Press Enter to continue to next query...
+Executing query:
+\tSELECT DISTINCT \* FROM /exampleRegion WHERE status = 'active'
+Query result:
+	
+\tPortfolio \[id=\d status=active type=type\d
+\t\t[\w]+:Position \[secId=[\w]+ qty=[\d]+\.0 mktValue=[\d]+\.[\d]+\], 
+\t\t[\w]+:Position \[secId=[\w]+ qty=[\d]+\.0 mktValue=[\d]+\.[\d]+\]\]
+	
+\tPortfolio \[id=\d status=active type=type\d
+\t\t[\w]+:Position \[secId=[\w]+ qty=[\d]+\.0 mktValue=[\d]+\.[\d]+\], 
+\t\t[\w]+:Position \[secId=[\w]+ qty=[\d]+\.0 mktValue=[\d]+\.[\d]+\]\]
+	
+\tPortfolio \[id=\d status=active type=type\d
+\t\t[\w]+:Position \[secId=[\w]+ qty=[\d]+\.0 mktValue=[\d]+\.[\d]+\], 
+\t\t[\w]+:Position \[secId=[\w]+ qty=[\d]+\.0 mktValue=[\d]+\.[\d]+\]\]
+	
+Press Enter to continue to next query...
+Executing query:
+\tSELECT DISTINCT \* FROM /exampleRegion WHERE status = 'active' AND "type" = 'type3'
+Query result:
+	
+\tPortfolio \[id=3 status=active type=type3
+\t\tAOL:Position \[secId=AOL qty=978.0 mktValue=40.373\], 
+\t\tMSFT:Position \[secId=MSFT qty=98327.0 mktValue=23.32\]\]
+	
+Press Enter to continue to next query...
+Executing query:
+\tIMPORT quickstart.Position; SELECT DISTINCT posnVal FROM /exampleRegion, positions.values posnVal TYPE Position WHERE status = 'active' AND posnVal.mktValue >= 25.00
+Query result:
+\tPosition \[secId=[\w]+ qty=[\d]+\.0 mktValue=[\d]+\.[\d]+\]
+\tPosition \[secId=[\w]+ qty=[\d]+\.0 mktValue=[\d]+\.[\d]+\]
+\tPosition \[secId=[\w]+ qty=[\d]+\.0 mktValue=[\d]+\.[\d]+\]
+\tPosition \[secId=[\w]+ qty=[\d]+\.0 mktValue=[\d]+\.[\d]+\]
+	
+Closing the cache and disconnecting.

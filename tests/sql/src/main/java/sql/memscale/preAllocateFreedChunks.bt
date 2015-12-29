@@ -1,0 +1,16 @@
+sql/sqlDisk/randomPartitionReplIndexCrashRecovery.conf
+   A=datastore
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=10
+   accessorVMsPerHost=3
+   datastoreHosts=1
+   datastoreThreadsPerVM=1
+   datastoreVMsPerHost=6
+   dropIndex=true
+   forceCompaction=true
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   redundantCopies=2
+

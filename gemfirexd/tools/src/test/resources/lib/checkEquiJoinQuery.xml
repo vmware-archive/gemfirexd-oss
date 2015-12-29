@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlResults PUBLIC "-//GemStone Systems, Inc.//GemFireXD Test Results 1.0//EN"
+          "sqlResults1_0.dtd">
+<sqlResults>
+	<!-- The empty result set -->
+	<resultSet id="empty" />
+
+	<!--
+		Result set expected for first query.
+	-->
+	<resultSet id="query1">
+		<row>
+			<field name="ID1">1</field>
+			<field name="ID2">1</field>
+			<field name="ADDRESS1">J1 604</field>
+			<field name="ADDRESS2">J2 604</field>
+			<field name="DESCRIPTION1">First11</field>
+			<field name="DESCRIPTION2">First21</field>
+		</row>
+		<row>
+			<field name="ID1">2</field>
+			<field name="ID2">1</field>
+			<field name="ADDRESS1">J1 604</field>
+			<field name="ADDRESS2">J2 604</field>
+			<field name="DESCRIPTION1">First12</field>
+			<field name="DESCRIPTION2">First21</field>
+		</row>
+		<row>
+			<field name="ID1">3</field>
+			<field name="ID2">1</field>
+			<field name="ADDRESS1">J1 604</field>
+			<field name="ADDRESS2">J2 604</field>
+			<field name="DESCRIPTION1">First13</field>
+			<field name="DESCRIPTION2">First21</field>
+		</row>
+		<row>
+			<field name="ID1">4</field>
+			<field name="ID2">1</field>
+			<field name="ADDRESS1">J1 604</field>
+			<field name="ADDRESS2">J2 604</field>
+			<field name="DESCRIPTION1">First14</field>
+			<field name="DESCRIPTION2">First21</field>
+		</row>
+		<row>
+			<field name="ID1">5</field>
+			<field name="ID2">1</field>
+			<field name="ADDRESS1">J1 604</field>
+			<field name="ADDRESS2">J2 604</field>
+			<field name="DESCRIPTION1">First15</field>
+			<field name="DESCRIPTION2">First21</field>
+		</row>
+		<row>
+			<field name="ID1">6</field>
+			<field name="ID2">1</field>
+			<field name="ADDRESS1">J1 604</field>
+			<field name="ADDRESS2">J2 604</field>
+			<field name="DESCRIPTION1">First16</field>
+			<field name="DESCRIPTION2">First21</field>
+		</row>
+		<row>
+			<field name="ID1">7</field>
+			<field name="ID2">1</field>
+			<field name="ADDRESS1">J1 604</field>
+			<field name="ADDRESS2">J2 604</field>
+			<field name="DESCRIPTION1">First17</field>
+			<field name="DESCRIPTION2">First21</field>
+		</row>
+		<row>
+			<field name="ID1">8</field>
+			<field name="ID2">1</field>
+			<field name="ADDRESS1">J1 604</field>
+			<field name="ADDRESS2">J2 604</field>
+			<field name="DESCRIPTION1">First18</field>
+			<field name="DESCRIPTION2">First21</field>
+		</row>
+		<row>
+			<field name="ID1">9</field>
+			<field name="ID2">1</field>
+			<field name="ADDRESS1">J1 604</field>
+			<field name="ADDRESS2">J2 604</field>
+			<field name="DESCRIPTION1">First19</field>
+			<field name="DESCRIPTION2">First21</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for second query.
+	-->
+	<resultSet id="query2">
+		<row>
+			<field name="ID1">2</field>
+			<field name="ID2">2</field>
+			<field name="ADDRESS1">J1 604</field>
+			<field name="ADDRESS2">J2 604</field>
+			<field name="DESCRIPTION1">First12</field>
+			<field name="DESCRIPTION2">First22</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for third query.
+	-->
+	<resultSet id="query3">
+		<row>
+			<field name="ID1">4</field>
+			<field name="ID2">1</field>
+			<field name="ADDRESS1">J1 604</field>
+			<field name="ADDRESS2">J2 604</field>
+			<field name="DESCRIPTION1">First14</field>
+			<field name="DESCRIPTION2">First21</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for first query testing server groups.
+	-->
+	<resultSet id="sgs_1">
+		<row>
+			<field name="ID1">4</field>
+			<field name="ID2">1</field>
+			<field name="ADDRESS1">J1 604</field>
+			<field name="ADDRESS2">J2 604</field>
+			<field name="DESCRIPTION1">First14</field>
+			<field name="DESCRIPTION2">First21</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for second query testing server groups.
+	-->
+	<resultSet id="sgs_2">
+		<row>
+			<field name="ID1">4</field>
+			<field name="ID4">1</field>
+			<field name="ADDRESS1">J1 604</field>
+			<field name="ADDRESS4">J4 604</field>
+			<field name="DESCRIPTION1">First14</field>
+			<field name="DESCRIPTION4">First41</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for third query testing server groups.
+	-->
+	<resultSet id="sgs_3">
+		<row>
+			<field name="ID4">4</field>
+			<field name="ID2">1</field>
+			<field name="ADDRESS4">J4 604</field>
+			<field name="ADDRESS2">J2 604</field>
+			<field name="DESCRIPTION4">First44</field>
+			<field name="DESCRIPTION2">First21</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for SelectQueryInfoInternalTest.
+	-->
+	<resultSet id="query_repl">
+		<row>
+			<field name="ID1">1</field>
+			<field name="ID2">1</field>
+			<field name="ADDRESS1">Addr11</field>
+			<field name="ADDRESS2">Addr21</field>
+			<field name="DESCRIPTION1">First1</field>
+			<field name="DESCRIPTION2">First2</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for DefaultColocatedTablesJoinDUnit_test1.
+	-->
+	<resultSet id="defaultquery_test1">
+		<row>
+			<field name="ID">1</field>
+			<field name="SECONDID">1</field>
+			<field name="THIRDID">1</field>
+			<field name="ID_FK">1</field>
+			<field name="SECONDID_2">1</field>
+			<field name="THIRDID_2">1</field>
+		</row>
+		<row>
+			<field name="ID">2</field>
+			<field name="SECONDID">2</field>
+			<field name="THIRDID">2</field>
+			<field name="ID_FK">2</field>
+			<field name="SECONDID_2">2</field>
+			<field name="THIRDID_2">2</field>
+		</row>
+		<row>
+			<field name="ID">3</field>
+			<field name="SECONDID">3</field>
+			<field name="THIRDID">3</field>
+			<field name="ID_FK">3</field>
+			<field name="SECONDID_2">3</field>
+			<field name="THIRDID_2">3</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for DefaultColocatedTablesJoinDUnit_test2.
+	-->
+	<resultSet id="defaultquery_test2">
+		<row>
+			<field name="ID">1</field>
+			<field name="SECONDID">1</field>
+			<field name="THIRDID">1</field>
+			<field name="ID_FK">1</field>
+			<field name="SECONDID_2">5</field>
+			<field name="THIRDID_2">1</field>
+		</row>
+		<row>
+			<field name="ID">2</field>
+			<field name="SECONDID">2</field>
+			<field name="THIRDID">2</field>
+			<field name="ID_FK">2</field>
+			<field name="SECONDID_2">7</field>
+			<field name="THIRDID_2">2</field>
+		</row>
+		<row>
+			<field name="ID">3</field>
+			<field name="SECONDID">3</field>
+			<field name="THIRDID">3</field>
+			<field name="ID_FK">3</field>
+			<field name="SECONDID_2">9</field>
+			<field name="THIRDID_2">3</field>
+		</row>
+	</resultSet>
+
+	<!--
+        Result set expected for PR and replicated mix1.
+    -->
+	<resultSet id="pr_repl_mix1">
+		<row>
+			<field name="ID1">1</field>
+			<field name="ID2">1</field>
+			<field name="ID1">1</field>
+			<field name="DESCRIPTION1">First11</field>
+			<field name="DESCRIPTION2">First21</field>
+			<field name="DESCRIPTION1">RFirst11</field>
+			<field name="ADDRESS1">J1 604</field>
+			<field name="ADDRESS2">J2 604</field>
+			<field name="ADDRESS1">J1 604</field>
+		</row>
+		<row>
+			<field name="ID1">2</field>
+			<field name="ID2">2</field>
+			<field name="ID1">2</field>
+			<field name="DESCRIPTION1">First12</field>
+			<field name="DESCRIPTION2">First22</field>
+			<field name="DESCRIPTION1">RFirst12</field>
+			<field name="ADDRESS1">J1 604</field>
+			<field name="ADDRESS2">J2 604</field>
+			<field name="ADDRESS1">J1 604</field>
+		</row>
+		<row>
+			<field name="ID1">3</field>
+			<field name="ID2">3</field>
+			<field name="ID1">3</field>
+			<field name="DESCRIPTION1">First13</field>
+			<field name="DESCRIPTION2">First23</field>
+			<field name="DESCRIPTION1">RFirst13</field>
+			<field name="ADDRESS1">J1 604</field>
+			<field name="ADDRESS2">J2 604</field>
+			<field name="ADDRESS1">J1 604</field>
+		</row>
+		<row>
+			<field name="ID1">4</field>
+			<field name="ID2">4</field>
+			<field name="ID1">4</field>
+			<field name="DESCRIPTION1">First14</field>
+			<field name="DESCRIPTION2">First24</field>
+			<field name="DESCRIPTION1">RFirst14</field>
+			<field name="ADDRESS1">J1 604</field>
+			<field name="ADDRESS2">J2 604</field>
+			<field name="ADDRESS1">J1 604</field>
+		</row>
+	</resultSet>
+
+	<!--
+        Result set expected for PR and replicated mix2.
+    -->
+	<resultSet id="pr_repl_mix2">
+		<row>
+			<field name="ID1">3</field>
+			<field name="ID2">3</field>
+			<field name="ID1">3</field>
+			<field name="ID2">3</field>
+			<field name="DESCRIPTION1">First13</field>
+			<field name="DESCRIPTION2">First23</field>
+			<field name="DESCRIPTION1">RFirst13</field>
+			<field name="DESCRIPTION2">First23</field>
+			<field name="ADDRESS1">J1 604</field>
+			<field name="ADDRESS2">J2 604</field>
+			<field name="ADDRESS1">J1 604</field>
+			<field name="ADDRESS2">RJ2 604</field>
+		</row>
+	</resultSet>
+
+	<!--
+        Result set expected for PR and replicated mix3.
+    -->
+	<resultSet id="pr_repl_mix3">
+		<row>
+			<field name="ID1">1</field>
+			<field name="ID2">1</field>
+			<field name="ID1">2</field>
+			<field name="ID2">4</field>
+			<field name="DESCRIPTION1">First11</field>
+			<field name="DESCRIPTION2">First21</field>
+			<field name="DESCRIPTION1">RFirst12</field>
+			<field name="DESCRIPTION2">First24</field>
+			<field name="ADDRESS1">J1 604</field>
+			<field name="ADDRESS2">J2 604</field>
+			<field name="ADDRESS1">J1 604</field>
+			<field name="ADDRESS2">RJ2 604</field>
+		</row>
+		<row>
+			<field name="ID1">2</field>
+			<field name="ID2">2</field>
+			<field name="ID1">2</field>
+			<field name="ID2">4</field>
+			<field name="DESCRIPTION1">First12</field>
+			<field name="DESCRIPTION2">First22</field>
+			<field name="DESCRIPTION1">RFirst12</field>
+			<field name="DESCRIPTION2">First24</field>
+			<field name="ADDRESS1">J1 604</field>
+			<field name="ADDRESS2">J2 604</field>
+			<field name="ADDRESS1">J1 604</field>
+			<field name="ADDRESS2">RJ2 604</field>
+		</row>
+		<row>
+			<field name="ID1">3</field>
+			<field name="ID2">3</field>
+			<field name="ID1">2</field>
+			<field name="ID2">4</field>
+			<field name="DESCRIPTION1">First13</field>
+			<field name="DESCRIPTION2">First23</field>
+			<field name="DESCRIPTION1">RFirst12</field>
+			<field name="DESCRIPTION2">First24</field>
+			<field name="ADDRESS1">J1 604</field>
+			<field name="ADDRESS2">J2 604</field>
+			<field name="ADDRESS1">J1 604</field>
+			<field name="ADDRESS2">RJ2 604</field>
+		</row>
+		<row>
+			<field name="ID1">4</field>
+			<field name="ID2">4</field>
+			<field name="ID1">2</field>
+			<field name="ID2">4</field>
+			<field name="DESCRIPTION1">First14</field>
+			<field name="DESCRIPTION2">First24</field>
+			<field name="DESCRIPTION1">RFirst12</field>
+			<field name="DESCRIPTION2">First24</field>
+			<field name="ADDRESS1">J1 604</field>
+			<field name="ADDRESS2">J2 604</field>
+			<field name="ADDRESS1">J1 604</field>
+			<field name="ADDRESS2">RJ2 604</field>
+		</row>
+	</resultSet>
+</sqlResults>

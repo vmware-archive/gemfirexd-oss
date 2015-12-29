@@ -1,0 +1,38 @@
+
+================================================================================
+HOW TO RUN
+================================================================================
+
+Run one of the existing batterytest files in this directory or its
+subdirectories or configure your own batterytest file using relevant test
+configuration variables.
+
+================================================================================
+PERFORMANCE COMPARISON BATTERYTESTS
+================================================================================
+
+gemfire.bt (PST7)
+    GemFire (VMRegions)
+    GemFire 3.0 Performance and Scalability Requirement #7
+
+================================================================================
+TEST CONFIGURATION VARIABLES
+================================================================================
+
+//------------------------------------------------------------------------
+// gemfire
+
+hydra.numHosts // see hydraconfig/systemparamsN.inc (number of hosts)
+
+vmQuantities   // see hydra.ClientPrms-vmQuantities (vms per host)
+
+vmThreads      // see hydra.ClientPrms-vmThreads (threads per vm)
+
+objectType     // see cacheperf.CachePerfPrms-objectType and tests/objects
+
+//------------------------------------------------------------------------
+// gemfire only
+
+scope          // see distcache.gemfire.GemFireCachePrms-scope
+
+dataPolicy     // see distcache.gemfire.GemFireCachePrms-dataPolicy

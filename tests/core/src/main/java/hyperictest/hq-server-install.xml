@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="hq-server-install"  basedir="." xmlns:aws="antlib:org.springframework.build.aws">
+
+	<tstamp prefix="testRunTime">
+		<format property="TODAY" pattern="MM-dd-yyyy" />
+		<format property="TSTAMP" pattern="hh-mm-aa" />
+	</tstamp>
+
+	<path id="test.class.path">
+		<pathelement location="lib/mysql-connector-java-5.0.5-bin.jar"/>
+		<pathelement location="lib/ojdbc14.jar"/>
+	</path>
+
+	<target name="init">
+
+		<condition property="is.windows">
+			<os family="windows" />
+		</condition>
+		<condition property="is.mysql">
+			<equals arg1="${hq.server.db}" arg2="mysql" />
+		</condition>
+		<condition property="is.oracle">
+			<equals arg1="${hq.server.db}" arg2="oracle" />
+		</condition>
+		<condition property="is.postgres">
+			<equals arg1="${hq.server.db}" arg2="postgres" />
+		</condition>
+		<condition property="setup.extn" value="bat" else="sh">
+			<istrue value="${is.windows}" />
+		</condition>
+		<condition property="build.extn" value="zip" else="tar.gz">
+			<istrue value="${is.windows}" />
+		</condition>
+		<property name="tmp.dir" value="${tmp.dir}" />
+		<property name="install.dir" value="${install.dir}" />
+		<condition property="server.install.dir" value="${server.install.dir}" else="${install.dir}/HQ-${release.num}-EE-${build.version}/${testRunTime.DSTAMP}">
+			<isset property="server.install.dir" />
+		</condition>
+		<property name="server.installer.file" value="hyperic-hqee-installer-${release.num}.${build.version}-${build.os}.${build.extn}" />
+		<property name="server.installer" value="hyperic-hqee-installer-${release.num}.${build.version}-${build.os}" />
+	</target>
+
+	<target name="recreateHQServerDBSchema" depends="init">
+		<antcall target="recreateMySQLSchema" />
+		<antcall target="recreateOracleSchema" />
+	</target>
+
+	<target name="recreateMySQLSchema" if="is.mysql" depends="init">
+
+		<echo message="Recreating database: ${mysql.db}" />
+		<sql driver="com.mysql.jdbc.Driver" classpathref="test.class.path" url="${mysql.root.db.url}" userid="${mysql.db.admin.user}" password="${mysql.db.admin.password}" expandProperties="true" onerror="continue">
+			<transaction>DROP DATABASE IF EXISTS ${mysql.db};</transaction>
+			<transaction>CREATE DATABASE ${mysql.db};</transaction>
+		</sql>
+		<echo message="Recreating user: ${mysql.db.user}" />
+		<sql driver="com.mysql.jdbc.Driver" url="${mysql.db.url}" userid="${mysql.db.admin.user}" password="${mysql.db.admin.password}" expandProperties="true" classpath="../lib/mysql-connector-java-5.0.5-bin.jar" onerror="continue">
+			<transaction>DROP USER '${mysql.db.user}';</transaction>
+			<transaction>CREATE USER '${mysql.db.user}'@'%' IDENTIFIED BY '${mysql.db.password}';</transaction>
+			<transaction>GRANT ALL ON ${mysql.db}.* TO '${mysql.db.user}'@'%';</transaction>
+		</sql>
+	</target>
+
+	<target name="recreateOracleSchema" if="is.oracle" depends="init">
+		<echo message="Recreating user: ${oracle.db.user}" />
+		<sql driver="oracle.jdbc.driver.OracleDriver" classpathref="test.class.path" url="${oracle.db.url}" userid="${oracle.db.admin.user}" password="${oracle.db.admin.password}" expandProperties="true" onerror="continue">
+			<transaction>DROP USER ${oracle.db.user} cascade;</transaction>
+			<transaction>CREATE USER ${oracle.db.user} IDENTIFIED BY ${oracle.db.password} DEFAULT TABLESPACE USERS;</transaction>
+			<transaction>GRANT CONNECT, RESOURCE TO ${oracle.db.user};</transaction>
+			<transaction>GRANT CREATE VIEW TO ${oracle.db.user};</transaction>
+		</sql>
+	</target>
+
+
+	<target name="clean-mysql-install" depends="recreateMySQLSchema, copyAndExtractHQBuild, configureMySQLHQBuild, setupHQServer" />
+	<target name="clean-oracle-install" depends="recreateOracleSchema, copyAndExtractHQBuild, configureOracleHQBuild, setupHQServer" />
+
+	<target name="copyAndExtractHQBuild" depends="init">
+		<echo message="Creating the HQ Server Install Directory: ${server.install.dir}" />
+		<mkdir dir="${server.install.dir}" />
+		<echo message="Creating tmp directory ${tmp.dir} if it doesn't exist" />
+		<mkdir dir="${tmp.dir}" />
+		<echo message="Verify if the build file at ${tmp.dir} is present" />
+		<available filepath="${tmp.dir}" file="${server.installer.file}" property="server.installer.file.present" />
+		<echo message="Copy the build if necessary" />
+		<antcall target="copyHQBuild" />
+		<antcall target="extractHQBuild" />
+		<echo message="Change Permission of ${server.install.dir}" />
+		<chmod dir="${server.install.dir}/hyperic-hqee-installer-${release.num}.BUILD-SNAPSHOT" perm="755" includes="*.sh,*.bat" />
+		<chmod dir="${server.install.dir}/hyperic-hqee-installer-${release.num}.BUILD-SNAPSHOT/installer/bin" perm="755" includes="*.sh,*.bat,*.cmd,*.pl,ant, antRun" />
+	</target>
+
+	<target name="aws.init">
+		<taskdef resource="org/springframework/build/aws/ant/antlib.xml" uri="antlib:org.springframework.build.aws">
+			<classpath>
+				<path location="lib/org.springframework.build.aws.ant-3.0.5.RELEASE.jar" />
+				<path location="lib/commons-codec.jar" />
+				<path location="lib/commons-httpclient.jar" />
+				<path location="lib/commons-logging.jar" />
+				<path location="lib/jets3t.jar" />
+				<path location="config" />
+			</classpath>
+		</taskdef>
+	</target>
+
+	<target name="copyHQBuild" unless="server.installer.file.present" depends="aws.init, init">
+		<echo message="${server.installer.file}" />
+		<aws:s3 accessKey="0SCA5K7NAW330XGHMT02" secretKey="voXvAIMUsYCus5DymV7AS0NkqPU3UAvGktjD7hTs">
+			<downloadLatest bucketName="private.maven.hyperic.com" toDir="${tmp.dir}">
+				<fileset dir="snapshot/com/hyperic/hq/dist/hyperic-hqee-installer/${release.num}.BUILD-SNAPSHOT">
+					<include name="${server.installer.file}" />
+				</fileset>
+			</downloadLatest>
+		</aws:s3>
+	</target>
+
+	<!--  Copy HQ Build from build repository 
+	<target name="copyHQBuild" description="Copy HQ build from ${build.location}" unless="server.installer.file.present" depends="init">
+		<echo message="Copying the HQ build ${server.installer.file} from ${build.location}" />
+		<get src="${build.location}/${server.installer.file}" dest="${tmp.dir}/${server.installer.file}" />
+	</target>
+	-->
+
+	<target name="unzipBuild" if="is.windows" depends="init">
+		<echo message="Unzip the build ${server.installer.file}" />
+		<unzip dest="${server.install.dir}" overwrite="true">
+			<fileset dir="${tmp.dir}">
+				<include name="**/${server.installer.file}" />
+			</fileset>
+		</unzip>
+		<delete file="${tmp.dir}/${server.installer.file}" />
+	</target>
+
+	<target name="untarBuild" unless="is.windows" depends="init">
+		<echo message="Untar the build ${server.installer.file}" />
+		<gunzip src="${tmp.dir}/${server.installer.file}" />
+		<untar dest="${server.install.dir}" overwrite="true">
+			<fileset dir="${tmp.dir}">
+				<include name="**/${server.installer}.tar" />
+			</fileset>
+		</untar>
+		<echo message="Deleting the tmp files" />
+		<delete file="${tmp.dir}/${server.installer}.tar" />
+	</target>
+
+	<target name="extractHQBuild" depends="init">
+		<antcall target="unzipBuild" />
+		<antcall target="untarBuild" />
+	</target>
+
+	<target name="configureHQServerBuild" depends="init">
+		<antcall target="configureMySQLHQBuild" />
+		<antcall target="configureOracleHQBuild" />
+		<antcall target="configurePostgresHQBuild" />
+	</target>
+
+	<!-- Configure MySQL HQ Build -->
+	<target name="configureMySQLHQBuild" if="is.mysql" description="Configure silent installer properties" depends="init">
+
+		<!-- update installer properties here -->
+		<propertyfile file="${server.install.dir}/install.properties" comment="HQ Config Properties">
+
+			<entry key="server.installdir" value="${server.install.dir}" />
+			<!--
+				<entry key="hyperic-hq-agent.installdir" value="${server.install.dir}" />
+			-->
+			<!-- <entry key="agent.installdir" value="${server.install.dir}" /> -->
+			<entry key="server.hibernate.dialect" value="org.hyperic.hibernate.dialect.MySQL5InnoDBDialect" />
+			<entry key="server.connection-validation-sql" value="select 1" />
+			<entry key="server.database-password-encrypted" value="${mysql.db.password}" />
+			<entry key="server.database-user" value="${mysql.db.user}" />
+			<entry key="server.database-password" value="${mysql.db.password}" />
+			<!-- Following property sets up fresh install -->
+			<entry key="server.database.create" value="Yes" />
+
+			<entry key="server.mail.sender" value="hqadmin-automation@vmware.com" />
+			<entry key="server.overwrite" value="Yes" />
+			<entry key="server.database.upgrade" value="No" />
+			<entry key="server.database.upgrade.choice" value="Overwrite the HQ server database (ERASE all existing data)" />
+			<entry key="server.admin.email" value="hqadmin-automation@hyperic.com" />
+
+			<!-- By default the base url and  port are set to following values -->
+			<entry key="server.webapp.baseurl" value="http://localhost:7080/" />
+			<entry key="server.webapp.port" value="7080" />
+
+			<entry key="server.mail.host" value="localhost" />
+			<entry key="server.multicast.addr" value="227.0.0.1" />
+			<entry key="server.multicast.port" value="3030" />
+			<entry key="server.webapp.secure.port" value="7443" />
+			<entry key="hq-engine.server.port" value="9093" />
+			<entry key="server.ha.bind_addr" value="*.*" />
+			<entry key="hq-engine.jnp.port" value="2099" />
+			<entry key="install.mode" value="quick" />
+			<entry key="server.admin.password" value="hqadmin" />
+			<entry key="server.admin.username" value="hqadmin" />
+
+			<!--  DB Specific Properties -->
+			<entry key="using.builtin.db" value="false" />
+			<entry key="server.database.choice" value="MySQL Enterprise / Community Server 5.x" />
+			<entry key="server.database-driver" value="com.mysql.jdbc.Driver" />
+			<entry key="server.quartzDelegate" value="org.quartz.impl.jdbcjobstore.StdJDBCDelegate" />
+			<entry key="server.database-url" value="${mysql.db.url}" />
+			<entry key="mysql" value="true" />
+			<entry key="server.mysql.port" value="${mysql.db.port}" />
+			<entry key="server.database" value="MySQL" />
+			<entry key="server.encryption-key" value="12345678" />
+			<entry key="accept.eula" value="true" />
+		</propertyfile>
+	</target>
+
+	<!-- Configure MySQL HQ Build -->
+	<target name="configureOracleHQBuild" if="is.oracle" description="Configure silent installer properties" depends="init">
+
+		<!-- update installer properties here -->
+		<propertyfile file="${server.install.dir}/install.properties" comment="HQ Config Properties">
+
+			<entry key="server.installdir" value="${server.install.dir}" />
+			<!--
+					<entry key="hyperic-hq-agent.installdir" value="${server.install.dir}" />
+				-->
+			<!-- <entry key="agent.installdir" value="${server.install.dir}" /> -->
+			<entry key="server.hibernate.dialect" value="org.hyperic.hibernate.dialect.Oracle9Dialect" />
+			<entry key="server.connection-validation-sql" value="select 1" />
+			<entry key="server.database-password-encrypted" value="${oracle.db.password}" />
+			<entry key="server.database-user" value="${oracle.db.user}" />
+			<entry key="server.database-password" value="${oracle.db.password}" />
+			<!-- Following property sets up fresh install -->
+			<entry key="server.database.create" value="Yes" />
+
+			<entry key="server.mail.sender" value="hqadmin-automation@vmware.com" />
+			<entry key="server.overwrite" value="Yes" />
+			<entry key="server.database.upgrade" value="No" />
+			<entry key="server.database.upgrade.choice" value="Overwrite the HQ server database (ERASE all existing data)" />
+			<entry key="server.admin.email" value="hqadmin-automation@hyperic.com" />
+
+			<!-- By default the base url and  port are set to following values -->
+			<entry key="server.webapp.baseurl" value="http://localhost:7080/" />
+			<entry key="server.webapp.port" value="7080" />
+
+			<entry key="server.mail.host" value="localhost" />
+			<entry key="server.multicast.addr" value="227.0.0.1" />
+			<entry key="server.multicast.port" value="3030" />
+			<entry key="server.webapp.secure.port" value="7443" />
+			<entry key="hq-engine.server.port" value="9093" />
+			<entry key="server.ha.bind_addr" value="*.*" />
+			<entry key="hq-engine.jnp.port" value="2099" />
+			<entry key="install.mode" value="quick" />
+			<entry key="server.admin.password" value="hqadmin" />
+			<entry key="server.admin.username" value="hqadmin" />
+
+			<!--  DB Specific Properties -->
+			<entry key="using.builtin.db" value="false" />
+			<entry key="server.database.choice" value="Oracle 10g/11g" />
+			<entry key="server.database-driver" value="oracle.jdbc.driver.OracleDriver" />
+			<entry key="server.quartzDelegate" value="org.quartz.impl.jdbcjobstore.oracle.OracleDelegate" />
+			<entry key="server.database-url" value="${oracle.db.url}" />
+			<entry key="oracle" value="true" />
+			<entry key="sid" value="${oracle.db.sid}" />
+			<entry key="server.database" value="Oracle10g" />
+			<entry key="server.encryption-key" value="12345678" />
+			<entry key="accept.eula" value="true" />
+		</propertyfile>
+	</target>
+
+	<target name="configurePostgresHQBuild" if="is.postgres" depends="init">
+
+		<propertyfile file="${server.install.dir}/install.properties" comment="HQ Config Properties">
+
+			<entry key="server.installdir" value="${server.install.dir}" />
+			<entry key="server.hibernate.dialect" value="org.hyperic.hibernate.dialect.PostgreSQLDialect" />
+			<entry key="server.connection-validation-sql" value="select 1" />
+			<entry key="server.database-password-encrypted" value="hqadmin" />
+			<entry key="server.database-password" value="hqadmin" />
+			<entry key="server.database-user" value="hqadmin" />
+			<entry key="server.database.create" value="Yes" />
+			<entry key="server.mail.sender" value="hqadmin-automation@hyperic.com" />
+			<entry key="server.overwrite" value="Yes" />
+			<entry key="server.database.upgrade" value="No" />
+			<entry key="server.database.upgrade.choice" value="Overwrite the HQ server database (ERASE all existing data)" />
+			<entry key="server.admin.email" value="hqadmin-automation@hyperic.com" />
+			<entry key="server.webapp.baseurl" value="http://localhost:7080/" />
+			<entry key="server.webapp.port" value="7080" />
+			<entry key="server.mail.host" value="localhost" />
+			<entry key="server.multicast.addr" value="227.0.0.1" />
+			<entry key="server.multicast.port" value="3030" />
+			<entry key="server.webapp.secure.port" value="7443" />
+			<entry key="hq-engine.server.port" value="9093" />
+			<entry key="server.ha.bind_addr" value="*.*" />
+			<entry key="hq-engine.jnp.port" value="2099" />
+			<entry key="install.mode" value="quick" />
+			<entry key="server.admin.password" value="hqadmin" />
+			<entry key="server.admin.username" value="hqadmin" />
+
+			<!--  DB Specific Properties -->
+			<entry key="using.builtin.db" value="true" />
+			<entry key="server.database.choice" value="HQ Built-in Database" />
+			<entry key="server.database-driver" value="org.postgresql.Driver" />
+			<entry key="server.quartzDelegate" value="org.quartz.impl.jdbcjobstore.PostgreSQLDelegate" />
+			<entry key="server.database-url" value="jdbc:postgresql://localhost:9432/hqdb?protocolVersion=2" />
+			<entry key="postgresql" value="true" />
+			<entry key="server.postgresql.port" value="9432" />
+			<entry key="server.database" value="PostgreSQL" />
+			<entry key="server.encryption-key" value="12345678" />
+			<entry key="accept.eula" value="true" />
+		</propertyfile>
+	</target>
+
+	<!-- Setup HQ Server & install (in windows)-->
+	<target name="setupHQServer" description="Install HQ server with silent installer with the given properties file" depends="init">
+		<mkdir dir="${install.dir}/properties" />
+		<touch file="${install.dir}/properties/lastTestTimeStamp.txt" />
+		<touch file="${install.dir}/properties/lastTestBuildNum.txt" />
+		<antcall target="stopInstalledHQServer" />
+		<echo message="${testRunTime.DSTAMP}" file="${install.dir}/properties/lastTestTimeStamp.txt" />
+		<echo message="${build.version}" file="${install.dir}/properties/lastTestBuildNum.txt" />
+		<exec dir="${server.install.dir}/hyperic-hqee-installer-${release.num}.BUILD-SNAPSHOT" executable="${server.install.dir}/hyperic-hqee-installer-${release.num}.BUILD-SNAPSHOT/setup.${setup.extn}">
+			<arg line="${server.install.dir}/install.properties" />
+		</exec>
+		<antcall target="installHQServer" />
+		<antcall target="startHQServer" />
+	</target>
+
+	<target name="stopInstalledHQServer" depends="init, check-server-install" if="server.install.present">
+		<exec dir="${server.install.dir}/HQ-${release.num}-EE-${lastTest.build.version}/${lastTest.time.stamp}/server-${release.num}.BUILD-SNAPSHOT-EE/bin" executable="${server.install.dir}/HQ-${release.num}-EE-${lastTest.build.version}/${lastTest.time.stamp}/server-${release.num}.BUILD-SNAPSHOT-EE/bin/hq-server.${setup.extn}" failonerror="false">
+			<arg line="stop" />
+		</exec>
+		<sleep seconds="240" />
+		<antcall target="removeInstalledHQServer" />
+	</target>
+
+	<target name="check-server-install" depends="init">
+		<loadfile property="lastTest.time.stamp" srcFile="${install.dir}/properties/lastTestTimeStamp.txt">
+			<filterchain>
+				<striplinebreaks />
+			</filterchain>
+		</loadfile>
+		<loadfile property="lastTest.build.version" srcFile="${install.dir}/properties/lastTestBuildNum.txt">
+			<filterchain>
+				<striplinebreaks />
+			</filterchain>
+		</loadfile>
+		<available file="${server.install.dir}/HQ-${release.num}-EE-${lastTest.build.version}/${lastTest.time.stamp}/server-${release.num}.BUILD-SNAPSHOT-EE/bin/hq-server.{setup.extn}" property="server.install.present" />
+	</target>
+
+
+	<target name="removeInstalledHQServer" if="is.windows" depends="init">
+		<echo message="Removing installed HQ Server" />
+		<exec dir="${server.install.dir}/HQ-${release.num}-EE-${lastTest.build.version}/${lastTest.time.stamp}/server-${release.num}.BUILD-SNAPSHOT-EE/bin/hq-server.{setup.extn}" executable="${server.install.dir}/HQ-${release.num}-EE-${lastTest.build.version}/${lastTest.time.stamp}/server-${release.num}.BUILD-SNAPSHOT-EE/bin/hq-server.{setup.extn}" failonerror="false">
+			<arg value="remove" />
+		</exec>
+	</target>
+
+	<target name="installHQServer" if="is.windows" depends="init">
+		<echo message="Remove already installed HQ Server incase if it's still there" />
+		<exec dir="${server.install.dir}/server-${release.num}.BUILD-SNAPSHOT-EE/bin" executable="${server.install.dir}/server-${release.num}.BUILD-SNAPSHOT-EE/bin/hq-server.${setup.extn}">
+			<arg value="remove" />
+		</exec>
+		<echo message="Installing HQ Server" />
+		<exec dir="${server.install.dir}/server-${release.num}.BUILD-SNAPSHOT-EE/bin" executable="${server.install.dir}/server-${release.num}.BUILD-SNAPSHOT-EE/bin/hq-server.${setup.extn}">
+			<arg value="install" />
+		</exec>
+	</target>
+
+	<!-- Start HQ Server -->
+	<target name="startHQServer" description="Start HQ server" depends="init">
+		<chmod dir="${server.install.dir}/server-${release.num}.BUILD-SNAPSHOT-EE/" perm="755" includes="**/*.sh,**/*.bat" />
+		<chmod dir="${server.install.dir}/server-${release.num}.BUILD-SNAPSHOT-EE/wrapper/sbin" perm="755" includes="wrapper*" />
+		<exec dir="${server.install.dir}/server-${release.num}.BUILD-SNAPSHOT-EE/bin" executable="${server.install.dir}/server-${release.num}.BUILD-SNAPSHOT-EE/bin/hq-server.${setup.extn}">
+			<arg value="start" />
+		</exec>
+		<sleep seconds="180" />
+	</target>
+
+	<!-- Stop HQ Server -->
+	<target name="stopHQServer" description="Start HQ server" depends="init">
+		<exec dir="${server.install.dir}/server-${release.num}.BUILD-SNAPSHOT-EE/bin" executable="${server.install.dir}/server-${release.num}.BUILD-SNAPSHOT-EE/bin/hq-server.${setup.extn}">
+			<arg value="stop" />
+		</exec>
+		<sleep seconds="180" />
+	</target>
+</project>
+

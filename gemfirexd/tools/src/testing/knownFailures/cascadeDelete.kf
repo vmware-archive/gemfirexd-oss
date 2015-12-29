@@ -1,0 +1,1 @@
+The delete rules, CASCADE and SET NULL, on foreign keys are not supported

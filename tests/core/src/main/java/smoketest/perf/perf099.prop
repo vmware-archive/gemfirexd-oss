@@ -1,0 +1,22 @@
+locatorHosts = 1
+locatorVMsPerHost = 1
+locatorThreadsPerVM = 1
+
+A = archiver
+archiverHosts = 1
+archiverVMsPerHost = 1
+archiverThreadsPerVM = 1
+
+B = peer
+peerHosts = 2
+peerVMsPerHost = 1
+peerThreadsPerVM = 1
+
+sleepMs = 20
+trimSeconds = 90
+workSeconds = 180
+
+securityScheme = noop
+sslScheme = none
+
+perffmwk.comparisonKey = perf099

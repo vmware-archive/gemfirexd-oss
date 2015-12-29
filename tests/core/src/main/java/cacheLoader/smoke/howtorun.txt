@@ -1,0 +1,26 @@
+Basic CacheLoader tests
+
+cacheLoader/smoke/dist.bt includes the basic list of tests to run.
+Each test runs for about 15 minutes (totalTaskTimeSec = 600).
+
+distNoExp.conf is the simplest config, with no expiration.
+The other configs vary cache expiration actions.
+
+- Run the bt file multiple times (at least 5), to exercise various
+combinations.
+
+- On a single platform: scale back the numHost variations depending on
+the box being used.  A basic Windows box can generally only run the
+numHosts=2 configs.  On my Solaris desktop, I comment out the
+numHosts=4 config if I am doing anything else on the box.
+
+- On multiple platforms: For remote tests, add something like the
+following in local.conf.
+
+//numHosts=2 configs: 
+hydra.HostPrms-hostNames         = duck     stealth;
+
+//numHosts=3 configs:
+hydra.HostPrms-hostNames         = duck     stealth  biker;
+
+etc.

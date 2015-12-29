@@ -1,0 +1,15 @@
+durableClients/eventValidationNetDown.conf
+ A = bridge  bridgeHosts =  1 bridgeVMsPerHost = 7  bridgeThreadsPerVM = 1
+ B = feed    feedHosts   =  1 feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+ C = edge    edgeHosts   =  1 edgeVMsPerHost   = 5  edgeThreadsPerVM   = 1
+ D = reference    referenceHosts   =  1 referenceVMsPerHost   = 1  referenceThreadsPerVM   = 1
+ hc.nPutThreads=3 hc.nPutKeyRange=3
+ onlyOnPlatforms=Linux
+ 
+ durableClients/durableCQWithNetDown.conf
+ A = bridge  bridgeHosts =  1 bridgeVMsPerHost = 7  bridgeThreadsPerVM = 1
+ B = feed    feedHosts   =  1 feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+ C = edge    edgeHosts   =  1 edgeVMsPerHost   = 5  edgeThreadsPerVM   = 1
+ D = reference    referenceHosts   =  1 referenceVMsPerHost   = 1  referenceThreadsPerVM   = 1
+ hc.nPutThreads=3 hc.nPutKeyRange=3
+ onlyOnPlatforms=Linux

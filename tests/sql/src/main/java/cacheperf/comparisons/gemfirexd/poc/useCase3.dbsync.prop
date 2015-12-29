@@ -1,0 +1,29 @@
+locatorHosts=1
+locatorVMsPerHost=1
+locatorThreadsPerVM=1
+
+A=client
+clientHosts=1
+clientVMsPerHost=1
+clientThreadsPerVM=1
+
+B=server
+serverHosts=2
+serverVMsPerHost=1
+serverThreadsPerVM=1
+
+api=GFXD
+
+txIsolation = read_committed
+
+ddlFileName = useCase3.dbsync.sql
+tableName = TX_PL_POSITION
+rowCount = 100000
+
+clientHeapMB = 256
+serverHeapMB = 3500
+
+trimSeconds =  60
+workSeconds = 180
+
+perffmwk.comparisonKey = useCase3

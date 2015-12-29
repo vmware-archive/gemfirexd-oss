@@ -1,0 +1,217 @@
+// cli 
+/* Commenting out for Cheetah Release
+management/test/cli/peerRegionCommandsRebalance.conf
+      locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+      A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=2
+      B=dataStore dataStoreHosts=8 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+      C=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+      D=cli cliHosts=2 cliVMsPerHost=1 cliThreadsPerVM=1
+      redundantCopies=2
+      numMembersJoinDSOnly=0 numMembersCreateCacheOnly=0
+*/
+
+// diskRecovery 
+smoketest/moresmoke/concRecoverLatest.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+smoketest/moresmoke/concRecoverAll.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+smoketest/moresmoke/concRecoverAllAfterShutDownAll.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+
+// diskReg
+diskReg/serialPersistence.conf
+diskReg/diskOverflowRecovery.conf maxKeys=100 objectType=objects.ArrayOfByte
+diskReg/crashOverflowRecovery.conf maxKeys=100 objectType=objects.ArrayOfByte
+diskReg/shutdownOverflowRecovery.conf maxKeys=100 objectType=objects.ArrayOfByte
+
+// dlock 
+dlock/contention_entryLock.conf
+dlock/lockemallatonce.conf
+dlock/smokelock1_global.conf
+
+// pr eviction
+smoketest/moresmoke/heapEvictionWithRRAndPR.conf peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=2 redundantCopies=3
+parReg/eviction/prEvictionWithQuery.conf peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=2 redundantCopies=0
+smoketest/moresmoke/verifyHeapEvictionBehaviorPersist.conf peerHosts=1 peerVMsPerHost=4 peerThreadsPerVM=2 redundantCopies=3
+
+// resman (heap eviction)
+resman/criticalHeapFireHoseAddCapacityAndQueryAndIndex.conf
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   C=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   D=extraDataStore extraDataStoreHosts=4 extraDataStoreVMsPerHost=1 extraDataStoreThreadsPerVM=10
+   heapMB=250
+
+resman/criticalHeapFireHoseWithRebal.conf
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=4
+   C=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=4
+   heapMB=100
+
+// federation 
+// todo@tushar
+
+// fixed partitioning 
+// todo@sonal
+
+// functionService 
+parReg/execute/randomFunctionExecution.conf peerHosts=5 peerVMsPerHost=2 peerThreadsPerVM=20 numKeys=100 byteArraySize=5 redundantCopies=1
+
+parReg/execute/functionExecutionWithColocationHA.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=7 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=10000  byteArraySize=5000 redundantCopies=1 numVMsToStop=1
+
+parReg/execute/randomFunctionExecutionHA.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=7 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=100 byteArraySize=5000 redundantCopies=3 numVMsToStop=3
+
+// getInitialImage 
+getInitialImage/concGiiPreferenceVMReg.conf hydra.numHosts = 5
+
+getInitialImage/giiWhilePublishing.conf
+  hydra.numHosts=2 numGiiClients=30
+  dataPolicy=replicate scope=distributedAck
+  workIterations=20000
+
+getInitialImage/giiWhileMultiplePublishing.conf
+  dataPolicy=replicate
+  hydra.numHosts=3
+  numGiiClients=10
+  scope=distributedNoAck
+  trimIterations=0
+  workIterations=250000
+
+// jmx 
+// todo@tushar
+
+// newWan (serial, parallel)
+parReg/newWan/serial/p2p.conf 
+  wanSites = 2 maxOps=10000 resultWaitSec=600
+  locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  peerHostsPerSite = 3 peerVMsPerHost = 1 peerThreadsPerVM = 3
+
+parReg/newWan/serial/p2pKill.conf
+  wanSites = 2 maxOps=3000 resultWaitSec=600 redundantCopies=1
+  peerHostsPerSite = 3 peerVMsPerHost = 1 peerThreadsPerVM = 3
+    
+parReg/newWan/parallel/p2p.conf 
+  wanSites = 2 maxOps=10000 resultWaitSec=600
+  locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  peerHostsPerSite = 3 peerVMsPerHost = 1 peerThreadsPerVM = 3
+
+smoketest/moresmoke/concParRegRecover.conf 
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=6 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   redundantCopies=2
+
+// pdx 
+pdx/parReg/concParRegPersistPdx.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies=1
+
+// prColocation 
+// todo@sonal
+
+// rebalance 
+rebalance/addCapacity.conf
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=1
+   C=dataStore dataStoreHosts=8 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   D=extraDataStore extraDataStoreHosts=10 extraDataStoreVMsPerHost=1 extraDataStoreThreadsPerVM=1
+   localMaxMemory = 5
+
+rebalance/addCapacityFewBuckets.conf
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=1
+   C=dataStore dataStoreHosts=8 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   D=extraDataStore extraDataStoreHosts=10 extraDataStoreVMsPerHost=1 extraDataStoreThreadsPerVM=1
+   localMaxMemory = default
+
+rebalance/addCapacityManyBuckets.conf 
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=1
+   C=dataStore dataStoreHosts=8 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   D=extraDataStore extraDataStoreHosts=10 extraDataStoreVMsPerHost=1 extraDataStoreThreadsPerVM=1
+   localMaxMemory = 5
+
+// snapshot 
+smoketest/moresmoke/cacheSnapshotMixed.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+   useFilterOnExport = true useFilterOnImport = false
+   numDiskStores = 3
+
+smoketest/moresmoke/cacheSnapshotMixed.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+   useFilterOnExport = false useFilterOnImport = true
+   numDiskStores = 3
+
+// splitBrain 
+splitBrain/concLeadSelection.conf
+   locatorHosts=5 locatorVMsPerHost=1 locatorThreadsPerVM=1
+   A=client clientHosts=5 clientVMsPerHost=1 clientThreadsPerVM=1
+
+splitBrain/unhealthyKnownKeys.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   C=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   numKeys=100000 byteArraySize=2000 redundantCopies=1 numVMsToStop=1
+   unhealthiness=slow playDead=true
+
+splitBrain/unhealthyKnownKeys.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   C=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   numKeys=100000 byteArraySize=2000 redundantCopies=1 numVMsToStop=1
+   unhealthiness=sick playDead=false
+
+//federation.bt
+management/test/federation/fedMBeanSet.conf 	 
+	managed_1_Hosts = 1 managed_1_VMsPerHost = 1 managed_1_ThreadsPerVM = 2
+	managed_2_Hosts = 1 managed_2_VMsPerHost = 1 managed_2_ThreadsPerVM = 2
+	managing_1_Hosts = 2 managing_1_VMsPerHost = 1 managing_1_ThreadsPerVM = 2
+	locator_managing_Hosts = 2 locator_managing_VMsPerHost = 1 locator_managing_ThreadsPerVM = 3
+	restartManagingNodesTimes=3
+	
+management/test/federation/fedOpsAndNotifs.conf 
+	managed_1_Hosts = 1 managed_1_VMsPerHost = 1 managed_1_ThreadsPerVM = 1
+	managed_2_Hosts = 1 managed_2_VMsPerHost = 1 managed_2_ThreadsPerVM = 1
+	managing_1_Hosts = 2 managing_1_VMsPerHost = 1 managing_1_ThreadsPerVM = 2
+	locator_managing_Hosts = 2 locator_managing_VMsPerHost = 1 locator_managing_ThreadsPerVM = 3
+
+//jmx.bt	
+management/test/jmx/cacheStopStart.conf
+	A=managing managingHosts=2 managingThreadsPerVM=2 managingVMsPerHost=1
+	B=managed managedHosts=2 managedThreadsPerVM=1 managedVMsPerHost=1
+	jmxIterations = 20 duration = 600
+	
+management/test/jmx/memberMBean.conf 
+    managed_1_Hosts = 1 managed_1_VMsPerHost = 1 managed_1_ThreadsPerVM = 2
+	managed_2_Hosts = 1 managed_2_VMsPerHost = 1 managed_2_ThreadsPerVM = 2
+	locator_managing_Hosts = 2 locator_managing_VMsPerHost = 1 locator_managing_ThreadsPerVM = 3
+	managing_1_Hosts = 2 managing_1_VMsPerHost = 1 managing_1_ThreadsPerVM = 2
+	jmxIterations = 150 duration = 600
+
+// hdfs.bt 
+hdfs/parReg/concKnownKeysPersist.conf
+  A=config configHosts=1  configVMsPerHost=1 configThreadsPerVM=1
+  B=peer   peerHosts  =10 peerVMsPerHost  =1 peerThreadsPerVM  =20
+  numKeys=10000 byteArraySize=5
+  batchSizeMB=5 batchTimeInterval=5000
+
+hdfs/parReg/concKnownKeysStreaming.conf
+  A=config configHosts=1  configVMsPerHost=1 configThreadsPerVM=1
+  B=peer   peerHosts  =10 peerVMsPerHost  =1 peerThreadsPerVM  =20
+  numKeys=10000 byteArraySize=5
+  batchSizeMB=5 batchTimeInterval=5000
+
+hdfs/parReg/concKnownKeysMapReduce.conf
+  peerHosts=10 peerVMsPerHost=1 peerThreadsPerVM=20 numKeys=10000 byteArraySize=5
+  batchSizeMB=5 batchTimeInterval=5000
+  hdfsWriteOnly = true mapReduceClass = hdfs.mapreduce.KnownKeysMRv1
+
+

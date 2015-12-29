@@ -1,0 +1,25 @@
+
+Connecting to the distributed system and creating the cache.
+
+Example region, PartitionedRegion, created in cache.
+Please press Enter in VM1.
+Getting 3 entries from PartitionedRegion. . .
+
+     Getting key key0: value0
+
+     Getting key key1: value1
+
+     Getting key key2: value2
+
+Please press Enter in VM1 again.
+Getting the same entries from PartitionedRegion after destroy and invalidate. . .
+
+     Getting key key0: null
+
+     Getting key key1: null
+
+     Getting key key2: value2
+
+After VM2 is closed, please press Enter in VM1 to read the values.
+
+Closing the cache and disconnecting.

@@ -1,0 +1,15 @@
+A = putter
+B = watcher
+putterHosts        = 1
+putterVMsPerHost   = 1
+putterThreadsPerVM = 1
+watcherHosts        = 1
+watcherVMsPerHost   = 1
+watcherThreadsPerVM = 1
+statisticsEnabled=false
+numberOfEntries=50000
+sampleInterval=1000
+dataPolicy=replicate
+scope=dack
+
+perffmwk.comparisonKey = memory

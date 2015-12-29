@@ -1,0 +1,7 @@
+// This batterytest script runs all of the messaging performance tests
+
+com/gemstone/gemfire/distributed/internal/tcpPerf.conf
+com/gemstone/gemfire/distributed/internal/conduitPerf.conf
+com/gemstone/gemfire/distributed/internal/distributionChannelPerf.conf
+com/gemstone/gemfire/distributed/internal/distributionMessagePerf.conf
+

@@ -1,0 +1,11 @@
+cacheperf/comparisons/gemfirexd/largeobject/thinClient/drop.conf
+  api = MYSQL
+  clientHosts=1 clientVMsPerHost=1 clientThreadsPerVM=1
+  serverHosts=1 serverVMsPerHost=1 serverThreadsPerVM=1
+  numLargeObjectsPerServer=2000
+  heapMB = 150
+  redundantCopies=0
+  txIsolation = readCommitted
+  enableHistogram=true
+  queryPlanFrequency = 0
+  perffmwk.comparisonKey = drop

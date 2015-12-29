@@ -1,0 +1,24 @@
+#!/bin/bash
+
+#-------------------------------------------------------------------------------
+#
+# Lists relevant processes belonging to everyone but the $USER on each
+# of the $TEST_HOSTS.
+#
+#-------------------------------------------------------------------------------
+
+trap 'exit 1' 2 #traps Ctrl-C (signal 2)
+
+if [ -z "$TEST_HOSTS" ]
+then
+  echo "Environment variable TEST_HOSTS is not set."
+  exit 0
+fi
+
+for i in $TEST_HOSTS
+do
+  echo $i
+
+  ssh -q $i ps -edalf | grep -v "S root" | grep -v "D root" | grep -v "S ntp" | grep -v "S nobody" | grep -v "S daemon" | grep -v "S postfix" | grep -v "S at" | grep -v "S UID" | grep -v "S lp" | grep -v "S 100" | grep -v "S rpc" | grep -v "S dbus" | grep -v "S smmsp" | grep -v "S xfs" | grep -v "S avahi" | grep -v "S 68" | grep -v $USER | grep -v gdm | grep -v nslcd | grep -v rtkit | grep -v qpidd | grep -v nscd
+  #ssh -q $i ps -edalf | grep ndb
+done

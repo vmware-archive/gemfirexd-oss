@@ -1,0 +1,10 @@
+mirror/serialMirrorKeysDist.conf
+mirror/serialMirrorKeysValuesDist.conf
+mirror/mirrorKeysDist.conf
+//mirror/mirrorKeysLocal.conf
+mirror/mirrorKeysValuesDist.conf
+//mirror/mirrorKeysValuesLocal.conf
+mirror/mirrorNoneDist.conf
+mirror/mirrorNoneLocal.conf
+
+include $JTESTS/mirror/dataPolicy/mirror.bt

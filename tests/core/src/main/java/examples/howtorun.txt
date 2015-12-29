@@ -1,0 +1,16 @@
+All examples should be run manually on all platforms. We want to run
+these manually, even though we have automated tests for them, because
+manually is how customers will run them.  Instructions for running tests 
+manually are in:
+   dist/howtorun.txt (for the flashcache example)
+   dist/cacheOverflow/howtorun.txt (for cache overflow examples)
+    
+
+
+To run the examples automatically, run the following battery test file.
+Some of these tests do not run on windows. It is OK, however, to run 
+this .bt file on windows, as hydra will automatically skip over the
+tests in this .bt file that are unable to run on windows. However, 
+hydra will run all tests in this .bt file on Solaris and Linux.
+   Run tests in tests/examples/examples.bt
+

@@ -1,0 +1,15 @@
+// no security
+cacheperf/comparisons/connection/connectAuto.conf
+  bounceVm = false,true vmType = client,server
+  createCacheAndRegion = true useCacheXml = false,true
+cacheperf/comparisons/connection/connectExplicit.conf
+  bounceVm = false,true vmType = client,server
+  createCacheAndRegion = true useCacheXml = false,true
+
+// with security
+cacheperf/comparisons/connection/connectAutoSecure.conf
+  bounceVm = false,true vmType = client,server
+  createCacheAndRegion = true useCacheXml = false,true
+cacheperf/comparisons/connection/connectExplicitSecure.conf
+  bounceVm = false,true vmType = client,server
+  createCacheAndRegion = true useCacheXml = false,true

@@ -1,0 +1,40 @@
+sql/alterTable/addUniquenessConstraintsWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=1 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=2
+//sql/alterTable/addPKWithAccessors.conf
+//    A=store storeHosts=1 storeVMsPerHost=1 storeThreadsPerVM=1
+//    B=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=2
+//sql/alterTable/addDropForeignKeyWithAccessors.conf
+//    A=store storeHosts=1 storeVMsPerHost=1 storeThreadsPerVM=1
+//    B=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=2
+//sql/alterTable/alterNullWithAccessors.conf
+//    A=store storeHosts=1 storeVMsPerHost=1 storeThreadsPerVM=1
+//    B=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=2
+//sql/alterTable/addCheckWithAccessors.conf
+//    A=store storeHosts=1 storeVMsPerHost=1 storeThreadsPerVM=1
+//    B=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=2
+//sql/alterTable/addCheck.conf
+// A=peer peerHosts=1 peerVMsPerHost=1 peerThreadsPerVM=2
+//sql/alterTable/alterExpiration.conf
+// A=peer peerHosts=1 peerVMsPerHost=1 peerThreadsPerVM=2
+// sql/alterTable/alterEviction.conf
+//  A=peer peerHosts=1 peerVMsPerHost=1 peerThreadsPerVM=2
+//sql/alterTable/addUniquenessConstraints.conf
+//  A=peer peerHosts=1 peerVMsPerHost=1 peerThreadsPerVM=2
+// sql/alterTable/alterDataTypes.conf
+//  A=peer peerHosts=1 peerVMsPerHost=1 peerThreadsPerVM=2
+// sql/alterTable/alterDefaults.conf
+//  A=peer peerHosts=1 peerVMsPerHost=1 peerThreadsPerVM=2
+// sql/alterTable/addColumns.conf
+//   A=peer peerHosts=1 peerVMsPerHost=1 peerThreadsPerVM=2
+// sql/alterTable/addPK.conf
+//   A=peer peerHosts=1 peerVMsPerHost=1 peerThreadsPerVM=2
+// sql/alterTable/alterNulls.conf
+//   A=peer peerHosts=1 peerVMsPerHost=1 peerThreadsPerVM=2
+// sql/alterTable/bug42478.conf
+//   A=peer peerHosts=1 peerVMsPerHost=1 peerThreadsPerVM=2
+// // Bug42503
+// sql/alterTable/bugNPEonInsert.conf
+//   A=peer peerHosts=1 peerVMsPerHost=1 peerThreadsPerVM=2
+//sql/alterTable/bug42504.conf
+//  A=peer peerHosts=1 peerVMsPerHost=1 peerThreadsPerVM=2

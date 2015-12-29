@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE cache PUBLIC "-//GemStone Systems, Inc.//GemFire Declarative Caching 5.1//EN" "http://www.gemstone.com/dtd/cache6_5.dtd">
+<cache>
+  <region name="QueryRegion0">
+    <region-attributes>
+       <partition-attributes redundant-copies="2" total-num-buckets="50" />
+       <subscription-attributes interest-policy="cache-content" />
+    </region-attributes>
+    <index name="statusIndex">
+      <functional from-clause="/QueryRegion0 p" expression="p.status" />
+    </index>
+    <index name="idIndex">
+      <functional from-clause="/QueryRegion0 p" expression="p.ID" />
+    </index>
+  </region>
+  <region name="QueryRegion1">
+    <region-attributes scope="distributed-ack" data-policy="replicate" />
+    <index name="statusIndex">
+      <functional from-clause="/QueryRegion1 p" expression="p.status" />
+    </index>
+    <index name="idIndex">
+      <functional from-clause="/QueryRegion1 p" expression="p.ID" />
+    </index>
+  </region>
+  <region name="QueryRegion2">
+    <region-attributes scope="distributed-ack" data-policy="replicate" />
+    <index name="statusIndex">
+      <functional from-clause="/QueryRegion2 p" expression="p.status" />
+    </index>
+    <index name="idIndex">
+      <functional from-clause="/QueryRegion2 p" expression="p.ID" />
+    </index>
+  </region>
+  <region name="QueryRegion0noIndex">
+    <region-attributes>
+       <partition-attributes redundant-copies="1" total-num-buckets="50" />
+       <subscription-attributes interest-policy="cache-content" />
+    </region-attributes>
+  </region>
+  <region name="QueryRegion1noIndex">
+    <region-attributes scope="distributed-ack" data-policy="replicate" />
+  </region>
+  <region name="QueryRegion2noIndex">
+    <region-attributes scope="distributed-ack" data-policy="replicate" />
+  </region>
+</cache>

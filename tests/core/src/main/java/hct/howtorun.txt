@@ -1,0 +1,72 @@
+
+***********
+hct.bt
+***********
+
+These tests use up to 6 GemFire systems. To specify the hosts
+used in the test, add the parameters below to your local.conf file.
+Each host name maps to a GemFire system.
+
+   hydra.HostPrms-hostNames = spiroc stealth bilbo pope pope pope;
+
+The following parameters are OPTIONAL, used when doing multi-platform 
+testing with sanctioned builds.  The directory under spiroc1 is a
+Solaris snapshot; the one under bilbo1 is a linux snapshot.
+
+   hydra.HostPrms-gemfireHomes =
+     /spiroc1/users/belindaf/gemfire.119/product
+     /spiroc1/users/belindaf/gemfire.119/product
+     /bilbo1/users/belindaf/gemfire.119/product
+     /spiroc1/users/belindaf/gemfire.119/product
+   ;
+   hydra.HostPrms-javaHomes =
+     /spiroc1/users/belindaf/gemfire.119/product/jre
+     /spiroc1/users/belindaf/gemfire.119/product/jre
+     /bilbo1/users/belindaf/gemfire.119/product/jre
+     /spiroc1/users/belindaf/gemfire.119/product/jre
+   ;
+
+Some things to consider when choosing hosts:
+  -- You can place several GemFire systems on a host.
+  -- Cache servers require less resources than edges; edges will 
+     have at least 20 clients each.
+  -- The cache servers are the first GemFire systems in the list
+     (however many there are for a given test); the rest are edges.
+
+
+***********
+scaled.bt
+***********
+
+These tests use 21 GemFire systems.  A configuration known to work
+for Solaris is to have 4 edges per 2-CPU machine having 2G ram, or 
+8 edges per 4-CPU machine with 4G ram.
+
+Valid configurations for Windows is still under investigation.
+To run with remote GemFire systems on a Windows machine, define a share
+on a directory containing the product, hidden and test_classes
+directories from a GemFire build. Include parameter settings
+similar to these in your local.conf:
+
+Note that this only works with separate UNIX boxes as Master and Server.
+For example, the test configuration below would work as long as it wasn't
+started from the system 'big'.  The start of MasterController must be on 
+a separate UNIX box.
+
+(//quill/gemfire30 is the Windows shared directory)
+
+hydra.HostPrms-hostNames = big quill;
+hydra.HostPrms-gemfireHomes =
+   /spiroc1/users/belindaf/gemfire.119/product
+   "//quill/lhughes/gemfireBuild/product"
+;
+hydra.HostPrms-testDirs =
+   /spiroc2/users/belindaf/gemfire30/build-artifacts/sol/tests/classes
+   "//quill/lhughes/gemfireBuild/tests/classes"
+;
+hydra.HostPrms-javaHomes =
+   /spiroc1/users/belindaf/gemfire.119/product/jre
+   "//quill/lhughes/gemfireBuild/product/jre"
+;
+
+

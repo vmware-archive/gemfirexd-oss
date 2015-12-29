@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title>writeDataToDatabase</title>
+<link href="styles.css" type="text/css" rel="stylesheet">
+</head>
+<body>
+<h2> writeDataToDatabase</h2>
+<fieldset class="taskDescription">
+<legend><a class="anchor" name="description">Description</a></legend>
+<p>Java type: <a href="../api/org/apache/ddlutils/task/WriteDataToDatabaseCommand.html"><code>org.apache.ddlutils.task.WriteDataToDatabaseCommand</code></a></p>
+<p>Inserts the data defined by the data XML file(s) into the database. This requires the schema
+ in the database to match the schema defined by the XML files specified at the enclosing task.<br/>
+ DdlUtils will honor the order imposed by the foreign keys. Ie. first all required entries are
+ inserted, then the dependent ones. Obviously this requires that no circular references exist
+ in the schema (DdlUtils currently does not check this). Also, the referenced entries must be
+ present in the data, otherwise the task will fail. This behavior can be turned off via the
+ <code>ensureForeignKeyOrder</code> attribute.<br/>
+ In order to define data for foreign key dependencies that use auto-incrementing primary keys,
+ simply use some unique values for their columns. DdlUtils then will automatically use the real
+ primary key values when inserting the data. Note though that not every database supports the
+ retrieval of auto-increment values which is necessary for this to work.</p>
+</fieldset>
+<fieldset class="taskParameters">
+<legend><a class="anchor" name="parameters">Parameters</a></legend>
+  	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-usebatchmode">usebatchmode</a> : boolean
+  	</p>
+	<p class="taskParameterDescription">
+	Specifies whether batch mode shall be used for inserting the data. In batch mode, insert statements
+ for the same table are bundled together and executed as one statement. This can be a lot faster
+ than single insert statements but is not supported by all JDBC drivers/databases. To achieve the
+ highest performance, you should group the data in the XML file according to the tables. This is
+ because a batch insert only works for one table at a time. Thus when the table changes in an
+ entry in the XML file, the batch is committed and then a new one is started. <br/>
+        Per default batch mode is not used.
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-datafile">datafile</a> : File
+  	</p>
+	<p class="taskParameterDescription">
+	Specifies the name of the single XML file that contains the data to insert into the database. <br/>
+        Use either this or <code>fileset</code> sub elements.
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-batchsize">batchsize</a> : int
+  	</p>
+	<p class="taskParameterDescription">
+	The maximum number of insert statements to combine in one batch. The number typically
+ depends on the JDBC driver and the amount of available memory.<br/>
+ This value is only used if <code>useBatchMode</code> is <code>true</code>. <br/>
+        The default value is 1.
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-failonerror">failonerror</a> : boolean
+  	</p>
+	<p class="taskParameterDescription">
+	Specifies whether the execution shall stop if an error has occurred during the task runs. <br/>
+        By default execution will be stopped when an error is encountered.
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-ensureforeignkeyorder">ensureforeignkeyorder</a> : boolean
+  	</p>
+	<p class="taskParameterDescription">
+	Specifies whether the foreign key order shall be honored when inserting data into the database.
+ If not, DdlUtils will simply assume that the entry order is correct, i.e. that referenced rows
+ come before referencing rows in the data XML. Note that execution will be slower when DdlUtils
+ has to ensure the foreign-key order of the data. Thus if you know that the data is specified in
+ foreign key order turn this off. <br/>
+        Per default foreign key order is honored.
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-useexplicitidentityvalues">useexplicitidentityvalues</a> : boolean
+  	</p>
+	<p class="taskParameterDescription">
+	Defines whether values for identity columns in the data XML shall be used instead of
+ letting the database define the value. Unless <code>ensureForeignKeyOrder</code> is
+ set to false, setting this to <code>false</code> (the default) does not affect foreign
+ keys as DdlUtils will automatically update the values of the columns of foreign keys
+ pointing to the inserted row with the database-created values. <br/>
+        Default is <code>false</code>
+  	</p>
+</fieldset>
+<fieldset class="taskNestedElements">
+<legend><a class="anchor" name="nestedElements">Nested elements</a></legend>
+  	<p class="taskNestedElementExternalRef">&rArr;&nbsp;<a href="http://ant.apache.org/manual/CoreTypes/fileset.html">Ant's <code>fileset</code> type</a></p>
+    <div class="taskNestedElementSeparator"></div>
+    </fieldset>
+<p>&copy;2005-2007 Apache Software Foundation</p>
+</body>
+</html>

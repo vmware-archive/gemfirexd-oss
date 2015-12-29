@@ -1,0 +1,85 @@
+Failover Test cases MSSB ran for Gemfire, which you requested:
+
+ 
+
+Test 1
+
+Generate some load on Gemfire cache servers.
+
+shutdown one locator and see if there is any functionality or performance issues when the env is running on one locator
+
+ 
+
+Test 2
+
+Shutdown both locators and see if the app can still work
+
+ 
+
+Test 3
+
+Bring back one locator and see if new connections work. Add more load on gemfire cache servers.
+
+ 
+
+Test 4
+
+Bring back second locator and see if it gets accepted to the pool gracefully
+
+ 
+
+Test 5
+
+Kill one or 2 cache servers in the pool and check the performance under load
+
+ 
+
+Test 6
+
+Add server back and see if server is admitted to the group with no errors
+
+ 
+
+Test 7
+
+Shutdown Linux server running locator, agent and server and see if there are any issues with GemFire plant
+
+ 
+
+Test 8
+
+Bring back the server and see if locator, agent and server joins the plant
+
+ 
+
+Test 9
+
+Kill both agents and see if env is still working fine by looking at logs
+
+ 
+
+Test 10
+
+Kill four cache servers in the pool and see if there are any issues with GemFire plant
+
+ 
+
+Test 11
+
+Kill agent and connect to second agent and see if GFMON provides updates
+
+ 
+
+Test 12
+
+Restart agent and see if GFMON can connect and provide statistics
+
+ 
+
+ 
+
+regards,
+Denny Panakal
+Project Manager - ClientServ TEB projects
+212-276-6211
+Morgan Stanley Smith Barney 

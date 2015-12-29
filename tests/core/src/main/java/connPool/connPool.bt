@@ -1,0 +1,30 @@
+connPool/balance.conf
+   locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+   edgeHosts=20 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   minConnections=100
+   maxConnections=100
+
+connPool/balance.conf
+   locatorHosts=4 locatorVMsPerHost=1 locatorThreadsPerVM=1
+   edgeHosts=20 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   minConnections=100
+   maxConnections=100
+
+connPool/balanceWithClientCache.conf
+   locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+   edgeHosts=20 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   minConnections=100
+   maxConnections=100
+   shortcut=PROXY,CACHING_PROXY,CACHING_PROXY_HEAP_LRU,LOCAL,LOCAL_HEAP_LRU, CACHING_PROXY_OVERFLOW,LOCAL_PERSISTENT,LOCAL_OVERFLOW,LOCAL_PERSISTENT_OVERFLOW
+
+connPool/balanceWithClientCache.conf
+   locatorHosts=4 locatorVMsPerHost=1 locatorThreadsPerVM=1
+   edgeHosts=20 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   minConnections=100
+   maxConnections=100
+   shortcut=PROXY,CACHING_PROXY,CACHING_PROXY_HEAP_LRU,LOCAL,LOCAL_HEAP_LRU, CACHING_PROXY_OVERFLOW,LOCAL_PERSISTENT,LOCAL_OVERFLOW,LOCAL_PERSISTENT_OVERFLOW
+

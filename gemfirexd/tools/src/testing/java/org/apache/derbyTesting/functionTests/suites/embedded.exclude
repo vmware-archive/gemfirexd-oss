@@ -1,0 +1,104 @@
+// this was excluded in the original embedded.exclude file
+// (for unknown reasons, deprecated method?)
+jdbcapi/blobSetBinaryStream.java
+
+// first cause of failure is missing TRIGGERs 
+lang/db2Compatibility.sql
+
+// isolation levels not supported
+lang/DB2IsolationLevels.sql
+
+// excluded due to missing runtime statistics, #39493
+lang/partdml.sql
+
+// The autoincrement test fails with 'not yet implemented: 
+// java.lang.UnsupportedOperationException'
+// This tests the identity column feature which is not yet implemented. 
+lang/autoincrement.sql
+
+// The test tries to alter the table by adding a column,
+//  which is not yet supported. #39498
+lang/columnDefaults.sql
+
+// fails due to missing runtime statistics, #39497 
+lang/aggregateOptimization.sql
+
+// adding a column in alter table is not implemented, #39498 
+lang/altertable.sql
+
+// fails due to relying on rollback
+lang/checkConstraint.sql
+
+// relies on database name in master output file,
+// and GemFireXD doesn't use database names
+lang/closed.java
+
+// fails due to NPE, #39661
+lang/compressTable.sql
+
+// connect.sql: not relevent to GemFireXD 
+// since connection URL/database names are different
+lang/connect.sql
+
+// fails, derby calles system producedure to corrupt its
+// indexes then expects the index consistency checker to
+// fail. Since the system procedures don't touch gemfirexd
+// indexes, our indexes don't become inconsistent and therefore
+// the test fails.
+lang/consistencyChecker.sql
+
+// fails because it relies on rollback 
+lang/currentSchema.sql
+
+// fails because it relies on cursor behavior
+// (actually gets pretty far with cursors)
+lang/cursorerrors.sql
+
+// fails because it relies on rollback
+lang/datetime.sql
+
+// fails because it does alter table locksize (and
+// will probably fail trying to get runtime stats
+// after that)
+lang/ddlTableLockMode.sql
+
+// fails creating global temporary table, #40921
+lang/declareGlobalTempTableJavaJDBC30.java
+
+lang/desc_index.sql
+lang/dropTable.sql
+lang/fk_nonSPS.sql
+lang/holdCursorIJ.sql
+lang/inbetween.sql
+lang/isolationLevels.sql
+lang/joinDeadlock.sql
+lang/lockTable.sql
+lang/lojreorder.sql
+lang/maxMemPerTab.java
+lang/nestedCommit.sql
+lang/openScans.sql
+lang/optimizerOverrides.sql
+lang/orderbyElimination.sql
+lang/outerjoin.sql
+lang/outparams.java
+lang/predicatePushdown.sql
+lang/predicatesIntoViews.sql
+lang/refActions.sql
+lang/refActions2.sql
+lang/refActions3.sql
+lang/reopenScan.sql
+lang/setOpPlan.sql
+lang/specjPlans.sql
+lang/triggerGeneral.sql
+lang/triggerRecursion.sql
+lang/triggerRefClause.sql
+lang/wisconsin.java
+
+// Now that GemFireXD throws syntax errors with expected tokens, these do not
+// match either
+// TODO : the whole harness should be removed from build, as SQL scripts
+// are now run via JUnit harness and few tests remain
+lang/LOBDB2compatibility.sql
+lang/subquery.sql
+lang/subquery2.sql
+lang/triggerBeforeTrig.sql

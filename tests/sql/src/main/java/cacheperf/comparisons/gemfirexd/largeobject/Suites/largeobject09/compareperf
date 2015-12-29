@@ -1,0 +1,37 @@
+#!/bin/sh
+
+echo "GFE AND GFXD"
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m -Dmode=ratio -DcompareByKey=true -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE -DaddTestKey=true \
+-DcompReportFile=gfe.v.gfxd.ratio.txt \
+perffmwk.PerfComparer \
+peerClient.gfe.noparnew peerClient.gfxd.noparnew peerClient.gfe peerClient.gfxd
+
+echo "GFE AND GFXD PERSIST"
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m -Dmode=ratio -DcompareByKey=true -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE -DaddTestKey=true \
+-DcompReportFile=gfe.v.gfxd.persist.ratio.txt \
+perffmwk.PerfComparer \
+peerClient.gfe.persist.noparnew peerClient.gfxd.persist.noparnew peerClient.gfe.persist peerClient.gfxd.persist
+
+echo "GFE AND GFXD NONPERSIST PERSIST (TO BUFFER)"
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m -Dmode=ratio -DcompareByKey=true -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE -DaddTestKey=true \
+-DcompReportFile=gfe.v.gfxd.nonpersist.v.persist.buf.ratio.txt \
+perffmwk.PerfComparer \
+peerClient.gfe.noparnew peerClient.gfxd.noparnew peerClient.gfe.persist.noparnew peerClient.gfxd.persist.noparnew
+
+echo "GFE AND GFXD NONPERSIST PERSIST RAW (TO BUFFER)"
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m -Dmode=raw -DcompareByKey=true -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE -DaddTestKey=true \
+-DcompReportFile=gfe.v.gfxd.nonpersist.v.persist.buf.raw.txt \
+perffmwk.PerfComparer \
+peerClient.gfe.noparnew peerClient.gfxd.noparnew peerClient.gfe.persist.noparnew peerClient.gfxd.persist.noparnew
+
+echo "GFE AND GFXD NONPERSIST PERSIST"
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m -Dmode=ratio -DcompareByKey=true -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE -DaddTestKey=true \
+-DcompReportFile=gfe.v.gfxd.nonpersist.v.persist.ratio.txt \
+perffmwk.PerfComparer \
+peerClient.gfe.noparnew.more peerClient.gfxd.noparnew.more peerClient.gfe.persist.noparnew.more peerClient.gfxd.persist.noparnew.more
+
+echo "GFE AND GFXD NONPERSIST PERSIST RAW"
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m -Dmode=raw -DcompareByKey=true -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE -DaddTestKey=true \
+-DcompReportFile=gfe.v.gfxd.nonpersist.v.persist.raw.txt \
+perffmwk.PerfComparer \
+peerClient.gfe.noparnew.more peerClient.gfxd.noparnew.more peerClient.gfe.persist.noparnew.more peerClient.gfxd.persist.noparnew.more

@@ -1,0 +1,22 @@
+<configuration>
+  <property>
+    <name>dfs.replication</name>
+    <value>${dfs.replication}</value>
+  </property>
+  <property>
+    <name>dfs.block.size</name>
+    <value>134217728</value>
+  </property>
+  <property>
+    <name>dfs.client.read.shortcircuit</name>
+    <value>true</value>
+  </property>
+  <property>
+    <name>dfs.block.local-path-access.user</name>
+    <value>${user}</value>
+  </property>
+  <property>
+    <name>dfs.domain.socket.path</name>
+    <value>/tmp/dn_socket</value>
+  </property>
+</configuration>

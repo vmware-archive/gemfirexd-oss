@@ -1,0 +1,42 @@
+// GemFire tests
+// GemFire tests use default values
+// LRU tests
+diskReg/serialDiskRegLRU.conf
+diskReg/serialOverflowLRU.conf
+diskReg/serialOverflowPersistenceLRU.conf
+diskReg/concDiskRegLRU.conf
+
+// MemLRU tests
+diskReg/serialDiskRegMemLRU.conf
+diskReg/serialOverflowMemLRU.conf
+diskReg/serialOverflowPersistenceMemLRU.conf
+diskReg/concDiskRegMemLRU.conf
+
+// Heap tests
+diskReg/concDiskRegHeap.conf
+
+// persistence with no overflow
+diskReg/serialPersistence.conf
+
+// mirroring - no disk & overflow only (MIRROR_KEYS)
+diskReg/diskRegMirrorKeysLRU.conf
+
+diskReg/diskRecovery.conf maxKeys=100 objectType=objects.ArrayOfByte
+diskReg/crashRecovery.conf maxKeys=100 objectType=objects.ArrayOfByte
+diskReg/shutdownRecovery.conf maxKeys=100 objectType=objects.ArrayOfByte
+diskReg/mirroredRecovery.conf maxKeys=100 objectType=objects.ArrayOfByte
+
+diskReg/diskRecovery.conf maxKeys=100 objectType=objects.NestedOrderVector
+diskReg/crashRecovery.conf maxKeys=100 objectType=objects.NestedOrderVector
+diskReg/shutdownRecovery.conf maxKeys=100 objectType=objects.NestedOrderVector
+diskReg/mirroredRecovery.conf maxKeys=100 objectType=objects.NestedOrderVector
+
+diskReg/diskOverflowRecovery.conf maxKeys=100 objectType=objects.ArrayOfByte
+diskReg/crashOverflowRecovery.conf maxKeys=100 objectType=objects.ArrayOfByte
+diskReg/shutdownOverflowRecovery.conf maxKeys=100 objectType=objects.ArrayOfByte
+diskReg/mirroredOverflowRecovery.conf maxKeys=100 objectType=objects.ArrayOfByte
+
+diskReg/diskOverflowRecovery.conf maxKeys=100 objectType=objects.NestedOrderVector
+diskReg/crashOverflowRecovery.conf maxKeys=100 objectType=objects.NestedOrderVector
+diskReg/shutdownOverflowRecovery.conf maxKeys=100 objectType=objects.NestedOrderVector
+diskReg/mirroredOverflowRecovery.conf maxKeys=100 objectType=objects.NestedOrderVector

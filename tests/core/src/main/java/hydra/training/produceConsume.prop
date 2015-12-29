@@ -1,0 +1,4 @@
+producer.vms=1
+consumer.vms=1
+producer.threads=2
+consumer.threads=2

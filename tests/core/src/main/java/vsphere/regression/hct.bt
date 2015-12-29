@@ -1,0 +1,80 @@
+
+hct/hierarchy.conf
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+      hc.serverMemSize = 350m
+      threadGroupsName=edgeInit
+/*hct/objects1.conf
+      bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+        hc.serverMemSize = 400m
+hct/objects2.conf
+      bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+        hc.serverMemSize = 400m*/
+hct/objects3.conf
+      bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+      hc.serverMemSize = 550m
+      threadGroupsName=edgeInit
+hct/bigbytearray.conf
+      bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+      hc.serverMemSize = 550m
+      threadGroupsName=edgeInit
+
+/*hct/failover1.conf
+      bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+        hc.serverMemSize = 300m*/
+hct/failover1.conf
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+      hc.serverMemSize = 300m
+      threadGroupsName=edgeInit
+/*hct/randomLB.conf
+      bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  1 edgeVMsPerHost   = 3 edgeThreadsPerVM   = 1
+        hc.serverMemSize = 350m*/
+hct/randomLB.conf
+      bridgeHosts =  4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+      hc.serverMemSize = 350m
+      threadGroupsName=edgeInit
+      
+// Comparisons to Bloomberg tests, but with Java clients
+hct/bloom-vm.conf  edgeThreadsPerVM = 40
+threadGroupsName=edgeInit
+//hct/bloom-vm.conf  edgeThreadsPerVM = 10
+
+// UniversalMembershipAdapterEvents
+hct/univServerMembership.conf
+      bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+      hc.serverMemSize = 300m
+      threadGroupsName=edgeInit
+hct/univClientMembership.conf
+      bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  3 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+      hc.serverMemSize = 300m
+      threadGroupsName=killTargets
+
+// bridgeMembership
+/*hct/clientMembership.conf
+      bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  3 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+        hc.serverMemSize = 300m
+hct/serverMembership.conf
+      bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+        hc.serverMemSize = 300m*/
+// this test is commented out -- still needs work on validation
+//hct/bridgeMembership.conf
+//      bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+//      edgeHosts   =  3 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+//        hc.serverMemSize = 300m
+
+//include $JTESTS/hct/multiDS/multiDS.bt
+hct/multiDS/multiDS.conf
+threadGroupsName=edge
+

@@ -1,0 +1,24 @@
+// client/server /backward compatibility tests (with caching clients)
+hct/backwardCompatibility/backwardCompatibilityRR.conf
+       bridgeHosts=2 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+       edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=2
+       version1=default   version2=651  version3=664  version4=700
+
+hct/backwardCompatibility/backwardCompatibilityPR.conf
+       bridgeHosts=2 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+       edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=2
+       redundantCopies=1
+       version1=default   version2=651  version3=664  version4=700
+      
+// client/server /backward compatibility tests (with empty clients)
+hct/backwardCompatibility/backwardCompatibilityRRandEmptyClients.conf
+       bridgeHosts=2 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+       edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=2
+       version1=default   version2=651  version3=664  version4=700
+
+hct/backwardCompatibility/backwardCompatibilityPRandEmptyClients.conf
+       bridgeHosts=2 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+       edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=2
+       redundantCopies=1
+       version1=default   version2=651  version3=664  version4=700
+

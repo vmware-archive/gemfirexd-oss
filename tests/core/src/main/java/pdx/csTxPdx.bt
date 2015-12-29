@@ -1,0 +1,26 @@
+pdx/csTx/serialParRegBridgeCsTxPdx.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   redundantCopies=0,1,3 numAccessors=1 numEmptyClients=1 numThinClients=0
+pdx/csTx/concParRegBridgeCsTxPdx.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   bridgeOrderingWorkaround=uniqueKeys
+   redundantCopies=0,1,3 numAccessors=1 numEmptyClients=1 numThinClients=0
+pdx/csTx/serialParRegHABridgeCsTxPdx.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   redundantCopies=1,3 numVMsToStop=unused
+   numAccessors=1 numEmptyClients=1 numThinClients=0
+pdx/csTx/concParRegHABridgeCsTxPdx.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=1,3 numVMsToStop=unused
+   numAccessors=1 numEmptyClients=1 numThinClients=0
+
+pdx/csTx/hctFuncExecWOCustomPartitionPdx.conf
+   edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=1000 byteArraySize=500 redundancy=1
+   redundantCopies=0,1,3
+

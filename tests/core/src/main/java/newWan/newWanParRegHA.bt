@@ -1,0 +1,86 @@
+//serial
+parReg/newWan/serial/p2pKill.conf
+    wanSites = 2,3,4 maxOps=15000 resultWaitSec=600 redundantCopies=2
+    peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5 
+        
+parReg/newWan/serial/persistence/p2pKillPersist.conf
+    wanSites = 2,3,4 maxOps=15000 resultWaitSec=600 redundantCopies = 2
+    peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5   
+    
+parReg/newWan/serial/colocation/p2pKillParRegColocation.conf
+    wanSites = 2,3,4 maxOps=15000 resultWaitSec=600 redundantCopies = 2
+    peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+
+parReg/newWan/serial/colocation/p2pKillParRegColocationPersist.conf
+    wanSites = 2,3,4 maxOps=15000 resultWaitSec=600
+    peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+    
+parReg/newWan/serial/hctKill.conf
+    wanSites = 2,3,4 maxOps=15000 resultWaitSec=600
+    bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+    edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+                
+parReg/newWan/serial/persistence/hctKillPersist.conf
+    wanSites = 2,3,4 maxOps=300 resultWaitSec=600
+    bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+    edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+    
+parReg/newWan/serial/colocation/hctKillParRegColocation.conf
+    wanSites = 2,3,4 maxOps=300 resultWaitSec=600
+    bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+    edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+      
+parReg/newWan/serial/colocation/hctKillParRegColocationPersist.conf
+    wanSites = 2,3,4 maxOps=15000 resultWaitSec=600
+    bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+    edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+    
+parReg/newWan/serial/colocation/p2pKillParRegNonColocation.conf
+    wanSites = 2,3,4 maxOps=15000 resultWaitSec=600 redundantCopies = 2
+    peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+
+//parallel
+parReg/newWan/parallel/p2pKill.conf
+    wanSites = 2,3,4 maxOps=15000 resultWaitSec=600 redundantCopies = 2
+    peerHostsPerSite = 5 peerVMsPerHost = 1  peerThreadsPerVM = 5 
+           
+parReg/newWan/parallel/persistence/p2pKillPersist.conf
+    wanSites = 2,3,4 maxOps=15000 resultWaitSec=600 redundantCopies = 2
+    peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5 
+        
+parReg/newWan/parallel/colocation/p2pKillParRegColocation.conf
+    wanSites = 2,3,4 maxOps=15000 resultWaitSec=600 redundantCopies = 2
+    peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+             
+parReg/newWan/parallel/colocation/p2pKillParRegColocationPersist.conf
+    wanSites = 2,3,4 maxOps=15000 resultWaitSec=600 redundantCopies = 2
+    peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+
+parReg/newWan/parallel/colocation/p2pKillColocationOnlyParentRegion.conf
+    wanSites = 2,3,4 maxOps=15000 resultWaitSec=600 redundantCopies = 2
+    peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 3
+    
+parReg/newWan/parallel/hctKill.conf
+    wanSites = 2,3,4 maxOps=15000 resultWaitSec=600
+    bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+    edgeHostsPerSite = 4 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+               
+parReg/newWan/parallel/persistence/hctKillPersist.conf
+    wanSites = 2,3,4 maxOps=15000 resultWaitSec=600
+    bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+    edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/parallel/colocation/hctKillParRegColocation.conf
+    wanSites = 2,3,4 maxOps=15000 resultWaitSec=600   
+    bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+    edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/parallel/colocation/hctKillParRegColocationPersist.conf
+    wanSites = 2,3,4 maxOps=15000 resultWaitSec=600
+    bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+    edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+    
+parReg/newWan/parallel/colocation/p2pKillParRegNonColocation.conf
+    wanSites = 2,3,4 maxOps=15000 resultWaitSec=600 redundantCopies = 2
+    peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+

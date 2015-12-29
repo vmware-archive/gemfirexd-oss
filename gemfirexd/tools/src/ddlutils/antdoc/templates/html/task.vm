@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+##
+## Licensed to the Apache Software Foundation (ASF) under one
+## or more contributor license agreements.  See the NOTICE file
+## distributed with this work for additional information
+## regarding copyright ownership.  The ASF licenses this file
+## to you under the Apache License, Version 2.0 (the
+## "License"); you may not use this file except in compliance
+## with the License.  You may obtain a copy of the License at
+##
+##   http://www.apache.org/licenses/LICENSE-2.0
+##
+## Unless required by applicable law or agreed to in writing,
+## software distributed under the License is distributed on an
+## "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+## KIND, either express or implied.  See the License for the
+## specific language governing permissions and limitations
+## under the License.
+##
+##
+## This is a Velocity template for generating an HTML
+## document describing an Ant Task/Type 
+## 
+## Objects expected in context:
+##
+##     $taskDoc - Describes an Ant Task/Type (of type AntDoc)
+##
+## 
+<html>
+<head>
+<title>$taskDoc.getAntName()</title>
+<link href="styles.css" type="text/css" rel="stylesheet">
+</head>
+<body>
+<h2>#if ($taskDoc.getAnyCategory().length() > 0) $!taskDoc.getAntCategory() : #end $taskDoc.getAntName()</h2>
+<fieldset class="taskDescription">
+<legend><a class="anchor" name="description">Description</a></legend>
+<p>Java type: <a href="../api/${taskDoc.getFullClassName().replace(".", "/")}.html"><code>$taskDoc.getFullClassName()</code></a></p>
+<p>$taskDoc.getComment()</p>
+</fieldset>
+<fieldset class="taskParameters">
+<legend><a class="anchor" name="parameters">Parameters</a></legend>
+#foreach ($attr in $taskDoc.attributes )
+  #if ($velocityCount > 1) <div class="taskParameterSeparator"></div> #end
+	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-$attr">$attr</a> : $taskDoc.getAttributeType($attr)
+  #if ($taskDoc.getAttributeRequired($attr)) <span class="requiredInfo">(required)</span> #end
+	</p>
+	<p class="taskParameterDescription">
+	$taskDoc.getAttributeComment($attr) <br/>
+  #if ($taskDoc.getAttributeRequired($attr))
+      $taskDoc.getAttributeRequired($attr)
+  #elseif ($taskDoc.getAttributeNotRequired($attr))
+      $taskDoc.getAttributeNotRequired($attr)
+  #end
+	</p>
+#end
+</fieldset>
+<fieldset class="taskNestedElements">
+<legend><a class="anchor" name="nestedElements">Nested elements</a></legend>
+#if ($taskDoc.isTaskContainer())
+<p>This Task is a Container (it accepts nested Tasks).</p>
+#end
+#if ($taskDoc.supportsCharacters())
+<p>This Task accepts text in its element body.</p>
+#end
+#set ($hasExternalRefs = false)
+#foreach ($element in $taskDoc.getNestedElements())
+  #set ($elementDoc = $taskDoc.getElementDoc($element))
+  #if ($elementDoc.getAntName() == 'FileSet')
+    #set ($hasExternalRefs = true)
+	<p class="taskNestedElementExternalRef">&rArr;&nbsp;<a href="http://ant.apache.org/manual/CoreTypes/fileset.html">Ant's <code>fileset</code> type</a></p>
+  #elseif ($elementDoc.getAntName() == 'BasicDataSource')
+    #set ($hasExternalRefs = true)
+	<p class="taskNestedElementExternalRef">&rArr;&nbsp;<a href="http://jakarta.apache.org/commons/dbcp/apidocs/org/apache/commons/dbcp/BasicDataSource.html"><code>$element</code> (an object of type <code>org.apache.commons.dbcp.BasicDataSource</code>)</a></p>
+  #end
+#end
+#if ($hasExternalRefs)
+<div class="taskNestedElementSeparator"></div>
+#end
+#foreach ($element in $taskDoc.getNestedElements())
+  #set ($elementDoc = $taskDoc.getElementDoc($element))
+  #if ($elementDoc.sourceIncluded() && $elementDoc.isTagged())
+	<p class="taskNestedElementRef">&rArr;&nbsp;<a href="${elementDoc.getFullClassName()}.html"><code>$element</code></a></p>
+  #end
+#end
+</fieldset>
+<p>&copy;2005-2007 Apache Software Foundation</p>
+</body>
+</html>

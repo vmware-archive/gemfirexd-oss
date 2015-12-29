@@ -1,0 +1,8 @@
+cacheperf/gemfire/miss/miss.conf
+  A = data  B = miss
+  dataHosts = 1,2,4 dataVMsPerHost = 1 dataThreadsPerVM = 1
+  missHosts = 2,4,8 missVMsPerHost = 2 missThreadsPerVM = 5
+  scope = noack, ack, global
+  dataSize = 1000, 10000
+  dataPolicy = normal, replicate // also need partitioned
+  perffmwk.comparisonKey = fromProps

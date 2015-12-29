@@ -1,0 +1,24 @@
+#===============================================================================
+#  TEST CONFIGURATION VARIABLES
+#===============================================================================
+
+  hydra.numHosts = 2
+  # see hydraconfig/systemparamsN.inc (number of hosts)
+
+  scope = distributedAck
+  # see distcache.gemfire.GemFireCachePrms-scope
+
+  trimIterations = 50000
+  # see cacheperf.CachePerfPrms-trimIterations
+
+  workIterations = 200000
+  # see cacheperf.CachePerfPrms-workIterations
+
+  batchSize = 5000
+  # see cacheperf.CachePerfPrms-batchSize
+
+  validateObjects = true
+  # see cacheperf.CachePerfPrms-validateObjects
+
+  objectType = objects.ArrayOfByte
+  # see cacheperf.CachePerfPrms-objectType

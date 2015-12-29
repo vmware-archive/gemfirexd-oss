@@ -1,0 +1,86 @@
+//serial sender with replicated and dynamic regions
+newWan/serial/splitBrain/mlRio.conf
+       wanSites=2
+       locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite = 2 bridgeVMsPerHost=1 bridgeThreadsPerVM = 1
+       edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=4
+       numRootRegions = 3  numDynamicRegions = 3 
+
+newWan/serial/splitBrain/serialOpsMLRio.conf
+       wanSites=2
+       locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite = 2 bridgeVMsPerHost=1 bridgeThreadsPerVM = 1
+       edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=4
+       numRootRegions = 1 numDynamicRegions = 1
+
+newWan/serial/splitBrain/mlRioSequentialKeys.conf
+       wanSites=2
+       locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1 
+       bridgeHostsPerSite = 2 bridgeVMsPerHost=1 bridgeThreadsPerVM = 1 
+       edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+       numRootRegions = 3  numDynamicRegions = 3 
+
+newWan/serial/splitBrain/mlRioWithConflation.conf
+       wanSites=2
+       locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1 
+       bridgeHostsPerSite = 2 bridgeVMsPerHost=1 bridgeThreadsPerVM = 1 
+       edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+       numRootRegions = 3  numDynamicRegions = 3 
+
+//serial sender with partitioned region
+parReg/newWan/serial/splitBrain/mlRio.conf
+       wanSites=2
+       locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite = 2 bridgeVMsPerHost=1 bridgeThreadsPerVM = 1
+       edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=4
+       numRootRegions = 3  numDynamicRegions = 0 
+
+parReg/newWan/serial/splitBrain/serialOpsMLRio.conf
+       wanSites=2
+       locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite = 2 bridgeVMsPerHost=1 bridgeThreadsPerVM = 1
+       edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=4
+       numRootRegions = 1 numDynamicRegions = 0
+
+parReg/newWan/serial/splitBrain/mlRioSequentialKeys.conf
+       wanSites=2
+       locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1 
+       bridgeHostsPerSite = 2 bridgeVMsPerHost=1 bridgeThreadsPerVM = 1 
+       edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+       numRootRegions = 3  numDynamicRegions = 0 
+
+parReg/newWan/serial/splitBrain/mlRioWithConflation.conf
+       wanSites=2
+       locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1 
+       bridgeHostsPerSite = 2 bridgeVMsPerHost=1 bridgeThreadsPerVM = 1 
+       edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+       numRootRegions = 3  numDynamicRegions = 0 
+
+//parallel sender with partitioned region
+parReg/newWan/parallel/splitBrain/mlRio.conf
+       wanSites=2
+       locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite = 2 bridgeVMsPerHost=1 bridgeThreadsPerVM = 1
+       edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=4
+       numRootRegions = 1  numDynamicRegions = 0 
+
+parReg/newWan/parallel/splitBrain/serialOpsMLRio.conf
+       wanSites=2
+       locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite = 2 bridgeVMsPerHost=1 bridgeThreadsPerVM = 1
+       edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=4
+       numRootRegions = 1 numDynamicRegions = 0
+
+parReg/newWan/parallel/splitBrain/mlRioSequentialKeys.conf
+       wanSites=2
+       locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1 
+       bridgeHostsPerSite = 2 bridgeVMsPerHost=1 bridgeThreadsPerVM = 1 
+       edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+       numRootRegions = 1  numDynamicRegions = 0 
+
+parReg/newWan/parallel/splitBrain/mlRioWithConflation.conf
+       wanSites=2
+       locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1 
+       bridgeHostsPerSite = 2 bridgeVMsPerHost=1 bridgeThreadsPerVM = 1 
+       edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+       numRootRegions = 1  numDynamicRegions = 0 

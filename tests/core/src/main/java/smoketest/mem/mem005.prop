@@ -1,0 +1,18 @@
+locatorHosts        = 1
+locatorVMsPerHost   = 1
+locatorThreadsPerVM = 1
+A = putter
+B = watcher
+putterHosts        = 1
+putterVMsPerHost   = 1
+putterThreadsPerVM = 1
+watcherHosts        = 1
+watcherVMsPerHost   = 1
+watcherThreadsPerVM = 1
+statisticsEnabled=false
+numberOfEntries=50000
+sampleInterval=50000
+dataPolicy=replicate
+scope=global
+
+perffmwk.comparisonKey = mem005

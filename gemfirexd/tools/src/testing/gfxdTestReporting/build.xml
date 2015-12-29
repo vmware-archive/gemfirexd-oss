@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. -->
+<project basedir="." default="build" name="gfxdTestReporting">
+    <property environment="env"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.6"/>
+    <property name="source" value="1.6"/>
+    <property name="outdir" value="./buildout"/>
+    <property name="outclassesdir" value="${outdir}/classes"/>
+    <property name="outjarsdir" value="${outdir}/jars"/>
+    <property name="outjar" value="${outjarsdir}/GFXDReport.jar"/>
+    <path id="gfxdTestReporting.classpath">
+        <pathelement location="bin/gfxdTestReportingBin"/>
+        <pathelement location="../../../../../../commons-io-2.0.1/commons-io-2.0.1.jar"/>
+    </path>
+    <target name="init">
+        <mkdir dir="${outclassesdir}"/>
+        <mkdir dir="${outjarsdir}"/>
+        <copy includeemptydirs="false" todir="${outdir}">
+            <fileset dir="src">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="${outdir}"/>
+    </target>
+    <target depends="init" name="build">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="${outclassesdir}" source="${source}" target="${target}">
+            <src path="src"/>
+            <classpath refid="gfxdTestReporting.classpath"/>
+        </javac>
+        <delete file="${outjar}" />
+        <jar basedir="${outclassesdir}" destfile="${outjar}" >
+          <manifest>
+            <attribute name="Main-Class"
+                   value="s2qa.GFXDReport"/>
+          </manifest>
+        </jar>
+    </target>
+</project>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  This is the Ant build file for building the GemFire Security Examples. 
+  It was tested with Ant 1.6.2, but should work (possibly with slight modifications) on any version of Ant.
+
+  How to build:
+    Preform basic ant setup: 
+      confirm javac is in your PATH
+      set JAVA_HOME to match
+      confirm ant is in your PATH**
+    Run the actual targets:
+      ant clean build jar
+  **This build file is incompatable with versions of ant compiled using gcj, instead of calling "ant build" instead use "classic-ant build"
+-->
+
+<project default="usage" name="gemfireSecuritySamples">
+  <description>Builds GemFire Security Examples</description>
+
+  <target depends="usage" name="help"/> 
+
+  <target name="usage">
+    <description>Prints information about what can be built</description>
+
+
+    <echo>
+targets:
+  clean                Deletes the &#36;&#123;output.dir&#125;
+  build                Builds all GemFire template code
+  jar                  Builds a jar of the GemFire template code
+  usage (or help)      Prints this help information
+
+Command Line Defines:
+  -Dgemfire.build.dir=&lt;path&gt;  Specify where output files should be stored 
+                              Default is the current directory.
+  -Dgemfire.jar=&lt;path&gt;        Specify the path to the gemfire.jar  
+                              Default is "../../lib/gemfire.jar" 
+    </echo>
+  </target>
+
+  <target depends="" name="-init"> 
+    <property name="gemfire.build.dir" location="${basedir}/build-artifacts"/>
+    <property name="gemfire.artifacts" 
+      location="${gemfire.build.dir}/build-artifacts"/>
+    <property name="gemfire.jar" location="../../lib/gemfire.jar"/>
+    <property name="gemfire.template.jar" 
+      location="${gemfire.artifacts}/gfSecurityImpl.jar"/>
+  </target>
+
+  <target depends="-init" name="clean"> 
+    <description>Deletes the artifacts from a previous build.</description>
+    <delete dir="${gemfire.artifacts}" quiet="true"/>
+  </target>
+
+  <target depends="-init" name="build"> 
+    <mkdir dir="${gemfire.artifacts}"/>
+    <javac debug="on" deprecation="true" destdir="${gemfire.artifacts}" 
+      includeAntRuntime="false" nowarn="off" optimize="off" 
+      srcdir="${basedir}" verbose="off">
+      <classpath>
+        <pathelement location="${gemfire.jar}"/>
+      </classpath>
+      <include name="**/*.java"/>
+    </javac>
+  </target>
+
+  <target depends="-init, build" name="jar"> 
+    <jar destfile="${gemfire.template.jar}">
+      <fileset dir="${gemfire.artifacts}" includes="templates/security/**/*.class"/>
+    </jar>
+  </target>
+</project>

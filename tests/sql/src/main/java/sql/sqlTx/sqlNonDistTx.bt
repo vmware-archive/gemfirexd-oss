@@ -1,0 +1,68 @@
+sql/sqlTx/singleServerTxWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=1 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=3 accessorThreadsPerVM=3
+
+sql/sqlTx/concTxUniqWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=2 storeThreadsPerVM=2
+    B=accessor accessorHosts=1 accessorVMsPerHost=3 accessorThreadsPerVM=3
+  
+sql/sqlTx/partitionByRangeTxWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=6 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=3 accessorThreadsPerVM=6
+    workIterationsPerThread=600
+    
+sql/sqlTx/partitionByListTxWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=4 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=3 accessorThreadsPerVM=6
+    workIterationsPerThread=600
+
+sql/sqlTx/partitionByRangeTxWithAccessorsGFXDOnly.conf
+    A=store storeHosts=1 storeVMsPerHost=6 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=3 accessorThreadsPerVM=6
+
+sql/sqlTx/partitionByListTxWithAccessorsGFXDOnly.conf
+    A=store storeHosts=1 storeVMsPerHost=4 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=3 accessorThreadsPerVM=6
+    
+sql/sqlTx/partitionByRangeSingleOpTxWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=6 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=3 accessorThreadsPerVM=6
+    redundantCopies=2
+    workIterationsPerThread=1000
+    
+sql/sqlTx/partitionByListSingleOpTxWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=4 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=3 accessorThreadsPerVM=6
+    redundantCopies=2
+    workIterationsPerThread=1000
+
+sql/sqlTx/partitionByRangeSingleOpTxWithAccessorsGFXDOnly.conf
+    A=store storeHosts=1 storeVMsPerHost=6 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=3 accessorThreadsPerVM=6
+
+sql/sqlTx/partitionByListSingleOpTxWithAccessorsGFXDOnly.conf
+    A=store storeHosts=1 storeVMsPerHost=4 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=3 accessorThreadsPerVM=6
+    
+sql/sqlTx/partitionByRangeSingleOpMultiRowsTxWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=6 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=3 accessorThreadsPerVM=6
+    redundantCopies=2
+    workIterationsPerThread=1000
+    
+sql/sqlTx/partitionByListSingleOpMultiRowsTxWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=4 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=3 accessorThreadsPerVM=6
+    redundantCopies=2
+    workIterationsPerThread=1000
+    
+sql/sqlTx/partitionByListSingleOpTxThreeTablesWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=4 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=3 accessorThreadsPerVM=6
+    redundantCopies=2
+    workIterationsPerThread=1000
+    
+sql/sqlTx/partitionByListTxThreeTablesWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=4 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=3 accessorThreadsPerVM=6
+    workIterationsPerThread=600

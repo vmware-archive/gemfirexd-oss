@@ -1,0 +1,12 @@
+compatibility/concParRegCompatibilityPutAll.conf 
+ peerHosts=3 peerVMsPerHost=3 peerThreadsPerVM=2
+ redundantCopies=1
+ oldVersion=700
+ 
+compatibility/concEntryEventPutAllVersionCompatibility.conf
+oldVersion = 700
+
+compatibility/concParRegPersistCompatibilityPutAll.conf 
+ peerHosts=3 peerVMsPerHost=3 peerThreadsPerVM=2
+ redundantCopies=1
+ oldVersion=700

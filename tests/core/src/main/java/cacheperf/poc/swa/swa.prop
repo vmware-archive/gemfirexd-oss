@@ -1,0 +1,17 @@
+locatorHosts = 2
+locatorVMsPerHost = 1
+locatorThreadsPerVM = 1
+
+bridgeHosts = 4
+bridgeVMsPerHost = 1
+bridgeThreadsPerVM = 1
+
+edgeHosts = 4
+edgeVMsPerHost = 1
+edgeThreadsPerVM = 200
+
+heapMB = 5400
+maxKeys = 10000000
+objectSize = 200
+
+version = default

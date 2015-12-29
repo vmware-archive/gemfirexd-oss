@@ -1,0 +1,45 @@
+cacheperf/gemfire/morgan/addMember.conf
+  hydra.numHosts = 1, 2, 4, 6
+
+cacheperf/gemfire/morgan/getLocal.conf
+  dataSize = 1024, 2048, 10240
+
+cacheperf/gemfire/morgan/putLocal.conf
+  dataSize = 1024, 2048, 10240
+
+cacheperf/gemfire/morgan/putReplicated.conf
+  hydra.numHosts = 2, 4, 6
+  dataSize = 1024, 2048, 10240
+
+cacheperf/gemfire/morgan/putNotify.conf
+  hydra.numHosts = 2, 4, 6
+  dataSize = 1024, 2048, 10240
+
+cacheperf/gemfire/morgan/getRemote.conf
+  hydra.numHosts = 2, 4, 6
+  dataSize = 1024, 2048, 10240
+  maxKeys = 100000
+
+cacheperf/gemfire/morgan/getLocal.conf
+  dataSize = 10485760
+  maxKeys = 125
+
+cacheperf/gemfire/morgan/putLocal.conf
+  dataSize = 10485760
+  maxKeys = 125
+
+cacheperf/gemfire/morgan/putReplicated.conf
+  hydra.numHosts = 2, 4, 6
+  dataSize = 10485760
+  maxKeys = 125
+
+cacheperf/gemfire/morgan/putNotify.conf
+  hydra.numHosts = 2, 4, 6
+  dataSize = 10485760
+  maxKeys = 125
+
+cacheperf/gemfire/morgan/getRemote.conf
+  hydra.numHosts = 2, 4, 6
+  dataSize = 10485760
+  maxKeys = 125
+

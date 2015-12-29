@@ -1,0 +1,28 @@
+
+//////////////////////////////
+// How To Scale system      //
+//////////////////////////////
+
+// managed_1_Hosts is number of cache-servers in the system
+// managed_2_Hosts is number of peers in the system
+// edge_Hosts is number of gemfire clients
+// locator_managing_Hosts is number of locator (also dedicated managers)
+// managing_1_Hosts is number of managers (also dedicated managers)
+// jmxIterations is number of times to iterate. One iteration roughly lasts 1 second
+
+// No need to change other parameters
+
+//Region Created : Tests creates following kind of regions in cacheserver, peers and clients
+// Replicated, ReplicatedNoAck, Partition, Persistent Partition, ReplicatedPartition
+
+// Registers 5 CQs per cacheserver
+// 5 DLCOK services per managed vm
+
+management/test/jmx/pulse.conf 
+    managed_1_Hosts = 2 managed_1_VMsPerHost = 1 managed_1_ThreadsPerVM = 2
+	managed_2_Hosts = 2 managed_2_VMsPerHost = 1 managed_2_ThreadsPerVM = 2
+	locator_managing_Hosts = 2 locator_managing_VMsPerHost = 1 locator_managing_ThreadsPerVM = 3
+	managing_1_Hosts = 2 managing_1_VMsPerHost = 1 managing_1_ThreadsPerVM = 2
+	edge_Hosts = 5 edge_VMsPerHost = 1 edge_ThreadsPerVM = 2
+	jmxIterations = 300 duration = 600
+	

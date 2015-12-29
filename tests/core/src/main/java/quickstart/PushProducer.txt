@@ -1,0 +1,17 @@
+
+Connecting to the distributed system and creating the cache.
+Example region, /exampleRegion, created in cache. 
+Putting entry: key0, value0
+Putting entry: key1, value1
+Putting entry: key2, value2
+Putting entry: key3, value3
+Putting entry: key4, value4
+Putting entry: key0, value100
+Putting entry: key1, value101
+Putting entry: key2, value102
+Putting entry: key3, value103
+Putting entry: key4, value104
+
+Closing the cache and disconnecting.
+
+Please press Enter in the PushConsumer.

@@ -1,0 +1,85 @@
+//------------------------------------------------------------------------------
+// Run these tests on IPv6-enabled hosts (see ipv6.txt) using: 
+//
+//      local.ipv6.conf
+//
+// WARNING: Do not add multicast tests to this suite until I.S. gives the OK
+//
+//------------------------------------------------------------------------------
+
+// useCase13Scenarios 
+useCase13Scenarios/killPrimarySteady.conf trimIterations=5000 workIterations=20000
+
+// diskReg
+diskReg/serialOverflowMemLRU.conf
+diskReg/crashOverflowRecovery.conf maxKeys=100 objectType=objects.ArrayOfByte
+
+// tx tests
+//disable for #44146
+//tx/event/serialEntryEvent.conf
+//tx/distSerialView.conf
+
+// expiration
+expiration/entryExpirActionVMReg.conf hydra.numHosts = 6
+
+// capCon
+capCon/concMemLRUTest.conf hydra.numHosts = 1 vmQuantities = 10 vmThreads = 5 
+
+// event
+event/concRegionEvent.conf
+
+// admin
+admin/concRegion.conf hydra.numHosts=3 vmQuantities=2
+admin/jmxAdminCache.conf
+admin/systemMemberCacheListener.conf
+
+dlock/unlockperf.conf hydra.numHosts = 2 vmQuantities = 4
+dlock/multiBeGrantor.conf
+
+// getInitialImage
+getInitialImage/giiCacheLoader.conf
+
+//hct
+/*commenting out for Cheetah release
+hct/univServerMembership.conf
+      bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+        hc.serverMemSize = 300m */
+
+//wan
+wan/p2p.conf wanSites=3 clientVmsPerSite=3 clientThreadsPerVm=2
+/*commenting out for Cheetah release
+wan/hct.conf wanSites=3 clientVmsPerSite=3 clientThreadsPerVm=2*/
+
+//cq
+/*commenting out for Cheetah release
+cq/concCQBridgePR.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=5 */
+
+//parReg
+parReg/concParReg.conf peerHosts=3 peerVMsPerHost=3 peerThreadsPerVM=10 redundantCopies=0
+
+//durableClients
+/*commenting out for Cheetah release
+durableClients/durableClientsEventValidationAllKeys.conf
+   A = bridge  bridgeHosts =  7 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+   B = feed    feedHosts   =  1 feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+   C = edge    edgeHosts   =  5 edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+   hc.nPutThreads=3 hc.nPutKeyRange=3
+
+//security
+security/LocatorAsGcTest.conf
+A = locatorA  locatorAHosts =  1 locatorAVMsPerHost = 1  locatorAThreadsPerVM = 1
+B = locatorB  locatorBHosts =  1 locatorBVMsPerHost = 1  locatorBThreadsPerVM = 1
+C = validBridge    validBridgeHosts   =  4 validBridgeVMsPerHost   = 1  validBridgeThreadsPerVM   = 1
+D = invalidBridge    invalidBridgeHosts   =  2 invalidBridgeVMsPerHost   = 1  invalidBridgeThreadsPerVM   = 1
+E = edge    edgeHosts   =  5 edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1 */
+
+security/wan_p2p.conf
+validWanSites=3 invalidWanSites=3 locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1 bridgeHostsPerSite=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHostsPerSite=1 edgeVMsPerHost=1 edgeThreadsPerVM=1 peerMem = 256m
+
+/*commenting out for Cheetah release
+security/wan_hct.conf
+validWanSites=3 invalidWanSites=3 locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1 bridgeHostsPerSite=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHostsPerSite=1 edgeVMsPerHost=2 edgeThreadsPerVM=1 peerMem = 256m
+*/

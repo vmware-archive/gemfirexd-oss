@@ -1,0 +1,17 @@
+A = pub
+pubHosts        = 1
+pubVMsPerHost   = 1
+pubThreadsPerVM = 2
+B = data
+dataHosts          = 1
+dataVMsPerHost     = 1
+dataThreadsPerVM   = 1
+
+conserveSockets = true
+
+# about 975 bytes
+dataWidth = 2
+dataDepth = 3
+dataSize = unused
+
+perffmwk.comparisonKey = perf058

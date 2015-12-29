@@ -1,0 +1,9 @@
+Modestly scaled query suite for GFXD using the Sector schema with no redundant copies for partitioned tables.  Runs with result size 1 and 3.
+
+Used to compare one build/alpha/release to another.
+
+Can also be used to compare peer and thin clients, but that is done elsewhere.
+
+Note that GFE and GFXD are non-transactional, while MYSQLC is read-uncommitted.
+
+This suite should be obsoleted once there are good regression numbers using sector01.

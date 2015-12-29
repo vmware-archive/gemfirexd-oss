@@ -1,0 +1,18 @@
+# do not change wanSites. Test is configured to use 3 sites.
+wanSites = 3 
+
+locatorHostsPerSite = 1
+locatorVMsPerHost = 1
+locatorThreadsPerVM = 1
+
+peerHostsPerSite = 2
+peerVMsPerHost = 1
+peerThreadsPerVM = 1
+
+# memory for peers
+peerMem = 256m
+
+# Set version1 and version2 to 7.0 or above, and version3 to 6.5 or below 
+version1 = default
+version2 = default
+version3 = 651

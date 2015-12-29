@@ -1,0 +1,14 @@
+#!/bin/sh
+
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m \
+  -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE \
+  -DomitFailedTests=true -DaddTestKey=true -DcompareByKey=true \
+  -Dmode=raw -DcompReportFile=benchmark.raw.txt \
+  -DgenerateCSVFile=true -DcsvFile=benchmark.csv \
+  perffmwk.PerfComparer benchmark.gfxd
+
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m \
+  -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE \
+  -DomitFailedTests=true -DaddTestKey=true -DcompareByKey=true \
+  -Dmode=ratio -DcompReportFile=benchmark.ratio.txt \
+  perffmwk.PerfComparer benchmark.gfxd

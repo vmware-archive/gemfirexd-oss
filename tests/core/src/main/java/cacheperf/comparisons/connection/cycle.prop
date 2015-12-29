@@ -1,0 +1,14 @@
+A = prOne
+prOneHosts = 1
+prOneVMsPerHost = 1
+prOneThreadsPerVM = 1
+
+B = prTwo
+prTwoHosts = 1
+prTwoVMsPerHost = 1
+prTwoThreadsPerVM = 1
+
+handshakePoolSize = 2
+restartWaitSec = 60
+sleepSec = 120
+workSeconds = 900

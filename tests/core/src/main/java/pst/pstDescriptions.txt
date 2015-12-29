@@ -1,0 +1,112 @@
+Pst results are checked in to the cvs repository performanceJ.
+
+------------------------------------------------------------------------
+PST0  useCase17 PUTS with LISTENER tests
+                                                                                
+Description:
+For a configurable number of publisher and subscriber hosts (running
+in separate VMs) and scope=distributedNoAck, cache listeners
+in the Subscriber processes update events produced by the
+Publisher.  Cache entries consist of stringified int keys and timestamped
+messages with an optional 1K string payload encoded with the key.
+Publishers update values at random keys in their own dataset at a
+configurable rate.  Puts throughput and Update latency are measured.
+
+Goal:  No regression from previous release(s)
+                                                                                
+------------------------------------------------------------------------
+PST4  MIRRORING Perf Tests
+
+Description: Test performs puts on VM Regions with mirroring = keysValues for
+scope = distributedAck, distributedNoAck and global.  Tests vary the number
+of hosts (2, 4) and the number of VMs per host (1, 2) with 40 threads per VM.  
+Uses medium-sized objects that involve an object graph totaling about 1K in 
+size.  
+       
+Goal:  No regression from previous release(s).
+
+------------------------------------------------------------------------
+PST5  NET SEARCH Perf Test
+
+Description:
+Distribute data across several nodes (4-8) with one cache per
+node. Each cache can be a pure Java cache. Data is in a DISTR_NO_ACK
+region with each node creating a portion of the data. Aim for a large
+object count (1000000) across all the caches. Object should be some
+serializable with some nesting that is at least 500 bytes in
+serialized form. Perf test from a new client that fetches these
+objects concurrently from 40 threads. All data access have to be
+misses. Measure the usual.
+
+Goal: get performance should average 2ms or less with 4 nodes.
+
+------------------------------------------------------------------------
+PST6  Consistent Performance (with significant concurrent eviction)
+
+Description: 
+We need to prove that GemFire can provide linear performance when
+accessing objects in the cache even when the evictor
+(LRU/TTL/IdleTime) is very busy removing cached objects. Specifically,
+GemFire by itself should not be the cause for introducing large pauses
+in the application. So, for instance, if the fetch response time goes
+from 3 ms to 100 ms for even a few fetches it is not acceptable to the
+customer (especially someone like Bloomberg that have to ensure a very
+high quality of service when it comes to application
+responsiveness). ;; Assume a back-end database to be significantly
+larger than the memory resource available for caching. The test
+application should be multi-threaded (30 concurrent threads) executing
+on at least 2 nodes. The client fetches data from a single region with
+DISTR_NO_ACK. The data arrives into the cache from a data loader
+configured in all cache instances. The loader typically fetches data
+from a RDB (simulate this). Cache entry is a 5K BLOB. Application
+usecase should involve constant misses (70% or more).  Test with VM regions;
+Use dual CPU Xeon machines for the test.  Use standard 100Mbit ethernet.
+
+Goal:  All get times should be 100 ms or less
+
+------------------------------------------------------------------------
+PST7  Jcache perf Tests
+
+Description: 
+Test puts, cache hits, and cache misses in the following scenarios:
+. GemFire global scope with and without mirroring
+. GemFire scope distributed no ack with and without mirroring
+. GemFire scope distributed ack with and without mirroring
+Run 1, 2, and 4 nodes.  Run 1 and 2 VMs per node.  Run 40 threads per
+VM.  Use arrays of bytes that are 1K in size.  Run with 2-3 GB of
+objects.  Run the tests only long enough to obtain reproducible
+numbers.  Measure total throughput, the maximum response time per
+thread, footprint, and cpu usage.
+
+Goal: Java tests scale reasonably well
+
+------------------------------------------------------------------------
+PST12  Concurrency
+
+Description: 
+How many concurrent threads across 4 caches can GF handle?  Scale to
+100 threads per cache, with each doing 80% gets and 20% puts of random
+keys using scope distributed ack.  Run on Linux on the Gbit network.
+
+------------------------------------------------------------------------
+PST13  Max Number of Machines
+
+Description: 
+Prove that we can scale to up to 30 nodes.  Run the PST12 Concurrency
+test with fewer threads per cache.  Run a mix of Linux and Solaris on
+the 100MBit network.
+
+------------------------------------------------------------------------
+PST14  Scalability of Nodes (Sudhir's Tests)
+
+Description: 
+Measure performance as the number of nodes increases, according to
+Sudhir's matrix.
+
+------------------------------------------------------------------------
+PST15  Transaction Performance
+
+Description: Comparison of non-transactional vs. transactional puts (one
+operation per transaction).
+
+------------------------------------------------------------------------

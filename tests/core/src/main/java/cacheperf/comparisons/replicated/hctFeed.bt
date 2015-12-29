@@ -1,0 +1,28 @@
+cacheperf/comparisons/replicated/hctFeedDataPut.conf
+  feedHosts   =  2 feedVMsPerHost   = 1 feedThreadsPerVM   = 1
+  bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHosts   =  2 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+  maxKeys = 100000 objectSize = 1024
+  conserveSockets = false
+  perffmwk.comparisonKey = put_02_01
+cacheperf/comparisons/replicated/hctFeedDataPut.conf
+  feedHosts   =  8 feedVMsPerHost   = 1 feedThreadsPerVM   = 1
+  bridgeHosts =  8 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHosts   =  8 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+  maxKeys = 100000 objectSize = 1024
+  conserveSockets = false
+  perffmwk.comparisonKey = put_08_01
+cacheperf/comparisons/replicated/hctFeedDataPut.conf
+  feedHosts   =  2 feedVMsPerHost   = 1 feedThreadsPerVM   = 5
+  bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHosts   =  2 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+  maxKeys = 100000 objectSize = 1024
+  conserveSockets = false
+  perffmwk.comparisonKey = put_02_05
+cacheperf/comparisons/replicated/hctFeedDataPut.conf
+  feedHosts   =  8 feedVMsPerHost   = 1 feedThreadsPerVM   = 5
+  bridgeHosts =  8 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHosts   =  8 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+  maxKeys = 100000 objectSize = 1024
+  conserveSockets = false
+  perffmwk.comparisonKey = put_08_05

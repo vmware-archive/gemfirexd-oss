@@ -1,0 +1,35 @@
+ ----------------------------------------------------------------
+ 2006-12-15 16:14:53.694 GMT:
+ Booting Derby version The Apache Software Foundation - Apache Derby - 10.3.0.0 alpha - (486911M): instance c013800d-010f-86e4-eedb-0000001755b0
+on database directory C:\private\test\other\derby-2152\ugh  
+
+Database Class Loader started - gemfirexd.distributedsystem.classpath=''
+2006-12-15 16:14:58.280 GMT Thread[main,5,main] (XID = 1111), (SESSIONID = 0), (DATABASE = ugh), (DRDAID = null), Cleanup action starting
+2006-12-15 16:14:58.280 GMT Thread[main,5,main] (XID = 1111), (SESSIONID = 0), (DATABASE = ugh), (DRDAID = null), Failed Statement is: select * from oops
+ERROR 42X05: Table/View 'OOPS' does not exist.
+	at com.pivotal.gemfirexd.internal.iapi.error.StandardException.newException(StandardException.java:305)
+	at com.pivotal.gemfirexd.internal.impl.sql.compile.FromBaseTable.bindTableDescriptor(FromBaseTable.java:2385)
+	at com.pivotal.gemfirexd.internal.impl.sql.compile.FromBaseTable.bindNonVTITables(FromBaseTable.java:2108)
+	at com.pivotal.gemfirexd.internal.impl.sql.compile.FromList.bindTables(FromList.java:301)
+	at com.pivotal.gemfirexd.internal.impl.sql.compile.SelectNode.bindNonVTITables(SelectNode.java:463)
+	at com.pivotal.gemfirexd.internal.impl.sql.compile.DMLStatementNode.bindTables(DMLStatementNode.java:200)
+	at com.pivotal.gemfirexd.internal.impl.sql.compile.DMLStatementNode.bind(DMLStatementNode.java:138)
+	at com.pivotal.gemfirexd.internal.impl.sql.compile.CursorNode.bindStatement(CursorNode.java:237)
+	at com.pivotal.gemfirexd.internal.impl.sql.GenericStatement.prepMinion(GenericStatement.java:314)
+	at com.pivotal.gemfirexd.internal.impl.sql.GenericStatement.prepare(GenericStatement.java:88)
+	at com.pivotal.gemfirexd.internal.impl.sql.conn.GenericLanguageConnectionContext.prepareInternalStatement(GenericLanguageConnectionContext.java:741)
+	at com.pivotal.gemfirexd.internal.impl.jdbc.EmbedStatement.execute(EmbedStatement.java:568)
+	at com.pivotal.gemfirexd.internal.impl.jdbc.EmbedStatement.execute(EmbedStatement.java:517)
+	at com.pivotal.gemfirexd.internal.impl.tools.ij.ij.executeImmediate(ij.java:321)
+	at com.pivotal.gemfirexd.internal.impl.tools.ij.utilMain.doCatch(utilMain.java:517)
+	at com.pivotal.gemfirexd.internal.impl.tools.ij.utilMain.runScriptGuts(utilMain.java:373)
+	at com.pivotal.gemfirexd.internal.impl.tools.ij.utilMain.go(utilMain.java:268)
+	at com.pivotal.gemfirexd.internal.impl.tools.ij.Main.go(Main.java:204)
+	at com.pivotal.gemfirexd.internal.impl.tools.ij.Main.mainCore(Main.java:170)
+	at com.pivotal.gemfirexd.internal.impl.tools.ij.Main14.main(Main14.java:56)
+	at com.pivotal.gemfirexd.internal.tools.ij.main(ij.java:71)
+Cleanup action completed
+
+2006-12-15 16:15:04.199 GMT:
+Shutting down instance c013800d-010f-86e4-eedb-0000001755b0
+----------------------------------------------------------------

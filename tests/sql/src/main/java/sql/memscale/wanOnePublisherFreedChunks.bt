@@ -1,0 +1,19 @@
+sql/wan/singleSitePublisherHARandomPTAccessorsGfxdOnly.conf
+   A=datastore
+   B=accessor
+   accessorHostsPerSite=2
+   accessorThreadsPerVM=9
+   accessorVMsPerHost=3
+   datastoreHostsPerSite=2
+   datastoreThreadsPerVM=1
+   datastoreVMsPerHost=3
+   enableQueueConflation=false
+   locatorHostsPerSite=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   redundantCopies=2
+   testUniqueKeys=true
+   useSamePartitionAllWanSites=true
+   wanSites=3
+   withReplicatedTables=true
+

@@ -1,0 +1,205 @@
+plugins {
+  id "ca.coglinc.javacc" version "2.3.1"
+}
+
+dependencies {
+  compile project(subprojectBase + 'gemfire-core')
+  compile project(subprojectBase + 'gemfirexd:shared')
+  provided project(subprojectBase + 'gemfirexd:prebuild')
+
+  provided files("${System.getProperty('java.home')}/../lib/tools.jar")
+  provided 'xalan:xalan:2.7.2'
+  provided 'xalan:serializer:2.7.2'
+  provided "com.pivotal:pxf-api:${pxfVersion}"
+  provided "org.osgi:org.osgi.core:${osgiVersion}"
+  provided "org.apache.ant:ant:${antVersion}"
+  compile 'javax.servlet:javax.servlet-api:3.1.0'
+
+  provided "org.apache.hadoop:hadoop-annotations:${hadoopVersion}"
+  provided "org.apache.hadoop:hadoop-auth:${hadoopVersion}"
+  provided "org.apache.hadoop:hadoop-common:${hadoopVersion}"
+  provided "org.apache.hadoop:hadoop-hdfs:${hadoopVersion}"
+  provided "org.apache.hadoop:hadoop-mapreduce-client-core:${hadoopVersion}"
+}
+
+// move javacc output directory to a place where IDEA can easily register
+def javaccOut = 'src/generated/javacc'
+compileJavacc.outputDirectory = file(javaccOut)
+
+sourceSets.main.java.srcDirs = [ 'src/main/java', javaccOut, 'src/drda/java' ]
+
+// update javacc generated files as per in original derby build
+compileJavacc.doLast {
+  def grammarDir = 'com/pivotal/gemfirexd/internal/impl/sql/compile'
+  def matcherDir = 'com/pivotal/gemfirexd/internal/engine/sql/compile'
+
+  println 'Replacing all occurrances of GetImage() to GetImage(jjmatchedKind)'
+
+  replaceRegex("${compileJavacc.outputDirectory}/${grammarDir}", 'SQLParser.java',
+      'GetImage\\(\\)', 'GetImage(jjmatchedKind)')
+  replaceRegex("${compileJavacc.outputDirectory}/${grammarDir}", 'SQLParserTokenManager.java',
+      'GetImage\\(\\)', 'GetImage(jjmatchedKind)')
+
+  replaceRegex("${compileJavacc.outputDirectory}/${matcherDir}", 'SQLMatcher.java',
+      'GetImage\\(\\)', "GetImage(jjmatchedKind)")
+  replaceRegex("${compileJavacc.outputDirectory}/${matcherDir}", 'SQLMatcherTokenManager.java',
+      'GetImage\\(\\)', 'GetImage(jjmatchedKind)')
+}
+
+task generatePropertiesFiles {
+  def infoDir = file("${buildDir}/resources/main/com/pivotal/gemfirexd/internal/info")
+  outputs.files "${infoDir}/DBMS.properties", "${infoDir}/net.properties"
+  inputs.dir compileJava.destinationDir
+
+  doLast {
+    println('Creating engine properties')
+    derbyProps.put('gemfirexd.product.technology.name', "${DERBY_NAME} Embedded Engine")
+    writeProperties(infoDir, 'DBMS.properties', COPYRIGHT, derbyProps)
+
+    println('Creating DRDA server properties')
+    derbyProps.put('gemfirexd.product.technology.name', "${DERBY_NAME} Network Server")
+    writeProperties(infoDir, 'net.properties', COPYRIGHT, derbyProps)
+  }
+}
+
+def msgDir = "${projectDir}/src/main/resources/${locDir}"
+def msgEnDir = "${buildDir}/resources/main/${locDir}"
+
+task buildMessages {
+  dependsOn project(subprojectBase + 'gemfirexd:prebuild').jar
+
+  def msgXml = "${msgDir}/messages.xml"
+  def msgEn = "${msgEnDir}/messages_en.properties"
+
+  def msgEnDirF = file(msgEnDir)
+  msgEnDirF.exists() || msgEnDirF.mkdirs()
+
+  inputs.file msgXml
+  outputs.file msgEn
+
+  doLast {
+    ant.taskdef(name: 'buildMessages',
+        classname: 'org.apache.derbyBuild.MessageBuilder',
+        classpath: project(subprojectBase + 'gemfirexd:prebuild').sourceSets.main.output.classesDir)
+
+    ant.buildMessages(xmlSourceFile: msgXml, propertiesTargetFile: msgEn,
+        ditaTargetFile: "${projectDir}/doc/rrefexcept71493.dita")
+  }
+}
+
+def splitMessages(def msgFile, def msgDir) {
+  def outDir = file(clientMsgOutDir)
+  outDir.exists() || outDir.mkdirs()
+  def msgPath = "${msgDir}/${msgFile}"
+  javaexec {
+    main = 'org.apache.derbyBuild.splitmessages'
+    classpath = sourceSets.main.compileClasspath
+    args = [ outDir, msgPath, '' /* unused */ ]
+  }
+}
+
+// create the client messages files for various languages
+task doSplit(dependsOn: buildMessages) {
+  def msgXml = "${msgDir}/messages.xml"
+  def clientResourceDir = "${project(subprojectBase + 'gemfirexd:client').buildDir}/resources/main/${locDir}"
+
+  inputs.file msgXml
+  outputs.file "${clientResourceDir}/clientmessages_en.properties"
+
+  doLast {
+    splitMessages('messages_en.properties', msgEnDir)
+    splitMessages('messages_cs.properties', msgDir)
+    splitMessages('messages_de_DE.properties', msgDir)
+    splitMessages('messages_es.properties', msgDir)
+    splitMessages('messages_fr.properties', msgDir)
+    splitMessages('messages_hu.properties', msgDir)
+    splitMessages('messages_it.properties', msgDir)
+    splitMessages('messages_ja_JP.properties', msgDir)
+    splitMessages('messages_ko_KR.properties', msgDir)
+    splitMessages('messages_qq_PP_testOnly.properties', msgDir)
+    splitMessages('messages_pl.properties', msgDir)
+    splitMessages('messages_pt_BR.properties', msgDir)
+    splitMessages('messages_ru.properties', msgDir)
+    splitMessages('messages_zh_CN.properties', msgDir)
+    splitMessages('messages_zh_TW.properties', msgDir)
+
+    // copy the clientmessages properties files to their proper place
+    copy {
+      from clientMsgOutDir
+      into clientResourceDir
+      include 'clientmessages*.properties'
+    }
+    // copy the remaining properties files to their place in engine jar
+    copy {
+      from clientMsgOutDir
+      into "${buildDir}/resources/main/${locDir}"
+      include 'm*.properties'
+    }
+  }
+}
+
+/*
+task createClassSizeCatalog {
+  def internalDir = 'com/pivotal/gemfirexd/internal'
+  def internalOut = "${sourceSets.main.output.classesDir}/${internalDir}"
+
+  // need to re-generate class size catalog if any of the classes below change
+  inputs.files [ "${internalOut}/iapi/types/DataValueDescriptor.class",
+    "${internalOut}/impl/services/cache/CachedItem.class",
+    "${internalOut}/impl/store/raw/data/RecordId.class",
+    "${internalOut}/iapi/store/raw/ContainerKey.class",
+    "${internalOut}/iapi/services/cache/SizedCacheable.class" ]
+  outputs.file "src/main/java/${internalDir}/iapi/services/cache/ClassSizeCatalog.java"
+
+  def internalCP = "com.pivotal.gemfirexd.internal"
+  javaexec {
+    main = 'org.apache.derbyBuild.ClassSizeCrawler'
+    classpath = sourceSets.main.runtimeClasspath
+    // TODO: SW: incomplete code ...
+    args = [ "-DWS=${workspace}", "-DclassDir=${out.dir}", "-Dout=${derby.engine.src.dir}/${derby.dir}/iapi/services/cache/ClassSizeCatalog.java", "-Dprefix.1=${internalCP}.iapi.types", "-Dprefix.2=com.pivotal.gemfirexd.internal.impl", com.pivotal.gemfirexd.internal.iapi.types.DataValueDescriptor" ]
+  }
+}
+*/
+
+compileJava.dependsOn generatePropertiesFiles
+
+// TODO: SW: manifest generation, check previous GemFireXD.xml
+
+// external javadocs
+javadoc {
+  include 'com/pivotal/gemfirexd/auth/callback/*.java'
+  include 'com/pivotal/gemfirexd/callbacks/*.java'
+  include 'com/pivotal/gemfirexd/jdbc/*.java'
+  include 'com/pivotal/gemfirexd/load/*.java'
+  include 'com/pivotal/gemfirexd/procedure/*.java'
+  include 'com/pivotal/gemfirexd/tools/sizer/*.java'
+  include 'com/pivotal/gemfirexd/hadoop/*.java'
+  include 'com/pivotal/gemfirexd/hadoop/mapred/*.java'
+  include 'com/pivotal/gemfirexd/hadoop/mapreduce/*.java'
+  include 'com/pivotal/gemfirexd/*.java'
+}
+javadoc.dependsOn.clear()
+
+jar {
+  dependsOn doSplit
+  baseName = 'gemfirexd'
+
+  from {
+    configurations.runtime.collect {
+      it.isDirectory() ? it : zipTree(it).matching {
+        exclude {
+          it.path.contains('META-INF')
+        }
+      }
+    }
+  }
+  doLast {
+    // copy the native JNI library
+    if (osName.isLinux()) {
+      copy {
+        from "${projectDir}/lib"
+        into "${buildDir}/libs"
+      }
+    }
+  }
+}

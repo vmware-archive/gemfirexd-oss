@@ -1,0 +1,20 @@
+sql/dataextractor/hdfs/p2pDataExtractHdfsQueue.conf
+    locatorHosts = 1 locatorVMsPerHost=2 locatorThreadsPerVM = 1
+    A=peer peerHosts=1 peerVMsPerHost=4 peerThreadsPerVM=2
+    B=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+    tableDefaultPartitioned=true
+    testPartitionBy=true
+    performDDLOps=false
+    redundantCopies=1
+    performUpdatesWhileShuttingDown = false
+    simultaneousShutdownVMs = true
+    securities=trade.securities:random:persistent
+    customers=trade.customers:random:persistent
+    networth=trade.networth:random:persistent
+    portfolio=trade.portfolio:random:persistent
+    sellorders=trade.sellorders:random:persistent
+    buyorders=trade.buyorders:random:persistent
+    txhistory=trade.txhistory:random:persistent
+    employees=emp.employees:random:persistent
+    trades=trade.trades:random:persistent
+    product=sqlfire

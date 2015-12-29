@@ -1,0 +1,26 @@
+parReg/bridge/serialParRegBridge.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   redundantCopies=0,1,2,3 numAccessors=1 numEmptyClients=1 numThinClients=1
+
+parReg/bridge/concParRegBridge.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=0,1,2,3 numAccessors=1 numEmptyClients=1 numThinClients=1
+   bridgeOrderingWorkaround=registerInterest,uniqueKeys
+
+parReg/bridge/parRegCreateDestroyBridge.conf nServers=3 nBrClients=3 hydra.numHosts=6
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=20
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=20
+
+// ClientCacheFactory versions
+parReg/bridge/serialParRegBridgeWithClientCache.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   redundantCopies=0,1,2,3 numAccessors=1 numEmptyClients=1 numThinClients=1
+
+parReg/bridge/concParRegBridgeWithClientCache.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=0,1,2,3 numAccessors=1 numEmptyClients=1 numThinClients=1
+   bridgeOrderingWorkaround=registerInterest,uniqueKeys

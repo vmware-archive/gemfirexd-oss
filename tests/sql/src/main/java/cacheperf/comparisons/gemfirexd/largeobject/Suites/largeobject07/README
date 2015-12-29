@@ -1,0 +1,1 @@
+The goal is linear horizontal scaling of peer client GFXD primary key lookups using the LargeObject schema.  Clients, servers, data, and hardware are scaled together.

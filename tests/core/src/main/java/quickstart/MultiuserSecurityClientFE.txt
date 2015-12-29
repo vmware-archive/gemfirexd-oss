@@ -1,0 +1,31 @@
+Please select your option.
+ Enter 1 for put and get operations.
+ Enter 2 for executing functions.
+ Enter 3 for executing Continuous Query \(CQs\).
+ Your selection: 
+-----------------------------------------------------
+Setting security properties for client...
+-----------------------------------------------------
+User 'writer0' is not authorized to perform EXECUTE_FUNCTION operations.
+User 'reader1' is authorized to do EXECUTE_FUNCTION operations.
+-----------------------------------------------------
+Press Enter to continue.
+
+\[writer0\] Executing function on region...
+\[writer0\] Got expected NotAuthorizedException: com.gemstone.gemfire.security.NotAuthorizedException: Not authorized to perform EXECUTE_REGION_FUNCTION operation
+\[writer0\] Executing function on server...
+\[writer0\] Got expected NotAuthorizedException: com.gemstone.gemfire.security.NotAuthorizedException: Not authorized to perform EXECUTE_REGION_FUNCTION operation
+\[writer0\] Closed the cache for this user.
+Press Enter to continue.
+
+\[reader1\] Executing function on region...
+\[reader1\] Function executed, now getting the result...
+\[reader1\] Got result with size 3.
+\[reader1\] Executing function on server...
+\[reader1\] Function executed, now getting the result...
+\[reader1\] Got result with size 1.
+\[reader1\] Closed the cache for this user.
+Press Enter to continue.
+
+MultiuserSecurityClient closed.
+-----------------------------------------------------

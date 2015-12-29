@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE cache PUBLIC
+    "-//GemStone Systems, Inc.//GemFire Declarative Caching 6.5//EN"
+    "http://www.gemstone.com/dtd/cache6_5.dtd">
+
+<!--
+  | FunctionExecutionpeer.xml
+  |
+ -->
+<cache>
+	<region name="exampleRegion">
+		<region-attributes refid="PARTITION">
+			<partition-attributes local-max-memory="50" redundant-copies="0" total-num-buckets="13" />
+		</region-attributes>
+	</region>
+</cache>

@@ -1,0 +1,64 @@
+// CQ (multipleWriters & versioning: useUniqueKeys = false + concurrencyChecksEnabled = true)
+pdx/versioning/concCQBridgePdx.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+pdx/versioning/concCQBridgePRPdx.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+pdx/versioning/concCQBridgeHAPdx.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundancyLevel = 4
+pdx/versioning/concCQBridgePRHAPdx.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundancyLevel = 3 redundantCopies = 3 maxVMsToStop=2
+
+// Run with multiple writers (per entry), write operations in servers (with HA)
+// leave at least 2 copies (for negotiating rvv differences after a server is killed)
+// parReg
+pdx/parReg/concParRegBridgePdx.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=1 numAccessors=1 numEmptyClients=1 numThinClients=1
+   bridgeOrderingWorkaround=none
+
+// HA testing - concurrent (stop 1 VM at a time)
+pdx/versioning/concParRegHABridgePdx.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=2 numVMsToStop=1
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+
+// HA testing - concurrent (stop 2 VMs at a time)
+pdx/versioning/concParRegHABridgePdx.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=3 numVMsToStop=2
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+
+pdx/versioning/concParRegHAPersistPdx.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=6 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   redundantCopies=1 numVMsToStop=1,3
+
+pdx/versioning/concParRegHABridgePersistParOfflinePdx.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   numAccessors=0 numEmptyClients=1 numThinClients=1
+   redundantCopies=0 numVMsToStop=3
+
+pdx/versioning/concParRegHABridgePersistPdx.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   numAccessors=0 numEmptyClients=1 numThinClients=1
+   redundantCopies=3 numVMsToStop=3
+
+pdx/versioning/concRecoverAll.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+
+pdx/versioning/concRecoverLatest.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+

@@ -1,0 +1,13 @@
+A = bridge
+bridgeHosts        = 1
+bridgeVMsPerHost   = 2
+bridgeThreadsPerVM = 1
+B = edge
+edgeHosts          = 1
+edgeVMsPerHost     = 4
+edgeThreadsPerVM   = 3
+
+dataSize = 1024
+maxKeys = 100000
+
+perffmwk.comparisonKey = perf152

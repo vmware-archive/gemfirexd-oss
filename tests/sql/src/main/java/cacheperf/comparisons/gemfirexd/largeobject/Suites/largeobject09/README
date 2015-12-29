@@ -1,0 +1,3 @@
+Looks at the impact of persistence on creates, using the LargeObject schema.  Compares GFE and GFXD.  Runs with 2 clients and 2 servers.  Uses partitioning and redundance 0 and 1.
+
+This suite runs on bensa in two parts.  The first part does not create enough data to cause the O/S buffers to flush to disk.   The second part does, with flushes occurring eventually.

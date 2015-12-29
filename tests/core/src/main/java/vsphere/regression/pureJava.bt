@@ -1,0 +1,33 @@
+////// pure.bt //////
+
+event/concEntryEvent.conf 
+threadGroupsName=default
+event/concRegionEvent.conf 
+threadGroupsName=default
+
+//capCon/concLRUTest.conf hydra.numHosts = 1 vmQuantities = 10 vmThreads = 5 
+//capCon/concLRUDynamic.conf vmQuantities = 7 vmThreads = 4
+capCon/concLRUDynamic.conf vmQuantities = 1 vmThreads = 50
+threadGroupsName=default
+
+////// hct/pure.bt //////
+
+/*hct/hierarchy.conf  
+      hc.serverMemSize = 350m*/
+hct/hierarchy.conf
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+      hc.serverMemSize = 350m
+      threadGroupsName=edgeInit
+hct/failover1.conf
+      bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+      hc.serverMemSize = 512m
+      threadGroupsName=edgeInit
+hct/randomLB.conf
+      bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+      hc.serverMemSize = 512m
+      threadGroupsName=edgeInit
+hct/bloom-vm.conf  edgeThreadsPerVM = 10
+      threadGroupsName=edgeInit

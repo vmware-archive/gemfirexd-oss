@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<!-- Initializes a cache to serve the /root/cs_region region, 
+    waiting for client communication on port 40404 -->
+
+<!DOCTYPE cache PUBLIC
+  "-//GemStone Systems, Inc.//GemFire Declarative Caching 6.5//EN"
+  "http://www.gemstone.com/dtd/cache6_5.dtd">
+<cache>
+  <cache-server port="40404">
+  </cache-server>
+  <region name="exampleRegion">
+    <region-attributes refid="REPLICATE">
+        <cache-listener>
+      		<class-name>quickstart.DeltaSimpleListener</class-name>
+      	</cache-listener>
+    </region-attributes>   
+  </region>
+</cache>

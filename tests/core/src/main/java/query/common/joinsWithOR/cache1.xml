@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE cache PUBLIC
+        "-//GemStone Systems, Inc.//GemFire Declarative Caching 7.0//EN"
+        "http://www.gemstone.com/dtd/cache7_0.dtd">
+
+<cache>
+    <disk-store name="regions-disk-store" auto-compact="true" max-oplog-size="500" queue-size="1000"
+        time-interval="15">
+        <disk-dirs>
+            <disk-dir dir-size="500">queryDiskStore1</disk-dir>
+        </disk-dirs>
+    </disk-store>
+
+    <region-attributes id="region-attributes-template" scope="global" data-policy="persistent-replicate"
+        statistics-enabled="true" enable-gateway="true" disk-synchronous="true" disk-store-name="regions-disk-store"
+        enable-subscription-conflation="true">
+        <eviction-attributes>
+            <lru-memory-size maximum="100" action="overflow-to-disk" />
+        </eviction-attributes>
+    </region-attributes>
+
+    <region name="Amoeba">
+        <region-attributes scope="global" data-policy="replicate" />
+        <region name="Community">
+            <region-attributes refid="region-attributes-template">
+                <value-constraint>query.common.joinsWithOR.data.Community</value-constraint>
+            </region-attributes>
+            <index name="Community.id" from-clause="/Amoeba/Community" expression="id" type="range" />
+        </region>
+
+        <region name="LoginCommunityAssignment">
+            <region-attributes refid="region-attributes-template">
+                <value-constraint>query.common.joinsWithOR.data.LoginCommunityAssignment</value-constraint>
+            </region-attributes>
+            <index name="LoginCommunityAssignment.id" from-clause="/Amoeba/LoginCommunityAssignment" expression="id"
+                type="range" />
+            <index name="LoginCommunityAssignment.communityId" from-clause="/Amoeba/LoginCommunityAssignment"
+                expression="communityId" type="range" />
+            <index name="LoginCommunityAssignment.loginId" from-clause="/Amoeba/LoginCommunityAssignment"
+                expression="loginId" type="range" />
+        </region>
+
+        <region name="BranchCommunityAssignment">
+            <region-attributes refid="region-attributes-template">
+                <value-constraint>query.common.joinsWithOR.data.BranchCommunityAssignment</value-constraint>
+            </region-attributes>
+            <index name="BranchCommunityAssignment.id" from-clause="/Amoeba/BranchCommunityAssignment" expression="id"
+                type="range" />
+            <index name="BranchCommunityAssignment.communityId" from-clause="/Amoeba/BranchCommunityAssignment"
+                expression="communityId" type="range" />
+        </region>
+        
+
+        <region name="Community_noIndex">
+            <region-attributes refid="region-attributes-template">
+                <value-constraint>query.common.joinsWithOR.data.Community</value-constraint>
+            </region-attributes>
+        </region>
+
+        <region name="LoginCommunityAssignment_noIndex">
+            <region-attributes refid="region-attributes-template">
+                <value-constraint>query.common.joinsWithOR.data.LoginCommunityAssignment</value-constraint>
+            </region-attributes>
+        </region>
+
+        <region name="BranchCommunityAssignment_noIndex">
+            <region-attributes refid="region-attributes-template">
+                <value-constraint>query.common.joinsWithOR.data.BranchCommunityAssignment</value-constraint>
+            </region-attributes>
+        </region>
+    </region>
+
+</cache>

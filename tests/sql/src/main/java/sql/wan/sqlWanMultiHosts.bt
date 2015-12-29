@@ -1,0 +1,182 @@
+///singlePublisherAccessor
+sql/wan/singleSitePublisherRandomPTAccessors.conf
+    wanSites= 5
+    A=datastore datastoreHostsPerSite=2 datastoreVMsPerHost=3 datastoreThreadsPerVM=1
+    B=accessor accessorHostsPerSite=2 accessorVMsPerHost=3 accessorThreadsPerVM=9
+    locatorHostsPerSite = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    enableQueueConflation=false
+    useSamePartitionAllWanSites=true
+
+sql/wan/singleSitePublisherHARandomPTAccessors.conf
+    wanSites= 5
+    A=datastore datastoreHostsPerSite=2 datastoreVMsPerHost=3 datastoreThreadsPerVM=1
+    B=accessor accessorHostsPerSite=2 accessorVMsPerHost=3 accessorThreadsPerVM=9
+    locatorHostsPerSite = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    enableQueueConflation=false
+    useSamePartitionAllWanSites=true
+    redundantCopies=1,3
+
+sql/wan/singleSitePublisherAccessorsSenderFailover.conf
+    wanSites= 5
+    A=datastore datastoreHostsPerSite=2 datastoreVMsPerHost= 4 datastoreThreadsPerVM=1
+    B=accessor accessorHostsPerSite=2 accessorVMsPerHost=2 accessorThreadsPerVM=9
+    locatorHostsPerSite = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    enableQueueConflation=false
+    useSamePartitionAllWanSites=true
+    SGvms1=1 SGvms2=1 SGvms3=1 SGvms4=1
+    SGList1="random" SGList2="random" SGList3="random"
+    SGList4="random"
+
+sql/wan/singleSitePublisherRandomPTAccessorsGfxdOnly.conf
+    wanSites= 5
+    A=datastore datastoreHostsPerSite=2 datastoreVMsPerHost=3 datastoreThreadsPerVM=1
+    B=accessor accessorHostsPerSite=2 accessorVMsPerHost=3 accessorThreadsPerVM=9
+    locatorHostsPerSite = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    enableQueueConflation=false
+    useSamePartitionAllWanSites=true
+    testUniqueKeys = true
+    withReplicatedTables = false    
+
+sql/wan/singleSitePublisherHARandomPTAccessorsGfxdOnly.conf
+    wanSites= 5
+    A=datastore datastoreHostsPerSite=2 datastoreVMsPerHost=3 datastoreThreadsPerVM=1
+    B=accessor accessorHostsPerSite=2 accessorVMsPerHost=3 accessorThreadsPerVM=9
+    locatorHostsPerSite = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    enableQueueConflation=false
+    useSamePartitionAllWanSites=true
+    redundantCopies= 1, 3
+    testUniqueKeys = true
+    withReplicatedTables = true
+
+/*
+sql/wan/singleSitePublisherRandomPTAccessorsGfxdOnly.conf
+    wanSites= 5
+    A=datastore datastoreHostsPerSite=2 datastoreVMsPerHost=3 datastoreThreadsPerVM=1
+    B=accessor accessorHostsPerSite=2 accessorVMsPerHost=3 accessorThreadsPerVM=9
+    locatorHostsPerSite = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    enableQueueConflation=false
+    useSamePartitionAllWanSites=true
+    testUniqueKeys = false
+    withReplicatedTables = false    
+
+sql/wan/singleSitePublisherHARandomPTAccessorsGfxdOnly.conf
+    wanSites= 5
+    A=datastore datastoreHostsPerSite=2 datastoreVMsPerHost=3 datastoreThreadsPerVM=1
+    B=accessor accessorHostsPerSite=2 accessorVMsPerHost=3 accessorThreadsPerVM=9
+    locatorHostsPerSite = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    enableQueueConflation=false
+    useSamePartitionAllWanSites=true
+    redundantCopies= 1, 3
+    testUniqueKeys = false
+    withReplicatedTables = true
+*/
+   
+//multiPublisherAccessor
+sql/wan/wanp2pRandomPTBoth.conf
+    wanSites= 5
+    A=datastore datastoreHostsPerSite=2 datastoreVMsPerHost=3 datastoreThreadsPerVM=1
+    B=accessor accessorHostsPerSite=2 accessorVMsPerHost=3 accessorThreadsPerVM=9
+    locatorHostsPerSite = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    enableQueueConflation=false
+    useSamePartitionAllWanSites=true
+    
+sql/wan/wanp2pHARandomPTAccessors.conf
+    wanSites= 5
+    A=datastore datastoreHostsPerSite=2 datastoreVMsPerHost=3 datastoreThreadsPerVM=1
+    B=accessor accessorHostsPerSite=2 accessorVMsPerHost=3 accessorThreadsPerVM=9
+    locatorHostsPerSite = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    enableQueueConflation=false
+    useSamePartitionAllWanSites=true
+    redundantCopies= 1, 3
+
+sql/wan/wanp2pRandomPTBothGfxdOnly.conf
+    wanSites= 5
+    A=datastore datastoreHostsPerSite=2 datastoreVMsPerHost=3 datastoreThreadsPerVM=1
+    B=accessor accessorHostsPerSite=2 accessorVMsPerHost=3 accessorThreadsPerVM=9
+    locatorHostsPerSite = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    enableQueueConflation=false
+    useSamePartitionAllWanSites=true
+    testUniqueKeys = true
+    testWanUniqueness = false
+    withReplicatedTables = true
+    
+sql/wan/wanp2pHARandomPTAccessorsGfxdOnly.conf
+    wanSites= 5
+    A=datastore datastoreHostsPerSite=2 datastoreVMsPerHost=3 datastoreThreadsPerVM=1
+    B=accessor accessorHostsPerSite=2 accessorVMsPerHost=3 accessorThreadsPerVM=9
+    locatorHostsPerSite = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    enableQueueConflation=false
+    useSamePartitionAllWanSites=true
+    redundantCopies= 1, 3
+    testUniqueKeys = true
+    testWanUniqueness = false
+    withReplicatedTables = true 
+    
+/*
+sql/wan/wanp2pRandomPTBothGfxdOnly.conf
+    wanSites= 5
+    A=datastore datastoreHostsPerSite=2 datastoreVMsPerHost=3 datastoreThreadsPerVM=1
+    B=accessor accessorHostsPerSite=2 accessorVMsPerHost=3 accessorThreadsPerVM=9
+    locatorHostsPerSite = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    enableQueueConflation=false
+    useSamePartitionAllWanSites=true
+    testUniqueKeys = false
+    testWanUniqueness = false
+    withReplicatedTables = true
+    
+sql/wan/wanp2pHARandomPTAccessorsGfxdOnly.conf
+    wanSites= 5
+    A=datastore datastoreHostsPerSite=2 datastoreVMsPerHost=3 datastoreThreadsPerVM=1
+    B=accessor accessorHostsPerSite=2 accessorVMsPerHost=3 accessorThreadsPerVM=9
+    locatorHostsPerSite = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    enableQueueConflation=false
+    useSamePartitionAllWanSites=true
+    redundantCopies= 1, 3
+    testUniqueKeys = false
+    testWanUniqueness = false
+    withReplicatedTables = true            
+*/
+
+    sql/wan/wanp2pAccessorsSenderFailover.conf
+    wanSites= 5
+    A=datastore datastoreHostsPerSite=2 datastoreVMsPerHost= 4 datastoreThreadsPerVM=1
+    B=accessor accessorHostsPerSite=2 accessorVMsPerHost=2 accessorThreadsPerVM=9
+    locatorHostsPerSite = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    enableQueueConflation=false
+    useSamePartitionAllWanSites=true
+    SGvms1=1 SGvms2=1 SGvms3=1 SGvms4=1
+    SGList1="random" SGList2="random" SGList3="random"
+    SGList4="random"     
+   
+    sql/wan/wanp2pAccessorsSenderFailoverGfxdOnly.conf
+    wanSites= 5
+    A=datastore datastoreHostsPerSite=2 datastoreVMsPerHost= 4 datastoreThreadsPerVM=1
+    B=accessor accessorHostsPerSite=2 accessorVMsPerHost=2 accessorThreadsPerVM=9
+    locatorHostsPerSite = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    enableQueueConflation=false
+    useSamePartitionAllWanSites=true
+    SGvms1=1 SGvms2=1 SGvms3=1 SGvms4=1
+    SGList1="random" SGList2="random" SGList3="random"
+    SGList4="random"  
+    testUniqueKeys = true
+    testWanUniqueness = false
+    withReplicatedTables = true 
+
+/* do not run these as #42075 is a known issue 
+sql/wan/wanp2pAccessorsSenderFailoverGfxdOnly.conf
+    wanSites= 5
+    A=datastore datastoreHostsPerSite=2 datastoreVMsPerHost= 4 datastoreThreadsPerVM=1
+    B=accessor accessorHostsPerSite=2 accessorVMsPerHost=2 accessorThreadsPerVM=9
+    locatorHostsPerSite = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    enableQueueConflation=false
+    useSamePartitionAllWanSites=true
+    SGvms1=1 SGvms2=1 SGvms3=1 SGvms4=1
+    SGList1="random" SGList2="random" SGList3="random"
+    SGList4="random"  
+    testUniqueKeys = false
+    testWanUniqueness = true
+    withReplicatedTables = false 
+*/
+    
+INCLUDE $JTESTS/sql/wan/thinClient/sqlWanMultiHostsThinClient.bt
+    

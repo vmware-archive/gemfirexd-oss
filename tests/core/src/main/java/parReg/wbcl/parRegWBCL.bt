@@ -1,0 +1,56 @@
+parReg/wbcl/concParRegWBCL.conf 
+   A=wbcl wbclHosts=1 wbclVMsPerHost=1 wbclThreadsPerVM=10
+   B=peer peerHosts=2 peerVMsPerHost=3 peerThreadsPerVM=10 
+   redundantCopies=0
+
+parReg/wbcl/concParRegWBCL.conf 
+   A=wbcl wbclHosts=1 wbclVMsPerHost=1 wbclThreadsPerVM=10
+   B=peer peerHosts=2 peerVMsPerHost=3 peerThreadsPerVM=10 
+   redundantCopies=1
+
+parReg/wbcl/concParRegWBCL.conf 
+   A=wbcl wbclHosts=1 wbclVMsPerHost=1 wbclThreadsPerVM=10
+   B=peer peerHosts=2 peerVMsPerHost=3 peerThreadsPerVM=10 
+   redundantCopies=2
+
+parReg/wbcl/concParRegWBCL.conf 
+   A=wbcl wbclHosts=1 wbclVMsPerHost=1 wbclThreadsPerVM=10
+   B=peer peerHosts=2 peerVMsPerHost=3 peerThreadsPerVM=10 
+   redundantCopies=3
+
+// HA testing - concurrent (stop 1 VM at a time)
+parReg/wbcl/concParRegWBCLHA.conf 
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   B=dataStore dataStoreHosts=2 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   C=wbcl wbclHosts=2 wbclVMsPerHost=1 wbclThreadsPerVM=10
+   redundantCopies=1 numVMsToStop=1
+parReg/wbcl/concParRegWBCLHA.conf 
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   C=wbcl wbclHosts=2 wbclVMsPerHost=1 wbclThreadsPerVM=10
+   redundantCopies=2 numVMsToStop=1
+parReg/wbcl/concParRegWBCLHA.conf 
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   C=wbcl wbclHosts=2 wbclVMsPerHost=1 wbclThreadsPerVM=10
+   redundantCopies=3 numVMsToStop=1
+
+// HA testing - concurrent (stop 2 VMs at a time)
+parReg/wbcl/concParRegWBCLHA.conf 
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   C=wbcl wbclHosts=2 wbclVMsPerHost=1 wbclThreadsPerVM=10
+   redundantCopies=2 numVMsToStop=2
+parReg/wbcl/concParRegWBCLHA.conf 
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   B=dataStore dataStoreHosts=5 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   C=wbcl wbclHosts=2 wbclVMsPerHost=1 wbclThreadsPerVM=10
+   redundantCopies=3 numVMsToStop=2
+parReg/wbcl/concParRegWBCLHA.conf 
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   B=dataStore dataStoreHosts=6 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   C=wbcl wbclHosts=2 wbclVMsPerHost=1 wbclThreadsPerVM=10
+   redundantCopies=3 numVMsToStop=3
+
+// newwan test wbcl tests
+INCLUDE $JTESTS/parReg/wbcl/newWan/newWanWBCL.bt

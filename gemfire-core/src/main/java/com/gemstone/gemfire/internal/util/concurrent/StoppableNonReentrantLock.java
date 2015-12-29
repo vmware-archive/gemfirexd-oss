@@ -1,0 +1,95 @@
+/*
+ * Copyright (c) 2010-2015 Pivotal Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you
+ * may not use this file except in compliance with the License. You
+ * may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * permissions and limitations under the License. See accompanying
+ * LICENSE file.
+ */
+package com.gemstone.gemfire.internal.util.concurrent;
+
+import java.util.concurrent.TimeUnit;
+
+import com.gemstone.gemfire.CancelCriterion;
+import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
+
+/**
+ * This is a type of {@link StoppableReentrantLock} that does not allow
+ * recursion
+ * 
+ */
+public class StoppableNonReentrantLock extends StoppableReentrantLock
+{
+  /**
+   * Creates an instance.
+   * @param stopper the cancellation object
+   */
+  public StoppableNonReentrantLock(CancelCriterion stopper) {
+    super(stopper);
+  }
+
+  /**
+   * Creates an instance with the
+   * given fairness policy.
+   *
+   * @param fair <code>true</code> if this lock should use a fair ordering policy
+   * @param stopper the cancellation object
+   */
+  public StoppableNonReentrantLock(boolean fair, CancelCriterion stopper) {
+    super(fair, stopper);
+  }
+
+  /**
+   * @throws IllegalStateException if reentry is detected
+   */
+  private void checkForRentry() {
+    if (isHeldByCurrentThread()) {
+      throw new IllegalStateException(LocalizedStrings.StoppableNonReentrantLock_LOCK_REENTRY_IS_NOT_ALLOWED.toLocalizedString());
+    }
+  }
+  
+  /**
+   * @throws IllegalStateException if the lock is already held by the current thread
+   */
+  @Override
+  public void lock() {
+    checkForRentry();
+    super.lock();
+  }
+
+  /**
+   * @throws IllegalStateException if the lock is already held by the current thread
+   */
+  @Override
+  public void lockInterruptibly() throws InterruptedException {
+    checkForRentry();
+    super.lockInterruptibly();
+  }
+  
+  /**
+   * @throws IllegalStateException if the lock is already held by the current thread
+   */
+  @Override
+  public boolean tryLock() {
+    checkForRentry();
+    return super.tryLock();
+  }
+
+  /**
+   * @throws IllegalStateException
+   *           if the lock is already held by the current thread
+   */
+  @Override
+  public boolean tryLock(long time, TimeUnit unit) throws InterruptedException {
+    checkForRentry();
+    return super.tryLock(time, unit);
+  }
+}

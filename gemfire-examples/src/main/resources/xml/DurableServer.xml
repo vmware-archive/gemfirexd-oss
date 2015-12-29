@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE cache PUBLIC
+    "-//GemStone Systems, Inc.//GemFire Declarative Caching 6.5//EN"
+    "http://www.gemstone.com/dtd/cache6_5.dtd">
+
+<!--
+  | DurableServer.xml
+  |
+  | Configures a cache to serve Durable caching clients at port 40404.
+  | The example region also is configured with a loader and listener. 
+ -->
+<cache>
+	<cache-server port="40404"/>
+	
+	<region name="exampleRegion">
+		<region-attributes refid="REPLICATE">
+			<cache-listener>
+				<class-name>quickstart.SimpleCacheListener</class-name>
+			</cache-listener>
+		</region-attributes>
+	</region>
+</cache>

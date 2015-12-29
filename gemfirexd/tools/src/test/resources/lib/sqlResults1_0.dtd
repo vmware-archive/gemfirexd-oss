@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+This is the XML DTD for checking the output ResultSet of an SQL query.
+
+All XMLs must include a DOCTYPE of the following form:
+
+  <!DOCTYPE sqlResults PUBLIC
+    "-//GemStone Systems, Inc.//GemFireXD Test Results 1.0//EN"
+    "sqlResults1_0.dtd">
+
+-->
+
+<!--
+
+The following conventions apply to all file elements unless indicated otherwise.
+
+- In elements that contain PCDATA, leading and trailing whitespace in
+  the data may be ignored.
+
+- In elements whose value is an "enumerated type", the value is case
+  sensitive.
+
+-->
+
+<!--
+The "sqlResults" element is the root element of all the specified ResultSets.
+It contains one or more "resultSet" elements each specifying a JDBC
+ResultSet object.
+-->
+<!ELEMENT sqlResults (resultSet+)>
+
+<!--
+The "resultSet" element is the root element of the obtained ResultSet.
+It must specify an ID attribute to identify a ResultSet. This is so that
+a single XML file can specify multiple resultSet elements for different
+test results. The optional "ordered" attribute specifies whether the result
+is expected to be in exactly the order given in the XML or not.
+-->
+
+<!ELEMENT resultSet (row*)>
+<!ATTLIST resultSet
+  id ID #REQUIRED
+  ordered (false | true) #IMPLIED>
+
+<!--
+The "row" element contains a single row of the ResultSet.
+It contains one or more "field" elements.
+-->
+
+<!ELEMENT row (field+)>
+
+<!--
+The "field" element is contained within a "row" element and contains
+the name and value. It can optionally also specify the type of the
+expected object. Normally the value is a simple toString() on the
+underlying java object though it can be any string representation
+of the object in principle.
+-->
+
+<!ELEMENT field (#PCDATA)>
+<!ATTLIST field
+  name CDATA #REQUIRED
+  type CDATA #IMPLIED>

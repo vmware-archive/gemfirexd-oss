@@ -1,0 +1,58 @@
+sql/sqlTx/thinClient/repeatableRead/multiTablesRRTxClient.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=1 serverVMsPerHost=2, 5 serverThreadsPerVM=1
+    clientHosts = 1 clientVMsPerHost =6 clientThreadsPerVM = 5
+    workIterationsPerThread=500
+    
+sql/sqlTx/thinClient/repeatableRead/randomPartitionTablesRRTxClient.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=2 serverVMsPerHost=2, 5 serverThreadsPerVM=1
+    clientHosts = 1 clientVMsPerHost =6 clientThreadsPerVM = 8
+    workIterationsPerThread=500
+
+sql/sqlTx/thinClient/repeatableRead/concMultiTablesRRTxClient.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=2 serverVMsPerHost=2, 5 serverThreadsPerVM=1
+    clientHosts = 2 clientVMsPerHost =6 clientThreadsPerVM = 8
+    nobatching = true
+
+sql/sqlTx/thinClient/repeatableRead/concMultiTablesRRTxClient.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=2 serverVMsPerHost=2, 5 serverThreadsPerVM=1
+    clientHosts = 2 clientVMsPerHost =6 clientThreadsPerVM = 8
+    nobatching = false
+    
+sql/sqlTx/thinClient/repeatableRead/randomPartitionTablesRRTxClientHA.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=2 serverVMsPerHost=5 serverThreadsPerVM=1
+    clientHosts = 1 clientVMsPerHost =5 clientThreadsPerVM = 8
+    workIterationsPerThread=500
+    redundantCopies = 1
+
+sql/sqlTx/thinClient/repeatableRead/concMultiTablesRRTxClientHA.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=2 serverVMsPerHost=5 serverThreadsPerVM=1
+    clientHosts = 2 clientVMsPerHost =6 clientThreadsPerVM = 8
+    nobatching = true
+    redundantCopies = 1
+    
+sql/sqlTx/thinClient/repeatableRead/concMultiTablesRRTxClientHA.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=2 serverVMsPerHost=5 serverThreadsPerVM=1
+    clientHosts = 2 clientVMsPerHost =6 clientThreadsPerVM = 8
+    nobatching = false
+    redundantCopies = 1
+    
+sql/sqlTx/thinClient/repeatableRead/concMultiTablesUniqRRTxClient.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=2 serverVMsPerHost=5 serverThreadsPerVM=1
+    clientHosts = 2 clientVMsPerHost =6 clientThreadsPerVM = 8
+    nobatching = true    
+    
+sql/sqlTx/thinClient/repeatableRead/concMultiTablesUniqRRTxClientHA.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=2 serverVMsPerHost=5 serverThreadsPerVM=1
+    clientHosts = 2 clientVMsPerHost =6 clientThreadsPerVM = 8
+    nobatching = true
+    redundantCopies = 1
+    

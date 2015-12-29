@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE cache PUBLIC
+  "-//GemStone Systems, Inc.//GemFire Declarative Caching 7.0//EN"
+  "http://www.gemstone.com/dtd/cache7_0.dtd">
+  
+<cache>
+
+  <gateway-sender id="US" remote-distributed-system-id="1" parallel="false"
+      maximum-queue-memory="50" batch-size="10" batch-time-interval="1000"
+      manual-start="false"/>
+  <gateway-receiver/>
+
+  <!--
+    Configure the conflict resolution plugin.
+    The resolution-type parameter may be use-latest, merge, or highest-int
+    -->
+  <gateway-conflict-resolver>
+    <class-name>wanActiveActive.WANConflictResolver</class-name>
+    <parameter name="resolution-type">
+      <string>use-latest</string>
+    </parameter>
+    <parameter name="site">
+      <string>US</string>
+    </parameter>
+  </gateway-conflict-resolver>
+  
+
+  <cache-server port="22222"/>
+
+  <pdx read-serialized="true"/>  <!-- servers will see PDXInstances instead of deserialized values -->
+
+  <region name="wanActiveActive" refid="REPLICATE">
+    <region-attributes enable-gateway="true" gateway-sender-ids="US" concurrency-checks-enabled="true"/>
+  </region>
+</cache>
+

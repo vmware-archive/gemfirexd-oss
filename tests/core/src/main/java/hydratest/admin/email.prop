@@ -1,0 +1,15 @@
+locatorHosts = 1
+locatorVMsPerHost = 1
+locatorThreadsPerVM = 1
+A = larry
+larryHosts = 2
+larryVMsPerHost = 2
+larryThreadsPerVM = 2
+B = moe
+moeHosts = 2
+moeVMsPerHost = 2
+moeThreadsPerVM = 2
+C = curly
+curlyHosts = 2
+curlyVMsPerHost = 2
+curlyThreadsPerVM = 2

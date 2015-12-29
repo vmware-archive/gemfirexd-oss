@@ -1,0 +1,16 @@
+
+//------------------------------------------------------------------------------
+// requires a local.conf with hydra.HostPrms-hostNames = <4 distinct hosts>
+// and access to the specific JDK/JREs given in the hydra.HostPrms-javaHomes.
+
+hydratest/checkextravmargs.conf
+
+//------------------------------------------------------------------------------
+// requires a local.conf as listed in the .bt file
+
+hydratest/reboot/reboot.bt
+
+//------------------------------------------------------------------------------
+// requires a local.conf as listed in the .bt file
+
+hydratest/reboot/hdfs.bt

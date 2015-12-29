@@ -1,0 +1,94 @@
+include $JTESTS/sql/hdfs/sqlHdfsRandom.bt
+
+// Compaction
+sql/hdfs/hdfsCompaction.conf
+  A = datastore datastoreHosts = 1 datastoreVMsPerHost = 1 datastoreThreadsPerVM = 1
+  B = accessor  accessorHosts  = 1 accessorVMsPerHost  = 1 accessorThreadsPerVM  = 3
+  C = locator   locatorHosts   = 1 locatorVMsPerHost   = 1 locatorThreadsPerVM   = 1
+  redundantCopies    = 1
+  testUniqueKeys     = false
+  testMultiTableJoin = false
+  securities=trade.securities:0
+  hoplogJanitorIntervalSecs = 30
+  desiredMinorCompactions   = 100
+  desiredMajorCompactions   = 2
+
+// Compaction using SYS.HDFS_FORCE_COMPACTION vs. configuring major compactions
+sql/hdfs/hdfsCompactionProcedure.conf
+  A = datastore datastoreHosts = 1 datastoreVMsPerHost = 1 datastoreThreadsPerVM = 1
+  B = accessor  accessorHosts  = 1 accessorVMsPerHost  = 1 accessorThreadsPerVM  = 3
+  C = locator   locatorHosts   = 1 locatorVMsPerHost   = 1 locatorThreadsPerVM   = 1
+  redundantCopies    = 1
+  testUniqueKeys     = false
+  testMultiTableJoin = false
+  securities=trade.securities:0
+  hoplogJanitorIntervalSecs = 30
+  desiredMinorCompactions   = 1130
+  desiredMajorCompactions   = 226
+  
+sql/hdfs/testBug49002.conf
+  A=datastore datastoreHosts=4 datastoreVMsPerHost=1 datastoreThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=9
+  locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  redundantCopies=1
+  testMultiTableJoin=false
+  testUniqueKeys=true
+  mapredVersion1=true,false 
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:random
+  employees=emp.employees:random
+
+sql/hdfs/alterHdfsStoreWriteOnly.conf
+  A=datastore datastoreHosts=4 datastoreVMsPerHost=1 datastoreThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=9
+  locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  redundantCopies=1
+  testUniqueKeys=true
+  alterType=WO_BUCKET_ORGANIZER, HDFS_AEQ
+  launchProcedure = true,false
+
+sql/hdfs/alterHdfsStoreRW.conf
+  A=datastore datastoreHosts=4 datastoreVMsPerHost=1 datastoreThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=9
+  locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  redundantCopies=1
+  testUniqueKeys=true
+  alterType=RW_BUCKET_ORGANIZER, HDFS_AEQ, COMPACTION_MANAGER_DISABLE_MINOR, COMPACTION_MANAGER_DISABLE_MAJOR, COMPACTION_MANAGER
+  launchProcedure = true,false
+
+sql/hdfs/concAlterHdfsStoreWriteOnly.conf
+  A=datastore datastoreHosts=4 datastoreVMsPerHost=1 datastoreThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=9
+  locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  redundantCopies=1
+  testUniqueKeys=true
+
+sql/hdfs/concAlterHdfsStoreRW.conf
+  A=datastore datastoreHosts=4 datastoreVMsPerHost=1 datastoreThreadsPerVM=1
+  B=accessor accessorHosts=3 accessorVMsPerHost=1 accessorThreadsPerVM=9
+  locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  redundantCopies=1
+  testUniqueKeys=true
+
+sql/hdfs/concAlterHdfsStoreWriteOnlyHA.conf
+  A=datastore datastoreHosts=4 datastoreVMsPerHost=1 datastoreThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=9
+  locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  redundantCopies=1
+  testUniqueKeys=true
+
+sql/hdfs/concAlterHdfsStoreRWHA.conf
+  A=datastore datastoreHosts=4 datastoreVMsPerHost=1 datastoreThreadsPerVM=1
+  B=accessor accessorHosts=3 accessorVMsPerHost=1 accessorThreadsPerVM=9
+  locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  redundantCopies=1
+  testUniqueKeys=true
+
+

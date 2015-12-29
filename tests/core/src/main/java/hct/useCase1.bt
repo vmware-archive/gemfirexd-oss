@@ -1,0 +1,38 @@
+
+// Simple failover test with configurable number of servers & clients
+// servers are stopped (until only 1 server remains).
+// varies number of connectionsPerServers
+hct/failover.conf
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 20 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+      hc.serverMemSize = 300m
+      threadLocalConnections = true connectionsPerServer = 1,10,20,40
+
+// same as above, but with roundRobin load balancing
+hct/failover.conf
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 20 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+      hc.serverMemSize = 300m
+      threadLocalConnections = false connectionsPerServer = 1,10,20,40
+
+// hydraized version of UseCase1 CBBs POC w/ sticky LoadBalancing
+hct/useCase1Failover.conf
+      useCase1ServerHosts = 3 feedHosts = 1 edgeHosts = 20
+      hc.serverMemSize = 300m dataSize = 2000,20000,200000
+      threadLocalConnections = true connectionsPerServer = 1
+
+hct/useCase1Failover.conf
+      useCase1ServerHosts = 3 feedHosts = 1 edgeHosts = 20
+      hc.serverMemSize = 300m dataSize = 20000
+      threadLocalConnections = true connectionsPerServer = 20
+
+hct/useCase1Failover.conf
+      useCase1ServerHosts = 3 feedHosts = 1 edgeHosts = 20
+      hc.serverMemSize = 300m dataSize = 20000
+      threadLocalConnections = true connectionsPerServer = 40
+
+// hydraized version of UseCase1 CBBs POC w/ RoundRobin LoadBalancing
+hct/useCase1Failover.conf
+      useCase1ServerHosts = 3 feedHosts = 1 edgeHosts = 20
+      hc.serverMemSize = 300m dataSize = 20000
+      LBPolicy = roundRobin connectionsPerServer = 20,40

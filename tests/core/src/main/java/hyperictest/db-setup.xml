@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="db-setup" basedir=".">
+
+
+	<target name="recreateMySQLSchema">
+
+		<echo message="Recreating database: ${mysql.db}" />
+		<sql driver="com.mysql.jdbc.Driver" url="${mysql.root.db.url}" userid="${mysql.db.admin.user}" password="${mysql.db.admin.password}" expandProperties="true" classpath="../lib/mysql-connector-java-5.0.5-bin.jar" onerror="continue">
+			<transaction>DROP DATABASE IF EXISTS ${mysql.db};</transaction>
+			<transaction>CREATE DATABASE ${mysql.db};</transaction>
+		</sql>
+		<echo message="Recreating user: ${mysql.db.user}" />
+		<sql driver="com.mysql.jdbc.Driver" url="${mysql.db.url}" userid="${mysql.db.admin.user}" password="${mysql.db.admin.password}" expandProperties="true" classpath="../lib/mysql-connector-java-5.0.5-bin.jar" onerror="continue">
+			<transaction>DROP USER '${mysql.db.user}';</transaction>
+			<transaction>CREATE USER '${mysql.db.user}'@'%' IDENTIFIED BY '${mysql.db.password}';</transaction>
+			<transaction>GRANT ALL ON ${mysql.db}.* TO '${mysql.db.user}'@'%';</transaction>
+		</sql>
+	</target>
+
+	<target name="recreateOracleSchema">
+		<echo message="Recreating user: ${oracle.db.user}" />
+		<sql driver="oracle.jdbc.driver.OracleDriver" url="${oracle.db.url}" userid="${oracle.db.admin.user}" password="${oracle.db.admin.password}" expandProperties="true" classpath="../lib/ojdbc14.jar" onerror="continue">
+			<transaction>
+				DROP USER ${oracle.db.user} cascade;
+			</transaction>
+			<transaction>
+				CREATE USER ${oracle.db.user} IDENTIFIED BY
+				${oracle.db.password} DEFAULT TABLESPACE USERS;
+			</transaction>
+			<transaction>
+				GRANT CONNECT, RESOURCE TO
+				${oracle.db.user};
+		            </transaction>
+			<transaction>
+				GRANT CREATE VIEW TO ${oracle.db.user};
+			</transaction>
+		</sql>
+	</target>
+
+</project>

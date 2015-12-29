@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE cache PUBLIC
+    "-//GemStone Systems, Inc.//GemFire Declarative Caching 6.5//EN"
+    "http://www.gemstone.com/dtd/cache6_5.dtd">
+
+<!--
+  | CacheLoaderListenerWriter.xml
+  |
+  | Configures a region with a loader, a writer, and a listener.
+-->
+<cache>
+	<region name="exampleRegion">
+		<region-attributes>
+			<cache-loader>
+				<class-name>quickstart.SimpleCacheLoader</class-name>
+			</cache-loader>
+			<cache-writer>
+				<class-name>quickstart.SimpleCacheWriter</class-name>
+			</cache-writer>
+			<cache-listener>
+				<class-name>quickstart.SimpleCacheListener</class-name>
+			</cache-listener>
+		</region-attributes>
+	</region>
+</cache>

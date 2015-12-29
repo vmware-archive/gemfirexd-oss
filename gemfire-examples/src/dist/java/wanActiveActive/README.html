@@ -1,0 +1,197 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<style type="text/css">
+<!--
+.style1 {font-style: italic}
+.style2 {font-style: italic}
+.style4 {font-size: medium}
+-->
+</style>
+<BODY bgcolor="#ffffff"><HTML>
+ <IMG SRC="../../../../docs/VMwareLogo.png" BORDER="0">
+ <HEAD>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+  <META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+  <LINK REL="STYLESHEET" HREF="DocIndex.css" CHARSET="ISO-8859-1" TYPE="text/css">
+<H1 align="center">
+vFabric<FONT size=6><b><sup><font size=-0>&#8482;</font></sup></b></FONT></font> GemFire<FONT size=6><b><sup><font size=-0>&#174;</font></sup></b></FONT></font></H1>
+     </b></FONT>
+<H1 align="center">WAN</H1>
+<H2 align="center">Java Caching API Programming Example </H2>
+
+<HR color="#cc0000" size="2" align="left">
+
+<P>The <b>wan</b> example is an application that simulates two active WAN sites, namely a US site
+and an EU site. To keep things simple each site has only one cache server.
+The example shows the use of a conflict resolver to keep the two sites consistent.  The
+resolver has several options for how conflicts are resolved that are set in the server cache.xml files.
+The example is located in the GemFire installation under
+<code>examples/dist/wanActiveActive</code>.</P>
+
+<P>The WAN example contains the following six components:</P>
+
+<UL>
+<LI>A Locator service process for the US site
+<LI>A Locator service process for the EU site
+<LI>A US WAN client that puts entries into a WAN-enabled region
+<LI>A EU WAN client that does the same
+<LI>A US WAN server that receives entries from the US client and distributes them to the EU system
+<LI>A EU WAN server that receives entries from the EU client and distributes them to the US system
+</UL>
+
+<P>In every shell used to run this example application, configure your
+environment according to the instructions provided in
+<a href="../../EnvSetup.html">examples/EnvSetup.html</a>.
+</P>
+
+<P>Once your environment is set, change to the
+<code>examples/dist/wanActiveActive</code> directory to run the
+application.</P>
+
+<P>To run the WAN active-active example, perform the following steps:</P>
+
+<OL>
+<LI>Launch a shell for the US server
+  <P>The US WAN server is a cache server with a sender to the EU WAN. This sender forwards any client updates
+to entries in the trades region to the EU WAN. Entry updates received from the EU WAN sender are
+distributed to its clients.</P>
+  <P>Change to the <code>examples/dist/wanActiveActive/us-server</code> directory and run the following command:</P>
+<PRE>
+cacheserver start
+</PRE>
+This command logs output like shown below:
+<PRE>Starting CacheServer with pid: 18087
+CacheServer pid: 18087 status: running
+  </PRE>
+It also opens a GUI that will update every two seconds to show the current cache state and
+the number of conflicts between the two systems that have been detected.
+<p>  
+  
+<LI>Launch a shell for the EU server
+  <P>The EU server has a gateway sender to the US distributed system. This gateway sender forwards any client updates
+to entries in the trades region to the US server. Entry updates received from the US system will be
+distributed to its clients.</P>
+<P>Change to the <code>examples/dist/wanActiveActive/eu-server</code> directory and
+run the following command:</P>
+<PRE>
+cacheserver start
+</PRE>
+This command logs output like shown below:
+
+<PRE>Starting CacheServer with pid: 18686
+CacheServer pid: 18686 status: running
+</PRE>
+This server also opens a GUI that will update every two seconds to show the current cache state and
+the number of conflicts between the two systems that have been detected.  The number here may differ
+from that in the other server because the timing of events can cause some events in one system to be
+in conflict while they are not conflicting in the other syste,.
+<p>
+<LI>Launch a shell for the US client
+<P>Change to the <code>examples/dist/wanActiveActive/us-client</code> directory and run the following command:.</P>
+<P>The WAN client updates the same entry over and over again.</P>
+<PRE>
+java wanActiveActive.WANClient
+</PRE>
+
+<P>This command logs output like shown below:</P>
+<PRE>
+Created GemFire client cache: us-client
+Retrieved region: com.gemstone.gemfire.internal.cache.LocalRegion[path='/wanActiveActive';scope=LOCAL';dataPolicy=NORMAL; gatewayEnabled; concurrencyChecksEnabled]
+Registered interest in updates for region wanActiveActive
+PID 18918 putting update #1
+PID 18918 putting update #2
+PID 18918 putting update #3
+PID 18918 putting update #4
+PID 18918 putting update #5
+PID 18918 putting update #6
+</PRE>
+
+<LI>Launch a shell for the EU client 
+<P>Like the US client the EU client updates the same entry over and over again.</P>
+<P>Change to the <code>examples/dist/wanActiveActive/eu-client</code> directory and run the following command:</P>
+<PRE>
+java wanActiveActive.WANClient
+</PRE>
+
+<P>This command logs output like shown below:</P>
+<PRE>
+Created GemFire client cache: eu-client
+Retrieved region: com.gemstone.gemfire.internal.cache.LocalRegion[path='/wanActiveActive';scope=LOCAL';dataPolicy=NORMAL; gatewayEnabled; concurrencyChecksEnabled]
+Registered interest in updates for region wanActiveActive
+current value is from other system: PID=18918 count=6
+PID 19010 putting update #7
+PID 19010 putting update #8
+PID 19010 putting update #9
+PID 19010 putting update #10
+PID 19010 putting update #11
+PID 19010 putting update #12
+current value is from other system: PID=18198 count=13
+PID 19010 putting update #14
+</PRE>
+
+<P>When both clients are running at the same time there will be update conflicts.
+These are intercepted in the servers and handed to the WAN gateway conflict
+resolvers.  The resolver in each server will update its conflict-count in the
+GUI dialog.</p>
+The two systems update each other asynchronously so you will observe short intervals
+where they do not appear to be in sync.  If you stop the clients you will observe
+that the servers soon become consistent.  The clients can be stopped an restarted as
+often as you like.
+<p>
+<LI>Examine the us-server/cacheserver.log file and you will find details of conflicts being
+resolved by the WANConflictResolver example resolver class.  The output looks like this:
+<PRE>
+[info 2012/07/02 13:21:33.125 PDT  <ServerConnection on port 11111 Thread 0> tid=0x38] WANConflictResolver: 
+  existing timestamp=1341260492865
+  existing value=PDX[33554433,wanActiveActive.Value]{history=[PID=22516 count=4, PID=22516 count=3, PID=22516 count=2], merged=false, modification=PID=22516 count=4, modificationCount=4}
+  proposed timestamp=1341260492376
+  proposed value=PDX[33554433,wanActiveActive.Value]{history=[PID=22557 count=4, PID=22516 count=3, PID=22516 count=2], merged=false, modification=PID=22557 count=4, modificationCount=4}
+
+[info 2012/07/02 13:21:33.126 PDT  <ServerConnection on port 11111 Thread 0> tid=0x38] event is older than cached value - disallowing event
+</PRE>
+
+<LI>Stop the us-server and eu-server cache server VMs
+by entering <code>cacheserver stop</code> in their shells. Or by pressing the Close button in the GUI windows.
+The clients will detect loss of the servers and exit.
+An example is shown below.
+<PRE>
+cacheserver stop
+CacheServer stopped</PRE>
+Close the four open shells by entering <code>exit</code> in each. 
+</OL>
+
+<LI>The wanActiveActive cache servers can be modified to perform three different types of conflict resolution:
+"use-latest", "merge" or "highest-int".  These are configured in cache.xml in the &LTgateway-conflict-resolver&GT
+settings:
+<pre>
+  &LTgateway-conflict-resolver&GT
+    &LTclass-name&GTwanActiveActive.WANConflictResolver&LT/class-name&GT
+    &LTparameter name="resolution-type"&GT
+      &LTstring&GT<font color="blue">merge</font>&LT/string&GT
+    &LT/parameter&GT
+</pre>
+To select a different resolution algorithm stop the hubs as described above and edit the
+us-server/cache.xml and eu-server/cache.xml files to change the resolution-type parameter.
+
+<p>The default is "use-latest", which keeps the most recent change.  If two
+changes happen to have the exact same timestamp then the distributed-system ID is checked and the EU hub is
+allowed to prevail.
+
+<p>"merge" resolution attempts to merge the conflicting events, though it may cause their contents to be slightly
+out of order in the two systems.  When this resolution is in effect a flag is set on the merged value so that clients
+can tell that the value has been tampered with.  The clients look for this and will display
+<pre>
+current value was merged by conflict resolver: { id=5, str='PID=23728 count=5', merged=true, 
+history=['PID=23770 count=5''PID=23728 count=5''PID=23728 count=4''
+</pre>
+In this case you can see that there are two count=5 entries that were both based on a count=4 and that
+the two changes were preserved in the merge.
+
+<p>"highest-int" will attempt to keep the value with the highest modification count.  Each time a client modifies
+the cached object it increments the modification count, so this will attempt to preserve the most operations
+performed on the object.
+<HR color="#cc0000" size="2" align="left">
+
+</BODY>
+</HTML>
+

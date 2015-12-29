@@ -1,0 +1,291 @@
+//simple DDL test
+sql/testDDL.conf
+    A=peer peerHosts=1 peerVMsPerHost=1 peerThreadsPerVM=3
+
+//round up precision
+sql/testbug39455.conf
+  A=peer peerHosts=1 peerVMsPerHost=1 peerThreadsPerVM=3
+  
+//single vm operations    
+sql/concMultiTablesUniq.conf
+  A=peer peerHosts=1 peerVMsPerHost=1 peerThreadsPerVM=20  
+
+sql/concMultiTablesUniq.conf
+  A=peer peerHosts=1 peerVMsPerHost=10 peerThreadsPerVM=5    
+
+sql/testGFE.conf
+  A=peer peerHosts=1 peerVMsPerHost=1 peerThreadsPerVM=20  
+
+sql/testGFE.conf
+  A=peer peerHosts=1 peerVMsPerHost=5 peerThreadsPerVM=10 
+
+sql/concGFENonUniqSingleNode.conf
+  A=peer peerHosts=1 peerVMsPerHost=1 peerThreadsPerVM=100
+  
+sql/concGFENonUniq.conf
+  A=peer peerHosts=2 peerVMsPerHost=5 peerThreadsPerVM=11
+  
+//using accessorDataStore config
+sql/concMultiTablesUniqWithAccessors.conf
+    locatorHosts = 1 locatorVMsPerHost =2 locatorThreadsPerVM = 1
+    A=store storeHosts=1 storeVMsPerHost=1 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=8
+    
+sql/concMultiTablesUniqWithAccessors.conf
+    locatorHosts = 1 locatorVMsPerHost =2 locatorThreadsPerVM = 1
+    A=store storeHosts=1 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=8    
+
+sql/testbug39543.conf    
+    A=store storeHosts=1 storeVMsPerHost=1 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=5 accessorThreadsPerVM=10    
+
+sql/testGFEWithAccessor.conf
+    A=store storeHosts=1 storeVMsPerHost=1 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=4 accessorThreadsPerVM=8
+
+sql/testGFEWithAccessor.conf
+    A=store storeHosts=2 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=5 accessorThreadsPerVM=8
+
+sql/concGFENonUniqSingleStoreWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=1 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=6 accessorThreadsPerVM=8
+
+sql/concGFENonUniqWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=6 accessorThreadsPerVM=10
+
+//HA test (accessor/dataStore)
+sql/testGFEWithAccessorHA.conf
+    A=store storeHosts=1 storeVMsPerHost=7 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=8
+    redundantCopies = 1, 2, 3
+
+sql/concMultiTablesUniqProcedureIndexWithAccessorsHA.conf
+    locatorHosts = 1 locatorVMsPerHost =2 locatorThreadsPerVM = 1
+    A=store storeHosts=1 storeVMsPerHost=2,5 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=10
+    dropIndex= true
+    redundantCopies=1
+    
+sql/concMultiTablesUniqProcedureIndexWithAccessorsHA.conf
+    locatorHosts = 1 locatorVMsPerHost =2 locatorThreadsPerVM = 1
+    A=store storeHosts=1 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=3 accessorThreadsPerVM=10
+    dropIndex= true
+    redundantCopies=2
+      
+sql/concMultiTablesUniqProcedureIndexWithAccessorsHA.conf
+    locatorHosts = 1 locatorVMsPerHost =2 locatorThreadsPerVM = 1
+    A=store storeHosts=1 storeVMsPerHost=6 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=10
+    dropIndex= true
+    redundantCopies=2
+    
+sql/concMultiTablesUniqProcedureIndexWithAccessorsHA.conf
+    locatorHosts = 1 locatorVMsPerHost =2 locatorThreadsPerVM = 1
+    A=store storeHosts=1 storeVMsPerHost=4 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=2 accessorThreadsPerVM=10
+    dropIndex= true
+    redundantCopies=3
+  
+sql/concMultiTablesUniqProcedureIndexWithAccessorsHA.conf
+    locatorHosts = 1 locatorVMsPerHost =2 locatorThreadsPerVM = 1
+    A=store storeHosts=1 storeVMsPerHost=7 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=7
+    dropIndex= true
+    redundantCopies=3
+       
+//Index test (accessor/dataStore)
+sql/concMultiTablesUniqIndexWithAccessors.conf
+    locatorHosts = 1 locatorVMsPerHost =2 locatorThreadsPerVM = 1
+    A=store storeHosts=1 storeVMsPerHost=1, 8 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=10
+    dropIndex = true
+
+//test unique local index without unique constraint, so only 1 data store is allowed    
+sql/testUniqIndexVerifyWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=10    
+
+sql/indexTest.conf
+    A=store storeHosts=1 storeVMsPerHost=1,5 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=10
+    dropIndex = true
+
+//mixed replicate with partitioned table
+sql/concMixedTablesUniqWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=5 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=5 accessorThreadsPerVM=8
+       
+//create procedures and call procedures       
+sql/concMultiTablesUniqProcedureWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=1,6 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=10   
+
+//procedures without verifications    
+sql/concGFENonUniqProcedureSingleStoreWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=1 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=6 accessorThreadsPerVM=10 
+    
+sql/concGfxdNonUniqProcedureWithAccessors.conf
+    locatorHosts = 1 locatorVMsPerHost =2 locatorThreadsPerVM = 1
+    A=store storeHosts=1 storeVMsPerHost=7 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=6 accessorThreadsPerVM=10
+
+sql/concGfxdNonUniqProcedureWithAccessorsHA.conf
+    locatorHosts = 1 locatorVMsPerHost =2 locatorThreadsPerVM = 1
+    A=store storeHosts=1 storeVMsPerHost=7 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=6 accessorThreadsPerVM=10
+    redundantCopies=1
+    
+sql/concGfxdNonUniqProcedureWithAccessorsHA.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    A=store storeHosts=1 storeVMsPerHost=6 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=20
+    redundantCopies=2
+    
+sql/concGfxdNonUniqProcedureWithAccessorsHA.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    A=store storeHosts=1 storeVMsPerHost=5 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=20
+    redundantCopies=3    
+
+//different partition strategies
+sql/randomPartitionClauseUniqWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=1, 9 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=10
+
+//mixed partition and replicate tables
+sql/randomPartitionReplicateTablesUniqWithAccessors.conf
+    locatorHosts = 1 locatorVMsPerHost =2 locatorThreadsPerVM = 1
+    A=store storeHosts=1 storeVMsPerHost=4, 7 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=10
+
+//test server groups
+sql/randomServerGroupsUniqWithAccessors.conf
+    A=store storeHosts=6 storeVMsPerHost=2 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=10
+    SGvms1=1 SGvms2=2 SGvms3=2 SGvms4=2 SGvms5=3 SGvms6=2
+    SGList1="random" SGList2="random" SGList3="random"
+    SGList4="random" SGList5="random" SGList6="random"
+    
+sql/concGFEIndexNonUniqWithAccessors.conf 
+    A=store storeHosts=1 storeVMsPerHost=4 storeThreadsPerVM=1 
+    B=accessor accessorHosts=2 accessorVMsPerHost=8 accessorThreadsPerVM=8 
+    dropIndex = true
+    
+sql/testDDLReplayHA.conf 
+    A=store storeHosts=1 storeVMsPerHost=5 storeThreadsPerVM=1 
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=10 
+    dropIndex=true 
+    redundantCopies=2
+    securities=trade.securities:random
+    customers=trade.customers:random
+    networth=trade.networth:random
+    portfolio=trade.portfolio:random
+    sellorders=trade.sellorders:random
+    buyorders=trade.buyorders:random
+    txhistory=trade.txhistory:random
+ 
+//create procedures and call procedures, index operations on random partition tables   
+sql/randomPartitionTablesProcedureIndexWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=6 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=10
+    dropIndex=true
+    manageDerbyServer=true
+    testUniqueKeys = true
+    redundantCopies=2
+
+sql/randomPartitionTablesProcedureIndexWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=6 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=10
+    dropIndex=true
+    manageDerbyServer=false
+    testUniqueKeys = false
+    redundantCopies=2    
+    
+sql/serialRandomPartitionTablesProcedureIndexWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=5 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=10
+    dropIndex=true
+    redundantCopies=2, 3
+    
+sql/randomPartitionReplicateTablesNonUniqWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=4  storeThreadsPerVM=1
+    B=accessor accessorHosts=3 accessorVMsPerHost=9 accessorThreadsPerVM=6
+
+sql/randomPartitionReplicateTablesNonUniqWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost= 6 storeThreadsPerVM=1
+    B=accessor accessorHosts=3 accessorVMsPerHost=9 accessorThreadsPerVM=4
+    
+sql/concDDLWithAccessors.conf
+    A=store storeHosts=3 storeThreadsPerVM=1 storeVMsPerHost=1
+    B=accessor accessorHosts=2 accessorThreadsPerVM=3 accessorVMsPerHost=3
+
+sql/testbug43418.conf
+  A=store storeHosts=2 storeVMsPerHost=2 storeThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=2 accessorThreadsPerVM=6
+
+sql/randomPartitionClauseUniqSelectIntoWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=9 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=10
+    
+sql/randomPartitionClauseUniqSelectIntoWithAccessorsHA.conf
+    A=store storeHosts=1 storeVMsPerHost=9 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=10    
+    redundantCopies=2
+    
+sql/multiTablesDefaultIdUniqAccessorsHA.conf
+    locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+    A=store storeHosts=1 storeVMsPerHost=6 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=10
+    dropIndex=true
+    testUniqueKeys = true
+    redundantCopies=1
+    
+sql/multiTablesGenerateIdAlwaysUniqAccessorsHA.conf
+    locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+    A=store storeHosts=1 storeVMsPerHost=6 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=10
+    dropIndex=true
+    testUniqueKeys = true
+    redundantCopies=1
+
+sql/truncateTablesUniqAccessorsHA.conf
+    locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+    A=store storeHosts=1 storeVMsPerHost=6 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=10
+    dropIndex=true
+    testUniqueKeys = true
+    redundantCopies=1
+
+//coverage for new node join hung when there is a rowloader attached
+sql/randomPartitionReplicateTablesNonUniqWithAccessorsNewNodes.conf
+    A=store storeHosts=1 storeVMsPerHost=6  storeThreadsPerVM=1
+    B=accessor accessorHosts=3 accessorVMsPerHost=1 accessorThreadsPerVM=6
+
+// test the GemFireXD Backup and restore process
+INCLUDE $JTESTS/sql/backupAndRestore/backupAndRestore.bt
+
+
+sql/indexTestWithMoreData.conf
+    A=store storeHosts=1 storeVMsPerHost=1 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=2 accessorThreadsPerVM=5
+    dropIndex = true
+
+//add concurrent ddl op only in limited tests to avoid too many failures with #47362
+sql/concDDLMultiTablesUniqProcedureIndexWithAccessorsHA.conf
+    locatorHosts = 1 locatorVMsPerHost =2 locatorThreadsPerVM = 1
+    A=store storeHosts=1 storeVMsPerHost=4 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=2 accessorThreadsPerVM=10
+    dropIndex= true
+    redundantCopies=1
+    
+sql/concDDLMultiTablesUniqProcedureIndexWithAccessorsHA.conf
+    locatorHosts = 1 locatorVMsPerHost =2 locatorThreadsPerVM = 1
+    A=store storeHosts=2 storeVMsPerHost=4 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=2 accessorThreadsPerVM=10
+    dropIndex= true
+    redundantCopies=3    

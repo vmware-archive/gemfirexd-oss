@@ -1,0 +1,33 @@
+cacheperf/comparisons/gemfirexd/largeobject/thinClient/getTest.conf
+  api=GFXD
+  clientHosts=9 clientVMsPerHost=1 clientThreadsPerVM=1 //,4,8,16,32
+  serverHosts=1 serverVMsPerHost=1 serverThreadsPerVM=1
+  numLargeObjectsPerServer=20000000
+  heapMB = 15000
+  redundantCopies=0
+  txIsolation = readCommitted
+  enableHistogram=true
+  queryPlanFrequency = 0
+  perffmwk.comparisonKey = fromProps:get:clientThreadsPerVM
+cacheperf/comparisons/gemfirexd/largeobject/thinClient/putTest.conf
+  api=GFXD
+  clientHosts=9 clientVMsPerHost=1 clientThreadsPerVM=1 //,4,8,16,32
+  serverHosts=1 serverVMsPerHost=1 serverThreadsPerVM=1
+  numLargeObjectsPerServer=20000000
+  heapMB = 15000
+  redundantCopies=0
+  txIsolation = readCommitted
+  enableHistogram=true
+  queryPlanFrequency = 0
+  perffmwk.comparisonKey = fromProps:put:clientThreadsPerVM
+cacheperf/comparisons/gemfirexd/largeobject/thinClient/updateTest.conf
+  api=GFXD
+  clientHosts=9 clientVMsPerHost=1 clientThreadsPerVM=1 //,4,8,16,32
+  serverHosts=1 serverVMsPerHost=1 serverThreadsPerVM=1
+  numLargeObjectsPerServer=20000000
+  heapMB = 15000
+  redundantCopies=0
+  txIsolation = readCommitted
+  enableHistogram=true
+  queryPlanFrequency = 0
+  perffmwk.comparisonKey = fromProps:update:clientThreadsPerVM

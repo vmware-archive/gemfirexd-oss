@@ -1,0 +1,79 @@
+plugins {
+  id "ca.coglinc.javacc" version "2.3.1"
+}
+
+dependencies {
+  provided project(subprojectBase + 'gemfirexd:core')
+  compile project(subprojectBase + 'gemfirexd-hibernate')
+
+  // ddlutils dependencies
+  compile 'commons-beanutils:commons-beanutils:1.9.2'
+  compile 'commons-codec:commons-codec:1.10'
+  compile 'commons-collections:commons-collections:3.2.1'
+  compile 'commons-dbcp:commons-dbcp:1.4'
+  compile "org.scala-lang:jline:${scalaVersion}"
+  provided "org.apache.ant:ant:${antVersion}"
+
+  // need hydra support classes for unit tests too
+  testCompile project(subprojectBase + 'tests-core')
+  testCompile project(subprojectBase + 'gemfirexd:client')
+  testCompile project(path: subprojectBase + 'gemfire-junit', configuration: 'testOutput')
+
+  provided "org.apache.hadoop:hadoop-annotations:${hadoopVersion}"
+  provided "org.apache.hadoop:hadoop-auth:${hadoopVersion}"
+  provided "org.apache.hadoop:hadoop-common:${hadoopVersion}"
+  provided "org.apache.hadoop:hadoop-hdfs:${hadoopVersion}"
+  provided "org.apache.hadoop:hadoop-mapreduce-client-core:${hadoopVersion}"
+  provided "org.apache.hadoop:hadoop-common:${hadoopVersion}:tests"
+  provided "org.apache.hadoop:hadoop-hdfs:${hadoopVersion}:tests"
+  provided "org.apache.hbase:hbase:${hbaseVersion}"
+  provided 'commons-configuration:commons-configuration:1.6'
+
+  provided "com.pivotal:pxf-api:${pxfVersion}"
+
+  testCompile "org.apache.derby:derby:${derbyVersion}"
+  testCompile "org.apache.derby:derbynet:${derbyVersion}"
+  testCompile 'oro:oro:2.0.8'
+  testCompile 'dom4j:dom4j:1.6.1'
+  // Embedded Apache Directory Server for LDAP tests
+  testCompile(group: 'org.apache.directory.server', name: 'apacheds-all', version: '1.5.7') {
+    exclude(group: 'org.apache.directory.shared', module: 'shared-ldap-schema')
+  }
+
+  testRuntime project(subprojectBase + 'gemfirexd:core')
+}
+
+// move javacc output directory to a place where IDEA can easily register
+def javaccOut = 'src/generated/javacc'
+compileJavacc.outputDirectory = file(javaccOut)
+
+sourceSets.main.java.srcDirs = [ 'src/main/java', javaccOut, 'src/ddlutils/java' ]
+sourceSets.test.java.srcDirs = [ 'src/test/java', 'src/testing/java', 'src/dunit/java',
+                                 'src/demo/java', 'src/test-ddlutils/java' ]
+
+task generatePropertiesFiles {
+  def infoDir = file("${buildDir}/resources/main/com/pivotal/gemfirexd/internal/info")
+  outputs.file "${infoDir}/tools.properties"
+  inputs.dir compileJava.destinationDir
+
+  doLast {
+    println('Creating tools properties')
+    derbyProps.put('gemfirexd.product.technology.name', "${DERBY_NAME} Tools")
+    writeProperties(infoDir, 'tools.properties', COPYRIGHT, derbyProps)
+  }
+}
+compileJava.dependsOn generatePropertiesFiles
+
+jar {
+  baseName = 'gemfirexd-tools'
+
+  from {
+    configurations.runtime.collect {
+      it.isDirectory() ? it : zipTree(it).matching {
+        exclude {
+          it.path.contains('META-INF')
+        }
+      }
+    }
+  }
+}

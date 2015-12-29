@@ -1,0 +1,65 @@
+// Run with local.sqlNetworkPartition3hosts.conf
+
+sql/networkPartition/p2pNetworkPartitionNoReconnect.conf
+    locatorHosts = 2 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+    A=survivor survivorHosts=1 survivorVMsPerHost=4 survivorThreadsPerVM=2
+    B=loser loserHosts=1 loserVMsPerHost=2 loserThreadsPerVM=2
+    tableDefaultPartitioned=false
+    securities=trade.securities:replicate
+    customers=trade.customers:replicate
+    networth=trade.networth:replicate
+    portfolio=trade.portfolio:replicate
+    sellorders=trade.sellorders:replicate
+    buyorders=trade.buyorders:replicate
+    txhistory=trade.txhistory:replicate
+    employees=emp.employees:replicate
+    trades=trade.trades:replicate
+    product=gemfirexd
+
+sql/networkPartition/p2pNetworkPartitionAutoReconnect.conf
+    locatorHosts = 2 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+    A=survivor survivorHosts=1 survivorVMsPerHost=4 survivorThreadsPerVM=2
+    B=loser loserHosts=1 loserVMsPerHost=2 loserThreadsPerVM=2
+    tableDefaultPartitioned=false
+    securities=trade.securities:replicate
+    customers=trade.customers:replicate
+    networth=trade.networth:replicate
+    portfolio=trade.portfolio:replicate
+    sellorders=trade.sellorders:replicate
+    buyorders=trade.buyorders:replicate
+    txhistory=trade.txhistory:replicate
+    employees=emp.employees:replicate
+    trades=trade.trades:replicate
+    
+sql/networkPartition/accessorDatastoreNetworkPartitionAccessorReconnect.conf
+    locatorHosts = 2 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+    A=datastore datastoreHosts=1 datastoreVMsPerHost=4 datastoreThreadsPerVM=2
+    B=accessor accessorHosts=1 accessorVMsPerHost=2 accessorThreadsPerVM=2
+    tableDefaultPartitioned=false
+    securities=trade.securities:replicate
+    customers=trade.customers:replicate
+    networth=trade.networth:replicate
+    portfolio=trade.portfolio:replicate
+    sellorders=trade.sellorders:replicate
+    buyorders=trade.buyorders:replicate
+    txhistory=trade.txhistory:replicate
+    employees=emp.employees:replicate
+    trades=trade.trades:replicate
+    product=gemfirexd
+    
+sql/networkPartition/accessorDatastoreNetworkPartitionDatastoreReconnect.conf
+    locatorHosts = 2 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+    A=datastore datastoreHosts=1 datastoreVMsPerHost=2 datastoreThreadsPerVM=2
+    B=accessor accessorHosts=1 accessorVMsPerHost=4 accessorThreadsPerVM=2
+    tableDefaultPartitioned=false
+    securities=trade.securities:replicate
+    customers=trade.customers:replicate
+    networth=trade.networth:replicate
+    portfolio=trade.portfolio:replicate
+    sellorders=trade.sellorders:replicate
+    buyorders=trade.buyorders:replicate
+    txhistory=trade.txhistory:replicate
+    employees=emp.employees:replicate
+    trades=trade.trades:replicate
+    product=gemfirexd
+    

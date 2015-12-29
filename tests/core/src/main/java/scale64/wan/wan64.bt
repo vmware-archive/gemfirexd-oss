@@ -1,0 +1,29 @@
+//
+// VOLUME TESTING
+//
+// Scaled up 64-bit functional tests with large heaps and lots of data.
+//
+// Run these tests on sufficient 64-bit hosts with a minimum of 8 GB RAM to
+// avoid swapping.  Run BatteryTest with -DmasterHeapMB=3000 to support larger
+// blackboards.  Also run with -DmoveRemoteDirs=true and with system directories
+// local to each VM to accommodate overflow.
+//
+// To collect more complete logs, set hydra.log.LogPrms-file_maxKBPerVM to a
+// very large value.  It is currently set to 25000 KB in all tests.
+//
+
+scale64/wan/p2p64.conf
+  wanSites=2
+  locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+  peerHostsPerSite=2 peerVMsPerHost=1 peerThreadsPerVM=5
+  numEntries=1000000  entrySize=2048
+  peerMem=4g
+  
+/*commenting out for Cheetah release  
+scale64/wan/hct64.conf
+  wanSites=2
+  locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+  bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+  edgeHostsPerSite=1 edgeVMsPerHost=2 edgeThreadsPerVM=5
+  numEntries=800000  entrySize=2048
+  serverMem=4g  clientMem=4g */

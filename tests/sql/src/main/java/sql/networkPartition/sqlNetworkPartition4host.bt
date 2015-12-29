@@ -1,0 +1,37 @@
+// This bt should be run with local.sqlNetworkPartition4hosts.conf
+
+sql/networkPartition/datastoreDatastoreNetworkPartitionReconnect.conf
+    locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+    A=accessor accessorHosts=1 accessorVMsPerHost=2 accessorThreadsPerVM=2
+    B=survivingdatastore survivingdatastoreHosts=1 survivingdatastoreVMsPerHost=6 survivingdatastoreThreadsPerVM=2
+    C=losingdatastore losingdatastoreHosts=1 losingdatastoreVMsPerHost=3 losingdatastoreThreadsPerVM=2
+    tableDefaultPartitioned=false
+    securities=trade.securities:replicate
+    customers=trade.customers:replicate
+    networth=trade.networth:replicate
+    portfolio=trade.portfolio:replicate
+    sellorders=trade.sellorders:replicate
+    buyorders=trade.buyorders:replicate
+    txhistory=trade.txhistory:replicate
+    employees=emp.employees:replicate
+    trades=trade.trades:replicate
+    product=gemfirexd
+    
+sql/networkPartition/clientServerNetworkPartitionReconnectFailOver.conf
+    locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+    A=client clientHosts=1 clientVMsPerHost=2 clientThreadsPerVM=2
+    B=survivingserver survivingserverHosts=1 survivingserverVMsPerHost=4 survivingserverThreadsPerVM=2
+    C=losingserver losingserverHosts=1 losingserverVMsPerHost=2 losingserverThreadsPerVM=2
+    redundantCopies=1
+    dropIndex = true
+    tableDefaultPartitioned=false
+    securities=trade.securities:replicate
+    customers=trade.customers:replicate
+    networth=trade.networth:replicate
+    portfolio=trade.portfolio:replicate
+    sellorders=trade.sellorders:replicate
+    buyorders=trade.buyorders:replicate
+    txhistory=trade.txhistory:replicate
+    employees=emp.employees:replicate
+    trades=trade.trades:replicate
+    product=gemfirexd

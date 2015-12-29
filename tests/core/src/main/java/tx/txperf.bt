@@ -1,0 +1,12 @@
+// perftests on local region
+cacheperf/comparisons/localregion/localputs.conf
+  vmThreads=1
+  perffmwk.comparisonKey=localputs
+  keyAllocation=sameKeysRandomWrap
+                                                                                
+cacheperf/comparisons/localregion/txlocalputs.conf
+  vmThreads=1
+  perffmwk.comparisonKey=localputs
+  keyAllocation=sameKeysRandomWrap
+
+include $JTESTS/pst/txperf/txperf.bt

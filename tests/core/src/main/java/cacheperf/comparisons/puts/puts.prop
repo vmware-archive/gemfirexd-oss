@@ -1,0 +1,11 @@
+peerHosts = 1
+peerVMsPerHost = 1
+peerThreadsPerVM = 1
+
+cacheVendor = gemfire
+dataPolicy = normal
+keyAllocation = ownKey
+keysPerThread = 1
+objectType = objects.ArrayOfByte
+optimizationCount = 1000
+scope = local

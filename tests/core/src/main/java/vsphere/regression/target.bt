@@ -1,0 +1,13 @@
+target/targetClientServer.conf
+bridgeHosts = 1
+bridgeThreadsPerVM=1
+bridgeVMsPerHost=5
+edgeHosts=1
+edgeThreadsPerVM=1
+edgeVMsPerHost=3
+numAccessors=1
+threadGroupsName=edge
+
+target/targetP2P.conf
+A=peer peerHosts=3 peerVMsPerHost=2 peerThreadsPerVM=1 
+threadGroupsName=default    

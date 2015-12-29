@@ -1,0 +1,11 @@
+/*
+rebalance/concKnownKeysTxSerialRebalance.conf
+A = peer peerHosts=5 peerVMsPerHost=2 peerThreadsPerVM=10 numKeys=10000
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1
+startupRecoveryDelay = 0 redundantCopies = 1
+*/
+
+rebalance/concParRegTxStopStartWithRebalance.conf
+A = peer peerHosts=2 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies = 0 numVMsToStop = 1
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1
+

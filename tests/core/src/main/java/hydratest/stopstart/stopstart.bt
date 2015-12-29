@@ -1,0 +1,22 @@
+hydratest/stopstart/closetasks1.conf
+hydratest/stopstart/closetasks3.conf
+hydratest/stopstart/inittasks3.conf
+hydratest/stopstart/stop.conf
+hydratest/stopstart/stopclientname.conf
+hydratest/stopstart/stopclientnameregex.conf
+hydratest/stopstart/stopAsync.conf
+hydratest/stopstart/stopDeadlock.conf
+hydratest/stopstart/stopVarious1.conf
+hydratest/stopstart/stopVarious2.conf
+hydratest/stopstart/stopVarious3.conf
+hydratest/stopstart/stopVarious4.conf
+hydratest/stopstart/stopVariousAsync1.conf
+hydratest/stopstart/stopVariousAsync5.conf
+hydratest/stopstart/stopVariousAsyncTimeout1.conf // H
+hydratest/stopstart/stopVariousAsyncTimeout5.conf // H
+hydratest/stopstart/stopscheduling.conf
+hydratest/stopstart/stopschedulingtaskonclient.conf
+hydratest/stopstart/stopschedulingtaskonclientbatch.conf
+hydratest/stopstart/stopschedulingtaskonclientbatch2.conf
+hydratest/stopstart/stopschedulingtaskonclientbatch3.conf
+hydratest/stopstart/stopschedulingtaskonclientserial.conf

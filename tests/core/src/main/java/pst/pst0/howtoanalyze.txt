@@ -1,0 +1,154 @@
+When pst0 is run, we run on linux only as that is the platform where we have a 
+history of runs.  The tests take ~6 hours to run on Linux.
+
+Since the battery test file contains specifications for perffmwk.comparisonKey for
+each test, the results can be sorted based on the comparisonKey for simple generation
+of the test report.
+
+ComparisonKey legend:
+
+pXsX_X_XX
+ | | | |
+ | | | |
+ | | | ----- number of subscriber vms * threads
+ | | |
+ | | ------- number of publisher hosts
+ | |
+ | --------- sleep (0 if sleepBeforeOp = false, N if sleepBeforeOp = true)
+ |
+ ----------- payload (0 if no payload, or N).  If N is specified, messageSize = 512 is used.
+                                               Note this is 1024 bytes (512 - 16 bit unicode chars).
+
+Once the test run has completed, copy the directories into a directory along with the previous runs from 
+GemFire 3.0 (the baseline).  Use perffmwk.PerfSorter to sort into directories based 
+on the comparison keys.  (See sortperf)
+
+Once the directories have been sorted, you should see two test runs in each directory:
+- GF 3.0 (or whatever your baseline is)
+- GF 3.5 (or whatever your newest version)
+
+Use the compareperf script to run PerfComparer on each set of directories.
+If you want to see the raw performance numbers, use the rawperf script.
+
+A nice report format is show in performanceJ, pst0.results.txt.  
+
+Below is the pst0.results.txt with the 3.0, 3.5 comparison:
+note it is created by simply pulling the relevant statistics from each of the 
+files created by compareperf (xxx.txt) where xxx is the comparisonKey.
+
+================================================================================
+                                Comparison Report
+                          Tue Nov 30 15:59:09 PST 2004
+================================================================================
+                                    Build Key
+B: 3.0 build 119 04/23/2004 23:28:05 PDT optimized i386 Linux 2.4.20-24.7
+1: 3.5Beta1 build 67 11/23/2004 20:13:42 PST optimized i386 Linux 2.4.21-241-default
+================================================================================
+                                    Test Key
+B: cacheperf/comparisons/useCase17/useCase17.conf cacheVendor=gemfire
+1: cacheperf/comparisons/useCase17/useCase17.conf cacheVendor=gemfire
+================================================================================
+
+STATSPEC              OP    #1 
+p0s0_1_01
+putsPerSecond         avg      
+updateEventsPerSecond avg      
+updateMaxLatency      max 1.20 
+updateAvgLatency      avg 1.06 
+
+p0s0_1_12
+putsPerSecond         avg  2.07 
+updateEventsPerSecond avg  2.08 
+updateMaxLatency      max  1.72 
+updateAvgLatency      avg -1.96 
+
+p0s0_2_01
+putsPerSecond         avg  1.28 
+updateEventsPerSecond avg  1.28 
+updateMaxLatency      max       
+updateAvgLatency      avg -1.28 
+
+p0s0_2_12
+putsPerSecond         avg  1.12 
+updateEventsPerSecond avg  1.12 
+updateMaxLatency      max  1.65 
+updateAvgLatency      avg       
+
+p0sN_1_01
+putsPerSecond         avg     
+updateEventsPerSecond avg     
+updateMaxLatency      max     
+updateAvgLatency      avg     
+
+p0sN_1_12
+putsPerSecond         avg     
+updateEventsPerSecond avg     
+updateMaxLatency      max  1.25 
+updateAvgLatency      avg           
+
+p0sN_2_01
+putsPerSecond         avg           
+updateEventsPerSecond avg           
+updateMaxLatency      max           
+updateAvgLatency      avg           
+
+p0sN_2_12
+putsPerSecond         avg           
+updateEventsPerSecond avg           
+updateMaxLatency      max  1.13 
+updateAvgLatency      avg           
+
+pNs0_1_01
+putsPerSecond         avg -1.71 
+updateEventsPerSecond avg -1.71 
+updateMaxLatency      max       
+updateAvgLatency      avg  1.71 
+
+pNs0_1_12
+putsPerSecond         avg  1.44 
+updateEventsPerSecond avg  1.44 
+updateMaxLatency      max  1.51 
+updateAvgLatency      avg -1.41 
+
+pNs0_2_01
+putsPerSecond         avg  1.13 
+updateEventsPerSecond avg  1.13 
+updateMaxLatency      max       
+updateAvgLatency      avg -1.14 
+
+pNs0_2_12
+putsPerSecond         avg  1.09 
+updateEventsPerSecond avg  1.09 
+updateMaxLatency      max  1.70 
+updateAvgLatency      avg -1.06 
+
+pNsN_1_01
+putsPerSecond         avg     
+updateEventsPerSecond avg     
+updateMaxLatency      max     
+updateAvgLatency      avg     
+
+pNsN_1_12
+putsPerSecond         avg     
+updateEventsPerSecond avg     
+updateMaxLatency      max  1.19 
+updateAvgLatency      avg          
+
+pNsN_2_01
+putsPerSecond         avg           
+updateEventsPerSecond avg           
+updateMaxLatency      max           
+updateAvgLatency      avg           
+
+pNsN_2_06
+putsPerSecond         avg      
+updateEventsPerSecond avg      
+updateMaxLatency      max      
+updateAvgLatency      avg      
+
+pNsN_2_12
+putsPerSecond         avg           
+updateEventsPerSecond avg           
+updateMaxLatency      max 1.26 
+updateAvgLatency      avg           
+

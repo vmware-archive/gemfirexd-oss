@@ -1,0 +1,87 @@
+________________________________________________________________________________
+
+HOW TO ANALYZE PERFORMANCE AND SCALABILITY TESTS
+________________________________________________________________________________
+
+TASK GRANULARITY
+To check that granularity is not too large, look for tasks timing out.  If this occurs, check whether the task has, say, too large a batch size or hydra.Prms-maxResultWaitSec is too small.  To check that granularity not too small, look at taskmaster*.log and the scheduling of tasks of interest.  You should see one or more "Waiting for idle clients" log messages.  You can also look at TASK REPORTREPORTs in taskmaster*.log and check the min, mean, and max times to run the task to see that the granularity is as expected (do not check the min for tests that do client-controlled task termination).
+
+WARMUP
+If a test uses warmup, check that the trim intervals in trim.spec show non-null start times.  Look at throughput stats in vsd to see that performance has stabilized by the warmup point.  You might need to run a longer test to make sure max performance has been reached.
+
+REPRODUCIBLE RESULTS
+Make sure the test runs in its timing trim interval long enough to have reproducible results.  E.g., run the test 5 times and use the PerfComparer tool to see how the test varies from one run to the next, or use vsd.  If the test only needs to produce stable results after sufficient warmup, make sure the test is not overly long by checking with vsd to see that it's, say, not running many minutes after stability is reached.
+
+CPU USAGE
+Look at the cpu activity in performance.txt or vsd.  You can check cpuUsed on process stats, cpuActive on system stats, and loadAverge on system stats.  Make sure the test is not cpu-bound.  If it is, find out whether it is reasonable to move the test to a larger machine or distributed it across more machines or scale it back in some way.
+
+MEMORY USAGE
+Look at the memory use in performance.txt or vsd.  Make sure the java vms do not get out of memory errors and are not memory-bound, since this will slow performance with excessive garbage collection.
+
+THROUGHPUT
+Look at the test-specific throughput stats in vsd, performance.txt, and any perfcomparison.txt files generated.
+
+LATENCY AND RESPONSE TIME
+Look at the test-specific latency and response time stats in vsd, performance.txt, and any perfcomparison.txt files generated.
+
+________________________________________________________________________________
+
+SYMPTOMS AND POSSIBLE CAUSES
+________________________________________________________________________________
+
+Test performance degrades or improves from one build to the next.
+
+-- is it statistical noise?
+-- is the test running enough timed iterations to eliminate noise?
+-- is more logging being done in one of the runs?
+   -- look at the sizes of all hydra logs and system logs, including bgexec logs
+   -- check for debug logging, log level changes, 
+-- are more significantly more stats being archived in one of the runs?
+-- were the tests run on the same type of build (fast or slow)?
+-- were the tests run on the same host(s)?
+-- did one or more of the hosts undergo hardware or software changes?
+-- were there meaningful hydra configuration file differences?
+-- were relevant changes made to the test source?
+-- were relevant changes made to the product source?
+-- was there competition for the machine in one run but not the other?
+-- what statistics differ between the runs?
+-- is the product actually doing the work in both cases?
+
+________________________________________________________________________________
+
+SOME THINGS TO DO AND WATCH OUT FOR
+________________________________________________________________________________
+
+-- make sure that all logging below the level at which the the test will be run
+   when measuring performance and/or scalability does a check that the level is
+   enabled before building the log message, e.g., check for fineEnabled() before
+   issuing a fine level logging message
+
+-- run tests on a non-system disk
+
+
+VSD AND OTHER NOTES
+________________________________________________________________________________
+
+-- Check rssSize and imageSize in ProcessStats, and totalMemory in VMStats. Look
+   for any unexpected growth to see if there is a memory leak or inefficient
+   coding.  If so, do a JProbe heapdump to determine the culprit.
+
+-- Check freeMemory and pagesPagedOut in SystemStats and to see if a test had
+   sufficient memory to run efficiently.  If not, use a machine with more RAM or
+   scale the test down, especially if pagesPagedIn is also higher than desired.
+
+-- Check cpuActive in SystemStats to see if lack of CPU is the cause of a test
+   not scaling as expected, or, alternatively, whether a test is spending too
+   much time waiting or thrashing or dong system calls.
+
+-- check cacheperfstats, including getInitialImageTime and netsearchesCompleted
+-- check object and special map sizes
+-- check contextSwitches to look for thrashing
+-- check that all processes and threads are running concurrently instead of
+   having linux scheduling problems
+-- check distribution stats
+-- check java gc (can also use +XX:PrintGC)
+-- watch for rehash pattern
+-- check application stats
+-- check spinlock behavior

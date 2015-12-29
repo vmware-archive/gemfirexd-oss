@@ -1,0 +1,29 @@
+This example uses disk to extend a region's capacity. The region is
+configured with an eviction controller that overflows data to disk when
+the region reaches a specified capacity.
+
+Connecting to the distributed system and creating the cache.
+
+Example region "/exampleRegion" created in cache. 
+
+Putting 250 cache entries of 10 kilobytes each into the cache.
+When the configured limit of 1 megabyte capacity is reached, the data
+will overflow to files in overflowData1. Note the number of
+overflow files created.
+
+Finished putting entries.
+
+Use another shell to see the overflow files in overflowData1.
+The disk is used to extend available memory and these files are
+treated as part of the local cache.
+
+Press Enter in this shell to continue.
+
+Destroying some entries to allow compaction of overflow files...
+
+Please look again in overflowData1. The data in overflow files is
+compacted and the two files are merged into one.
+
+Press Enter in this shell to continue.
+
+Closing the cache and disconnecting.

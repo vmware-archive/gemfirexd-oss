@@ -1,0 +1,48 @@
+--------------------------------------------------------------------------------
+I copied the schema and other files to /export/bobo6/users/swale/UseCase3-S2
+
+The import.jar contains ImportOra class that is used by the import procedure to transform date/time from Oracle to GemFireXD format. You can add it to classpath of servers or install it into the datadictionary using "gfxd install-jar". The full UseCase3 schema is in schema.sql.
+
+Once schema is in place, the S2DataGenerator in that directory can be used to generate any amount of data for the tables. UseCase3 is looking to the tune of 5m rows and one of the main tables is TX_PL_POSITION, so you can use it like:
+
+java -cp .:gemfirexd-client.jar S2DataGenerator TX_PL_POSITION <host>:<port> 1000000
+
+to generate 1m rows where the program will pull schema of table from the server specified using client driver and write to TX_PL_POSITION.dat
+
+Then import procedure can be fired like in import.sql there:
+
+call syscs_util.import_table_ex('APP', 'TX_PL_POSITION', '../../TX_PL_POSITION.dat', ',', NULL, NULL, 0, 0, 6, 0, 'ImportOra', NULL);
+
+This is executed on the server so the file path is as seen by the server instance.
+
+Right now this is all manual and I am testing running all scripts from gfxd command-line but maybe later you can hydra-fy it.
+--------------------------------------------------------------------------------
+>> The DDL has this procedure:
+>> com.gemfirexd.funcs.Revenue.calculateRevenueByMonth. Will I need that 
+>> as well?
+--------------------------------------------------------------------------------
+> not required for the import
+--------------------------------------------------------------------------------
+> Great. What's the topology? How many servers? Where is the import 
+> executed from? How do the JVMs map to hosts?
+--------------------------------------------------------------------------------
+They are testing with 2 servers and a locator. I think both will have the dbsynchronizer. In their tests import is being done using a client driver, so data file is available on one of the servers to which client connects (or on both servers then client can connect to locator). 
+Alternatively the peer driver can be used with data locally on the peer client but they are not using that yet (though ultimately they might complain having to copy file to servers, so then this will be what we can suggest).
+
+We can test with one JVM per host. They will be testing on a single box, but that box is a 80CPU, 1TB monster as you might know, so for us one JVM per host will be a fair test to get an idea.
+
+regards
+sumedh
+--------------------------------------------------------------------------------
+>> The command executed to produce this error is:
+>> connect client 'localhost:1530';
+>> create asynceventlistener useCase3listener (
+>>    listenerclass 'com.pivotal.gemfirexd.callbacks.DBSynchronizer'
+>>    initparams
+>> 
+>>'com.mysql.jdbc.Driver,jdbc:mysql://172.36.16.148/SOLAR_BATCH?user=roo
+>>db&
+>>password=roodb'
+>> ) server groups (dbsynch);
+>>
+>> call sys.start_async_event_listener('USECASE3LISTENER');

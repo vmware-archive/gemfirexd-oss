@@ -1,0 +1,67 @@
+runqueue.pl -- run queued up commands
+
+This utility allows one to dynamically append commands to a given file and
+permit them to be sequentially executed.  It does this by leaving the file
+closed except when it is actively reading it for content.
+
+Its intended use is as an adjunct to rungemfire.pl, permitting multiple
+runs to be queued up while other runs are currently being executed.
+
+FILE FORMAT
+
+Every line in the input file is a potential command.  If the line begins
+with any number of spaces followed by a sharp ("#"), it is regarded as
+a comment as is ignored.
+
+If the line is blank, it is ignored.
+
+Otherwise, the line is the first line of a command, which can potentially
+span multiple lines.
+
+Line continuation is indicated by a backslash ("\") as the last character
+on the line.  In this case, the backslash is elided, and the subsquent line
+is appended to the command.  This step may be repeated.
+
+EXECUTION
+
+The entire contents of the command is passed to the system(3) intrinsic.
+No shell escaping or other type of modification of the command is performed.
+
+The contents of the command may be captured by appending "2>&1" to the end
+of the line.  Otherwise, only the output of stdout will be in the log.
+
+FILE APPENDING
+
+The facilities at present for modifying the command file on the fly are
+very simple (i.e., crude).  
+
+You are permitted to append to the file while the script is running.  
+
+Note that the program attempts to detect if the file has changed and
+subsequently re-read lines from the beginning, but modifying the middle of
+the file is not recommended.
+
+If the file inexplicably vanishes or shortens beyond the current
+line number, execution of the queue will terminate.
+
+[todo: we could add a file interlock semantic of some sort...]
+
+USAGE
+
+Usage: runqueue.pl <args>
+
+Arguments:
+  log=<fname>           (default "-")
+    log file to be appended to
+  commandFile=<fname>   (default "runqueue.txt")
+    file to read commands from
+  nextLine=<int>        (default "1")
+    first line to execute from commandFile
+  pauseFile=<fname>     (default "")
+    While this file is present, execution pauses.
+
+"-" for the log file name is an idiom for stdout.  In this case, output
+is only written once, to the console.
+
+It is possible, though probably not advisable,  to start execution from the
+given line in a file, where line 1 is the first line in the file.

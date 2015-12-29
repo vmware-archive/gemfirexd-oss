@@ -1,0 +1,38 @@
+// fixed partitioning
+csTx/fixedPartitioning/hct_colocationWithTxOps.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=4
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=10000 byteArraySize=500 redundancy=2
+   redundantCopies=0,1,2,3
+
+csTx/fixedPartitioning/hct_colocationWithTxOpsHA.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=4
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=10000 byteArraySize=500 redundancy=2 numVMsToStop=1
+   redundantCopies=1
+
+csTx/fixedPartitioning/hct_colocationWithTxOpsHA.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=4
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=10000 byteArraySize=500 redundancy=2 numVMsToStop=2
+   redundantCopies=2
+
+csTx/fixedPartitioning/hct_colocationWithTxOpsHA.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=4
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=10000 byteArraySize=500 redundancy=3 numVMsToStop=3
+   redundantCopies=3
+
+csTx/fixedPartitioning/hct_fixedPartitioningWithTxOps.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=4
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=10000 byteArraySize=500 redundancy=2
+   redundantCopies=0,1,2,3
+
+csTx/fixedPartitioning/hct_fixedPartitioningWithTxOpsHA.conf
+    edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=4
+    bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+    numKeys=10000 byteArraySize=500 redundancy=2 numVMsToStop=1
+    redundantCopies=1,2,3
+
+

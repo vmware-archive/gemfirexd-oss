@@ -1,0 +1,105 @@
+/* Test for Parallel Sender (PS)  */
+// all partitioned tables [TBR - To Be Removed]
+sql/wan/thinClient/singleSitePublisherClientPS.conf
+    wanSites= 3
+    A=server serverHostsPerSite=2 serverVMsPerHost=1 serverThreadsPerVM=1
+    B=client clientHostsPerSite=2 clientVMsPerHost=1 clientThreadsPerVM=9
+    locatorHostsPerSite = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    enableQueueConflation=false
+    redundantCopies=1
+    withReplicatedTables=false
+    testMultiTableJoin=false
+    securities=trade.securities:random
+    customers=trade.customers:random
+    networth=trade.networth:random
+    portfolio=trade.portfolio:random
+    sellorders=trade.sellorders:random
+    buyorders=trade.buyorders:random
+    txhistory=trade.txhistory:random
+    trades=trade.trades:random
+    empemployee=emp.employees:random
+    defaultemployee=default1.employees:random
+    
+// all replicated tables [TBR]
+//sql/wan/thinClient/singleSitePublisherClientPS.conf
+    //wanSites= 3
+    //A=server serverHostsPerSite=2 serverVMsPerHost=1 serverThreadsPerVM=1
+    //B=client clientHostsPerSite=2 clientVMsPerHost=1 clientThreadsPerVM=9
+    //locatorHostsPerSite = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    //enableQueueConflation=false
+    //redundantCopies=1
+    //withReplicatedTables=true
+    //testMultiTableJoin=false
+    //securities=trade.securities:replicate
+    //customers=trade.customers:replicate
+    //networth=trade.networth:replicate
+    //portfolio=trade.portfolio:replicate
+    //sellorders=trade.sellorders:replicate
+    //buyorders=trade.buyorders:replicate
+    //txhistory=trade.txhistory:replicate
+    //trades=trade.trades:replicate
+    //empemployee=emp.employees:replicate
+    //defaultemployee=default1.employees:replicate
+    
+// with mix replicate and partitioned tables  
+//sql/wan/thinClient/singleSitePublisherClientPS.conf
+    //wanSites= 3
+    //A=server serverHostsPerSite=2 serverVMsPerHost=1 serverThreadsPerVM=1
+    //B=client clientHostsPerSite=2 clientVMsPerHost=1 clientThreadsPerVM=9
+    //locatorHostsPerSite = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    //enableQueueConflation=false
+    //redundantCopies=1
+    //withReplicatedTables=true
+    //testMultiTableJoin=false
+    //securities=trade.securities:random
+    //customers=trade.customers:random
+    //networth=trade.networth:random
+    //portfolio=trade.portfolio:random
+    //sellorders=trade.sellorders:random
+    //buyorders=trade.buyorders:random
+    //txhistory=trade.txhistory:random
+    //trades=trade.trades:random
+    //empemployee=emp.employees:random
+    //defaultemployee=default1.employees:random
+    
+// with colocated joins 
+sql/wan/thinClient/singleSitePublisherClientPS.conf
+    wanSites= 3
+    A=server serverHostsPerSite=2 serverVMsPerHost=1 serverThreadsPerVM=1
+    B=client clientHostsPerSite=2 clientVMsPerHost=1 clientThreadsPerVM=9
+    locatorHostsPerSite = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    enableQueueConflation=false
+    redundantCopies=1
+    withReplicatedTables=false
+    testMultiTableJoin=true
+    securities=trade.securities:random
+    customers=trade.customers:0
+    networth=trade.networth:0
+    portfolio=trade.portfolio:0
+    sellorders=trade.sellorders:0
+    buyorders=trade.buyorders:0
+    txhistory=trade.txhistory:0
+    trades=trade.trades:random
+    empemployee=emp.employees:random
+    defaultemployee=default1.employees:random
+    
+// with Sender Failover (HA scenario)    
+sql/wan/thinClient/singleSitePublisherClientPSSenderFailover.conf
+    wanSites= 3
+    A=server serverHostsPerSite=2 serverVMsPerHost=1 serverThreadsPerVM=1
+    B=client clientHostsPerSite=2 clientVMsPerHost=1 clientThreadsPerVM=9
+    locatorHostsPerSite = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    enableQueueConflation=false
+    redundantCopies=1
+    withReplicatedTables=false
+    testMultiTableJoin=false
+    securities=trade.securities:random
+    customers=trade.customers:random
+    networth=trade.networth:random
+    portfolio=trade.portfolio:random
+    sellorders=trade.sellorders:random
+    buyorders=trade.buyorders:random
+    txhistory=trade.txhistory:random
+    trades=trade.trades:random
+    empemployee=emp.employees:random
+    defaultemployee=default1.employees:random

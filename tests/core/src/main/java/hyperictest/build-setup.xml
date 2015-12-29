@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+
+	<property file="${host.properties}" />
+
+	<target name="init">
+		<condition property="is.windows" else="false">
+			<os family="windows" />
+		</condition>
+		<condition property="setup.extn" value="bat" else="sh">
+			<istrue value="${is.windows}" />
+		</condition>
+		<condition property="build.extn" value="zip" else="tar.gz">
+			<istrue value="${is.windows}" />
+		</condition>
+		<property name="tmp.dir" value="${tmp.dir}" />
+		<property name="install.dir" value="${install.dir}" />
+		<condition property="server.install.dir" value="${server.install.dir}" else="${install.dir}/HQ-${release.num}-EE-${build.version}/${testRunTime.DSTAMP}">
+			<isset property="server.install.dir" />
+		</condition>
+		<property name="server.installer.file" value="hyperic-hqee-installer-${release.num}.${build.version}-${build.os}.${build.extn}" />
+		<property name="server.installer" value="hyperic-hqee-installer-${release.num}.${build.version}-${build.os}" />
+	</target>
+
+</project>

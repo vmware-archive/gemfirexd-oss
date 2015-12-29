@@ -1,0 +1,8 @@
+//
+// STUDY001
+//
+// This study compares the performance of TPCH restart from disk with and without an HDFS table.
+// The purpose is to reproduce a performance issue in the Santander POC.
+
+gfxdperf/tpch/gfxd/study001/tpch_load_hdfs_restart.conf
+gfxdperf/tpch/gfxd/study001/tpch_load_restart.conf

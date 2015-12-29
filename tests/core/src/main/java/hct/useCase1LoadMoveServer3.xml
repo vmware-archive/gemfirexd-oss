@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Initializes a cache server to serve the /root/bridge_region region, 
+    waiting for bridge client communication on port 40404 -->
+
+<!DOCTYPE cache PUBLIC
+  "-//GemStone Systems, Inc.//GemFire Declarative Caching 5.0//EN"
+  "http://www.gemstone.com/dtd/cache5_0.dtd">
+<cache>
+  <cache-server port="%CACHE_SERVER_PORT%" notify-by-subscription="false" maximum-time-between-pings="180000"/>
+  <vm-root-region name="root">
+    <region-attributes scope="distributed-ack"> 
+    </region-attributes>
+
+    <region name="day0a">
+      <region-attributes statistics-enabled="true" scope="distributed-ack" mirror-type="keys-values" persist-backup="false">
+
+<!--	
+        <disk-write-attributes>
+          <synchronous-writes/>
+        </disk-write-attributes>
+        <disk-dirs>
+          <disk-dir>./useCase1LoadMoveServer3_diskDir_day0a</disk-dir>
+        </disk-dirs>
+
+        <eviction-attributes>
+          <lru-heap-percentage maximum="75" time-interval="500" action="overflow-to-disk"/>
+        </eviction-attributes>
+-->        
+
+      </region-attributes>
+    </region>
+
+    <region name="day0b">
+      <region-attributes statistics-enabled="true" scope="distributed-ack" mirror-type="keys-values" persist-backup="false">
+
+<!--	
+        <disk-write-attributes>
+          <synchronous-writes/>
+        </disk-write-attributes>
+        <disk-dirs>
+          <disk-dir>./useCase1LoadMoveServer3_diskDir_day0b</disk-dir>
+        </disk-dirs>
+
+
+        <eviction-attributes>
+          <lru-heap-percentage maximum="75" time-interval="500" action="overflow-to-disk"/>
+        </eviction-attributes>
+-->        
+
+      </region-attributes>
+    </region>
+
+    <region name="day1">
+      <region-attributes statistics-enabled="true" scope="distributed-ack" mirror-type="keys-values" persist-backup="false">
+
+        <disk-write-attributes>
+          <synchronous-writes/>
+        </disk-write-attributes>
+        <disk-dirs>
+          <disk-dir>./useCase1LoadMoveServer3_diskDir_day1</disk-dir>
+        </disk-dirs>
+
+        <eviction-attributes>
+          <lru-heap-percentage maximum="75" time-interval="500" action="overflow-to-disk"/>
+        </eviction-attributes>
+
+      </region-attributes>
+    </region>
+
+    <region name="day2">
+      <region-attributes statistics-enabled="true" scope="distributed-ack" mirror-type="keys-values" persist-backup="false">
+       
+        <disk-write-attributes>
+          <synchronous-writes/>
+        </disk-write-attributes>
+        <disk-dirs>
+          <disk-dir>./useCase1LoadMoveServer3_diskDir_day2</disk-dir>
+        </disk-dirs>
+
+        <eviction-attributes>
+          <lru-heap-percentage maximum="75" time-interval="500" action="overflow-to-disk"/>
+        </eviction-attributes>
+
+      </region-attributes>
+    </region>
+
+    <region name="day3">
+      <region-attributes statistics-enabled="true" scope="distributed-ack" mirror-type="keys-values" persist-backup="false">
+
+        <disk-write-attributes>
+          <synchronous-writes/>
+        </disk-write-attributes>
+        <disk-dirs>
+          <disk-dir>./useCase1LoadMoveServer3_diskDir_day3</disk-dir>
+        </disk-dirs>
+
+        <eviction-attributes>
+          <lru-heap-percentage maximum="75" time-interval="500" action="overflow-to-disk"/>
+        </eviction-attributes>
+      
+      </region-attributes>
+    </region>
+
+    <region name="day4">
+      <region-attributes statistics-enabled="true" scope="distributed-ack" mirror-type="keys-values" persist-backup="false">
+
+        <disk-write-attributes>
+          <synchronous-writes/>
+        </disk-write-attributes>
+        <disk-dirs>
+          <disk-dir>./useCase1LoadMoveServer3_diskDir_day4</disk-dir>
+        </disk-dirs>
+
+        <eviction-attributes>
+          <lru-heap-percentage maximum="75" time-interval="500" action="overflow-to-disk"/>
+        </eviction-attributes>
+
+      </region-attributes>
+    </region>
+
+    <region name="day5">
+      <region-attributes statistics-enabled="true" scope="distributed-ack" mirror-type="keys-values" persist-backup="false">
+
+        <disk-write-attributes>
+          <synchronous-writes/>
+        </disk-write-attributes>
+        <disk-dirs>
+          <disk-dir>./useCase1LoadMoveServer3_diskDir_day5</disk-dir>
+        </disk-dirs>
+
+        <eviction-attributes>
+          <lru-heap-percentage maximum="75" time-interval="500" action="overflow-to-disk"/>
+        </eviction-attributes>
+
+      </region-attributes>
+    </region>
+
+    <region name="day6">
+      <region-attributes statistics-enabled="true" scope="distributed-ack" mirror-type="keys-values" persist-backup="false">
+
+        <disk-write-attributes>
+          <synchronous-writes/>
+        </disk-write-attributes>
+        <disk-dirs>
+          <disk-dir>./useCase1LoadMoveServer3_diskDir_day6</disk-dir>
+        </disk-dirs>
+
+        <eviction-attributes>
+          <lru-heap-percentage maximum="75" time-interval="500" action="overflow-to-disk"/>
+        </eviction-attributes>
+
+      </region-attributes>
+    </region>
+
+    <region name="day7">
+      <region-attributes statistics-enabled="true" scope="distributed-ack" mirror-type="keys-values" persist-backup="false">
+
+        <disk-write-attributes>
+          <synchronous-writes/>
+        </disk-write-attributes>
+        <disk-dirs>
+          <disk-dir>./useCase1LoadMoveServer3_diskDir_day7</disk-dir>
+        </disk-dirs>
+
+        <eviction-attributes>
+          <lru-heap-percentage maximum="75" time-interval="500" action="overflow-to-disk"/>
+        </eviction-attributes>
+      </region-attributes>
+    </region>
+  </vm-root-region>
+</cache>

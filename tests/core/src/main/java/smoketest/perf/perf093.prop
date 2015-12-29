@@ -1,0 +1,10 @@
+A = updater
+updaterHosts        = 1
+updaterVMsPerHost   = 1
+updaterThreadsPerVM = 2
+
+dataSize = 1024
+maxKeys = 2
+queueSize = 50000
+
+perffmwk.comparisonKey = perf093

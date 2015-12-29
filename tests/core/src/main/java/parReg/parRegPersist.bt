@@ -1,0 +1,80 @@
+// functional tests
+
+parReg/persistence/serialParRegPersist.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=2 redundantCopies=0
+parReg/persistence/serialParRegPersist.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=2 redundantCopies=1
+parReg/persistence/serialParRegPersist.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=2 redundantCopies=2
+parReg/persistence/serialParRegPersist.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=2 redundantCopies=3
+// serialParRegLoader sets its own redundantCopies, but inherits the batterytest arg redundantCopies
+parReg/persistence/serialParRegLoaderPersist.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=2 redundantCopies=unused
+parReg/persistence/concParRegPersist.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies=0
+parReg/persistence/concParRegPersist.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies=1
+parReg/persistence/concParRegPersist.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies=2
+parReg/persistence/concParRegPersist.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies=3
+parReg/persistence/parRegCreateDestroyPersist.conf
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=peer peerHosts=2 peerVMsPerHost=1 peerThreadsPerVM=3
+parReg/persistence/concKnownKeysPersist.conf peerHosts=10 peerVMsPerHost=1 peerThreadsPerVM=20 numKeys=10000 byteArraySize=5 
+parReg/persistence/concKnownKeysPersist.conf peerHosts=10 peerVMsPerHost=1 peerThreadsPerVM=20 numKeys=1000000 byteArraySize=5 
+
+// ParReg wan tests
+parReg/persistence/hct_explicitPersist.conf
+                                                                                
+// Linux,Windows version - uses sync distribution for gateway 
+parReg/persistence/hctPersist.conf
+       wanSites=1,2,3 bridgeVMsPerHost=2 edgeVMsPerHost=1 edgeThreadsPerVm=1      
+       onlyOnPlatforms=Linux,Windows,AIX
+                                                                                
+// Solaris - uses async-distribution for gateway (accomodates slower systems) 
+parReg/persistence/hct_asyncPersist.conf
+       wanSites=1,2,3 bridgeVMsPerHost=2 edgeVMsPerHost=1 edgeThreadsPerVM=1 
+       onlyOnPlatforms=SunOS
+                                                                                
+// Linux,Windows version - uses sync distribution for gateway 
+parReg/persistence/hctPersist.conf
+       wanSites=1,2,3 bridgeVMsPerHost=2 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       onlyOnPlatforms=Linux,Windows,AIX                                                                                 
+// Solaris - uses async-distribution for gateway (accomodates slower systems)
+parReg/persistence/hct_asyncPersist.conf
+       wanSites=1,2 bridgeVMsPerHost=2 edgeVMsPerHost=3 edgeThreadsPerVM=2      
+       onlyOnPlatforms=SunOS
+parReg/persistence/hct_asyncPersist.conf
+       wanSites=3 bridgeVMsPerHost=2 edgeVMsPerHost=2 edgeThreadsPerVM=2      
+       onlyOnPlatforms=SunOS
+
+// p2p WAN tests
+parReg/persistence/p2pPersist.conf
+       wanSites=2,3 peerVMsPerHost=3 peerThreadsPerVM=2
+parReg/persistence/p2pkillPersist.conf
+       wanSites=2   peerVMsPerHost=3 peerThreadsPerVM=2
+
+parReg/persistence/serialParRegEventPersist.conf
+parReg/persistence/serialParRegEntryEventPersist.conf
+parReg/persistence/serialMultiListenerPersist.conf
+
+parReg/persistence/manyKeysOverflow.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=bridge bridgeHosts=2 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   C=edge edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   D=extraBridge extraBridgeHosts=4 extraBridgeVMsPerHost=1 extraBridgeThreadsPerVM=2
+   numKeys=50000
+parReg/persistence/manyKeysOverflowPersist.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=bridge bridgeHosts=2 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   C=edge edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   D=extraBridge extraBridgeHosts=4 extraBridgeVMsPerHost=1 extraBridgeThreadsPerVM=2
+   numKeys=50000
+
+parReg/persistence/serialParRegCMEventPersist.conf
+
+// ParReg incremental serial
+parReg/persistence/serialParRegIncremental.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=2 redundantCopies=0
+parReg/persistence/serialParRegIncremental.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=2 redundantCopies=1
+parReg/persistence/serialParRegIncremental.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=2 redundantCopies=2
+parReg/persistence/serialParRegIncremental.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=2 redundantCopies=3
+
+// ParReg incremental concurrent
+parReg/persistence/concParRegIncremental.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies=0
+parReg/persistence/concParRegIncremental.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies=1
+parReg/persistence/concParRegIncremental.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies=2
+parReg/persistence/concParRegIncremental.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies=3
+

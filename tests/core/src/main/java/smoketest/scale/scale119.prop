@@ -1,0 +1,17 @@
+perffmwk.comparisonKey = scale119
+wanSites            = 2
+locatorHostsPerSite = 1
+locatorVMsPerHost   = 2
+locatorThreadsPerVM = 1
+A = data
+dataHostsPerSite  = 2
+dataVMsPerHost    = 1
+dataThreadsPerVM  = 1
+B = edge
+edgeHostsPerSite  = 1 
+edgeVMsPerHost    = 2
+edgeThreadsPerVM  = 5
+objectSize        = 1024
+dataMem           = 1g
+putsPerSec        = 4000
+trimSeconds       = 60

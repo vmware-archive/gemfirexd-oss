@@ -1,0 +1,72 @@
+//serial
+newWan/senderOperationsP2p.conf
+    wanSites = 2,3,4 maxOps=5000 resultWaitSec=600
+    locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+    peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+
+newWan/senderOperationsP2pKill.conf
+    wanSites = 2,3,4 maxOps=5000 resultWaitSec=600
+    locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+    peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+
+parReg/newWan/serial/colocation/senderOperationsP2pParRegColocationPersist.conf
+    wanSites = 2,3,4 maxOps=5000 resultWaitSec=600
+    locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+    peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+
+parReg/newWan/serial/colocation/senderOperationsP2pKillParRegColocationPersist.conf     
+    wanSites = 2,3,4 maxOps=5000 resultWaitSec=600
+    locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+    peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+
+newWan/senderOperationsHct.conf
+    wanSites = 2,3,4 maxOps=5000 resultWaitSec=600
+    bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+    edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+newWan/senderOperationsHctKill.conf
+    wanSites = 2,3,4 maxOps=5000 resultWaitSec=600
+    bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+    edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/serial/colocation/senderOperationsHctParRegColocationPersist.conf
+    wanSites = 2,3,4 maxOps=5000 resultWaitSec=600
+    bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+    edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/serial/colocation/senderOperationsHctKillParRegColocationPersist.conf
+    wanSites = 2,3,4 maxOps=5000 resultWaitSec=600
+    bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+    edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+  
+//parallel
+parReg/newWan/parallel/senderOperationsP2p.conf
+    wanSites = 2,3,4 maxOps=5000 resultWaitSec=600 redundantCopies = 2
+    locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+    peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5 
+
+parReg/newWan/parallel/senderOperationsP2pKill.conf
+    wanSites = 2,3,4 maxOps=5000 resultWaitSec=600 redundantCopies = 2
+    locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+    peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5    
+
+parReg/newWan/parallel/colocation/senderOperationsP2pParRegColocationPersist.conf
+    wanSites = 2,3,4 maxOps=5000 resultWaitSec=600 redundantCopies = 2
+    locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+    peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5        
+
+parReg/newWan/parallel/colocation/senderOperationsP2pKillParRegColocationPersist.conf
+    wanSites = 2,3,4 maxOps=5000 resultWaitSec=600 redundantCopies = 2
+    locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+    peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+    
+parReg/newWan/parallel/colocation/senderOperationsHctParRegColocationPersist.conf
+    wanSites = 2,3,4 maxOps=5000 resultWaitSec=600 redundantCopies = 2
+    locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+    peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5        
+
+parReg/newWan/parallel/colocation/senderOperationsHctKillParRegColocationPersist.conf
+    wanSites = 2,3,4 maxOps=5000 resultWaitSec=600 redundantCopies = 2
+    locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+    peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5 
+

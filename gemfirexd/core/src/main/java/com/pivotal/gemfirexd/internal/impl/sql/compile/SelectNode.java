@@ -1,0 +1,3227 @@
+/*
+
+   Derby - Class com.pivotal.gemfirexd.internal.impl.sql.compile.SelectNode
+
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to you under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
+ */
+
+/*
+ * Changes for GemFireXD distributed data platform (some marked by "GemStone changes")
+ *
+ * Portions Copyright (c) 2010-2015 Pivotal Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you
+ * may not use this file except in compliance with the License. You
+ * may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * permissions and limitations under the License. See accompanying
+ * LICENSE file.
+ */
+                     
+
+package	com.pivotal.gemfirexd.internal.impl.sql.compile;
+
+
+
+
+
+
+
+
+import com.pivotal.gemfirexd.internal.engine.Misc;
+import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserver;
+import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
+import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
+import com.pivotal.gemfirexd.internal.engine.distributed.metadata.NcjHashMapWrapper;
+import com.pivotal.gemfirexd.internal.engine.distributed.utils.GemFireXDUtils;
+import com.pivotal.gemfirexd.internal.engine.sql.compile.CollectExpressionOperandsVisitor;
+import com.pivotal.gemfirexd.internal.engine.sql.compile.DistributedHashFetchRowsJoinStrategy;
+import com.pivotal.gemfirexd.internal.iapi.error.StandardException;
+import com.pivotal.gemfirexd.internal.iapi.reference.Limits;
+import com.pivotal.gemfirexd.internal.iapi.reference.SQLState;
+import com.pivotal.gemfirexd.internal.iapi.services.property.PropertyUtil;
+import com.pivotal.gemfirexd.internal.iapi.services.sanity.SanityManager;
+import com.pivotal.gemfirexd.internal.iapi.sql.compile.C_NodeTypes;
+import com.pivotal.gemfirexd.internal.iapi.sql.compile.CompilerContext;
+import com.pivotal.gemfirexd.internal.iapi.sql.compile.CostEstimate;
+import com.pivotal.gemfirexd.internal.iapi.sql.compile.OptimizablePredicateList;
+import com.pivotal.gemfirexd.internal.iapi.sql.compile.Optimizer;
+import com.pivotal.gemfirexd.internal.iapi.sql.compile.Visitable;
+import com.pivotal.gemfirexd.internal.iapi.sql.compile.Visitor;
+import com.pivotal.gemfirexd.internal.iapi.sql.conn.Authorizer;
+import com.pivotal.gemfirexd.internal.iapi.sql.dictionary.DataDictionary;
+import com.pivotal.gemfirexd.internal.iapi.sql.dictionary.TableDescriptor;
+import com.pivotal.gemfirexd.internal.iapi.store.access.TransactionController;
+import com.pivotal.gemfirexd.internal.iapi.util.JBitSet;
+
+import java.util.ArrayList;
+import java.util.Vector;
+import java.util.HashSet;
+
+/**
+ * A SelectNode represents the result set for any of the basic DML
+ * operations: SELECT, INSERT, UPDATE, and DELETE.  (A RowResultSetNode
+ * will be used for an INSERT with a VALUES clause.)  For INSERT - SELECT,
+ * any of the fields in a SelectNode can be used (the SelectNode represents
+ * the SELECT statement in the INSERT - SELECT).  For UPDATE and
+ * DELETE, there will be one table in the fromList, and the groupByList
+ * fields will be null. For both INSERT and UPDATE,
+ * the resultColumns in the selectList will contain the names of the columns
+ * being inserted into or updated.
+ *
+ */
+
+public class SelectNode extends ResultSetNode
+{
+	/**
+	 * List of tables in the FROM clause of this SELECT
+	 */
+	FromList	fromList;
+	FromTable targetTable;
+
+	/* Aggregate Vectors for select and where clauses */
+	Vector	selectAggregates ;
+	Vector	whereAggregates;
+	Vector  havingAggregates;
+	/**
+	 * The ValueNode for the WHERE clause must represent a boolean
+	 * expression.  The binding phase will enforce this - the parser
+	 * does not have enough information to enforce it in all cases
+	 * (for example, user methods that return boolean).
+	 */
+	ValueNode	whereClause;
+	ValueNode	originalWhereClause;
+
+	/**
+	 * List of result columns in GROUP BY clause
+	 */
+	GroupByList	groupByList;
+
+	/** User specified a group by without aggregates and we turned 
+	 * it into a select distinct 
+	 */
+	private boolean wasGroupBy;
+	
+	/* List of columns in ORDER BY list */
+	OrderByList orderByList;
+	boolean		orderByQuery ;
+
+	/* PredicateLists for where clause */
+	PredicateList wherePredicates;
+
+	/* SubqueryLists for select where and having clauses */
+	SubqueryList  selectSubquerys;
+	SubqueryList  whereSubquerys;
+	SubqueryList  havingSubquerys;
+
+	/* Whether or not we are only binding the target list */
+	private boolean bindTargetListOnly;
+
+	private boolean isDistinct;
+
+	private boolean orderByAndDistinctMerged;
+
+	boolean originalWhereClauseHadSubqueries;
+	
+	/* Copy of fromList prior to generating join tree */
+	private FromList preJoinFL;
+
+	ValueNode havingClause;
+	
+	private int nestingLevel;
+	
+	//GemStone changes BEGIN
+	/**
+	 * Keep a pointer to current resultSet's
+	 * parent PRN i.e. topmost PRN.
+	 */
+        private ResultSetNode topPRN;
+
+        private boolean isPartOfSubQueryNode = false;
+        
+        private boolean convertCountToRegionSize = false;
+        
+	//GemStone changes END
+        
+	@Override
+  public void init(Object selectList,
+			  Object aggregateVector,
+			  Object fromList,
+			  Object whereClause,
+			  Object groupByList,
+			  Object havingClause,
+                          //GemStone changes BEGIN
+                          Object isForDmlOp
+                          //GemStone changes BEGIN
+			  )
+			throws StandardException
+	{
+		/* RESOLVE - remove aggregateList from constructor.
+		 * Consider adding selectAggregates and whereAggregates 
+		 */
+		resultColumns = (ResultColumnList) selectList;
+		if (resultColumns != null)
+			resultColumns.markInitialSize();
+		this.fromList = (FromList) fromList;
+		this.whereClause = (ValueNode) whereClause;
+		this.originalWhereClause = (ValueNode) whereClause;
+		this.groupByList = (GroupByList) groupByList;
+		this.havingClause = (ValueNode)havingClause;
+		bindTargetListOnly = false;
+		
+		this.originalWhereClauseHadSubqueries = false;
+		if (this.whereClause != null){
+			CollectNodesVisitor cnv = 
+				new CollectNodesVisitor(SubqueryNode.class, SubqueryNode.class);
+			this.whereClause.accept(cnv);
+			if (!cnv.getList().isEmpty()){
+				this.originalWhereClauseHadSubqueries = true;
+			}
+		}
+		//GemStone changes BEGIN
+                /*
+  	         * If ConnectionForRemote is TRUE then surely its coming from
+  	         * FunctionExecution.
+  	         * 
+  	         * isDmlOp Variable indicating whether select is
+  	         * for Cursor or Update/Delete.
+  	         */
+                 boolean isCompilationAsDataStoreNode = getLanguageConnectionContext().isConnectionForRemote()
+                                                          && !((Boolean)isForDmlOp).booleanValue();
+                 
+                 //This disabling of QueryInfo creation appears to be redundant as it is already done at 
+                 // CompilerContext level
+                 if(getCompilerContext().createQueryInfo() && isCompilationAsDataStoreNode) {
+                   getCompilerContext().disableQueryInfoCreation();
+                 }
+                 this.topPRN = this;
+                //GemStone changes END
+	}
+
+	/**
+	 * Convert this object to a String.  See comments in QueryTreeNode.java
+	 * for how this should be done for tree printing.
+	 *
+	 * @return	This object as a String
+	 */
+
+	@Override
+  public String toString()
+	{
+		if (SanityManager.DEBUG)
+		{
+			return "isDistinct: "+ isDistinct + "\n"+
+		    	"groupByList: " +
+				(groupByList != null ? groupByList.toString() : "null") + "\n" +
+				"orderByList: " + 
+				(orderByList != null ? orderByList.toString() : "null") + "\n" +
+				super.toString();
+		}
+		else
+		{
+			return "";
+		}
+	}
+
+	public String statementToString()
+	{
+		return "SELECT";
+	}
+
+	public void makeDistinct()
+	{
+		isDistinct = true;
+	}
+
+	public void clearDistinct()
+	{
+		isDistinct = false;
+	}
+
+	boolean hasDistinct()
+	{
+		return isDistinct;
+	}
+
+	/**
+	 * Prints the sub-nodes of this object.  See QueryTreeNode.java for
+	 * how tree printing is supposed to work.
+	 *
+	 * @param depth		The depth of this node in the tree
+	 */
+
+	@Override
+  public void printSubNodes(int depth)
+	{
+		if (SanityManager.DEBUG)
+		{
+			super.printSubNodes(depth);
+
+			if (selectSubquerys != null)
+			{
+				printLabel(depth, "selectSubquerys: ");
+				selectSubquerys.treePrint(depth + 1);
+			}
+
+			printLabel(depth, "fromList: ");
+
+			if (fromList != null)
+			{
+				fromList.treePrint(depth + 1);
+			}
+
+			if (whereClause != null)
+			{
+				printLabel(depth, "whereClause: ");
+				whereClause.treePrint(depth + 1);
+			}
+
+			if ((wherePredicates != null) &&wherePredicates.size() > 0)
+			{
+				printLabel(depth, "wherePredicates: ");
+				wherePredicates.treePrint(depth + 1);
+			}
+
+			if (whereSubquerys != null)
+			{
+				printLabel(depth, "whereSubquerys: ");
+				whereSubquerys.treePrint(depth + 1);
+			}
+
+			printLabel(depth, "preJoinFL: ");
+
+			if (preJoinFL != null)
+			{
+				preJoinFL.treePrint(depth + 1);
+			}
+		}
+	}
+
+	/**
+	 * Return the fromList for this SelectNode.
+	 *
+	 * @return FromList	The fromList for this SelectNode.
+	 */
+	@Override
+  public FromList getFromList()
+	{
+		return fromList;
+	}
+
+	/**
+	 * Find colName in the result columns and return underlying columnReference.
+	 * Note that this function returns null if there are more than one FromTable
+	 * for this SelectNode and the columnReference needs to be directly under
+	 * the resultColumn. So having an expression under the resultSet would cause
+	 * returning null.
+	 *
+	 * @param	colName		Name of the column
+	 *
+	 * @return	ColumnReference	ColumnReference to the column, if found
+	 */
+	public ColumnReference findColumnReferenceInResult(String colName)
+					throws StandardException
+	{
+		if (fromList.size() != 1)
+			return null;
+
+		// This logic is similar to SubQueryNode.singleFromBaseTable(). Refactor
+		FromTable ft = (FromTable) fromList.elementAt(0);
+		if (! ((ft instanceof ProjectRestrictNode) &&
+		 		((ProjectRestrictNode) ft).getChildResult() instanceof FromBaseTable) &&
+				!(ft instanceof FromBaseTable))
+			return null;
+
+		// Loop through the result columns looking for a match
+		int rclSize = resultColumns.size();
+		for (int index = 0; index < rclSize; index++)
+		{
+			ResultColumn rc = (ResultColumn) resultColumns.elementAt(index);
+			if (! (rc.getExpression() instanceof ColumnReference))
+				return null;
+
+			ColumnReference crNode = (ColumnReference) rc.getExpression();
+
+			if (crNode.columnName.equals(colName))
+				return (ColumnReference) crNode.getClone();
+		}
+
+		return null;
+	}
+
+	/**
+	 * Return the whereClause for this SelectNode.
+	 *
+	 * @return ValueNode	The whereClause for this SelectNode.
+	 */
+	public ValueNode getWhereClause()
+	{
+		return whereClause;
+	}
+
+	/**
+	 * Return the wherePredicates for this SelectNode.
+	 *
+	 * @return PredicateList	The wherePredicates for this SelectNode.
+	 */
+	public PredicateList getWherePredicates()
+	{
+		return wherePredicates;
+	}
+
+	/**
+	 * Return the selectSubquerys for this SelectNode.
+	 *
+	 * @return SubqueryList	The selectSubquerys for this SelectNode.
+	 */
+	public SubqueryList getSelectSubquerys()
+	{
+		return selectSubquerys;
+	}
+
+	/**
+	 * Return the whereSubquerys for this SelectNode.
+	 *
+	 * @return SubqueryList	The whereSubquerys for this SelectNode.
+	 */
+	public SubqueryList getWhereSubquerys()
+	{
+		return whereSubquerys;
+	}
+
+	/**
+	 * Bind the tables in this SelectNode.  This includes getting their
+	 * TableDescriptors from the DataDictionary and numbering the FromTables.
+	 * NOTE: Because this node represents the top of a new query block, we bind
+	 * both the non VTI and VTI tables under this node in this method call.
+	 *
+	 * @param dataDictionary	The DataDictionary to use for binding
+	 * @param fromListParam		FromList to use/append to.
+	 *
+	 * @return	ResultSetNode
+	 *
+	 * @exception StandardException		Thrown on error
+	 */
+
+	@Override
+  public ResultSetNode bindNonVTITables(DataDictionary dataDictionary,
+						   FromList fromListParam) 
+					throws StandardException
+	{
+		int fromListSize = fromList.size();
+		
+
+		wherePredicates = (PredicateList) getNodeFactory().getNode(
+											C_NodeTypes.PREDICATE_LIST,
+											getContextManager());
+		preJoinFL = (FromList) getNodeFactory().getNode(
+									C_NodeTypes.FROM_LIST,
+									getNodeFactory().doJoinOrderOptimization(),
+									getContextManager());
+
+		/* Set the nesting level in the fromList */
+		if (fromListParam.size() == 0)
+		{
+			nestingLevel = 0;
+		}
+		else
+		{
+			nestingLevel = ((FromTable) fromListParam.elementAt(0)).getLevel() + 1;
+		}
+		fromList.setLevel(nestingLevel);
+
+		/* Splice a clone of our FromList on to the beginning of fromListParam, before binding
+		 * the tables, for correlated column resolution in VTIs.
+		 */
+		for (int index = 0; index < fromListSize; index++)
+		{
+			fromListParam.insertElementAt(fromList.elementAt(index), 0);
+		}
+
+		// Now bind our from list
+		fromList.bindTables(dataDictionary, fromListParam);
+
+		/* Restore fromListParam */
+		for (int index = 0; index < fromListSize; index++)
+		{
+			fromListParam.removeElementAt(0);
+		}
+		
+              //GemStone changes BEGIN
+	      //GemStone changes END
+		return this;
+	}
+	
+	/**
+	 * Check whether this query can be converted to region.size().
+	 * Applicable to queries such as 'select count(*) from table'
+	 * @return True or False
+	 * @throws StandardException
+	 */
+  public boolean satisfiesConditionsForRegionSizeOpt()
+      throws StandardException {
+    if (fromList.size() == 1
+        /* selectNode.selectAggregates.size() == 1 && */
+        && whereClause == null 
+        && orderByList == null 
+        && !isDistinct
+        && (groupByList == null || groupByList.isDSIDOnly())
+        && havingClause == null
+        /* && getCompilerContext().getNumTables() == 1 */
+        && !resultColumns.containsWindowFunctionResultColumn()) {
+      //query on table 
+      if (fromList.elementAt(0) instanceof FromBaseTable) {
+        return true;
+      } 
+      // query on view 
+      else if (fromList.elementAt(0) instanceof FromSubquery) { 
+        ResultSetNode rsn = 
+            ((FromSubquery) fromList.elementAt(0)).getSubquery();
+        if (rsn instanceof SelectNode && !fromList.hasJoins()) {
+          //nested views- view2-->view1-->table1
+          return ((SelectNode) rsn).satisfiesConditionsForRegionSizeOpt();
+        }
+      }
+    }
+    return false;
+  }
+
+	/**
+	 * Bind the expressions in this SelectNode.  This means binding the
+	 * sub-expressions, as well as figuring out what the return type is
+	 * for each expression.
+	 *
+	 * @param fromListParam		FromList to use/append to.
+	 *
+	 * @exception StandardException		Thrown on error
+	 */
+	@Override
+  public void bindExpressions(FromList fromListParam)
+					throws StandardException
+	{
+		int fromListParamSize = fromListParam.size();
+		int fromListSize = fromList.size();
+		int numDistinctAggs;
+
+		if (SanityManager.DEBUG)
+		SanityManager.ASSERT(fromList != null && resultColumns != null,
+			"Both fromList and resultColumns are expected to be non-null");
+
+		/* NOTE - a lot of this code would be common to bindTargetExpression(),
+		 * so we use a private boolean to share the code instead of duplicating
+		 * it.  bindTargetExpression() is responsible for toggling the boolean.
+		 */
+		if (! bindTargetListOnly)
+		{
+			/* Bind the expressions in FromSubquerys, JoinNodes, etc. */
+		        // GemStone changes BEGIN
+		        /*(original code) fromList.bindExpressions( fromListParam);*/
+                        fromList.bindExpressions( fromListParam);
+		        // GemStone changes END
+		}
+
+		selectSubquerys = (SubqueryList) getNodeFactory().getNode(
+											C_NodeTypes.SUBQUERY_LIST,
+											getContextManager());
+		selectAggregates = new Vector();
+
+		/* Splice our FromList on to the beginning of fromListParam, before binding
+		 * the expressions, for correlated column resolution.
+		 */
+		for (int index = 0; index < fromListSize; index++)
+		{
+			fromListParam.insertElementAt(fromList.elementAt(index), index);
+		}
+
+		resultColumns.bindExpressions(fromListParam, 
+									  selectSubquerys,
+									  selectAggregates);
+
+		/* We're done if we're only binding the target list.
+		 * (After we restore the fromList, of course.)
+		 */
+		if (bindTargetListOnly)
+		{
+			for (int index = 0; index < fromListSize; index++)
+			{
+				fromListParam.removeElementAt(0);
+			}
+			return;
+		}
+
+		whereAggregates = new Vector();
+		whereSubquerys = (SubqueryList) getNodeFactory().getNode(
+												C_NodeTypes.SUBQUERY_LIST,
+												getContextManager());
+		if (whereClause != null)
+		{
+			getCompilerContext().pushCurrentPrivType( Authorizer.SELECT_PRIV);
+			whereClause = whereClause.bindExpression(fromListParam, 
+										whereSubquerys,
+										whereAggregates);
+			
+			/* RESOLVE - Temporarily disable aggregates in the HAVING clause.
+			** (We may remove them in the parser anyway.)
+			** RESOLVE - Disable aggregates in the WHERE clause.  Someday
+			** Aggregates will be allowed iff they are in a subquery
+			** of the having clause and they correlate to an outer
+			** query block.  For now, aggregates are not supported
+			** in the WHERE clause at all.
+			** Note: a similar check is made in JoinNode.
+			*/
+			if (whereAggregates.size() > 0)
+			{
+				throw StandardException.newException(SQLState.LANG_NO_AGGREGATES_IN_WHERE_CLAUSE);
+			}
+
+			/* If whereClause is a parameter, (where ?/where -?/where +?), then we should catch it and throw exception
+			 */
+			if (whereClause.isParameterNode())
+				throw StandardException.newException(SQLState.LANG_NON_BOOLEAN_WHERE_CLAUSE, "PARAMETER" );
+			
+			whereClause = whereClause.checkIsBoolean();
+			getCompilerContext().popCurrentPrivType();
+		}
+
+		if (havingClause != null) {
+			havingAggregates = new Vector();
+			havingSubquerys = (SubqueryList) getNodeFactory().getNode(
+					C_NodeTypes.SUBQUERY_LIST,
+					getContextManager());
+			havingClause.bindExpression(
+					fromListParam, havingSubquerys, havingAggregates);
+			havingClause = havingClause.checkIsBoolean();
+		}
+		
+		/* Restore fromList */
+		for (int index = 0; index < fromListSize; index++)
+		{
+			fromListParam.removeElementAt(0);
+		}
+
+		if (SanityManager.DEBUG) {
+		SanityManager.ASSERT(fromListParam.size() == fromListParamSize,
+			"fromListParam.size() = " + fromListParam.size() +
+			", expected to be restored to " + fromListParamSize);
+		SanityManager.ASSERT(fromList.size() == fromListSize,
+			"fromList.size() = " + fromList.size() +
+			", expected to be restored to " + fromListSize);
+		}
+
+		/* If query is grouped, bind the group by list. */
+		if (groupByList != null)
+		{
+			Vector gbAggregateVector = new Vector();
+
+			groupByList.bindGroupByColumns(this,
+										   gbAggregateVector);
+
+			/*
+			** There should be no aggregates in the Group By list.
+			** We don't expect any, but just to be on the safe side
+			** we will check under sanity.
+			*/
+			if (SanityManager.DEBUG)
+			{
+				SanityManager.ASSERT(gbAggregateVector.size() == 0,
+						"Unexpected Aggregate vector generated by Group By clause");
+			}
+		}
+		/* If ungrouped query with aggregates in SELECT list, verify
+		 * that all result columns are valid aggregate expressions -
+		 * no column references outside of an aggregate.
+		 * If grouped query with aggregates in SELECT list, verify that all
+		 * result columns are either grouping expressions or valid
+		 * grouped aggregate expressions - the only column references
+		 * allowed outside of an aggregate are columns in expressions in 
+		 * the group by list.
+		 */
+		if (groupByList != null || selectAggregates.size() > 0)
+		{
+
+  			VerifyAggregateExpressionsVisitor visitor = 
+  				new VerifyAggregateExpressionsVisitor(groupByList);
+			resultColumns.accept(visitor);
+		}       
+
+		/*
+		** RESOLVE: for now, only one distinct aggregate is supported
+		** in the select list.
+		*/
+		numDistinctAggs = numDistinctAggregates(selectAggregates);
+		if (numDistinctAggs > 1)
+		{
+			throw StandardException.newException(SQLState.LANG_USER_AGGREGATE_MULTIPLE_DISTINCTS);
+		}
+		
+    // GemStone changes BEGIN
+		//must be at last after covering all possible bindings of tables etc.
+		// probably preprocess() of optimize is a better place.
+                if (selectAggregates.size() == 1 
+                    && satisfiesConditionsForRegionSizeOpt()) {
+                  
+                    if(SanityManager.ASSERT) {
+                      
+                      if(selectAggregates.size() > 1) {
+                        for(int i = 0; i < selectAggregates.size(); i++) {
+                          AggregateDefinition ad = ((AggregateNode)selectAggregates.elementAt(0))
+                              .getAggregateDefinition();
+                          if(!(ad instanceof CountAggregateDefinition)) {
+                              SanityManager
+                                  .THROWASSERT("One or more occurances of aggregate other than count(*) not allowed ");
+                          }
+                        }
+                      }
+                    }
+            
+                    AggregateDefinition ad = ((AggregateNode)selectAggregates.elementAt(0))
+                        .getAggregateDefinition();
+            
+                    if (ad instanceof CountAggregateDefinition
+                        && ((CountAggregateDefinition)ad).isRegionSizeConvertible()) {
+
+                      // on query node we just want to turn on distribute to ALL primaries while converting
+                      // count(*) to remote data node getBucketCount .
+                      if(getCompilerContext().createQueryInfo()) {
+                        getCompilerContext().setOptimizeForWrite(true); 
+                      }
+                      else {
+                        // at last! we know its 'select count(*) from table' query.
+                        convertCountToRegionSize = true;
+                      }
+            
+                    }
+                }
+                else {
+                  if (GemFireXDUtils.TraceQuery | GemFireXDUtils.TraceNCJ) {
+                    if (selectAggregates.size() > 1 &&
+                        ((AggregateNode)selectAggregates.elementAt(0))
+                          .getAggregateDefinition() instanceof
+                            CountAggregateDefinition) {
+                        SanityManager.DEBUG_PRINT(GfxdConstants.TRACE_QUERYDISTRIB,
+                            "Not converting count(*) to Region.size() optimization. groupBy list "
+                                + groupByList + " selectAggregates " + selectAggregates
+                                + " isDistinct " + isDistinct + " numTables "
+                                + getCompilerContext().getNumTables() + " isWindowFunction "
+                                + resultColumns.containsWindowFunctionResultColumn());
+                    }
+                  }
+                }
+                final GemFireXDQueryObserver observer = GemFireXDQueryObserverHolder
+                    .getInstance();
+                if(observer != null) {
+                  observer.regionSizeOptimizationTriggered2(this);
+                }
+
+	}
+	//GemStone changes BEGIN
+	public boolean categorize(JBitSet referencedTabs, boolean simplePredsOnly) throws StandardException{
+	  //Get the ResultColumnsList
+	  int size = this.resultColumns.size();
+	  for (int i = 1 ; i <= size ;++i) {
+	    ResultColumn rc = this.resultColumns.getResultColumn(i);
+	    if( rc != null && rc.getReference() != null) {
+	      referencedTabs.or(rc.getReference().getTablesReferenced());
+	    }
+	  }
+	//get from clause
+	  referencedTabs.or(this.referencedTableMap);
+	  
+	//get the where clause
+	  size = this.wherePredicates.size();
+	  for (int i = 0 ; i < size ; ++i) {
+	    referencedTabs.or( ((Predicate)this.wherePredicates.elementAt(i)).getReferencedSet());
+	  }
+	  //TODO :Asif: check for dependency on group by and order by clauses.
+	  return false;
+	  
+	}
+	//GemStone changes END
+	@Override
+  public void eliminateUnUsedColumns(ResultColumnList parentResultColumn, CollectAndEliminateColumnsVisitor finder) throws StandardException {
+          if (parentResultColumn != null) {
+            resultColumns = resultColumns.eliminateUnUsedColumns(resultColumns.mergeColumnList(parentResultColumn), finder);
+          }
+          fromList.eliminateUnUsedColumns(resultColumns, finder);
+    // GemStone changes END
+	}
+
+	/**
+	 * Bind the expressions in this ResultSetNode if it has tables.  This means binding the
+	 * sub-expressions, as well as figuring out what the return type is for
+	 * each expression.
+	 *
+	 * @param fromListParam		FromList to use/append to.
+	 *
+	 * @exception StandardException		Thrown on error
+	 */
+	@Override
+  public void bindExpressionsWithTables(FromList fromListParam)
+					throws StandardException
+	{
+		/* We have tables, so simply call bindExpressions() */
+		bindExpressions(fromListParam);
+	}
+
+	/**
+	 * Bind the expressions in the target list.  This means binding the
+	 * sub-expressions, as well as figuring out what the return type is
+	 * for each expression.  This is useful for EXISTS subqueries, where we
+	 * need to validate the target list before blowing it away and replacing
+	 * it with a SELECT true.
+	 *
+	 * @exception StandardException		Thrown on error
+	 */
+
+	@Override
+  public void bindTargetExpressions(FromList fromListParam)
+					throws StandardException
+	{
+		/*
+		 * With a FromSubquery in the FromList we cannot bind target expressions 
+		 * at this level (DERBY-3321)
+		 */
+		CollectNodesVisitor cnv = new CollectNodesVisitor(FromSubquery.class, 
+														  FromSubquery.class);
+		fromList.accept(cnv);
+		if (!cnv.getList().isEmpty()){		
+			bindTargetListOnly = false;
+		} else {
+			bindTargetListOnly = true;				
+		}		
+		bindExpressions(fromListParam);
+		bindTargetListOnly = false;
+	}
+
+	/**
+	 * Bind the result columns of this ResultSetNode when there is no
+	 * base table to bind them to.  This is useful for SELECT statements,
+	 * where the result columns get their types from the expressions that
+	 * live under them.
+	 *
+	 * @param fromListParam		FromList to use/append to.
+	 *
+	 * @exception StandardException		Thrown on error
+	 */
+
+	@Override
+  public void bindResultColumns(FromList fromListParam)
+				throws StandardException
+	{
+		/* We first bind the resultColumns for any FromTable which
+		 * needs its own binding, such as JoinNodes.
+		 * We pass through the fromListParam without adding our fromList
+		 * to it, since the elements in our fromList can only be correlated
+		 * with outer query blocks.
+		 */
+		fromList.bindResultColumns(fromListParam);
+		super.bindResultColumns(fromListParam);
+
+		/* Only 1012 elements allowed in select list */
+		if (resultColumns.size() > Limits.DB2_MAX_ELEMENTS_IN_SELECT_LIST)
+		{
+			throw StandardException.newException(SQLState.LANG_TOO_MANY_ELEMENTS,
+			    Limits.DB2_MAX_ELEMENTS_IN_SELECT_LIST /* GemStoneAddition */);
+		}
+
+		/* Fix nullability in case of any outer joins in the fromList */
+		if (fromList.hasOuterJoins())
+			resultColumns.setNullability(true);
+	}
+
+	/**
+	 * Bind the result columns for this ResultSetNode to a base table.
+	 * This is useful for INSERT and UPDATE statements, where the
+	 * result columns get their types from the table being updated or
+	 * inserted into.
+	 * If a result column list is specified, then the verification that the 
+	 * result column list does not contain any duplicates will be done when
+	 * binding them by name.
+	 *
+	 * @param targetTableDescriptor	The TableDescriptor for the table being
+	 *				updated or inserted into
+	 * @param targetColumnList	For INSERT statements, the user
+	 *					does not have to supply column
+	 *					names (for example, "insert into t
+	 *					values (1,2,3)".  When this
+	 *					parameter is null, it means that
+	 *					the user did not supply column
+	 *					names, and so the binding should
+	 *					be done based on order.  When it
+	 *					is not null, it means do the binding
+	 *					by name, not position.
+	 * @param statement			Calling DMLStatementNode (Insert or Update)
+	 * @param fromListParam		FromList to use/append to.
+	 *
+	 * @exception StandardException		Thrown on error
+	 */
+
+	@Override
+  public void bindResultColumns(TableDescriptor targetTableDescriptor,
+					FromVTI targetVTI,
+					ResultColumnList targetColumnList,
+					DMLStatementNode statement,
+					FromList fromListParam)
+				throws StandardException
+	{
+		/* We first bind the resultColumns for any FromTable which
+		 * needs its own binding, such as JoinNodes.
+		 * We pass through the fromListParam without adding our fromList
+		 * to it, since the elements in our fromList can only be correlated
+		 * with outer query blocks.
+		 */
+		fromList.bindResultColumns(fromListParam);
+		super.bindResultColumns(targetTableDescriptor,
+								targetVTI,
+								targetColumnList, statement,
+								fromListParam);
+	}
+
+	/** 
+	 * Push an expression into this SELECT (and possibly down into
+	 * one of the tables in the FROM list).  This is useful when
+	 * trying to push predicates into unflattened views or
+	 * derived tables.
+	 *
+	 * @param predicate	The predicate that we attempt to push
+	 *
+	 * @exception StandardException		Thrown on error
+	 */
+	void pushExpressionsIntoSelect(Predicate predicate)
+		throws StandardException
+	{
+		wherePredicates.pullExpressions(referencedTableMap.size(), predicate.getAndNode());
+		fromList.pushPredicates(wherePredicates);
+	}
+
+
+	/**
+	 * Verify that a SELECT * is valid for this type of subquery.
+	 *
+	 * @param outerFromList	The FromList from the outer query block(s)
+	 * @param subqueryType	The subquery type
+	 *
+	 * @exception StandardException		Thrown on error
+	 */
+	@Override
+  public void verifySelectStarSubquery(FromList outerFromList, int subqueryType) 
+					throws StandardException
+	{
+		if (! ((ResultColumn) resultColumns.elementAt(0) instanceof AllResultColumn) )
+		{
+			return;
+		}
+
+		/* Select * currently only valid for EXISTS/NOT EXISTS.
+		 * NOT EXISTS does not appear prior to preprocessing.
+		 */
+		if (subqueryType != SubqueryNode.EXISTS_SUBQUERY)
+		{
+			throw StandardException.newException(SQLState.LANG_CANT_SELECT_STAR_SUBQUERY);
+		}
+
+		/* If the AllResultColumn is qualified, then we have to verify
+		 * that the qualification is a valid exposed name.
+		 * NOTE: The exposed name can come from an outer query block.
+		 */
+		String		fullTableName;
+			
+		fullTableName = ((AllResultColumn) resultColumns.elementAt(0)).getFullTableName();
+
+		if (fullTableName != null)
+		{
+			if (fromList.getFromTableByName(fullTableName, null, true) == null &&
+				outerFromList.getFromTableByName(fullTableName, null, true) == null)
+			{
+				if (fromList.getFromTableByName(fullTableName, null, false) == null &&
+					outerFromList.getFromTableByName(fullTableName, null, false) == null)
+				{
+					throw StandardException.newException(SQLState.LANG_EXPOSED_NAME_NOT_FOUND, fullTableName);
+				}
+			}
+		}
+	}
+
+	/** 
+	 * Determine whether or not the specified name is an exposed name in
+	 * the current query block.
+	 *
+	 * @param name	The specified name to search for as an exposed name.
+	 * @param schemaName	Schema name, if non-null.
+	 * @param exactMatch	Whether or not we need an exact match on specified schema and table
+	 *						names or match on table id.
+	 *
+	 * @return The FromTable, if any, with the exposed name.
+	 *
+	 * @exception StandardException		Thrown on error
+	 */
+	@Override
+  protected FromTable getFromTableByName(String name, String schemaName, boolean exactMatch)
+		throws StandardException
+	{
+		return fromList.getFromTableByName(name, schemaName, exactMatch);
+	}
+
+	/**
+	 * Check for (and reject) ? parameters directly under the ResultColumns.
+	 * This is done for SELECT statements.
+	 *
+	 * @exception StandardException		Thrown if a ? parameter found
+	 *									directly under a ResultColumn
+	 */
+
+	@Override
+  public void rejectParameters() throws StandardException
+	{
+		super.rejectParameters();
+		fromList.rejectParameters();
+	}
+
+	/**
+	 * Push the order by list down from the cursor node
+	 * into its child result set so that the optimizer
+	 * has all of the information that it needs to 
+	 * consider sort avoidance.
+	 *
+	 * @param orderByList	The order by list
+	 */
+	@Override
+  void pushOrderByList(OrderByList orderByList)
+	{
+		this.orderByList = orderByList;
+		// remember that there was an order by list
+		orderByQuery = true;
+	}
+
+	/** 
+	 * Put a ProjectRestrictNode on top of each FromTable in the FromList.
+	 * ColumnReferences must continue to point to the same ResultColumn, so
+	 * that ResultColumn must percolate up to the new PRN.  However,
+	 * that ResultColumn will point to a new expression, a VirtualColumnNode, 
+	 * which points to the FromTable and the ResultColumn that is the source for
+	 * the ColumnReference.  
+	 * (The new PRN will have the original of the ResultColumnList and
+	 * the ResultColumns from that list.  The FromTable will get shallow copies
+	 * of the ResultColumnList and its ResultColumns.  ResultColumn.expression
+	 * will remain at the FromTable, with the PRN getting a new 
+	 * VirtualColumnNode for each ResultColumn.expression.)
+	 * We then project out the non-referenced columns.  If there are no referenced
+	 * columns, then the PRN's ResultColumnList will consist of a single ResultColumn
+	 * whose expression is 1.
+	 *
+	 * @param numTables			The number of tables in the DML Statement
+	 * @param gbl				The outer group by list, if any
+	 * @param fl			The from list, if any
+	 *
+	 * @return The generated ProjectRestrictNode atop the original FromTable.
+	 *
+	 * @exception StandardException		Thrown on error
+	 */
+
+	@Override
+  public ResultSetNode preprocess(int numTables,
+									GroupByList gbl,
+									FromList fl)
+								throws StandardException
+	{
+		ResultSetNode newTop = this;
+		//GemStone changes BEGIN
+		//keep a handle to the orderByList locally as it gets nullified in between
+		OrderByList localOrderByList = orderByList;
+		//GemStone changes END
+
+		/* Put the expression trees in conjunctive normal form.
+		 * NOTE - This needs to occur before we preprocess the subqueries
+		 * because the subquery transformations assume that any subquery operator 
+		 * negation has already occurred.
+		 */
+		whereClause = normExpressions(whereClause);
+		// DERBY-3257. We need to normalize the having clause as well, because 
+		// preProcess expects CNF.
+		havingClause = normExpressions(havingClause);
+		
+		/**
+		 * This method determines if (1) the query is a LOJ, and (2) if the LOJ is a candidate for
+		 * reordering (i.e., linearization).  The condition for LOJ linearization is:
+		 * 1. either LOJ or ROJ in the fromList, i.e., no INNER, NO FULL JOINs
+		 * 2. ON clause must be equality join between left and right operands and in CNF (i.e., AND is allowed)
+		 */
+		boolean anyChange = fromList.LOJ_reorderable(numTables);
+		if (anyChange)
+		{
+			FromList afromList = (FromList) getNodeFactory().getNode(C_NodeTypes.FROM_LIST,
+																	 getNodeFactory().doJoinOrderOptimization(),
+																	 getContextManager());
+			bindExpressions(afromList);
+		}
+
+		/* Preprocess the fromList.  For each FromTable, if it is a FromSubquery
+		 * then we will preprocess it, replacing the FromSubquery with a
+		 * ProjectRestrictNode. If it is a FromBaseTable, then we will generate
+		 * the ProjectRestrictNode above it.
+		 */
+		fromList.preprocess(numTables, groupByList, whereClause);
+
+		/* selectSubquerys is always allocated at bind() time */
+		if (SanityManager.DEBUG)
+		{
+			SanityManager.ASSERT(selectSubquerys != null,
+				"selectSubquerys is expected to be non-null");
+		}
+
+		/* Preprocess the RCL after the from list so that
+		 * we can flatten/optimize any subqueries in the
+		 * select list.
+		 */
+		resultColumns.preprocess(numTables, 
+								 fromList, whereSubquerys,
+								 wherePredicates);
+
+		/* Preprocess the expressions.  (This is necessary for subqueries.
+		 * This is also where we do transformations such as for LIKE.)
+		 *
+		 * NOTE: We do this after preprocessing the fromList so that, for
+		 * quantified subqueries, the join expression with the outer
+		 * expression will be pushable (to be pushable, the ColumnReference
+		 * has to point to a VirtualColumnNode, and not to a BaseColumnNode).
+		 */
+		if (whereClause != null)
+		{
+			// DERBY-3301
+			// Mark subqueries that are part of the where clause as such so
+			// that we can avoid flattening later, particularly for nested 
+			// WHERE EXISTS subqueries.
+			if (whereSubquerys != null){
+				whereSubquerys.markWhereSubqueries();
+			}
+// GemStone changes BEGIN
+			whereClause =
+// GemStone changes END
+			whereClause.preprocess(numTables,
+								   fromList, whereSubquerys,
+								   wherePredicates);
+		}
+
+		/* Preprocess the group by list too. We need to compare 
+		 * expressions in the group by list with the select list and we 
+		 * can't rewrite one and not the other.
+		 */
+		if (groupByList != null)
+		{
+			groupByList.preprocess(numTables, fromList, whereSubquerys, wherePredicates);
+		}
+		
+		if (havingClause != null) {
+		    // DERBY-3257 
+		    // Mark  subqueries that are part of the having clause as 
+		    // such so we can avoid flattenning later. Having subqueries
+		    // cannot be flattened because we cannot currently handle
+		    // column references at the same source level.
+		    // DERBY-3257 required we normalize the having clause which
+		    // triggered flattening because SubqueryNode.underTopAndNode
+		    // became true after normalization.  We needed another way to
+		    // turn flattening off. Perhaps the long term solution is
+		    // to avoid this restriction all together but that was beyond
+		    // the scope of this bugfix.
+		    havingSubquerys.markHavingSubqueries();
+		    havingClause = havingClause.preprocess(
+					numTables, fromList, havingSubquerys, wherePredicates);
+		}
+		
+		/* Pull apart the expression trees */
+		if (whereClause != null)
+		{
+			wherePredicates.pullExpressions(numTables, whereClause);
+			whereClause = null;
+		}
+
+		/* RESOLVE - Where should we worry about expression pull up for
+		 * expensive predicates?
+		 */
+
+		// Flatten any flattenable FromSubquerys or JoinNodes
+		fromList.flattenFromTables(resultColumns, 
+								   wherePredicates, 
+								   whereSubquerys,
+								   groupByList);
+
+		if (wherePredicates != null && wherePredicates.size() > 0 && fromList.size() > 0)
+		{
+			// Perform various forms of transitive closure on wherePredicates
+			if (fromList.size() > 1)
+			{
+				performTransitiveClosure(numTables);
+			}
+
+			if (orderByList != null)
+			{
+				// Remove constant columns from order by list.  Constant
+				// columns are ones that have equality comparisons with
+				// constant expressions (e.g. x = 3)
+				orderByList.removeConstantColumns(wherePredicates);
+
+				/*
+				** It's possible for the order by list to shrink to nothing
+				** as a result of removing constant columns.  If this happens,
+				** get rid of the list entirely.
+				*/
+				if (orderByList.size() == 0)
+				{
+					orderByList = null;
+				}
+			}
+		}
+
+		
+		//GemStone changes BEGIN
+		//Commenting the below snippet, because we are prefering GroupByList presence so that
+		// sort avoidance path if present will be used. In case of no index available, we are
+		// prefering external sorter over hash as sorter can overflow to disk.
+		//This also fixes the issue of LocalCSLMIndex test selectivity work as expected.
+		
+		
+		/* A valid group by without any aggregates or a having clause
+		 * is equivalent to a distinct without the group by.  We do the transformation
+		 * in order to simplify the group by code.
+		 */
+		/*
+		if (groupByList != null &&
+			havingClause == null &&
+			selectAggregates.size() == 0 &&
+			whereAggregates.size() == 0)
+		{
+			isDistinct = true;
+			groupByList = null;
+			wasGroupBy = true;
+		}*/
+		
+		//GemStone changes END
+
+		/* Consider distinct elimination based on a uniqueness condition.
+		 * In order to do this:
+		 *	o  All top level ColumnReferences in the select list are
+		 *	   from the same base table.  (select t1.c1, t2.c2 + t3.c3 is 
+		 *	   okay - t1 is the table of interest.)
+		 *  o  If the from list is a single table then the columns in the
+		 *	   select list plus the columns in the where clause that are
+		 *	   in = comparisons with constants or parameters must be a
+		 *	   superset of any unique index.
+		 *  o  If the from list has multiple tables then at least 1 table
+		 *	   meet the following - the set of columns in = comparisons
+		 *	   with constants or parameters is a superset of any unique
+		 *	   index on the table.  All of the other tables must meet
+		 *	   the following - the set of columns in = comparisons with
+		 *	   constants, parameters or join columns is a superset of
+		 *	   any unique index on the table.  If the table from which
+		 *	   the columns in the select list are coming from is in this
+		 *     later group then the rule for it is to also include
+		 *     the columns in the select list in the set of columns that
+		 *     needs to be a superset of the unique index.  Whew!
+		 */
+		//GemStone changes BEGIN
+                //boolean isCompilationAsDataStoreNode = ! getCompilerContext().createQueryInfo();
+		boolean isSenderNode = !this.isPartOfSubQueryNode &&
+		! getCompilerContext().createQueryInfo();
+		
+		//If this Select Node is under a subquery node , then we don't have to expand the 
+                // aggregate function of the subquery . 
+                // The reason is : A subquery with aggregate function will never be converted into a
+                // an equi join query. Keeping this in mind
+                /**
+                 * 1) If the query node has determined that gfxdsubactivation is not needed for subquery, then on data store
+                 * a derby activation will be created. In which case we do not have to expand it.
+                 * 2) If the query node has determined that gfxd subactivation is needed, then that means 
+                 *  a GFe activation will be created. In which case GroupByQueryInfo would have 
+                 *  manipulated the tree and so the data store should not mess with it. 
+                 */
+		
+		if (isDistinct && groupByList == null)
+		{
+			int distinctTable =	resultColumns.allTopCRsFromSameTable();
+			
+			if (distinctTable != -1)
+			{
+				if (fromList.returnsAtMostSingleRow(resultColumns, 
+											   whereClause, wherePredicates,
+											   getDataDictionary()))
+				{
+					isDistinct = false;
+				}
+			}
+
+			/* If we were unable to eliminate the distinct and we have
+			 * an order by then we can consider eliminating the sort for the
+			 * order by.  All of the columns in the order by list must
+			 * be ascending in order to do this.  There are 2 cases:
+			 *	o	The order by list is an in order prefix of the columns
+			 *		in the select list.  In this case the output of the
+			 *		sort from the distinct will be in the right order
+			 *		so we simply eliminate the order by list.
+			 *	o	The order by list is a subset of the columns in the
+			 *		the select list.  In this case we need to reorder the
+			 *		columns in the select list so that the ordering columns
+			 *		are an in order prefix of the select list and put a PRN
+			 *		above the select so that the shape of the result set
+			 *		is as expected.
+			 */
+			if (isDistinct && orderByList != null && orderByList.allAscending()
+// GemStone changes BEGIN
+			    && orderByList.isDistinctOrderable()
+// GemStone changes END
+			   )
+			{
+				/* Order by list currently restricted to columns in select
+				 * list, so we will always eliminate the order by here.
+				 */
+				if (orderByList.isInOrderPrefix(resultColumns))
+				{
+					orderByList = null;
+				}
+				else
+				{
+					/* Order by list is not an in order prefix of the select list
+					 * so we must reorder the columns in the the select list to
+					 * match the order by list and generate the PRN above us to
+					 * preserve the expected order.
+					 */
+					newTop = genProjectRestrictForReordering();
+ 					orderByList.resetToSourceRCs();
+					resultColumns = orderByList.reorderRCL(resultColumns);
+					newTop.getResultColumns().removeOrderByColumns();
+                                        orderByList = null;
+				}
+				orderByAndDistinctMerged = true;
+			}
+		}
+
+		/*
+		 * Push predicates that are pushable.
+		 *
+		 * NOTE: We pass the wherePredicates down to the new PRNs here,
+		 * so they can pull any clauses and possibily push them down further.
+		 * NOTE: We wait until all of the FromTables have been preprocessed
+		 * until we attempt to push down predicates, because we cannot push down
+		 * a predicate if the immediate source of any of its column references
+		 * is not a ColumnReference or a VirtualColumnNode.
+		 */
+		fromList.pushPredicates(wherePredicates);
+
+		/* Set up the referenced table map */
+		referencedTableMap = new JBitSet(numTables);
+		int flSize = fromList.size();
+		for (int index = 0; index < flSize; index++)
+		{
+			referencedTableMap.or(((FromTable) fromList.elementAt(index)).
+													getReferencedTableMap());
+		}
+
+		/* Copy the referenced table map to the new tree top, if necessary */
+		if (newTop != this)
+		{
+			newTop.setReferencedTableMap((JBitSet) referencedTableMap.clone());
+		}
+		
+		//GemStone changes BEGIN
+		
+		/* At the query node if distinct and orderBy is merged
+		 * we need to keep the column ordering as it gets lost in between.
+		 * 
+		 * e.g: select c1 from t1 group by c1 order by c1 nulls first
+		 * 
+		 * TODO: soubhik: This is a derby's bug and need to handle more effectively.
+		 *  Distinct and OrderBy merge is also possible when orderByList is
+		 *  AllDescending or Ascending & Descending with null ordering.
+		 */
+		if(orderByAndDistinctMerged && !isSenderNode) {
+		  newTop.getResultColumns().setColumnOrdering(localOrderByList.getColumnOrdering());
+		}
+		
+		if(isSenderNode && !getCompilerContext().allTablesAreReplicatedOnRemote() && isDistinct) {
+		  resultColumns.mergeResultColumnList(newTop.getResultColumns(), true);
+		  resultColumns.unmarkAllGenerated();
+		}
+		
+		/* For distinct we need not have to expand the expression because, 
+		 * if aggregates are present anywhere in select query
+		 * groupBy to distinct optimization will not happen.
+		 * 
+		 * In Absence of aggregates expression can only be evaluated at
+		 * the data store node(s) and query nodes just have to accumulate
+		 * the ResultSet(s).
+		 */
+		if(isSenderNode 
+                    // Also, If all tables are replicated, no special processing on Data
+                    // Node
+                    && !getCompilerContext().allTablesAreReplicatedOnRemote()
+		    && ! isDistinct) {
+		  /* check whether GroupBy or any aggregates are present and only then try
+		   * to expand the projection (resultColumns included grouped/aggregated columns
+		   * by this time) as simple expressions need not to be evaluated on the queryNode
+		   * again.
+		   * e.g. following query requires simple concatenation of ResultSets
+		   * i. select a+b from Tab group by a, b, a+b
+		   * ii.select c+d from Tab order by (a+b)/2 
+		   */
+		  if(groupByList != null || (selectAggregates != null) && (selectAggregates.size() > 0)) {
+		    CollectExpressionOperandsVisitor substitute = new CollectExpressionOperandsVisitor(
+		        getLanguageConnectionContext()
+		        //whereAggregates are not allowed as of now.
+		        ,new Vector[] { selectAggregates, havingAggregates }
+		        ,isSenderNode);
+		    resultColumns.accept(substitute);
+		    
+		    if(havingClause != null) {
+		      havingClause.accept(substitute);
+		      if(substitute.getOtherExpressions() != null && 
+		          substitute.getOtherExpressions().size() > 0) {
+		        havingClause = null;
+		      }
+		    }
+		    
+		    resultColumns = substitute.getResultColumns();
+		  }
+		}
+
+                /**
+                 * lets disable orderBy in the data store node if group by is present as its
+                 * optimum to return ResultSet ordered by grouped columns. Also, If all
+                 * tables are replicated, no special processing on Data Node. Also if case
+                 * of fetch-next and has no aggregate in order by, don't do this.
+                 * 
+                 */
+		if(groupByList != null && orderByList != null && isSenderNode
+                    && !getCompilerContext().allTablesAreReplicatedOnRemote()) {
+		    boolean nullifyOrderByList = true;
+		    if (getCompilerContext().isOffsetOrFetchNext()) {
+		      if (!orderByList.hasAnyAgrregateInOrderByList(isSenderNode)) {
+		        nullifyOrderByList = false;
+		      }
+		    }
+                    if (nullifyOrderByList) {
+                      orderByList = null;
+                      getCompilerContext().setOrderByListNullified();
+                    }
+		}
+		
+		//keep the back reference to parent PRN so that later decided RCL can be 
+		//moved upwards if required. 
+		topPRN = newTop;
+		//GemStone changes END
+		return newTop;
+	}
+
+	/**
+	 * Peform the various types of transitive closure on the where clause.
+	 * The 2 types are transitive closure on join clauses and on search clauses.
+	 * Join clauses will be processed first to maximize benefit for search clauses.
+	 *
+	 * @param numTables		The number of tables in the query
+	 *
+	 * @exception StandardException		Thrown on error
+	 */
+	private void performTransitiveClosure(int numTables)
+		throws StandardException
+	{
+		// Join clauses
+		wherePredicates.joinClauseTransitiveClosure(numTables, fromList, getCompilerContext());
+
+		// Search clauses
+		wherePredicates.searchClauseTransitiveClosure(numTables, fromList.hashJoinSpecified());
+	}
+
+	/** Put the expression trees in conjunctive normal form 
+	 *
+     * @param boolClause clause to normalize
+     * 
+	 * @exception StandardException		Thrown on error
+	 */
+	public static /* GemStone change private */ ValueNode normExpressions(ValueNode boolClause)
+				throws StandardException
+	{
+		/* For each expression tree:
+		 *	o Eliminate NOTs (eliminateNots())
+		 *	o Ensure that there is an AndNode on top of every
+		 *	  top level expression. (putAndsOnTop())
+		 *	o Finish the job (changeToCNF())
+		 */
+		if (boolClause != null)
+		{
+			boolClause = boolClause.eliminateNots(false);
+			if (SanityManager.DEBUG)
+			{
+				if (!(boolClause.verifyEliminateNots()) )
+				{
+					boolClause.treePrint();
+					SanityManager.THROWASSERT(
+						"boolClause in invalid form: " + boolClause); 
+				}
+			}
+			boolClause = boolClause.putAndsOnTop();
+			if (SanityManager.DEBUG)
+			{
+				if (! ((boolClause instanceof AndNode) &&
+					   (boolClause.verifyPutAndsOnTop())) )
+				{
+					boolClause.treePrint();
+					SanityManager.THROWASSERT(
+						"boolClause in invalid form: " + boolClause); 
+				}
+			}
+			boolClause = boolClause.changeToCNF(true);
+			if (SanityManager.DEBUG)
+			{
+				if (! ((boolClause instanceof AndNode) &&
+					   (boolClause.verifyChangeToCNF())) )
+				{
+					boolClause.treePrint();
+					SanityManager.THROWASSERT(
+						"boolClause in invalid form: " + boolClause); 
+				}
+			}
+		}
+
+		return boolClause;
+	}
+
+	/**
+	 * Add a new predicate to the list.  This is useful when doing subquery
+	 * transformations, when we build a new predicate with the left side of
+	 * the subquery operator and the subquery's result column.
+	 *
+	 * @param predicate		The predicate to add
+	 *
+	 * @return ResultSetNode	The new top of the tree.
+	 *
+	 * @exception StandardException		Thrown on error
+	 */
+	@Override
+  public ResultSetNode addNewPredicate(Predicate predicate)
+			throws StandardException
+	{
+		wherePredicates.addPredicate(predicate);
+		return this;
+	}
+
+	/**
+	 * Evaluate whether or not the subquery in a FromSubquery is flattenable.  
+	 * Currently, a FSqry is flattenable if all of the following are true:
+	 *		o  Subquery is a SelectNode. (ie, not a RowResultSetNode or a UnionNode)
+	 *		o  It contains a single table in its FROM list.
+	 *		o  It contains no subqueries in the SELECT list.
+	 *		o  It does not contain a group by or having clause
+	 *		o  It does not contain aggregates.
+	 *		o  It is not a DISTINCT.
+	 *
+	 * @param fromList	The outer from list
+	 *
+	 * @return boolean	Whether or not the FromSubquery is flattenable.
+	 */
+	@Override
+  public boolean flattenableInFromSubquery(FromList fromList)
+	{
+		if (isDistinct) 
+		{
+			return false;
+		}
+		if (this.fromList.size() > 1)
+		{
+			return false;
+		}
+
+		/* Don't flatten (at least for now) if selectNode's SELECT list contains a subquery */
+		if ((selectSubquerys != null) && 
+			 (selectSubquerys.size() > 0))
+		{
+			return false;
+		}
+
+		/* Don't flatten if selectNode contains a group by or having clause */
+		if ((groupByList != null) || (havingClause != null))
+		{
+			return false;
+		}
+
+		/* Don't flatten if select list contains something that isn't cloneable.
+		 */
+		if (! resultColumns.isCloneable())
+		{
+			return false;
+		}
+
+		/* Don't flatten if selectNode contains an aggregate */
+		if ((selectAggregates != null) && 
+			 (selectAggregates.size() > 0))
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Replace this SelectNode with a ProjectRestrictNode,
+	 * since it has served its purpose.
+	 *
+	 * @param origFromListSize	The size of the original FROM list, before
+	 *							generation of join tree.
+	 * @return ResultSetNode	new ResultSetNode atop the query tree.
+	 *
+	 * @exception StandardException		Thrown on error
+	 */
+
+	@Override
+  public ResultSetNode genProjectRestrict(int origFromListSize)
+				throws StandardException
+	{
+		boolean				eliminateSort = false;
+		ResultSetNode		prnRSN;
+		boolean				hasWindowFunction = false;
+		ResultColumnList	originalRCL = this.resultColumns.copyListAndObjects();		
+
+// GemStone changes BEGIN
+		CompilerContext cc = getCompilerContext();
+		boolean createQueryInfo = cc != null && cc.createQueryInfo();
+		boolean isLoner = Misc.getDistributedSystem().isLoner();
+// GemStone changes END
+		/*
+		 * Even if we have a window function, we must do all projection and
+		 * restriction at this stage. Restricting on a window function, i.e
+		 *    SELECT ... <WINDOWFUNCTION> AS W ... WHERE W ...
+		 * is not allowed. Restrictions need to be evaluated in an outer SELECT
+		 * to achieve this.
+		 */
+		hasWindowFunction = resultColumns.containsWindowFunctionResultColumn();		
+		if (hasWindowFunction) {				
+			/*
+			 * Remove any window function columns now, and reinsert them from
+			 * the copy made above once grouping and ordering has been performed.
+			 */						
+			resultColumns.removeWindowFunctionColumns();			
+			if (orderByList != null) {
+				orderByList.adjustForWindowFunctionColumns();				
+			}
+		}
+		
+		prnRSN = (ResultSetNode) getNodeFactory().getNode(
+								C_NodeTypes.PROJECT_RESTRICT_NODE,
+								fromList.elementAt(0),	/* Child ResultSet */
+								resultColumns,		/* Projection */
+								whereClause,			/* Restriction */
+								wherePredicates,/* Restriction as PredicateList */
+								selectSubquerys,/* Subquerys in Projection */
+								whereSubquerys,	/* Subquerys in Restriction */
+								null,
+								getContextManager()	 );
+
+		/*
+		** If we have aggregates OR a select list we want
+		** to generate a GroupByNode.  In the case of a
+		** scalar aggregate we have no grouping columns.
+		**
+		** JRESOLVE: what about correlated aggregates from another
+		** block.
+		*/ 
+		if (((selectAggregates != null) && (selectAggregates.size() > 0)) 
+			|| (groupByList != null))
+		{
+			Vector aggs = selectAggregates;
+			if (havingAggregates != null && !havingAggregates.isEmpty()) {
+				havingAggregates.addAll(selectAggregates);
+				aggs = havingAggregates;
+			}
+			GroupByNode gbn = (GroupByNode) getNodeFactory().getNode(
+												C_NodeTypes.GROUP_BY_NODE,
+												prnRSN,
+												groupByList,
+												aggs,
+												havingClause,
+												havingSubquerys,
+												null,
+// GemStone changes BEGIN
+												// changed to use Integer.valueOf()
+												Integer.valueOf(nestingLevel),
+												/* (original code)
+												new Integer(nestingLevel),
+												*/
+// GemStone changes END
+												getContextManager());
+			gbn.considerPostOptimizeOptimizations(originalWhereClause != null);
+			gbn.assignCostEstimate(optimizer.getOptimizedCost());
+
+			groupByList = null;
+			prnRSN  = gbn.getParent();
+
+			// Remember whether or not we can eliminate the sort.
+			eliminateSort = eliminateSort || gbn.getIsInSortedOrder();
+		}
+
+		/* 
+		 * If it is distinct, that must also be taken care of. But, if there is 
+		 * a window function in the RCL we must delay duplicate elimination
+		 * until after the window function has been evaluated.
+		 */
+		if (isDistinct && !hasWindowFunction)
+		{
+			// We first verify that a distinct is valid on the
+			// RCL.
+			resultColumns.verifyAllOrderable();
+
+			/* See if we can push duplicate elimination into the store
+			 * via a hash scan.  This is possible iff:
+			 *	o  A single table query
+			 *	o  We haven't merged the order by and distinct sorts.
+			 *	   (Results do not have to be in a particular order.)
+			 *	o  All entries in the select's RCL are ColumnReferences.
+			 *	o  No predicates (This is because we currently do not
+			 *	   differentiate between columns referenced in the select
+			 *	   list and columns referenced in other clauses.  In other
+			 *	   words, the store will do duplicate elimination based on
+			 *	   all referenced columns.)
+			 *	   RESOLVE - We can change this to be all referenced columns
+			 *	   have to be in the select list.  In that case, we need to
+			 *	   refine which predicates are allowed.  Basically, all predicates
+			 *	   must have been pushed down to the index/table scan.(If we make
+			 *	   this change, then we need to verify that non of the columns in
+			 *	   the predicates are correlated columns.)
+			 *	o  NOTE: The implementation of isPossibleDistinctScan() will return
+			 *	   false if there is an IndexRowToBaseRow above the 
+			 *	   FromBaseTable.  This is because all of a table's columns must come
+			 *	   from the same conglomerate in order to get consistent data.
+			 */
+	                boolean distinctScanPossible = false;
+// GemStone changes BEGIN
+	                // first check if the underlying source is already sorted
+	                // and in that case don't need any of distinct scan etc
+	                final boolean inSortedOrder = isOrderedResult(
+	                    resultColumns, prnRSN, !(orderByAndDistinctMerged));
+	                if (!inSortedOrder)
+// GemStone changes END
+			if (origFromListSize == 1 && !orderByAndDistinctMerged)
+			{
+				boolean simpleColumns = true;
+				HashSet distinctColumns = new HashSet();
+				int size = resultColumns.size();
+				for (int i = 1; i <= size; i++) {
+					BaseColumnNode bc = resultColumns.getResultColumn(i).getBaseColumnNode();
+					if (bc == null) {
+						simpleColumns = false;
+						break;
+					}
+					distinctColumns.add(bc);
+				}
+				if (simpleColumns && prnRSN.isPossibleDistinctScan(distinctColumns)) {
+					prnRSN.markForDistinctScan();
+					distinctScanPossible = true;
+				}
+			}
+
+			if (!distinctScanPossible)
+			{
+				/* We can't do a distinct scan. Determine if we can filter out 
+				 * duplicates without a sorter. 
+				 */
+				//boolean inSortedOrder = isOrderedResult(resultColumns, prnRSN, !(orderByAndDistinctMerged));
+				prnRSN = (ResultSetNode) getNodeFactory().getNode(
+											C_NodeTypes.DISTINCT_NODE,
+											prnRSN,
+// GemStone changes BEGIN
+											// changed to use valueOf()
+											Boolean.valueOf(inSortedOrder),
+											/* (original code)
+											new Boolean(inSortedOrder),
+											*/
+// GemStone changes END
+											null,
+											getContextManager());
+				prnRSN.costEstimate = costEstimate.cloneMe();
+
+				// Remember whether or not we can eliminate the sort.
+				eliminateSort = eliminateSort || inSortedOrder;
+			}
+		}
+
+		/* Generate the OrderByNode if a sort is still required for
+		 * the order by.
+		 */
+		if (orderByList != null)
+		{
+			if (orderByList.getSortNeeded())
+			{
+				prnRSN = (ResultSetNode) getNodeFactory().getNode(
+												C_NodeTypes.ORDER_BY_NODE,
+												prnRSN,
+												orderByList,
+												null,
+												getContextManager());
+				prnRSN.costEstimate = costEstimate.cloneMe();
+			}
+			
+			// There may be columns added to the select projection list
+			// a query like:
+			// select a, b from t group by a,b order by a+b
+			// the expr a+b is added to the select list.  
+			int orderBySelect = this.getResultColumns().getOrderBySelect();
+			if (orderBySelect > 0
+// GemStone changes BEGIN
+                           && (createQueryInfo || (!createQueryInfo && cc != null && cc
+                                .allTablesAreReplicatedOnRemote())))
+// GemStone changes END			  
+			{
+				ResultColumnList selectRCs = prnRSN.getResultColumns().copyListAndObjects();
+				
+				selectRCs.removeOrderByColumns();
+				selectRCs.genVirtualColumnNodes(prnRSN, prnRSN.getResultColumns());				
+				prnRSN = (ResultSetNode) getNodeFactory().getNode(
+								C_NodeTypes.PROJECT_RESTRICT_NODE,
+								prnRSN,
+								selectRCs,
+								null,
+								null,
+								null,
+								null,
+								null,
+								getContextManager());
+				/*
+				 * Remove added ordering columns from the saved original RCL
+				*/								
+				originalRCL.removeOrderByColumns();				
+			}
+		}
+
+		
+		if (wasGroupBy && resultColumns.numGeneratedColumnsForGroupBy() > 0) {
+
+			// This case takes care of columns generated for group by's which 
+			// will need to be removed from the final projection. Note that the
+			// GroupByNode does remove generated columns but in certain cases
+			// we dispense with a group by and replace it with a distinct instead.
+			// So in a query like:
+			// select c1 from t group by c1, c2
+			// we would have added c2 to the projection list which will have to be 
+			// projected out.
+			
+			ResultColumnList newSelectList = prnRSN.getResultColumns().copyListAndObjects(); 
+			newSelectList.removeGeneratedGroupingColumns();
+			newSelectList.genVirtualColumnNodes(prnRSN, prnRSN.getResultColumns());
+			prnRSN = (ResultSetNode) getNodeFactory().getNode(
+						C_NodeTypes.PROJECT_RESTRICT_NODE,
+						prnRSN,
+						newSelectList,
+						null,
+						null,
+						null,
+						null,
+						null,
+						getContextManager());
+		}
+		
+
+		if (!(orderByList != null && orderByList.getSortNeeded()) && orderByQuery)
+		{
+			// Remember whether or not we can eliminate the sort.
+			eliminateSort = true;
+		}
+
+		/* If we were able to eliminate the sort during optimization then
+		 * we must tell the underlying tree.  At minimum, this means no
+		 * group fetch on an index under an IndexRowToBaseRow since that
+		 * that could lead to incorrect results.  (Bug 2347.)
+		 */
+// GemStone changes BEGIN
+		// don't do sort elimination for query node else we will end
+		// up skipping sorting the merged results
+		if (((!createQueryInfo && !cc.allTablesAreReplicatedOnRemote())  || isLoner) && eliminateSort)
+		/* (original code)
+		if (eliminateSort)
+		*/
+// GemStone changes END
+		{
+			prnRSN.adjustForSortElimination(orderByList);
+		}
+
+		/* Set the cost of this node in the generated node */
+		prnRSN.costEstimate = costEstimate.cloneMe();
+
+		/*
+		 * Now that grouping and ordering has been performed, we can reinsert 
+		 * the window function column(s), and pull the WindowNode(s) up from 
+		 * under the window function ResultColumn(s).
+		 */
+		if (hasWindowFunction) {		
+			/*
+			 * Pull all WindowNodes up from under their window function column,
+			 * and place the WindowNode on top.
+			 */			
+			int size = originalRCL.size();						
+			int windowFunctionLevel = 0;		
+			ResultColumnList windowFunctionRCL = originalRCL.copyListAndObjects();										
+			for (int index = 0; index < size; index++) {
+				ResultColumn rc = (ResultColumn) originalRCL.elementAt(index);				
+				/*
+				 * NOTE: We only care about window function columns that appear 
+				 * here, and not about references into subquerys or similar.
+				 */
+				if (rc.expressionIsWindowFunction()) {					
+			
+					WindowFunctionColumnNode wfcn = (WindowFunctionColumnNode) rc.getExpression();
+					WindowNode windowNode = wfcn.getWindowNode();
+
+					windowFunctionLevel++;
+					
+					windowNode.setResultColumns(windowFunctionRCL);
+					windowNode.setChildResult(prnRSN);
+					windowNode.setWindowFunctionLevel(windowFunctionLevel);
+					
+					/* Set the cost of this node in the generated node */
+					windowNode.costEstimate = costEstimate.cloneMe();
+					/* Set the new top */
+					prnRSN = windowNode;
+				}
+			}
+
+			/* 
+			 * After evaluation of the window function, we can do duplicate 
+			 * elimination for distinct queries.
+			 */
+			if (isDistinct)
+			{
+				/* Verify that a distinct is valid on the RCL. */
+				prnRSN.getResultColumns().verifyAllOrderable();
+
+				/*
+				 * We cannot push duplicate elimination into store via a hash 
+				 * scan when there is a window function in the RCL, but it may 
+				 * be possible to filter out duplicates without a sorter.
+				 */
+				boolean inSortedOrder = isOrderedResult(prnRSN.getResultColumns(), 
+														prnRSN, 
+														!(orderByAndDistinctMerged));
+				prnRSN = (ResultSetNode) getNodeFactory().getNode(
+											C_NodeTypes.DISTINCT_NODE,
+											prnRSN,
+											Boolean.valueOf(inSortedOrder),
+											null,
+											getContextManager());
+				prnRSN.costEstimate = costEstimate.cloneMe();
+			}
+			
+			/*
+			 * Top off with a PRN as this is the intent of this method. Even 
+			 * though this PRN is a noop and will never be generated, we should 
+			 * leave it here as other parts of the code expects to find 
+			 * PRN -> WN, or PRN -> DN -> WN.
+			 */
+			ResultColumnList newRCL = prnRSN.getResultColumns().copyListAndObjects(); 
+			newRCL.genVirtualColumnNodes(prnRSN, prnRSN.getResultColumns());
+						
+			prnRSN = (ResultSetNode) getNodeFactory().getNode(
+				C_NodeTypes.PROJECT_RESTRICT_NODE,
+				prnRSN, /* Child ResultSet */
+				newRCL, /* Projection */ 
+				null, /* Restriction */
+				null, /* Restriction as PredicateList */
+				null, /* Subquerys in Projection */
+				null, /* Subquerys in Restriction */
+				null,
+				getContextManager());
+		
+			/* Set the cost of this node in the generated node */
+			prnRSN.costEstimate = costEstimate.cloneMe();						
+		}
+	
+		return prnRSN;
+	}
+
+	/**
+	 * Is the result of this node an ordered result set.  An ordered result set
+	 * means that the results from this node will come in a known sorted order.
+	 * This means that the data is ordered according to the order of the elements in the RCL.
+	 * Today, the data is considered ordered if:
+	 *		o The RCL is composed entirely of CRs or ConstantNodes
+	 *		o The underlying tree is ordered on the CRs in the order in which
+	 *			they appear in the RCL, taking equality predicates into account.
+	 * Future Enhancements:
+	 *		o The prefix will not be required to be in order.  (We will need to 
+	 *		  reorder the RCL and generate a PRN with an RCL in the expected order.)
+	 *
+	 * @return boolean	Whether or not this node returns an ordered result set.
+	 *
+	 * @exception StandardException		Thrown on error
+	 */
+	private boolean isOrderedResult(ResultColumnList resultColumns,
+										  ResultSetNode newTopRSN,
+										  boolean permuteOrdering)
+		throws StandardException
+	{
+		int rclSize = resultColumns.size();
+
+		/* Not ordered if RCL contains anything other than a ColumnReference
+		 * or a ConstantNode.
+		 */
+		int numCRs = 0;
+		for (int index = 0; index < rclSize; index++)
+		{
+			ResultColumn rc = (ResultColumn) resultColumns.elementAt(index);
+			if (rc.getExpression() instanceof ColumnReference)
+			{
+				numCRs++;
+			}
+			else if (! (rc.getExpression() instanceof ConstantNode))
+			{
+				return false;
+			}
+		}
+
+		// Corner case, all constants
+		if (numCRs == 0)
+		{
+			return true;
+		}
+
+		ColumnReference[] crs = new ColumnReference[numCRs];
+
+		// Now populate the CR array and see if ordered
+		int crsIndex = 0;
+		for (int index = 0; index < rclSize; index++)
+		{
+			ResultColumn rc = (ResultColumn) resultColumns.elementAt(index);
+			if (rc.getExpression() instanceof ColumnReference)
+			{
+				crs[crsIndex++] = (ColumnReference) rc.getExpression();
+			}
+		}
+
+		return newTopRSN.isOrderedOn(crs, permuteOrdering, (Vector)null);
+	}
+
+	/**
+	 * Ensure that the top of the RSN tree has a PredicateList.
+	 *
+	 * @param numTables			The number of tables in the query.
+	 * @return ResultSetNode	A RSN tree with a node which has a PredicateList on top.
+	 *
+	 * @exception StandardException		Thrown on error
+	 */
+	@Override
+  public ResultSetNode ensurePredicateList(int numTables) 
+		throws StandardException
+	{
+		return this;
+	}
+
+	/**
+	 * Optimize this SelectNode.  This means choosing the best access path
+	 * for each table, among other things.
+	 *
+	 * @param dataDictionary	The DataDictionary to use for optimization
+	 * @param predicateList		The predicate list to optimize against
+	 * @param outerRows			The number of outer joining rows
+	 *
+	 * @return	ResultSetNode	The top of the optimized tree
+	 *
+	 * @exception StandardException		Thrown on error
+	 */
+
+	@Override
+  public ResultSetNode optimize(DataDictionary dataDictionary,
+								  PredicateList	predicateList,
+								  double outerRows) 
+				throws StandardException
+	{
+		Optimizer		 optimizer;
+
+		/* Optimize any subquerys before optimizing the underlying result set */
+
+		/* selectSubquerys is always allocated at bind() time */
+		if (SanityManager.DEBUG)
+		SanityManager.ASSERT(selectSubquerys != null,
+			"selectSubquerys is expected to be non-null");
+
+		/* If this select node is the child of an outer node that is
+		 * being optimized, we can get here multiple times (once for
+		 * every permutation that is done for the outer node).  With
+		 * DERBY-805, we can add optimizable predicates to the WHERE
+		 * list as part of this method; thus, before proceeding we
+		 * need go through and remove any opt predicates that we added
+		 * to our WHERE list the last time we were here; if we don't
+		 * do that, we'll end up with the same predicates in our
+		 * WHERE list multiple times, which can lead to incorrect
+		 * optimization.
+		 */
+
+		if (wherePredicates != null)
+		{
+			// Iterate backwards because we might be deleting entries.
+			for (int i = wherePredicates.size() - 1; i >= 0; i--)
+			{
+				if (((Predicate)wherePredicates.elementAt(i)).isScopedForPush())
+					wherePredicates.removeOptPredicate(i);
+			}
+		}
+
+		/* Get a new optimizer */
+
+		/* With DERBY-805 we take any optimizable predicates that
+		 * were pushed into this node and we add them to the list of
+		 * predicates that we pass to the optimizer, thus allowing
+		 * the optimizer to use them when choosing an access path
+		 * for this SELECT node.  We do that by adding the predicates
+		 * to our WHERE list, since the WHERE predicate list is what
+		 * we pass to the optimizer for this select node (see below).
+		 * We have to pass the WHERE list directly (as opposed to
+		 * passing a copy) because the optimizer is only created one
+		 * time; it then uses the list we pass it for the rest of the
+		 * optimization phase and finally for "modifyAccessPaths()".
+		 * Since the optimizer can update/modify the list based on the
+		 * WHERE predicates (such as by adding internal predicates or
+		 * by modifying the actual predicates themselves), we need
+		 * those changes to be applied to the WHERE list directly for
+		 * subsequent processing (esp. for modification of the access
+		 * path).  Note that by adding outer opt predicates directly
+		 * to the WHERE list, we're changing the semantics of this
+		 * SELECT node.  This is only temporary, though--once the
+		 * optimizer is done with all of its work, any predicates
+		 * that were pushed here will have been pushed even further
+		 * down and thus will have been removed from the WHERE list
+		 * (if it's not possible to push them further down, then they
+		 * shouldn't have made it this far to begin with).
+		 */
+		if (predicateList != null)
+		{
+			if (wherePredicates == null) {
+				wherePredicates = (PredicateList) getNodeFactory().getNode(
+						C_NodeTypes.PREDICATE_LIST,
+						getContextManager());
+			}
+
+			Predicate pred = null;
+			int sz = predicateList.size();
+			for (int i = sz - 1; i >= 0; i--)
+			{
+				// We can tell if a predicate was pushed into this select
+				// node because it will have been "scoped" for this node
+				// or for some result set below this one.
+				pred = (Predicate)predicateList.getOptPredicate(i);
+				if (pred.isScopedToSourceResultSet())
+				{
+					// If we're pushing the predicate down here, we have to
+					// remove it from the predicate list of the node above
+					// this select, in order to keep in line with established
+					// push 'protocol'.
+					wherePredicates.addOptPredicate(pred);
+					predicateList.removeOptPredicate(pred);
+				}
+			}
+		}
+		
+		//GemStone changes BEGIN
+                /*
+		optimizer = getOptimizer(fromList,
+                    wherePredicates,
+                    dataDictionary,
+                    this.orderByList);*/
+
+		optimizer = getOptimizer(fromList,
+								wherePredicates,
+								dataDictionary,
+								orderByList == null?this.groupByList:this.orderByList);
+		
+		
+		//GemStone changes END
+		optimizer.setOuterRows(outerRows);
+
+		// GemStone changes BEGIN
+                CompilerContext cc = (CompilerContext)(lcc.getContextManager()
+                    .getContext(CompilerContext.CONTEXT_ID));
+                if (Boolean.parseBoolean(PropertyUtil.getSystemProperty(
+                    GfxdConstants.OPTIMIZE_NON_COLOCATED_JOIN, "false"))
+                    && cc != null
+                    && cc.createQueryInfo()) {
+                  optimizer.determineColocation();
+                }
+                // GemStone changes END
+
+		/* Optimize this SelectNode */
+		while (optimizer.getNextPermutation())
+		{
+			while (optimizer.getNextDecoratedPermutation())
+			{
+				optimizer.costPermutation();
+			}
+		}
+
+		/* When we're done optimizing, any scoped predicates that
+		 * we pushed down the tree should now be sitting again
+		 * in our wherePredicates list.  Put those back in the
+		 * the list from which we received them, to allow them
+		 * to be "pulled" back up to where they came from.
+		 */
+		if (wherePredicates != null)
+		{
+			Predicate pred = null;
+			for (int i = wherePredicates.size() - 1; i >= 0; i--)
+			{
+				pred = (Predicate)wherePredicates.getOptPredicate(i);
+				if (pred.isScopedForPush())
+				{
+					predicateList.addOptPredicate(pred);
+					wherePredicates.removeOptPredicate(pred);
+				}
+			}
+		}
+
+		/* Get the cost */
+		costEstimate = optimizer.getOptimizedCost();
+
+		/* Update row counts if this is a scalar aggregate */
+		if ((selectAggregates != null) && (selectAggregates.size() > 0)) 
+		{
+			costEstimate.setEstimatedRowCount((long) outerRows);
+			costEstimate.setSingleScanRowCount(1);
+		}
+
+		selectSubquerys.optimize(dataDictionary, costEstimate.rowCount());
+
+		if (whereSubquerys != null && whereSubquerys.size() > 0)
+		{
+			whereSubquerys.optimize(dataDictionary, costEstimate.rowCount());
+		}
+		
+		if (havingSubquerys != null && havingSubquerys.size() > 0) {
+			havingSubquerys.optimize(dataDictionary, costEstimate.rowCount());
+		}
+
+		return this;
+	}
+
+	/**
+	 * Modify the access paths according to the decisions the optimizer
+	 * made.  This can include adding project/restrict nodes,
+	 * index-to-base-row nodes, etc.
+	 *
+	 * @param predList A list of optimizable predicates that should
+	 *  be pushed to this ResultSetNode, as determined by optimizer.
+	 * @return The modified query tree
+	 * @exception StandardException        Thrown on error
+	 */
+	@Override
+  public ResultSetNode modifyAccessPaths(PredicateList predList)
+		throws StandardException
+	{
+		// Take the received list of predicates and propagate them to the
+		// predicate list for this node's optimizer.  Then, when we call
+		// optimizer.modifyAccessPaths(), the optimizer will have the
+		// predicates and can push them down as necessary, according
+		// the join order that it has chosen.
+
+		if (SanityManager.DEBUG)
+		{
+			SanityManager.ASSERT(optimizer != null,
+				"SelectNode's optimizer not expected to be null when " +
+				"modifying access paths.");
+		}
+
+		((OptimizerImpl)optimizer).addScopedPredicatesToList(predList);
+		return modifyAccessPaths();
+	}
+
+	/**
+	 * Modify the access paths according to the choices the optimizer made.
+	 *
+	 * @return	A QueryTree with the necessary modifications made
+	 *
+	 * @exception StandardException		Thrown on error
+	 */
+	@Override
+  public ResultSetNode modifyAccessPaths() throws StandardException
+	{
+		int				 origFromListSize = fromList.size();
+		ResultColumnList leftRCList;
+		ResultColumnList rightRCList;
+		ResultSetNode	 leftResultSet;
+		ResultSetNode	 rightResultSet;
+                // GemStone changes BEGIN
+                if (convertCountToRegionSize) {
+            
+                  // this is just safe.
+                  QueryTreeNode qt = fromList.elementAt(0);
+                  assert qt instanceof ProjectRestrictNode : "type not expected " + qt;
+                  ProjectRestrictNode prn = ((ProjectRestrictNode)qt);
+                  topPRN = prn;
+                  FromBaseTable fbt = (FromBaseTable) prn.getChildResult();
+                  // cleaning up the FromBaseTable column list specifier, as
+                  // we know its count(*) which is forcing to select all the
+                  // columns of the underlying table only to count the num rows.
+                  fbt.getResultColumns().removeAllElements();
+                  
+                  int size = resultColumns.size();
+                  for (int index = 0; index < size; index++) {
+                    ResultColumn parentRC = (ResultColumn)resultColumns.elementAt(index);
+                    if (parentRC.getExpression() instanceof AggregateNode) {
+                      fbt.doSpecialRegionSize(parentRC);
+                    }
+                  }
+            
+                  final GemFireXDQueryObserver observer = GemFireXDQueryObserverHolder
+                      .getInstance();
+                  if(observer != null) {
+                    observer.regionSizeOptimizationTriggered(fbt, this);
+                  }
+
+                  return (ResultSetNode)getNodeFactory().getNode(
+                      C_NodeTypes.PROJECT_RESTRICT_NODE, fbt, /* Child ResultSet */
+                      resultColumns, /* Projection */
+                      whereClause, /* Restriction */
+                      wherePredicates,/* Restriction as PredicateList */
+                      selectSubquerys,/* Subquerys in Projection */
+                      whereSubquerys, /* Subquerys in Restriction */
+                      null, getContextManager());
+                }
+                // GemStone changes END
+
+		/*
+		** Modify the access path for each Optimizable, as necessary
+		**
+		** This should be the same optimizer we got above.
+		*/
+		optimizer.modifyAccessPaths();
+
+		// Load the costEstimate for the final "best" join order.
+		costEstimate = optimizer.getFinalCost();
+
+		if (SanityManager.DEBUG)
+		{
+			// When we optimized this select node, we may have added pushable
+			// outer predicates to the wherePredicates list for this node
+			// (see the optimize() method above).  When we did so, we said
+			// that all such predicates should have been removed from the
+			// where list by the time optimization was completed.   So we
+			// check that here, just to be safe.  NOTE: We do this _after_
+			// calling optimizer.modifyAccessPaths(), because it's only in
+			// that call that the scoped predicates are officially pushed
+			// and thus removed from the list.
+			if (wherePredicates != null)
+			{
+				Predicate pred = null;
+				for (int i = wherePredicates.size() - 1; i >= 0; i--)
+				{
+					pred = (Predicate)wherePredicates.getOptPredicate(i);
+					if (pred.isScopedForPush())
+					{
+						SanityManager.THROWASSERT("Found scoped predicate " +
+							pred.binaryRelOpColRefsToString() +
+							" in WHERE list when no scoped predicates were" +
+							" expected.");
+					}
+				}
+			}
+		}
+
+		selectSubquerys.modifyAccessPaths();
+
+		if (whereSubquerys != null && whereSubquerys.size() > 0)
+		{
+			whereSubquerys.modifyAccessPaths();
+		}
+		
+		if (havingSubquerys != null && havingSubquerys.size() > 0) {
+			havingSubquerys.modifyAccessPaths();
+		}
+
+		/* Build a temp copy of the current FromList for sort elimination, etc. */
+		preJoinFL.removeAllElements();
+		preJoinFL.nondestructiveAppend(fromList);
+
+		/* Now we build a JoinNode tree from the bottom up until there is only
+		 * a single entry in the fromList and that entry points to the top of
+		 * the JoinNode tree.
+		 *
+		 * While there is still more than 1 entry in the list, create a JoinNode
+		 * which points to the 1st 2 entries in the list.  This JoinNode becomes 
+		 * the new 1st entry in the list and the 2nd entry is deleted.  The
+		 * old 1st and 2nd entries will get shallow copies of their 
+		 * ResultColumnLists.  The JoinNode's ResultColumnList will be the
+		 * concatenation of the originals from the old 1st and 2nd entries.
+		 * The virtualColumnIds will be updated to reflect there new positions
+		 * and each ResultColumn.expression will be replaced with a new
+		 * VirtualColumnNode.
+		 */
+                int ncjCountPullDone = 0;
+                CompilerContext cc = getCompilerContext();
+		while (fromList.size() > 1)
+		{
+      		        leftResultSet = (ResultSetNode)fromList.elementAt(0);
+                        rightResultSet = (ResultSetNode)fromList.elementAt(1);
+                        boolean ncjPullJoinDone = false;
+                        if (cc.isNCJoinOnRemote()) {
+                          if (leftResultSet.isJoinNode()) {
+                            ResultSetNode newResultSet = ncjHandleHigherLevelJoin(leftResultSet,
+                                rightResultSet);
+                            if (newResultSet != null) {
+                              leftResultSet = replaceWithNcjPullNode(
+                                  (ProjectRestrictNode)rightResultSet, true, false);
+                              rightResultSet = newResultSet;
+                              ncjCountPullDone++;
+                              ncjPullJoinDone = true;
+                            }
+                          }
+                          else {
+                            SanityManager.ASSERT(ncjCountPullDone == 0,
+                                "Should not be called at any higher level of join");
+                            int pullCountAtFirstLevel = NcjHashMapWrapper
+                                .getNoOfTabsForPullAtFirstLevel(cc.getNCJMetaDataOnRemote());
+                            if (pullCountAtFirstLevel > 0) {
+                              if (ncjVerifyTablesInOrderAtFirstLevelJoin(leftResultSet,
+                                  rightResultSet)) {
+                                ResultSetNode newResultSet = ncjHandleFirstLevelJoin(
+                                    leftResultSet, rightResultSet);
+                                if (newResultSet != null) {
+                                  rightResultSet = newResultSet;
+                                  leftResultSet = replaceWithNcjPullNode(
+                                      (ProjectRestrictNode)leftResultSet, true, false);
+                                  ncjPullJoinDone = true;
+                                }
+                                else {
+                                  SanityManager
+                                      .THROWASSERT("NCJ Join failed at first level (in-order) which have pull count = "
+                                          + pullCountAtFirstLevel);
+                                }
+                              }
+                              else {
+                                SanityManager
+                                    .THROWASSERT("NCJ Join failed at first level, since tables are not in order as expected, and have pull count = "
+                                        + pullCountAtFirstLevel);
+                              }
+                            }
+                            ncjCountPullDone = ncjCountPullDone + pullCountAtFirstLevel;
+                          }
+                        }
+                  
+			/* Get left's ResultColumnList, assign shallow copy back to it
+			 * and create new VirtualColumnNodes for the original's 
+			 * ResultColumn.expressions.
+			 */
+			leftRCList = leftResultSet.getResultColumns();
+			leftResultSet.setResultColumns(leftRCList.copyListAndObjects());
+			leftRCList.genVirtualColumnNodes(leftResultSet, leftResultSet.resultColumns);
+
+			/* Get right's ResultColumnList, assign shallow copy back to it,
+			 * create new VirtualColumnNodes for the original's 
+			 * ResultColumn.expressions and increment the virtualColumnIds.
+			 * (Right gets appended to left, so only right's ids need updating.)
+			 */
+			rightRCList = rightResultSet.getResultColumns();
+			rightResultSet.setResultColumns(rightRCList.copyListAndObjects());
+			rightRCList.genVirtualColumnNodes(rightResultSet, rightResultSet.resultColumns);
+			rightRCList.adjustVirtualColumnIds(leftRCList.size());
+
+			/* Concatenate the 2 ResultColumnLists */
+			leftRCList.nondestructiveAppend(rightRCList);
+			
+			/* Now we're finally ready to generate the JoinNode and have it
+			 * replace the 1st 2 entries in the FromList.
+			 */
+			fromList.setElementAt(
+						 getNodeFactory().getNode(
+												C_NodeTypes.JOIN_NODE,
+												leftResultSet,
+												rightResultSet,
+												null,
+												null,
+												leftRCList,
+												null,
+												//user supplied optimizer overrides
+												fromList.properties,
+												getContextManager()
+												),
+							0
+						);
+
+			fromList.removeElementAt(1);
+			
+	                // GemStone changes BEGIN
+                        if (cc.isNCJoinOnRemote()) {
+                          JoinNode jn = (JoinNode)this.fromList.elementAt(0);
+                  
+                          if (ncjPullJoinDone) {
+                            jn.setJoinResultSetString(new DistributedHashFetchRowsJoinStrategy()
+                                .joinResultSetMethodName());
+                          }
+                        }
+                        // GemStone changes END
+		}
+		
+                if (cc.isNCJoinOnRemote()) {
+                  int totalPullsExpected = NcjHashMapWrapper.getNoOfTabsForPull(cc
+                      .getNCJMetaDataOnRemote());
+                  if (totalPullsExpected != ncjCountPullDone) {
+                    SanityManager
+                        .THROWASSERT("JoinOrderList from QN has not been consumed fully."
+                            + " Expected Pulls" + totalPullsExpected + " ,Pulls Done="
+                            + ncjCountPullDone);
+                  }
+                }
+
+		return genProjectRestrict(origFromListSize);
+	}
+
+	/**
+	 * Get the final CostEstimate for this SelectNode.
+	 *
+	 * @return	The final CostEstimate for this SelectNode, which is
+	 * 			the final cost estimate for the best join order of
+	 *          this SelectNode's optimizer.
+	 */
+	@Override
+  public CostEstimate getFinalCostEstimate()
+		throws StandardException
+	{
+		return optimizer.getFinalCost();
+	}
+
+	/**
+		Determine if this select is updatable or not, for a cursor.
+	 */
+	@Override
+  boolean isUpdatableCursor(DataDictionary dd) throws StandardException
+	{
+		TableDescriptor	targetTableDescriptor;
+
+		if (isDistinct)
+		{
+			if (SanityManager.DEBUG)
+			SanityManager.DEBUG("DumpUpdateCheck","cursor select has distinct");
+			return false;
+		}
+
+		if ((selectAggregates == null) || (selectAggregates.size() > 0))
+		{
+			return false;
+		}
+
+		if (groupByList != null || havingClause != null)
+		{
+			return false;
+		}
+
+		if (SanityManager.DEBUG)
+		SanityManager.ASSERT(fromList!=null, "select must have from tables");
+		if (fromList.size() != 1)
+		{
+			if (SanityManager.DEBUG)
+			SanityManager.DEBUG("DumpUpdateCheck","cursor select has more than one from table");
+			return false;
+		}
+
+		targetTable = (FromTable)(fromList.elementAt(0));
+
+		if (targetTable instanceof FromVTI) {
+
+			return ((FromVTI) targetTable).isUpdatableCursor();
+		}
+
+		if (! (targetTable instanceof FromBaseTable))
+		{
+			if (SanityManager.DEBUG)
+			SanityManager.DEBUG("DumpUpdateCheck","cursor select has non base table as target table");
+			return false;
+		}
+
+
+ 		/* Get the TableDescriptor and verify that it is not for a
+ 		 * view or a system table.  
+ 		 * NOTE: We need to use the base table name for the table.
+ 		 *		 Simplest way to get it is from a FromBaseTable.  We
+ 		 *		 know that targetTable is a FromBaseTable because of check
+ 		 *		 just above us.
+		 * NOTE: We also need to use the base table's schema name; otherwise
+		 *		we will think it is the default schema Beetle 4417
+ 		 */
+ 		targetTableDescriptor = getTableDescriptor(
+ 						((FromBaseTable)targetTable).getBaseTableName(), 
+ 			getSchemaDescriptor(((FromBaseTable)targetTable).getTableNameField().getSchemaName()));
+ 		if (targetTableDescriptor.getTableType() == TableDescriptor.SYSTEM_TABLE_TYPE)
+ 		{
+ 			if (SanityManager.DEBUG)
+ 			SanityManager.DEBUG("DumpUpdateCheck","cursor select is on system table");
+ 			return false;
+ 		}
+ 		if (targetTableDescriptor.getTableType() == TableDescriptor.VIEW_TYPE)
+ 		{
+ 			if (SanityManager.DEBUG)
+ 			SanityManager.DEBUG("DumpUpdateCheck","cursor select is on view");
+			return false;
+		}
+		if ((getSelectSubquerys() != null) &&
+			(getSelectSubquerys().size() != 0))
+		{
+			if (SanityManager.DEBUG)
+			SanityManager.DEBUG("DumpUpdateCheck","cursor select has subquery in SELECT list");
+			return false;
+		}
+
+		if ((getWhereSubquerys() != null) &&
+			(getWhereSubquerys().size() != 0))
+		{
+			if (SanityManager.DEBUG)
+			SanityManager.DEBUG("DumpUpdateCheck","cursor select has subquery in WHERE clause");
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+		Assumes that isCursorUpdatable has been called, and that it
+		is only called for updatable cursors.
+	 */
+	@Override
+  FromTable getCursorTargetTable()
+	{
+		if (SanityManager.DEBUG)
+		SanityManager.ASSERT(targetTable!=null,
+			"must call isUpdatableCursor() first, and must be updatable");
+		return targetTable;
+	}
+
+	/**
+	 * Search to see if a query references the specifed table name.
+	 *
+	 * @param name		Table name (String) to search for.
+	 * @param baseTable	Whether or not name is for a base table
+	 *
+	 * @return	true if found, else false
+	 *
+	 * @exception StandardException		Thrown on error
+	 */
+	@Override
+  public boolean referencesTarget(String name, boolean baseTable)
+		throws StandardException
+	{
+		if (fromList.referencesTarget(name, baseTable) ||
+			(selectSubquerys != null && selectSubquerys.referencesTarget(name, baseTable)) ||
+			(whereSubquerys != null && whereSubquerys.referencesTarget(name, baseTable))
+		   )
+		{
+			return true;
+		}
+		return false;
+	}
+
+	/** 
+	 * @see QueryTreeNode#disablePrivilegeCollection
+	 */
+	@Override
+  public void disablePrivilegeCollection()
+	{
+		super.disablePrivilegeCollection();
+		int fromListSize = fromList.size();
+		for( int i = 0; i < fromListSize; i++)
+			((FromTable) fromList.elementAt(i)).disablePrivilegeCollection();
+	}
+
+	/**
+	 * Return whether or not this ResultSetNode contains a subquery with a
+	 * reference to the specified target table.
+	 * 
+	 * @param name	The table name.
+	 * @param baseTable	Whether or not table is a base table.
+	 *
+	 * @return boolean	Whether or not a reference to the table was found.
+	 *
+	 * @exception StandardException		Thrown on error
+	 */
+	@Override
+  boolean subqueryReferencesTarget(String name, boolean baseTable)
+		throws StandardException
+	{
+		if ((selectSubquerys != null && selectSubquerys.referencesTarget(name, baseTable)) ||
+			(whereSubquerys != null && whereSubquerys.referencesTarget(name, baseTable))
+		   )
+		{
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Bind any untyped null nodes to the types in the given ResultColumnList.
+	 *
+	 * @param bindingRCL	The ResultColumnList with the types to bind to.
+	 *
+	 * @exception StandardException		Thrown on error
+	 */
+	@Override
+  public void bindUntypedNullsToResultColumns(ResultColumnList bindingRCL)
+				throws StandardException
+	{
+		fromList.bindUntypedNullsToResultColumns(bindingRCL);
+	}
+
+	/**
+	 * Decrement (query block) level (0-based) for 
+	 * all of the tables in this ResultSet tree.
+	 * This is useful when flattening a subquery.
+	 *
+	 * @param decrement	The amount to decrement by.
+	 */
+	@Override
+  void decrementLevel(int decrement)
+	{
+		/* Decrement the level in the tables */
+		fromList.decrementLevel(decrement);
+		selectSubquerys.decrementLevel(decrement);
+		whereSubquerys.decrementLevel(decrement);
+		/* Decrement the level in any CRs in predicates
+		 * that are interesting to transitive closure.
+		 */
+		wherePredicates.decrementLevel(fromList, decrement);
+	}
+	
+	/**
+	 * Determine whether or not this subquery,
+	 * the SelectNode is in a subquery, can be flattened
+	 * into the outer query block based on a uniqueness condition.
+	 * A uniqueness condition exists when we can guarantee
+	 * that at most 1 row will qualify in each table in the
+	 * subquery.  This is true if every table in the from list is
+	 * (a base table and the set of columns from the table that
+	 * are in equality comparisons with expressions that do not
+	 * include a column from the same table is a superset of any unique index
+	 * on the table) or an ExistsBaseTable.
+	 *
+	 * @param additionalEQ	Whether or not the column returned
+	 *						by this select, if it is a ColumnReference,
+	 *						is in an equality comparison.
+	 *
+	 * @return	Whether or not this subquery can be flattened based
+	 *			on a uniqueness condition.
+	 *
+	 * @exception StandardException		Thrown on error
+	 */
+	boolean uniqueSubquery(boolean additionalEQ)
+		throws StandardException
+	{
+		ColumnReference additionalCR = null;
+		ResultColumn	rc = (ResultColumn) getResultColumns().elementAt(0);
+
+		/* Figure out if we have an additional ColumnReference
+		 * in an equality comparison.
+		 */
+		if (additionalEQ &&
+			rc.getExpression() instanceof ColumnReference)
+		{
+			additionalCR = (ColumnReference) rc.getExpression();
+
+			/* ColumnReference only interesting if it is 
+			 * not correlated.
+			 */
+			if (additionalCR.getCorrelated())
+			{
+				additionalCR = null;
+			}
+		}
+
+		return fromList.returnsAtMostSingleRow((additionalCR == null) ? null : getResultColumns(), 
+											   whereClause, wherePredicates,
+											   getDataDictionary());
+	}
+
+	/**
+	 * Get the lock mode for the target of an update statement
+	 * (a delete or update).  The update mode will always be row for
+	 * CurrentOfNodes.  It will be table if there is no where clause.
+	 *
+	 * @see TransactionController
+	 *
+	 * @return	The lock mode
+	 */
+	@Override
+  public int updateTargetLockMode()
+	{
+		/* Do row locking if there is a restriction */
+		return fromList.updateTargetLockMode();
+	}
+
+	/**
+	 * Return whether or not this ResultSet tree is guaranteed to return
+	 * at most 1 row based on heuristics.  (A RowResultSetNode and a
+	 * SELECT with a non-grouped aggregate will return at most 1 row.)
+	 *
+	 * @return Whether or not this ResultSet tree is guaranteed to return
+	 * at most 1 row based on heuristics.
+	 */
+	@Override
+  boolean returnsAtMostOneRow()
+	{
+		return (groupByList == null && selectAggregates != null && selectAggregates.size() != 0);
+	}
+
+	/**
+	 * Return true if the node references SESSION schema tables (temporary or permanent)
+	 *
+	 * @return	true if references SESSION schema tables, else false
+	 *
+	 * @exception StandardException		Thrown on error
+	 */
+	@Override
+  public boolean referencesSessionSchema()
+		throws StandardException
+	{
+		if (fromList.referencesSessionSchema() ||
+			(selectSubquerys != null && selectSubquerys.referencesSessionSchema()) ||
+			(whereSubquerys != null && whereSubquerys.referencesSessionSchema()))
+					return true;
+
+		return false;
+	}
+
+	/**
+	 * Accept a visitor, and call v.visit()
+	 * on child nodes as necessary.  
+	 * 
+	 * @param v the visitor
+	 *
+	 * @exception StandardException on error
+	 */
+	@Override
+  public Visitable accept(Visitor v)
+		throws StandardException
+	{
+		Visitable returnNode = v.visit(this);
+
+		if (v.skipChildren(this))
+		{
+			return returnNode;
+		}
+
+		if (!v.stopTraversal())
+		{
+			super.accept(v);
+		}
+
+		if (fromList != null && !v.stopTraversal())
+		{
+			fromList = (FromList)fromList.accept(v);
+		}
+
+		if (whereClause != null && !v.stopTraversal())
+		{
+			whereClause = (ValueNode)whereClause.accept(v);
+		}		
+
+		if (wherePredicates != null && !v.stopTraversal())
+		{
+			wherePredicates = (PredicateList)wherePredicates.accept(v);
+		}		
+
+		if (havingClause != null && !v.stopTraversal()) {
+			havingClause = (ValueNode)havingClause.accept(v);
+		}
+		
+		// GemStone changes BEGIN
+		if (groupByList != null) {
+		        groupByList = (GroupByList) groupByList.accept(v);
+		}
+		// GemStone changes END
+		
+		return returnNode;
+	}
+
+	/**
+	 * @return true if there are aggregates in the select list.
+	 */
+	public boolean hasAggregatesInSelectList() 
+	{
+		return !selectAggregates.isEmpty();
+	}
+	
+        //GemStone changes begin
+	public void setParentSubQueryNodeFlag() {
+	  this.isPartOfSubQueryNode = true; 
+	}
+	
+
+	public int getNestingLevel() {
+	  return this.nestingLevel;
+	}
+	
+	public boolean convertCountToRegionSize() {
+	  return convertCountToRegionSize;
+	}
+	
+        /*
+         * NCJ
+         * 
+         * @see com.pivotal.gemfirexd.internal.impl.sql.compile.ProjectRestrictNode.replaceWithHashTableNode()
+         */
+        private ResultSetNode replaceWithHashTableNode(int[] hashKeyColumns,
+            ResultSetNode childResult, PredicateList joinQualifierList)
+            throws StandardException {
+          /* We get a shallow copy of the child's ResultColumnList and its 
+           * ResultColumns.  (Copy maintains ResultColumn.expression for now.)
+           */
+          ResultColumnList htRCList = childResult.getResultColumns();
+          childResult.setResultColumns(htRCList.copyListAndObjects());
+      
+          /* Replace ResultColumn.expression with new VirtualColumnNodes
+           * in the HTN's ResultColumnList.  (VirtualColumnNodes include
+           * pointers to source ResultSetNode, this, and source ResultColumn.)
+           * NOTE: We don't want to mark the underlying RCs as referenced, otherwise
+           * we won't be able to project out any of them.
+           */
+          htRCList.genVirtualColumnNodes(childResult, childResult.getResultColumns(),
+              false);
+          
+          joinQualifierList.markAllPredicatesQualifiers();
+      
+          /* We can finally put the HTN between ourself and our old child. */
+          HashTableNode newChildResult = (HashTableNode)getNodeFactory().getNode(
+              C_NodeTypes.HASH_TABLE_NODE, 
+              childResult, 
+              null, // tableProperties
+              htRCList, 
+              null, // searchPredicateList
+              joinQualifierList, 
+              null, // access path
+              null,// costestimate??
+              null,// subquery list
+              null,// subquery list
+              hashKeyColumns,// ??
+              getContextManager());
+          
+          newChildResult.isNCJCase = true;
+          
+          return newChildResult;
+        }
+        
+  /*
+   * NCJ purpose
+   */
+  private ResultSetNode replaceWithNcjPullNode(ProjectRestrictNode childResult,
+      boolean isRemoteScan, Object isAtSecondPosition) throws StandardException {
+    ResultSetNode newChildResult = (ResultSetNode)getNodeFactory().getNode(
+        C_NodeTypes.NCJ_PULL_NODE, childResult, isRemoteScan,
+        isAtSecondPosition, childResult.tableProperties, getContextManager());
+    return newChildResult;
+  }
+        
+  int[] findHashKeyColumns(ResultSetNode resultSet,
+      OptimizablePredicateList predList, int driverTabNum,
+      final int remoteTabNum, ArrayList<String> localJoinColNames,
+      ArrayList<String> remoteJoinColNames) throws StandardException {
+    if (predList == null)
+      return null;
+    SanityManager.ASSERT(remoteTabNum > NcjHashMapWrapper.MINUS_ONE);
+    // Build a Vector of all the hash key columns
+    Vector<Integer> hashKeyVector = new Vector<Integer>();
+    for (int idx = 0; idx < predList.size(); idx++) {
+      int localTabNum = NcjHashMapWrapper.MINUS_ONE;
+      int localColNum = NcjHashMapWrapper.MINUS_ONE;
+      int remoteColNum = NcjHashMapWrapper.MINUS_ONE;
+      String nameLocalCol = null;
+      String nameRemoteCol = null;
+      Predicate pred = (Predicate)predList.getOptPredicate(idx);
+      // We know this is Join predicate @see Predicate.isJoinPredicate()
+      BinaryRelationalOperatorNode opNode = (BinaryRelationalOperatorNode)pred
+          .getAndNode().getLeftOperand();
+      ColumnReference leftOp = (ColumnReference)opNode.getLeftOperand();
+      ColumnReference rightOp = (ColumnReference)opNode.getRightOperand();
+      SanityManager.ASSERT(leftOp.getSourceLevel() == rightOp.getSourceLevel());
+      if (leftOp.getTableNumber() == remoteTabNum) {
+        localTabNum = rightOp.getTableNumber();
+        localColNum = rightOp.getColumnNumber();
+        nameLocalCol = rightOp.getSource().getActualName();
+
+        remoteColNum = leftOp.getColumnNumber();
+        nameRemoteCol = leftOp.getSource().getActualName();
+      }
+      else if (rightOp.getTableNumber() == remoteTabNum) {
+        localTabNum = leftOp.getTableNumber();
+        localColNum = leftOp.getColumnNumber();
+        nameLocalCol = leftOp.getSource().getActualName();
+
+        remoteColNum = rightOp.getColumnNumber();
+        nameRemoteCol = rightOp.getSource().getActualName();
+      }
+
+      if (remoteColNum != NcjHashMapWrapper.MINUS_ONE
+          && localColNum != NcjHashMapWrapper.MINUS_ONE) {
+        if (driverTabNum != NcjHashMapWrapper.MINUS_ONE) {
+          SanityManager.ASSERT(localTabNum == driverTabNum);
+        }
+        else {
+          SanityManager.ASSERT(localTabNum > NcjHashMapWrapper.MINUS_ONE);
+        }
+        if (!localJoinColNames.contains(nameLocalCol)
+            && !remoteJoinColNames.contains(nameRemoteCol)) {
+          remoteJoinColNames.add(nameRemoteCol);
+          localJoinColNames.add(nameLocalCol);
+          resultSet.collectHashKeyColumns(hashKeyVector, localTabNum,
+              localColNum);
+        }
+      }
+    }
+
+    if (SanityManager.DEBUG) {
+      if (GemFireXDUtils.TraceNCJIter) {
+        SanityManager.DEBUG_PRINT(GfxdConstants.TRACE_NCJ_ITER,
+            "SelectNode#findHashKeyColumns. " + "hashKeyVector="
+                + hashKeyVector + "");
+      }
+    }
+
+    // Convert the Vector into an int[], if there are hash key columns
+    if (hashKeyVector.size() > 0) {
+      int[] keyCols = new int[hashKeyVector.size()];
+      for (int index = 0; index < keyCols.length; index++) {
+        keyCols[index] = hashKeyVector.elementAt(index).intValue();
+      }
+      return keyCols;
+    }
+    else
+      return null;
+  }
+
+  public boolean isDistributedJoin() {
+    return optimizer.hasNonColocatedTables();
+  }
+
+  private static boolean verifyLists(ArrayList<String> remoteList,
+      ArrayList<String> localList) {
+    final int size = remoteList.size();
+    if (size != localList.size()) {
+      return false;
+    }
+
+    for (int i = 0; i < size; i++) {
+      if (localList.get(i) == null && remoteList.get(i) == null) {
+        continue;
+      }
+      if (localList.get(i) != null && remoteList.get(i) != null) {
+        continue;
+      }
+      return false;
+    }
+
+    return true;
+  }
+
+  private ResultSetNode ncjHandleFirstLevelJoin(ResultSetNode leftResultSet,
+      ResultSetNode rightResultSet) throws StandardException {
+    ResultSetNode retrunResultSet = null;
+    final CompilerContext cc = getCompilerContext();
+    leftResultSet.assertProjectRestrictNode();
+    FromBaseTable lFbTbl = leftResultSet.ncjGetOnlyOneFBTNode();
+    if (lFbTbl != null && lFbTbl.isPartitionedRegion()) {
+      if (NcjHashMapWrapper.isTabAtFirstPosition(
+          cc.getNCJMetaDataOnRemote(), lFbTbl.ncjGetCorrelationName())
+          && NcjHashMapWrapper.isTabForPull(cc.getNCJMetaDataOnRemote(),
+              lFbTbl.ncjGetCorrelationName())) {
+        rightResultSet.assertProjectRestrictNode();
+        FromBaseTable rFbTbl = rightResultSet.ncjGetOnlyOneFBTNode();
+        if (NcjHashMapWrapper.isTabAtSecondPosition(
+            cc.getNCJMetaDataOnRemote(), rFbTbl.ncjGetCorrelationName())) {
+          final int driverTabNum = rFbTbl.getTableNumber();
+          assertTableNumberIsValid(driverTabNum);
+          PredicateList joinPredicateList = new PredicateList();
+          ProjectRestrictNode rPrn = (ProjectRestrictNode)rightResultSet;
+          int[] hashKeyColumns = {0};
+          ArrayList<String> remoteJoinCols = new ArrayList<String>();
+          ArrayList<String> localJoinCols = new ArrayList<String>();
+          if (rPrn.restrictionList != null) {
+            rPrn.restrictionList.moveJoinPredicatesToOtherList(
+                joinPredicateList, lFbTbl);
+            SanityManager.ASSERT(joinPredicateList.size() > 0);
+            // Remove extra predicates added due to transitive closure
+            // @see PredicateList.joinClauseTransitiveClosure
+            // TODO - Verify if necessary new predicates are not removed
+            joinPredicateList.removeRedundantPredicates();
+            final int remoteTabNum = lFbTbl.getTableNumber();
+            assertTableNumberIsValid(remoteTabNum);
+            hashKeyColumns = null;
+            hashKeyColumns = findHashKeyColumns(rightResultSet,
+                joinPredicateList, driverTabNum, remoteTabNum, localJoinCols,
+                remoteJoinCols);
+            SanityManager.ASSERT(hashKeyColumns != null);
+            SanityManager.ASSERT(verifyLists(remoteJoinCols, localJoinCols));
+            ProjectRestrictNode lPrn = (ProjectRestrictNode)leftResultSet;
+            lPrn.setRemoteInListCols(remoteJoinCols);
+          }
+          boolean rightIsPull = false;
+          if (rFbTbl.isPartitionedRegion()
+              && NcjHashMapWrapper.isTabForPull(cc.getNCJMetaDataOnRemote(),
+                  rFbTbl.ncjGetCorrelationName())) {
+            rightIsPull = true;
+          }
+          rightResultSet = replaceWithNcjPullNode(
+              (ProjectRestrictNode)rightResultSet, rightIsPull, true);
+          retrunResultSet = replaceWithHashTableNode(hashKeyColumns,
+              rightResultSet, joinPredicateList);
+
+          if (SanityManager.DEBUG) {
+            if (GemFireXDUtils.TraceNCJ) {
+              SanityManager.DEBUG_PRINT(
+                  GfxdConstants.TRACE_NON_COLLOCATED_JOIN,
+                  "SelectNode#ncjHandleFirstLevelJoin." + " leftTab="
+                      + lFbTbl.ncjGetCorrelationName() + " ,rightTab="
+                      + rFbTbl.ncjGetCorrelationName() + " right-pull="
+                      + rightIsPull + " remoteJoinCols=" + remoteJoinCols
+                      + " ,localJoinCols=" + localJoinCols);
+            }
+          }
+        }
+      }
+    }
+    return retrunResultSet;
+  }
+  
+  private boolean ncjVerifyTablesInOrderAtFirstLevelJoin(
+      ResultSetNode leftResultSet, ResultSetNode rightResultSet)
+      throws StandardException {
+    final CompilerContext cc = getCompilerContext();
+    leftResultSet.assertProjectRestrictNode();
+    FromBaseTable lFbTbl = leftResultSet.ncjGetOnlyOneFBTNode();
+    rightResultSet.assertProjectRestrictNode();
+    FromBaseTable rFbTbl = rightResultSet.ncjGetOnlyOneFBTNode();
+    if (lFbTbl != null && lFbTbl.isPartitionedRegion()) {
+      if (NcjHashMapWrapper.isTabAtFirstPosition(cc.getNCJMetaDataOnRemote(),
+          lFbTbl.ncjGetCorrelationName())) {
+        if (NcjHashMapWrapper.isTabForPull(cc.getNCJMetaDataOnRemote(),
+            lFbTbl.ncjGetCorrelationName())) {
+          if (NcjHashMapWrapper.isTabAtSecondPosition(
+              cc.getNCJMetaDataOnRemote(), rFbTbl.ncjGetCorrelationName())) {
+            final int driverTabNum = rFbTbl.getTableNumber();
+            assertTableNumberIsValid(driverTabNum);
+            if (SanityManager.DEBUG) {
+              if (GemFireXDUtils.TraceNCJ) {
+                SanityManager.DEBUG_PRINT(
+                    GfxdConstants.TRACE_NON_COLLOCATED_JOIN,
+                    "SelectNode#ncjVerifyTablesAtFirstLevelJoin. Tables are in order"
+                        + " leftTab=" + lFbTbl.ncjGetCorrelationName()
+                        + " ,rightTab=" + rFbTbl.ncjGetCorrelationName());
+              }
+            }
+            return true;
+          }
+          else {
+            if (SanityManager.DEBUG) {
+              if (GemFireXDUtils.TraceNCJ) {
+                SanityManager.DEBUG_PRINT(
+                    GfxdConstants.TRACE_NON_COLLOCATED_JOIN,
+                    "SelectNode#ncjVerifyTablesAtFirstLevelJoin. Right Table is not second table"
+                        + " leftTab=" + lFbTbl.ncjGetCorrelationName()
+                        + " ,rightTab=" + rFbTbl.ncjGetCorrelationName());
+              }
+            }
+          }
+        }
+        else {
+          if (SanityManager.DEBUG) {
+            if (GemFireXDUtils.TraceNCJ) {
+              SanityManager.DEBUG_PRINT(
+                  GfxdConstants.TRACE_NON_COLLOCATED_JOIN,
+                  "SelectNode#ncjVerifyTablesAtFirstLevelJoin. Left table is not for Pull. "
+                      + " leftTab=" + lFbTbl.ncjGetCorrelationName()
+                      + " ,rightTab=" + rFbTbl.ncjGetCorrelationName());
+            }
+          }
+        }
+      }
+      else {
+        if (SanityManager.DEBUG) {
+          if (GemFireXDUtils.TraceNCJ) {
+            SanityManager
+                .DEBUG_PRINT(
+                    GfxdConstants.TRACE_NON_COLLOCATED_JOIN,
+                    "SelectNode#ncjVerifyTablesAtFirstLevelJoin. Left table is not at First Position. "
+                        + " leftTab="
+                        + lFbTbl.ncjGetCorrelationName()
+                        + " ,rightTab=" + rFbTbl.ncjGetCorrelationName());
+          }
+        }
+      }
+    }
+    else {
+      if (SanityManager.DEBUG) {
+        if (GemFireXDUtils.TraceNCJ) {
+          SanityManager
+              .DEBUG_PRINT(
+                  GfxdConstants.TRACE_NON_COLLOCATED_JOIN,
+                  "SelectNode#ncjVerifyTablesAtFirstLevelJoin. Left table is not a partitioned region. "
+                      + " leftTab="
+                      + lFbTbl.ncjGetCorrelationName()
+                      + " ,rightTab=" + rFbTbl.ncjGetCorrelationName());
+        }
+      }
+    }
+
+    return false;
+  }
+
+  private ResultSetNode ncjHandleHigherLevelJoin(ResultSetNode leftResultSet,
+      ResultSetNode rightResultSet) throws StandardException {
+    ResultSetNode returnRs = null;
+    rightResultSet.assertProjectRestrictNode();
+    FromBaseTable rFbTbl = rightResultSet.ncjGetOnlyOneFBTNode();
+    if (rFbTbl != null
+        && rFbTbl.isPartitionedRegion()
+        && NcjHashMapWrapper.isTabForPull(getCompilerContext()
+            .getNCJMetaDataOnRemote(), rFbTbl.ncjGetCorrelationName())) {
+      final int remoteTabNum = rFbTbl.getTableNumber();
+      assertTableNumberIsValid(remoteTabNum);
+      PredicateList joinPredicateList = new PredicateList();
+      ProjectRestrictNode rPrn = (ProjectRestrictNode)rightResultSet;
+      rPrn.restrictionList.moveJoinPredicatesToOtherList(joinPredicateList,
+          rFbTbl);
+      SanityManager.ASSERT(joinPredicateList.size() > 0);
+      // Remove extra predicates added due to transitive closure
+      // @see PredicateList.joinClauseTransitiveClosure
+      // TODO - Verify if necessary new predicates are not removed
+      joinPredicateList.removeRedundantPredicates();
+      ArrayList<String> remoteJoinCols = new ArrayList<String>();
+      ArrayList<String> localJoinCols = new ArrayList<String>();
+      int[] hashKeyColumns = findHashKeyColumns(leftResultSet,
+          joinPredicateList, NcjHashMapWrapper.MINUS_ONE, remoteTabNum,
+          localJoinCols, remoteJoinCols);
+      SanityManager.ASSERT(hashKeyColumns != null);
+      SanityManager.ASSERT(verifyLists(remoteJoinCols, localJoinCols));
+      rPrn.setRemoteInListCols(remoteJoinCols);
+      returnRs = replaceWithHashTableNode(hashKeyColumns, leftResultSet,
+          joinPredicateList);
+      if (SanityManager.DEBUG) {
+        if (GemFireXDUtils.TraceNCJ) {
+          SanityManager.DEBUG_PRINT(GfxdConstants.TRACE_NON_COLLOCATED_JOIN,
+              "SelectNode#ncjHandleHigherLevelJoin." + " remoteJoinCols="
+                  + remoteJoinCols + " ,localJoinCols=" + localJoinCols);
+        }
+      }
+    }
+    return returnRs;
+  }
+  
+  private void assertTableNumberIsValid(int tabNum) {
+    SanityManager.ASSERT(tabNum >= 0, "TODO: Need TableName based solution");
+  }
+	//GemStone changes end
+}

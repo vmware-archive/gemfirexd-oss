@@ -1,0 +1,134 @@
+APACHE DERBY STATUS:
+Last modified at [$Date: 2008-08-25 11:14:37 -0700 (Mon, 25 Aug 2008) $] by $Author: rhillegas $.
+
+Web site: http://db.apache.org/derby/
+
+Project Status
+
+  Description
+
+  "Derby" began as a snapshot of the IBM's Cloudscape Java relational database. IBM
+  contributed the code to The Apache Software Foundation and 
+  bases future versions of IBM Cloudscape on the Apache-managed code.
+
+  To participate in Derby, you should join the mailing list. Just 
+  send an empty message to derby-dev-subscribe@db.apache.org.
+
+  Derby graduated from incubation in July, 2005 and is now a
+  full-fledged Apache DB project..
+
+Project info
+
+  * The Apache DB project owns the Derby subproject, and the subproject
+    follows the Apache DB PMC's direction. Significant contributors to this sub-
+    project (for example, after a significant interval of sustained
+    contribution) will be proposed for commit access to the codebase.
+
+  * The Derby sub-project's modules will be available as distinct and discrete downloads.
+
+Releases from trunk:
+
+ * 10.5.0.0 : In development 
+ * 10.4.1.3 : Released 04/26/2008
+ * 10.3.2.1 : Released 12/10/2007
+ * 10.3.1.4 : Released 8/10/2007
+ * 10.2.2.0 : Released 12/19/2006
+ * 10.2.1.6 : Released 10/05/2006
+ * 10.1.3.1 : Released 06/30/2006
+ * 10.1.2.1 : Released 11/18/2005
+ * 10.1.1.0 : Released 08/3/2005
+ * 10.0.2.1 : Released 12/06/2004
+
+PENDING ISSUES
+==============
+
+None.
+
+RESOLVED ISSUES SINCE LAST STATUS
+=================================
+
+New committers:
+
+V. Narayanan
+Jørgen Løland
+Thomas Nielsen
+John Embretsen
+Camilla Haase
+
+RECENT VOTES
+=================================
+V. Narayanan elected as a committer
+   April 11, 2008
+   See http://www.nabble.com/-RESULT---VOTE--V.-Narayanan-as-a-committer--tt16622866.html#a16622866
+
+Jørgen Løland elected as a committer
+   April 11, 2008
+   See http://www.nabble.com/-RESULT---VOTE--J%C3%B8rgen-L%C3%B8land-as-a-committer--tt16622854.html#a16622854
+
+Thomas Nielsen elected as a committer
+   April 5, 2008
+   See http://www.nabble.com/-RESULT---VOTE--Thomas-Nielsen-as-a-Derby-committer-tt16508562.html#a16508562
+
+John Embretsen elected as a committer
+   April 4, 2008
+   See http://www.nabble.com/-VOTE--John-H-Embretsen-as-a-Derby-committer-tt16308653.html#a16500937
+
+Camilla Haase elected as a committer
+   March 11, 2008
+   See http://www.nabble.com/-RESULT---VOTE--Kim-Haase-as-a-committer-tt15982963.html#a15982963
+  
+
+OTHER NEWS
+==========
+
+
+
+RELEASE STATUS
+==============
+
+Derby 10.5.0.0 is open for development.
+
+No currently outstanding issues.
+
+
+
+
+References:
+ 
+item            type      reference
+Status file     www       http://svn.apache.org/repos/asf/db/derby/code/trunk/STATUS
+Website         www       http://db.apache.org/derby/
+Mailing list    dev       derby-dev@db.apache.org
+Mailing list    users     derby-user@db.apache.org
+Source code     SVN       /repos/asf/db/derby/code/trunk/
+Committers      jta                        Jean Anderson (CLA on file)
+Committers      kahatlen              Knut Anders Hatlen (CLA on file)
+Committers      oyvind                  Øyvind Bakksjø (CLA on file)
+Committers      satheesh              Satheesh Bandaram (CLA on file)
+Committers      jboynes                 Jeremy Boynes (CLA on file)
+Committers      abrown                 Army Brown (CLA on file)
+Committers      coar                      Ken Coar (CLA on file)
+Committers      djd                        Daniel Debrunner (CLA on file)
+Committers      rhillegas               Rick Hillegas (CLA on file)
+Committers      bernt                    Bernt M. Johnsen (CLA on file)
+Committers      andreask              Andreas Korneliussen (CLA on file)
+Committers      kmarsden             Katherine Marsden (CLA on file)
+Committers      mikem                  Mike Matrigali (CLA on file)
+Committers      mcintyre              Samuel McIntyre (CLA on file)
+Committers      tmnk                    Tomohito Nakayama (CLA on file)
+Committers      bryanpendleton  Bryan Pendleton (CLA on file)
+Committers      fernanda             Fernanda Pizzorno (CLA on file)
+Committers      suresht               Suresh Thalamati (CLA on file)
+Committers      davidvc               David Van Couvering (CLA on file)
+Committers      myrnavl              Myrna Van Lunteren (CLA on file)
+Committers      mamta                Mamta Satoor (CLA on file)
+Committers      scotsmatrix        Laura Stewart (CLA on file)
+Committers      kristwaa             Kristian Waagan (CLA on file)
+Committers      dag                  Dag H. Wanvik (CLA on file)
+Committers      oysteing             Øystein Grøvlen (CLA on file)
+Committers      dyre                 Dyre Tjeldvoll (CLA on file)
+Committers      chaase3              Camilla Haase (CLA on file)
+Committers      vnarayanan           V Narayanan (CLA on file)
+Committers      jorgenlo             Jørgen Løland (CLA on file)
+Committers      thomanie          Thomas Nielsen (CLA on file)
+Committers      johnemb           John Embretsen (CLA on file)

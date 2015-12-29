@@ -1,0 +1,58 @@
+//------------------------------------------------------------------------------
+//
+//  GemFire get initial image tests (verify nonBlocking behavior)
+//
+//------------------------------------------------------------------------------
+
+getInitialImage/diskRecoveryWithPuts.conf
+
+getInitialImage/destroyIntegrity.conf
+  dataPolicy=replicate scope=distributedAck
+  workIterations=250000 batchSize=25000
+
+getInitialImage/nonBlockingNetSearch.conf
+  hydra.numHosts=3 
+  dataPolicy=replicate scope=distributedAck
+  workIterations=250000 batchSize=25000
+
+getInitialImage/nonBlockingNetWrites.conf
+  hydra.numHosts=3 
+  dataPolicy=replicate scope=distributedAck
+  workIterations=250000 batchSize=25000
+
+// verify union gii removed from product
+getInitialImage/giiUnionVMReg.conf hydra.numHosts = 5 
+
+// Test getInitialImage using a preferred cache for a source
+getInitialImage/giiPreferenceVMReg.conf hydra.numHosts = 5 
+getInitialImage/concGiiPreferenceVMReg.conf hydra.numHosts = 5
+getInitialImage/concGiiPreferenceGlobalVMReg.conf hydra.numHosts = 5 
+
+// Tests for getInitialImage with cache loaders, cache writers 
+getInitialImage/giiCacheLoader.conf 
+getInitialImage/giiCacheWriter.conf 
+
+// Test for getInitialImage when source is a publisher
+getInitialImage/giiWhilePublishing.conf 
+  hydra.numHosts=2 numGiiClients=30
+  dataPolicy=replicate scope=distributedAck
+  workIterations=20000 
+
+getInitialImage/giiWhilePublishing.conf 
+  hydra.numHosts=2 numGiiClients=1
+  dataPolicy=replicate scope=distributedAck
+  workIterations=250000 
+
+getInitialImage/giiWhileMultiplePublishing.conf
+  dataPolicy=replicate
+  hydra.numHosts=3
+  numGiiClients=10
+  scope=distributedNoAck
+  trimIterations=0
+  workIterations=250000
+
+getInitialImage/giiTwoPubs.conf
+  hydra.numHosts=3 numGiiClients=30
+  dataPolicy=replicate scope=distributedAck
+  workIterations=20000 
+

@@ -1,0 +1,213 @@
+gfxd> --
+--   Licensed to the Apache Software Foundation (ASF) under one or more
+--   contributor license agreements.  See the NOTICE file distributed with
+--   this work for additional information regarding copyright ownership.
+--   The ASF licenses this file to You under the Apache License, Version 2.0
+--   (the "License"); you may not use this file except in compliance with
+--   the License.  You may obtain a copy of the License at
+--
+--      http://www.apache.org/licenses/LICENSE-2.0
+--
+--   Unless required by applicable law or agreed to in writing, software
+--   distributed under the License is distributed on an "AS IS" BASIS,
+--   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+--   See the License for the specific language governing permissions and
+--   limitations under the License.
+--
+run resource '/org/apache/derbyTesting/functionTests/util/testRoutines.sql';
+gfxd> --
+--   Licensed to the Apache Software Foundation (ASF) under one or more
+--   contributor license agreements.  See the NOTICE file distributed with
+--   this work for additional information regarding copyright ownership.
+--   The ASF licenses this file to You under the Apache License, Version 2.0
+--   (the "License"); you may not use this file except in compliance with
+--   the License.  You may obtain a copy of the License at
+--
+--      http://www.apache.org/licenses/LICENSE-2.0
+--
+--   Unless required by applicable law or agreed to in writing, software
+--   distributed under the License is distributed on an "AS IS" BASIS,
+--   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+--   See the License for the specific language governing permissions and
+--   limitations under the License.
+--
+-- Changed to create individual procedures so that this will work with JSR169. 
+-- Direct call to 'installRoutines' uses nested connection
+CREATE PROCEDURE TESTROUTINE.SET_SYSTEM_PROPERTY(IN PROPERTY_KEY VARCHAR(32000), IN PROPERTY_VALUE VARCHAR(32000)) NO SQL EXTERNAL NAME 'org.apache.derbyTesting.functionTests.util.TestRoutines.setSystemProperty' language java parameter style java;
+0 rows inserted/updated/deleted
+gfxd> CREATE PROCEDURE TESTROUTINE.SLEEP(IN SLEEP_TIME_MS BIGINT) NO SQL EXTERNAL NAME 'org.apache.derbyTesting.functionTests.util.TestRoutines.sleep' language java parameter style java;
+0 rows inserted/updated/deleted
+gfxd> CREATE FUNCTION TESTROUTINE.HAS_SECURITY_MANAGER() RETURNS INT NO SQL EXTERNAL NAME 'org.apache.derbyTesting.functionTests.util.TestRoutines.hasSecurityManager' language java parameter style java;
+0 rows inserted/updated/deleted
+gfxd> CREATE FUNCTION TESTROUTINE.READ_FILE(FILE_NAME VARCHAR(60), ENCODING VARCHAR(60)) RETURNS VARCHAR(32000) NO SQL EXTERNAL NAME 'org.apache.derbyTesting.functionTests.util.TestRoutines.readFile' language java parameter style java;
+0 rows inserted/updated/deleted
+gfxd> CREATE FUNCTION GET_TABLE_PROPERTY (SCHEMA_NAME VARCHAR(128), TABLE_NAME VARCHAR(128), PROP_KEY VARCHAR(1000)) RETURNS VARCHAR(1000) EXTERNAL NAME 'org.apache.derbyTesting.functionTests.util.TestPropertyInfo.getTableProperty' LANGUAGE JAVA PARAMETER STYLE JAVA;
+0 rows inserted/updated/deleted
+gfxd> -- Get a property that hasn't been set yet - should return null
+values SYSCS_UTIL.GET_DATABASE_PROPERTY('key1');
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+NULL                                                                                                                            
+gfxd> -- Set a couple of properties
+call SYSCS_UTIL.SET_DATABASE_PROPERTY('key1', 'one, two, three');
+0 rows inserted/updated/deleted
+gfxd> call SYSCS_UTIL.SET_DATABASE_PROPERTY('key2', 'eins, zwei, drei');
+0 rows inserted/updated/deleted
+gfxd> -- and fetch them
+values SYSCS_UTIL.GET_DATABASE_PROPERTY('key1');
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+one, two, three                                                                                                                 
+gfxd> values SYSCS_UTIL.GET_DATABASE_PROPERTY('key2');
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+eins, zwei, drei                                                                                                                
+gfxd> -- and delete one of theme
+call SYSCS_UTIL.SET_DATABASE_PROPERTY('key2', null);
+0 rows inserted/updated/deleted
+gfxd> -- and fetch them
+values SYSCS_UTIL.GET_DATABASE_PROPERTY('key1');
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+one, two, three                                                                                                                 
+gfxd> values SYSCS_UTIL.GET_DATABASE_PROPERTY('key2');
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+NULL                                                                                                                            
+gfxd> -- Now check some explicit properties
+-- ************ gemfirexd.storage.pageSize
+-- See what the default is first
+create table T (i int);
+0 rows inserted/updated/deleted
+gfxd> values GET_TABLE_PROPERTY('APP', 'T', 'gemfirexd.storage.pageSize');
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+4096                                                                                                                            
+gfxd> drop table T;
+0 rows inserted/updated/deleted
+gfxd> -- set the per-database value
+call SYSCS_UTIL.SET_DATABASE_PROPERTY('gemfirexd.storage.pageSize', '16384');
+0 rows inserted/updated/deleted
+gfxd> -- this create table should pick up the per-database
+create table T (i int);
+0 rows inserted/updated/deleted
+gfxd> values GET_TABLE_PROPERTY('APP', 'T', 'gemfirexd.storage.pageSize');
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+16384                                                                                                                           
+gfxd> drop table T;
+0 rows inserted/updated/deleted
+gfxd> -- ************ gemfirexd.storage.minimumRecordSize
+-- See what the default is first
+create table T (i int);
+0 rows inserted/updated/deleted
+gfxd> values GET_TABLE_PROPERTY('APP', 'T', 'gemfirexd.storage.minimumRecordSize');
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+12                                                                                                                              
+gfxd> drop table T;
+0 rows inserted/updated/deleted
+gfxd> -- set the per-database value
+call SYSCS_UTIL.SET_DATABASE_PROPERTY('gemfirexd.storage.minimumRecordSize', '42');
+0 rows inserted/updated/deleted
+gfxd> -- this create table should pick up the per-database
+create table T (i int);
+0 rows inserted/updated/deleted
+gfxd> values GET_TABLE_PROPERTY('APP', 'T', 'gemfirexd.storage.minimumRecordSize');
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+42                                                                                                                              
+gfxd> drop table T;
+0 rows inserted/updated/deleted
+gfxd> -- ************ gemfirexd.storage.pageReservedSpace
+-- See what the default is first
+create table T (i int);
+0 rows inserted/updated/deleted
+gfxd> values GET_TABLE_PROPERTY('APP', 'T', 'gemfirexd.storage.pageReservedSpace');
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+20                                                                                                                              
+gfxd> drop table T;
+0 rows inserted/updated/deleted
+gfxd> -- set the per-database value
+call SYSCS_UTIL.SET_DATABASE_PROPERTY('gemfirexd.storage.pageReservedSpace', '17');
+0 rows inserted/updated/deleted
+gfxd> -- this create table should pick up the per-database
+create table T (i int);
+0 rows inserted/updated/deleted
+gfxd> values GET_TABLE_PROPERTY('APP', 'T', 'gemfirexd.storage.pageReservedSpace');
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+17                                                                                                                              
+gfxd> drop table T;
+0 rows inserted/updated/deleted
+gfxd> -- ************ gemfirexd.distributedsystem.noAutoBoot
+-- should be set in service.properties, not the conglomerate, but that's transparent here ... 
+values SYSCS_UTIL.GET_DATABASE_PROPERTY('gemfirexd.distributedsystem.noAutoBoot');
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+NULL                                                                                                                            
+gfxd> call SYSCS_UTIL.SET_DATABASE_PROPERTY('gemfirexd.distributedsystem.noAutoBoot', 'true');
+0 rows inserted/updated/deleted
+gfxd> values SYSCS_UTIL.GET_DATABASE_PROPERTY('gemfirexd.distributedsystem.noAutoBoot');
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+true                                                                                                                            
+gfxd> call SYSCS_UTIL.SET_DATABASE_PROPERTY('gemfirexd.distributedsystem.noAutoBoot', 'false');
+0 rows inserted/updated/deleted
+gfxd> values SYSCS_UTIL.GET_DATABASE_PROPERTY('gemfirexd.distributedsystem.noAutoBoot');
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+false                                                                                                                           
+gfxd> call SYSCS_UTIL.SET_DATABASE_PROPERTY('gemfirexd.distributedsystem.noAutoBoot', null);
+0 rows inserted/updated/deleted
+gfxd> values SYSCS_UTIL.GET_DATABASE_PROPERTY('gemfirexd.distributedsystem.noAutoBoot');
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+NULL                                                                                                                            
+gfxd> -- Now check some explicit properties
+-- Now check with gemfirexd.storage.pageSize if gemfirexd.distributedsystem.propertiesOnly
+-- ensures that system wide properties are ignored
+-- See is currently set, should be 16384
+create table T (i int);
+0 rows inserted/updated/deleted
+gfxd> values GET_TABLE_PROPERTY('APP', 'T', 'gemfirexd.storage.pageSize');
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+16384                                                                                                                           
+gfxd> drop table T;
+0 rows inserted/updated/deleted
+gfxd> -- set system value
+CALL TESTROUTINE.SET_SYSTEM_PROPERTY('gemfirexd.storage.pageSize', '8192');
+0 rows inserted/updated/deleted
+gfxd> -- this create table should pick up the system value - 8192
+create table T (i int);
+0 rows inserted/updated/deleted
+gfxd> values GET_TABLE_PROPERTY('APP', 'T', 'gemfirexd.storage.pageSize');
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+8192                                                                                                                            
+gfxd> drop table T;
+0 rows inserted/updated/deleted
+gfxd> -- 
+call SYSCS_UTIL.SET_DATABASE_PROPERTY('gemfirexd.distributedsystem.propertiesOnly', 'true');
+0 rows inserted/updated/deleted
+gfxd> -- this create table should pick up the database value - 16384
+create table T (i int);
+0 rows inserted/updated/deleted
+gfxd> values GET_TABLE_PROPERTY('APP', 'T', 'gemfirexd.storage.pageSize');
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+16384                                                                                                                           
+gfxd> drop table T;
+0 rows inserted/updated/deleted
+gfxd> -- verify that creation time only properties may not be set.
+call SYSCS_UTIL.SET_DATABASE_PROPERTY('gemfirexd.engineType', '9');
+ERROR XCY02: The requested property change is not supported 'gemfirexd.engineType'='9'.
+gfxd> values SYSCS_UTIL.GET_DATABASE_PROPERTY('gemfirexd.engineType');
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+NULL                                                                                                                            
+gfxd> drop function GET_TABLE_PROPERTY;
+0 rows inserted/updated/deleted
+gfxd> 

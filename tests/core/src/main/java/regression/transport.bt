@@ -1,0 +1,109 @@
+// Variety of tests (similar to license/regr.bt) to be run with
+// transport combinations:
+// 1. multicast, disable-tcp=false
+// 2. multicast, disable-tcp=true
+// 3. no multicast, disable-tcp=true
+// No specific run needed for multicast, disable-tcp=false because that is default for hydra tests.
+// 
+// This .bt is not run directly but is used when running transportMcastTcp.bt, transportMcastUdp.bt
+// and transportUdp.bt
+
+// useCase13Scenarios 
+useCase13Scenarios/killPrimarySteady.conf trimIterations=5000 workIterations=20000
+useCase13Scenarios/killSecondaryDuringGii.conf trimIterations=5000 workIterations=20000
+
+// diskReg
+diskReg/serialOverflowLRU.conf
+diskReg/serialOverflowMemLRU.conf
+diskReg/serialPersistence.conf
+
+diskReg/crashOverflowRecovery.conf maxKeys=100 objectType=objects.ArrayOfByte
+diskReg/shutdownOverflowRecovery.conf maxKeys=100 objectType=objects.ArrayOfByte
+
+// tx tests
+//disabled for #44146
+//tx/event/serialEntryEvent.conf
+//tx/concNoConflict.conf
+//tx/distSerialView.conf
+
+// mirroring
+mirror/mirrorKeysValuesDist.conf
+
+// expiration
+expiration/entryExpirActionVMReg.conf hydra.numHosts = 6
+
+// capCon
+capCon/concLRUTest.conf hydra.numHosts = 4 vmQuantities = 2  vmThreads = 5 
+capCon/concMemLRUTest.conf hydra.numHosts = 1 vmQuantities = 10 vmThreads = 5 
+
+// event
+event/concEntryEvent.conf
+event/concRegionEvent.conf
+
+// admin
+admin/recycleConn.conf
+locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+A=client clientHosts=3 clientVMsPerHost=1 clientThreadsPerVM=1
+B=admin  adminHosts=1  adminVMsPerHost=1  adminThreadsPerVM=1
+
+admin/concRegion.conf hydra.numHosts=3 vmQuantities=2
+
+// regions/validate
+regions/validate/distAckRegion.conf
+
+dlock/unlockperf.conf hydra.numHosts = 2 vmQuantities = 4
+dlock/DLSCreateDestroy.conf
+dlock/multiBeGrantor.conf
+
+// getInitialImage
+getInitialImage/giiCacheLoader.conf
+// make sure the 'flush' protocol is working
+getInitialImage/giiWhileMultiplePublishing.conf
+  batchSize=25000
+  dataPolicy=replicate
+  hydra.numHosts=3
+  mirrorType=keysValues
+  numGiiClients=10
+  scope=distributedNoAck
+  trimIterations=0
+  workIterations=75000
+
+//wan
+wan/p2p.conf wanSites=3 clientVmsPerSite=3 clientThreadsPerVm=2
+/*commenting out for Cheetah release
+wan/hct.conf wanSites=3 clientVmsPerSite=3 clientThreadsPerVm=2 */
+
+//cq
+/*commenting out for Cheetah release
+cq/concCQBridge.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+cq/concCQBridgePR.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=5 */
+
+//parReg
+parReg/concParReg.conf peerHosts=3 peerVMsPerHost=3 peerThreadsPerVM=10 redundantCopies=0
+/*commenting out for Cheetah release
+parReg/bridge/concParRegBridge.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=0 numAccessors=1 numEmptyClients=1 numThinClients=1
+   bridgeOrderingWorkaround=registerInterest */
+
+//durableClients
+/*commenting out for Cheetah release
+durableClients/durableClientsEventValidationAllKeys.conf
+   A = bridge  bridgeHosts =  7 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+   B = feed    feedHosts   =  1 feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+   C = edge    edgeHosts   =  5 edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+   hc.nPutThreads=3 hc.nPutKeyRange=3
+
+//security
+security/registerInterestAuthorization.conf
+   A = bridge  bridgeHosts =  8 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+   B = writer    writerHosts   =  1 writerVMsPerHost   = 1  writerThreadsPerVM   = 3
+   C = reader    readerHosts   =  2 readerVMsPerHost   = 1  readerThreadsPerVM   = 3
+   D = query    queryHosts   =  2 queryVMsPerHost   = 1  queryThreadsPerVM   = 3
+   E = admin    adminHosts   =  2 adminVMsPerHost   = 1  adminThreadsPerVM   = 3
+   nPutKeyRange=200 */

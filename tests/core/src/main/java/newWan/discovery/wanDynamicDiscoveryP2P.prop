@@ -1,0 +1,12 @@
+# wanSites should be >= 7
+wanSites = 8
+locatorHostsPerSite = 2
+locatorVMsPerHost = 1
+locatorThreadsPerVM = 1
+peerHostsPerSite = 1
+peerVMsPerHost = 1
+peerThreadsPerVM = 1
+
+# memory for peers
+peerMem = 64m
+resultWaitTime=300

@@ -1,0 +1,60 @@
+sql/networkPartition/clientServerNetworkPartitionReconnectFailOver.conf
+   A=client
+   B=survivingserver
+   C=losingserver
+   buyorders=trade.buyorders:random
+   clientHosts=1
+   clientThreadsPerVM=2
+   clientVMsPerHost=2
+   customers=trade.customers:random
+   dropIndex=true
+   employees=emp.employees:random
+   locatorHosts=2
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   losingserverHosts=1
+   losingserverThreadsPerVM=2
+   losingserverVMsPerHost=2
+   networth=trade.networth:random
+   portfolio=trade.portfolio:random
+   product=gemfirexd
+   redundantCopies=2
+   securities=trade.securities:random
+   sellorders=trade.sellorders:random
+   survivingserverHosts=1
+   survivingserverThreadsPerVM=2
+   survivingserverVMsPerHost=4
+   tableDefaultPartitioned=true
+   trades=trade.trades:random
+   txhistory=trade.txhistory:random
+
+sql/networkPartition/datastoreDatastoreNetworkPartitionReconnect.conf
+   A=accessor
+   B=survivingdatastore
+   C=losingdatastore
+   accessorHosts=1
+   accessorThreadsPerVM=2
+   accessorVMsPerHost=2 
+   buyorders=trade.buyorders:random 
+   customers=trade.customers:random
+   employees=emp.employees:random
+   locatorHosts=2
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   losingdatastoreHosts=1
+   losingdatastoreThreadsPerVM=2
+   losingdatastoreVMsPerHost=3
+   networth=trade.networth:random
+   portfolio=trade.portfolio:random
+   product=gemfirexd
+   redundantCopies=2
+   securities=trade.securities:random
+   sellorders=trade.sellorders:random
+   survivingdatastoreHosts=1
+   survivingdatastoreThreadsPerVM=2
+   survivingdatastoreVMsPerHost=6
+   tableDefaultPartitioned=true
+   trades=trade.trades:random
+   txhistory=trade.txhistory:random
+ 
+

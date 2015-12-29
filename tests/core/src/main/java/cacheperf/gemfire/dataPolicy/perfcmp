@@ -1,0 +1,20 @@
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE -Dmode=raw -DcompReportFile=puts_2_4.raw.txt perffmwk.PerfComparer puts_2_4/puts*
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE -Dmode=raw -DcompReportFile=puts_2_1.raw.txt perffmwk.PerfComparer puts_2_1/puts*
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE -Dmode=raw -DcompReportFile=puts_1_4.raw.txt perffmwk.PerfComparer puts_1_4/puts*
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE -Dmode=raw -DcompReportFile=puts_1_1.raw.txt perffmwk.PerfComparer puts_1_1/puts*
+
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE -Dmode=ratio -DcompReportFile=puts_2_4.ratio.txt perffmwk.PerfComparer puts_2_4/puts*
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE -Dmode=ratio -DcompReportFile=puts_2_1.ratio.txt perffmwk.PerfComparer puts_2_1/puts*
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE -Dmode=ratio -DcompReportFile=puts_1_4.ratio.txt perffmwk.PerfComparer puts_1_4/puts*
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE -Dmode=ratio -DcompReportFile=puts_1_1.ratio.txt perffmwk.PerfComparer puts_1_1/puts*
+
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE -Dmode=raw -DcompReportFile=putOneKey_2_4.raw.txt perffmwk.PerfComparer oneKey_2_4/putOneKey*
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE -Dmode=raw -DcompReportFile=putOneKey_2_1.raw.txt perffmwk.PerfComparer oneKey_2_1/putOneKey*
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE -Dmode=raw -DcompReportFile=putOneKey_1_4.raw.txt perffmwk.PerfComparer oneKey_1_4/putOneKey*
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE -Dmode=raw -DcompReportFile=putOneKey_1_1.raw.txt perffmwk.PerfComparer oneKey_1_1/putOneKey*
+
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE -Dmode=ratio -DcompReportFile=putOneKey_2_4.ratio.txt perffmwk.PerfComparer oneKey_2_4/putOneKey*
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE -Dmode=ratio -DcompReportFile=putOneKey_2_1.ratio.txt perffmwk.PerfComparer oneKey_2_1/putOneKey*
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE -Dmode=ratio -DcompReportFile=putOneKey_1_4.ratio.txt perffmwk.PerfComparer oneKey_1_4/putOneKey*
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE -Dmode=ratio -DcompReportFile=putOneKey_1_1.ratio.txt perffmwk.PerfComparer oneKey_1_1/putOneKey*
+

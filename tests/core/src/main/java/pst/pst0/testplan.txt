@@ -1,0 +1,79 @@
+================================================================================
+Single Source / Single Sink / Single Host
+
+Run Data Source VM, Subscriber VM, and Requester VM on a single host.  Each VM
+has a single worker thread.
+
+Set all caches to scope distributed no ack with the same vm region.
+
+Set Subscriber cache to fully replicate Data Source cache and use cache listener
+to process update events produced by the Data Source.  Measure update latency.
+
+Cache entries consist of stringified int keys and 1K string values encoded with
+the key.  The Data Source updates values at random keys with new 1K strings.
+
+Run the test on 1) one Linux host, and 2) one Solaris host.
+
+================================================================================
+Single Source / Single Sink / Multiple Host
+
+Run Data Source VM on one host, Subscriber VM and Requester VM on another host.
+Each VM has a single worker thread.
+
+Set all caches to scope distributed no ack with the same vm region.  Use an
+edge cache for the Requester VM using the Data Source as the bridge server.
+
+Set Subscriber cache to fully replicate Data Source cache and use cache listener
+to process update events produced by the Data Source.  Measure update latency.
+
+Cache entries consist of stringified int keys and 1K string values encoded with
+the key.  The Data Source updates values at random keys with new 1K strings.
+
+Run the test on 1) two Linux hosts, and 2) two Solaris hosts.
+
+================================================================================
+
+Multiple Source / Multiple Sink / Single Host
+
+Run two Data Source VMs, two Subscriber VMs, and one Requester VM on a single
+host.  Each Data Source and Subscriber VM has a single worker thread.  The
+Requester VM has two worker threads.
+
+Set all caches to scope distributed no ack with the same vm region.
+
+Set Subscriber caches to fully replicate Data Source caches and use cache
+listeners to process update events produced by the Data Sources.  Measure
+update latency.
+
+Cache entries consist of stringified int keys and 1K string values encoded with
+the key.  The Data Sources updates values at random keys with new 1K strings.
+Cache entries are partitioned evenly across the Data Source caches.  Each Data
+Source updates only its own set of entries.
+
+Run the test on 1) one Linux host, and 2) one Solaris host.
+
+================================================================================
+
+Multiple Source / Multiple Sink / Multiple Host
+
+Run two Data Source VMs, two Subscriber VMs and one Requester VM, times four.
+Each Data Source and Subscriber VM has a single worker thread.  The Requester VM
+has two worker threads.
+
+Set all caches to scope distributed no ack with the same vm region.  Use edge
+caches for the Requester VMs using the Data Sources as the bridge servers.
+
+Set Subscriber caches to fully replicate Data Source caches and use cache
+listeners to process update events produced by the Data Sources.  Measure
+update latency.
+
+Cache entries consist of stringified int keys and 1K string values encoded with
+the key.  The Data Sources update values at random keys with new 1K strings.
+Cache entries are partitioned evenly across the Data Source caches.  Each Data
+Source updates only its own set of entries.
+
+Run the test on 1) four Linux hosts (each running one Data Source-Subscriber-
+Requester configuration), and 2) two Solaris hosts (running two Data Source-
+Subscriber-Requester configurations each).
+
+================================================================================

@@ -1,0 +1,45 @@
+sql/sqlTx/repeatableRead/multiTablesRRTxWithAccessors.conf
+    locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+    A=store storeHosts=2 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=3
+    workIterationsPerThread=500
+    
+sql/sqlTx/repeatableRead/randomPartitionTablesRRTxWithAccessors.conf
+    locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+    A=store storeHosts=2 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=4
+    workIterationsPerThread=500
+
+sql/sqlTx/repeatableRead/randomPartitionTablesRRTxWithAccessors.conf
+    locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+    A=store storeHosts=3 storeVMsPerHost=4 storeThreadsPerVM=1
+    B=accessor accessorHosts=3 accessorVMsPerHost=3 accessorThreadsPerVM=3
+    workIterationsPerThread=500
+    
+sql/sqlTx/repeatableRead/concMultiTablesRRTxWithAccessors.conf
+    locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+    A=store storeHosts=2 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=8
+
+sql/sqlTx/repeatableRead/concMultiTablesRRTxWithAccessors.conf
+    locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+    A=store storeHosts=3 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=12
+    
+sql/sqlTx/repeatableRead/concMultiTablesRRTxIndexWithAccessors.conf
+    locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+    A=store storeHosts=3 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=12    
+
+sql/sqlTx/repeatableRead/randomPartitionTablesRRTxWithAccessorsHA.conf
+    locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+    A=store storeHosts=3 storeVMsPerHost=4 storeThreadsPerVM=1
+    B=accessor accessorHosts=3 accessorVMsPerHost=3 accessorThreadsPerVM=3
+    workIterationsPerThread=500
+    redundantCopies = 1
+    
+sql/sqlTx/repeatableRead/concMultiTablesRRTxIndexWithAccessorsHA.conf
+    locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+    A=store storeHosts=3 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=12 
+    redundantCopies = 1

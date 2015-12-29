@@ -1,0 +1,79 @@
+#### This is the list of functional tests that should be run for a regression with vMotion.
+
+The following tests should be run with local.vmotion.threadGroups.conf and edit the conf to specify minimum 2 VMs on 2 different ESX hosts.
+vsphere/regression/admin.bt
+vsphere/regression/asyncMsg.bt
+vsphere/regression/capCon.bt
+vsphere/regression/connPool.bt
+vsphere/regression/concCQ.bt                                (Run BatteryTest with -Dbt.masterHeapMB=512 to support larger Blackboards)
+vsphere/regression/diskRecovery.bt
+vsphere/regression/dlock.bt
+vsphere/regression/durableClients.bt
+vsphere/regression/dynamicRegion.bt
+vsphere/regression/getInitialImage.bt
+vsphere/regression/jta.bt
+vsphere/regression/prEviction.bt
+vsphere/regression/fixedPartitioning.bt
+vsphere/regression/functionService.bt
+vsphere/regression/parReg.bt
+vsphere/regression/parRegHA.bt
+vsphere/regression/parRegHABridgeLimitWrites.bt
+vsphere/regression/parRegQuery.bt
+vsphere/regression/prTxRegr.bt
+vsphere/regression/csTxDev.bt
+vsphere/regression/prTxRebalance.bt
+vsphere/regression/recovDelay.bt
+vsphere/regression/rebalanceRegr.bt
+vsphere/regression/diskReg.bt
+vsphere/regression/distFuncScale1.bt
+vsphere/regression/misc.bt
+vsphere/regression/roles.bt
+vsphere/regression/csTxDev.bt
+vsphere/regression/pdx.bt
+vsphere/regression/csTxRegr.bt
+vsphere/regression/target.bt
+vsphere/regression/resumeTx.bt
+vsphere/regression/security.bt
+vsphere/regression/splitBrain.bt
+vsphere/regression/tx.bt
+vsphere/regression/newWanHct.bt
+vsphere/regression/newWanP2P.bt
+
+
+The following tests need to be run with a local.conf, as noted:
+vsphere/regression/miscDelta.bt                         (-Dlocal.conf=$productCheckoutDir/tests/vsphere/regression/local.vmotion.misc.delta.conf and edit to specify minimum 2 VMs on 2 different ESX hosts)
+vsphere/regression/pureJava.bt                          (-Dlocal.conf=$productCheckoutDir/tests/vsphere/regression/local.vmotion.pureJava.conf and edit to specify minimum 2 VMs on 2 different ESX hosts)
+vsphere/regression/bridgeLicense.bt                     (-Dlocal.conf=$productCheckoutDir/tests/vsphere/regression/local.vmotion.bridgeLicense.conf and edit to specify minimum 2 VMs on 2 different ESX hosts)
+vsphere/regression/hct.bt                               (-Dlocal.conf=$productCheckoutDir/tests/vsphere/regression/local.vmotion.hct.conf and edit to specify minimum 2 VMs on 2 different ESX hosts)
+vsphere/regression/ha.bt                                (-Dlocal.conf=$productCheckoutDir/tests/vsphere/regression/local.vmotion.ha.conf and edit to specify minimum 2 VMs on 2 different ESX hosts)
+vsphere/regression/transportUdp.bt                      (-Dlocal.conf=$productCheckoutDir/tests/vsphere/regression/local.vmotion.udp.conf and edit to specify minimum 2 VMs on 2 different ESX hosts)
+vsphere/regression/sqlBridge.bt                         (-Dlocal.conf=$productCheckoutDir/tests/vsphere/regression/local.vmotion.sql.conf and edit to specify minimum 2 VMs on 2 different ESX hosts)
+vsphere/regression/sqlJoin.bt                           (-Dlocal.conf=$productCheckoutDir/tests/vsphere/regression/local.vmotion.sql.conf and edit to specify minimum 2 VMs on 2 different ESX hosts)
+vsphere/regression/parRegPdxAutoSerializer.bt           (-Dlocal.conf=$productCheckoutDir/tests/vsphere/regression/local.vmotion.autoSerializer.conf and edit to specify minimum 2 VMs on 2 different ESX hosts)
+vsphere/regression/pdxSerializer.bt                     (-Dlocal.conf=$productCheckoutDir/tests/vsphere/regression/local.vmotion.pdxSerializer.conf and edit to specify minimum 2 VMs on 2 different ESX hosts)
+vsphere/regression/parRegPdxInstance.bt                 (-Dlocal.conf=$productCheckoutDir/tests/vsphere/regression/local.vmotion.pdxInstance.conf and edit to specify minimum 2 VMs on 2 different ESX hosts)
+vsphere/regression/ipv6UDP.bt                           (-Dlocal.conf=$productCheckoutDir/tests/vsphere/regression/local.vmotion.ipv6.udp.conf and edit to specify minimum 2 VMs on 2 different ESX hosts)
+vsphere/regression/mssb.bt                              (-Dlocal.conf=$productCheckoutDir/tests/vsphere/regression/local.vmotion.mssb.conf and edit to specify 5 VMs on 5 different ESX hosts)
+vsphere/regression/parRegUniqueHosts.bt                 (-Dlocal.conf=$productCheckoutDir/tests/vsphere/regression/local.vmotion.ipv6.udp.conf and edit to specify 5 VMs on 5 different ESX hosts)
+
+#vsphere/regression/transportMcastTcp.bt                (-Dlocal.conf=$productCheckoutDir/tests/vsphere/regression/local.vmotion.mcast.tcp.conf and edit to specify minimum 2 VMs on 2 different ESX hosts)
+##The transportMcastTcp.bt should not be run on multiple hosts unless and untilhaving a well controlled environment, as doing multi-machine mcast testing is dangerous as it can flood the whole network with multicast packets. Some
+##OS/hardware platforms are able to ignore mcast packets that they have no subscribers for, but others will process all of the packets your test broadcasts.  The routers will be hit hard, too, and as our mcast is not "tcp
+##friendly" you may get complaints from the system administrators.
+
+
+The following 64-bit tests are to be run on Linux only, following all instructions in the specified local conf files, which must be edited before use:
+vsphere/regression/resman64.bt                         (Run only on Linux with 64-bit JVMs and with -Dbt.moveRemoteDirs=true -Dbt.masterHeapMB=3000 -Dlocal.conf=$productCheckoutDir/tests/vsphere/regression/local.vmotion.resman64.conf and edit to specify minimum 2 VMs on 2 different ESX hosts)
+vsphere/regression/scale64.bt                          (-Dlocal.conf=$productCheckoutDir/tests/vsphere/regression/local.vmotion.6hosts64bit.conf and edit to specify 6 VMs on 6 different ESX hosts)
+
+
+The following tests need to be run individually and not in a suite and are time based vMotion tests to be run following all instructions in the specified local conf files, which must be edited before use:
+vsphere/regression/timed/cqRegistration.bt             (-Dlocal.conf=$productCheckoutDir/tests/vsphere/regression/timed/local.vmotion.cqRegistration.conf)
+vsphere/regression/timed/failover.bt                   (-Dlocal.conf=$productCheckoutDir/tests/vsphere/regression/timed/local.vmotion.failover.conf)
+vsphere/regression/timed/functionService.bt            (-Dlocal.conf=$productCheckoutDir/tests/vsphere/regression/timed/local.vmotion.functionService.conf)
+vsphere/regression/timed/gii.bt                        (-Dlocal.conf=$productCheckoutDir/tests/vsphere/regression/timed/local.vmotion.gii.conf)
+vsphere/regression/timed/netDown.bt                    (-Dlocal.conf=$productCheckoutDir/tests/vsphere/regression/timed/local.vmotion.netdown.conf)
+vsphere/regression/timed/newWan.bt                     (-Dlocal.conf=$productCheckoutDir/tests/vsphere/regression/timed/local.vmotion.newWan.conf)
+vsphere/regression/timed/prTx.bt                       (-Dlocal.conf=$productCheckoutDir/tests/vsphere/regression/timed/local.vmotion.prTx.conf)
+vsphere/regression/timed/prTxRebalance.bt              (-Dlocal.conf=$productCheckoutDir/tests/vsphere/regression/timed/local.vmotion.prTxRebalance.conf)
+vsphere/regression/timed/registerInterest.bt           (-Dlocal.conf=$productCheckoutDir/tests/vsphere/regression/timed/local.vmotion.ri.conf)

@@ -1,0 +1,2 @@
+java -classpath $JTESTS:$GEMFIRE/lib/gemfire.jar -DJTESTS=$JTESTS perffmwk.PerfSorter miss-*
+

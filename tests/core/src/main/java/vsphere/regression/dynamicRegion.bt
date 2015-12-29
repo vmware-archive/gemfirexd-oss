@@ -1,0 +1,29 @@
+//
+// bridgeThreadsPerVM and edgeThreadsPerVM are always 1 in these tests
+//
+
+dynamicReg/dynamicRegion.conf
+  bridgeHosts = 2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHosts   = 2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+                               numRootRegions=4 numSubRegions=2 regionDepth=2
+                               maxEntries=1000
+  threadGroupsName=opThread
+                               
+
+/*dynamicReg/dynamicRegionP2P.conf
+  peerHosts = 4 peerVMsPerHost = 3 peerThreadsPerVM = 1
+  numRootRegions=3 numSubRegions=2 regionDepth=1 maxEntries=1000*/
+
+dynamicReg/dynamicRegionP2P_lateClient.conf
+  peerHosts = 2 peerVMsPerHost = 3 peerThreadsPerVM = 1
+  numRootRegions=1 numSubRegions=0 regionDepth=1 maxEntries=25
+  threadGroupsName=lateClient
+
+/*dynamicReg/dynamicRegion_lateClient.conf
+  bridgeHosts = 2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHosts   = 2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+                                          numRootRegions=1
+                                          numSubRegions=0 regionDepth=1
+                                          maxEntries=1000*/
+                                          //persistDynamicRegBackup=true
+

@@ -1,0 +1,29 @@
+// puts with listeners (distAck)
+cacheperf/comparisons/useCase17/useCase17.conf
+  scope = distributedAck
+        pubHosts = 1 pubVMsPerHost = 1 pubThreadsPerVM = 1
+        subHosts = 1 subVMsPerHost = 1 subThreadsPerVM = 1
+  messageSize = 0 sleepBeforeOp = false
+  perffmwk.comparisonKey = p0s0_1_01_da
+
+cacheperf/comparisons/useCase17/txuseCase17.conf
+  scope = distributedAck
+        pubHosts = 1 pubVMsPerHost = 1 pubThreadsPerVM = 1
+        subHosts = 1 subVMsPerHost = 1 subThreadsPerVM = 1
+  messageSize = 0 sleepBeforeOp = false
+  perffmwk.comparisonKey = p0s0_1_01_da
+
+// puts with listeners (distNoAck)
+cacheperf/comparisons/useCase17/useCase17.conf
+  scope = distributedNoAck
+        pubHosts = 1 pubVMsPerHost = 1 pubThreadsPerVM = 1
+        subHosts = 1 subVMsPerHost = 1 subThreadsPerVM = 1
+  messageSize = 0 sleepBeforeOp = false
+  perffmwk.comparisonKey = p0s0_1_01_dna
+
+cacheperf/comparisons/useCase17/txuseCase17.conf
+  scope = distributedNoAck
+        pubHosts = 1 pubVMsPerHost = 1 pubThreadsPerVM = 1
+        subHosts = 1 subVMsPerHost = 1 subThreadsPerVM = 1
+  messageSize = 0 sleepBeforeOp = false
+  perffmwk.comparisonKey = p0s0_1_01_dna

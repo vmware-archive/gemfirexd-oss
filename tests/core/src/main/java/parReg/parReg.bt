@@ -1,0 +1,86 @@
+// functional tests
+parReg/serialParReg.conf peerHosts=3 peerVMsPerHost=3 peerThreadsPerVM=2 redundantCopies=0
+parReg/serialParReg.conf peerHosts=3 peerVMsPerHost=3 peerThreadsPerVM=2 redundantCopies=1
+parReg/serialParReg.conf peerHosts=3 peerVMsPerHost=3 peerThreadsPerVM=2 redundantCopies=2
+parReg/serialParReg.conf peerHosts=3 peerVMsPerHost=3 peerThreadsPerVM=2 redundantCopies=3
+// serialParRegLoader sets its own redundantCopies, but inherits the batterytest arg redundantCopies
+parReg/serialParRegLoader.conf peerHosts=3 peerVMsPerHost=3 peerThreadsPerVM=2 redundantCopies=unused
+parReg/concParReg.conf peerHosts=3 peerVMsPerHost=3 peerThreadsPerVM=10 redundantCopies=0
+parReg/concParReg.conf peerHosts=3 peerVMsPerHost=3 peerThreadsPerVM=10 redundantCopies=1
+parReg/concParReg.conf peerHosts=3 peerVMsPerHost=3 peerThreadsPerVM=10 redundantCopies=2
+parReg/concParReg.conf peerHosts=3 peerVMsPerHost=3 peerThreadsPerVM=10 redundantCopies=3
+parReg/parRegCreateDestroy.conf peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=20 
+parReg/fillParReg.conf
+parReg/concKnownKeys.conf peerHosts=5 peerVMsPerHost=2 peerThreadsPerVM=20 numKeys=10000 byteArraySize=5 
+parReg/concKnownKeys.conf peerHosts=5 peerVMsPerHost=2 peerThreadsPerVM=20 numKeys=1000000 byteArraySize=5 
+parReg/event/serialParRegEvent.conf
+parReg/event/concParRegEvent.conf
+parReg/event/serialParRegCMEvent.conf
+parReg/event/concParRegCMEvent.conf
+
+// tests that expect data loss 
+parReg/concParRegStopStart.conf peerHosts=9 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies = 0 numVMsToStop = 3
+parReg/concParRegStopStart.conf peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies = 1 numVMsToStop = 3
+parReg/concParRegStopStart.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies = 2 numVMsToStop = 3
+parReg/concParRegStopStart.conf peerHosts=6 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies = 3 numVMsToStop = 3
+
+// ParReg wan tests
+parReg/wan/hct_explicit.conf
+                                                                                
+// Linux,Windows version - uses sync distribution for gateway 
+parReg/wan/hct.conf
+       wanSites=1,2,3 bridgeVMsPerHost=2 edgeVMsPerHost=1 edgeThreadsPerVm=1      
+       onlyOnPlatforms=Linux,Windows,AIX
+                                                                                
+// Solaris - uses async-distribution for gateway (accomodates slower systems) 
+parReg/wan/hct_async.conf
+       wanSites=1,2,3 bridgeVMsPerHost=2 edgeVMsPerHost=1 edgeThreadsPerVM=1 
+       onlyOnPlatforms=SunOS
+                                                                                
+// Linux,Windows version - uses sync distribution for gateway 
+parReg/wan/hct.conf
+       wanSites=1,2,3 bridgeVMsPerHost=2 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       onlyOnPlatforms=Linux,Windows,AIX                                                                                 
+// Solaris - uses async-distribution for gateway (accomodates slower systems)
+parReg/wan/hct_async.conf
+       wanSites=1,2 bridgeVMsPerHost=2 edgeVMsPerHost=3 edgeThreadsPerVM=2      
+       onlyOnPlatforms=SunOS
+parReg/wan/hct_async.conf
+       wanSites=3 bridgeVMsPerHost=2 edgeVMsPerHost=2 edgeThreadsPerVM=2      
+       onlyOnPlatforms=SunOS
+
+// ParReg EntryEvent (Listener) tests
+parReg/event/serialParRegEntryEvent.conf
+parReg/event/concParRegEntryEvent.conf
+parReg/event/concParRegEntryEventStopStart.conf
+parReg/event/serialMultiListener.conf
+
+// p2p WAN tests
+parReg/wan/p2p.conf
+       wanSites=2,3 peerVMsPerHost=3 peerThreadsPerVM=2
+parReg/wan/p2pkill.conf
+       wanSites=2   peerVMsPerHost=3 peerThreadsPerVM=2
+
+// WBCL (event) tests (new in 6.6.2)
+parReg/event/serialWBCLEvent.conf
+   A=wbcl wbclHosts=1 wbclVMsPerHost=1 wbclThreadsPerVM=2
+   B=peer peerHosts=1 peerVMsPerHost=3 peerThreadsPerVM=2
+
+parReg/event/concWBCLEvent.conf
+   A=wbcl wbclHosts=1 wbclVMsPerHost=1 wbclThreadsPerVM=2
+   B=peer peerHosts=1 peerVMsPerHost=3 peerThreadsPerVM=2
+
+// We do not expect 7.0 <=> 7.5 peers to be backward compatible
+// backward compatibility with minor versions and persistence 
+//parReg/serialParRegMinorVersionCompatibility.conf 
+   //peerHosts=3 peerVMsPerHost=1 peerThreadsPerVM=2 redundantCopies=2
+   //oldVersion=700
+
+// We do not expect 7.0 <=> 7.5 peers to be backward compatible
+// backward compatibility with minor versions and persistence 
+//parReg/serialParRegPersistMinorVersionCompatibility.conf 
+   //peerHosts=3 peerVMsPerHost=1 peerThreadsPerVM=2 redundantCopies=2
+   //oldVersion=700
+
+parReg/serialParRegConcMapOps.conf peerHosts=3 peerVMsPerHost=3 peerThreadsPerVM=2 redundantCopies=1
+

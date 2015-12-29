@@ -1,0 +1,176 @@
+<FindBugsFilter>
+
+<!-- ========================================================== -->
+<!-- Try to keep the codes in alphabetical order... -->
+
+<!-- I don't think that exposing internal implementation is a big worry for us -->
+     <Match>
+       <Bug pattern="EI_EXPOSE_REP" /> <!-- EI TODO-doesn't work yet -->
+     </Match>
+
+     <Match>
+       <Bug pattern="EI_EXPOSE_REP2" /> <!-- EI2 TODO-doesn't work yet -->
+     </Match>
+
+<!-- Ignore "apparent infinite loop" -->
+     <Match>
+       <Bug pattern="IL_INFINITE_LOOP" /> <!-- IL TODO-doesn't work yet -->
+     </Match>
+
+<!-- We already have Eclipse warning about field masking; no need getting
+     this noise reported twice. -->
+     <Match>
+       <Bug pattern="MF_CLASS_MASKS_FIELD" /> <!-- MF -->
+     </Match>
+
+<!-- Ignore "is transient but isn't set by deserialization  -->
+     <Match>
+       <Bug pattern="SE_TRANSIENT_FIELD_NOT_RESTORED" /> <!-- Se TODO-doesn't work yet -->
+     </Match>
+
+<!-- Ignore "consider declaring a serialVersionUID -->
+     <Match>
+       <Bug pattern="SE_NO_SERIALVERSIONID" /> <!-- SnVI TODO-doesn't work yet -->
+     </Match>
+
+<!-- Eclipse already flags unused private methods -->
+     <Match>
+       <Bug pattern="UPM_UNCALLED_PRIVATE_METHOD" /> <!-- UPM -->
+     </Match>
+
+<!-- Eclipse already flags unused private fields -->
+     <Match>
+       <Bug pattern="UUF_UNREAD_FIELD" /> <!-- UuF -->
+     </Match>
+
+<!-- ========================================================== -->
+
+<!-- Specific exceptions below -->
+
+<!-- There's weirdness in this package, but...really, we don't care -->
+     <Match>
+       <Package name="~com\.gemstone\.net\.sourceforge\.blowfishj\..*" />
+     </Match>
+
+<!-- findbugs is only run on the src project, so it's doesn't know that
+     this field is modified from the tests tree -->
+     <Match>
+       <Class name="com.gemstone.gemfire.distributed.internal.DistributionManager" />
+       <Bug pattern="MS_SHOULD_BE_FINAL" /> <!-- MS TODO-doesn't work yet -->
+     </Match>
+     <Match>
+       <Class name="com.gemstone.gemfire.distributed.internal.membership.jgroup.JGroupMembershipManager" />
+       <Bug pattern="MS_SHOULD_BE_FINAL" /> <!-- MS TODO-doesn't work yet -->
+     </Match>
+     <Match>
+       <Class name="com.gemstone.gemfire..internal.cache.GemFireCache" />
+       <Bug pattern="MS_SHOULD_BE_FINAL" /> <!-- MS -->
+     </Match>
+     <Match>
+       <Class name="com.gemstone.gemfire.internal.cache.tier.sockets.ConnectionImpl" />
+       <Bug pattern="MS_SHOULD_BE_FINAL" /> <!-- MS -->
+     </Match>
+     <Match>
+       <Class name="com.gemstone.gemfire.internal.cache.tier.sockets.ConnectionProxyImpl" />
+       <Bug pattern="MS_SHOULD_BE_FINAL" /> <!-- MS -->
+     </Match>
+     <Match>
+       <Class name="com.gemstone.gemfire.internal.OSProcess" />
+       <Bug pattern="MS_SHOULD_BE_FINAL" /> <!-- MS -->
+     </Match>
+
+<!-- These switch fall-throughs are already noted by Eclipse.  Don't need
+     to hear this twice. -->
+     <Match>
+       <Class name="com.gemstone.gemfire.cache.query.internal.index.RangeIndex" />
+       <Bug pattern="SF_SWITCH_FALLTHROUGH" /> <!-- SF TODO-Doesn't work yet -->
+     </Match>
+     <Match>
+       <Class name="com.gemstone.gemfire.cache.Oplog" />
+       <Bug pattern="SF_SWITCH_FALLTHROUGH" /> <!-- SF -->
+     </Match>
+     <Match>
+       <Class name="com.gemstone.gemfire.org.jgroups.blocks.ConnectionTableNIO" />
+       <Bug pattern="SF_SWITCH_FALLTHROUGH" /> <!-- SF -->
+     </Match>
+     <Match>
+       <Class name="com.gemstone.gemfire.org.jgroups.protocols.VERIFY_SUSPECT" />
+       <Bug pattern="SF_SWITCH_FALLTHROUGH" /> <!-- SF -->
+     </Match>
+
+<!-- Yes, we have a few occurrences of System.gc() -->
+     <Match>
+       <Class name="com.gemstone.gemfire.internal.admin.remote.RemoteGfManagerAgent" />
+       <Method name="connectToDS" />
+       <Bug pattern="DM_GC" /> <!-- Dm TODO-doesn't work yet -->
+     </Match>
+     <Match>
+       <Class name="com.gemstone.gemfire.SystemFailure" />
+       <Method name="emergencyClose" />
+       <Bug pattern="DM_GC" /> <!-- Dm TODO-doesn't work yet -->
+     </Match>
+     <Match>
+       <Class name="com.gemstone.org.jgroups.util.Util" />
+       <Method name="memStats" />
+       <Bug pattern="DM_GC" /> <!-- Dm TODO-doesn't work yet -->
+     </Match>
+
+<!-- Explicit references to System.exit() -->
+     <Match>
+       <Class name="com.gemstone.gemfire.admin.GemFireClientAdminTool" />
+       <Method name="init" />
+       <Bug pattern="DM_EXIT" /> <!-- Dm TODO-doesn't work yet -->
+     </Match>
+     <Match>
+       <Class name="~com\.gemstone\.gemfire\.internal\.gui\.Navigator\$\d+" />
+       <Method name="run" />
+       <Bug pattern="DM_EXIT" /> <!-- Dm -->
+     </Match>
+
+<!-- Explicit shortcut compares strings by identity *before*
+     comparing by value -->
+     <Match>
+       <Class name="com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember" />
+       <Method name="compareTo" />
+       <Bug pattern="ES_COMPARING_STRINGS_WITH_EQ" /> <!-- ES -->
+     </Match>
+
+<!-- ========================================================== -->
+<!-- Some examples, if needed... -->
+
+<!--
+     <Match>
+       <Class name="com.foobar.ClassNotToBeAnalyzed" />
+     </Match>
+
+     <Match>
+       <Class name="com.foobar.ClassWithSomeBugsMatched" />
+       <Bug code="DE,UrF,SIC" />
+     </Match>
+
+Match all XYZ violations.
+     <Match>
+       <Bug code="XYZ" />
+     </Match>
+
+Match all doublecheck violations in these methods of "AnotherClass".
+     <Match>
+       <Class name="com.foobar.AnotherClass" />
+       <Or>
+         <Method name="nonOverloadedMethod" />
+         <Method name="frob" params="int,java.lang.String" returns="void" />
+         <Method name="blat" params="" returns="boolean" />
+       </Or>
+       <Bug code="DC" />
+     </Match>
+
+A method with a dead local store false positive (medium priority).
+     <Match>
+       <Class name="com.foobar.MyClass" />
+       <Method name="someMethod" />
+       <Bug pattern="DLS_DEAD_LOCAL_STORE" />
+       <Priority value="2" />
+     </Match>
+-->
+</FindBugsFilter>
+

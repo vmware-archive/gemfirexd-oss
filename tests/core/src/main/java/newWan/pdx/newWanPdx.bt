@@ -1,0 +1,64 @@
+//serial
+newWan/pdx/p2pPdx.conf
+        wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+        peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 2
+
+newWan/pdx/p2pKillPdx.conf
+        wanSites = 2,3,4 maxOps=1000 resultWaitSec=600
+        peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5
+
+parReg/newWan/serial/pdx/p2pPdx.conf
+        wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+        peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 2
+
+parReg/newWan/serial/pdx/p2pKillPdx.conf
+        wanSites = 2,3,4 maxOps=1000 resultWaitSec=600
+        peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5
+        
+newWan/pdx/hctPdx.conf
+        wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+        bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+        edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+newWan/pdx/hctKillPdx.conf
+        wanSites = 2,3,4 maxOps=1000 resultWaitSec=600
+        bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+        edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/serial/pdx/hctPdx.conf
+        wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+        bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+        edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/serial/pdx/hctKillPdx.conf
+        wanSites = 2,3,4 maxOps=1000 resultWaitSec=600  
+        bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+        edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+        
+parReg/newWan/serial/pdx/p2pMultipleRegionPdx.conf
+        wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+        peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 2
+
+//parallel
+parReg/newWan/parallel/pdx/p2pPdx.conf
+        wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+        peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+
+parReg/newWan/parallel/pdx/p2pKillPdx.conf
+        wanSites = 2,3,4 maxOps=1000 resultWaitSec=600
+        peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5
+
+parReg/newWan/parallel/pdx/hctPdx.conf
+        wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+        bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+        edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/parallel/pdx/hctKillPdx.conf
+        wanSites = 2,3,4 maxOps=1000 resultWaitSec=600
+        bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+        edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+        
+parReg/newWan/parallel/pdx/p2pMultipleRegionPdx.conf
+        wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+        peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+

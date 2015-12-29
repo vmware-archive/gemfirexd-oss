@@ -1,0 +1,14 @@
+A = accessor
+accessorHosts        = 1
+accessorVMsPerHost   = 1
+accessorThreadsPerVM = 2
+B = data
+dataHosts          = 1
+dataVMsPerHost     = 1
+dataThreadsPerVM   = 1
+
+conserveSockets = false
+
+dataSize = 1024
+
+perffmwk.comparisonKey = perf050

@@ -1,0 +1,24 @@
+api=GFXD
+
+txIsolation = none
+
+clientVMs = 1
+etlClientThreads = 1
+meClientThreads = 1
+
+inclientHeapMB = 256
+outclientHeapMB = 256
+etlclientHeapMB = 256
+serverHeapGB = 32
+
+heapPercentage = 60
+
+batchSize = 1000
+numSectChannelDataRows = 1000000
+
+trimSeconds =  60
+workSeconds = 300
+
+logQueries = false
+
+perffmwk.comparisonKey = useCase1

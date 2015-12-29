@@ -1,0 +1,34 @@
+
+This example shows the operation of a partitioned region on two VMs.
+
+Connecting to the distributed system and creating the cache.
+
+Example region, PartitionedRegion, created in cache.
+Please start VM2.
+Putting 3 entries into PartitionedRegion. . .
+
+     Putting entry: key0, value0
+
+     Putting entry: key1, value1
+
+     Putting entry: key2, value2
+
+Please press Enter in VM2.
+Destroying and invalidating entries in PartitionedRegion. . .
+
+     Destroying key0
+
+     Invalidating key1
+
+Please press Enter in VM2 again.
+
+^\[warning.*PartitionedRegion.*PartitionedRegion Message Processor.*\] .*Redundancy has dropped below 1 configured copies to 0 actual copies for /PartitionedRegion
+Getting 3 entries from PartitionedRegion after VM2 is closed. . .
+
+     Getting key key0: null
+
+     Getting key key1: null
+
+     Getting key key2: value2
+
+Closing the cache and disconnecting.

@@ -1,0 +1,3 @@
+Runs very simple and small memory measurement test for Bug 40972, using a single JVM.
+
+Used to compare footprint of RR and PR to previous builds.  Can also use it to look at RR vs PR (using VSD).

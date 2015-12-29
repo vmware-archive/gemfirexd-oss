@@ -1,0 +1,26 @@
+In order to install these commands and make them available from within Gfsh you
+will need to do the following:
+
+1. Download jsch-0.1.49.jar from http://www.jcraf.com/jsch to the same
+   directory as this readme.  If the current version is different, then
+   download the latest verion and modify build.xml to match.
+
+2. Ensure that Java and Ant are in your command path and build the Jar file
+   using "ant jar".
+
+3. Copy the build-artifacts/gfcommands.jar and jsch-0.1.49.jar files to 
+   $GEMFIRE/lib/ext.  You'll probably need to create the directory first.
+
+4. Set the JAVA_ARGS enviroment variable to identify the package where the
+   user commands can be found.  On *NIX systems this should work:
+   "export JAVA_ARGS=-Dgemfire.user-command-packages=templates/commands"
+
+5. Change directories to $GEMFIRE/bin and run "gfsh".
+
+6. Run the "start remote-locator" or "start remote-server" commands.  You'll
+   probably want to start the locator and then server using commands that
+   look like this:
+   "start remote-locator --host=myhost --user=myuser --password=mypassword
+    --gemfire-bin=/usr/local/gemfire/bin --name=mylocator"
+   "start remote-locator --host=myhost --user=myuser --password=mypassword
+    --gemfire-bin=/usr/local/gemfire/bin --name=myserver"

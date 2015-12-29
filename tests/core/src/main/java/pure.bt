@@ -1,0 +1,30 @@
+// HOW TO RUN
+
+// Tests can be run in pure java mode using a system property for VMs.
+// Add this to the local.conf file in the directory where battery test is run:
+//
+//    hydra.VmPrms-extraVMArgs += "-Dgemfire.pureJavaMode=true";
+//
+// Alternatively, use the PureJava snapshot in:
+//     /gcm/where/gemfire/3X/snaps.PureJava/snapshots
+//
+// Some tests use 3 gemfire systems, which may be spread across multiple
+// machines by adding this to the local.conf:
+//
+//    hydra.HostPrms-hostNames = hotrod stealth spiroc;   (for example)
+//
+// The tests in this bt file should be run multiple times, since they randomly
+// choose values for various region attributes and other config parameters.
+// When invoking batterytest, use the option:
+//    -DnumTimesToRun=<a number>
+
+
+event/concEntryEvent.conf 
+event/concRegionEvent.conf 
+
+capCon/concLRUTest.conf hydra.numHosts = 1 vmQuantities = 10 vmThreads = 5 
+capCon/concLRUDynamic.conf vmQuantities = 7 vmThreads = 4
+capCon/concLRUDynamic.conf vmQuantities = 1 vmThreads = 50
+
+
+

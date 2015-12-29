@@ -1,0 +1,119 @@
+SET CURRENT SCHEMA=SEC_OWNER;
+
+INSERT
+INTO
+  SECM_PREMATCH_TRANSFORMATION
+  (
+    ACTION_KEY,
+    ACTION_NAME,
+    DESCRIPTION,
+    ONBOARD_DATE,
+	END_DATE,
+    LAST_UPDATE_BY,
+    LAST_UPDATE_DATE
+  )
+  VALUES
+  (
+    'ACTION_NONE',
+    'NONE',
+    'No additional action is required before matching',
+    CURRENT TIMESTAMP,
+	TIMESTAMP('2020-03-19', '00:00:00'),
+    'SEC_SYS',
+    CURRENT TIMESTAMP
+  );
+  
+INSERT
+INTO
+  SECM_PREMATCH_TRANSFORMATION
+  (
+    ACTION_KEY,
+    ACTION_NAME,
+    DESCRIPTION,
+    ONBOARD_DATE,
+	END_DATE,
+    LAST_UPDATE_BY,
+    LAST_UPDATE_DATE
+  )
+  VALUES
+  (
+    'ACTION_TRIM_LEADING_SPACE',
+    'TRIM_LEADING_SPACE',
+    'To remove the leading space of the matching keys',
+    CURRENT TIMESTAMP,
+	TIMESTAMP('2020-03-19', '00:00:00'),
+    'SEC_SYS',
+    CURRENT TIMESTAMP
+  );
+
+INSERT
+INTO
+  SECM_PREMATCH_TRANSFORMATION
+  (
+    ACTION_KEY,
+    ACTION_NAME,
+    DESCRIPTION,
+    ONBOARD_DATE,
+	END_DATE,
+    LAST_UPDATE_BY,
+    LAST_UPDATE_DATE
+  )
+  VALUES
+  (
+    'ACTION_TRIM_LEADING_TAB',
+    'TRIM_LEADING_TAB',
+    'To remove the leading tab of the matching keys',
+    CURRENT TIMESTAMP,
+	TIMESTAMP('2020-03-19', '00:00:00'),
+    'SEC_SYS',
+    CURRENT TIMESTAMP
+  );
+
+
+  INSERT
+  INTO
+    SECM_PREMATCH_TRANSFORMATION
+    (
+      ACTION_KEY,
+      ACTION_NAME,
+      DESCRIPTION,
+      ONBOARD_DATE,
+  	END_DATE,
+      LAST_UPDATE_BY,
+      LAST_UPDATE_DATE
+    )
+    VALUES
+    (
+      'ACTION_CLIENT_ACCOUNT_NUMBER_IPAY',
+      'EXTRACT_ACCOUNT_NUMBER_IPAY',
+      'To extract client account number based on entity value',
+      CURRENT TIMESTAMP,
+  	TIMESTAMP('2020-03-19', '00:00:00'),
+      'SEC_SYS',
+      CURRENT TIMESTAMP
+    );
+
+
+
+    INSERT
+    INTO
+      SECM_PREMATCH_TRANSFORMATION
+      (
+        ACTION_KEY,
+        ACTION_NAME,
+        DESCRIPTION,
+        ONBOARD_DATE,
+    	END_DATE,
+        LAST_UPDATE_BY,
+        LAST_UPDATE_DATE
+      )
+      VALUES
+      (
+        'ACTION_EXTRACT_COMPANY_ID_IPAY',
+        'EXTRACT_COMPANY_ID_IPAY',
+        'To extract company id',
+        CURRENT TIMESTAMP,
+    	TIMESTAMP('2020-03-19', '00:00:00'),
+        'SEC_SYS',
+        CURRENT TIMESTAMP
+      );

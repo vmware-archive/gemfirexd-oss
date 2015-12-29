@@ -1,0 +1,6 @@
+cacheperf/comparisons/useCase17/txuseCase17.conf
+  scope = noAck,ack
+  pubHosts = 1         pubVMsPerHost = 1       pubThreadsPerVM = 1,2,4
+  subHosts = 1,2,4,8   subVMsPerHost = 1,2,4,8 subThreadsPerVM = 1
+  messageSize = 0,512 sleepBeforeOp = false,true
+  perffmwk.comparisonKey = autogenerate

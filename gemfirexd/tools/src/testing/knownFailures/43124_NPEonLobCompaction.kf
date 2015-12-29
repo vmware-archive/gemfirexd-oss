@@ -1,0 +1,3 @@
+Caused by: java.lang.NullPointerException
+        at com.pivotal.gemfirexd.internal.engine.store.RowFormatter.getColumn(RowFormatter.java:1505)
+        at com.pivotal.gemfirexd.internal.engine.store.CompactExecRowWithLobs.basicGetColumn(CompactExecRowWithLobs.java:163)

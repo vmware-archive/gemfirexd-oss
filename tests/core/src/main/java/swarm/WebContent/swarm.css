@@ -1,0 +1,255 @@
+@CHARSET "ISO-8859-1";
+
+body {
+	font-family: "Lucida Grand","Lucida Grande",verdana,helvetica, arial;
+	text-align:center;
+	background-color: #DFD3B6; 
+}
+table {
+	background-color: black;
+}
+
+th {
+	background-color: #0092B2;
+	color: white;
+	font-size: 0.8em;
+}
+td {
+	background-color: white;
+padding-left:10px;
+padding-right:10px;
+margin:20px;
+color: black;
+}
+
+a { color: black; }
+h1 { background-color: #FFFFFF; color: #0092B2; text-align:left; padding:10px; font-size:1.5em;margin:0px; padding-left:0px;padding-top:0px;}
+h2 { background-color: #FFFFFF; color: #0092B2; text-align:left; padding:10px; font-size:0.8em;margin:0px; padding-left:0px;padding-top:0px;}
+h2 a { color: #0092B2; }
+h1 a { color: #0092B2; }
+div.resultbox,div.container {
+	padding:10px;
+	border: 2px solid black;
+	margin:auto;
+	width: 850px;
+	margin-bottom:10px;
+	text-align:left;
+	}
+div.resultbox {
+	background-color: white;
+}
+div.container {
+	padding:0px;
+	width: 870px;
+}
+	
+div.dunitMethodResult {
+	width: 860px;
+	border-bottom: 3px dashed black;
+	margin-bottom: 10px;
+	}
+	
+div.leftResult {
+	width:220px;
+	float: left;
+	text-align:right;
+	line-height:1.1em;
+}
+
+div.rightResult {
+	float:left;
+	width:620px;
+	margin-left:20px;
+	line-height:1.1em;
+}
+
+div.statuspass,div.statusfail {
+	text-align:center;
+	padding:10px;
+	font-size:1.2em;
+	font-weight: bold;
+	background-color: #A8C545;
+}
+
+td.failtd,td.passtd { font-weight: bold; }
+
+td.failtd { 
+	background-color: #776045;
+	color: white;
+}
+td.failtd a {
+	color: white;
+}
+
+td.passtd { 
+	background-color: #A8C545;
+}
+
+a.smalllink {
+	font-size:0.6em;
+	font-weight:normal;
+	}
+
+div.statusfail {
+	background-color: #776045;
+	color: white;
+}
+div.statusfail a { 
+	color: white;
+}
+
+div.runInfo {
+	font-size:0.6em;
+}
+
+div.runInfo label {
+	font-weight:bold;
+}
+
+div.timestamp {
+	padding-top: 10px;
+	padding-bottom: 10px;
+	font-size:1.2em;
+	font-weight:bold;
+}
+
+
+
+div.classLabel {
+	font-weight:bold;
+	text-align:left;
+	font-size:0.8em;
+}
+
+div.methodLabel {
+	font-weight:bold;
+	text-align:left;
+}
+
+div.errorText {
+	font-size: 0.6em;
+	color: #776045;
+	padding:5px;
+	padding-bottom:10px;
+	text-align:left;
+}
+
+
+div.bigErrorText {
+	font-size: 1.0em;
+	line-height: 1.2em;
+	padding-left: 10px;
+	padding-right:10px;
+	color: black;
+	padding:5px;
+	padding-bottom:10px;
+	text-align:left;
+	padding-left:15px;
+	padding-right:15px;
+}
+
+
+
+div.errorText a {
+	text-decoration: none;
+	color: #776045;
+}
+
+div.fs {
+	clear: both;
+	height: 1px;
+}
+
+div.activetab,div.inactivetab {
+	float:left;
+	width:190px;
+	margin-right:10px;
+	padding:5px;
+	-moz-border-radius-topleft:10px;
+	-webkit-border-top-left-radius:10px;
+	-moz-border-radius-topright:10px;
+	-webkit-border-top-right-radius:10px;
+	font-weight:bold;
+	}
+	
+div.resulttabs,div.tabholder {
+	margin-bottom: 0px;
+	padding:0px;
+	width: 870px;
+	margin:0px;
+	margin:auto;
+}
+
+div.activetab {
+	color: white;
+	background-color: #0092B2;
+	border: 1px solid #0092B2;
+	}
+div.activetab a {
+	color: white;
+}
+	
+div.inactivetab  {
+	background-color:white;
+	border: 1px solid #0092B2;
+	color: #0092B2;
+	}
+
+div.inactivetab a {
+	color: black;
+	}
+	
+	
+div.toolbar {
+	margin:auto;
+	background-color: #0092B2;
+	border: 5px solid white;
+	height:30px;
+	padding:10px;
+	font-weight: bold;
+	color: white;
+	margin-bottom:30px;
+	width: 840px;
+}
+
+div.toolbar div.section {
+	font-size:1.3em;
+	float:left;
+	width:260px;
+	text-align:left;
+}
+div.toolbar div.selectsection {
+	float:left;
+	width:500px;
+}
+div.toolbar div.section a {
+	color: white;
+	}
+	
+table.passsummary {
+	color: black;
+	border-bottom:1px solid #A8C545;
+	padding:5px;
+	text-align:left;
+	}
+table.passsummary tbody {
+	font-size:0.6em;
+}
+table.passsummary a {
+	color: #A8C545;
+	font-weight: bold;
+}
+	
+div.pad {
+	padding:10px;
+	background-color: white;
+	width: 850px;
+	}
+	
+div.container h1 {
+	border-bottom: 2px solid #0092B2;
+	margin-bottom:10px;
+	}
+div.resultbox h1 {
+	margin-bottom:10px;
+	}

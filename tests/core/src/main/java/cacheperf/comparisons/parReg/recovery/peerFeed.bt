@@ -1,0 +1,16 @@
+cacheperf/comparisons/parReg/recovery/peerFeedDataGet.conf
+  dataHosts    = 8 dataVMsPerHost    = 1 dataThreadsPerVM    = 1
+  feedHosts    = 8 feedVMsPerHost    = 1 feedThreadsPerVM    = 5
+  maxKeys = 500000 objectSize = 1024 heapMB = 1500
+  redundantCopies = 1
+  conserveSockets = false
+  workSeconds = 600
+  perffmwk.comparisonKey = pr1_get_08_08_05
+cacheperf/comparisons/parReg/recovery/peerFeedDataPut.conf
+  dataHosts    = 8 dataVMsPerHost    = 1 dataThreadsPerVM    = 1
+  feedHosts    = 8 feedVMsPerHost    = 1 feedThreadsPerVM    = 5
+  maxKeys = 500000 objectSize = 1024 heapMB = 1500
+  redundantCopies = 1
+  conserveSockets = false
+  workSeconds = 600
+  perffmwk.comparisonKey = pr1_put_08_08_05

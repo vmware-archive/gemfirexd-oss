@@ -1,0 +1,68 @@
+sql/sqlEviction/evictionOverflowHA.conf
+   A=store
+   B=accessor
+   accessorHosts=1
+   accessorThreadsPerVM=10
+   accessorVMsPerHost=6
+   dropIndex=true
+   maxHeapSize=128
+   redundantCopies=3
+   setCriticalHeap=false
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=3
+   useHeapPercentage=false
+sql/sqlDisk/randomPartitionOfflinePersistTablesHA.conf
+   A=store
+   B=accessor
+   accessorHosts=1
+   accessorThreadsPerVM=6
+   accessorVMsPerHost=3
+   dropIndex=true
+   redundantCopies=3
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=5
+sql/dbCache/dbCacheEvictionDestroy.conf
+   A=store
+   B=accessor
+   accessorHosts=1
+   accessorThreadsPerVM=6
+   accessorVMsPerHost=3
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=1
+sql/concGfxdNonUniqProcedureWithAccessorsHA.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=10
+   accessorVMsPerHost=6
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=2
+   redundantCopies=1
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=7
+sql/randomPartitionClauseUniqSelectIntoWithAccessorsHA.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=10
+   accessorVMsPerHost=3
+   redundantCopies=2
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=9
+sql/sqlDisk/randomPartitionOfflinePersistTablesHA.conf
+   A=store
+   B=accessor
+   accessorHosts=1
+   accessorThreadsPerVM=6
+   accessorVMsPerHost=3
+   dropIndex=true
+   redundantCopies=1
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=3

@@ -1,0 +1,14 @@
+A = useCase1Server
+    useCase1ServerHosts = 1
+    useCase1ServerVMsPerHost = 1
+    useCase1ServerThreadsPerVM = 1
+
+B = feed
+    feedHosts = 1
+    feedVMsPerHost = 1
+    feedThreadsPerVM = 1
+
+C = edge
+    edgeHosts = 1
+    edgeVMsPerHost = 1
+    edgeThreadsPerVM = 1

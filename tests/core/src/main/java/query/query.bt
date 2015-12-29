@@ -1,0 +1,37 @@
+query/serialQueryEntry.conf
+query/serialQueryIndexEntry.conf
+query/serialCountQueryEntry.conf
+query/serialCountQueryIndexEntry.conf
+query/concQueryEntry.conf
+query/concQueryIndexEntry.conf
+
+//Apply a limit clause to each query
+//query/concQueryEntryWithLimit.conf queryLimit=10
+query/concQueryIndexEntryWithLimit.conf queryLimit=10
+
+// Index creation as part of GII.
+query/indexCreationAsPartOfGII.conf
+query/indexCreationAsPartOfGIIWithConcCacheOp.conf
+
+query/index/concIndexUpdatesValidationPartitioned.conf
+query/index/concIndexUpdatesValidationReplicated.conf
+query/index/concIndexUpdatesValidationReplicatedOverflow.conf
+query/index/serialQueryIndexValidationPartitioned.conf
+query/index/serialQueryIndexValidationReplicated.conf
+
+//Hash index tests
+query/index/concHashIndexUpdatesValidationPartitioned.conf
+query/index/concHashIndexUpdatesValidationReplicated.conf
+query/index/concHashIndexUpdatesValidationReplicatedOverflow.conf
+query/index/serialQueryHashIndexValidationPartitioned.conf
+query/index/serialQueryHashIndexValidationReplicated.conf
+
+// Query tests using FunctionContext API
+INCLUDE $JTESTS/query/context/queryContext.bt
+
+// Query tests with recycling VMs.
+INCLUDE $JTESTS/query/queryRecycleVM.bt
+
+//Index update with multiple threads
+query/index/concIndexUpdatesMultipleThreads.conf
+

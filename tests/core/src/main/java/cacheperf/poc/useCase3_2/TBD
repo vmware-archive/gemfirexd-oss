@@ -1,0 +1,71 @@
+multithread the register interest bins
+remove stats from locators and other vm types if unused
+
+================================================================================
+USE CASE 3_2
+================================================================================
+
+Need to have servers and clients use subset of regions
+        datahosts have mutually exclusive subsets of rrs
+        datahosts have all prs
+        servers have all regions
+Need to tune maxKeys in useCase3.conf
+        load 1.5 GB total data into each datahost
+Need to tune heaps to reasonable values in useCase3.prop
+Need to set up proper numbers of hosts in local.conf
+        ideally two servers with 8 cores and 32 GB RAM
+Need to have clients register interest in subset
+        each uses a subset of regions, some rr, some pr
+        end up with 400K data each without eviction
+
+REGISTER INTEREST AFTER FEED LOADS DATA AND WATCH FOR OOM IN CLIENTS
+
+RUN ON 32-bit JROCKIT 1.6.0_27
+
+RUN FOR 4 HOURS
+
+================================================================================
+STRESS TEST DESCRIPTION based on meeting with Suds Fri 07/16/10
+================================================================================
+base on UseCase3 use case
+not a performance test, just stress/mtbf, no functional validation
+
+32-bit
+
+multiple regions
+pr redundancy 1 for all prs
+make some regions persistent
+
+not all servers have all regions
+750 MB of data per server including redundance/replication
+conserve-sockets false
+
+up to 2000 clients
+all clients have all regions
+various register interest
+  10% of clients subscribe to all keys in all regions
+    these have empty caches
+  remainder subscribe to random subset across all regions (use list of keys)
+    and have local cache with eviction using local destroy
+cycle client threads (at what rate?)
+  no hydra thread locals holding connections
+
+operations are replacement puts/putAlls (gets/getAlls as well?)
+  no creates (beyond initialization), destroys, or updates
+operations done by clients and/or feeds
+no eviction
+all operations are throttled, modify 10% of data per hour
+want data to promote to old gen before turning to garbage
+
+use FastAssetAccount
+  no delta
+
+run for 8 hours
+bounce a server then rebalance every hour
+
+check stats
+  garbage profile, long lived garbage
+  load balance, rebalancing
+  queue load
+
+remove excess stats (e.g., updateEvents can be cacheListenerCallsCompleted)

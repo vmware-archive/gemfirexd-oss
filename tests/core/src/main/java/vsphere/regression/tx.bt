@@ -1,0 +1,90 @@
+// conflict tests
+//tx/serialConflictTxOnly.conf hydra.numHosts=2 regionType=localRegion numVMs=1 numThreads=1  totalTaskTimeSec=600
+tx/serialConflictTxOnly.conf hydra.numHosts=1 regionType=localRegion numVMs=1 numThreads=2 totalTaskTimeSec=1800
+threadGroupsName=default
+//tx/serialConflictTxOnly.conf hydra.numHosts=2 regionType=distRegion numVMs=1 numThreads=1  totalTaskTimeSec=1800
+tx/serialConflictTxOnly.conf hydra.numHosts=1 regionType=distRegion numVMs=1 numThreads=2 totalTaskTimeSec=1800
+threadGroupsName=default
+
+//tx/serialConflict.conf hydra.numHosts=2 regionType=localRegion numVMs=1 numThreads=1 totalTaskTimeSec=600
+tx/serialConflict.conf hydra.numHosts=1 regionType=localRegion numVMs=1 numThreads=2 totalTaskTimeSec=1800
+threadGroupsName=default
+//tx/serialConflict.conf hydra.numHosts=2 regionType=distRegion numVMs=1 numThreads=1 totalTaskTimeSec=1800
+tx/serialConflict.conf hydra.numHosts=1 regionType=distRegion numVMs=1 numThreads=2 totalTaskTimeSec=1800
+threadGroupsName=default
+
+// proxy serial conflict tests (dataPolicies vary)
+tx/proxySerialConflict.conf hydra.numHosts=2 regionType=distRegion numVMs=1 numThreads=1 totalTaskTimeSec=1800
+threadGroupsName=default
+//tx/proxySerialConflict.conf hydra.numHosts=2 regionType=distRegion numVMs=1 numThreads=1 totalTaskTimeSec=1800
+//tx/proxySerialConflict.conf hydra.numHosts=2 regionType=distRegion numVMs=1 numThreads=1 totalTaskTimeSec=1800
+
+tx/concConflict.conf
+threadGroupsName=default
+//tx/concNoConflict.conf
+
+// View Tests (includes proxy clients)
+tx/localSerialView.conf 
+threadGroupsName=txThread
+//tx/distSerialView.conf
+//tx/distSerialNonTxSameVmView.conf
+tx/distSerialNonTxDiffVmView.conf
+threadGroupsName=txThread
+
+// collection (region iterators)
+//tx/collectionsTest.conf
+
+// Kill Committing VM during commit
+tx/distIntegrity.conf hydra.numHosts=3 commitStateTrigger=afterReservation
+threadGroupsName=killer
+//tx/distIntegrity.conf hydra.numHosts=3 commitStateTrigger=afterConflictCheck
+tx/distIntegrity.conf hydra.numHosts=3 commitStateTrigger=beforeSend
+threadGroupsName=killer
+//tx/distIntegrity.conf hydra.numHosts=3 commitStateTrigger=duringIndividualSend
+tx/distIntegrity.conf hydra.numHosts=3 commitStateTrigger=afterIndividualSend
+threadGroupsName=killer
+tx/distIntegrity.conf hydra.numHosts=3 commitStateTrigger=duringIndividualCommit
+threadGroupsName=killer
+//tx/distIntegrity.conf hydra.numHosts=3 commitStateTrigger=afterIndividualCommit
+//tx/distIntegrity.conf hydra.numHosts=3 commitStateTrigger=afterApplyChanges
+tx/distIntegrity.conf hydra.numHosts=3 commitStateTrigger=afterReleaseLocalLocks
+threadGroupsName=killer
+//tx/distIntegrity.conf hydra.numHosts=3 commitStateTrigger=afterSend
+
+// Kill Committing PROXY VM during commit
+//tx/proxyDistIntegrity.conf hydra.numHosts=3 commitStateTrigger=afterReservation
+tx/proxyDistIntegrity.conf hydra.numHosts=3 commitStateTrigger=afterConflictCheck
+threadGroupsName=killer
+//tx/proxyDistIntegrity.conf hydra.numHosts=3 commitStateTrigger=beforeSend
+tx/proxyDistIntegrity.conf hydra.numHosts=3 commitStateTrigger=duringIndividualSend
+threadGroupsName=killer
+//tx/proxyDistIntegrity.conf hydra.numHosts=3 commitStateTrigger=afterIndividualSend
+//tx/proxyDistIntegrity.conf hydra.numHosts=3 commitStateTrigger=duringIndividualCommit
+tx/proxyDistIntegrity.conf hydra.numHosts=3 commitStateTrigger=afterIndividualCommit
+threadGroupsName=killer
+tx/proxyDistIntegrity.conf hydra.numHosts=3 commitStateTrigger=afterApplyChanges
+threadGroupsName=killer
+//tx/proxyDistIntegrity.conf hydra.numHosts=3 commitStateTrigger=afterReleaseLocalLocks
+tx/proxyDistIntegrity.conf hydra.numHosts=3 commitStateTrigger=afterSend
+threadGroupsName=killer
+
+//tx/serialConflictTxCheck.conf hydra.numHosts=1 numVMs=1 numThreads=3 totalTaskTimeSec=300
+tx/serialRepeatableRead.conf hydra.numHosts=2 regionType=distRegion numVMs=1 numThreads=1  totalTaskTimeSec=1800
+threadGroupsName=default
+//tx/serialRepeatableRead.conf hydra.numHosts=1 regionType=distRegion numVMs=1 numThreads=2 totalTaskTimeSec=1800
+
+// ParReg Conflict Tests
+//tx/serialParRegConflict.conf 
+  // hydra.numHosts=1 numVMs=1 numThreads=2 redundantCopies = 0
+tx/serialParRegConflict.conf 
+   hydra.numHosts=2 numVMs=1 numThreads=1 redundantCopies = 0
+   threadGroupsName=default
+tx/serialParRegConflict.conf 
+   hydra.numHosts=2 numVMs=1 numThreads=1 redundantCopies = 1
+   threadGroupsName=default
+//tx/serialConflictPrTxOnly.conf hydra.numHosts=1 numVMs=1 numThreads=2 
+tx/serialConflictPrTxCheck.conf hydra.numHosts=1 numVMs=1 numThreads=3
+threadGroupsName=default
+
+tx/prCollectionsTest.conf
+threadGroupsName=default

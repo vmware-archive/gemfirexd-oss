@@ -1,0 +1,210 @@
+// Interest Registration for old and current client
+delta/feederIsCurrentVersionPeer.conf
+  A = bridge  bridgeHosts =  2 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+  B = feed    feedHosts   =  1 feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+  C = edge    edgeHosts   =  2 edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+  D = edgeOld    edgeOldHosts   =  2 edgeOldVMsPerHost   = 1  edgeOldThreadsPerVM   = 1
+  nPutThreads=10 nPutKeyRange=10 version1=default version2=57
+
+// validation for old and current client where feeder is current client
+delta/feederIsCurrentVersionClient.conf
+  A = bridge  bridgeHosts = 2 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+  B = feed    feedHosts   =  1 feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+  C = edge    edgeHosts   =  2 edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+  D = edgeOld    edgeOldHosts   =  2 edgeOldVMsPerHost   = 1  edgeOldThreadsPerVM   = 1
+  nPutThreads=10 nPutKeyRange=10 version1=default version2=57  
+
+// validation for old and current client where feeder is old client
+delta/feederIsOldVersionClient.conf
+  A = bridge  bridgeHosts = 2 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+  B = feed    feedHosts   =  1 feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+  C = edge    edgeHosts   =  2 edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+  D = edgeOld    edgeOldHosts   =  2 edgeOldVMsPerHost   = 1  edgeOldThreadsPerVM   = 1
+  nPutThreads=10 nPutKeyRange=10 version1=default version2=57   
+
+delta/deltaPropagationNoConflation.conf
+  A = bridge  bridgeHosts = 4  bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+  B = feed    feedHosts   = 1  feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+  C = edge    edgeHosts   = 4  edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+  nPutThreads=10 nPutKeyRange=10
+
+delta/deltaPropagationFailoverNoConflation.conf
+  A = bridge  bridgeHosts = 4  bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+  B = feed    feedHosts   = 1  feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+  C = edge    edgeHosts   = 4  edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+  nPutThreads=10 nPutKeyRange=10
+
+delta/deltaPropagationForParRegHABridge.conf
+  A = bridge  bridgeHosts = 2  bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+  B = feed    feedHosts   = 1  feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+  C = edge    edgeHosts   = 4  edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+  nPutThreads=5 nPutKeyRange=10 redundantCopies=1
+
+delta/deltaPropagationForAdjunctMessaging.conf
+  A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=1
+  B = feed    feedHosts   = 1  feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+  C = defaultedge  defaultedgeHosts   = 1  defaultedgeVMsPerHost   = 1  defaultedgeThreadsPerVM   = 1
+  D = emptyedge    emptyedgeHosts   = 1  emptyedgeVMsPerHost   = 1  emptyedgeThreadsPerVM   = 1
+  nPutThreads=5 nPutKeyRange=10  
+
+delta/deltaPropagationFailoverForParRegHABridge.conf
+  A = bridge  bridgeHosts = 4  bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+  B = feed    feedHosts   = 1  feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+  C = edge    edgeHosts   = 4  edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+  nPutThreads=5 nPutKeyRange=10 redundantCopies=3
+  
+delta/deltaPropagationWithOverflow.conf
+  A = bridge  bridgeHosts = 4  bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+  B = feed    feedHosts   = 1  feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+  C = edge    edgeHosts   = 4  edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+  nPutThreads=10 nPutKeyRange=10
+
+delta/deltaPropagationFailoverNoConflationFeederIsPeer.conf
+  A = bridge  bridgeHosts = 4  bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+  B = feed    feedHosts   = 1  feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+  C = edge    edgeHosts   = 4  edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+  nPutThreads=10 nPutKeyRange=10
+
+delta/deltaPropagationFailoverWithDurableClients.conf
+  A = bridge  bridgeHosts = 4  bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+  B = feed    feedHosts   = 1  feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+  C = edge    edgeHosts   = 4  edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+  nPutThreads=10 nPutKeyRange=10
+
+delta/deltaPropagationWithEvictionForParRegHABridge.conf
+  A = bridge  bridgeHosts = 2  bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+  B = feed    feedHosts   = 1  feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+  C = edge    edgeHosts   = 4  edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+  nPutThreads=2 nPutKeyRange=25 redundantCopies=1
+
+delta/deltaPropagationFailoverFeederIsAccessor.conf
+  A = bridge  bridgeHosts = 4  bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+  B = feed    feedHosts   = 1  feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+  C = edge    edgeHosts   = 4  edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+  nPutThreads=5 nPutKeyRange=10 redundantCopies=3
+
+delta/deltaPropagationWithFailuresInC2S.conf
+  A = bridge  bridgeHosts = 1  bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+  B = feed    feedHosts   = 1  feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+  C = edge    edgeHosts   = 1  edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+  nPutThreads=1 nPutKeyRange=1
+
+delta/deltaPropagationWithFailuresInS2C.conf
+  A = bridge  bridgeHosts = 1  bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+  B = feed    feedHosts   = 1  feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+  C = edge    edgeHosts   = 1  edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+  nPutThreads=1 nPutKeyRange=1
+
+delta/deltaPropagationWithFailuresInP2P.conf
+  A = bridge  bridgeHosts = 4  bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+  B = feed    feedHosts   = 1  feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+  C = edge    edgeHosts   = 1  edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+  nPutThreads=1 nPutKeyRange=1
+
+delta/concDeltaReplicatePeer.conf
+   peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=4
+delta/concDeltaReplicateBridge.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=4
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=4
+delta/concDeltaPRPeer.conf
+   A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=1
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=1
+   redundantCopies = nonZero
+delta/concDeltaPRBridge.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=4
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=4
+   redundantCopies = nonZero
+
+delta/ensureNoDeltaWithNoAckPeer.conf
+   peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=4
+delta/ensureNoDeltaWithNoAckBridge.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=4
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=4
+delta/ensureNoDeltaWithDeltaOffPeer.conf
+   peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=4
+delta/ensureNoDeltaWithDeltaOffBridge.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=4
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=4
+
+delta/deltaPrCq.conf
+   A=serverGroup1 serverGroup1Hosts=1 serverGroup1VMsPerHost=1 serverGroup1ThreadsPerVM=1
+   B=serverGroup2 serverGroup2Hosts=1 serverGroup2VMsPerHost=1 serverGroup2ThreadsPerVM=1
+   C=serverGroup3 serverGroup3Hosts=1 serverGroup3VMsPerHost=1 serverGroup3ThreadsPerVM=1
+   D=edgeClient1 edgeClient1Hosts=1 edgeClient1VMsPerHost=1 edgeClient1ThreadsPerVM=1
+   E=edgeClient2 edgeClient2Hosts=1 edgeClient2VMsPerHost=1 edgeClient2ThreadsPerVM=1
+   cloningEnabled= true, false
+
+delta/serialDeltaCQBridge.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   cloningEnabled = true, false
+
+delta/deltaReplicateCq.conf
+   A=serverGroup1 serverGroup1Hosts=1 serverGroup1VMsPerHost=1 serverGroup1ThreadsPerVM=1
+   B=serverGroup2 serverGroup2Hosts=1 serverGroup2VMsPerHost=1 serverGroup2ThreadsPerVM=1
+   C=serverGroup3 serverGroup3Hosts=1 serverGroup3VMsPerHost=1 serverGroup3ThreadsPerVM=1
+   D=edgeClient1 edgeClient1Hosts=1 edgeClient1VMsPerHost=1 edgeClient1ThreadsPerVM=1
+   E=edgeClient2 edgeClient2Hosts=1 edgeClient2VMsPerHost=1 edgeClient2ThreadsPerVM=1
+   cloningEnabled= true, false
+
+delta/serialDeltaCQBridgePR.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   cloningEnabled = true, false
+delta/concDeltaCQBridge.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   cloningEnabled = true, false
+delta/concDeltaCQBridgePR.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   cloningEnabled = true, false
+
+delta/serialDeltaCQBridgeHA.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   redundancyLevel = 4 cloningEnabled = true, false
+delta/serialDeltaCQBridgePRHA.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   redundancyLevel = 3 redundantCopies = 3
+   cloningEnabled = true, false
+delta/concDeltaCQBridgeHA.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundancyLevel = 4
+   cloningEnabled = true, false
+delta/concDeltaCQBridgePRHA.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundancyLevel = 3 redundantCopies = 3
+   cloningEnabled = true, false
+
+// Concurrent Peer tx tests
+//disable for #44146
+//delta/tx/concDeltaReplicatePeer.conf
+//   peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=4
+//delta/tx/concDeltaPRPeer.conf
+//   A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=1
+//   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=1
+//   redundantCopies = nonZero
+
+// edge clients use ClientCacheFactory
+delta/serialDeltaCQBridgeWithClientCache.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   cloningEnabled = true, false
+
+delta/concDeltaCQBridgeWithClientCache.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   cloningEnabled = true, false
+
+delta/concDeltaCQBridgeHAWithClientCache.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundancyLevel = 4
+   cloningEnabled = true, false
+
+
+

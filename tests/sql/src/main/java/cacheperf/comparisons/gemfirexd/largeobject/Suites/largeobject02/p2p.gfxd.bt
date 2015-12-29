@@ -1,0 +1,28 @@
+cacheperf/comparisons/gemfirexd/largeobject/p2p/createTest.conf
+  api = GFXD
+  clientserverHosts=1 clientserverVMsPerHost=1 clientserverThreadsPerVM=16
+  numLargeObjectsPerServer = 1500000 heapMB = 4096
+  redundantCopies = 0
+  enableHistogram = true
+  perffmwk.comparisonKey = create
+cacheperf/comparisons/gemfirexd/largeobject/p2p/getTest.conf
+  api = GFXD
+  clientserverHosts=1 clientserverVMsPerHost=1 clientserverThreadsPerVM=16
+  numLargeObjectsPerServer = 150000
+  redundantCopies = 0
+  enableHistogram = true
+  perffmwk.comparisonKey = get
+cacheperf/comparisons/gemfirexd/largeobject/p2p/putTest.conf
+  api = GFXD
+  clientserverHosts=1 clientserverVMsPerHost=1 clientserverThreadsPerVM=16
+  numLargeObjectsPerServer = 150000
+  redundantCopies = 0
+  enableHistogram = true
+  perffmwk.comparisonKey = put
+cacheperf/comparisons/gemfirexd/largeobject/p2p/updateTest.conf
+  api = GFXD
+  clientserverHosts=1 clientserverVMsPerHost=1 clientserverThreadsPerVM=16
+  numLargeObjectsPerServer = 150000
+  redundantCopies = 0
+  enableHistogram = true
+  perffmwk.comparisonKey = update

@@ -1,0 +1,21 @@
+locatorHosts = 1
+locatorVMsPerHost = 1
+locatorThreadsPerVM = 1
+
+A = pub
+pubHosts        = 1
+pubVMsPerHost   = 1
+pubThreadsPerVM = 2
+
+B = data
+dataHosts        = 1
+dataVMsPerHost   = 2
+dataThreadsPerVM = 1
+
+cloningEnabled = false
+conserveSockets = true
+getBeforeUpdate = true
+
+dataSize = 5000
+
+perffmwk.comparisonKey = perf147

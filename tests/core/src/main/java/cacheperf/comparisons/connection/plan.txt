@@ -1,0 +1,33 @@
+test development
+  removed helper use
+  added other ops to spec
+  checked perfreport
+  checked vsd
+test variations
+  autodiscovery vs explicit
+  security vs none
+test properties
+  -client vs -server
+  bounce vm
+  create cache/region
+  use cache xml
+  log times
+  log level
+  delete system files
+
+================================================================================
+TBD
+
+  do a get or put
+
+  pure java
+  keith index jar
+  unjar into classes directory
+  jrockit precompile
+  shared memory (solaris only?)
+  sourceforge to keep hot vm (java clients only)
+
+  native client
+
+  scale clients, servers
+  win/sol/lin

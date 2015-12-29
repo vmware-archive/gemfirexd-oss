@@ -1,0 +1,27 @@
+
+Run the batterytest file miss.bt using a local.conf containing a sufficient
+number of hosts.
+
+--------------------------------------------------------------------------------
+
+For other variations, simply use a different .bt file with different values of
+hydra configuration variables, or a local.conf with different values of hydra
+configuration parameters.
+
+--------------------------------------------------------------------------------
+
+To run with a different object type, add something like this to the local.conf:
+
+    cacheperf.CachePerfPrms-objectType = objects.NestedOrderVector;
+    objects.NestedOrderVectorPrms-width = 2;
+    objects.NestedOrderVectorPrms-depth = 2;
+
+and set ${dataSize} to the approximate average size of the object in the .bt:
+
+    dataSize = <size of a 2x2 NestedOrderVector in bytes>
+
+--------------------------------------------------------------------------------
+
+To check whether netsearch return correct data, add this to the local.conf:
+
+    cacheperf.CachePerfPrms-validateObjects = true;

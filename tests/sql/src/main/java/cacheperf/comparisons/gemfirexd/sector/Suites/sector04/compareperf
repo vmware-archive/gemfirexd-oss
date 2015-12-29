@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# GFXD PR1 raw histogram report sorted by server
+
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m -Dgemfire.home=$GEMFIRE \
+     -DJTESTS=$JTESTS -DomitFailedTests=true -DaddTestKey=true \
+     -DcompareByKey=true \
+     -Dmode=raw \
+     -DcompReportFile=thinClient.gfxd.joinPruneByPositionAmountAndInstrumentName.pr1.raw.txt \
+     -DgenerateCSVFile=true \
+     -DcsvFile=thinClient.gfxd.joinPruneByPositionAmountAndInstrumentName.pr1.raw.csv \
+  perffmwk.PerfComparer \
+     thinClient.gfxd.joinPruneByPositionAmountAndInstrumentName.pr1/4_servers \
+     thinClient.gfxd.joinPruneByPositionAmountAndInstrumentName.pr1/5_servers \
+     thinClient.gfxd.joinPruneByPositionAmountAndInstrumentName.pr1/6_servers \
+     thinClient.gfxd.joinPruneByPositionAmountAndInstrumentName.pr1/7_servers \
+     thinClient.gfxd.joinPruneByPositionAmountAndInstrumentName.pr1/8_servers \

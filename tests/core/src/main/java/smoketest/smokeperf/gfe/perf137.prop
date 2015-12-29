@@ -1,0 +1,12 @@
+locatorHosts        = 1
+locatorVMsPerHost   = 1
+locatorThreadsPerVM = 1
+
+A = creator
+creatorHosts        = 1
+creatorVMsPerHost   = 1
+creatorThreadsPerVM = 1
+
+dataSize = 0
+
+perffmwk.comparisonKey = perf137

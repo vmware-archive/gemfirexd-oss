@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="com.pivotal.gemfirexd.integration.hibernate">
+
+    <class name="MainTable" table="MainT">
+        <comment> partition by column(MID)</comment>
+        <id name="id" column="MID">
+            <generator class="increment"/>
+        </id>
+        <property name="date" type="timestamp" column="MDATE"/>
+        <property name="title" column="MTITLE"/>
+    </class>
+    
+        <database-object> 
+    	<create>call syscs_util.set_runtimestatistics(0)</create> 
+    	<drop>DROP table if exists ZColocatedT </drop> 
+    </database-object> 
+    
+    
+</hibernate-mapping>

@@ -1,0 +1,4 @@
+include $JTESTS/vsphere/regression/diskRecoveryPdx.bt
+include $JTESTS/vsphere/regression/queryPdx.bt
+include $JTESTS/vsphere/regression/cqPdx.bt
+//include $JTESTS/vsphere/regression/wanPdx.bt

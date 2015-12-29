@@ -1,0 +1,45 @@
+sourceSets.main.java {
+  // requires WebLogic jars
+  exclude 'sql/ecotests/wls/**'
+}
+
+// need to exclude specificially in IDEA
+idea {
+  module {
+    excludeDirs += file('src/main/java/sql/ecotests/wls')
+  }
+}
+
+dependencies {
+  compile project(subprojectBase + 'gemfire-core')
+  compile project(subprojectBase + 'tests-core')
+  compile project(subprojectBase + 'gemfirexd:client')
+  compile project(subprojectBase + 'gemfirexd:tools')
+  // have to use output since we exclude the dependent classes from jar :(
+  provided project(subprojectBase + 'gemfirexd:core').sourceSets.main.output
+  provided project(subprojectBase + 'gemfirexd:core')
+
+  provided "org.apache.hadoop:hadoop-annotations:${hadoopVersion}"
+  provided "org.apache.hadoop:hadoop-auth:${hadoopVersion}"
+  provided "org.apache.hadoop:hadoop-common:${hadoopVersion}"
+  provided "org.apache.hadoop:hadoop-hdfs:${hadoopVersion}"
+  provided "org.apache.hadoop:hadoop-mapreduce-client-core:${hadoopVersion}"
+  provided "org.apache.hbase:hbase:${hbaseVersion}"
+  provided "org.springframework:spring-aop:${springVersion}"
+  provided "org.springframework:spring-beans:${springVersion}"
+  provided "org.springframework:spring-context:${springVersion}"
+  provided "org.springframework:spring-context-support:${springVersion}"
+  provided "org.springframework:spring-core:${springVersion}"
+  provided "org.springframework:spring-expression:${springVersion}"
+  provided "org.springframework:spring-web:${springVersion}"
+  provided "org.springframework:spring-webmvc:${springVersion}"
+  provided "org.springframework:spring-tx:${springVersion}"
+
+  compile 'com.googlecode.json-simple:json-simple:1.1.1'
+  compile 'org.hibernate.javax.persistence:hibernate-jpa-2.0-api:1.0.1.Final'
+  compile 'javax.ejb:javax.ejb-api:3.2'
+  compile 'org.apache.tomcat:tomcat-juli:8.0.24'
+  compile 'org.apache.tomcat:tomcat-jdbc:8.0.24'
+  compile 'com.mchange:c3p0:0.9.5.1'
+  compile "org.apache.derby:derbytools:${derbyVersion}"
+}

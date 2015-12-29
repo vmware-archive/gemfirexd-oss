@@ -1,0 +1,23 @@
+event/serialEntryEvent.conf 
+event/serialRegionEvent.conf 
+event/concEntryEvent.conf 
+event/concRegionEvent.conf 
+event/serialMultiListener.conf
+event/concMultiListener.conf
+event/serialCMEvent.conf
+event/concCMEvent.conf
+
+include $JTESTS/event/dataPolicy/event.bt
+
+event/concEntryEventGlobal.conf
+event/concRegionEventGlobal.conf
+
+// WBCL (event) tests (new in 6.6.2)
+event/serialWBCLEvent.conf
+   A=wbcl wbclHosts=1 wbclVMsPerHost=1 wbclThreadsPerVM=2
+   B=peer peerHosts=1 peerVMsPerHost=3 peerThreadsPerVM=2
+
+event/concWBCLEvent.conf
+   A=wbcl wbclHosts=1 wbclVMsPerHost=1 wbclThreadsPerVM=2
+   B=peer peerHosts=1 peerVMsPerHost=3 peerThreadsPerVM=2
+

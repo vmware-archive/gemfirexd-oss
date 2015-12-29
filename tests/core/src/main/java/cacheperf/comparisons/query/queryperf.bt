@@ -1,0 +1,5 @@
+//perf tests of index on primary key, functional key and drill down
+
+include $JTESTS/cacheperf/comparisons/query/queryperfprimary.bt
+include $JTESTS/cacheperf/comparisons/query/queryperffunc.bt
+include $JTESTS/cacheperf/comparisons/query/queryperfdrilldown.bt

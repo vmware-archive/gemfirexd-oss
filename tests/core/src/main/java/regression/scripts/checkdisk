@@ -1,0 +1,13 @@
+#!/bin/sh -f
+#
+# check disk space for each directory listed in regrdirs file
+#
+if [ -e ~/bin/regrdirs ]; then
+  for i in `cat ~/bin/regrdirs`
+  do
+    cd $i
+    df .
+  done
+else 
+  echo "Usage: checkdisk requires a list of directories in ~/bin/regrdirs"
+fi

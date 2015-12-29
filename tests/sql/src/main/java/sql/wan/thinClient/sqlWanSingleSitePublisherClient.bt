@@ -1,0 +1,89 @@
+sql/wan/thinClient/singleSitePublisherClient.conf
+    wanSites= 3, 4
+    A=server serverHostsPerSite=2 serverVMsPerHost=2 serverThreadsPerVM=1
+    B=client clientHostsPerSite=2 clientVMsPerHost=1 clientThreadsPerVM=15
+    locatorHostsPerSite = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    enableQueueConflation=false
+
+sql/wan/thinClient/singleSitePublisherRandomPTClient.conf
+    wanSites= 3, 4
+    A=server serverHostsPerSite=2 serverVMsPerHost=2 serverThreadsPerVM=1
+    B=client clientHostsPerSite=2 clientVMsPerHost=1 clientThreadsPerVM=15
+    locatorHostsPerSite = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    enableQueueConflation=false
+    useSamePartitionAllWanSites=true
+
+sql/wan/thinClient/singleSitePublisherHARandomPTClient.conf
+    wanSites= 3, 4
+    A=server serverHostsPerSite=2 serverVMsPerHost=2 serverThreadsPerVM=1
+    B=client clientHostsPerSite=2 clientVMsPerHost=1 clientThreadsPerVM=15
+    locatorHostsPerSite = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    enableQueueConflation=false
+    useSamePartitionAllWanSites=true
+    redundantCopies=1, 2
+
+sql/wan/thinClient/singleSitePublisherClientSenderFailover.conf
+    wanSites= 3, 4
+    A=server serverHostsPerSite=2 serverVMsPerHost=3 serverThreadsPerVM=1
+    B=client clientHostsPerSite=2 clientVMsPerHost=2 clientThreadsPerVM=9
+    locatorHostsPerSite = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    enableQueueConflation=false
+    useSamePartitionAllWanSites=true
+    SGvms1=1 SGvms2=1 SGvms3=1 SGvms4=1
+    SGList1="random" SGList2="random" SGList3="random"
+    SGList4="random"
+
+sql/wan/thinClient/singleSitePublisherRandomPTClientGfxdOnly.conf
+    wanSites= 3, 4
+    A=server serverHostsPerSite=2 serverVMsPerHost=2 serverThreadsPerVM=1
+    B=client clientHostsPerSite=2 clientVMsPerHost=1 clientThreadsPerVM=35
+    locatorHostsPerSite = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    enableQueueConflation=false
+    useSamePartitionAllWanSites=true
+    testUniqueKeys = true
+    withReplicatedTables = true
+    
+/* Avoid #42075/#44780 in case of testUniqueKeys = false
+sql/wan/thinClient/singleSitePublisherRandomPTClientGfxdOnly.conf
+    wanSites= 3, 4
+    A=server serverHostsPerSite=2 serverVMsPerHost=2 serverThreadsPerVM=1
+    B=client clientHostsPerSite=2 clientVMsPerHost=1 clientThreadsPerVM=35
+    locatorHostsPerSite = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    enableQueueConflation=false
+    useSamePartitionAllWanSites=true
+    testUniqueKeys = false
+    withReplicatedTables = false
+*/    
+sql/wan/thinClient/singleSitePublisherHARandomPTClientGfxdOnly.conf
+    wanSites= 3, 4
+    A=server serverHostsPerSite=2 serverVMsPerHost=2 serverThreadsPerVM=1
+    B=client clientHostsPerSite=2 clientVMsPerHost=1 clientThreadsPerVM=35
+    locatorHostsPerSite = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    enableQueueConflation=false
+    useSamePartitionAllWanSites=true
+    testUniqueKeys = true
+    withReplicatedTables = true    
+    redundantCopies=1, 2
+
+sql/wan/thinClient/delayStartWanSiteClient.conf
+    wanSites= 2
+    A=server serverHostsPerSite=1 serverVMsPerHost=3 serverThreadsPerVM=1
+    B=client clientHostsPerSite=1 clientVMsPerHost=1 clientThreadsPerVM=3
+    locatorHostsPerSite = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    enableQueueConflation=false
+
+
+/* know issue of #4780/42075 -- do not run in regression for now
+sql/wan/thinClient/singleSitePublisherHARandomPTClientGfxdOnly.conf
+    wanSites= 3, 4
+    A=server serverHostsPerSite=2 serverVMsPerHost=2 serverThreadsPerVM=1
+    B=client clientHostsPerSite=2 clientVMsPerHost=1 clientThreadsPerVM=35
+    locatorHostsPerSite = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    enableQueueConflation=false
+    useSamePartitionAllWanSites=true
+    testUniqueKeys = false
+    withReplicatedTables = false
+    redundantCopies=1, 2
+*/    
+
+

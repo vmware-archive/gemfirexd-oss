@@ -1,0 +1,73 @@
+Please select your option.
+ Enter 1 for put and get operations.
+ Enter 2 for executing functions.
+ Enter 3 for executing Continuous Query \(CQs\).
+ Your selection: 
+-----------------------------------------------------
+Setting security properties for client...
+User 1 executing CQ \"CQ_1\" with query 
+    \"SELECT \* FROM /exampleRegion e where e='VALUE_1' OR e='VALUE_3'\"
+User 2 executing CQ \"CQ_2\" with query 
+    \"SELECT \* FROM /exampleRegion e where e='VALUE_2' OR e='VALUE_3'\"
+User 3 executing CQ \"CQ_3\" with query 
+    \"SELECT \* FROM /exampleRegion\"
+-----------------------------------------------------
+'User 1' and 'User 2' are authorized to receive CQ events.
+'User 3' is not authorized receive CQ events.
+-----------------------------------------------------
+
+This client will update the server cache and its CQ listeners will get events
+for any changes to the CQ result set. CQ events provide the base operation \(change
+in the server's cache\), and the query operation \(change in the CQ's result set\).
+Press Enter to continue.
+_____________________________________________________
+Putting key1 with value 'VALUE_1'
+This satisfies the query for User 1, so its CqListener will report a query create
+event from the server cache.
+
+    \[User 1\] CqListener:
+    Received cq event for entry: key1, VALUE_1
+    With BaseOperation = Create and QueryOperation = Create
+Press Enter to continue.
+_____________________________________________________
+Updating key1 with value 'VALUE_2'
+This satisfies the query for User 2, so its CqListener will report a query create
+event from the server cache. The CqListener for User 1 will report a query destroy event.
+
+    \[User 2\] CqListener:
+    Received cq event for entry: key1, VALUE_2
+    With BaseOperation = Update and QueryOperation = Create
+
+    \[User 1\] CqListener:
+    Received cq event for entry: key1, VALUE_2
+    With BaseOperation = Update and QueryOperation = Destroy
+Press Enter to continue.
+_____________________________________________________
+Updating key1 with value 'VALUE_3'
+This adds key1 back into the CQ result set for User 1, so its CqListener will
+report a query create event. The CqListener for User 2 will report a query update event.
+
+    \[User 2\] CqListener:
+    Received cq event for entry: key1, VALUE_3
+    With BaseOperation = Update and QueryOperation = Update
+
+    \[User 1\] CqListener:
+    Received cq event for entry: key1, VALUE_3
+    With BaseOperation = Update and QueryOperation = Create
+Press Enter to continue.
+_____________________________________________________
+Closing CQ for User 1.
+Now on, CqListener for User 1 will not be invoked.
+Press Enter to continue.
+_____________________________________________________
+Destroying key1.
+This removes key1 from the CQ result set, so the CqListener will report a query destroy event.
+
+    \[User 2\] CqListener:
+    Received cq event for entry: key1, 
+    With BaseOperation = Destroy and QueryOperation = Destroy
+Press Enter to continue.
+Closing the cache for all users...
+
+MultiuserSecurityClient closed.
+-----------------------------------------------------

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title>writeSchemaSqlToFile</title>
+<link href="styles.css" type="text/css" rel="stylesheet">
+</head>
+<body>
+<h2> writeSchemaSqlToFile</h2>
+<fieldset class="taskDescription">
+<legend><a class="anchor" name="description">Description</a></legend>
+<p>Java type: <a href="../api/org/apache/ddlutils/task/WriteSchemaSqlToFileCommand.html"><code>org.apache.ddlutils.task.WriteSchemaSqlToFileCommand</code></a></p>
+<p>Parses the schema XML files specified in the enclosing task, and writes the SQL statements
+ necessary to create this schema in the database, to a file. Note that this SQL is
+ database specific and hence this subtask requires that for the enclosing task, either a
+ data source is specified (via the <code>database</code> sub element) or the
+ <code>databaseType</code> attribute is used to specify the database type.</p>
+</fieldset>
+<fieldset class="taskParameters">
+<legend><a class="anchor" name="parameters">Parameters</a></legend>
+  	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-outputfile">outputfile</a> : File
+   <span class="requiredInfo">(required)</span> 	</p>
+	<p class="taskParameterDescription">
+	Specifies the name of the file to write the SQL commands to. <br/>
+        
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-dodrops">dodrops</a> : boolean
+  	</p>
+	<p class="taskParameterDescription">
+	Specifies whether SQL for dropping tables, external constraints, etc. is created if necessary.
+ Note that this is only relevant when <code>alterDatabase</code> is <code>false</code>. <br/>
+        Per default, drop SQL statements are created
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-failonerror">failonerror</a> : boolean
+  	</p>
+	<p class="taskParameterDescription">
+	Specifies whether the execution shall stop if an error has occurred during the task runs. <br/>
+        By default execution will be stopped when an error is encountered.
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-alterdatabase">alterdatabase</a> : boolean
+  	</p>
+	<p class="taskParameterDescription">
+	Specifies whether DdlUtils shall generate SQL to alter an existing database rather
+ than SQL for clearing it and creating it new. <br/>
+        Per default SQL for altering the database is created
+  	</p>
+</fieldset>
+<fieldset class="taskNestedElements">
+<legend><a class="anchor" name="nestedElements">Nested elements</a></legend>
+    	<p class="taskNestedElementRef">&rArr;&nbsp;<a href="org.apache.ddlutils.task.TableSpecificParameter.html"><code>parameter</code></a></p>
+  </fieldset>
+<p>&copy;2005-2007 Apache Software Foundation</p>
+</body>
+</html>

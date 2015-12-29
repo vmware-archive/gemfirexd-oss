@@ -1,0 +1,32 @@
+// ============================================================
+// measure put performance for persistent replicate regions
+
+// persist only
+// runs put test with current version
+cacheperf/comparisons/replicated/persist/peerDataPut.conf
+  peerHosts =  2 peerVMsPerHost = 1 peerThreadsPerVM = 1
+  maxKeys = 500000 objectSize = 1024
+  perffmwk.comparisonKey = put_02x01x01
+  synchronous = false queueSize = 1000
+
+// overflow only
+cacheperf/comparisons/replicated/persist/peerDataPutOverflow.conf
+  peerHosts =  2 peerVMsPerHost = 1 peerThreadsPerVM = 1
+  maxKeys = 500000 objectSize = 1024
+  perffmwk.comparisonKey = put_02x01x01
+  dataPolicy = replicate
+  synchronous = false queueSize = 1000
+
+// persist and overflow
+cacheperf/comparisons/replicated/persist/peerDataPutOverflow.conf
+  peerHosts =  2 peerVMsPerHost = 1 peerThreadsPerVM = 1
+  maxKeys = 500000 objectSize = 1024
+  perffmwk.comparisonKey = put_02x01x01
+  dataPolicy = persistentReplicate
+  synchronous = false queueSize = 1000
+
+// no persist
+cacheperf/comparisons/replicated/peerDataPut.conf
+  peerHosts =  2 peerVMsPerHost = 1 peerThreadsPerVM = 1
+  maxKeys = 500000 objectSize = 1024
+  perffmwk.comparisonKey = put_02x01x01

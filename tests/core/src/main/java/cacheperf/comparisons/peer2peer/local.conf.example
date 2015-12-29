@@ -1,0 +1,16 @@
+// example local.conf for test run with 1 publisher, 2 subscribers (e.g. throughput2.bt)
+
+hydra.HostPrms-hostNames =
+    oin
+    bobo 
+    hs20e
+    ;
+
+hydra.HostPrms-resourceDirBases =
+    /oin2/users/jfarris/runtests/45/peer2peer
+    /bobo2/users/jfarris/runtests/peer2peer
+    /hs20e2/users/jfarris/runtests/peer2peer
+   ;
+// Set doWorkTask to false to turnoff non-GemFire work task.
+// Default is true
+// cacheperf.CachePerfPrms-doWorkTask = false;

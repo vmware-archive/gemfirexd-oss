@@ -1,0 +1,7 @@
+//vMotion during CQ registration
+cq/serialEntryEvent.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=2 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   registerInterest = true
+   threadGroupsName=bridgeThreads
+

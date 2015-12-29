@@ -1,0 +1,21 @@
+cacheperf/poc/useCase8/useCase8Thin.conf
+  api = GFXD
+  connstorebridgeHosts = 2 connstorebridgeVMsPerHost = 1 connstorebridgeThreadsPerVM = 1
+  storebridgeHosts = 2 storebridgeVMsPerHost = 1 storebridgeThreadsPerVM = 1
+  edgeHosts = 2 edgeVMsPerHost = 2 edgeThreadsPerVM = 2
+  isValue = false
+  tableType = partitioned
+  redundantCopies = 2
+  createIndexes = false
+  perffmwk.comparisonKey = useCase8_thin_false
+
+cacheperf/poc/useCase8/useCase8Thin.conf
+  api = GFXD
+  connstorebridgeHosts = 2 connstorebridgeVMsPerHost = 1 connstorebridgeThreadsPerVM = 1
+  storebridgeHosts = 2 storebridgeVMsPerHost = 1 storebridgeThreadsPerVM = 1
+  edgeHosts = 2 edgeVMsPerHost = 2 edgeThreadsPerVM = 2
+  isValue = true
+  tableType = partitioned
+  redundantCopies = 2
+  createIndexes = false
+  perffmwk.comparisonKey = useCase8_thin_true

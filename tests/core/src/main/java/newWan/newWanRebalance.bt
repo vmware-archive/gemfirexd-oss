@@ -1,0 +1,146 @@
+//serial
+parReg/newWan/serial/concKnownKeysWANp2p.conf wanSites=2,3,4
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   peerHostsPerSite=3 peerVMsPerHost=1 peerThreadsPerVM=4
+   numKeys = 50000 
+
+parReg/newWan/serial/concKnownKeysWANp2pWithCacheServer.conf wanSites=2,3,4
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   peerHostsPerSite=3 peerVMsPerHost=1 peerThreadsPerVM=4
+   numKeys = 50000 
+   
+parReg/newWan/serial/persistence/concKnownKeysWANp2p.conf wanSites=2,3,4
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   peerHostsPerSite=3 peerVMsPerHost=1 peerThreadsPerVM=4
+   numKeys = 20000 
+     
+parReg/newWan/serial/persistence/concKnownKeysWANp2pWithCacheServer.conf wanSites=2,3,4
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   peerHostsPerSite=3 peerVMsPerHost=1 peerThreadsPerVM=4
+   numKeys = 20000 
+   
+parReg/newWan/serial/colocation/concKnownKeysWANp2p.conf wanSites=2,3,4
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   peerHostsPerSite=3 peerVMsPerHost=1 peerThreadsPerVM=4
+   numKeys = 10000   
+
+parReg/newWan/serial/colocation/concKnownKeysWANp2pPersist.conf wanSites=2,3,4
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   peerHostsPerSite=3 peerVMsPerHost=1 peerThreadsPerVM=3
+   numKeys = 10000 
+ 
+parReg/newWan/serial/concKnownKeysWANbridge.conf wanSites=2
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   bridgeHostsPerSite = 3 bridgeVMsPerHost=1 bridgeThreadsPerVM = 2
+   edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=4
+   numKeys = 30000 edgeVmSize=300 serverVmSize=350
+
+parReg/newWan/serial/concKnownKeysWANbridge.conf wanSites=3,4
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   bridgeHostsPerSite = 2 bridgeVMsPerHost=1 bridgeThreadsPerVM = 2
+   edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=3
+   numKeys = 30000 edgeVmSize=300 serverVmSize=350
+   
+parReg/newWan/serial/concKnownKeysWANbridgeWithCacheServer.conf wanSites=2
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   bridgeHostsPerSite = 3 bridgeVMsPerHost=1 bridgeThreadsPerVM = 2
+   edgeHostsPerSite = 3 edgeVMsPerHost=1 edgeThreadsPerVM=4
+   numKeys = 30000 edgeVmSize=300 serverVmSize=350    
+     
+parReg/newWan/serial/concKnownKeysWANbridgeWithCacheServer.conf wanSites=3,4
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   bridgeHostsPerSite = 2 bridgeVMsPerHost=1 bridgeThreadsPerVM = 2
+   edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=3
+   numKeys = 30000 edgeVmSize=300 serverVmSize=350 
+ 
+parReg/newWan/serial/persistence/concKnownKeysWANbridge.conf wanSites=2,3,4
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   bridgeHostsPerSite = 3 bridgeVMsPerHost=1 bridgeThreadsPerVM = 2
+   edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=3
+   numKeys = 20000 edgeVmSize=300 serverVmSize=350
+   
+parReg/newWan/serial/persistence/concKnownKeysWANbridgeWithCacheServer.conf wanSites=2,3,4
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   bridgeHostsPerSite = 3 bridgeVMsPerHost=1 bridgeThreadsPerVM = 2
+   edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=3
+   numKeys = 20000 edgeVmSize=300 serverVmSize=350    
+
+parReg/newWan/serial/colocation/concKnownKeysWANbridge.conf wanSites=2,3,4
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   bridgeHostsPerSite = 3 bridgeVMsPerHost=1 bridgeThreadsPerVM = 2
+   edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=3
+   numKeys = 10000 edgeVmSize=300 serverVmSize=350
+ 
+parReg/newWan/serial/colocation/concKnownKeysWANbridgePersist.conf wanSites=2,3,4
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   bridgeHostsPerSite = 3 bridgeVMsPerHost=1 bridgeThreadsPerVM = 2
+   edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=3
+   numKeys = 10000 edgeVmSize=300 serverVmSize=350
+
+//parallel   
+parReg/newWan/parallel/concKnownKeysWANp2p.conf wanSites=2,3,4
+    locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+    peerHostsPerSite = 3 peerVMsPerHost = 1 peerThreadsPerVM = 3
+    numKeys = 20000
+         
+parReg/newWan/parallel/concKnownKeysWANp2pWithCacheServer.conf wanSites=2,3,4
+    locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+    peerHostsPerSite = 3 peerVMsPerHost = 1 peerThreadsPerVM = 3
+    numKeys = 20000
+
+parReg/newWan/parallel/persistence/concKnownKeysWANp2p.conf wanSites=2,3,4
+    locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+    peerHostsPerSite = 3 peerVMsPerHost = 1 peerThreadsPerVM = 3
+    numKeys = 20000 
+          
+parReg/newWan/parallel/persistence/concKnownKeysWANp2pWithCacheServer.conf wanSites=2,3,4
+    locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+    peerHostsPerSite = 3 peerVMsPerHost = 1 peerThreadsPerVM = 3
+    numKeys = 20000
+
+parReg/newWan/parallel/colocation/concKnownKeysWANp2p.conf wanSites=2,3,4
+    locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+    peerHostsPerSite = 3 peerVMsPerHost = 1 peerThreadsPerVM = 3
+    numKeys = 10000    
+
+parReg/newWan/parallel/colocation/concKnownKeysWANp2pPersist.conf wanSites=2,3,4
+    locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+    peerHostsPerSite = 3 peerVMsPerHost = 1 peerThreadsPerVM = 3
+    numKeys = 10000 
+       
+parReg/newWan/parallel/concKnownKeysWANbridge.conf wanSites=2,3,4
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   bridgeHostsPerSite = 3 bridgeVMsPerHost=1 bridgeThreadsPerVM = 2
+   edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=3
+   numKeys = 20000 edgeVmSize=300 serverVmSize=350
+   
+parReg/newWan/parallel/concKnownKeysWANbridgeWithCacheServer.conf wanSites=2,3,4
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   bridgeHostsPerSite = 3 bridgeVMsPerHost=1 bridgeThreadsPerVM = 2
+   edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=3
+   numKeys = 20000 edgeVmSize=300 serverVmSize=350    
+
+parReg/newWan/parallel/persistence/concKnownKeysWANbridge.conf wanSites=2,3,4
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   bridgeHostsPerSite = 3 bridgeVMsPerHost=1 bridgeThreadsPerVM = 2
+   edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=3
+   numKeys = 20000 edgeVmSize=300 serverVmSize=350
+
+parReg/newWan/parallel/persistence/concKnownKeysWANbridgeWithCacheServer.conf wanSites=2,3,4
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   bridgeHostsPerSite = 3 bridgeVMsPerHost=1 bridgeThreadsPerVM = 2
+   edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=3
+   numKeys = 20000 edgeVmSize=300 serverVmSize=350
+           
+parReg/newWan/parallel/colocation/concKnownKeysWANbridge.conf wanSites=2,3,4
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   bridgeHostsPerSite = 3 bridgeVMsPerHost=1 bridgeThreadsPerVM = 2
+   edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=3
+   numKeys = 10000 edgeVmSize=300 serverVmSize=350
+
+parReg/newWan/parallel/colocation/concKnownKeysWANbridgePersist.conf wanSites=2,3,4
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   bridgeHostsPerSite = 3 bridgeVMsPerHost=1 bridgeThreadsPerVM = 2
+   edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=3
+   numKeys = 10000 edgeVmSize=300 serverVmSize=750
+

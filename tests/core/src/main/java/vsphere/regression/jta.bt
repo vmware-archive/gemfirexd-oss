@@ -1,0 +1,128 @@
+//jta/jtaDataSource.conf
+jta/jtaCacheAndDataSource.conf
+threadGroupsName=default
+jta/jtaTimeOut.conf
+threadGroupsName=default
+//jta/jtaSingleRR.conf
+//jta/jtaSingleMR.conf
+jta/jtaMultipleRR.conf
+threadGroupsName=default
+jta/jtaMultipleMR.conf
+threadGroupsName=default
+
+//jta/serialJtaCacheCallback.conf
+//   hydra.numHosts = 1
+jta/serialJtaCacheCallbackWithTxWriter.conf
+   hydra.numHosts = 1 vmQuantities = 1 vmThreads = 15
+   threadGroupsName=txThreads
+
+//jta/concJtaCacheCallback.conf
+//   hydra.numHosts = 1
+jta/concJtaCacheCallbackWithTxWriter.conf
+   hydra.numHosts = 1
+   threadGroupsName=txThreads
+
+//jta/serialGemFireCacheCallback.conf
+//   hydra.numHosts = 1
+jta/serialGemFireCacheCallbackWithTxWriter.conf
+   hydra.numHosts = 1
+   threadGroupsName=default
+
+/*jta/concGemFireCacheCallback.conf
+   hydra.numHosts = 1
+jta/concGemFireCacheCallback.conf
+   hydra.numHosts = 3
+jta/concGemFireCacheCallbackWithTxWriter.conf
+   hydra.numHosts = 1*/
+jta/concGemFireCacheCallbackWithTxWriter.conf
+   hydra.numHosts = 3
+   threadGroupsName=default
+
+// multiple VM versions of serial/concJtaCacheCallback tests (RR = Replicate, PR = PartitionRegion)
+// note that only 1 VM executes transactions
+//jta/serialRRJtaCallback.conf
+//    hydra.numHosts = 3
+
+// note that DB updates are only done 'inline' here (not via Writers/Listeners)
+// this is because the callbacks can be invoked remotely
+jta/serialPRJtaCallback.conf
+    hydra.numHosts = 4 redundantCopies = 0,3
+    threadGroupsName=txThreads
+
+// multiple VM versions of gemfireCallback (RR = Replicate, PR = PartitionRegion)
+// again, db ops must be done inline (not in the DBWriter)
+//jta/serialRRGemFireCallback.conf
+//    hydra.numHosts = 3
+jta/serialPRGemFireCallback.conf
+    hydra.numHosts = 4 redundantCopies = 0,2
+    threadGroupsName=default
+
+// client/server versions of simple jta tests
+/*jta/bridge/jtaDataSource.conf
+  bridgeHosts=2 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+  edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=3*/
+
+jta/bridge/jtaCacheAndDataSource.conf
+  bridgeHosts=2 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+  edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=3
+  threadGroupsName=edge
+
+jta/bridge/jtaTimeOut.conf
+  bridgeHosts=2 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+  edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=10
+  threadGroupsName=edge
+
+/*jta/bridge/jtaSingleRR.conf
+  bridgeHosts=2 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+  edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=2
+
+jta/bridge/jtaSinglePR.conf
+  bridgeHosts=2 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+  edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=2*/
+
+jta/bridge/jtaMultipleRR.conf
+  bridgeHosts=2 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+  edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=2
+  threadGroupsName=edge
+
+jta/bridge/jtaMultiplePR.conf
+  bridgeHosts=2 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+  edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=2
+  threadGroupsName=edge
+
+// multiple VM versions of jtaCallback (RR = Replicate, PR = PartitionRegion)
+// note that only 1 VM executes transactions
+/*jta/bridge/serialRRJtaCallback.conf
+  bridgeHosts=2 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+  edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=15*/
+
+// note that DB updates are only done 'inline' here (not via Writers/Listeners)
+// this is because the callbacks can be invoked remotely
+jta/bridge/serialPRJtaCallback.conf
+  bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+  edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=15
+  redundantCopies = 0,3
+  threadGroupsName=edge
+
+// concurrent execution (no consistency checks as GemFire is not enlisted as a resource in the JTA tx
+/*jta/bridge/concRRJtaCallback.conf
+  bridgeHosts=2 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+  edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=15*/
+
+jta/bridge/concPRJtaCallback.conf
+  bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+  edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=15
+  redundantCopies = 0,2
+  threadGroupsName=edge
+
+// HA (recycle server VMs)
+/*jta/bridge/concRRJtaCallbackHA.conf
+  bridgeHosts=2 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+  edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=15*/
+
+jta/bridge/concPRJtaCallbackHA.conf
+  bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+  edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=15
+  redundantCopies = 1
+  threadGroupsName=edge
+

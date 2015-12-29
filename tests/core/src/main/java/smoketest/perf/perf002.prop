@@ -1,0 +1,5 @@
+peerHosts = 1
+peerVMsPerHost = 1
+peerThreadsPerVM = 2
+scope = ack
+perffmwk.comparisonKey = perf002

@@ -1,0 +1,34 @@
+locatorHosts=1
+locatorVMsPerHost=1
+locatorThreadsPerVM=1
+
+A=peer
+peerHosts=1
+peerVMsPerHost=1
+peerThreadsPerVM=1
+
+B=customerserver
+customerserverHosts=1
+customerserverVMsPerHost=1
+customerserverThreadsPerVM=1
+
+C=marketserver
+marketserverHosts=1
+marketserverVMsPerHost=1
+marketserverThreadsPerVM=1
+
+api=GFXD
+
+txIsolation = read_committed
+
+clientHeapMB = 256
+customerserverHeapMB = 3500
+marketserverHeapMB = 1600
+
+trimSeconds =  60
+workSeconds = 3600
+
+logQueries = false
+queryPlanFrequency = 0
+
+//perffmwk.comparisonKey = tpcc

@@ -1,0 +1,33 @@
+/*pdx/cq/serialCQBridgePdx.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+pdx/cq/serialCQBridgePRPdx.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=2*/
+pdx/cq/serialCQBridgeHAPdx.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   redundancyLevel = 4 
+   threadGroupsName=bridgeThreads
+pdx/cq/serialCQBridgePRHAPdx.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   redundancyLevel = 3 redundantCopies = 3
+   threadGroupsName=bridgeThreads
+/*pdx/cq/concCQBridgePdx.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+pdx/cq/concCQBridgePRPdx.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=5*/
+pdx/cq/concCQBridgeHAPdx.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundancyLevel = 4 
+   threadGroupsName=bridgeThreads
+pdx/cq/concCQBridgePRHAPdx.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundancyLevel = 3 redundantCopies = 3 
+   threadGroupsName=bridgeThreads
+

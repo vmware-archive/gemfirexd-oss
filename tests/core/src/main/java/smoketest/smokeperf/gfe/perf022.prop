@@ -1,0 +1,10 @@
+A = datastore
+datastoreHosts        = 1
+datastoreVMsPerHost   = 1
+datastoreThreadsPerVM = 2
+
+dataSize = 1024
+maxKeys = 10
+optimizationCount = 1000
+
+perffmwk.comparisonKey = perf022

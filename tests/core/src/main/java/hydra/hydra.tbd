@@ -1,0 +1,176 @@
+//==============================================================================
+//                              HYDRA TBD
+//==============================================================================
+
+-- pure java bgexec for Windows with PID registration
+
+-- cannot use tasktab in inittask right before batch keyword -- fix this
+
+-- remove stopSystemsAfterTest when there are minimal active branches
+
+-- remove perl test support in batterytest
+
+//==============================================================================
+// HYDRA CACHE, REGION, PARTITION, BRIDGE, EDGE, GATEWAY, GATEWAY HUB SUPPORT
+//==============================================================================
+
+-- support multiple gateway hubs per vm
+   AttributesFactory
+     public void setGatewayHubId(String gatewayHubId);
+       Sets id of GatewayHub to which events are distributed.
+   Cache
+     public GatewayHub addGatewayHub(String id, int port);
+       Just like old setGatewayHub, which is deprecated
+     public List getGatewayHubs();
+       Just like old getGatewayHub, which is deprecated, but now a List
+   RegionFactory
+     public RegionFactory setGatewayHubId(String id);
+       Sets id of GatewayHub to which events on this region are distributed.
+   Sample architecture: three sites
+        VM 1 in ds A has a primary hub for ds B and a secondary hub for ds C
+        VM 2 in ds A has a primary hub for ds C and a secondary hub for ds B
+        (if using WBCL, which hubs should add a WBCL gateway?)
+
+-- review gateway endpoint algorithms
+
+-- reduce logging of immutable (description) objects
+
+-- add API to get status of remote bridge server
+
+-- support munging configuration programmatically before generating xml
+-- support existing xml for edge clients (add tags for endpoints)
+-- support existing xml for gateway hubs (add tags for ports and endpoints)
+
+-- add topology_wan_2.inc and topology_wan_3.inc
+
+-- run cacheperf/comparisons and cacheperf/poc to make sure ported ok
+
+-- review /pst and /smoketest files for porting issues
+
+-- remove all use of util/CacheUtil and hydra/DistributedConnectionMgr
+
+-- make names of all directory types consistent (omit PID unless required)
+
+//==============================================================================
+// RECENT REQUESTS
+//==============================================================================
+
+-- add support for executing a method on a target client from a source client,
+   passing arguments and getting a result.  Issues:
+   -- identifying the target logical client thread
+   -- how to initialize the target client thread
+   -- thread-safety between multiple invocations on the logical target
+   -- notifying the scheduler for proper test termination
+   -- synchronous vs. asynchronous execution
+   -- options: enqueue request on scheduler vs. back-door rmi call
+
+-- revamp and simplify gemfire, locator, distributed system support, configure
+   distributed systems, not gemfire systems, and fix distributed system naming
+
+-- try making a pooled local.conf for a WAN HCT scalability test, any issues?
+
+-- introduce "synchronize" keyword to appear in .conf files amongst TASKs, to
+   force complex task scheduler to schedule only tasks between sync points
+   until "done" (what would that mean here?), then move to the next sync block
+
+-- might need to have reusable java thread for each logical hydra thread, so
+   that product features that use java threadlocals work without test hacks,
+   but need to figure out how to clear state, perhaps have it as an option
+
+-- automate task attributes so that tab() looks there first automatically,
+   doing away with the need to explicitly invoke tasktab()
+
+//==============================================================================
+// OTHER
+//==============================================================================
+
+-- support setting "ulimit -n 30000"
+
+-- make all resources schedulable clients (no more hydra-managed, all
+   task-managed)
+
+-- correct meaningful output from FindBugs.
+
+-- clarify starting resources from command line vs in-process (master-managed) vs. in-client-process
+
+-- way to stop run by asking master to shut test down.
+
+-- Eclipse support.
+
+-- pure Java version possible? no...reevaluate when we can move source to 1.5
+
+-- generate script to start vsd on remote dirs during test.
+
+-- complain if log files are too large (system, bgexec, etc.).
+
+-- clean up master shutdown and hang code.
+
+-- zLinux
+
+-- move classes into appropriate packages, separate internal from public API, and improve javadocs for public API.
+
+-- make non-client resources pluggable and more easily configurable.
+
+-- support statmonitor from clients for stopping test when arbitrary conditions are bad.
+
+-- support autogenerating keys based on varying parameters, both during and after a test run, for example say perffmwk.comparisonKey=autogenerate.scope to get keys generated based on that value, and allow PerfSorter to use that.
+
+-- do "pids" tool that checks for processes on remote hosts in local.conf.  Ditto other tools.
+
+-- clear public APIs
+
+-- clean up resource hang logic in master (e.g., process stacks)
+
+-- support high availability testing (Lynn and LynnH to specify in more detail)
+
+-- have hydra add severe log messages from system log to errors.txt and fail
+   test, also check for pstack, and check system.log size if possible
+
+-- add support for killing LDMs and clients in general, if needed
+
+-- "autotuning" task granularity, test duration, warmup
+
+-- add support for rolling logs, rolling archives, and split archives
+
+-- support threadgroup attributes
+
+-- add more javadocs, update AAAReadme and hydra.txt
+
+-- fix and improve remote host and cross-platform support, use
+   platform.properties and osbuild.dir
+
+-- restore dumping lock tables on hang, must provide multi-threaded support
+   in hostagent for connecting and disconnecting from gemfire (synchronize)
+
+-- start hostagents using fgexec in a timer thread so that failures can be
+   easily diagnosed
+
+-- fix parsing problem with including // comments inside /** **/ comments
+
+-- complain about nested comments in ConfigLexer
+
+-- move classpath from VmDescription to ClientDescription
+
+-- clean up test termination, shut down rmi and hostagents on error in config
+   file, halt test on error in master before switch to task logs
+
+-- note test shutdown in clients so that no error is logged trying to talk
+   to master after it's gone
+
+-- investigate and deal with @todo comments
+
+-- produce hydra statistics viewable through vsd and perfstats
+
+-- factor simple and complex TestTasks
+
+-- provide for last task to run in clients before doing closetasks
+
+-- provide for inittask and closetask that runs in one client per vm
+
+-- provide for forcedtask that executes even when there is an error
+
+-- change SharedMap to extend Map
+
+-- have master dump blackboards
+
+-- have ClientMapper report on unmapped threads

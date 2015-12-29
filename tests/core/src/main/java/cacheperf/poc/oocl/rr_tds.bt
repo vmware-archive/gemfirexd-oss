@@ -1,0 +1,6 @@
+cacheperf/poc/oocl/oocl_rr.conf
+  enableHistogram = true
+  maxKeys = 2000000 numAssets = 10 maxValue = 2000000000
+  bridgeHosts = 3 bridgeThreadsPerVM = 2
+  edgeVMsPerHost = 1 edgeThreadsPerVM = 1,2,4,8,16,32
+  perffmwk.comparisonKey = fromProps:clients:edgeThreadsPerVM

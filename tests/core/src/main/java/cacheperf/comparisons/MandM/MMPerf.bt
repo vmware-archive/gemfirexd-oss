@@ -1,0 +1,50 @@
+// tests to determine the cpu used when a system is quiet
+// compare 664 to a 0..max number of managers in 7.0
+// run on only one host since we just measure CPU on a sleeping (quiet) system
+
+//================================================================================ 
+// peers
+
+// run in 664
+cacheperf/comparisons/MandM/peerQuietSystem.conf
+      locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+      A=peer peerHosts=6 peerVMsPerHost=1 peerThreadsPerVM=1
+      heapMB=800 conserveSockets=false redundantCopies=1
+      numLocatorManagers=1 // not used in 664 but must be set
+      numPeerManagers=0 // not used in 664 but must be set
+      version=664
+
+// run the current GF version
+// run peers with various number of managers
+cacheperf/comparisons/MandM/peerQuietSystem.conf
+      locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+      A=peer peerHosts=6 peerVMsPerHost=1 peerThreadsPerVM=1
+      heapMB=800 conserveSockets=false redundantCopies=1
+      numLocatorManagers=1 
+      numPeerManagers=0,1,2,3,4,5,6
+      version=default
+
+//================================================================================ 
+// client/server
+
+// run in 664
+cacheperf/comparisons/MandM/csQuietSystem.conf
+      locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+      bridgeHosts=6 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+      edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=1
+      heapMB=800 conserveSockets=false redundantCopies=1
+      numLocatorManagers=1 // not used in 664 but must be set
+      numBridgeManagers=0 // not used in 664 but must be set
+      version=664
+
+// run the current GF version
+// run client/server with various number of managers
+cacheperf/comparisons/MandM/csQuietSystem.conf
+      locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+      bridgeHosts=6 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+      edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=1
+      heapMB=800 conserveSockets=false redundantCopies=1
+      numLocatorManagers=1 
+      numBridgeManagers=0,1,2,3,4,5,6
+      version=default
+

@@ -1,0 +1,8 @@
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE -Dmode=raw -DcompReportFile=vm_4_distAck_keys.raw.txt perffmwk.PerfComparer vm_4_distAck_keys/miss*
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE -Dmode=raw -DcompReportFile=vm_4_distAck_none.raw.txt perffmwk.PerfComparer vm_4_distAck_none/miss*
+
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE -Dmode=raw -DcompReportFile=vm_4_distNoAck_keys.raw.txt perffmwk.PerfComparer vm_4_distNoAck_keys/miss*
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE -Dmode=raw -DcompReportFile=vm_4_distNoAck_none.raw.txt perffmwk.PerfComparer vm_4_distNoAck_none/miss*
+
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE -Dmode=raw -DcompReportFile=vm_4_global_keys.raw.txt perffmwk.PerfComparer vm_4_global_keys/miss*
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE -Dmode=raw -DcompReportFile=vm_4_global_none.raw.txt perffmwk.PerfComparer vm_4_global_none/miss*

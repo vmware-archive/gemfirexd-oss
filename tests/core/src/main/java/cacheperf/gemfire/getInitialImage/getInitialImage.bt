@@ -1,0 +1,37 @@
+//------------------------------------------------------------------------------
+//
+//  GemFire get initial image for objects.ArrayOfByte
+//
+//------------------------------------------------------------------------------
+
+cacheperf/gemfire/getInitialImage/getInitialImage.conf
+  hydra.numHosts=2 dataPolicy=replicate scope=distributedNoAck
+
+cacheperf/gemfire/getInitialImage/getInitialImage.conf
+  hydra.numHosts=2 dataPolicy=replicate scope=distributedAck
+
+cacheperf/gemfire/getInitialImage/getInitialImage.conf
+  hydra.numHosts=2 dataPolicy=replicate scope=global
+
+//------------------------------------------------------------------------------
+
+cacheperf/gemfire/getInitialImage/getInitialImage.conf
+  hydra.numHosts=4 dataPolicy=replicate scope=distributedNoAck
+
+cacheperf/gemfire/getInitialImage/getInitialImage.conf
+  hydra.numHosts=4 dataPolicy=replicate scope=distributedAck
+
+cacheperf/gemfire/getInitialImage/getInitialImage.conf
+  hydra.numHosts=4 dataPolicy=replicate scope=global
+
+//------------------------------------------------------------------------------
+
+cacheperf/gemfire/getInitialImage/getInitialImage.conf
+  hydra.numHosts=8 dataPolicy=replicate scope=distributedNoAck
+
+cacheperf/gemfire/getInitialImage/getInitialImage.conf
+  hydra.numHosts=8 dataPolicy=replicate scope=distributedAck
+
+cacheperf/gemfire/getInitialImage/getInitialImage.conf
+  hydra.numHosts=8 dataPolicy=replicate scope=global
+

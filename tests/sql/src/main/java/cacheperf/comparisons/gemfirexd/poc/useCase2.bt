@@ -1,0 +1,6 @@
+cacheperf/comparisons/gemfirexd/poc/useCase2.conf
+  clientHosts=5 clientVMsPerHost=4 clientThreadsPerVM=24
+  serverHosts=5 serverVMsPerHost=1 serverThreadsPerVM=1
+  clientHeapMB = 1024 serverHeapMB = 20000 newSizeMB = 1000
+  batchSize = 100
+  numBatches = 100000

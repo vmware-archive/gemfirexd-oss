@@ -1,0 +1,4 @@
+management/test/cli/testableShell.conf managed_1_Hosts = 1 managed_1_VMsPerHost = 1 managed_1_ThreadsPerVM = 2
+	managed_2_Hosts = 1 managed_2_VMsPerHost = 1 managed_2_ThreadsPerVM = 1
+	managed_3_Hosts = 1 managed_3_VMsPerHost = 1 managed_3_ThreadsPerVM = 1
+	managing_1_Hosts = 2 managing_1_VMsPerHost = 1 managing_1_ThreadsPerVM = 2

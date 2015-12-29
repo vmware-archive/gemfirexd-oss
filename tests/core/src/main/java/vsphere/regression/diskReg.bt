@@ -1,0 +1,58 @@
+// GemFire tests
+// GemFire tests use default values
+// LRU tests
+//diskReg/serialDiskRegLRU.conf
+//diskReg/serialOverflowLRU.conf
+//diskReg/serialOverflowPersistenceLRU.conf
+//diskReg/concDiskRegLRU.conf
+
+// MemLRU tests
+diskReg/serialDiskRegMemLRU.conf
+threadGroupsName=default
+diskReg/serialOverflowMemLRU.conf
+threadGroupsName=default
+//diskReg/serialOverflowPersistenceMemLRU.conf
+//threadGroupsName=default
+diskReg/concDiskRegMemLRU.conf
+threadGroupsName=default
+
+// Heap tests
+diskReg/concDiskRegHeap.conf
+threadGroupsName=default
+
+// persistence with no overflow
+//diskReg/serialPersistence.conf
+//threadGroupsName=default
+
+// mirroring - no disk & overflow only (MIRROR_KEYS)
+//diskReg/diskRegMirrorKeysLRU.conf
+//threadGroupsName=otherPositiveUpdateThreads
+
+diskReg/diskRecovery.conf maxKeys=100 objectType=objects.ArrayOfByte
+threadGroupsName=accessor
+diskReg/crashRecovery.conf maxKeys=100 objectType=objects.ArrayOfByte
+threadGroupsName=accessor
+diskReg/shutdownRecovery.conf maxKeys=100 objectType=objects.ArrayOfByte
+threadGroupsName=accessor
+diskReg/mirroredRecovery.conf maxKeys=100 objectType=objects.ArrayOfByte
+threadGroupsName=accessor
+
+/*diskReg/diskRecovery.conf maxKeys=100 objectType=objects.NestedOrderVector
+diskReg/crashRecovery.conf maxKeys=100 objectType=objects.NestedOrderVector
+diskReg/shutdownRecovery.conf maxKeys=100 objectType=objects.NestedOrderVector
+diskReg/mirroredRecovery.conf maxKeys=100 objectType=objects.NestedOrderVector
+
+diskReg/diskOverflowRecovery.conf maxKeys=100 objectType=objects.ArrayOfByte
+diskReg/crashOverflowRecovery.conf maxKeys=100 objectType=objects.ArrayOfByte
+diskReg/shutdownOverflowRecovery.conf maxKeys=100 objectType=objects.ArrayOfByte
+diskReg/mirroredOverflowRecovery.conf maxKeys=100 objectType=objects.ArrayOfByte*/
+
+diskReg/diskOverflowRecovery.conf maxKeys=100 objectType=objects.NestedOrderVector
+threadGroupsName=accessor
+//diskReg/crashOverflowRecovery.conf maxKeys=100 objectType=objects.NestedOrderVector
+//threadGroupsName=accessor
+//diskReg/shutdownOverflowRecovery.conf maxKeys=100 objectType=objects.NestedOrderVector
+//threadGroupsName=accessor
+diskReg/mirroredOverflowRecovery.conf maxKeys=100 objectType=objects.NestedOrderVector
+threadGroupsName=accessor
+

@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE cache PUBLIC
+    "-//GemStone Systems, Inc.//GemFire Declarative Caching 3.0//EN"
+    "http://www.gemstone.com/dtd/cache3_0.dtd">
+<cache search-timeout="60">
+  <vm-root-region name="myRegion">
+    <region-attributes mirror-type="keys-values" scope="global" statistics-enabled="true">
+      <entry-time-to-live>
+        <expiration-attributes action="invalidate" timeout="60"/>
+      </entry-time-to-live>
+      <cache-loader>
+        <class-name>com.company.data.DatabaseLoader</class-name>
+        <parameter name="URL">
+          <string>jdbc:cloudscape:rmi:MyData</string>
+        </parameter>
+      </cache-loader>
+    </region-attributes>
+  </vm-root-region>
+  <vm-root-region name="myOtherRegion">
+    <region-attributes statistics-enabled="true"
+      scope="distributed-ack">
+    </region-attributes>
+    <entry>
+      <key><string>MyKey</string></key>
+      <value><string>MyValue</string></value>
+    </entry>
+    <entry>
+      <key><string>MyOtherKey</string></key>
+      <value>
+        <declarable>
+          <class-name>com.company.data.MyDeclarable</class-name>
+        </declarable>
+      </value>
+    </entry>
+  </vm-root-region>
+</cache>

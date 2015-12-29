@@ -1,0 +1,66 @@
+cacheperf/comparisons/gemfirexd/useCase5/poc/cbSellThin.conf
+  clientHosts = 1
+  clientVMsPerHost = 1
+  clientThreadsPerVM = 32
+  serverHosts = 2
+  serverVMsPerHost = 1
+  logQueries = false
+  maxKeysPerClient = 7500
+  serverHeapMB = 8192
+  ddlFile = ddl_vmware_2.sql persist = true
+  numTerminals = 1000
+cacheperf/comparisons/gemfirexd/useCase5/poc/cbSellThin.conf
+  clientHosts = 2
+  clientVMsPerHost = 1
+  clientThreadsPerVM = 32
+  serverHosts = 4
+  serverVMsPerHost = 1
+  logQueries = false
+  maxKeysPerClient = 7500
+  serverHeapMB = 8192
+  ddlFile = ddl_vmware_2.sql persist = true
+  numTerminals = 1000
+cacheperf/comparisons/gemfirexd/useCase5/poc/cbSellThin.conf
+  clientHosts = 3
+  clientVMsPerHost = 1
+  clientThreadsPerVM = 32
+  serverHosts = 6
+  serverVMsPerHost = 1
+  logQueries = false
+  maxKeysPerClient = 7500
+  serverHeapMB = 8192
+  ddlFile = ddl_vmware_2.sql persist = true
+  numTerminals = 1000
+cacheperf/comparisons/gemfirexd/useCase5/poc/cbSellThin.conf
+  clientHosts = 4
+  clientVMsPerHost = 1
+  clientThreadsPerVM = 32
+  serverHosts = 8
+  serverVMsPerHost = 1
+  logQueries = false
+  maxKeysPerClient = 7500
+  serverHeapMB = 8192
+  ddlFile = ddl_vmware_2.sql persist = true
+  numTerminals = 1000
+cacheperf/comparisons/gemfirexd/useCase5/poc/cbSellThin.conf
+  clientHosts = 5
+  clientVMsPerHost = 1
+  clientThreadsPerVM = 32
+  serverHosts = 10
+  serverVMsPerHost = 1
+  logQueries = false
+  maxKeysPerClient = 7500
+  serverHeapMB = 8192
+  ddlFile = ddl_vmware_2.sql persist = true
+  numTerminals = 1000
+cacheperf/comparisons/gemfirexd/useCase5/poc/cbSellThin.conf
+  clientHosts = 6
+  clientVMsPerHost = 1
+  clientThreadsPerVM = 32
+  serverHosts = 12
+  serverVMsPerHost = 1
+  logQueries = false
+  maxKeysPerClient = 7500
+  serverHeapMB = 8192
+  ddlFile = ddl_vmware_2.sql persist = true
+  numTerminals = 1000

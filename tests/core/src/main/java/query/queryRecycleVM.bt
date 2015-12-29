@@ -1,0 +1,25 @@
+query/index/concQueryIndexValidationPartitionedHAGII.conf
+query/index/concQueryIndexValidationReplicatedHAGII.conf
+query/index/serialQueryIndexValidationPartitionedRebalance.conf
+query/index/concQueryIndexPartitionedDiskRecovery.conf
+query/index/concQueryIndexReplicatedDiskRecovery.conf
+query/index/concQueryIndexPartitionedGIIHCT.conf
+edgeHosts=1 edgeVMsPerHost=3 edgeThreadsPerVM=3
+bridgeHosts=1 bridgeVMsPerHost=3 bridgeThreadsPerVM=3
+redundancy=1
+query/index/concQueryIndexReplicatedGIIHCT.conf
+edgeHosts=1 edgeVMsPerHost=3 edgeThreadsPerVM=3
+bridgeHosts=1 bridgeVMsPerHost=3 bridgeThreadsPerVM=3
+redundancy=0
+query/index/concQueryIndexReplicatedDiskRecoveryHCT.conf
+edgeHosts=1 edgeVMsPerHost=3 edgeThreadsPerVM=3
+bridgeHosts=1 bridgeVMsPerHost=3 bridgeThreadsPerVM=3
+redundancy=0
+query/index/concQueryIndexPartitionedDiskRecoveryHCT.conf
+edgeHosts=1 edgeVMsPerHost=3 edgeThreadsPerVM=3
+bridgeHosts=1 bridgeVMsPerHost=3 bridgeThreadsPerVM=3
+redundancy=0
+query/index/serialQueryIndexPartitionedRebalanceHCT.conf
+edgeHosts=1 edgeVMsPerHost=3 edgeThreadsPerVM=3
+bridgeHosts=1 bridgeVMsPerHost=3 bridgeThreadsPerVM=3
+redundancy=0

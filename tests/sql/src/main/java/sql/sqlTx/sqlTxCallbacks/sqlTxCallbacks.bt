@@ -1,0 +1,70 @@
+sql/sqlTx/sqlTxCallbacks/DBSynchronizerTxWithAccessors.conf
+    locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+    A=store storeHosts=6 storeVMsPerHost=2 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=6 accessorThreadsPerVM=10
+    SGvms1=1 SGvms2=2 SGvms3=2 SGvms4=2 SGvms5=3 SGvms6=2
+    SGList1="random" SGList2="random" SGList3="random"
+    SGList4="random" SGList5="random" SGList6="random"
+    testUniqueKeys=false
+    withReplicatedTables=false
+    securities=trade.securities:random:default
+    customers=trade.customers:random:default
+    networth=trade.networth:random:default
+    portfolio=trade.portfolio:random:default
+    sellorders=trade.sellorders:random:default
+    buyorders=trade.buyorders:random:default
+    txhistory=trade.txhistory:random:default
+
+sql/sqlTx/sqlTxCallbacks/DBSynchronizerTxWithAccessors.conf
+    locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+    A=store storeHosts=6 storeVMsPerHost=2 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=6 accessorThreadsPerVM=10
+    SGvms1=1 SGvms2=2 SGvms3=2 SGvms4=2 SGvms5=3 SGvms6=2
+    SGList1="random" SGList2="random" SGList3="random"
+    SGList4="random" SGList5="random" SGList6="random"
+    testUniqueKeys=true
+    withReplicatedTables=true
+    securities=trade.securities:random:random
+    customers=trade.customers:random:random
+    networth=trade.networth:random:random
+    portfolio=trade.portfolio:random:random
+    sellorders=trade.sellorders:random:random
+    buyorders=trade.buyorders:random:random
+    txhistory=trade.txhistory:random:random
+
+sql/sqlTx/sqlTxCallbacks/DBSynchronizerIndexTxWithAccessors.conf
+    locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+    A=store storeHosts=6 storeVMsPerHost=2 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=6 accessorThreadsPerVM=10
+    SGvms1=1 SGvms2=2 SGvms3=2 SGvms4=2 SGvms5=3 SGvms6=2
+    SGList1="random" SGList2="random" SGList3="random"
+    SGList4="random" SGList5="random" SGList6="random"
+    dropIndex = true
+    testUniqueKeys=false
+    withReplicatedTables=false
+    securities=trade.securities:random:default
+    customers=trade.customers:random:default
+    networth=trade.networth:random:default
+    portfolio=trade.portfolio:random:default
+    sellorders=trade.sellorders:random:default
+    buyorders=trade.buyorders:random:default
+    txhistory=trade.txhistory:random:default
+
+sql/sqlTx/sqlTxCallbacks/DBSynchronizerIndexTxWithAccessors.conf
+    locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+    A=store storeHosts=6 storeVMsPerHost=2 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=6 accessorThreadsPerVM=10
+    SGvms1=1 SGvms2=2 SGvms3=2 SGvms4=2 SGvms5=3 SGvms6=2
+    SGList1="random" SGList2="random" SGList3="random"
+    SGList4="random" SGList5="random" SGList6="random"
+    dropIndex = true
+    testUniqueKeys=true
+    withReplicatedTables=true
+    securities=trade.securities:random:random
+    customers=trade.customers:random:random
+    networth=trade.networth:random:random
+    portfolio=trade.portfolio:random:random
+    sellorders=trade.sellorders:random:random
+    buyorders=trade.buyorders:random:random
+    txhistory=trade.txhistory:random:random
+    

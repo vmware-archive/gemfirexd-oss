@@ -1,0 +1,520 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<BODY bgcolor="#ffffff"><HTML>
+ <IMG SRC="../../../../docs/VMwareLogo.png" BORDER="0">
+ <HEAD>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+  <META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+  <LINK REL="STYLESHEET" HREF="DocIndex.css" CHARSET="ISO-8859-1" TYPE="text/css">
+<H1 align="center">
+vFabric<FONT size=6><b><sup><font size=-0>&#8482;</font></sup></b></FONT></font> GemFire<FONT size=6><b><sup><font size=-0>&#174;</font></sup></b></FONT></font></H1>
+     </b></FONT>
+  <H1 align="center">Delta Propagation</H1>
+<H2 align="center">Java Caching API Programming Example </H2>
+
+<hr color="#cc0000" size="2" align="left">
+
+<BODY TEXT="#000000" LINK="#0000B0" VLINK="#666699" BGCOLOR="#FFFFFF">
+<P>The <b>Delta Propagation</b> example uses two servers and two clients with simple and nested object types to demonstrate the delta propagation feature of GemFire. The example used the distributed system property, <code>delta-propagation</code>, and the region level property, <code>cloning-enabled</code>.</P>
+<P>The example is located in the SampleCode distribution under <code>examples/dist/delta</code>.
+</P>
+
+<P>The two servers connect as peers in a distributed system, and each client runs as a standalone GemFire application and connects to  one  server. The four processes are:</P>
+
+<UL>
+<LI>A client, <code>feederClient</code>, which connects to the <code>server1</code> and updates its cache, causing the distribution of deltas to the server
+<LI>A server, <code>server1</code>, which receives the delta updates from <code>feederClient</code>, updates its own cache, and distributes the deltas to <code>server2</code>.
+<LI>The other server, <code>server2</code>, which receives delta distributions from <code>server1</code> and updates it own cache.
+<LI>The other client, <code>receiverClient</code>, which registers with <code>server2</code> to receives deltas updates.
+</UL>
+
+Both servers apply the delta to update the value objects in their process.
+
+<P>To run the example, take following steps.
+<UL>
+<LI>Open four shells.</LI>
+<LI>In each shell, configure your environment according to the instructions provided in <a href="../../EnvSetup.html">examples/EnvSetup.html</a>.</LI>
+<LI>In each shell, change the current working directory to <code>examples/dist/delta</code>.</LI>
+<LI>Start both the servers followed by the <code>receiverClient</code> and finally, the <code>feederClient</code>.</LI>
+</UL>
+The example uses 10347 as the mcast port. To change this, set the <code>mcast-port</code> value in the <code>server_gemfire.properties</code> file supplied with the example.</P>
+
+<P>
+The example uses the following cache server configuration files as input when starting the servers for cache initialization.
+<UL>
+<LI><code>examples/delta/server1.xml</code>.</LI>
+<LI><code>examples/delta/server2.xml</code>.</LI>
+<LI><code>examples/delta/cloningEnabledOnServer1.xml</code>.</LI>
+<LI><code>examples/delta/cloningEnabledOnServer2.xml</code>.</LI>
+</UL>
+The first two files run the servers with the default setting - cloning turned off. The last two files set <code>cloning-enabled</code> to true. In these configurations, the value object is cloned before they are updated with the delta.
+</P>
+<P>
+The corresponding configuration files for the clients are:
+<UL>
+<LI><code>examples/delta/receiverClient.xml</code>.</LI>
+<LI><code>examples/delta/feederClient.xml</code>.</LI>
+<LI><code>examples/delta/cloningEnabledOnReceiverClient.xml</code>.</LI>
+<LI><code>examples/delta/cloningEnabledOnFeederClient.xml</code>.</LI>
+</UL>
+</P>
+
+
+<p> <B>Running the servers</B></p>
+<P>Start <code>server1</code>, with the default cloning property by using the following command.
+<pre>
+       java -DgemfirePropertyFile=server_gemfire.properties \
+             delta.DeltaCacheServer server1.xml
+</pre>
+
+<P>Use <code>server2.xml</code> to start <code>server2</code>. 
+
+<pre>
+       java -DgemfirePropertyFile=server_gemfire.properties \
+             delta.DeltaCacheServer server2.xml
+</pre>
+
+Use <code>cloningEnabledOnServer1.xml</code> or <code>cloningEnabledOnServer2.xml</code> to enable cloning instead. The servers use the same gemfire.properties file, and hence, are peers to each other in their distributed system. Once started, the servers wait for clients to connect. </P>
+
+
+<p> <B>Running the clients</B></p>
+
+<p>Start <code>receiverClient</code> and <code>feederClient</code> in their separate shells.</p>
+<P>To start <code>receiverClient</code> execute the following command for the default setting for cloning.
+<pre>
+       java -DgemfirePropertyFile=client_gemfire.properties \
+             delta.DeltaReceiverClient receiverClient.xml
+
+</pre>
+<P>Use <CODE>feederClient.xml</CODE> to run DeltaFeederClient. Use <code>cloningEnabledOnReceiverClient.xml</code> or <code>cloningEnabledOnFeederClient.xml</code> to have the value objects cloned before applying the updates. Both clients use the same client_gemfire.properties file.</P>
+
+The example demonstrates four different kinds of delta examples. These are selected based on the option provided.</br>
+<UL>
+<LI>Simple - A very basic implementation of delta. The class <CODE>SimpleDelta</CODE> has two fields - an <code>int</code> and a <code>double</code>.
+<LI>Synchronized - For extracting and applying delta in synchronized block. The <code>SynchronizedDelta</code> class used synchronized versions of the <code>toDelta</code> and <code>fromDelta</code>, and demonstrates a way to protect against object inconsistency due to concurrent updates. Enabling cloning on the region preempts the need for such synchronization.
+<LI>Nested - Delta object contain another delta object. The <code>NestedDelta</code> class has two fields, a int and a NestedType. NestedType is an inner class of NestedDelta, and consists of two fields, a boolean and an int.
+<LI>Collection - Delta object has collection and this contain delta objects. The <code>DeltaCollection</code> class has one field, a HashMap.
+</UL>
+</P>
+<p> By default, feederClient will feed simple delta objects to server1. You can change this behavior by specifying <code>[ synchronized | nested | collection ]</code> as an argument to use the synchronized, nested or collection delta example.</p>
+
+<P>Both clients define the same cache region named <code>cs_region</code>. The second cache client connects and feeds deltas into the <code>cs_region</code> region. To run feederClient with cloning enabled, provide <code>cloningEnabledOnFeederClient.xml</code> for cache initialization.</P>
+
+java -DgemfirePropertyFile=client_gemfire.properties \
+             delta.DeltaFeederClient feederClient.xml
+
+
+<B>Simple delta feed </B>
+<P>A simple implementation of <code>Delta</code>, located at <code>examples/dist/delta/SimpleDelta.java</code>, is used as feed.
+This object has two fields:</P>
+<PRE>
+  private int intVal;
+  private double doubleVal;
+</PRE>
+<P>This example changes combination of field on each update. So in the logs you would see these fields getting extracted or updated.</P>
+<P>Logs <b>output</b> like shown below is displayed on the console of <b>feeder client</b>:</P>
+<PRE>
+Region name is /cs_region
+FEEDER_THREAD_0 putting _key, value=SimpleDelta [ hasDelta = true, intVal = 1, doubleVal = {0.5404765394313877} ]
+Extracting delta from SimpleDelta [ hasDelta = true, intVal = 1, doubleVal = {0.5404765394313877} ]
+ Extracted delta from field 'intVal' = 1
+FEEDER_THREAD_0 putting _key, value=SimpleDelta [ hasDelta = true, intVal = 1, doubleVal = {2.0} ]
+Extracting delta from SimpleDelta [ hasDelta = true, intVal = 1, doubleVal = {2.0} ]
+ Extracted delta from field 'doubleVal' = 2.0
+FEEDER_THREAD_0  putting _key, value=SimpleDelta [ hasDelta = true, intVal = 3, doubleVal = {3.0} ]
+Extracting delta from SimpleDelta [ hasDelta = true, intVal = 3, doubleVal = {3.0} ]
+ Extracted delta from field 'intVal' = 3
+ Extracted delta from field 'doubleVal' = 3.0
+.
+.
+.
+</PRE>
+<P>Logs <b>output</b> like shown below is displayed on the console of <b>both the servers</b>:</P>
+<PRE>
+Initialized
+Applying delta to SimpleDelta [ hasDelta = false, intVal = 2147483647, doubleVal = {0.5404765394313877} ]
+ Applied delta to field 'intVal' = 1
+Applying delta to SimpleDelta [ hasDelta = false, intVal = 1, doubleVal = {0.5404765394313877} ]
+ Applied delta to field 'doubleVal' = 2.0
+Applying delta to SimpleDelta [ hasDelta = false, intVal = 1, doubleVal = {2.0} ]
+ Applied delta to field 'intVal' = 3
+ Applied delta to field 'doubleVal' = 3.0
+Applying delta to SimpleDelta [ hasDelta = false, intVal = 3, doubleVal = {3.0} ]
+ Applied delta to field 'intVal' = 4
+Applying delta to SimpleDelta [ hasDelta = false, intVal = 4, doubleVal = {3.0} ]
+ Applied delta to field 'doubleVal' = 5.0
+.
+.
+.
+</PRE>
+<P>Logs <b>output</b> like shown below is displayed on the console of <b>receiver client</b>:</P>
+<PRE>
+Region name is /cs_region
+After Create: SimpleDelta [ hasDelta = false, intVal = 2147483647, doubleVal = {0.5404765394313877} ]
+-----------
+Applying delta to SimpleDelta [ hasDelta = false, intVal = 2147483647, doubleVal = {0.5404765394313877} ]
+ Applied delta to field 'intVal' = 1
+After Update: SimpleDelta [ hasDelta = false, intVal = 1, doubleVal = {0.5404765394313877} ]
+-----------
+Applying delta to SimpleDelta [ hasDelta = false, intVal = 1, doubleVal = {0.5404765394313877} ]
+ Applied delta to field 'doubleVal' = 2.0
+After Update: SimpleDelta [ hasDelta = false, intVal = 1, doubleVal = {2.0} ]
+-----------
+Applying delta to SimpleDelta [ hasDelta = false, intVal = 1, doubleVal = {2.0} ]
+ Applied delta to field 'intVal' = 3
+ Applied delta to field 'doubleVal' = 3.0
+After Update: SimpleDelta [ hasDelta = false, intVal = 3, doubleVal = {3.0} ]
+-----------
+Applying delta to SimpleDelta [ hasDelta = false, intVal = 3, doubleVal = {3.0} ]
+ Applied delta to field 'intVal' = 4
+After Update: SimpleDelta [ hasDelta = false, intVal = 4, doubleVal = {3.0} ]
+-----------
+.
+.
+.
+</PRE>
+
+<B>Synchronized delta feed</B>
+<P>A synchronized implementation of <code>Delta</code>, located at <code>examples/dist/delta/SynchronizedDelta.java</code>, is used as feed.
+There are 5 threads performing concurrent updates on the entries in the region. The object has two fields:</P>
+<PRE>
+  private long longVal;
+  private double doubleVal;
+</PRE>
+<P>This example changes combination of field on each update. So in the logs you would see this fields getting extracted or updated.</P>
+<P>Logs <b>output</b> like shown below is displayed on the console of <b>feeder client</b>:</P>
+<PRE>
+Region name is /cs_region
+FEEDER_THREAD_2 create _key, value=SynchronizedDelta [ hasDelta = false, longVal = 23, doubleVal = {0.3114208337382478} ]
+FEEDER_THREAD_1 create _key, value=SynchronizedDelta [ hasDelta = false, longVal = 22, doubleVal = {0.6809330603215199} ]
+FEEDER_THREAD_0 create _key, value=SynchronizedDelta [ hasDelta = false, longVal = 21, doubleVal = {0.42404865258767743} ]
+FEEDER_THREAD_4 create _key, value=SynchronizedDelta [ hasDelta = false, longVal = 25, doubleVal = {0.1981782306789458} ]
+FEEDER_THREAD_3 create _key, value=SynchronizedDelta [ hasDelta = false, longVal = 24, doubleVal = {0.18805155080261315} ]
+FEEDER_THREAD_0  putting _key, value=SynchronizedDelta [ hasDelta = true, longVal = 1246528738932131000, doubleVal = {0.40517
+71974740377} ]
+FEEDER_THREAD_4  putting _key, value=SynchronizedDelta [ hasDelta = true, longVal = 1246528738936074000, doubleVal = {0.76960
+8638345658} ]
+Extracting delta in synchronized block from SynchronizedDelta [ hasDelta = true, longVal = 1246528738932131000, doubleVal = {
+0.4051771974740377} ]
+ Extracted delta from field 'longVal' = 1246528738932131000
+ Extracted delta from field 'doubleVal' = 0.4051771974740377
+FEEDER_THREAD_0 putting _key, value=SynchronizedDelta [ hasDelta = true, longVal = 1246528738987661000, doubleVal = {0.405177
+1974740377} ]
+Extracting delta in synchronized block from SynchronizedDelta [ hasDelta = true, longVal = 1246528738987661000, doubleVal = {
+0.4051771974740377} ]
+ Extracted delta from field 'longVal' = 1246528738987661000
+FEEDER_THREAD_0 putting _key, value=SynchronizedDelta [ hasDelta = true, longVal = 1246528738987661000, doubleVal = {0.181456
+4589583273} ]
+.
+.
+.
+</PRE>
+<P>Logs <b>output</b> like shown below is displayed on the console of <b>both the servers</b>:</P>
+<PRE>
+Region name is /cs_region
+After Create: SynchronizedDelta [ hasDelta = false, longVal = 23, doubleVal = {0.3114208337382478} ]
+-----------
+After Update: SynchronizedDelta [ hasDelta = false, longVal = 24, doubleVal = {0.18805155080261315} ]
+-----------
+After Update: SynchronizedDelta [ hasDelta = false, longVal = 22, doubleVal = {0.6809330603215199} ]
+-----------
+After Update: SynchronizedDelta [ hasDelta = false, longVal = 21, doubleVal = {0.42404865258767743} ]
+-----------
+After Update: SynchronizedDelta [ hasDelta = false, longVal = 25, doubleVal = {0.1981782306789458} ]
+-----------
+Applying delta in synchronized block to SynchronizedDelta [ hasDelta = false, longVal = 25, doubleVal = {0.1981782306789458} ]
+ Applied delta to field 'longVal' = 1246528738932131000
+ Applied delta to field 'doubleVal' = 0.4051771974740377
+After Update: SynchronizedDelta [ hasDelta = false, longVal = 1246528738932131000, doubleVal = {0.4051771974740377} ]
+-----------
+Applying delta in synchronized block to SynchronizedDelta [ hasDelta = false, longVal = 1246528738932131000, doubleVal = {0.4051771974740377} ]
+ Applied delta to field 'longVal' = 1246528738987661000
+After Update: SynchronizedDelta [ hasDelta = false, longVal = 1246528738987661000, doubleVal = {0.4051771974740377} ]
+-----------
+Applying delta in synchronized block to SynchronizedDelta [ hasDelta = false, longVal = 1246528738987661000, doubleVal = {0.4051771974740377} ]
+ Applied delta to field 'doubleVal' = 0.1814564589583273
+After Update: SynchronizedDelta [ hasDelta = false, longVal = 1246528738987661000, doubleVal = {0.1814564589583273} ]
+-----------
+.
+.
+.
+</PRE>
+<P>Logs <b>output</b> like shown below is displayed on the console of <b>receiver client</b>:</P>
+<PRE>
+Region name is /cs_region
+After Create: SynchronizedDelta [ hasDelta = false, longVal = 26, doubleVal = {0.34843115669804614} ]
+-----------
+After Update: SynchronizedDelta [ hasDelta = false, longVal = 25, doubleVal = {0.3108178409880603} ]
+-----------
+After Update: SynchronizedDelta [ hasDelta = false, longVal = 23, doubleVal = {0.8693684686894905} ]
+-----------
+After Update: SynchronizedDelta [ hasDelta = false, longVal = 22, doubleVal = {0.6714219881196654} ]
+-----------
+After Update: SynchronizedDelta [ hasDelta = false, longVal = 24, doubleVal = {0.7907098370145067} ]
+-----------
+Applying delta in synchronized block to SynchronizedDelta [ hasDelta = false, longVal = 24, doubleVal = {0.7907098370145067} ]
+ Applied delta to field 'longVal' = 1246529498684743000
+ Applied delta to field 'doubleVal' = 0.43574465916013716
+After Update: SynchronizedDelta [ hasDelta = false, longVal = 1246529498684743000, doubleVal = {0.43574465916013716} ]
+-----------
+Applying delta in synchronized block to SynchronizedDelta [ hasDelta = false, longVal = 1246529498684743000, doubleVal = {0.43574465916013716} ]
+ Applied delta to field 'longVal' = 1246529498710952000
+After Update: SynchronizedDelta [ hasDelta = false, longVal = 1246529498710952000, doubleVal = {0.43574465916013716} ]
+-----------
+Applying delta in synchronized block to SynchronizedDelta [ hasDelta = false, longVal = 1246529498710952000, doubleVal = {0.43574465916013716} ]
+ Applied delta to field 'longVal' = 1246529498686279000
+ Applied delta to field 'doubleVal' = 0.7779255067881132
+After Update: SynchronizedDelta [ hasDelta = false, longVal = 1246529498686279000, doubleVal = {0.7779255067881132} ]
+-----------
+.
+.
+.
+</PRE>
+<B>Nested delta feed</B>
+<P>In this case, an implementation of <code>Delta</code>, located at <code>examples/dist/delta/NestedDelta.java</code>, is used as feed.
+This implementation has two fields:</P>
+<PRE>
+  private int intVal;
+  private NestedType nestedDelta = new NestedType();
+</PRE>
+<P><code>nestedDelta</code> is an instance of another implementation of <code>Delta</code>, <code>NestedType</code>. It has following fields:</P>
+<PRE>
+    private boolean flag; 
+    private int id = -1; 
+</PRE>
+<P>This example changes the fields <code>intVal</code> and <code>nestedDelta</code> of <code>NestedDelta</code> with each update. The field <code>intVal</code> will gets incremented with each update. The field <code>id</code> of <code>NestedType</code> too gets incremented by one with each update. So in the logs you would see only these two fields getting extracted or updated.</P>
+<P>Logs <b>output</b> like shown below is displayed on the console of <b>feeder client</b>:</P>
+<PRE>
+Region name is /cs_region
+FEEDER_THREAD_0 putting _key, value=NestedDelta [ hasDelta = true, intVal = 1, nestedDelta = NestedType [ hasDelta = false, fldSwitch = false, fldIdent = -1 ] ]
+Extracting delta from NestedDelta [ hasDelta = true, intVal = 1, nestedDelta = NestedType [ hasDelta = false, fldSwitch = false, fldIdent = -1 ] ]
+ Wrote modified field 'intVal' = 1 to DataOutput
+FEEDER_THREAD_0 putting _key, value=NestedDelta [ hasDelta = true, intVal = 1, nestedDelta = NestedType [ hasDelta = true, fldSwitch = false, fldIdent = 2 ] ]
+Extracting delta from NestedDelta [ hasDelta = true, intVal = 1, nestedDelta = NestedType [ hasDelta = true, fldSwitch = false, fldIdent = 2 ] ]
+Extracting delta to NestedType [ hasDelta = true, fldSwitch = false, fldIdent = 2 ]
+ Wrote modified field 'fldIdent' = 2 to DataOutput
+ Wrote modified field 'nestedDelta' = NestedType [ hasDelta = false, fldSwitch = false, fldIdent = 2 ] to DataOutput
+FEEDER_THREAD_0 putting _key, value=NestedDelta [ hasDelta = true, intVal = 3, nestedDelta = NestedType [ hasDelta = true, fldSwitch = true, fldIdent = 3 ] ]
+Extracting delta from NestedDelta [ hasDelta = true, intVal = 3, nestedDelta = NestedType [ hasDelta = true, fldSwitch = true, fldIdent = 3 ] ]
+ Wrote modified field 'intVal' = 3 to DataOutput
+Extracting delta to NestedType [ hasDelta = true, fldSwitch = true, fldIdent = 3 ]
+ Wrote modified field 'fldSwitch' = true to DataOutput
+ Wrote modified field 'fldIdent' = 3 to DataOutput
+ Wrote modified field 'nestedDelta' = NestedType [ hasDelta = false, fldSwitch = true, fldIdent = 3 ] to DataOutput
+.
+.
+.
+</PRE>
+<P>Logs <b>output</b> like shown below is displayed on the console of <b>both the servers</b>:</P>
+<PRE>
+Initialized
+Applying delta to NestedDelta [ hasDelta = false, intVal = 2147483647, nestedDelta = NestedType [ hasDelta = false, fldSwitch = false, fldIdent = -1 ] ]
+ Applied delta to field 'intVal' = 1
+Applying delta to NestedDelta [ hasDelta = false, intVal = 1, nestedDelta = NestedType [ hasDelta = false, fldSwitch = false, fldIdent = -1 ] ]
+Applying delta to NestedType [ hasDelta = false, fldSwitch = false, fldIdent = -1 ]
+ Applied delta to field 'fldIdent' = 2
+Applying delta to NestedDelta [ hasDelta = false, intVal = 1, nestedDelta = NestedType [ hasDelta = false, fldSwitch = false, fldIdent = 2 ] ]
+ Applied delta to field 'intVal' = 3
+Applying delta to NestedType [ hasDelta = false, fldSwitch = false, fldIdent = 2 ]
+ Applied delta to field 'fldSwitch' = true
+ Applied delta to field 'fldIdent' = 3
+Applying delta to NestedDelta [ hasDelta = false, intVal = 3, nestedDelta = NestedType [ hasDelta = false, fldSwitch = true, fldIdent = 3 ] ]
+ Applied delta to field 'intVal' = 4
+Applying delta to NestedType [ hasDelta = false, fldSwitch = true, fldIdent = 3 ]
+ Applied delta to field 'fldSwitch' = false
+Applying delta to NestedDelta [ hasDelta = false, intVal = 4, nestedDelta = NestedType [ hasDelta = false, fldSwitch = false, fldIdent = 3 ] ]
+.
+.
+.
+</PRE>
+<P>Logs <b>output</b> like shown below is displayed on the console of <b>receiver client</b>:</P>
+<PRE>
+Region name is /cs_region
+After Create: NestedDelta [ hasDelta = false, intVal = 2147483647, nestedDelta = NestedType [ hasDelta = false, fldSwitch = false, fldIdent = -1 ] ]
+-----------
+Applying delta to NestedDelta [ hasDelta = false, intVal = 2147483647, nestedDelta = NestedType [ hasDelta = false, fldSwitch = false, fldIdent = -1 ] ]
+ Applied delta to field 'intVal' = 1
+After Update: NestedDelta [ hasDelta = false, intVal = 1, nestedDelta = NestedType [ hasDelta = false, fldSwitch = false, fldIdent = -1 ] ]
+-----------
+Applying delta to NestedDelta [ hasDelta = false, intVal = 1, nestedDelta = NestedType [ hasDelta = false, fldSwitch = false, fldIdent = -1 ] ]
+Applying delta to NestedType [ hasDelta = false, fldSwitch = false, fldIdent = -1 ]
+ Applied delta to field 'fldIdent' = 2
+After Update: NestedDelta [ hasDelta = false, intVal = 1, nestedDelta = NestedType [ hasDelta = false, fldSwitch = false, fldIdent = 2 ] ]
+-----------
+Applying delta to NestedDelta [ hasDelta = false, intVal = 1, nestedDelta = NestedType [ hasDelta = false, fldSwitch = false, fldIdent = 2 ] ]
+ Applied delta to field 'intVal' = 3
+Applying delta to NestedType [ hasDelta = false, fldSwitch = false, fldIdent = 2 ]
+ Applied delta to field 'fldSwitch' = true
+ Applied delta to field 'fldIdent' = 3
+After Update: NestedDelta [ hasDelta = false, intVal = 3, nestedDelta = NestedType [ hasDelta = false, fldSwitch = true, fldIdent = 3 ] ]
+-----------
+.
+.
+.
+</PRE>
+<B>Collection delta feed</B>
+<P>In this case, an implementation of <code>Delta</code>, located at <code>examples/dist/delta/DeltaCollection.java</code>, is used as feed.
+This implementation has one field:</P>
+<PRE>
+    private HashMap<String, SimpleDelta> map = new HashMap<String, SimpleDelta>(); 
+</PRE>
+<P>This example changes the field <code>map</code> with each update, may contain <code>Delta</code> objects. So in the logs you would see these fields getting extracted or updated.</P>  
+<P>Logs <b>output</b> like shown below is displayed on the console of <b>feeder client</b>:</P>
+<PRE>
+Region name is /cs_region
+Extracting delta from DeltaCollection [ hasDelta = true, map = {_key11=SimpleDelta [ hasDelta = false, intVal = 36, doubleVal = {36.0} ], \
+ _key13=SimpleDelta [ hasDelta = true, intVal = 0, doubleVal = {13.0} ], _key2_added=SimpleDelta [ hasDelta = false, intVal = 2, doubleVal = {2.0} ], \
+ _key14=SimpleDelta [ hasDelta = false, intVal = 39, doubleVal = {39.0} ], _key16=SimpleDelta [ hasDelta = true, intVal = 0, doubleVal = {16.0} ], \
+ _key17=SimpleDelta [ hasDelta = false, intVal = 42, doubleVal = {42.0} ], _key19=SimpleDelta [ hasDelta = true, intVal = 0, doubleVal = {19.0} ], \
+ _key8_added=SimpleDelta [ hasDelta = false, intVal = 8, doubleVal = {8.0} ], _key5_added=SimpleDelta [ hasDelta = false, intVal = 5, doubleVal = {5.0} ], \
+ _key11_added=SimpleDelta [ hasDelta = false, intVal = 11, doubleVal = {11.0} ], _key23_added=SimpleDelta [ hasDelta = false, intVal = 23, doubleVal = {23.0} ], \
+ _key20_added=SimpleDelta [ hasDelta = false, intVal = 20, doubleVal = {20.0} ], _key20=SimpleDelta [ hasDelta = false, intVal = 45, doubleVal = {45.0} ], \
+ _key8=SimpleDelta [ hasDelta = false, intVal = 33, doubleVal = {33.0} ], _key22=SimpleDelta [ hasDelta = true, intVal = 0, doubleVal = {22.0} ], \
+ _key17_added=SimpleDelta [ hasDelta = false, intVal = 17, doubleVal = {17.0} ], _key23=SimpleDelta [ hasDelta = false, intVal = 48, doubleVal = {48.0} ], \
+ _key1=SimpleDelta [ hasDelta = true, intVal = 0, doubleVal = {1.0} ], _key2=SimpleDelta [ hasDelta = false, intVal = 27, doubleVal = {27.0} ], \
+ _key4=SimpleDelta [ hasDelta = true, intVal = 0, doubleVal = {4.0} ], _key5=SimpleDelta [ hasDelta = false, intVal = 30, doubleVal = {30.0} ], \
+ _key7=SimpleDelta [ hasDelta = true, intVal = 0, doubleVal = {7.0} ], _key10=SimpleDelta [ hasDelta = true, intVal = 0, doubleVal = {10.0} ], \
+ _key14_added=SimpleDelta [ hasDelta = false, intVal = 14, doubleVal = {14.0} ]} ]
+Extracting delta from SimpleDelta [ hasDelta = true, intVal = 0, doubleVal = {22.0} ]
+ Extracted delta from field 'doubleVal' = 22.0
+Extracting delta from SimpleDelta [ hasDelta = true, intVal = 0, doubleVal = {13.0} ]
+ Extracted delta from field 'doubleVal' = 13.0
+Extracting delta from SimpleDelta [ hasDelta = true, intVal = 0, doubleVal = {16.0} ]
+ Extracted delta from field 'doubleVal' = 16.0
+Extracting delta from SimpleDelta [ hasDelta = true, intVal = 0, doubleVal = {19.0} ]
+ Extracted delta from field 'doubleVal' = 19.0
+Extracting delta from SimpleDelta [ hasDelta = true, intVal = 0, doubleVal = {1.0} ]
+ Extracted delta from field 'doubleVal' = 1.0
+Extracting delta from SimpleDelta [ hasDelta = true, intVal = 0, doubleVal = {4.0} ]
+ Extracted delta from field 'doubleVal' = 4.0
+Extracting delta from SimpleDelta [ hasDelta = true, intVal = 0, doubleVal = {7.0} ]
+ Extracted delta from field 'doubleVal' = 7.0
+Extracting delta from SimpleDelta [ hasDelta = true, intVal = 0, doubleVal = {10.0} ]
+ Extracted delta from field 'doubleVal' = 10.0
+
+</PRE>
+<P>Logs <b>output</b> like shown below is displayed on the console of <b>both the servers</b>:</P>
+<PRE>
+Initialized
+Applying delta to DeltaCollection [ hasDelta = false, map = {_key11=SimpleDelta [ hasDelta = false, intVal = 36, doubleVal = {36.0} ], \
+_key12=SimpleDelta [ hasDelta = false, intVal = 37, doubleVal = {37.0} ], _key13=SimpleDelta [ hasDelta = false, intVal = 38, doubleVal = {38.0} ], \
+_key14=SimpleDelta [ hasDelta = false, intVal = 39, doubleVal = {39.0} ], _key15=SimpleDelta [ hasDelta = false, intVal = 40, doubleVal = {40.0} ], \
+_key16=SimpleDelta [ hasDelta = false, intVal = 41, doubleVal = {41.0} ], _key17=SimpleDelta [ hasDelta = false, intVal = 42, doubleVal = {42.0} ], \
+_key18=SimpleDelta [ hasDelta = false, intVal = 43, doubleVal = {43.0} ], _key19=SimpleDelta [ hasDelta = false, intVal = 44, doubleVal = {44.0} ], \
+_key21=SimpleDelta [ hasDelta = false, intVal = 46, doubleVal = {46.0} ], _key20=SimpleDelta [ hasDelta = false, intVal = 45, doubleVal = {45.0} ], \
+_key8=SimpleDelta [ hasDelta = false, intVal = 33, doubleVal = {33.0} ], _key24=SimpleDelta [ hasDelta = false, intVal = 49, doubleVal = {49.0} ], \
+_key9=SimpleDelta [ hasDelta = false, intVal = 34, doubleVal = {34.0} ], _key22=SimpleDelta [ hasDelta = false, intVal = 47, doubleVal = {47.0} ], \
+_key23=SimpleDelta [ hasDelta = false, intVal = 48, doubleVal = {48.0} ], _key0=SimpleDelta [ hasDelta = false, intVal = 25, doubleVal = {25.0} ], \
+_key1=SimpleDelta [ hasDelta = false, intVal = 26, doubleVal = {26.0} ], _key2=SimpleDelta [ hasDelta = false, intVal = 27, doubleVal = {27.0} ], \
+_key3=SimpleDelta [ hasDelta = false, intVal = 28, doubleVal = {28.0} ], _key4=SimpleDelta [ hasDelta = false, intVal = 29, doubleVal = {29.0} ], \
+_key5=SimpleDelta [ hasDelta = false, intVal = 30, doubleVal = {30.0} ], _key6=SimpleDelta [ hasDelta = false, intVal = 31, doubleVal = {31.0} ], \
+_key7=SimpleDelta [ hasDelta = false, intVal = 32, doubleVal = {32.0} ], _key10=SimpleDelta [ hasDelta = false, intVal = 35, doubleVal = {35.0} ]} ]
+Applying delta to SimpleDelta [ hasDelta = false, intVal = 47, doubleVal = {47.0} ]
+ Applied delta to field 'doubleVal' = 22.0
+Applying delta to SimpleDelta [ hasDelta = false, intVal = 38, doubleVal = {38.0} ]
+ Applied delta to field 'doubleVal' = 13.0
+Applying delta to SimpleDelta [ hasDelta = false, intVal = 41, doubleVal = {41.0} ]
+ Applied delta to field 'doubleVal' = 16.0
+Applying delta to SimpleDelta [ hasDelta = false, intVal = 44, doubleVal = {44.0} ]
+ Applied delta to field 'doubleVal' = 19.0
+Applying delta to SimpleDelta [ hasDelta = false, intVal = 26, doubleVal = {26.0} ]
+ Applied delta to field 'doubleVal' = 1.0
+Applying delta to SimpleDelta [ hasDelta = false, intVal = 29, doubleVal = {29.0} ]
+ Applied delta to field 'doubleVal' = 4.0
+Applying delta to SimpleDelta [ hasDelta = false, intVal = 32, doubleVal = {32.0} ]
+ Applied delta to field 'doubleVal' = 7.0
+Applying delta to SimpleDelta [ hasDelta = false, intVal = 35, doubleVal = {35.0} ]
+ Applied delta to field 'doubleVal' = 10.0
+ Applied delta on DeltaCollection's field 'map' = {_key11=SimpleDelta [ hasDelta = false, intVal = 36, doubleVal = {36.0} ], \
+ _key13=SimpleDelta [ hasDelta = false, intVal = 38, doubleVal = {13.0} ], _key2_added=SimpleDelta [ hasDelta = false, intVal = 2, doubleVal = {2.0} ], \
+ _key14=SimpleDelta [ hasDelta = false, intVal = 39, doubleVal = {39.0} ], _key16=SimpleDelta [ hasDelta = false, intVal = 41, doubleVal = {16.0} ], \
+ _key17=SimpleDelta [ hasDelta = false, intVal = 42, doubleVal = {42.0} ], _key19=SimpleDelta [ hasDelta = false, intVal = 44, doubleVal = {19.0} ], \
+ _key8_added=SimpleDelta [ hasDelta = false, intVal = 8, doubleVal = {8.0} ], _key5_added=SimpleDelta [ hasDelta = false, intVal = 5, doubleVal = {5.0} ], \
+ _key11_added=SimpleDelta [ hasDelta = false, intVal = 11, doubleVal = {11.0} ], _key23_added=SimpleDelta [ hasDelta = false, intVal = 23, doubleVal = {23.0} ], \
+ _key20_added=SimpleDelta [ hasDelta = false, intVal = 20, doubleVal = {20.0} ], _key20=SimpleDelta [ hasDelta = false, intVal = 45, doubleVal = {45.0} ], \
+ _key8=SimpleDelta [ hasDelta = false, intVal = 33, doubleVal = {33.0} ], _key22=SimpleDelta [ hasDelta = false, intVal = 47, doubleVal = {22.0} ], \
+ _key17_added=SimpleDelta [ hasDelta = false, intVal = 17, doubleVal = {17.0} ], _key23=SimpleDelta [ hasDelta = false, intVal = 48, doubleVal = {48.0} ], \
+ _key1=SimpleDelta [ hasDelta = false, intVal = 26, doubleVal = {1.0} ], _key2=SimpleDelta [ hasDelta = false, intVal = 27, doubleVal = {27.0} ], \
+ _key4=SimpleDelta [ hasDelta = false, intVal = 29, doubleVal = {4.0} ], _key5=SimpleDelta [ hasDelta = false, intVal = 30, doubleVal = {30.0} ], \
+ _key7=SimpleDelta [ hasDelta = false, intVal = 32, doubleVal = {7.0} ], _key10=SimpleDelta [ hasDelta = false, intVal = 35, doubleVal = {10.0} ], \
+ _key14_added=SimpleDelta [ hasDelta = false, intVal = 14, doubleVal = {14.0} ]}
+
+</PRE>
+<P>Logs <b>output</b> like shown below is displayed on the console of <b>receiver client</b>:</P>
+<PRE>
+Region name is /cs_region
+After Create: DeltaCollection [ hasDelta = false, map = {_key11=SimpleDelta [ hasDelta = false, intVal = 36, doubleVal = {36.0} ], \
+_key12=SimpleDelta [ hasDelta = false, intVal = 37, doubleVal = {37.0} ], _key13=SimpleDelta [ hasDelta = false, intVal = 38, doubleVal = {38.0} ], \
+_key14=SimpleDelta [ hasDelta = false, intVal = 39, doubleVal = {39.0} ], _key15=SimpleDelta [ hasDelta = false, intVal = 40, doubleVal = {40.0} ], \
+_key16=SimpleDelta [ hasDelta = false, intVal = 41, doubleVal = {41.0} ], _key17=SimpleDelta [ hasDelta = false, intVal = 42, doubleVal = {42.0} ], \
+_key18=SimpleDelta [ hasDelta = false, intVal = 43, doubleVal = {43.0} ], _key19=SimpleDelta [ hasDelta = false, intVal = 44, doubleVal = {44.0} ], \
+_key21=SimpleDelta [ hasDelta = false, intVal = 46, doubleVal = {46.0} ], _key20=SimpleDelta [ hasDelta = false, intVal = 45, doubleVal = {45.0} ], \
+_key8=SimpleDelta [ hasDelta = false, intVal = 33, doubleVal = {33.0} ], _key24=SimpleDelta [ hasDelta = false, intVal = 49, doubleVal = {49.0} ], \
+_key9=SimpleDelta [ hasDelta = false, intVal = 34, doubleVal = {34.0} ], _key22=SimpleDelta [ hasDelta = false, intVal = 47, doubleVal = {47.0} ], \
+_key23=SimpleDelta [ hasDelta = false, intVal = 48, doubleVal = {48.0} ], _key0=SimpleDelta [ hasDelta = false, intVal = 25, doubleVal = {25.0} ], \
+_key1=SimpleDelta [ hasDelta = false, intVal = 26, doubleVal = {26.0} ], _key2=SimpleDelta [ hasDelta = false, intVal = 27, doubleVal = {27.0} ], \
+_key3=SimpleDelta [ hasDelta = false, intVal = 28, doubleVal = {28.0} ], _key4=SimpleDelta [ hasDelta = false, intVal = 29, doubleVal = {29.0} ], \
+_key5=SimpleDelta [ hasDelta = false, intVal = 30, doubleVal = {30.0} ], _key6=SimpleDelta [ hasDelta = false, intVal = 31, doubleVal = {31.0} ], \
+_key7=SimpleDelta [ hasDelta = false, intVal = 32, doubleVal = {32.0} ], _key10=SimpleDelta [ hasDelta = false, intVal = 35, doubleVal = {35.0} ]} ]
+-----------
+Applying delta to DeltaCollection [ hasDelta = false, map = {_key11=SimpleDelta [ hasDelta = false, intVal = 36, doubleVal = {36.0} ], \
+_key12=SimpleDelta [ hasDelta = false, intVal = 37, doubleVal = {37.0} ], _key13=SimpleDelta [ hasDelta = false, intVal = 38, doubleVal = {38.0} ], \
+_key14=SimpleDelta [ hasDelta = false, intVal = 39, doubleVal = {39.0} ], _key15=SimpleDelta [ hasDelta = false, intVal = 40, doubleVal = {40.0} ], \
+_key16=SimpleDelta [ hasDelta = false, intVal = 41, doubleVal = {41.0} ], _key17=SimpleDelta [ hasDelta = false, intVal = 42, doubleVal = {42.0} ], \
+_key18=SimpleDelta [ hasDelta = false, intVal = 43, doubleVal = {43.0} ], _key19=SimpleDelta [ hasDelta = false, intVal = 44, doubleVal = {44.0} ], \
+_key21=SimpleDelta [ hasDelta = false, intVal = 46, doubleVal = {46.0} ], _key20=SimpleDelta [ hasDelta = false, intVal = 45, doubleVal = {45.0} ], \
+_key8=SimpleDelta [ hasDelta = false, intVal = 33, doubleVal = {33.0} ], _key24=SimpleDelta [ hasDelta = false, intVal = 49, doubleVal = {49.0} ], \
+_key9=SimpleDelta [ hasDelta = false, intVal = 34, doubleVal = {34.0} ], _key22=SimpleDelta [ hasDelta = false, intVal = 47, doubleVal = {47.0} ], \
+_key23=SimpleDelta [ hasDelta = false, intVal = 48, doubleVal = {48.0} ], _key0=SimpleDelta [ hasDelta = false, intVal = 25, doubleVal = {25.0} ], \
+_key1=SimpleDelta [ hasDelta = false, intVal = 26, doubleVal = {26.0} ], _key2=SimpleDelta [ hasDelta = false, intVal = 27, doubleVal = {27.0} ], \
+_key3=SimpleDelta [ hasDelta = false, intVal = 28, doubleVal = {28.0} ], _key4=SimpleDelta [ hasDelta = false, intVal = 29, doubleVal = {29.0} ], \
+_key5=SimpleDelta [ hasDelta = false, intVal = 30, doubleVal = {30.0} ], _key6=SimpleDelta [ hasDelta = false, intVal = 31, doubleVal = {31.0} ], \
+_key7=SimpleDelta [ hasDelta = false, intVal = 32, doubleVal = {32.0} ], _key10=SimpleDelta [ hasDelta = false, intVal = 35, doubleVal = {35.0} ]} ]
+Applying delta to SimpleDelta [ hasDelta = false, intVal = 47, doubleVal = {47.0} ]
+ Applied delta to field 'doubleVal' = 22.0
+Applying delta to SimpleDelta [ hasDelta = false, intVal = 38, doubleVal = {38.0} ]
+ Applied delta to field 'doubleVal' = 13.0
+Applying delta to SimpleDelta [ hasDelta = false, intVal = 41, doubleVal = {41.0} ]
+ Applied delta to field 'doubleVal' = 16.0
+Applying delta to SimpleDelta [ hasDelta = false, intVal = 44, doubleVal = {44.0} ]
+ Applied delta to field 'doubleVal' = 19.0
+Applying delta to SimpleDelta [ hasDelta = false, intVal = 26, doubleVal = {26.0} ]
+ Applied delta to field 'doubleVal' = 1.0
+Applying delta to SimpleDelta [ hasDelta = false, intVal = 29, doubleVal = {29.0} ]
+ Applied delta to field 'doubleVal' = 4.0
+Applying delta to SimpleDelta [ hasDelta = false, intVal = 32, doubleVal = {32.0} ]
+ Applied delta to field 'doubleVal' = 7.0
+Applying delta to SimpleDelta [ hasDelta = false, intVal = 35, doubleVal = {35.0} ]
+ Applied delta to field 'doubleVal' = 10.0
+ Applied delta on DeltaCollection's field 'map' = {_key11=SimpleDelta [ hasDelta = false, intVal = 36, doubleVal = {36.0} ], \
+ _key13=SimpleDelta [ hasDelta = false, intVal = 38, doubleVal = {13.0} ], _key2_added=SimpleDelta [ hasDelta = false, intVal = 2, doubleVal = {2.0} ], \
+ _key14=SimpleDelta [ hasDelta = false, intVal = 39, doubleVal = {39.0} ], _key16=SimpleDelta [ hasDelta = false, intVal = 41, doubleVal = {16.0} ], \
+ _key17=SimpleDelta [ hasDelta = false, intVal = 42, doubleVal = {42.0} ], _key19=SimpleDelta [ hasDelta = false, intVal = 44, doubleVal = {19.0} ], \
+ _key8_added=SimpleDelta [ hasDelta = false, intVal = 8, doubleVal = {8.0} ], _key5_added=SimpleDelta [ hasDelta = false, intVal = 5, doubleVal = {5.0} ], \
+ _key11_added=SimpleDelta [ hasDelta = false, intVal = 11, doubleVal = {11.0} ], _key23_added=SimpleDelta [ hasDelta = false, intVal = 23, doubleVal = {23.0} ], \
+ _key20_added=SimpleDelta [ hasDelta = false, intVal = 20, doubleVal = {20.0} ], _key20=SimpleDelta [ hasDelta = false, intVal = 45, doubleVal = {45.0} ], \
+ _key8=SimpleDelta [ hasDelta = false, intVal = 33, doubleVal = {33.0} ], _key22=SimpleDelta [ hasDelta = false, intVal = 47, doubleVal = {22.0} ], \
+ _key17_added=SimpleDelta [ hasDelta = false, intVal = 17, doubleVal = {17.0} ], _key23=SimpleDelta [ hasDelta = false, intVal = 48, doubleVal = {48.0} ], \
+ _key1=SimpleDelta [ hasDelta = false, intVal = 26, doubleVal = {1.0} ], _key2=SimpleDelta [ hasDelta = false, intVal = 27, doubleVal = {27.0} ], \
+ _key4=SimpleDelta [ hasDelta = false, intVal = 29, doubleVal = {4.0} ], _key5=SimpleDelta [ hasDelta = false, intVal = 30, doubleVal = {30.0} ], \
+ _key7=SimpleDelta [ hasDelta = false, intVal = 32, doubleVal = {7.0} ], _key10=SimpleDelta [ hasDelta = false, intVal = 35, doubleVal = {10.0} ], \
+ _key14_added=SimpleDelta [ hasDelta = false, intVal = 14, doubleVal = {14.0} ]}
+After Update: DeltaCollection [ hasDelta = false, map = {_key11=SimpleDelta [ hasDelta = false, intVal = 36, doubleVal = {36.0} ], \
+_key13=SimpleDelta [ hasDelta = false, intVal = 38, doubleVal = {13.0} ], _key2_added=SimpleDelta [ hasDelta = false, intVal = 2, doubleVal = {2.0} ], \
+_key14=SimpleDelta [ hasDelta = false, intVal = 39, doubleVal = {39.0} ], _key16=SimpleDelta [ hasDelta = false, intVal = 41, doubleVal = {16.0} ], \
+_key17=SimpleDelta [ hasDelta = false, intVal = 42, doubleVal = {42.0} ], _key19=SimpleDelta [ hasDelta = false, intVal = 44, doubleVal = {19.0} ], \
+_key8_added=SimpleDelta [ hasDelta = false, intVal = 8, doubleVal = {8.0} ], _key5_added=SimpleDelta [ hasDelta = false, intVal = 5, doubleVal = {5.0} ], \
+_key11_added=SimpleDelta [ hasDelta = false, intVal = 11, doubleVal = {11.0} ], _key23_added=SimpleDelta [ hasDelta = false, intVal = 23, doubleVal = {23.0} ], \
+_key20_added=SimpleDelta [ hasDelta = false, intVal = 20, doubleVal = {20.0} ], _key20=SimpleDelta [ hasDelta = false, intVal = 45, doubleVal = {45.0} ], \
+_key8=SimpleDelta [ hasDelta = false, intVal = 33, doubleVal = {33.0} ], _key22=SimpleDelta [ hasDelta = false, intVal = 47, doubleVal = {22.0} ], \
+_key17_added=SimpleDelta [ hasDelta = false, intVal = 17, doubleVal = {17.0} ], _key23=SimpleDelta [ hasDelta = false, intVal = 48, doubleVal = {48.0} ], \
+_key1=SimpleDelta [ hasDelta = false, intVal = 26, doubleVal = {1.0} ], _key2=SimpleDelta [ hasDelta = false, intVal = 27, doubleVal = {27.0} ], \
+_key4=SimpleDelta [ hasDelta = false, intVal = 29, doubleVal = {4.0} ], _key5=SimpleDelta [ hasDelta = false, intVal = 30, doubleVal = {30.0} ], \
+_key7=SimpleDelta [ hasDelta = false, intVal = 32, doubleVal = {7.0} ], _key10=SimpleDelta [ hasDelta = false, intVal = 35, doubleVal = {10.0} ], \
+_key14_added=SimpleDelta [ hasDelta = false, intVal = 14, doubleVal = {14.0} ]} ]
+-----------
+</PRE>
+<P>To end this example, press <code>CTRL-C</code> in the server, peer and receiver client shells, then enter <code>exit</code> in shells to close them. </P>
+<hr color="#cc0000" size="2" align="left">
+</BODY>
+</HTML>

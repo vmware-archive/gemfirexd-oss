@@ -1,0 +1,16 @@
+//------------------------------------------------------------------------------
+// PEER2PEER LATENCY - 1 + N hosts (1 publisher, N subscribers)
+//------------------------------------------------------------------------------
+
+cacheperf/comparisons/peer2peer/latency.conf
+  byteArraySize = 500,2048,5120,10240,1048576,2097152
+  scope = distributedNoAck, distributedAck
+        pubHosts = 1 pubVMs = 1 pubThreads = 1,2,4
+        subHosts = 2,4,8,10,15 subVMs = 1 subThreads = 1
+        workVMs = 1  workThreads = 1
+  pubWorkSleepMs = 100 subWorkSleepMs = 100 sleepBeforeOp = false
+  listenerClass = cacheperf.gemfire.LatencyListener
+  enableMcast = true   useLocator = true
+  multicastEnabled = true
+  pubWorkLoad = 40
+  perffmwk.comparisonKey = autogenerate

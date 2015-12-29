@@ -1,0 +1,12 @@
+include $JTESTS/hydratest/checkhydra.bt
+include $JTESTS/hydratest/version/version.bt
+include $JTESTS/hydratest/disconnect/disconnect.bt
+include $JTESTS/hydratest/stopstart/stopstart.bt
+include $JTESTS/hydratest/locators/locators.bt
+include $JTESTS/hydratest/locators/wan10/wan.bt
+include $JTESTS/hydratest/security/security.bt
+include $JTESTS/hydratest/network/network.bt
+include $JTESTS/hydratest/grid/grid.bt
+include $JTESTS/hydratest/admin/admin.bt
+include $JTESTS/hydratest/derby/derby.bt
+include $JTESTS/hydratest/hdfs/hdfs.bt

@@ -1,0 +1,19 @@
+/*cq/wan/hct.conf
+       wanSites=1,2,3 edgeVMsPerHost=1 edgeThreadsPerVM=1
+       threadGroupsName=default*/
+
+cq/wan/hct.conf
+       wanSites=3 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       threadGroupsName=edge
+
+cq/wan/hct.conf
+       wanSites=1,2 bridgeVMsPerHost=2 edgeVMsPerHost=1 edgeThreadsPerVm=1
+       threadGroupsName=edge
+
+/*cq/wan/hct.conf
+       wanSites=1,2 bridgeVMsPerHost=2 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       threadGroupsName=default*/
+       
+cq/wan/hct.conf
+       wanSites=3 bridgeVMsPerHost=2 edgeVMsPerHost=2 edgeThreadsPerVM=2
+       threadGroupsName=edge

@@ -1,0 +1,20 @@
+#!/bin/bash
+
+#-------------------------------------------------------------------------------
+#
+# Lists the hosts in $TEST_HOSTS.
+#
+#-------------------------------------------------------------------------------
+
+trap 'exit 1' 2 #traps Ctrl-C (signal 2)
+
+if [ -z "$TEST_HOSTS" ]
+then
+  echo "Environment variable TEST_HOSTS is not set."
+  exit 0
+fi
+
+for i in $TEST_HOSTS
+do
+  echo $i
+done

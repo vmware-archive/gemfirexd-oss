@@ -1,0 +1,31 @@
+snapshot/exportImport.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=worker workerHosts=4 workerVMsPerHost=1 workerThreadsPerVM=5
+   regionConfigName = persistentReplicateRegion, replicateRegion, persistentPartitionRegion, partitionRegion
+   exportStrategy = apiFromOneVm  executeConcurrentOps = true, false  executeConcurrentRebalance = false
+   redundantCopies = 1
+
+// concurrentRebalance (partitioned regions only)
+snapshot/exportImport.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=worker workerHosts=4 workerVMsPerHost=1 workerThreadsPerVM=5
+   regionConfigName = persistentPartitionRegion, partitionRegion
+   exportStrategy = apiFromOneVm  executeConcurrentOps = false  executeConcurrentRebalance = true
+   redundantCopies = 1
+
+// offline export with persistence only
+snapshot/exportImport.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=worker workerHosts=4 workerVMsPerHost=1 workerThreadsPerVM=5
+   regionConfigName = persistentReplicateRegion, persistentPartitionRegion
+   exportStrategy = cmdLineTool executeConcurrentOps = true, false executeConcurrentRebalance = false
+   redundantCopies = 1
+
+// offline export with rebalancing (persistent partitioned regions only)
+snapshot/exportImport.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=worker workerHosts=4 workerVMsPerHost=1 workerThreadsPerVM=5
+   regionConfigName = persistentPartitionRegion
+   exportStrategy = cmdLineTool  executeConcurrentOps = false  executeConcurrentRebalance = true
+   redundantCopies = 1
+

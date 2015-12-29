@@ -1,0 +1,16 @@
+hydra/samples/distupdate.conf hydra.numHosts=2
+cacheLoader/smoke/cacheLoaderVmReg.conf
+ssl/sslHierarchy.conf
+  bridgeHosts=2
+  edgeHosts=1 edgeVMsPerHost=1
+  ssl.totalTaskTimeSec=60 
+cacheperf/comparisons/dataScalability/dataScalability.conf
+  bridgeHosts = 2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHosts   = 2 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 2
+  dataSize = 500 maxKeys = 40000 bridgeVMSizeMB = 256 redundantCopies = 0
+ workSeconds = 10
+
+hydratest/version/clientcache/clientcache3.conf
+
+include $JTESTS/hydratest/version/version.bt
+include $JTESTS/hydratest/hdfs/hdfs.bt

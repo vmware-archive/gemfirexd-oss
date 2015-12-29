@@ -1,0 +1,86 @@
+
+//------------------------------------------------------------------------------
+// ANALYSIS: THROUGHPUT
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+// ANALYSIS: LATENCY AND RESPONSE TIME
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+// ANALYSIS: MEMORY USE
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+// ANALYSIS: NETWORK UTILIZATION
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+// BASIC CHART OPERATIONS: NORMALIZING STATISTICS
+//------------------------------------------------------------------------------
+
+Explain when normalization is needed or useful.
+
+//------------------------------------------------------------------------------
+// BASIC CHART OPERATIONS: DIVIDING STATISTICS
+//------------------------------------------------------------------------------
+
+CASE:
+Want to chart the "getTime" per "get".
+
+SOLUTION:
+Combine all threads with the "get" stat.  Use no filter.  Select the "getTime" line.  Choose divide from the menu.  Select the "get" line.  Move the resulting line to the other axis, or remove the undivided lines.  Look at the final value.  If the line is trending up or down, then the getTime per get is trending up or down.  The average over all gets is the last value on the line.
+
+You can also simply divide the lines to see the average getTime per get on a per-sample basis.
+
+//------------------------------------------------------------------------------
+// OTHER CHART OPERATIONS: USING TEMPLATES
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+// OTHER CHART OPERATIONS: PRINTING
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+// GATHERING STATISTICS WITH VSD
+//------------------------------------------------------------------------------
+
+hydra.GemFirePrms-enableTimeStatistics = true;
+     Turns on time statistics in product stats such as DistributionStats.
+
+-Dgemfire.enableThreadStats=true
+     Turns on basic thread-level statistics in VMThreadStats.
+
+-Dgemfire.enableCpuTime=true
+     Turns on thread-level CPU statistics in VMThreadStats.
+
+-Dgemfire.enableContentionTime=true
+     Turns on thread-level contention statistics in VMThreadStats.
+
+//------------------------------------------------------------------------------
+// ANOMALIES
+//------------------------------------------------------------------------------
+
+CASE:
+Statistic is in bold but will not appear when selected.  Just beeps at you.
+
+SOLUTION:
+Turn off No Flatlines.  Select stat and chart again.  Turn on No Filter.  Look at value.
+
+--------------------------------------------------------------------------------
+
+CASE:
+Brief downward spike in performance seen using the PerSecond filter.
+
+ANALYSIS:
+Look at the line in step style with symbols.  If the low value is:
+  -- represented by a single symbol
+  -- of duration less than one second
+  -- preceded by a single missing symbol
+  -- equal to around half of the value at the symbol preceding the missing one
+then switch to the PerSample filter.  If the low value disappears, then it is a merely an accumulated sampling error and did not really occur.  Such spikes tend to occur fairly regularly.  For example, if the sampler is set to 1 second and samples actually occur every 1.01 seconds, then a bogus downward spike would occur at 100 second intervals, more or less.
+
+CONCRETE EXAMPLE:
+Value at symbol at timestamp 17:58:17 is 378480.  No symbol appears at 17:58:18.  Value at symbol at timestamp 17:58:19 is 187513.  Value at timestamp 17:58:20 is 379045.  Low value disappears with PerSample filter.  This is a sampling artifact.
+
+--------------------------------------------------------------------------------

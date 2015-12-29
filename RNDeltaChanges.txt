@@ -1,0 +1,5 @@
+##############################################################################
+######### Please keep text to 78 char width - no wider than this #############
+##############################################################################
+
+This file should remain empty for trunk and all development branches

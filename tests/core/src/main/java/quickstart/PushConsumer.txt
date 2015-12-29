@@ -1,0 +1,19 @@
+
+This example shows how a distributed region works with replication enabled. I'll create a replicate region, then the producer will create the same region and put entries into it. Because my region is a replicate, all of the producer's puts are automatically pushed into my region. 
+
+Connecting to the distributed system and creating the cache.
+Example region, /exampleRegion, created in cache. 
+
+Please start the PushProducer.
+
+    Received afterCreate event for entry: key0, value0
+    Received afterCreate event for entry: key1, value1
+    Received afterCreate event for entry: key2, value2
+    Received afterCreate event for entry: key3, value3
+    Received afterCreate event for entry: key4, value4
+    Received afterUpdate event for entry: key0, value100
+    Received afterUpdate event for entry: key1, value101
+    Received afterUpdate event for entry: key2, value102
+    Received afterUpdate event for entry: key3, value103
+    Received afterUpdate event for entry: key4, value104
+Closing the cache and disconnecting.

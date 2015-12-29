@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title>parameter</title>
+<link href="styles.css" type="text/css" rel="stylesheet">
+</head>
+<body>
+<h2> parameter</h2>
+<fieldset class="taskDescription">
+<legend><a class="anchor" name="description">Description</a></legend>
+<p>Java type: <a href="../api/org/apache/ddlutils/task/Parameter.html"><code>org.apache.ddlutils.task.Parameter</code></a></p>
+<p>Specifies a parameter for the creation of the database. These are usually platform specific.
+ A parameter consists of a name-value pair and an optional list of platforms for which the
+ parameter shall be used.</p>
+</fieldset>
+<fieldset class="taskParameters">
+<legend><a class="anchor" name="parameters">Parameters</a></legend>
+  	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-platforms">platforms</a> : String
+  	</p>
+	<p class="taskParameterDescription">
+	Specifies the platforms - a comma-separated list of platform names - for which this parameter
+ shall be used (see the <code>databaseType</code> attribute of the tasks for possible values).
+ For every platform not in this list, the parameter is ignored. <br/>
+        If not specified then the parameter is processed for every platform.
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-name">name</a> : String
+   <span class="requiredInfo">(required)</span> 	</p>
+	<p class="taskParameterDescription">
+	Specifies the name of the parameter. See the database support documentation
+ for details on the parameters supported by the individual platforms. <br/>
+        
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-value">value</a> : String
+  	</p>
+	<p class="taskParameterDescription">
+	Specifies the parameter value. <br/>
+        If none is given, <code>null</code> is used.
+  	</p>
+</fieldset>
+<fieldset class="taskNestedElements">
+<legend><a class="anchor" name="nestedElements">Nested elements</a></legend>
+</fieldset>
+<p>&copy;2005-2007 Apache Software Foundation</p>
+</body>
+</html>

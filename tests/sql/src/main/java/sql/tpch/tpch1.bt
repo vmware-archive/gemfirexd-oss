@@ -1,0 +1,8 @@
+sql/tpch/tpchRunTxns.conf
+  api = SQLF
+  peerHosts=2 peerVMsPerHost=3 peerThreadsPerVM=10
+  customerserverHosts=2 customerserverVMsPerHost=4 customerserverThreadsPerVM=1
+  marketserverHosts=2 marketserverVMsPerHost=2 marketserverThreadsPerVM=1
+  peerHeapMB = 1000 customerserverHeapMB = 1000 marketserverHeapMB = 1000
+  queryPlanFrequency = 0
+  importfile=importdata1g

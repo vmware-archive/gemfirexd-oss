@@ -1,0 +1,41 @@
+// HA testing - concurrent (stop 1 VM at a time)
+parReg/bridge/concParRegHABridgeLimitWrites.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   bridgeOrderingWorkaround = uniqueKeys,registerInterest
+   redundantCopies=1 numVMsToStop=1
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+   threadGroupsName=dataStoreThreads
+
+// HA testing - concurrent (stop 2 VMs at a time)
+/*parReg/bridge/concParRegHABridgeLimitWrites.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   bridgeOrderingWorkaround = uniqueKeys,registerInterest
+   redundantCopies=2 numVMsToStop=2
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+   threadGroupsName=dataStoreThreads*/
+
+// HA testing - concurrent (stop 3 VMs at a time)
+parReg/bridge/concParRegHABridgeLimitWrites.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   bridgeOrderingWorkaround = uniqueKeys,registerInterest
+   redundantCopies=3 numVMsToStop=3
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+   threadGroupsName=dataStoreThreads
+
+// known keys ha testing
+parReg/bridge/concKnownKeysHABridge.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=3
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=180000 byteArraySize=1000 redundantCopies=1 numVMsToStop=1
+   edgeVmSize=600 serverVmSize=700
+   threadGroupsName=verifyThreads
+
+parReg/bridge/concKnownKeysHABridge.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=3
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=75000 byteArraySize=1000 redundantCopies=3 numVMsToStop=3
+   edgeVmSize=350 serverVmSize=450
+   threadGroupsName=verifyThreads

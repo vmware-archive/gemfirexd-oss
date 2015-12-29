@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE cache PUBLIC
+  "-//GemStone Systems, Inc.//GemFire Declarative Caching 4.1//EN"
+  "http://www.gemstone.com/dtd/cache4_1.dtd">
+<cache lock-lease="120" lock-timeout="60" search-timeout="300">
+	<vm-root-region name="root">
+		<region-attributes scope="distributed-no-ack" mirror-type="none" keep-alive-timeout="0" initial-capacity="16" load-factor="0.75" concurrency-level="16" statistics-enabled="true">
+			<region-time-to-live>
+				<expiration-attributes timeout="0" action="invalidate"/>
+			</region-time-to-live>
+			<region-idle-time>
+				<expiration-attributes timeout="0" action="invalidate"/>
+			</region-idle-time>
+			<entry-time-to-live>
+				<expiration-attributes timeout="0" action="invalidate"/>
+			</entry-time-to-live>
+			<entry-idle-time>
+				<expiration-attributes timeout="0" action="invalidate"/>
+			</entry-idle-time>
+		</region-attributes>
+		<entry>
+			<key>
+				<string>Application Version</string>
+			</key>
+			<value>
+				<string>1.0</string>
+			</value>
+		</entry>
+	</vm-root-region>
+
+	<jndi-bindings>
+         	<jndi-binding type="ManagedDataSource" jndi-name="ManagedConnSource" 
+					  init-pool-size="2" max-pool-size="7" 
+					  idle-timeout-seconds="20" 
+					  blocking-timeout-seconds="20" 
+					  login-timeout-seconds="30"
+					  managed-conn-factory-class="com.gemstone.persistence.connection.internal.ConnFactory">
+	     	</jndi-binding>
+         	<jndi-binding type="ManagedDataSource" jndi-name="ManagedConnSourceOneConnection" 
+					  init-pool-size="1" max-pool-size="1" 
+					  idle-timeout-seconds="20" 
+					  blocking-timeout-seconds="25"
+					  login-timeout-seconds="20"
+					  managed-conn-factory-class="com.gemstone.persistence.connection.internal.ConnFactory">
+	     	</jndi-binding>
+	</jndi-bindings>
+</cache>
+  <!--
+  Binding TransactionManager
+  Case 1: Use of GemFire JNDI Context
+  GemFire TransactionManager will be bound to the GemFire JNDI tree.
+  
+  Case 2: Application Server JNDI Context
+      If a TransactionManager is associated with Application Server JNDI tree (if exists), 
+      the GemFire system will make reference of that. Otherwise GemFire TransactionManager
+      will be bound to the Application Server JNDI tree.
+      
+  Binding UserTransaction
+  	UserTransaction will be bound to same JNDI tree where GemFire TransactionManager is bound.
+    If an Application Server TransactionManager bound to Application Server JNDI tree
+    GemFire UserTransaction will not be bound at all.
+    
+  Lookup for UserTransaction
+  
+  Case 1: Use of Application Server JNDI tree and Application Server TransactionManager is available.
+  	GemFire UserTransaction will not come into picture. 
+  	Should be referred as per Application Server specification.
+  Case 2: In any other case (Includes use of GemFire JNDI tree, Application Server JNDI tree with 
+  GemFire TransactionManager)
+  	UserTransaction will be looked up with java:/UserTransaction
+ 	
+  
+  Binding and Lookup of DataSource
+   In all scenario, the GemFire DataSource will be bound to the available JNDI tree.
+   jndi-name attribute of jndi-binding element is key binding parameters.
+   if the value of jndi-name is aDataSource, it will be bound as java:/aDataSource.
+   The type attribute of jndi-binding element should be SimpleDataSource, PooledDataSource
+   or XAPooledDataSource.  
+  -->

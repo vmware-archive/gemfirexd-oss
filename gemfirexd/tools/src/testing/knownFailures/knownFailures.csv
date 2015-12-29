@@ -1,0 +1,139 @@
+testname,testDescription,ticket,failureDescription,knownFailureType,knownFailureFile
+*,,39497,No support for SYSCS_UTIL.SET_RUNTIMESTATISTICS,ERRMSG_CONTAINS_TEXT,NoRuntimeStats.kf
+*,,39497,No support for SYSCS_UTIL.SET_RUNTIMESTATISTICS,TRACEBACK_CONTAINS_TEXT,NoRuntimeStats.kf
+*,,39913,,ERRMSG_CONTAINS_TEXT,noPartitionColumnUpdate.kf
+*,,39913,,TRACEBACK_CONTAINS_TEXT,noPartitionColumnUpdate.kf
+*,,40005,No delete or set null,ERRMSG_CONTAINS_TEXT,cascadeDelete.kf
+*,,40206,,ERRMSG_CONTAINS_TEXT,40206_noAlterWithData.kf
+*,,40206,,ERRMSG_CONTAINS_TEXT,40206_noAlterWithData2.kf
+*,,40206,,ERRMSG_CONTAINS_TEXT,40206_noAlterWithData3.kf
+*,,40712,"No support for alter table LOCKSIZE",ERRMSG_CONTAINS_TEXT,AlterLockSize.kf
+*,,41309,,ERRMSG_CONTAINS_TEXT,41309_ClassCast.kf
+*,,42716,XA not supported,TRACEBACK_CONTAINS_TEXT,XAunsupported.kf
+*,,42885,,ERRMSG_CONTAINS_TEXT,42885_FKrefPKonly.kf
+*,,42953,Unsupported isolation level,ERRMSG_CONTAINS_TEXT,TransactionIsolationLevel.kf
+*,,42953,Unsupported isolation level,TRACEBACK_CONTAINS_TEXT,TransactionIsolationLevel.kf
+*,,43124,,TRACEBACK_CONTAINS_TEXT,43124_NPEonLobCompaction.kf
+*,,43181,,ERRMSG_CONTAINS_TEXT,43181_incompleteGeneratedKeys.kf
+*,,43204,,ERRMSG_CONTAINS_TEXT,43204_NoStatementTriggers.kf
+*,,43204,,TRACEBACK_CONTAINS_TEXT,43204_NoStatementTriggers.kf
+*,,,OutOfMemory,ERRMSG_CONTAINS_TEXT,OutOfMemoryError.kf
+*,,,Error on null collator,TRACEBACK_CONTAINS_TEXT,nullCollator.kf
+*,,43497,,TRACEBACK_CONTAINS_TEXT,43497_licenseProblem.kf
+*,,,lock timeouts are not supported,ERRMSG_CONTAINS_TEXT,noLockTimeouts.kf
+*,,,DDL rollbacks not supported,ERRMSG_CONTAINS_TEXT,noDDLRollback.kf
+BatchUpdateTest.testTransactionErrorBatch,,41648,,ERRMSG_CONTAINS_TEXT,41648_BatchUpdateTest.kf
+BatchUpdateTest.testTransactionErrorPreparedStmtBatch,,41648,,ERRMSG_CONTAINS_TEXT,41648_BatchUpdateTest.kf
+BlobClob4BlobTest.testGet[BC]lobBeforeAndAfterUpdate.*,,42629,,NO_COMPARISON,
+BlobClob4BlobTest.testNegativeTestDerby265[BC]lob,,43136,,ERRMSG_MATCHES_REGEX,43136_GetAfterCommit.kf
+BlobClob4BlobTest.testNegativeTestDerby265[BC]lob,,43136,,NO_COMPARISON,
+BlobClob4BlobTest.testPositionBlobDeterministic,,43135,,ERRMSG_MATCHES_REGEX,43135_BlobPosition.kf
+BlobClob4BlobTest.*,,42629,,TRACEBACK_CONTAINS_TEXT,42629_noCONCUR_UPDATEABLE.kf
+BlobClob4BlobTest.*,,43128,,ERRMSG_CONTAINS_TEXT,43128_NPE.kf
+Bug5054Test.testBugBug5054,,42849,,NO_COMPARISON,
+CaseExpressionTest.testDerby3032,,42841,,TRACEBACK_CONTAINS_TEXT,42841_SelectCase.kf
+CoalesceTest.testTimeCoalesce,,42917,,NO_COMPARISON,
+CollationTest2.testDefaultCollation,,40206,,ERRMSG_CONTAINS_TEXT,40206_noAlterWithData.kf
+CollationTest2.testEnglishCollation,,42908,,NO_COMPARISON,
+CollationTest.*,,42908,,TRACEBACK_CONTAINS_TEXT,42908_collator.kf
+DatabaseMetaDataTest.testDetermineFeatureSupport,,42953,Unsupported transaction isolation,ERRMSG_CONTAINS_TEXT,noTransactionRepeatableRead.kf
+DatabaseMetaDataTest.testGetURL,,,test issue,TEST_ISSUE,
+DatabaseMetaDataTest.testVersionInfo,,40853,,ERRMSG_CONTAINS_TEXT,40853_ProdName.kf
+DataSourceTest.testAllDataSources,,42847,,ERRMSG_CONTAINS_TEXT,42847_Savepoints_DS.kf
+DataSourceTest.testAllDataSources,,43016,,ERRMSG_CONTAINS_TEXT,43016_NoConnReadOnly.kf
+DataSourceTest.testDSRequestAuthentication,,43013,,NO_COMPARISON,
+DataSourceTest.testJira95ds,,43013,,TRACEBACK_CONTAINS_TEXT,43013_DBName_wombat.kf
+DeclareGlobalTempTableJavaTest.*,,40921,,NO_COMPARISON,
+Derby3625Test.testTwoToOneByteCase,,42720,,TRACEBACK_CONTAINS_TEXT,42720_SpaceTable_StoreBase.kf
+DistinctTest.testDistinctIdenticalNullRows,,42828,,TRACEBACK_CONTAINS_TEXT,42828_nullHandling.kf
+DistinctTest.testDistinctInInsert,,42422,,ERRMSG_CONTAINS_TEXT,42422_unionSubquery.kf
+DistinctTest.testDistinctInsertWithGeneratedColumn,,42646,,NO_COMPARISON,
+DistinctTest.testDistinctWithBigInt,,42821,,ERRMSG_CONTAINS_TEXT,42821_BigInt.kf
+DistinctTest.testResultSetInOrderWhenUsingIndex,,40206,,NO_COMPARISON,
+DriverTest.testDbNameWithSpaces,,43013,,ERRMSG_CONTAINS_TEXT,43013_DBName.kf
+DriverTest.testEmbeddedAttributes,,43013,,ERRMSG_CONTAINS_TEXT,43013_DBName.kf
+DynamicLikeOptimizationTest.testCast,,42814,,NO_COMPARISON,
+DynamicLikeOptimizationTest.testEscapedEscapeCharacterPrecedingFirstWildcard,,42814,,NO_COMPARISON,
+DynamicLikeOptimizationTest.testEscapeWithBackslash,,42814,,NO_COMPARISON,
+DynamicLikeOptimizationTest.testGeneratedPredicates.*,,42783,,NO_COMPARISON,
+DynamicLikeOptimizationTest.testLikeWithHighestValidCharacter,,43037,,ERRMSG_CONTAINS_TEXT,NPE.kf
+DynamicLikeOptimizationTest.testSimpleLikePredicates,,43037,,ERRMSG_CONTAINS_TEXT,NPE.kf
+ErrorCodeTest.*,,,Test issue low priority,TEST_ISSUE,
+ErrorMessageTest.testDeadlockTimeout,,42860,,ERRMSG_CONTAINS_TEXT,42860_rowNotLocked2.kf
+ErrorMessageTest.testWaitTimeout,,42860,,ERRMSG_CONTAINS_TEXT,42860_rowNotLocked.kf
+ErrorStreamTest.testDefault,,42789,,ERRMSG_MATCHES_REGEX,42780_gemfirexdSystemHome.kf
+ExistsWithSubqueriesTest.test.*,,42789,,ERRMSG_CONTAINS_TEXT,42789_unionSubquery.kf
+ForUpdateTest.testCursors,,42833,,ERRMSG_CONTAINS_TEXT,42833_twoCursors.kf
+ForUpdateTest.testUpdates2,,42849,,ERRMSG_CONTAINS_TEXT,42849_SelectForUpdate.kf
+GrantRevokeDDLTest.testGrantRevokeDDL,,,cannot drop colocated tables,ERRMSG_CONTAINS_TEXT,noDropColocatedChildTables.kf
+GrantRevokeTest.testRevokeWithPublicPrivilege,,42974,,ERRMSG_CONTAINS_TEXT,42974_RevokePublic.kf
+GrantRevokeTest.test.*RollbackAndCommit,,42972,,ERRMSG_CONTAINS_TEXT,42972_GrantRevokeNonTransAutoFail.kf
+GrantRevokeTest.test.*RollbackAndCommit,,42972,,ERRMSG_CONTAINS_TEXT,42972_GrantRevokeNonTrans.kf
+GroupByTest.testGroupByWithTempTable,,40921,,NO_COMPARISON,
+GroupByTest.testGroupByWithVariousDatatypes,,42917,,NO_COMPARISON,
+GroupByTest.testSetOperationsAndGroupBy,,42918,,ERRMSG_CONTAINS_TEXT,42918_cce_union.kf
+HoldCursorTest.*,,42803,,NO_COMPARISON,
+ImportExportBinaryDataTest.testImportDataExportQuery,,41456,,ERRMSG_MATCHES_REGEX,41456_NoImportReplace.kf
+ImportExportBinaryDataTest.testImportDataExportQueryWithFewColumns,,41456,,ERRMSG_MATCHES_REGEX,41456_NoImportReplace.kf
+ImportExportBinaryDataTest.testImportExportInvalideDelimiters,,43078,,ERRMSG_CONTAINS_TEXT,43078_ImportNegativeErrCodes.kf
+ImportExportBinaryDataTest.testImportExportWitgInvalidHexStrings,,43078,,ERRMSG_CONTAINS_TEXT,43078_ImportNegativeErrCodes.kf
+ImportExportBinaryDataTest.testImportWitgInvalidHexStrings,,41456,,ERRMSG_MATCHES_REGEX,41456_NoImportReplace.kf
+ImportExportLobTest.test.*,,41456,,ERRMSG_MATCHES_REGEX,41456_NoImportReplace.kf
+ImportExportLobTest.testImportExportInvalideDelimiters,,43078,,ERRMSG_CONTAINS_TEXT,43078_ImportNegativeErrCodes.kf
+ImportExportLobTest.testImportExportWitgInvalidHexStrings,,43078,,ERRMSG_CONTAINS_TEXT,43078_ImportNegativeErrCodes.kf
+ImportExportLobTest.testImportExportWithInvalidLobFileName,,43078,,ERRMSG_CONTAINS_TEXT,43078_ImportNegativeErrCodes.kf
+ImportExportProcedureTest.testImportExportProcedureNegative,,40921,,TRACEBACK_CONTAINS_TEXT,40921_ImportExportProcedureTest.kf
+ImportExportProcedureTest.testImportExportProcedureNegative,,43078,,ERRMSG_CONTAINS_TEXT,43078_ImportNegativeErrCodes.kf
+ImportExportProcedureTest.testImportExportProcedures,,41456,,TRACEBACK_CONTAINS_TEXT,41456_NoImportReplace_IEP.kf
+ImportExportProcedureTest.testImportExportProcedures,,42771,,TRACEBACK_CONTAINS_TEXT,42771_ImpExp.kf
+ImportExportTest.testEarlyEndOfFile,,43078,,ERRMSG_CONTAINS_TEXT,43078_ImportNegativeErrCodes.kf
+ImportExportTest.testImportFromNonExistantFile,,43078,,ERRMSG_CONTAINS_TEXT,43078_ImportNegativeErrCodes.kf
+ImportExportTest.testNullDataFile,,43078,,ERRMSG_CONTAINS_TEXT,43078_ImportNegativeErrCodes.kf
+ImportExportTest.*,,42740,,TRACEBACK_CONTAINS_TEXT,42740_EmptyTable.kf
+InListMultiProbeTest.testInListProbingWithOrderBy,,43309,,TRACEBACK_CONTAINS_TEXT,43309_orderBy2Tables.kf
+JDBC4FromJDBC3DataSourceTest.test.*Connection,,42749,,ERRMSG_CONTAINS_TEXT,42749_jdbc4_3_mix.kf
+LangHarnessJavaTest.concateTests,,43164,,ERRMSG_CONTAINS_TEXT,43164_ConcatenateCast.kf
+LargeDataLocksTest.test.*,,42964,,TRACEBACK_CONTAINS_TEXT,42964_LargeDataLocksTest.kf
+LobStreamsTest.*,,43124,,NO_COMPARISON,
+NullableUniqueConstraintTest.test.*,,42844,,ERRMSG_CONTAINS_TEXT,42844_UniqueNulls.kf
+NullableUniqueConstraintTest.testComparisonAcrossPages,,42847,,ERRMSG_CONTAINS_TEXT,42847_Savepoints.kf
+OLAPTest.*,,41611,,ERRMSG_CONTAINS_TEXT,41611_SubqueryOrderBy.kf
+ParameterMappingTest.testParameterMapping,,43022,,TRACEBACK_CONTAINS_TEXT,43022_NPE_Blob.kf
+PreparedStatementTest\..*,,,negative test has logic error,TRACEBACK_CONTAINS_TEXT,internalDerbyIOExceptionState.kf
+PreparedStatementTest.testBlobExceptionDoesNotRollbackOtherStatements,,43124,,TRACEBACK_CONTAINS_TEXT,43124_NPEonLobCompaction.kf
+PrimaryKeyTest.testConstraintwithNotNull,,43034,,ERRMSG_CONTAINS_TEXT,43034_CountStar.kf
+PrimaryKeyTest.testExplicitNullabilityOfConstraints,,39408,,ERRMSG_CONTAINS_TEXT,39408_NullConstraints.kf
+ProcedureInTriggerTest.*,,42832,,ERRMSG_CONTAINS_TEXT,42832_TriggerProcedure.kf
+ReleaseCompileLocksTest.testReleaseCompileLocks,,42964,,TRACEBACK_CONTAINS_TEXT,42964_peekLock.kf
+RenameIndexTest.*,,42799,rename table not implemented,NO_COMPARISON,
+RenameTableTest.*,,42799,rename table not implemented,NO_COMPARISON,
+ResultSetsFromPreparedStatementTest.testAnyResultSet,,42789,,ERRMSG_CONTAINS_TEXT,42789_unionSubquery.kf
+ResultSetsFromPreparedStatementTest.testCurrentOfResultSet,,42849,,NO_COMPARISON,
+ResultSetsFromPreparedStatementTest.testOnceResultSet,,42856,,ERRMSG_CONTAINS_TEXT,42856_subqueryIntersect.kf
+ResultSetTest.testIsClosedOnNonHoldableResultSet,,42718,,ERRMSG_CONTAINS_TEXT,42718.kf
+RoutineSecurityTest.testGetSystemProperty,,,no support for a security manager,ERRMSG_CONTAINS_TEXT,noSecurityManager.kf
+ShutdownDatabaseTest.*,,42803,,ERRMSG_CONTAINS_TEXT,42803_shutdownWorkaround.kf
+ShutdownDatabaseTest.*,,43171,,NO_COMPARISON,
+SimpleTest.testBasicOperations,,42630,,NO_COMPARISON,
+SpillHashTest.test.*Heavy,,,overflow to disk not supported,ERRMSG_CONTAINS_TEXT,noDiskOverflow.kf
+SQLAuthorizationPropTest.*,,,Test issue,TEST_ISSUE,
+SqlExceptionTest.testSerializedException,,43160,,TRACEBACK_CONTAINS_TEXT,43160_ExceptionNotSerializable.kf
+StatementPlanCacheTest.*,,,No support for SYSCS_DIAG.STATEMENT_CACHE,NO_COMPARISON,
+StatementTest.testIsClosedWhenClosingConnectionInInvalidState,,42753,,ERRMSG_CONTAINS_TEXT,42753.kf
+StreamsTest.testStreams,,43159,,ERRMSG_CONTAINS_TEXT,43159_FKonSelf.kf
+SysinfoCPCheckTest.testClassPathChecker,,,Test Problem,TEST_ISSUE,
+TestDbMetaData.testGetFunctions.*,,,GemFireXD has extra functions,ERRMSG_CONTAINS_TEXT,GemFireXDFunctions.kf
+TestDbMetaData.testStoredProcEscapeSyntax,,39497,No support for SYSCS_UTIL.SET_RUNTIMESTATISTICS,NO_COMPARISON,
+ToolScripts.ij7,,,Test Problem,TEST_ISSUE,
+TriggerTest.testFiringOrder,,42891,,ERRMSG_CONTAINS_TEXT,42891_TriggerFiringOrder.kf
+TriggerTest.testTypesInActionStatement,,42644,,ERRMSG_CONTAINS_TEXT,42644_TriggerTrans.kf
+TriggerTest.testTypesInActionStatement,,43031,,ERRMSG_CONTAINS_TEXT,NPE.kf
+UnaryArithmeticParameterTest.testABSWithUnaryMinusAndPlus,,42902,,NO_COMPARISON,
+UnaryArithmeticParameterTest.testParametersForUnaryMinusAndPlus,,42902,,NO_COMPARISON,
+UnaryArithmeticParameterTest.testSelectWithUnaryMinusAndPlus,,42902,,NO_COMPARISON,
+UniqueConstraintSetNullTest.testUpdateNullablity,,40712,,ERRMSG_CONTAINS_TEXT,40712_noAlterNullWithData.kf
+UpdatableResultSetTest.*,,42629,Updatable Result Sets not supported yet,NO_COMPARISON,
+UpdatableXXXTest.*,,42629,Updatable Result Sets not supported yet,NO_COMPARISON,
+URCoveringIndexTest.*,,42629,Updatable Result Sets not supported yet,NO_COMPARISON,
+XMLBindingTest.testXMLExistsBinding,,42889,,ERRMSG_CONTAINS_TEXT,42889_XMLParse.kf
+XMLTypeAndOpsTest.*,,42889,,ERRMSG_CONTAINS_TEXT,42889_XMLParse.kf

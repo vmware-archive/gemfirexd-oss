@@ -1,0 +1,48 @@
+cacheperf/comparisons/replicated/execute/hctGet.conf
+  bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHosts   =  2 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+  maxKeys = 100000 objectSize = 1024
+  conserveSockets = false
+  perffmwk.comparisonKey = get_02_01
+cacheperf/comparisons/replicated/execute/hctGet.conf
+  bridgeHosts =  8 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHosts   =  8 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+  maxKeys = 100000 objectSize = 1024
+  conserveSockets = false
+  perffmwk.comparisonKey = get_08_01
+cacheperf/comparisons/replicated/execute/hctPut.conf
+  bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHosts   =  2 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+  maxKeys = 100000 objectSize = 1024
+  conserveSockets = false
+  perffmwk.comparisonKey = put_02_01
+cacheperf/comparisons/replicated/execute/hctPut.conf
+  bridgeHosts =  8 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHosts   =  8 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+  maxKeys = 100000 objectSize = 1024
+  conserveSockets = false
+  perffmwk.comparisonKey = put_08_01
+cacheperf/comparisons/replicated/execute/hctGet.conf
+  bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHosts   =  2 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 5
+  maxKeys = 100000 objectSize = 1024
+  conserveSockets = false
+  perffmwk.comparisonKey = get_02_05
+cacheperf/comparisons/replicated/execute/hctGet.conf
+  bridgeHosts =  8 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHosts   =  8 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 5
+  maxKeys = 100000 objectSize = 1024
+  conserveSockets = false
+  perffmwk.comparisonKey = get_08_05
+cacheperf/comparisons/replicated/execute/hctPut.conf
+  bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHosts   =  2 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 5
+  maxKeys = 100000 objectSize = 1024
+  conserveSockets = false
+  perffmwk.comparisonKey = put_02_05
+cacheperf/comparisons/replicated/execute/hctPut.conf
+  bridgeHosts =  8 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHosts   =  8 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 5
+  maxKeys = 100000 objectSize = 1024
+  conserveSockets = false
+  perffmwk.comparisonKey = put_08_05

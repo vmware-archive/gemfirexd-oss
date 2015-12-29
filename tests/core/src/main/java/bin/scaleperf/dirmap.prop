@@ -1,0 +1,62 @@
+w1-gst-dev01 = /export/w1-gst-dev01a/users/$USER/scratch
+w1-gst-dev02 = /export/w1-gst-dev02a/users/$USER/scratch
+w1-gst-dev03 = /export/w1-gst-dev03a/users/$USER/scratch
+w1-gst-dev04 = /export/w1-gst-dev04a/users/$USER/scratch
+w1-gst-dev05 = /export/w1-gst-dev05a/users/$USER/scratch
+w1-gst-dev06 = /export/w1-gst-dev06a/users/$USER/scratch
+w1-gst-dev07 = /export/w1-gst-dev07a/users/$USER/scratch
+w1-gst-dev08 = /export/w1-gst-dev08a/users/$USER/scratch
+w1-gst-dev09 = /export/w1-gst-dev09a/users/$USER/scratch
+w1-gst-dev10 = /export/w1-gst-dev10a/users/$USER/scratch
+
+w1-gst-dev20 = /export/w1-gst-dev20a/users/$USER/scratch
+w1-gst-dev21 = /export/w1-gst-dev21a/users/$USER/scratch
+w1-gst-dev22 = /export/w1-gst-dev22a/users/$USER/scratch
+w1-gst-dev23 = /export/w1-gst-dev23a/users/$USER/scratch
+w1-gst-dev24 = /export/w1-gst-dev24a/users/$USER/scratch
+w1-gst-dev25 = /export/w1-gst-dev25a/users/$USER/scratch
+w1-gst-dev26 = /export/w1-gst-dev26a/users/$USER/scratch
+w1-gst-dev27 = /export/w1-gst-dev27a/users/$USER/scratch
+w1-gst-dev28 = /export/w1-gst-dev28a/users/$USER/scratch
+w1-gst-dev29 = /export/w1-gst-dev29a/users/$USER/scratch
+
+w2-2013-lin-08 = /export/w2-2013-lin-08d/users/$USER/scratch
+w2-2013-lin-09 = /export/w2-2013-lin-09d/users/$USER/scratch
+w2-2013-lin-10 = /export/w2-2013-lin-10d/users/$USER/scratch
+w2-2013-lin-11 = /export/w2-2013-lin-11d/users/$USER/scratch
+w2-2013-lin-12 = /export/w2-2013-lin-12d/users/$USER/scratch
+w2-2013-lin-13 = /export/w2-2013-lin-13d/users/$USER/scratch
+w2-2013-lin-14 = /export/w2-2013-lin-14d/users/$USER/scratch
+w2-2013-lin-15 = /export/w2-2013-lin-15d/users/$USER/scratch
+
+hs21a = /export/hs21a1/users/$USER/scratch
+hs21b = /export/hs21b1/users/$USER/scratch
+hs21c = /export/hs21c1/users/$USER/scratch
+hs21d = /export/hs21d1/users/$USER/scratch
+hs21e = /export/hs21e1/users/$USER/scratch
+hs21f = /export/hs21f1/users/$USER/scratch
+hs21h = /export/hs21h1/users/$USER/scratch
+hs21i = /export/hs21i1/users/$USER/scratch
+hs21j = /export/hs21j1/users/$USER/scratch
+hs21k = /export/hs21k1/users/$USER/scratch
+hs21l = /export/hs21l1/users/$USER/scratch
+hs21m = /export/hs21m1/users/$USER/scratch
+hs21n = /export/hs21n1/users/$USER/scratch
+
+hs20a = /export/hs20a2/users/$USER/scratch
+hs20b = /export/hs20b2/users/$USER/scratch
+hs20c = /export/hs20c2/users/$USER/scratch
+hs20d = /export/hs20d2/users/$USER/scratch
+hs20e = /export/hs20e2/users/$USER/scratch
+hs20g = /export/hs20g2/users/$USER/scratch
+hs20h = /export/hs20h2/users/$USER/scratch
+hs20i = /export/hs20i2/users/$USER/scratch
+hs20j = /export/hs20j2/users/$USER/scratch
+hs20k = /export/hs20k2/users/$USER/scratch
+hs20l = /export/hs20l2/users/$USER/scratch
+hs20m = /export/hs20m2/users/$USER/scratch
+hs20n = /export/hs20n2/users/$USER/scratch
+
+doom = /export/doom2/users/$USER/scratch
+rook = /export/rook2/users/$USER/scratch
+monster = /export/monster2/users/$USER/scratch

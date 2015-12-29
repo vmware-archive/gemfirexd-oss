@@ -1,0 +1,8 @@
+
+// to run this suite, modify the unknown hosts to actual hosts that are
+// reserved for exclusive use
+
+hydratest/network/badArgs.conf host1 = unknown1
+hydratest/network/dropClientServer.conf host1 = unknown1 host2 = unknown2
+hydratest/network/dropRestore.conf host1 = unknown1 host2 = unknown2
+hydratest/network/dropRestore2.conf host1 = unknown1 host2 = unknown2 host3 = unknown3

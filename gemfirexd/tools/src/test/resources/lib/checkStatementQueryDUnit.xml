@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlResults PUBLIC "-//GemStone Systems, Inc.//GemFireXD Test Results 1.0//EN"
+          "sqlResults1_0.dtd">
+<sqlResults>
+	<!-- The empty result set -->
+	<resultSet id="empty" />
+
+	<!--
+		Result set expected for first query.
+	-->
+	<resultSet id="testLikePredicateQuery_1">
+		<row>
+			<field name="ID">1</field>
+		</row>
+		<row>
+			<field name="ID">2</field>
+		</row>
+		<row>
+			<field name="ID">3</field>
+		</row>
+		<row>
+			<field name="ID">4</field>
+		</row>
+		<row>
+			<field name="ID">5</field>
+		</row>
+		<row>
+			<field name="ID">6</field>
+		</row>
+		<row>
+			<field name="ID">7</field>
+		</row>
+		<row>
+			<field name="ID">8</field>
+		</row>
+	</resultSet>
+	<resultSet id="testLikePredicateQuery_2">
+		<row>
+			<field name="ID2">1</field>
+		</row>
+		<row>
+			<field name="ID2">2</field>
+		</row>
+		<row>
+			<field name="ID2">3</field>
+		</row>
+		<row>
+			<field name="ID2">4</field>
+		</row>
+		<row>
+			<field name="ID2">5</field>
+		</row>
+		<row>
+			<field name="ID2">6</field>
+		</row>
+		<row>
+			<field name="ID2">7</field>
+		</row>
+		<row>
+			<field name="ID2">8</field>
+		</row>
+	</resultSet>
+	<resultSet id="testBug40626">
+	</resultSet>
+</sqlResults>
+	

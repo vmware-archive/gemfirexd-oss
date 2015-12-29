@@ -1,0 +1,61 @@
+/*commenting out for Cheetah release
+management/test/jmx/cacheServerMBean.conf 
+    managed_1_Hosts = 2 managed_1_VMsPerHost = 1 managed_1_ThreadsPerVM = 2
+	managed_2_Hosts = 2 managed_2_VMsPerHost = 1 managed_2_ThreadsPerVM = 2
+	locator_managing_Hosts = 2 locator_managing_VMsPerHost = 1 locator_managing_ThreadsPerVM = 3
+	managing_1_Hosts = 2 managing_1_VMsPerHost = 1 managing_1_ThreadsPerVM = 2
+	edge_Hosts = 2 edge_VMsPerHost = 1 edge_ThreadsPerVM = 2
+	jmxIterations = 50 duration = 600 */
+
+management/test/jmx/regionMBean.conf 
+    managed_1_Hosts = 2 managed_1_VMsPerHost = 1 managed_1_ThreadsPerVM = 2
+	managed_2_Hosts = 2 managed_2_VMsPerHost = 1 managed_2_ThreadsPerVM = 2
+	locator_managing_Hosts = 2 locator_managing_VMsPerHost = 1 locator_managing_ThreadsPerVM = 3
+	managing_1_Hosts = 2 managing_1_VMsPerHost = 1 managing_1_ThreadsPerVM = 2
+	edge_Hosts = 2 edge_VMsPerHost = 1 edge_ThreadsPerVM = 2
+	jmxIterations = 50 duration = 600	
+	
+management/test/jmx/memberMBean.conf 
+    managed_1_Hosts = 1 managed_1_VMsPerHost = 1 managed_1_ThreadsPerVM = 2
+	managed_2_Hosts = 1 managed_2_VMsPerHost = 1 managed_2_ThreadsPerVM = 2
+	locator_managing_Hosts = 2 locator_managing_VMsPerHost = 1 locator_managing_ThreadsPerVM = 3
+	managing_1_Hosts = 2 managing_1_VMsPerHost = 1 managing_1_ThreadsPerVM = 2
+	jmxIterations = 50 duration = 600
+	
+management/test/jmx/diskStoreMBean.conf 
+    managed_1_Hosts = 1 managed_1_VMsPerHost = 1 managed_1_ThreadsPerVM = 2
+	managed_2_Hosts = 1 managed_2_VMsPerHost = 1 managed_2_ThreadsPerVM = 2
+	locator_managing_Hosts = 2 locator_managing_VMsPerHost = 1 locator_managing_ThreadsPerVM = 3
+	managing_1_Hosts = 2 managing_1_VMsPerHost = 1 managing_1_ThreadsPerVM = 2
+	edge_Hosts = 2 edge_VMsPerHost = 1 edge_ThreadsPerVM = 2
+	jmxIterations = 50 duration = 600
+	
+management/test/jmx/distributedSystemMBean.conf 
+	managed_1_Hosts = 1 managed_1_VMsPerHost = 1 managed_1_ThreadsPerVM = 2
+	managed_2_Hosts = 1 managed_2_VMsPerHost = 1 managed_2_ThreadsPerVM = 2
+	locator_managing_Hosts = 2 locator_managing_VMsPerHost = 1 locator_managing_ThreadsPerVM = 3
+	managing_1_Hosts = 2 managing_1_VMsPerHost = 1 managing_1_ThreadsPerVM = 2
+	edge_Hosts = 2 edge_VMsPerHost = 1 edge_ThreadsPerVM = 2
+	jmxIterations = 50 duration = 600
+	
+management/test/jmx/lockServiceMBean.conf 
+	managed_1_Hosts = 1 managed_1_VMsPerHost = 1 managed_1_ThreadsPerVM = 2
+	managed_2_Hosts = 1 managed_2_VMsPerHost = 1 managed_2_ThreadsPerVM = 2
+	locator_managing_Hosts = 2 locator_managing_VMsPerHost = 1 locator_managing_ThreadsPerVM = 3
+	managing_1_Hosts = 2 managing_1_VMsPerHost = 1 managing_1_ThreadsPerVM = 2
+	edge_Hosts = 2 edge_VMsPerHost = 1 edge_ThreadsPerVM = 2
+	jmxIterations = 50 duration = 600 	
+	
+management/test/jmx/wanMBeans.conf 
+	wanSites = 2 wanSiteNames = "PNE|NY" 
+	locatorHostsPerSite = 1 locator_VMsPerHost = 1 locatorThreadsPerVM = 3	 
+    managed_1_Hosts = 1 managed_1_VMsPerHost = 1 managed_1_ThreadsPerVM = 2
+	managed_2_Hosts = 1 managed_2_VMsPerHost = 1 managed_2_ThreadsPerVM = 2
+	managing_1_Hosts = 2 managing_1_VMsPerHost = 1 managing_1_ThreadsPerVM = 2
+	jmxIterations = 50 duration = 600
+	
+management/test/jmx/locatorMBean.conf
+	A=locator locatorHosts=2 locatorThreadsPerVM=2 locatorVMsPerHost=1
+	B=managing managingHosts=2 managingThreadsPerVM=2 managingVMsPerHost=1
+	C=potentialmanaged potentialmanagedHosts=2 potentialmanagedThreadsPerVM=1 potentialmanagedVMsPerHost=1
+	jmxIterations = 7 duration = 600	

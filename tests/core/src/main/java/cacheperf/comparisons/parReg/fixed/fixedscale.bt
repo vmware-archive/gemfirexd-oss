@@ -1,0 +1,13 @@
+smoketest/scale/scale103.conf perffmwk.comparisonKey = peer_create
+smoketest/scale/scale104.conf perffmwk.comparisonKey = peer_get
+smoketest/scale/scale105.conf perffmwk.comparisonKey = peer_put
+smoketest/scale/scale106.conf perffmwk.comparisonKey = peer_update
+smoketest/scale/scale107.conf perffmwk.comparisonKey = peer_bulk_create
+smoketest/scale/scale108.conf perffmwk.comparisonKey = peer_bulk_get
+smoketest/scale/scale109.conf perffmwk.comparisonKey = peer_bulk_put
+smoketest/scale/scale110.conf perffmwk.comparisonKey = peer_feed_create
+smoketest/scale/scale111.conf perffmwk.comparisonKey = peer_feed_get
+smoketest/scale/scale112.conf perffmwk.comparisonKey = peer_feed_put
+smoketest/scale/scale113.conf perffmwk.comparisonKey = peer_feed_fun_exe_get
+smoketest/scale/scale114.conf perffmwk.comparisonKey = peer_feed_fun_exe_put
+

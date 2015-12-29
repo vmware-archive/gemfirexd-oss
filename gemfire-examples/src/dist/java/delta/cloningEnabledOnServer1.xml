@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<!-- Initializes a cache to serve the /root/cs_region region, 
+    waiting for client communication on port 40404 -->
+
+<!DOCTYPE cache PUBLIC
+  "-//GemStone Systems, Inc.//GemFire Declarative Caching 6.5//EN"
+  "http://www.gemstone.com/dtd/cache6_5.dtd">
+<cache>
+  <cache-server port="40404"/>
+  <region name="cs_region" refid="REPLICATE">
+    <region-attributes  cloning-enabled="true"/>
+  </region>
+</cache>

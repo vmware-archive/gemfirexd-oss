@@ -1,0 +1,16 @@
+//
+// Measures scalability of local put operations (see Bug 40258)
+//
+// Run on a machines with as many CPUs as possible (16 or more)
+//
+cacheperf/comparisons/puts/puts.conf
+  cacheVendor = gemfire
+  dataPolicy = normal
+  scope = local
+  peerHosts = 1 peerVMsPerHost = 1 peerThreadsPerVM = 1,4,8,16,24,32,48,64
+
+cacheperf/comparisons/puts/puts.conf
+  cacheVendor = hashmap
+  dataPolicy = normal
+  scope = local
+  peerHosts = 1 peerVMsPerHost = 1 peerThreadsPerVM = 1,4,8,16,24,32,48,64

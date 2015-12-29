@@ -1,0 +1,15 @@
+cacheperf/poc/useCase6/useCase6.conf
+  api = GFXD
+  clientHosts = 1 clientVMsPerHost = 1 clientThreadsPerVM = 1
+  serverHosts = 1 serverVMsPerHost = 1 serverThreadsPerVM = 1
+  isValue = false, true
+  usePreparedStatements = false, true
+  perffmwk.comparisonKey = fromprops:isValue:usePreparedStatements
+
+cacheperf/poc/useCase6/useCase6Thin.conf
+  api = GFXD, MYSQL
+  clientHosts = 1 clientVMsPerHost = 1 clientThreadsPerVM = 1
+  serverHosts = 1 serverVMsPerHost = 1 serverThreadsPerVM = 1
+  isValue = false, true
+  usePreparedStatements = false, true
+  perffmwk.comparisonKey = fromprops:isValue:usePreparedStatements

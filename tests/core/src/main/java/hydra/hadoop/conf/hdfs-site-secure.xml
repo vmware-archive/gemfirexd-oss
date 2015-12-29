@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<!--
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License. See accompanying LICENSE file.
+-->
+
+<!-- Put site-specific property overrides in this file. -->
+
+<configuration>
+ <property>
+   <name>hadoop.security.authentication</name>
+   <value>kerberos</value>
+ </property>
+
+ <property>
+   <name>gemfirexd.kerberos.keytab.file</name>
+   <value>/export/gcm/where/java/hadoop/hadoop-secure-keytabs/gfxd-secure.keytab</value>
+ </property>
+ <property>
+   <name>gemfirexd.kerberos.principal</name>
+   <value>gfxd-secure@GEMSTONE.COM</value>
+ </property>
+
+ <property>
+   <name>dfs.replication</name>
+   <value>${dfs.replication}</value>
+ </property>
+ <property>
+   <name>dfs.name.dir</name>
+   <value>${dfs.name.dir}</value>
+ </property>
+ <property>
+   <name>dfs.data.dir</name>
+   <value>${dfs.data.dir}</value>
+ </property>
+ <property>
+   <name>dfs.block.size</name>
+   <value>134217728</value>
+ </property>
+ <property>
+   <name>dfs.block.local-path-access.user</name>
+   <value>user</value>
+ </property>
+ <property>
+   <name>dfs.datanode.max.xcievers</name>
+   <value>4096</value>
+ </property>
+ 
+ <!-- these defaults will be overridden by hydra -->
+ <property>
+   <name>dfs.datanode.address</name>
+   <value>0.0.0.0:${dn.port}</value>
+ </property>
+ <property>
+   <name>dfs.datanode.http.address</name>
+   <value>0.0.0.0:${dn.http.port}</value>
+ </property>
+ <property>
+   <name>dfs.datanode.ipc.address</name>
+   <value>0.0.0.0:${dn.ipc.port}</value>
+ </property>
+ <property>
+   <name>dfs.namenode.http-address</name>
+   <value>0.0.0.0:${nn.http.port}</value>
+ </property>
+ <property>
+   <name>dfs.namenode.secondary.http-address</name>
+   <value>0.0.0.0:${nn.secondary.http.port}</value>
+ </property>
+
+  <!-- General HDFS security config -->
+  <property>
+    <name>dfs.block.access.token.enable</name>
+    <value>true</value>
+  </property>
+
+  <!-- NameNode security config -->
+  <property>
+    <name>dfs.namenode.keytab.file</name>
+    <value>${hdfs.secure.keytab.file}</value>
+  </property>
+  <property>
+    <name>dfs.namenode.kerberos.principal</name>
+    <value>hdfs/_HOST@GEMSTONE.COM</value>
+  </property>
+  <property>
+    <name>dfs.namenode.kerberos.http.principal</name>
+    <value>HTTP/_HOST@GEMSTONE.COM</value>
+  </property>
+  <property>
+    <name>dfs.namenode.kerberos.internal.spnego.principal</name>
+    <value>HTTP/_HOST@GEMSTONE.COM</value>
+  </property>
+
+  <!-- Secondary NameNode security config -->
+  <property>
+    <name>dfs.secondary.namenode.keytab.file</name>
+    <value>${hdfs.secure.keytab.file}</value>
+  </property>
+  <property>
+    <name>dfs.secondary.namenode.kerberos.principal</name>
+    <value>hdfs/_HOST@GEMSTONE.COM</value>
+  </property>
+  <property>
+    <name>dfs.secondary.namenode.kerberos.http.principal</name>
+    <value>HTTP/_HOST@GEMSTONE.COM</value>
+  </property>
+  <property>
+    <name>dfs.secondary.namenode.kerberos.internal.spnego.principal</name>
+    <value>HTTP/_HOST@GEMSTONE.COM</value>
+  </property>
+
+  <!-- DataNode security config -->
+  <property>
+    <name>dfs.datanode.data.dir.perm</name>
+    <value>700</value>
+  </property>
+  <property>
+    <name>dfs.datanode.keytab.file</name>
+    <value>${hdfs.secure.keytab.file}</value>
+  </property>
+  <property>
+    <name>dfs.datanode.kerberos.principal</name>
+    <value>hdfs/_HOST@GEMSTONE.COM</value>
+  </property>
+  <property>
+    <name>dfs.datanode.kerberos.http.principal</name>
+    <value>HTTP/_HOST@GEMSTONE.COM</value>
+  </property>
+
+  <!-- Web -->
+  <property>
+    <name>dfs.web.authentication.kerberos.keytab</name>
+    <value>${hdfs.secure.keytab.file}</value>
+  </property>
+  <property>
+    <name>dfs.web.authentication.kerberos.principal</name>
+    <value>HTTP/_HOST@GEMSTONE.COM</value>
+  </property>
+</configuration>

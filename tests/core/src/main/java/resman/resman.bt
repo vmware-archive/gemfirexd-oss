@@ -1,0 +1,242 @@
+/*commenting out for Cheetah release
+resman/concParRegCriticalHABridge.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=10
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=10
+   redundantCopies=1 numVMsToStop=1
+   heapMB=250
+
+resman/concParRegCriticalBridge.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=10
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=10
+   redundantCopies=0 numVMsToStop=1
+   heapMB=250
+
+resman/concParRegCriticalBridge.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=10
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=10
+   redundantCopies=1 numVMsToStop=1
+   heapMB=250 */
+   
+// This is test A in the resman test plan
+resman/criticalThreshold.conf
+   A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=4
+   B=dataStore dataStoreHosts=1 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+   redundantCopies=0 evictionThreshold=55 criticalThreshold=80
+   heapMB=250
+
+// Test E-A
+resman/criticalThresholdHA.conf 
+   A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=4
+   B=dataStore dataStoreHosts=2 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+   redundantCopies=1 evictionThreshold=55 criticalThreshold=80
+   heapMB=250
+   
+// This is test B in the resman test plan
+resman/criticalFromEviction.conf
+   A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=4
+   B=dataStore dataStoreHosts=1 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+   redundantCopies=0 evictionThreshold=55 criticalThreshold=80
+   heapMB=250
+   
+// This is test C in the resman test plan
+resman/evictionThreshold.conf
+   A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=4
+   B=dataStore dataStoreHosts=1 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+   redundantCopies=0 evictionThreshold=55 criticalThreshold=80
+   heapMB=250
+   
+// This is test D in resman test plan
+resman/thresholdFullCycle.conf
+   A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=4
+   B=dataStore dataStoreHosts=1 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+   redundantCopies=0 evictionThreshold=55 criticalThreshold=80
+   heapMB=250
+   
+resman/criticalHeapFireHose.conf
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=4
+   C=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=4
+   heapMB=100
+   
+resman/criticalHeapFireHoseWithRebal.conf
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=4
+   C=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=4
+   heapMB=100
+   
+resman/criticalHeapFireHoseAddCapacity.conf
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   C=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   D=extraDataStore extraDataStoreHosts=4 extraDataStoreVMsPerHost=1 extraDataStoreThreadsPerVM=10
+   heapMB=250
+   
+ resman/criticalHeapFireHoseAddCapacityAndQueryAndIndex.conf
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   C=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   D=extraDataStore extraDataStoreHosts=4 extraDataStoreVMsPerHost=1 extraDataStoreThreadsPerVM=10
+   heapMB=250
+   
+
+resman/rescueFromCriticalByDroppingIndexes.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=1
+   B=dataStore dataStoreHosts=1 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=1
+   redundantCopies=0 evictionThreshold=0 criticalThreshold=90
+   heapMB=250 bootstrapPuts=5000 criticalPuts=18000
+   
+resman/rescueFromCriticalByDrainingGateways.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=1
+   B=dataStore dataStoreHosts=1 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=1
+   redundantCopies=0 evictionThreshold=0 criticalThreshold=90
+   heapMB=250 gatewayPuts=250000 criticalPuts=50000
+   
+resman/rescueFromCriticalByTurningOnEviction.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=1
+   B=dataStore dataStoreHosts=1 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=1
+   redundantCopies=0 evictionThreshold=0 criticalThreshold=90
+   heapMB=250 criticalPuts=25000
+
+//disabled for #44146
+//===================================================
+//  PR Transaction versions of resman.bt
+//===================================================
+//resman/prTxCriticalThreshold.conf
+//   A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=4
+//   B=dataStore dataStoreHosts=1 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+//   redundantCopies=0 evictionThreshold=55 criticalThreshold=80
+//   heapMB=250
+
+// Test E-A
+//resman/prTxCriticalThresholdHA.conf 
+//   A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=4
+//   B=dataStore dataStoreHosts=2 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+//   redundantCopies=1 evictionThreshold=55 criticalThreshold=80
+//   heapMB=250
+   
+// This is test B in the resman test plan
+//resman/prTxCriticalFromEviction.conf
+//   A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=4
+//   B=dataStore dataStoreHosts=1 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+//   redundantCopies=0 evictionThreshold=55 criticalThreshold=80
+//   heapMB=250
+   
+// This is test C in the resman test plan
+//resman/prTxEvictionThreshold.conf
+//   A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=4
+//   B=dataStore dataStoreHosts=1 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+//   redundantCopies=0 evictionThreshold=55 criticalThreshold=80
+//   heapMB=250
+   
+// This is test D in resman test plan
+//resman/prTxThresholdFullCycle.conf
+//   A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=4
+//   B=dataStore dataStoreHosts=1 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+//   redundantCopies=0 evictionThreshold=55 criticalThreshold=80
+//   heapMB=250
+   
+//resman/prTxCriticalHeapFireHose.conf
+//   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+//   B=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=4
+//   C=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=4
+//   heapMB=100
+
+//resman/prTxCriticalHeapFireHoseWithRebal.conf
+//   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+//   B=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=4
+//   C=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=4
+//   heapMB=100
+   
+//resman/prTxCriticalHeapFireHoseAddCapacity.conf
+//   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+//   B=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+//   C=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+//   D=extraDataStore extraDataStoreHosts=4 extraDataStoreVMsPerHost=1 extraDataStoreThreadsPerVM=10
+//   heapMB=250
+
+//resman/prTxRescueByDroppingIndexes.conf
+//   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=1
+//   B=dataStore dataStoreHosts=1 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=1
+//   redundantCopies=0 evictionThreshold=0 criticalThreshold=90
+//   heapMB=250 bootstrapPuts=5000 criticalPuts=18000
+   
+//resman/prTxRescueByDrainingGateways.conf
+//   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=1
+//   B=dataStore dataStoreHosts=1 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=1
+//   redundantCopies=0 evictionThreshold=0 criticalThreshold=90
+//   heapMB=250 gatewayPuts=250000 criticalPuts=50000
+   
+//resman/prTxRescueWithEviction.conf
+//   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=1
+//   B=dataStore dataStoreHosts=1 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=1
+//   redundantCopies=0 evictionThreshold=0 criticalThreshold=90
+//   heapMB=250 criticalPuts=25000
+
+// distributed/replicated region tests
+resman/distCriticalHeapFireHose.conf
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=replicate replicateHosts=4 replicateVMsPerHost=1 replicateThreadsPerVM=4
+   heapMB=100
+
+// commenting out due to bug 44146
+/*resman/txCriticalHeapFireHose.conf
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=replicate replicateHosts=4 replicateVMsPerHost=1 replicateThreadsPerVM=4
+   heapMB=100 */
+
+/*commenting out for Cheetah release
+resman/concParRegCriticalBridgePersist.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=10
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=10
+   redundantCopies=0 numVMsToStop=1
+   heapMB=250
+
+resman/concParRegCriticalBridgePersist.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=10
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=10
+   redundantCopies=1 numVMsToStop=1
+   heapMB=250
+   
+resman/concParRegCriticalHABridgePersist.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=10
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=10
+   redundantCopies=1 numVMsToStop=1
+   heapMB=250 */
+
+resman/criticalHeapFireHosePersist.conf
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=4
+   C=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=4
+   heapMB=100
+   
+resman/criticalHeapFireHoseWithRebalPersist.conf
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=4
+   C=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=4
+   heapMB=100
+   
+resman/criticalHeapFireHoseAddCapacityPersist.conf
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   C=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   D=extraDataStore extraDataStoreHosts=4 extraDataStoreVMsPerHost=1 extraDataStoreThreadsPerVM=10
+   heapMB=250
+
+// client/server tx integration with resman (useTransactions = true) : commenting out due to bug 44146
+/*resman/tx/concParRegCriticalHABridge.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=10
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=10
+   redundantCopies=1 numVMsToStop=1
+   heapMB=250
+
+resman/tx/concParRegCriticalBridge.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=10
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=10
+   redundantCopies=0 numVMsToStop=1
+   heapMB=250
+
+resman/tx/concParRegCriticalBridge.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=10
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=10
+   redundantCopies=1 numVMsToStop=1
+   heapMB=250 */

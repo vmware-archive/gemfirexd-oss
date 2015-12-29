@@ -1,0 +1,11 @@
+Peer sending function Execution request to other peer as well as executing function on its own region
+Connecting to the distributed system and creating the cache... 
+Example region "/exampleRegion" created in cache.
+Example region "/exampleRegion" is populated.
+Press Enter to continue.
+Executing Function : MultiGetFunction on region "/exampleRegion" with filter size 3 and with MyArrayListResultCollector.
+Press Enter to continue.
+Function executed successfully. Now getting the result
+Got result with size 3.
+Press Enter to continue.
+Closing the cache and disconnecting.

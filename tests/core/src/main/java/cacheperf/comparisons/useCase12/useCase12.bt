@@ -1,0 +1,30 @@
+cacheperf/comparisons/useCase12/useCase12.conf hydra.numHosts=2
+   pubHosts=1 pubVMsPerHost=1 pubThreadsPerVM=1
+   subHosts=1 subVMsPerHost=1 subThreadsPerVM=1
+   scope=distributedAck
+
+cacheperf/comparisons/useCase12/useCase12.conf hydra.numHosts=2
+   pubHosts=1 pubVMsPerHost=1 pubThreadsPerVM=10
+   subHosts=1 subVMsPerHost=1 subThreadsPerVM=1
+   scope=distributedAck
+
+cacheperf/comparisons/useCase12/useCase12.conf hydra.numHosts=4
+   pubHosts=1 pubVMsPerHost=1 pubThreadsPerVM=10
+   subHosts=3 subVMsPerHost=1 subThreadsPerVM=1
+   scope=distributedAck
+
+cacheperf/comparisons/useCase12/useCase12.conf hydra.numHosts=2
+   pubHosts=1 pubVMsPerHost=1 pubThreadsPerVM=1
+   subHosts=1 subVMsPerHost=1 subThreadsPerVM=1
+   scope=distributedNoAck
+
+cacheperf/comparisons/useCase12/useCase12.conf hydra.numHosts=2
+   pubHosts=1 pubVMsPerHost=1 pubThreadsPerVM=10
+   subHosts=1 subVMsPerHost=1 subThreadsPerVM=1
+   scope=distributedNoAck
+
+cacheperf/comparisons/useCase12/useCase12.conf hydra.numHosts=4
+   pubHosts=1 pubVMsPerHost=1 pubThreadsPerVM=10
+   subHosts=3 subVMsPerHost=1 subThreadsPerVM=1
+   scope=distributedNoAck
+

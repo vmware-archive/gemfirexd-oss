@@ -1,0 +1,8 @@
+A = peer
+peerHosts        = 1
+peerVMsPerHost   = 3
+peerThreadsPerVM = 1
+
+regionName = PRPortfolios
+
+perffmwk.comparisonKey = query009

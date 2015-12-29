@@ -1,0 +1,48 @@
+// concParReg & concParRegHA (with tx ops)
+parReg/tx/concParReg.conf peerHosts=3 peerVMsPerHost=3 peerThreadsPerVM=10 redundantCopies=0
+   threadGroupsName=default
+//parReg/tx/concParReg.conf peerHosts=3 peerVMsPerHost=3 peerThreadsPerVM=10 redundantCopies=1
+parReg/tx/concParReg.conf peerHosts=3 peerVMsPerHost=3 peerThreadsPerVM=10 redundantCopies=2
+   threadGroupsName=default
+//parReg/tx/concParReg.conf peerHosts=3 peerVMsPerHost=3 peerThreadsPerVM=10 redundantCopies=3
+
+// HA testing - concurrent (stop 1 VM at a time)
+/*parReg/tx/concParRegHA.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   redundantCopies=1 numVMsToStop=1
+   threadGroupsName=dataStoreThreads
+   
+parReg/tx/concParRegHA.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   redundantCopies=2 numVMsToStop=1*/
+parReg/tx/concParRegHA.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   B=dataStore dataStoreHosts=5 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   redundantCopies=3 numVMsToStop=1
+   threadGroupsName=dataStoreThreads
+
+// HA testing - concurrent (stop 2 VMs at a time)
+parReg/tx/concParRegHA.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   B=dataStore dataStoreHosts=5 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   redundantCopies=2 numVMsToStop=2
+   threadGroupsName=dataStoreThreads
+/*parReg/tx/concParRegHA.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   B=dataStore dataStoreHosts=6 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   redundantCopies=3 numVMsToStop=2*/
+
+// HA testing - concurrent (stop 3 VMs at a time)
+parReg/tx/concParRegHA.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   B=dataStore dataStoreHosts=7 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   redundantCopies=3 numVMsToStop=3
+   threadGroupsName=dataStoreThreads
+
+// parReg TX ConcurrentMap event tests
+parReg/tx/serialParRegCMEvent.conf
+   threadGroupsName=default
+parReg/tx/concParRegCMEvent.conf
+   threadGroupsName=default

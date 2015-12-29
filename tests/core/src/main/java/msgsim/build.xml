@@ -1,0 +1,26 @@
+<project name="MessagingSimulation" default="dist" basedir=".">
+  <description>Build.xml for messaging simulator</description>
+  
+  <property name="src" location=".."/>
+  <property name="build" location="build"/>
+  <property name="dist" location="dist"/>
+  
+  <target name="init">
+    <tstamp/>
+    <mkdir dir="${build}"/>
+  </target>
+  
+  <target name="compile" depends="init" description="compile the source">
+    <javac srcdir="${src}/msgsim" destdir="${build}" debug="yes"/>
+  </target>
+  
+  <target name="dist" depends="compile">
+    <mkdir dir="${dist}/lib"/>
+    <jar jarfile="${dist}/msgsim.jar" basedir="${build}"/>
+  </target>
+  
+  <target name="clean">
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+  </target>
+</project>

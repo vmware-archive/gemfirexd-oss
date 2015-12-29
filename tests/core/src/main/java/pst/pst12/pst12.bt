@@ -1,0 +1,4 @@
+cacheperf/gemfire/threads/threads.conf
+trimIterations=0
+workIterations=80000000
+batchSize=250000

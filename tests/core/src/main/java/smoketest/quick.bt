@@ -1,0 +1,3 @@
+smoketest/perf/perf001.conf
+// version testing (failure causes client vms to time out on startup)
+hydratest/version/partition/partition.conf version1 = default version2 = 57

@@ -1,0 +1,8 @@
+// SUDHIR'S MATRIX
+
+include $JTESTS/cacheperf/gemfire/create/create.bt
+include $JTESTS/cacheperf/gemfire/create/mirrorcreate.bt
+include $JTESTS/cacheperf/gemfire/getInitialImage/getInitialImage.bt
+include $JTESTS/cacheperf/gemfire/getInitialImage/getInitialImageGetsImpact.bt
+include $JTESTS/cacheperf/gemfire/getInitialImage/getInitialImagePutsImpact.bt
+include $JTESTS/cacheperf/gemfire/miss/miss.bt

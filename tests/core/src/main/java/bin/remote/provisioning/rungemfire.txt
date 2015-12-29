@@ -1,0 +1,362 @@
+rungemfire.pl -- remotely provision gemfire, run batterytest, and collect
+                 results
+
+This script is a do-all bulletproofed configurable script to permit
+the unattended provisioning, launch, and results retrieval of a batterytest.
+
+Most people should make a copy of runremote.sh and modify it to taste.
+This is the complete reference document to its functionality.
+
+rungemfire.pl is launched on a machine within the corporate infrastructure.
+The test environment is not assumed to have access to any infrastructure
+resources (especially network disk mounts).
+
+rungemfire.pl uses ssh.  You must ensure that password-less ssh is supported
+between all of the specified machines in your configuration as well as the
+current machine.  See the section 'Configuring SSH' for some more details
+on this.
+
+This script performs the following steps:
+
+- Correct a failed ntpd on the target machines.  If ntpd is missing,
+  it runs /usr/sbin/ntpdate to reset the clock, then launches
+  /etc/init.d/xntpd.  This requires that sudo be configured on the
+  target machines password-less.
+
+  TODO: make this linux specific
+
+- Optionally copy a JDK to the target machine.  In this case, the
+  source of the JDK (which must contain a bin/java executable) is
+  specified.
+
+  In any event, the JDK to use for the test is configurable as an
+  parameter.
+
+- Optionally copy a GemFire artifacts folder.  This folder should
+  be the top-level of an artifacts directory (an osbuild.dir),
+  containing, among other things, hidden/, product/, and tests/classes/
+  directories.
+
+  In any event, the GemFire to be used on the remote machine is
+  configurable as a parameter.
+
+- Create scratch directories on all managed machines.  These
+  directories will be used for all local JVM's during the test run.
+
+- Delete then re-Create a blank results directory on a specified master machine;
+  this folder will contain all artifacts and results of the run.
+
+- Copy over the specified .bt file to the results directory.
+
+- Copy over the specified local.conf file to the results directory.
+
+- Create a launch.sh in the results directory with all parameters
+  and arguments filled in, for documentation as well as to be
+  able to manually re-run the test at a later date.
+
+- [Windows only] copy over helper executables and scripts to allow
+  nuke.bat to work without access to the filer
+
+- Launch the test and wait for it to finish
+
+- Kill any stuck Java processes that may have escaped Hydra
+
+- Retrieve the results directory to a specified place on the local file system
+
+- Remove the scratch directories on the target machines;
+
+- Remove the results directory on the remote master
+
+---------------------------------------------------
+USAGE MESSAGE:
+
+Usage: rungemfire.pl <args>
+
+Arguments:
+  -n
+    Only print parameters, do not execute
+  -v
+    Verbose
+  BT=<fname>          (default "test.bt")
+    BT file for BatteryTest
+  CONF=<fname>        (default "local.conf")
+    local.conf file for Hydra
+  copyBUILD
+    copy from OSBUILD to REMOTE_BUILD
+  copyJDK
+    copy from JDKSOURCE to JDK
+  hostlist=<space separated string>
+    list of hosts to manage, default = ptesta ptestc ptestd pteste ptestf ptestb
+  JDK=<dirname>       (default "/export/ptesta1/users/build/jdk1.5.0_05")
+    JDK to use on SUT
+  JDKSOURCE=<dirname>  (default "/gcm/where/jdk/1.5.0_05/x86.linux")
+    JDK source on this system to copy (if copyjdk)
+  MASTER=hostname     (default "ptesta")
+    (Hydra) master for running test
+  nohostverify
+    Skip host ping verification, since it is slow
+  noremoteverify
+    Don't perform verification steps that disturb SUT
+  OSBUILD=<dirname>  (default "/export/shared_build/users/build/gemfire_obj")
+    obj source on this system to copy (if copyBUILD)
+  RESULTDIR=<dirname> (default "/export/shared_build/users/build/results)
+    Result directory on your system where test results will be put
+  REMOTE_BUILD=<dirname>       (default: "/export/ptesta1/users/build/gemfire_obj")
+    Product on SUT to test
+  SCRATCH=<dirname>   (default "/export/ptesta1/users/build/perfresults/scratch /export/ptestc1/users/build/perfresults/scratch /export/ptestd1/users/build/perfresults/scratch /export/pteste1/users/build/perfresults/scratch /export/ptestf1/users/build/perfresults/scratch /export/ptestb1/users/build/perfresults/scratch")
+    list of scratch folders on individual systems
+  SCRATCHPARENT=<dirname>      (default "/export/ptesta1/users/build/perfresults")
+    parent directory for test results on SUT)
+  USER=username       (default "build")
+    username on master for running test
+---------------------------------------------------
+
+
+USAGE DISCUSSION
+
+# ----------------------------------------
+  -n
+    Only print parameters, do not execute
+# ----------------------------------------
+
+Useful for validating arguments.  Folder existence, both remote and
+local, is performed, so be cautious about running this while tests
+are in progress.
+
+# ----------------------------------------
+  -v
+    Verbose; print more messages
+# ----------------------------------------
+
+More diagnostics, noisier.
+
+# ----------------------------------------
+  BT=<fname>          (default "test.bt")
+    BT file for BatteryTest
+# ----------------------------------------
+
+This is the BT file for BatteryTest.
+
+# ----------------------------------------
+  CONF=<fname>        (default "local.conf")
+    local.conf file for Hydra
+# ----------------------------------------
+
+Specify the configuration file you want to use.
+
+IMPORTANT: a number of the values in the configuration file MUST
+NOT BE CHANGED.  Look at the template for your configuration (such as
+ptest.conf) for more details.
+
+# ----------------------------------------
+  copyBUILD
+    copy from OSBUILD to REMOTE_BUILD
+# ----------------------------------------
+
+The product you are testing can be optionally copied to the target host.  
+Use this flag to specify that a copy should be done.
+
+(Use delremote.pl to remove a product directory you no longer need.)
+
+If you specify the 'copyBUILD' argument to rungemfire.pl, OSBUILD is
+used as the source of the copy, and it will be copied to REMOTE_BUILD.
+
+# ----------------------------------------
+  copyJDK
+    copy from JDKSOURCE to JDK
+# ----------------------------------------
+
+If you should actually need to create a JDK, use this flag to do specify
+that a copy should be done.
+
+This should not happen very often.
+
+If you specify the 'copyJDK' argument to rungemfire.pl, JDKSOURCE is
+used as the source of the copy, and it will be copied to JDK.
+
+# ----------------------------------------
+  hostlist=<space separated string>
+    list of hosts to manage, default = "ptesta ptestc ptestd pteste ptestf ptestb"
+# ----------------------------------------
+
+There are a number of global issues that the script attempts to address,
+such as fixing clock skew problems.  This is the list of hosts that will
+be managed.
+
+For the purposes of consistency, we will also verify that these hosts are
+sane and functioning before running the test.
+
+# ----------------------------------------
+  JDK=<dirname>       (default "/export/ptesta1/users/build/jdk1.5.0_05")
+    JDK to use on SUT
+# ----------------------------------------
+
+You can specify the JDK to be used.  Best practice for the Congo
+release is to use JDK 1.5.  Use 'copyJDK' to provision a new JDK.
+
+You should not have to change this argument very often.
+
+When using 'copyJDK', the parent directory of JDK must already exist
+
+# ----------------------------------------
+  JDKSOURCE=<dirname>  (default "/gcm/where/jdk/1.5.0_05/x86.linux")
+    JDK source on this system to copy (if copyjdk)
+# ----------------------------------------
+
+If you should actually need to create a JDK, this is the JDK on
+your local machine.  It will be copied to the location JDK.
+
+If you specify 'copyJDK' JDK_SOURCE is used as the source of the copy, and
+it will be copied to JDK.
+
+If 'copyJDK' is not specified, this argument is ignored.
+
+# ----------------------------------------
+  MASTER=hostname     (default "ptesta")
+    (Hydra) master for running test
+# ----------------------------------------
+
+This is the host upon which the Hydra master will be launched.  It is
+also used for all of the provisioning commands (scp, ssh, and the like).
+
+# ----------------------------------------
+  nohostverify
+    Skip host ping verification, since it is slow
+# ----------------------------------------
+
+An optional step in verifying the test parameters is to verify the
+actual existence of the machines.  In practice, this is very slow and
+is disabled by default.
+
+# ----------------------------------------
+  noremoteverify
+    Don't perform verification steps that disturb SUT
+# ----------------------------------------
+
+Many of the steps to verify the test parameters actually ssh to the system
+under test.  This is pernicious if a performance test is currently in progress.
+
+Specify this parameter to only do local checks (don't disturb the SUT)
+on the test arguments.
+
+# ----------------------------------------
+  OSBUILD=<dirname>  (default "/export/shared_build/users/build/gemfire_obj")
+    obj source on this system to copy (if copyBUILD)
+# ----------------------------------------
+
+The product you are testing can be optionally copied to the target host.
+
+(Use delremote.pl to remove a product directory you no longer need.)
+
+If you specify 'copyBUILD' OSBUILD is used as the source of the copy, and it
+will be copied to REMOTE_BUILD.  REMOTE_BUILD will be first be removed, if
+it exists.
+
+If 'copyBUILD' is not specified, this argument is ignored.
+
+OSBUILD is the same as the osbuild.dir property in your ant makefile;
+i.e., it's the host-specific build artifacts directory.  Symbolic links
+in this directory will not work.
+
+# ----------------------------------------
+  RESULTDIR=<dirname> (default "/export/shared_build/users/build/results)
+    Result directory on your system where test results will be put
+# ----------------------------------------
+
+Your results will be copied back to your local environment, to a
+directory that you specify.  If the given directory name already exists,
+it will be renamed in a unique fashion.
+
+The parent directory of the result directory must already exist.
+
+(If you are using the queuing tool (runqueue.pl), the parent directory
+must be writable by the uid running the queuer.)
+
+# ----------------------------------------
+  REMOTE_BUILD=<dirname>       (default: "/export/ptesta1/users/build/gemfire_obj")
+    Product on SUT to test
+# ----------------------------------------
+
+You specify the product (on the remote machine) that you will be testing.
+If you need to create it, specify both OSBUILD argument and copyBUILD.
+
+When using 'copyBUILD', the parent directory must already exist.
+
+If you are testing the same product multiple times, you can (obviously) omit
+the copy step after the first test run.
+
+Best practice is to choose a name that uniquely identifies
+it, i.e., includes your username somewhere in it, such as
+
+    "/export/ptesta1/users/build/jpenney_gemfire_bensley"
+
+# ----------------------------------------
+  SCRATCH=<dirname>   (default "/export/ptesta1/users/build/perfresults/scratch /export/ptestc1/users/build/perfresults/scratch /export/ptestd1/users/build/perfresults/scratch /export/pteste1/users/build/perfresults/scratch /export/ptestf1/users/build/perfresults/scratch /export/ptestb1/users/build/perfresults/scratch")
+    list of scratch folders on individual systems
+# ----------------------------------------
+
+This is the same as "hydra.HostPrms-resourceDirBases" in your configuration
+file.  These directories (and their parent directories, if necessary) will
+be created.  Also, these directories will be removed at the end of the test.
+
+If you have multiple tests running concurrently, make sure that different
+scratch folders are specified for each test.
+
+# ----------------------------------------
+  SCRATCHPARENT=<dirname>      (default "/export/ptesta1/users/build/perfresults")
+# ----------------------------------------
+
+All of your results are held in $SCRATCHPARENT/$RESULTDIR on the master.
+
+Results are "collected" here below here, before they are copied back to
+RESULTDIR on your system.
+
+This directory must already exist.
+
+If you are running multiple concurrent tests with the same $RESULTDIR name
+(deprecated), you will need to choose a different SCRATCHPARENT for each
+test.
+
+# ----------------------------------------
+  USER=username       (default "build")
+    username on master for running test
+# ----------------------------------------
+
+This is part of the ssh configuration for running the test.  You must be able
+to ssh to MASTER without a password (see the section "Configuring SSH".
+
+---------------------------------------------------
+
+# ----------------------------------------
+  Configuring SSH
+# ----------------------------------------
+
+First of all make sure that all machines in your SUT to ssh to one
+another without requiring a password.  The best way to do this is to create
+your ~/.ssh directory in its entirety, then zip it, scp it to each of the
+other machines, and then unzip it.
+
+Next, you need to be able to communicate with the MASTER machine from your
+current host without requiring a password.  To do this, you need to take
+the private key in your SUT and add it to the list of private keys you
+can proffer.
+
+scp the ~/id_dsa file (typically) from the SUT to your own ~/.ssh file as
+(for instance) ~/id_dsa.1.  Make sure you've done a chmod 600 on this file,
+or ssh won't use it.
+
+Edit your config file to read something like,
+
+	StrictHostKeyChecking no
+	IdentityFile /home/jpenney/.ssh/id_dsa
+	IdentityFile /home/jpenney/.ssh/id_dsa.1
+
+(where jpenney is obviously replaced with your own user name).
+
+Test it out by running the following commands:
+
+	ssh build@ptesta
+	ssh build@ptesta uname -a
+
+If both of these commands succeed without requiring a password, you've
+succeeded.  Congratulations!

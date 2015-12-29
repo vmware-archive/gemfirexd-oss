@@ -1,0 +1,36 @@
+A = pub
+B = sub
+
+pubHosts = 1
+pubVMsPerHost = 1
+pubThreadsPerVM = 1
+subHosts = 1
+subVMsPerHost = 1
+subThreadsPerVM = 1
+
+# scope (distributedNoAck, distributedAck)
+scope = distributedNoAck 
+
+# number of iterations to do in a task
+batchSize = 5000
+
+# characters in message payload string (this is half the byte size)
+messageSize = 0
+
+# whether to sleep before updating cache entries
+sleepBeforeOp = false
+
+# how many operations to do per sleep
+sleepOpCount = 1
+
+# low end of random sleep range
+putSleepMsMin = 5
+
+# high end of random sleep range
+putSleepMsMax = 5
+
+# sleep for publisher doing non-gemfire work
+sleepMsPub = 10
+
+# sleep for subsriber(s)  doing non-gemfire work
+sleepMsSub = 10

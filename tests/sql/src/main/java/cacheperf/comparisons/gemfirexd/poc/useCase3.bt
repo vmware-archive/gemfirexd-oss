@@ -1,0 +1,24 @@
+cacheperf/comparisons/gemfirexd/poc/useCase3.conf
+cacheperf/comparisons/gemfirexd/poc/useCase3.ddl.conf
+  api = ORACLE
+  dbapi = ORACLE
+  databaseName = wdc11
+  databaseServerHost = w1-gst-dev29
+  databaseServerHome = w1-gst-dev29a
+  user = system
+  password = apple
+cacheperf/comparisons/gemfirexd/poc/useCase3.dbsync.conf
+  dbapi = ORACLE
+  databaseName = wdc11
+  databaseServerHost = w1-gst-dev29
+  databaseServerHome = w1-gst-dev29a
+  user = system
+  password = apple
+cacheperf/comparisons/gemfirexd/poc/useCase3.drop.conf
+  api = ORACLE
+  dbapi = ORACLE
+  databaseName = wdc11
+  databaseServerHost = w1-gst-dev29
+  databaseServerHome = w1-gst-dev29a
+  user = system
+  password = apple

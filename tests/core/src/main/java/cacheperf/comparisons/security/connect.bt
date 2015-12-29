@@ -1,0 +1,30 @@
+// client connection
+cacheperf/comparisons/security/connectClient.conf
+  bridgeHosts = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHosts   = 4 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+  securityScheme = none, noop, dummy, ldap
+cacheperf/comparisons/security/connectClient.conf
+  bridgeHosts = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHosts   = 4 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+  securityScheme = none sslScheme = ssl
+  conserveSockets = true maxThreads = 0 // required by ssl
+
+// peer connection
+cacheperf/comparisons/security/connectPeer.conf
+  peerHosts = 4 peerVMsPerHost = 1 peerThreadsPerVM = 1
+  securityScheme = none, noop, dummy, ldap sslScheme = none
+cacheperf/comparisons/security/connectPeer.conf
+  peerHosts = 4 peerVMsPerHost = 1 peerThreadsPerVM = 1
+  securityScheme = none sslScheme = ssl
+  conserveSockets = true maxThreads = 0 // required by ssl
+
+// wan connection
+cacheperf/comparisons/security/connectWan.conf
+  wanSites = 4 peerHostsPerSite = 2 peerVMsPerHost = 1 peerThreadsPerVM = 1
+  hubType = primary, secondary
+  securityScheme = none, noop, dummy, ldap sslScheme = none
+cacheperf/comparisons/security/connectWan.conf
+  wanSites = 4 peerHostsPerSite = 2 peerVMsPerHost = 1 peerThreadsPerVM = 1
+  hubType = primary, secondary
+  securityScheme = none sslScheme = ssl
+  conserveSockets = true maxThreads = 0 // required by ssl

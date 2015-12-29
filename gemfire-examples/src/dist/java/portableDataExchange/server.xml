@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!DOCTYPE cache PUBLIC "-//GemStone Systems, Inc.//GemFire Declarative Caching 6.6//EN" "http://www.gemstone.com/dtd/cache6_6.dtd">
+<cache>
+  <!--Configure the pdx framework.  -->
+  <pdx persistent="true" read-serialized="true" ignore-unread-fields="false"/>
+
+  <!-- define a region to hold portfolio objects -->
+  <region name="Portfolios">
+    <region-attributes data-policy="persistent-replicate">
+     <cache-listener>
+       <class-name> portableDataExchange.LoggingCacheListener </class-name>
+     </cache-listener>
+    </region-attributes>
+  </region>
+</cache>

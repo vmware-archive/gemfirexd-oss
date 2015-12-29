@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<!-- MultiuserSecurityServer.xml -->
+
+<!DOCTYPE cache PUBLIC
+  "-//GemStone Systems, Inc.//GemFire Declarative Caching 6.5//EN"
+  "http://www.gemstone.com/dtd/cache6_5.dtd">
+<cache>
+  <cache-server port="40404" maximum-time-between-pings="20000"/>
+  <region name="exampleRegion" refid="REPLICATE"/>
+  <region name="functionServiceExampleRegion" refid="PARTITION"/>
+</cache>

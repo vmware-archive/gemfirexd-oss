@@ -1,0 +1,701 @@
+sql/sqlTx/thinClient/concUpdateTxClient.conf
+   clientHosts=1
+   clientThreadsPerVM=5
+   clientVMsPerHost=6
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   nobatching=false
+   serverHosts=1
+   serverThreadsPerVM=1
+   serverVMsPerHost=5
+
+sql/sqlTx/thinClient/concUpdatableResultsetTxClient.conf
+   clientHosts=1
+   clientThreadsPerVM=5
+   clientVMsPerHost=6
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   nobatching=false
+   serverHosts=1
+   serverThreadsPerVM=1
+   serverVMsPerHost=2
+
+sql/sqlTx/thinClient/concUpdateTxClient.conf
+   clientHosts=1
+   clientThreadsPerVM=5
+   clientVMsPerHost=6
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   nobatching=false
+   serverHosts=1
+   serverThreadsPerVM=1
+   serverVMsPerHost=5
+
+sql/sqlTx/concUpdateTxWithUpdatableResultSet.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=8
+   accessorVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=3
+
+sql/sqlTx/thinClient/concUpdateTxClient.conf
+   clientHosts=1
+   clientThreadsPerVM=5
+   clientVMsPerHost=6
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   nobatching=true
+   serverHosts=1
+   serverThreadsPerVM=1
+   serverVMsPerHost=2
+
+sql/sqlTx/thinClient/concUpdatableResultsetTxClient.conf
+   clientHosts=1
+   clientThreadsPerVM=5
+   clientVMsPerHost=6
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   nobatching=true
+   serverHosts=1
+   serverThreadsPerVM=1
+   serverVMsPerHost=2
+
+sql/sqlTx/thinClient/concUpdateTxClient.conf
+   clientHosts=1
+   clientThreadsPerVM=5
+   clientVMsPerHost=6
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   nobatching=true
+   serverHosts=1
+   serverThreadsPerVM=1
+   serverVMsPerHost=5
+
+sql/sqlTx/thinClient/concUpdatableResultsetTxClient.conf
+   clientHosts=1
+   clientThreadsPerVM=5
+   clientVMsPerHost=6
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   nobatching=false
+   serverHosts=1
+   serverThreadsPerVM=1
+   serverVMsPerHost=2
+
+sql/sqlTx/thinClient/concUpdateTxClient.conf
+   clientHosts=1
+   clientThreadsPerVM=5
+   clientVMsPerHost=6
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   nobatching=false
+   serverHosts=1
+   serverThreadsPerVM=1
+   serverVMsPerHost=2
+
+sql/sqlTx/concMultiTablesTxTriggerCallProcedureWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=1
+   accessorThreadsPerVM=12
+   accessorVMsPerHost=5
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=5
+
+sql/sqlTx/thinClient/concUpdatableResultsetTxClient.conf
+   clientHosts=1
+   clientThreadsPerVM=5
+   clientVMsPerHost=6
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   nobatching=true
+   serverHosts=1
+   serverThreadsPerVM=1
+   serverVMsPerHost=2
+
+sql/sqlTx/repeatableRead/concMultiTablesRRTxWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=8
+   accessorVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=3
+
+sql/sqlTx/repeatableRead/concMultiTablesRRTxWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=12
+   accessorVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   storeHosts=3
+   storeThreadsPerVM=1
+   storeVMsPerHost=3
+
+sql/sqlTx/thinClient/repeatableRead/concMultiTablesRRTxClient.conf
+   clientHosts=2
+   clientThreadsPerVM=8
+   clientVMsPerHost=6
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   nobatching=true
+   serverHosts=2
+   serverThreadsPerVM=1
+   serverVMsPerHost=5
+
+sql/sqlTx/thinClient/repeatableRead/concMultiTablesRRTxClient.conf
+   clientHosts=2
+   clientThreadsPerVM=8
+   clientVMsPerHost=6
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   nobatching=false
+   serverHosts=2
+   serverThreadsPerVM=1
+   serverVMsPerHost=5
+
+sql/subquery/randomPartitionRepTablesSubqueryNonUniqWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=20
+   accessorVMsPerHost=5
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=4
+
+sql/sqlTx/sqlTxCallbacks/DBSynchronizerTxWithAccessors.conf
+   A=store
+   B=accessor
+   SGList1=random
+   SGList2=random
+   SGList3=random
+   SGList4=random
+   SGList5=random
+   SGList6=random
+   SGvms1=1
+   SGvms2=2
+   SGvms3=2
+   SGvms4=2
+   SGvms5=3
+   SGvms6=2
+   accessorHosts=1
+   accessorThreadsPerVM=10
+   accessorVMsPerHost=6
+   buyorders=trade.buyorders:random:random
+   customers=trade.customers:random:random
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   networth=trade.networth:random:random
+   portfolio=trade.portfolio:random:random
+   securities=trade.securities:random:random
+   sellorders=trade.sellorders:random:random
+   storeHosts=6
+   storeThreadsPerVM=1
+   storeVMsPerHost=2
+   testUniqueKeys=true
+   txhistory=trade.txhistory:random:random
+   withReplicatedTables=true
+
+sql/sqlTx/thinClient/repeatableRead/concMultiTablesRRTxClient.conf
+   clientHosts=2
+   clientThreadsPerVM=8
+   clientVMsPerHost=6
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   nobatching=false
+   serverHosts=2
+   serverThreadsPerVM=1
+   serverVMsPerHost=2
+
+sql/sqlTx/randomPartitionReplicateTablesTxWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=3
+   accessorVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=3
+   workIterationsPerThread=500
+
+sql/sqlTx/concMultiTablesTxTriggerCallProcedureWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=8
+   accessorVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=3
+
+sql/sqlTx/concMultiTablesTxWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=8
+   accessorVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=3
+
+sql/sqlTx/concMultiTablesTxTriggerWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=8
+   accessorVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=3
+
+sql/sqlTx/thinClient/repeatableRead/concMultiTablesRRTxClient.conf
+   clientHosts=2
+   clientThreadsPerVM=8
+   clientVMsPerHost=6
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   nobatching=false
+   serverHosts=2
+   serverThreadsPerVM=1
+   serverVMsPerHost=2
+
+sql/sqlTx/concMultiTablesTxTriggerCallProcedureWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=8
+   accessorVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=3
+
+sql/sqlTx/concMultiTablesTxWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=8
+   accessorVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=3
+
+sql/sqlTx/concMultiTablesTxTriggerCallProcedureWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=1
+   accessorThreadsPerVM=12
+   accessorVMsPerHost=5
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=5
+
+sql/sqlTx/sqlTxCallbacks/DBSynchronizerIndexTxWithAccessors.conf
+   A=store
+   B=accessor
+   SGList1=random
+   SGList2=random
+   SGList3=random
+   SGList4=random
+   SGList5=random
+   SGList6=random
+   SGvms1=1
+   SGvms2=2
+   SGvms3=2
+   SGvms4=2
+   SGvms5=3
+   SGvms6=2
+   accessorHosts=1
+   accessorThreadsPerVM=10
+   accessorVMsPerHost=6
+   buyorders=trade.buyorders:random:default
+   customers=trade.customers:random:default
+   dropIndex=true
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   networth=trade.networth:random:default
+   portfolio=trade.portfolio:random:default
+   securities=trade.securities:random:default
+   sellorders=trade.sellorders:random:default
+   storeHosts=6
+   storeThreadsPerVM=1
+   storeVMsPerHost=2
+   testUniqueKeys=false
+   txhistory=trade.txhistory:random:default
+   withReplicatedTables=false
+
+sql/alterTablesUniqWithDataAccessorsHA.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=10
+   accessorVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=2
+   redundantCopies=1
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=5
+
+sql/sqlTx/multiTablesTxWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=3
+   accessorVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=3
+   workIterationsPerThread=500
+
+sql/alterTablesUniqWithDataAccessorsHA.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=10
+   accessorVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=2
+   redundantCopies=1
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=5
+
+sql/sqlTx/thinClient/multiTablesTxClient.conf
+   clientHosts=1
+   clientThreadsPerVM=5
+   clientVMsPerHost=6
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   serverHosts=1
+   serverThreadsPerVM=1
+   serverVMsPerHost=2
+   workIterationsPerThread=500
+
+sql/sqlTx/multiTablesTxNoConstCheckWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=6
+   accessorVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=3
+   workIterationsPerThread=500
+
+sql/sqlTx/randomPartitionTablesTxWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=3
+   accessorVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=3
+   workIterationsPerThread=500
+
+sql/sqlTx/thinClient/randomPartitionTablesTxClient.conf
+   clientHosts=1
+   clientThreadsPerVM=5
+   clientVMsPerHost=6
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   serverHosts=1
+   serverThreadsPerVM=1
+   serverVMsPerHost=5
+   workIterationsPerThread=500
+
+sql/sqlTx/thinClient/multiTablesTxClient.conf
+   clientHosts=1
+   clientThreadsPerVM=5
+   clientVMsPerHost=6
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   serverHosts=1
+   serverThreadsPerVM=1
+   serverVMsPerHost=2
+   workIterationsPerThread=500
+
+sql/sqlTx/repeatableRead/randomPartitionTablesRRTxWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=4
+   accessorVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=3
+   workIterationsPerThread=500
+
+sql/sqlTx/thinClient/concUpdateTxClient.conf
+   clientHosts=1
+   clientThreadsPerVM=5
+   clientVMsPerHost=6
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   nobatching=true
+   serverHosts=1
+   serverThreadsPerVM=1
+   serverVMsPerHost=2
+
+sql/joins/multiTablesJoinUniqHAWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=6
+   accessorVMsPerHost=4
+   redundantCopies=2
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=4
+
+sql/sqlTx/thinClient/multiTablesTxClient.conf
+   clientHosts=1
+   clientThreadsPerVM=5
+   clientVMsPerHost=6
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   serverHosts=1
+   serverThreadsPerVM=1
+   serverVMsPerHost=5
+   workIterationsPerThread=500
+
+sql/multiTablesDefaultIdUniqAccessorsHA.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=10
+   accessorVMsPerHost=3
+   dropIndex=true
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   redundantCopies=1
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=6
+   testUniqueKeys=true
+
+sql/sqlTx/thinClient/multiTablesTxClient.conf
+   clientHosts=1
+   clientThreadsPerVM=5
+   clientVMsPerHost=6
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   serverHosts=1
+   serverThreadsPerVM=1
+   serverVMsPerHost=5
+   workIterationsPerThread=500
+
+sql/sqlTx/multiTablesTxWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=3
+   accessorVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=3
+   workIterationsPerThread=500
+
+sql/multiTablesGenerateIdAlwaysUniqAccessorsHA.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=10
+   accessorVMsPerHost=3
+   dropIndex=true
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   redundantCopies=1
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=6
+   testUniqueKeys=true
+
+sql/sqlBridge/concClientGFXDHAUniqWithLocator.conf
+   buyorders=trade.buyorders:random
+   clientHosts=2
+   clientThreadsPerVM=10
+   clientVMsPerHost=3
+   customers=trade.customers:random
+   dropIndex=true
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   networth=trade.networth:random
+   portfolio=trade.portfolio:random
+   redundantCopies=3
+   securities=trade.securities:random
+   sellorders=trade.sellorders:random
+   serverHosts=1
+   serverThreadsPerVM=1
+   serverVMsPerHost=7
+   txhistory=trade.txhistory:random
+
+sql/sqlTx/multiTablesTxNoConstCheckWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=6
+   accessorVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=3
+   workIterationsPerThread=500
+
+sql/joins/multiTablesJoinTwoRepUniqHAWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=6
+   accessorVMsPerHost=4
+   redundantCopies=2
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=7
+
+sql/alterTablesNonUniqWithDataAccessorsHA.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=20
+   accessorVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=2
+   redundantCopies=1
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=5
+
+sql/sqlTx/thinClient/concUpdatableResultsetTxClient.conf
+   clientHosts=1
+   clientThreadsPerVM=5
+   clientVMsPerHost=6
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   nobatching=true
+   serverHosts=1
+   serverThreadsPerVM=1
+   serverVMsPerHost=5
+
+sql/sqlTx/thinClient/concUpdatableResultsetTxClient.conf
+   clientHosts=1
+   clientThreadsPerVM=5
+   clientVMsPerHost=6
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   nobatching=false
+   serverHosts=1
+   serverThreadsPerVM=1
+   serverVMsPerHost=5
+
+sql/sqlTx/concUpdateTxWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=8
+   accessorVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=3
+
+sql/sqlTx/concUpdateTxWithUpdatableResultSet.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=8
+   accessorVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=3
+

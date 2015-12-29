@@ -1,0 +1,77 @@
+//------------------------------------------------------------------------------
+// cq tests
+//------------------------------------------------------------------------------
+// Backward Compatibility test.
+csTx/cq/serialCQBridgeBackwardCompatibility.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+
+// concurrent tests (non-HA)
+csTx/cq/concCQBridge.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+csTx/cq/concCQBridgePR.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+
+// serial HA tests
+csTx/cq/serialCQBridgeHA.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   redundancyLevel = 4 
+csTx/cq/serialCQBridgePRHA.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   redundancyLevel = 3 redundantCopies = 3 
+
+// concurrent HA tests
+csTx/cq/concCQBridgeHA.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundancyLevel = 4 
+csTx/cq/concCQBridgePRHA.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundancyLevel = 3 redundantCopies = 3 
+
+// knownKeys tests
+csTx/cq/knownKeysCQ.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys = 10000
+csTx/cq/knownKeysCQPR.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys = 10000
+
+// simple serial event checks (create, destroy, update, invalidate)
+// currently fails as edge client initiating tx doesn't get any events at commit time
+// TX (RR)
+csTx/cq/serialEntryEvent.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=2 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   registerInterest = false
+
+// passes
+csTx/cq/serialEntryEvent.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=2 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   registerInterest = true
+
+// TX (PR)
+csTx/cq/serialEntryEventPR.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=2 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   registerInterest = false
+
+// TX (PR)
+csTx/cq/serialEntryEventPR.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=2 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   registerInterest = true
+
+// Backward Compatibility test.
+csTx/cq/mixed66and70clients.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+

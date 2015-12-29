@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- xml defines the JMXGemFireXDMonitor configuration and the custom stats 
+	and notifier classes used in this monitors. The xml schema has not yet
+	been developed to enforce its validity -->
+
+<JMXGemFireXDMonitor>
+	<Configuration>
+		<!-- JMX agent connection information, agent-host could be rmi-bind-address, 
+			agent-port could be rmi-port used by agent -->
+		<AgentConnection agent-host="10.150.30.37" agent-port="1099" />
+	
+		<!-- Define the Stats Notifier, which customized Java class is to be used -->
+		<StatsNotifiers>
+			<StatsNotifier id="ConsoleStatsNotifer" java-class="examples.jmxmonitor.notifier.ConsoleStatsNotifier" />
+		</StatsNotifiers>
+
+		<!-- Define the monitor run mode: once or continuous. If it is continuous 
+			run, what the duration and poll-interval are in the second -->
+		<RunMode mode="continuous" duration="240" poll-interval="60" />
+	</Configuration>
+
+	<JMXStats>
+		<!-- Define the interested Stats and the implemented Java class to retrieved these metrics,
+		the notifier to be used for these stats, notification threshold, history-keeping size -->
+		<MemberStats id="ResourceManagerStats" java-class="examples.jmxmonitor.jmxstats.ResourceManagerStats">
+			<StatsNotification notifier-id="ConsoleStatsNotifer">
+				<NotifcationThreshold name="TenuredHeapUsedPercent" value="0.6" />
+				<NotifcationThreshold name="HeapCriticalEvents" />
+			</StatsNotification>
+			<StatsHistorySize>10</StatsHistorySize>
+		</MemberStats>
+		<MemberStats id="TransactionStats" java-class="examples.jmxmonitor.jmxstats.TransactionStats">
+			<StatsNotification notifier-id="ConsoleStatsNotifer">
+				<NotifcationThreshold name="txCommitLatency" value="10.0" />
+			</StatsNotification>
+			<StatsHistorySize>20</StatsHistorySize>
+		</MemberStats>
+	</JMXStats>
+</JMXGemFireXDMonitor>

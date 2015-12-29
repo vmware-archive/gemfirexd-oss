@@ -1,0 +1,44 @@
+cacheperf/comparisons/gemfirexd/largeobject/peerClient/getTest.conf
+  api=GFXD
+  clientHosts=2 clientVMsPerHost=4 clientThreadsPerVM=32
+  serverHosts=2 serverVMsPerHost=1 serverThreadsPerVM=1
+  numLargeObjectsPerServer=75000
+  redundantCopies=1
+  enableHistogram=true
+  perffmwk.comparisonKey = fromProps:c:clientHosts:x:clientVMsPerHost:x:clientThreadsPerVM:s:serverHosts
+
+cacheperf/comparisons/gemfirexd/largeobject/peerClient/getTest.conf
+  api=GFXD
+  clientHosts=4 clientVMsPerHost=4 clientThreadsPerVM=32
+  serverHosts=4 serverVMsPerHost=1 serverThreadsPerVM=1
+  numLargeObjectsPerServer=75000
+  redundantCopies=1
+  enableHistogram=true
+  perffmwk.comparisonKey = fromProps:c:clientHosts:x:clientVMsPerHost:x:clientThreadsPerVM:s:serverHosts
+
+cacheperf/comparisons/gemfirexd/largeobject/peerClient/getTest.conf
+  api=GFXD
+  clientHosts=6 clientVMsPerHost=4 clientThreadsPerVM=32
+  serverHosts=6 serverVMsPerHost=1 serverThreadsPerVM=1
+  numLargeObjectsPerServer=75000
+  redundantCopies=1
+  enableHistogram=true
+  perffmwk.comparisonKey = fromProps:c:clientHosts:x:clientVMsPerHost:x:clientThreadsPerVM:s:serverHosts
+
+cacheperf/comparisons/gemfirexd/largeobject/peerClient/getTest.conf
+  api=GFXD
+  clientHosts=8 clientVMsPerHost=4 clientThreadsPerVM=32
+  serverHosts=8 serverVMsPerHost=1 serverThreadsPerVM=1
+  numLargeObjectsPerServer=75000
+  redundantCopies=1
+  enableHistogram=true
+  perffmwk.comparisonKey = fromProps:c:clientHosts:x:clientVMsPerHost:x:clientThreadsPerVM:s:serverHosts
+
+cacheperf/comparisons/gemfirexd/largeobject/peerClient/getTest.conf
+  api=GFXD
+  clientHosts=10 clientVMsPerHost=4 clientThreadsPerVM=32
+  serverHosts=10 serverVMsPerHost=1 serverThreadsPerVM=1
+  numLargeObjectsPerServer=75000
+  redundantCopies=1
+  enableHistogram=true
+  perffmwk.comparisonKey = fromProps:c:clientHosts:x:clientVMsPerHost:x:clientThreadsPerVM:s:serverHosts

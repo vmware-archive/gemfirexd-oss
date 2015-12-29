@@ -1,0 +1,6 @@
+cacheperf/gemfire/dataPolicy/puts.conf
+  scope=distributedAck
+  dataPolicy=empty,normal,replicate interestPolicy=all,cacheContent
+  hydra.numHosts=1,2 vmQuantities=1 vmThreads=1,4
+  objectType=objects.ArrayOfByte
+  perffmwk.comparisonKey = puts

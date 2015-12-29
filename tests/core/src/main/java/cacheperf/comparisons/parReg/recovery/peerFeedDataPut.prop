@@ -1,0 +1,30 @@
+locatorHosts = 1
+locatorVMsPerHost = 1
+locatorThreadsPerVM = 1
+
+A = data
+dataHosts = 2
+dataVMsPerHost = 1
+dataThreadsPerVM = 1
+
+B = feed
+feedHosts = 2
+feedVMsPerHost = 1
+feedThreadsPerVM = 1
+
+extraSeconds = 120
+heapMB = 1500
+maxKeys = 100000
+objectSize = 1024
+conserveSockets = false
+redundantCopies = 1
+bucketsPerDatahost = 10
+
+version = default
+
+maxBounces = 99999
+batchSeconds = 300
+trimSeconds = 60
+workSeconds = 180
+
+perffmwk.comparisonKey=peerFeedDataPut

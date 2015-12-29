@@ -1,0 +1,177 @@
+/*
+ * Copyright (c) 2010-2015 Pivotal Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you
+ * may not use this file except in compliance with the License. You
+ * may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * permissions and limitations under the License. See accompanying
+ * LICENSE file.
+ */
+#ifndef UTL_HF
+#define UTL_HF TRUE
+
+#include "global.ht"
+#include "host.hf"
+
+/*=========================================================================
+ * Description:
+ *
+ * This file consists largely of some obscurely written macros.  It will
+ * probably end up serving as a prototype for journeyman C programmers needing
+ * to compose macros for Heaven knows how long to come.
+ * As such, a number of rules are worth enumerating here:  Note -- there
+ * is an exception to every rule, but when these occur, they should be
+ * documented profusely.
+ *
+ * 1) A macro shall either be an expression or a block ({}).  Any other
+ *    use of macros is obscure to both humans and prettyprinters.
+ *
+ * 2) An identifier has highest precedence, and a function argument has
+ *    lowest precedence.  This means that a macro argument will usually
+ *    have the wrong precedence when expanded.  Thus, you should always
+ *    enclose macro arguments in parentheses (foo) so that it has the correct
+ *    level of precedence.
+ *
+ * 3) Function arguments are evaluated once, whereas macro arguments are
+ *    textually substituted.  If a function argument has side effects, it
+ *    can screw up in a macro evaluation.  Solution:  Refer to each function
+ *    argument exactly once, if possible.
+ *
+ *    Note that even lvals can have side effects, e.g., i++ = 10;
+ *
+ * 4) A block ({}) is NOT equivalent to a statement.  Thus, if we have
+ *
+ * #define FOO_MACRO { i = 3; j = 4;}
+ *
+ * if (i = j)
+ *   FOO_MACRO;
+ * else
+ *   somethingElse();
+ *
+ * The resulting expansion will have an illegal semicolon (";") before the
+ * "else".  It seems (no guarantees!) that this will always generate a message
+ * from the C compiler.  Solution:  Write the previous as,
+ *
+ * if (i = j)
+ *   {FOO_MACRO;}
+ * else
+ *   somethingElse();
+ *
+ * The advantage to this approach is that it is clear to humans as well as
+ * prettyprinters.
+ *
+ * 5) Blocks can have temporaries.  This sounds really useful until you consider
+ * that the temporaries can override names used as local variables.  In other
+ * words, if we have,
+ *
+ * #define FOO_MACRO(x) {int i; i = (x) + 3; j = i * i;}
+ *
+ * int i;
+ *
+ * i = 10;
+ * z = FOO_MACRO(i);
+ *
+ * you will get incorrect behavior at run-time.  Note that the compiler will
+ * be completely silent, but the execution will be wrong!
+ *
+ * To circumvent this, temporaries used in macro blocks should NOT be the
+ * same as those used in a macro.  In this module, temporaries are preceded
+ * with "utl_" which is against GemStone variable name conventions for all
+ * other purposes.
+ *
+ * 6) If you don't follow all of the above, HAVE SOMEONE LOOK AT YOUR MACRO!!!!
+ *
+ * --djp
+ *
+ *
+ *
+ *=========================================================================
+ */
+
+/*******  C Run-Time Library files ******************************************/
+
+/*******  GemStone constants/types defined in this and other modules ********/
+#include "global.ht"
+
+/* no more includes. KEEP THIS LINE */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+EXTERN_GS_DEC(void)
+UtlGuaranteeFailure(const char *fileName, int lineNum); 
+
+/* UTL_GUARANTEE is active in both fast and slow */
+#define UTL_GUARANTEE( x ) { \
+  if (! ( x )) { \
+    UtlGuaranteeFailure(__FILE__, __LINE__); \
+  } \
+}
+
+#if defined(FLG_DEBUG)
+#define UTL_ASSERT( x ) { \
+  if (! ( x )) { \
+    printf("UTL_ASSERT failure file %s line %d \n", __FILE__, __LINE__); \
+    HostCallDebuggerMsg("UTL_ASSERT failed"); \
+    } \
+  }
+#define UTL_IF_DEBUG( x ) { x }
+#define UTL_DEBUG_DEF( x ) x
+#define UTL_IS_DEBUG 1
+#else
+/* fast */
+#define UTL_ASSERT( x ) { }
+#define UTL_IF_DEBUG( x ) { }
+#define UTL_DEBUG_DEF( x ) /*  */
+#define UTL_IS_DEBUG 0
+#endif
+
+EXTERN_GS_DEC(int) UtlFirstFunction(void);
+
+EXTERN_GS_DEC(int) UtlLastFunction(void);
+
+
+/*========================================================================
+ * malloc tracing support
+ * 
+ *========================================================================
+ */
+#define UTL_FREE(x) { UtlFree(x); (x) = NULL; }
+
+void* UtlMalloc(int32 aSize, const char* msg);
+  /* calls HostCallDebugger if out of C heap memory */
+
+void* UtlMallocNoErr(int32 aSize, const char* msg);
+  /* returns null if out of C heap memory */
+
+void* UtlCalloc(size_t nelem, size_t elsize);
+  /* returns null if out of C heap memory */
+
+#if !defined(UTL_C)
+#define malloc mallocBadUsage 
+#endif
+
+#ifdef FLG_DEBUG
+void  UtlFree(void *x);
+  /* calls free() */
+#if !defined(UTL_C)
+#define free freeBadUsage 
+#endif
+
+#else
+#define UtlFree free 
+#endif  /* FLG_DEBUG*/
+
+#ifdef __cplusplus
+} /* extern "C" */
+#endif /* __cplusplus */
+
+#endif /* endif utl.hf */

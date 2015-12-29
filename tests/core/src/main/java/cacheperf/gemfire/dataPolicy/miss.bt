@@ -1,0 +1,11 @@
+cacheperf/gemfire/dataPolicy/miss.conf
+  hydra.numHosts=2
+  dataPolicy=empty scope=distributedNoAck
+  objectType=objects.ArrayOfByte
+  perffmwk.comparisonKey = miss
+
+cacheperf/gemfire/dataPolicy/miss.conf
+  hydra.numHosts=2
+  dataPolicy=normal scope=distributedNoAck
+  objectType=objects.ArrayOfByte
+  perffmwk.comparisonKey = miss

@@ -1,0 +1,123 @@
+// lead selection tests
+splitBrain/serialLeadSelection.conf
+   locatorHosts=5 locatorVMsPerHost=1 locatorThreadsPerVM=1
+   A=client clientHosts=5 clientVMsPerHost=1 clientThreadsPerVM=1
+   threadGroupsName=locatorThreads
+splitBrain/concLeadSelection.conf
+   locatorHosts=5 locatorVMsPerHost=1 locatorThreadsPerVM=1
+   A=client clientHosts=5 clientVMsPerHost=1 clientThreadsPerVM=1
+   threadGroupsName=locatorThreads
+   
+// coordinator selection tests
+/*splitBrain/serialCoordSelection.conf
+   locatorHosts=5 locatorVMsPerHost=1 locatorThreadsPerVM=1
+   A=client clientHosts=5 clientVMsPerHost=1 clientThreadsPerVM=1*/
+splitBrain/concCoordSelection.conf
+  locatorHosts=5 locatorVMsPerHost=1 locatorThreadsPerVM=1
+  A=client clientHosts=5 clientVMsPerHost=1 clientThreadsPerVM=1
+  threadGroupsName=clientThreads
+
+// ack alert threshold/forced disconnect tests with partitioned regions
+splitBrain/unhealthyKnownKeys.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   C=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   numKeys=100000 byteArraySize=2000 redundantCopies=1 numVMsToStop=1
+   unhealthiness=slow playDead=false
+   threadGroupsName=controllerThread
+/*splitBrain/unhealthyKnownKeys.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   C=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   numKeys=100000 byteArraySize=2000 redundantCopies=1 numVMsToStop=1
+   unhealthiness=slow playDead=true
+splitBrain/unhealthyKnownKeys.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   C=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   numKeys=100000 byteArraySize=2000 redundantCopies=1 numVMsToStop=1
+   unhealthiness=sick playDead=false*/
+splitBrain/unhealthyKnownKeys.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   C=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   numKeys=100000 byteArraySize=2000 redundantCopies=1 numVMsToStop=1
+   unhealthiness=sick playDead=true
+   threadGroupsName=controllerThread
+/*splitBrain/unhealthySerialPRHA.conf 
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=2
+   B=dataStore dataStoreHosts=5 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+   C=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   redundantCopies=3*/ 
+splitBrain/unhealthyConcPRHA.conf 
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=7 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   C=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   redundantCopies=3 
+   threadGroupsName=dataStoreThreads
+
+// Forced disconnect with ack/noack regions
+splitBrain/peerForcedDisc.conf
+   peerHosts=7 peerVMsPerHost=1 peerThreadsPerVM=5
+   maxConcNumForcedDisconnects = 1
+   threadGroupsName=oneThreadPerVM
+/*splitBrain/peerFDCycleWellness.conf
+   peerHosts=7 peerVMsPerHost=1 peerThreadsPerVM=5
+   maxConcNumForcedDisconnects = 4
+splitBrain/bridgeForcedDisc.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=9 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   maxConcNumForcedDisconnects = 1*/
+splitBrain/bridgeFDCycleWellness.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=9 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   maxConcNumForcedDisconnects = 5
+   threadGroupsName=oneThreadPerServerVM
+
+// Forced disconnect with gii
+splitBrain/gii/giiPreferenceForcedDisc.conf hydra.numHosts = 5 enableNetworkPartitioning = true
+threadGroupsName=extraThread
+//splitBrain/gii/giiPreferenceForcedDisc.conf hydra.numHosts = 5 enableNetworkPartitioning = false
+
+// Forced disconnect with cq
+splitBrain/concCQBridgeFD.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundancyLevel = 4 
+   threadGroupsName=bridgeThreads
+// ForcedDisconnects during TX
+splitBrain/distIntegrityFD.conf hydra.numHosts=3 commitStateTrigger=afterReservation
+threadGroupsName=FDTarget
+//splitBrain/distIntegrityFD.conf hydra.numHosts=3 commitStateTrigger=afterConflictCheck
+splitBrain/distIntegrityFD.conf hydra.numHosts=3 commitStateTrigger=beforeSend
+threadGroupsName=FDTarget
+//splitBrain/distIntegrityFD.conf hydra.numHosts=3 commitStateTrigger=duringIndividualSend
+splitBrain/distIntegrityFD.conf hydra.numHosts=3 commitStateTrigger=afterIndividualSend
+threadGroupsName=FDTarget
+splitBrain/distIntegrityFD.conf hydra.numHosts=3 commitStateTrigger=duringIndividualCommit
+threadGroupsName=FDTarget
+//splitBrain/distIntegrityFD.conf hydra.numHosts=3 commitStateTrigger=afterIndividualCommit
+splitBrain/distIntegrityFD.conf hydra.numHosts=3 commitStateTrigger=afterApplyChanges
+threadGroupsName=FDTarget
+//splitBrain/distIntegrityFD.conf hydra.numHosts=3 commitStateTrigger=afterReleaseLocalLocks
+//splitBrain/distIntegrityFD.conf hydra.numHosts=3 commitStateTrigger=afterSend
+
+// Forced disconnect with dlocks and global scope
+/*splitBrain/globalPeerForcedDisc.conf
+   peerHosts=7 peerVMsPerHost=1 peerThreadsPerVM=5
+   maxConcNumForcedDisconnects = 1*/
+splitBrain/globalPeerFDCycleWellness.conf
+   peerHosts=7 peerVMsPerHost=1 peerThreadsPerVM=5
+   maxConcNumForcedDisconnects = 4
+   threadGroupsName=oneThreadPerVM
+splitBrain/globalBridgeForcedDisc.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=9 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   maxConcNumForcedDisconnects = 1
+   threadGroupsName=oneThreadPerServerVM
+/*splitBrain/globalBridgeFDCycleWellness.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=9 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   maxConcNumForcedDisconnects = 5*/
+
+

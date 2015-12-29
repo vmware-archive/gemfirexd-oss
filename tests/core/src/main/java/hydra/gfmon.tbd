@@ -1,0 +1,16 @@
+Bugfix 38879 on merge to trunk.
+
+Test with gfmon using two agents.
+Test running with no agent when one is needed.
+Test on Solaris.
+Test cross-platform (Windows to Linux).
+
+Complete agent configuration parameters (http, snmp).
+Incorporate StatAlertPrms/Description.
+Changes to email notification (delayed).
+Support status-monitoring properties.
+Port admin/jmx tests to client-managed locators (required by above).
+Back out SVN r17512, extraLocatorVMArgs.
+
+Support multiple GFMon VMs?
+Make GFMon VMs client-spawned (or even client managed)?

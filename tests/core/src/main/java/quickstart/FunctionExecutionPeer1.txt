@@ -1,0 +1,6 @@
+Peer to which other peer sends request for function Execution
+Connecting to the distributed system and creating the cache... 
+Example region "/exampleRegion" created in cache.
+Registering the function MultiGetFunction on Peer
+Please start Other Peer And Then Press Enter to continue.
+Closing the cache and disconnecting.

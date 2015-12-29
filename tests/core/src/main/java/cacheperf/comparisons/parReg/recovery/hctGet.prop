@@ -1,0 +1,28 @@
+locatorHosts = 1
+locatorVMsPerHost = 1
+locatorThreadsPerVM = 1
+
+bridgeHosts = 2
+bridgeVMsPerHost = 1
+bridgeThreadsPerVM = 1
+
+edgeHosts = 2
+edgeVMsPerHost = 1
+edgeThreadsPerVM = 1
+
+extraSeconds = 120
+heapMB = 1500
+maxKeys = 100000
+objectSize = 1024
+conserveSockets = false
+redundantCopies = 1
+bucketsPerDatahost = 10
+
+version = default
+
+maxBounces = 99999
+batchSeconds = 300
+trimSeconds = 60
+workSeconds = 180
+
+perffmwk.comparisonKey=hctGet

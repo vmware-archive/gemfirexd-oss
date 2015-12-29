@@ -1,0 +1,87 @@
+//---- master-managed locators/wan10 ----//
+
+hydratest/locators/wan10/topology_wan_p2p.conf
+  wanSites = 2
+  peerHostsPerSite    = 1 peerVMsPerHost    = 3 peerThreadsPerVM    = 2
+hydratest/locators/wan10/topology_wan_p2p.conf
+  wanSites = 2
+  peerHostsPerSite    = 3 peerVMsPerHost    = 2 peerThreadsPerVM    = 2
+
+hydratest/locators/wan10/topology_wan_hct.conf
+  wanSites = 2
+  bridgeHostsPerSite  = 1 bridgeVMsPerHost  = 3 bridgeThreadsPerVM  = 2
+  edgeHostsPerSite    = 3 edgeVMsPerHost    = 2 edgeThreadsPerVM    = 2
+hydratest/locators/wan10/topology_wan_hct.conf
+  wanSites = 2
+  bridgeHostsPerSite  = 3 bridgeVMsPerHost  = 2 bridgeThreadsPerVM  = 2
+  edgeHostsPerSite    = 1 edgeVMsPerHost    = 3 edgeThreadsPerVM    = 2
+
+//---- client-managed locators/wan10 (admin DS) ----//
+
+hydratest/locators/wan10/topology_wan_p2p_locator.conf
+  wanSites = 2
+  locatorHostsPerSite = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  peerHostsPerSite    = 1 peerVMsPerHost    = 3 peerThreadsPerVM    = 2
+hydratest/locators/wan10/topology_wan_p2p_locator.conf
+  wanSites = 2
+  locatorHostsPerSite = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  peerHostsPerSite    = 3 peerVMsPerHost    = 2 peerThreadsPerVM    = 2
+
+hydratest/locators/wan10/topology_wan_p2p_2_locator.conf
+  wanSites = 2
+  A = bert   B = ernie
+  locatorHostsPerSite = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  bertHostsPerSite    = 1 bertVMsPerHost    = 3 bertThreadsPerVM    = 2
+  ernieHostsPerSite   = 3 ernieVMsPerHost   = 2 ernieThreadsPerVM   = 2
+hydratest/locators/wan10/topology_wan_p2p_2_locator.conf
+  wanSites = 2
+  A = bert   B = ernie
+  locatorHostsPerSite = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  bertHostsPerSite    = 3 bertVMsPerHost    = 2 bertThreadsPerVM    = 2
+  ernieHostsPerSite   = 1 ernieVMsPerHost   = 3 ernieThreadsPerVM   = 2
+
+hydratest/locators/wan10/topology_wan_hct_locator.conf
+  wanSites = 2
+  locatorHostsPerSite = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  bridgeHostsPerSite  = 1 bridgeVMsPerHost  = 3 bridgeThreadsPerVM  = 2
+  edgeHostsPerSite    = 3 edgeVMsPerHost    = 2 edgeThreadsPerVM    = 2
+hydratest/locators/wan10/topology_wan_hct_locator.conf
+  wanSites = 2
+  locatorHostsPerSite = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  bridgeHostsPerSite  = 3 bridgeVMsPerHost  = 2 bridgeThreadsPerVM  = 2
+  edgeHostsPerSite    = 1 edgeVMsPerHost    = 3 edgeThreadsPerVM    = 2
+
+//---- client-managed locators/wan10 (non-admin DS) ----//
+
+hydratest/locators/wan10/topology_wan_p2p_locator_cache.conf
+  wanSites = 2
+  locatorHostsPerSite = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  peerHostsPerSite    = 1 peerVMsPerHost    = 3 peerThreadsPerVM    = 2
+hydratest/locators/wan10/topology_wan_p2p_locator_cache.conf
+  wanSites = 2
+  locatorHostsPerSite = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  peerHostsPerSite    = 3 peerVMsPerHost    = 2 peerThreadsPerVM    = 2
+
+hydratest/locators/wan10/topology_wan_p2p_2_locator_cache.conf
+  wanSites = 2
+  A = bert   B = ernie
+  locatorHostsPerSite = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  bertHostsPerSite    = 1 bertVMsPerHost    = 3 bertThreadsPerVM    = 2
+  ernieHostsPerSite   = 3 ernieVMsPerHost   = 2 ernieThreadsPerVM   = 2
+hydratest/locators/wan10/topology_wan_p2p_2_locator_cache.conf
+  wanSites = 2
+  A = bert   B = ernie
+  locatorHostsPerSite = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  bertHostsPerSite    = 3 bertVMsPerHost    = 2 bertThreadsPerVM    = 2
+  ernieHostsPerSite   = 1 ernieVMsPerHost   = 3 ernieThreadsPerVM   = 2
+
+hydratest/locators/wan10/topology_wan_hct_locator_cache.conf
+  wanSites = 2
+  locatorHostsPerSite = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  bridgeHostsPerSite  = 1 bridgeVMsPerHost  = 3 bridgeThreadsPerVM  = 2
+  edgeHostsPerSite    = 3 edgeVMsPerHost    = 2 edgeThreadsPerVM    = 2
+hydratest/locators/wan10/topology_wan_hct_locator_cache.conf
+  wanSites = 2
+  locatorHostsPerSite = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  bridgeHostsPerSite  = 3 bridgeVMsPerHost  = 2 bridgeThreadsPerVM  = 2
+  edgeHostsPerSite    = 1 edgeVMsPerHost    = 3 edgeThreadsPerVM    = 2

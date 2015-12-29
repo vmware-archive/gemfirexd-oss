@@ -1,0 +1,12 @@
+A = data
+dataHosts            = 1
+dataVMsPerHost       = 1
+dataThreadsPerVM     = 1
+B = accessor
+accessorHosts        = 1
+accessorVMsPerHost   = 1
+accessorThreadsPerVM = 1
+
+buckets = default
+
+perffmwk.comparisonKey = autogenerate

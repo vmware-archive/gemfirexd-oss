@@ -1,0 +1,36 @@
+cacheperf/comparisons/useCase12/putsNoListener.conf
+   pubHosts=1 pubVMsPerHost=1 pubThreadsPerVM=1
+   subHosts=6 subVMsPerHost=1 subThreadsPerVM=1
+   scope=distributedAck
+   objectType = objects.ArrayOfByte objectSize = 100
+
+cacheperf/comparisons/useCase12/putsNoListener.conf
+   pubHosts=1 pubVMsPerHost=1 pubThreadsPerVM=1
+   subHosts=6 subVMsPerHost=1 subThreadsPerVM=1
+   scope=distributedAck
+   objectType = objects.ArrayOfByte objectSize = 500
+
+cacheperf/comparisons/useCase12/putsNoListener.conf
+   pubHosts=1 pubVMsPerHost=1 pubThreadsPerVM=1
+   subHosts=6 subVMsPerHost=1 subThreadsPerVM=1
+   scope=distributedAck
+   objectType = objects.ArrayOfByte objectSize = 1024
+
+cacheperf/comparisons/useCase12/putsNoListener.conf
+   pubHosts=1 pubVMsPerHost=1 pubThreadsPerVM=1
+   subHosts=6 subVMsPerHost=1 subThreadsPerVM=1
+   scope=distributedNoAck
+   objectType = objects.ArrayOfByte objectSize = 100
+
+cacheperf/comparisons/useCase12/putsNoListener.conf
+   pubHosts=1 pubVMsPerHost=1 pubThreadsPerVM=1
+   subHosts=6 subVMsPerHost=1 subThreadsPerVM=1
+   scope=distributedNoAck
+   objectType = objects.ArrayOfByte objectSize = 500
+
+cacheperf/comparisons/useCase12/putsNoListener.conf
+   pubHosts=1 pubVMsPerHost=1 pubThreadsPerVM=1
+   subHosts=6 subVMsPerHost=1 subThreadsPerVM=1
+   scope=distributedNoAck
+   objectType = objects.ArrayOfByte objectSize = 1024
+

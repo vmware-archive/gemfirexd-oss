@@ -1,0 +1,46 @@
+//------------------------------------------------------------------------------
+//
+//  GemFire cache push creates for objects.ArrayOfByte
+//
+//------------------------------------------------------------------------------
+
+cacheperf/gemfire/create/create.conf
+  hydra.numHosts=2 dataPolicy=normal scope=local validateObjects=false
+
+cacheperf/gemfire/create/create.conf
+  hydra.numHosts=2 dataPolicy=normal scope=distributedNoAck
+
+cacheperf/gemfire/create/create.conf
+  hydra.numHosts=2 dataPolicy=normal scope=distributedAck
+
+cacheperf/gemfire/create/create.conf
+  hydra.numHosts=2 dataPolicy=normal scope=global
+
+//------------------------------------------------------------------------------
+
+cacheperf/gemfire/create/create.conf
+  hydra.numHosts=4 dataPolicy=normal scope=local validateObjects=false
+
+cacheperf/gemfire/create/create.conf
+  hydra.numHosts=4 dataPolicy=normal scope=distributedNoAck
+
+cacheperf/gemfire/create/create.conf
+  hydra.numHosts=4 dataPolicy=normal scope=distributedAck
+
+cacheperf/gemfire/create/create.conf
+  hydra.numHosts=4 dataPolicy=normal scope=global
+
+//------------------------------------------------------------------------------
+
+cacheperf/gemfire/create/create.conf
+  hydra.numHosts=8 dataPolicy=normal scope=local validateObjects=false
+
+cacheperf/gemfire/create/create.conf
+  hydra.numHosts=8 dataPolicy=normal scope=distributedNoAck
+
+cacheperf/gemfire/create/create.conf
+  hydra.numHosts=8 dataPolicy=normal scope=distributedAck
+
+cacheperf/gemfire/create/create.conf
+  hydra.numHosts=8 dataPolicy=normal scope=global
+

@@ -1,0 +1,27 @@
+sql/sqlTx/thinClient/concUpdatableResultsetTxClient.conf
+   clientHosts=1
+   clientThreadsPerVM=5
+   clientVMsPerHost=6
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   nobatching=false
+   serverHosts=1
+   serverThreadsPerVM=1
+   serverVMsPerHost=2
+
+sql/sqlEviction/evictionOverflowHA.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=10 
+   accessorVMsPerHost=2
+   dropIndex=true
+   maxHeapSize=128
+   redundantCopies=2
+   setCriticalHeap=false
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=2
+   useHeapPercentage=false
+

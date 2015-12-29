@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<BODY bgcolor="#ffffff"><HTML>
+ <HEAD>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+  <META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+  <LINK REL="STYLESHEET" HREF="DocIndex.css" CHARSET="ISO-8859-1" TYPE="text/css">
+
+<H1 align="center">
+vFabric<FONT size=6><b><sup><font size=-0>&#8482;</font></sup></b></FONT></font> GemFire<FONT size=6><b><sup><font size=-0>&#174;</font></sup></b></FONT></font></H1>
+     </b></FONT>
+  <H1 align="center">cacheWorkerFragment</H1>
+<H2 align="center">OSGi Fragment Bundle Example</H2>
+<hr color="#cc0000" size="2" align="left">
+<BODY TEXT="#000000" LINK="#0000B0" VLINK="#666699" BGCOLOR="#FFFFFF">
+
+<P>This project is part of the <a href="../README.html"><b>cacheWorker and
+cacheWorkerFragment OSGi Deployment Example</b></a>. The Ant build.xml
+generates a JAR that's ready to be deployed as an OSGi bundle. The JAR itself
+contains only a <code>META-INF/MANIFEST.MF</code> which defines it as a
+fragment bundle that attaches to the GemFire bundle and imports packages from
+the cacheWorker bundle.</P>
+
+<P><b>Locating the Bundlor task definitions for Ant</b></P>
+
+<P>You can download Bundlor from <a href="http://www.springsource.org/bundlor">
+http://www.springsource.org/bundlor</a>. Unzip the bundlor-1.0.0.RELEASE.zip
+file to BUNDLOR_HOME.</P>
+
+<P>By default the Ant build.xml will attempt to use BUNDLOR_HOME if this is
+defined as an environment variable. You can edit the build.xml and hardcode
+the "bundlor.home" property value if you prefer:</P>
+
+<xmp><property name="bundlor.home" value="C:/bundlor-1.0.0" /></xmp>
+
+<P><b>Using the Ant build.xml</b></P>
+
+<P>The supplied build.xml will locate all the necessary files, package it as
+a .jar and use bundlor to transform it into an OSGi bundle.</P>
+
+<P>Simply type "ant". The default target is "all" which will compile, package,
+and use bundlor. The cacheWorkerFragment/target directory will contain the
+cacheworker.fragment-1.0.0.jar bundle for deploying into an OSGi container
+along with the GEMFIRE_HOME/lib/gemfire.jar, GEMFIRE_HOME/lib/antlr.jar and
+cacheworker-1.0.0.jar bundles.</P>
+
+<P>There's also a "debug" target to unjar the bundle as a convenience for
+viewing the generated MANIFEST.MF contained within the
+cacheworker.fragment-1.0.0.jar.</P>
+
+<hr color="#cc0000" size="2" align="left">
+
+</BODY>
+</HTML>
+

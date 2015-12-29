@@ -1,0 +1,351 @@
+gfxd> --
+--   Licensed to the Apache Software Foundation (ASF) under one or more
+--   contributor license agreements.  See the NOTICE file distributed with
+--   this work for additional information regarding copyright ownership.
+--   The ASF licenses this file to You under the Apache License, Version 2.0
+--   (the "License"); you may not use this file except in compliance with
+--   the License.  You may obtain a copy of the License at
+--
+--      http://www.apache.org/licenses/LICENSE-2.0
+--
+--   Unless required by applicable law or agreed to in writing, software
+--   distributed under the License is distributed on an "AS IS" BASIS,
+--   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+--   See the License for the specific language governing permissions and
+--   limitations under the License.
+--
+
+--
+-- this test shows the dependency system in action;
+--
+
+autocommit off;
+gfxd> create table t(i int);
+0 rows inserted/updated/deleted
+gfxd> create table s(i int);
+0 rows inserted/updated/deleted
+gfxd> prepare ins as 'insert into t (i) values (1956)';
+gfxd> prepare ins_s as 'insert into s (i) values (1956)';
+gfxd> prepare sel as 'select i from t';
+gfxd> prepare sel2 as 'select i from (select i from t) a';
+gfxd> prepare sel_s as 'select i from s where i = (select i from t)';
+gfxd> prepare upd as 'update t set i = 666 where i = 1956';
+gfxd> prepare del as 'delete from t where i = 666';
+gfxd> prepare ins_sel as 'insert into t select * from s';
+gfxd> execute ins;
+1 row inserted/updated/deleted
+gfxd> execute ins_s;
+1 row inserted/updated/deleted
+gfxd> execute sel;
+I          
+-----------
+1956       
+gfxd> execute sel2;
+I          
+-----------
+1956       
+gfxd> execute sel_s;
+I          
+-----------
+1956       
+gfxd> execute upd;
+1 row inserted/updated/deleted
+gfxd> execute sel;
+I          
+-----------
+666        
+gfxd> execute del;
+1 row inserted/updated/deleted
+gfxd> execute sel;
+I          
+-----------
+gfxd> execute ins_sel;
+1 row inserted/updated/deleted
+gfxd> execute sel;
+I          
+-----------
+1956       
+gfxd> drop table t;
+0 rows inserted/updated/deleted
+gfxd> -- these should fail, can't find table
+execute ins;
+ERROR 42X05: Table/View 'T' does not exist.
+gfxd> execute sel;
+ERROR 42X05: Table/View 'T' does not exist.
+gfxd> execute sel2;
+ERROR 42X05: Table/View 'T' does not exist.
+gfxd> execute upd;
+ERROR 42X05: Table/View 'T' does not exist.
+gfxd> execute del;
+ERROR 42X05: Table/View 'T' does not exist.
+gfxd> execute sel_s;
+ERROR 42X05: Table/View 'T' does not exist.
+gfxd> execute ins_sel;
+ERROR 42X05: Table/View 'T' does not exist.
+gfxd> create table t(i int);
+0 rows inserted/updated/deleted
+gfxd> -- these should recompile and work, table now found
+execute ins;
+1 row inserted/updated/deleted
+gfxd> -- expect one row only
+execute sel;
+I          
+-----------
+1956       
+gfxd> execute sel2;
+I          
+-----------
+1956       
+gfxd> execute sel_s;
+I          
+-----------
+1956       
+gfxd> execute upd;
+1 row inserted/updated/deleted
+gfxd> -- test update
+execute sel;
+I          
+-----------
+666        
+gfxd> execute del;
+1 row inserted/updated/deleted
+gfxd> -- test delete
+execute sel;
+I          
+-----------
+gfxd> execute ins_sel;
+1 row inserted/updated/deleted
+gfxd> execute sel;
+I          
+-----------
+1956       
+gfxd> rollback;
+gfxd> -- these should fail, the table will disappear at the rollback
+execute ins;
+ERROR 42X05: Table/View 'T' does not exist.
+gfxd> execute sel;
+ERROR 42X05: Table/View 'T' does not exist.
+gfxd> execute sel2;
+ERROR 42X05: Table/View 'T' does not exist.
+gfxd> execute sel_s;
+ERROR 42X05: Table/View 'S' does not exist.
+gfxd> execute upd;
+ERROR 42X05: Table/View 'T' does not exist.
+gfxd> execute del;
+ERROR 42X05: Table/View 'T' does not exist.
+gfxd> -- recreate t again
+create table t(i int);
+0 rows inserted/updated/deleted
+gfxd> -- these should recompile and work, table now found
+execute ins;
+1 row inserted/updated/deleted
+gfxd> -- open a cursor on t
+get cursor c1 as 'select * from t';
+gfxd> -- dropping t should fail, due to open cursor
+drop table t;
+ERROR X0X95: Operation 'DROP TABLE' cannot be performed on object 'T' because there is an open ResultSet dependent on that object.
+gfxd> -- insert should still succeed, since table not dropped
+execute ins;
+1 row inserted/updated/deleted
+gfxd> -- close cursor
+close c1;
+gfxd> -- drop table should succeed
+drop table t;
+0 rows inserted/updated/deleted
+gfxd> -- verify that invalidate worked this time
+execute ins;
+ERROR 42X05: Table/View 'T' does not exist.
+gfxd> execute sel;
+ERROR 42X05: Table/View 'T' does not exist.
+gfxd> execute sel2;
+ERROR 42X05: Table/View 'T' does not exist.
+gfxd> execute upd;
+ERROR 42X05: Table/View 'T' does not exist.
+gfxd> execute del;
+ERROR 42X05: Table/View 'T' does not exist.
+gfxd> execute ins_sel;
+ERROR 42X05: Table/View 'S' does not exist.
+gfxd> -- cleanup, roll everything back to the beginning
+rollback;
+gfxd> -- verify that cascading invalidations work
+create table t1(c1 int);
+0 rows inserted/updated/deleted
+gfxd> insert into t1 values 1, 2;
+2 rows inserted/updated/deleted
+gfxd> get cursor c1 as 'select c1 from t1 for update of c1';
+gfxd> -- positioned update dependent on cursor c1
+prepare u1 as 'update t1 set c1 = c1 + 1 where current of c1';
+gfxd> next c1;
+C1         
+-----------
+1          
+gfxd> close c1;
+gfxd> execute u1;
+ERROR 42X30: Cursor 'C1' not found. Verify that autocommit is OFF.
+gfxd> -- cleanup, roll everything back to the beginning
+rollback;
+gfxd> -- verify that create index invalidates based on table and
+-- drop index invalidates based on the index
+
+create table t1(c1 int, c2 int);
+0 rows inserted/updated/deleted
+gfxd> insert into t1 values (1,1), (2, 1), (3,3);
+3 rows inserted/updated/deleted
+gfxd> create index i1 on t1(c1);
+0 rows inserted/updated/deleted
+gfxd> get cursor c1 as 'select c1 from t1 where c2 = 1 for update of c1';
+gfxd> next c1;
+C1         
+-----------
+1          
+gfxd> prepare u1 as 'update  t1 set c1 = c1 + 1 ';
+gfxd> prepare i1 as 'insert into t1 values (4, 4)';
+gfxd> prepare d1 as 'delete from t1 where c2 = 3';
+gfxd> drop index i1;
+0 rows inserted/updated/deleted
+gfxd> -- u1 should be recompiled succesfully
+execute u1;
+3 rows inserted/updated/deleted
+gfxd> select * from t1;
+C1         |C2         
+-----------------------
+2          |1          
+3          |1          
+4          |3          
+gfxd> -- recreate index i1, this time on c2
+create index i1 on t1(c2);
+0 rows inserted/updated/deleted
+gfxd> next c1;
+C1         
+-----------
+3          
+gfxd> close c1;
+gfxd> -- i1 and d1 should have been invalidated and recompiled
+execute i1;
+1 row inserted/updated/deleted
+gfxd> -- check the state of the index
+select * from t1 where c2 > 0;
+C1         |C2         
+-----------------------
+2          |1          
+3          |1          
+4          |3          
+4          |4          
+gfxd> execute d1;
+1 row inserted/updated/deleted
+gfxd> -- check the state of the index
+select * from t1 where c2 > 0;
+C1         |C2         
+-----------------------
+2          |1          
+3          |1          
+4          |4          
+gfxd> -- cleanup, roll everything back to the beginning
+rollback;
+gfxd> -- DERBY-2202
+-- test various DROP statements
+
+-- test procedure
+autocommit off;
+gfxd> CREATE SCHEMA datamgmt;
+0 rows inserted/updated/deleted
+gfxd> CREATE PROCEDURE datamgmt.exit ( IN value INTEGER )
+ MODIFIES SQL DATA
+ PARAMETER STYLE JAVA
+ LANGUAGE JAVA
+ EXTERNAL NAME 'java.lang.System.exit';
+0 rows inserted/updated/deleted
+gfxd> DROP PROCEDURE datamgmt.exit;
+0 rows inserted/updated/deleted
+gfxd> DROP SCHEMA datamgmt RESTRICT;
+0 rows inserted/updated/deleted
+gfxd> CREATE SCHEMA datamgmt;
+0 rows inserted/updated/deleted
+gfxd> CREATE PROCEDURE datamgmt.exit ( IN value INTEGER )
+ MODIFIES SQL DATA
+ PARAMETER STYLE JAVA
+ LANGUAGE JAVA
+ EXTERNAL NAME 'java.lang.System.exit';
+0 rows inserted/updated/deleted
+gfxd> DROP PROCEDURE datamgmt.exit;
+0 rows inserted/updated/deleted
+gfxd> DROP SCHEMA datamgmt RESTRICT;
+0 rows inserted/updated/deleted
+gfxd> autocommit on;
+gfxd> CREATE SCHEMA datamgmt;
+0 rows inserted/updated/deleted
+gfxd> CREATE PROCEDURE datamgmt.exit ( IN value INTEGER )
+ MODIFIES SQL DATA
+ PARAMETER STYLE JAVA
+ LANGUAGE JAVA
+ EXTERNAL NAME 'java.lang.System.exit';
+0 rows inserted/updated/deleted
+gfxd> DROP PROCEDURE datamgmt.exit;
+0 rows inserted/updated/deleted
+gfxd> DROP SCHEMA datamgmt RESTRICT;
+0 rows inserted/updated/deleted
+gfxd> CREATE SCHEMA datamgmt;
+0 rows inserted/updated/deleted
+gfxd> CREATE PROCEDURE datamgmt.exit ( IN value INTEGER )
+ MODIFIES SQL DATA
+ PARAMETER STYLE JAVA
+ LANGUAGE JAVA
+ EXTERNAL NAME 'java.lang.System.exit';
+0 rows inserted/updated/deleted
+gfxd> DROP PROCEDURE datamgmt.exit;
+0 rows inserted/updated/deleted
+gfxd> DROP SCHEMA datamgmt RESTRICT;
+0 rows inserted/updated/deleted
+gfxd> -- test function
+CREATE SCHEMA datamgmt;
+0 rows inserted/updated/deleted
+gfxd> CREATE FUNCTION datamgmt.f_abs(P1 INT)
+ RETURNS INT
+ NO SQL
+ RETURNS NULL ON NULL INPUT
+ EXTERNAL NAME 'java.lang.Math.abs'
+ LANGUAGE JAVA PARAMETER STYLE JAVA;
+0 rows inserted/updated/deleted
+gfxd> DROP FUNCTION datamgmt.f_abs;
+0 rows inserted/updated/deleted
+gfxd> DROP SCHEMA datamgmt RESTRICT;
+0 rows inserted/updated/deleted
+gfxd> CREATE SCHEMA datamgmt;
+0 rows inserted/updated/deleted
+gfxd> CREATE FUNCTION datamgmt.f_abs(P1 INT)
+ RETURNS INT
+ NO SQL
+ RETURNS NULL ON NULL INPUT
+ EXTERNAL NAME 'java.lang.Math.abs'
+ LANGUAGE JAVA PARAMETER STYLE JAVA;
+0 rows inserted/updated/deleted
+gfxd> DROP FUNCTION datamgmt.f_abs;
+0 rows inserted/updated/deleted
+gfxd> DROP SCHEMA datamgmt RESTRICT;
+0 rows inserted/updated/deleted
+gfxd> -- test synonym
+CREATE SCHEMA datamgmt;
+0 rows inserted/updated/deleted
+gfxd> CREATE TABLE datamgmt.t1 (c1 int);
+0 rows inserted/updated/deleted
+gfxd> CREATE SYNONYM datamgmt.s1 for datamgmt.t1;
+0 rows inserted/updated/deleted
+gfxd> DROP SYNONYM datamgmt.s1;
+0 rows inserted/updated/deleted
+gfxd> DROP TABLE datamgmt.t1;
+0 rows inserted/updated/deleted
+gfxd> DROP SCHEMA datamgmt RESTRICT;
+0 rows inserted/updated/deleted
+gfxd> CREATE SCHEMA datamgmt;
+0 rows inserted/updated/deleted
+gfxd> CREATE TABLE datamgmt.t1 (c1 int);
+0 rows inserted/updated/deleted
+gfxd> CREATE SYNONYM datamgmt.s1 for datamgmt.t1;
+0 rows inserted/updated/deleted
+gfxd> DROP SYNONYM datamgmt.s1;
+0 rows inserted/updated/deleted
+gfxd> DROP TABLE datamgmt.t1;
+0 rows inserted/updated/deleted
+gfxd> DROP SCHEMA datamgmt RESTRICT;
+0 rows inserted/updated/deleted
+gfxd> 

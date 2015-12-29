@@ -1,0 +1,28 @@
+/**
+ * KEY
+ *
+ * maxKeys         = total number of keys created
+ * dataSize        = size of configurable portion of test object
+ * bridgeVMSizeMB  = size of bridge server VM, must be large enough to hold
+ *                   maxKeys objects of size dataSize plus other object fields
+ *                   plus key plus entry overhead
+ * workSeconds     = number of seconds to run test after warmup completes
+ */
+
+// The Full Scale PST
+/*
+cacheperf/comparisons/thinClientScalability/thinClientScalability.conf
+   bridgeHosts =  5 bridgeVMsPerHost =  1 bridgeThreadsPerVM = 1
+   edgeHosts   = 25 edgeVMsPerHost   = 10 edgeThreadsPerVM   = 3
+   maxKeys = 750000 dataSize = 1024 bridgeVMSizeMB = 1500
+   scope = ack, noack
+   workSeconds = 3600
+*/  
+
+// A Reduced Scale PST
+cacheperf/comparisons/thinClientScalability/thinClientScalability.conf
+  bridgeHosts  =  5 bridgeVMsPerHost =  1 bridgeThreadsPerVM =  1
+  edgeHosts    = 10 edgeVMsPerHost   =  5 edgeThreadsPerVM   =  5
+  maxKeys = 750000 dataSize = 1024 bridgeVMSizeMB = 1500
+  scope = ack, noack
+  workSeconds = 900

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Initializes a client of a cache server that runs on port 40404.
+     Loads values and sends updates to the server.  -->
+
+<!DOCTYPE cache PUBLIC
+  "-//GemStone Systems, Inc.//GemFire Declarative Caching 5.0//EN"
+  "http://www.gemstone.com/dtd/cache5_0.dtd">
+<cache>
+  <vm-root-region name="root">
+    <region-attributes scope="distributed-no-ack" statistics-enabled="true">
+    </region-attributes>
+    <region name="day0a">
+      <region-attributes scope="local" pool-name="brclient" statistics-enabled="true">
+        <eviction-attributes>
+          <lru-entry-count maximum="1" action="local-destroy"/>
+        </eviction-attributes>
+      </region-attributes>
+    </region>
+    <region name="day0b">
+      <region-attributes scope="local" pool-name="brclient" statistics-enabled="true">
+        <eviction-attributes>
+          <lru-entry-count maximum="1" action="local-destroy"/>
+        </eviction-attributes>
+      </region-attributes>
+    </region>
+    <region name="day1">
+      <region-attributes scope="local" pool-name="brclient" statistics-enabled="true">
+        <eviction-attributes>
+          <lru-entry-count maximum="1" action="local-destroy"/>
+        </eviction-attributes>
+      </region-attributes>
+    </region>
+    <region name="day2">
+      <region-attributes scope="local" pool-name="brclient" statistics-enabled="true">
+        <eviction-attributes>
+          <lru-entry-count maximum="1" action="local-destroy"/>
+        </eviction-attributes>
+      </region-attributes>
+    </region>
+    <region name="day3">
+      <region-attributes scope="local" pool-name="brclient" statistics-enabled="true">
+        <eviction-attributes>
+          <lru-entry-count maximum="1" action="local-destroy"/>
+        </eviction-attributes>
+      </region-attributes>
+    </region>
+    <region name="day4">
+      <region-attributes scope="local" pool-name="brclient" statistics-enabled="true">
+        <eviction-attributes>
+          <lru-entry-count maximum="1" action="local-destroy"/>
+        </eviction-attributes>
+      </region-attributes>
+    </region>
+    <region name="day5">
+      <region-attributes scope="local" pool-name="brclient" statistics-enabled="true">
+        <eviction-attributes>
+          <lru-entry-count maximum="1" action="local-destroy"/>
+        </eviction-attributes>
+      </region-attributes>
+    </region>
+    <region name="day6">
+      <region-attributes scope="local" pool-name="brclient" statistics-enabled="true">
+        <eviction-attributes>
+          <lru-entry-count maximum="1" action="local-destroy"/>
+        </eviction-attributes>
+      </region-attributes>
+    </region>
+    <region name="day7">
+      <region-attributes scope="local" pool-name="brclient" statistics-enabled="true">
+        <eviction-attributes>
+          <lru-entry-count maximum="1" action="local-destroy"/>
+        </eviction-attributes>
+      </region-attributes>
+    </region>
+  </vm-root-region>
+</cache>

@@ -1,0 +1,65 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to you under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# This file contains a list of the files that constitute the public
+# API. This includes the classes which are common to Derby's JDBC3
+# and JDBC4 versions of the public api.
+# 
+# IMPORTANT: all names should be like package names, but with slashes
+#            instead of dots.
+#
+# Add new files to the appropriate package section; add new sections
+# for new packages.
+#
+#
+# Please do not add whitespace in front of class names.
+# Blank lines and comments are allowed.
+
+# package: com.pivotal.gemfirexd.internal.authentication
+
+com/pivotal/gemfirexd/internal/authentication/UserAuthenticator.java
+
+# package: com.pivotal.gemfirexd.internal.drda
+
+com/pivotal/gemfirexd/internal/drda/NetServlet.java
+com/pivotal/gemfirexd/internal/drda/NetworkServerControl.java
+
+# package: com.pivotal.gemfirexd.internal.jdbc
+
+com/pivotal/gemfirexd/internal/jdbc/ClientBaseDataSource.java
+com/pivotal/gemfirexd/internal/jdbc/ClientDriver.java
+com/pivotal/gemfirexd/internal/jdbc/EmbeddedDriver.java
+
+# package: com.pivotal.gemfirexd.internal.tools
+
+com/pivotal/gemfirexd/internal/tools/ij.java
+com/pivotal/gemfirexd/internal/tools/sysinfo.java
+com/pivotal/gemfirexd/internal/tools/dblook.java
+
+# package: com.pivotal.gemfirexd.internal.vti
+
+com/pivotal/gemfirexd/internal/vti/VTICosting.java
+com/pivotal/gemfirexd/internal/vti/VTIEnvironment.java
+
+# package: com.pivotal.gemfirexd.internal.mbeans (all)
+
+com/pivotal/gemfirexd/internal/mbeans/*.java
+com/pivotal/gemfirexd/internal/mbeans/drda/*.java
+
+# package: com.pivotal.gemfirexd.internal.security
+
+com/pivotal/gemfirexd/internal/security/SystemPermission.java
+
+

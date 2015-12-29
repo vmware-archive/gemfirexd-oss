@@ -1,0 +1,10 @@
+# locatorHosts must always be an even number
+locatorHosts        = 2
+locatorVMsPerHost   = 2
+locatorThreadsPerVM = 1
+bridgeHosts         = 2
+bridgeVMsPerHost    = 2
+bridgeThreadsPerVM  = 1
+edgeHosts           = 2
+edgeVMsPerHost      = 2
+edgeThreadsPerVM    = 2

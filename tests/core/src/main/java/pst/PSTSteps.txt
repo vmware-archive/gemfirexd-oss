@@ -1,0 +1,97 @@
+
+STEPS FOR PSTS
+
+Not all steps are needed for all PSTs.  Not all steps are carried out by the
+performance team.
+
+As with all software work, the process is iterative.  Any step can result in
+additional work on preceding steps.  All we can do is estimate bucket sizes for
+some steps (per PST), and add backlog items as needed for others.
+________________________________________________________________________________
+
+Determine test description
+  Decide what the test will do, such as writing the description in the PST doc.
+
+Design test
+  How the test will achieve its goals, what new framework and test code is
+  needed to support it, what existing framework and test code can be reused.
+  
+Implement distcache support
+  Support additional vendors, cache topologies, etc. as needed by the test.
+
+Implement test code
+  Code specific to the test, such as test tasks in cacheperf/, utility classes
+  and methods in util/, object types in /objects, etc.
+
+Write test configuration files
+  First cut at the .conf, .inc, .spec, .bt files.
+
+Debug test configuration
+  Run the test and make sure it does what it purports to do, is configured as
+  intended, with no bugs in the test code itself, and that the product is doing
+  the work as expected.  This can get bogged down by functional problems in the
+  product, and the test can end up being part of a product bugfix effort.  File
+  bugs on any problems in the product.
+
+Tune test configuration
+  Run the test and make sure it has sufficient task granularity, provides
+  reproducible performance numbers, isn't hopelessly CPU bound, etc.
+
+Analyze test results
+  Run the test using the provided .bt file and analyze the results.  This can
+  involve running on multiple vendors.  If needed, try variations of the .bt
+  file, optimizations, etc.  File bugs on any performance or scalability
+  problems encountered.
+
+Fish for problems
+  Use VSD to look for problems on test runs, including successful ones.  This
+  can include looking at stats for competitors as well.
+
+Explore anomalies
+- Add sprint backlog items with estimated times and priorities.
+- Determine whether the anomoly is reproducible.
+- Submit a bug report on the anomoly.  Assign it to someone in the performance
+  team to start, unless the perpetrator is already known.
+- Explore possible causes for the anomoly.
+- File bugmail on any ideas or discoveries or results along the way.
+- Determine the cause of the anomoly.  Is it a problem with configuration,
+  functionality, performance, or scalability?
+- File bugmail on the final resolution.
+- Reassign the bug to the person who will do the fix.
+- Do the fix.
+- Run the test with the fix to verify it.
+- Bugfix the anomoly (or ok the person who fixed the bug to do it).
+
+Run variations as needed
+- Configuration (e.g., additional scaling)
+- Optimizations (e.g., VM heap, garbage collection, conserveSockets)
+- Competitors
+
+Check compliance with test performance and scalability requirements
+
+Analyze problems
+  If the test fails to meet its performance and scalability requirements,
+  determine why.
+
+Report interim test results
+  Keep a rollup on the portal of relevant test results, including variations.
+  Indicate why the test was run and what the outcome was.
+
+Propose fixes for problems
+  Figure out a solution that fixes each performance and scalability problem.
+  Have the proposal reviewed.  Determine how and when the fix can occur.
+  Schedule the work.
+
+Fix problems
+  Implement proposed fixes to performance and scalability problems.  This
+  requires repeating previous steps to gather and verify results.
+
+Report final test results
+  This is the final summary report for the PST, including the numbers, the
+  optimizations used, recommendations, competitive analysis (numbers plus
+  problems encountered, issues, etc.).
+
+Archive test results and reports
+  This is the final definitive test directories and reports, saved to the
+  performanceJ CVS repository.
+

@@ -1,0 +1,139 @@
+//------------------------------------------------------------------------------ 
+// cacheServer/hct interestPolicy tests with gemfire/bin/cacheServer (start/stop)
+//------------------------------------------------------------------------------
+
+cacheServer/hct/staticInterestPolicyList.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+cacheServer/hct/staticInterestPolicyAllKeys.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+cacheServer/hct/staticInterestPolicyRegex.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+cacheServer/hct/staticInterestPolicySingle.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+cacheServer/hct/staticInterestPolicyPartialList.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+cacheServer/hct/dynamicInterestPolicyList.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+cacheServer/hct/dynamicInterestPolicyAllKeys.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+cacheServer/hct/dynamicInterestPolicyRegex.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+cacheServer/hct/dynamicInterestPolicySingle.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+cacheServer/hct/dynamicInterestPolicyPartialList.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+cacheServer/hct/serialInterestPolicy.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 2
+
+cacheServer/hct/concInterestPolicy.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 3
+                                                    useOwnKeys = true
+cacheServer/hct/staticInterestPolicyListLateOps.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+cacheServer/hct/staticInterestPolicyAllKeysLateOps.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+cacheServer/hct/staticInterestPolicyRegexLateOps.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+cacheServer/hct/staticInterestPolicySingleLateOps.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+cacheServer/hct/staticInterestPolicyPartialListLateOps.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+
+//------------------------------------------------------------------------------
+// cacheServer/hct/csTx with gemfire/bin/cacheServer (start/stop)
+//------------------------------------------------------------------------------
+
+cacheServer/hct/csTx/staticInterestPolicyList.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+cacheServer/hct/csTx/staticInterestPolicyAllKeys.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+cacheServer/hct/csTx/staticInterestPolicyRegex.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+cacheServer/hct/csTx/staticInterestPolicySingle.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+cacheServer/hct/csTx/staticInterestPolicyPartialList.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+cacheServer/hct/csTx/dynamicInterestPolicyList.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+cacheServer/hct/csTx/dynamicInterestPolicyAllKeys.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+cacheServer/hct/csTx/dynamicInterestPolicyRegex.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+cacheServer/hct/csTx/dynamicInterestPolicySingle.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+cacheServer/hct/csTx/dynamicInterestPolicyPartialList.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+cacheServer/hct/csTx/staticInterestPolicyListLateOps.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+cacheServer/hct/csTx/staticInterestPolicyAllKeysLateOps.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+cacheServer/hct/csTx/staticInterestPolicyRegexLateOps.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+cacheServer/hct/csTx/staticInterestPolicySingleLateOps.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+cacheServer/hct/csTx/staticInterestPolicyPartialListLateOps.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+
+

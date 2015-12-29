@@ -1,0 +1,150 @@
+// basic tests
+cq/simpleCQ.conf
+   edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=2 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+cq/missingJarTest.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+
+// serial tests (non-HA)
+cq/serialCQBridge.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+cq/serialCQBridgePR.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+cq/serialEntryEvent.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=2 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   registerInterest = false
+cq/serialEntryEventWithFeeder.conf
+   A=feed   feedHosts=1 feedVMsPerHost=1 feedThreadsPerVM=1
+   B=edge   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   C=bridge bridgeHosts=2 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   registerInterest = false
+
+// Backward Compatibility test.
+cq/serialCQBridgeBackwardCompatibility.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+
+// concurrent tests (non-HA)
+cq/concCQBridge.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+cq/concCQBridgePR.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+
+// serial HA tests
+cq/serialCQBridgeHA.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   redundancyLevel = 4 
+cq/serialCQBridgePRHA.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   redundancyLevel = 3 redundantCopies = 3 
+
+// concurrent HA tests
+cq/concCQBridgeHA.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundancyLevel = 4 
+cq/concCQBridgePRHA.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundancyLevel = 3 redundantCopies = 3 
+
+// hct/ha/ha.bt tests extended to exercise CQs
+INCLUDE $JTESTS/cq/ha/ha.bt
+
+// wan hct related tests extended to exercise CQs
+INCLUDE $JTESTS/cq/wan/wan.bt
+
+// hct related tests extended to exercise CQs
+// loaders and MemLRUEviction in servers
+INCLUDE $JTESTS/cq/hct/hct.bt
+
+// serialEntryEvent tests w/registerInterest
+cq/serialEntryEvent.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=2 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   registerInterest = true
+cq/serialEntryEventWithFeeder.conf
+   A=feed   feedHosts=1 feedVMsPerHost=1 feedThreadsPerVM=1
+   B=edge   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   C=bridge bridgeHosts=2 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   registerInterest = true
+
+cq/knownKeysCQ.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys = 10000
+cq/knownKeysCQPR.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys = 10000
+cq/combineKnownKeysCQ.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys = 10000
+
+// CqAttributesMutator (cqListener list) tests
+cq/serialMultiListener.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=2 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   registerInterest = false
+
+cq/concMultiListener.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=2 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   registerInterest = false
+
+cq/bug41249.conf
+   edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+
+// transactional doOps (in servers only) as cs/tx not yet supported
+// validates proper adjunct messaging behavior
+//disabled for #44146
+//cq/tx/txKnownKeysCQPR.conf bridgeHosts=5 bridgeThreadsPerVM=5 bridgeVMsPerHost=1 edgeHosts=3 edgeThreadsPerVM=5 edgeVMsPerHost=1 numKeys=10000
+
+// New tests with PR vs. RR (more adjunct messaging validation)
+cq/serialEntryEventPR.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=2 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   registerInterest = true
+
+cq/serialEntryEventPR.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=2 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   registerInterest = false
+
+// Backward Compatibility test.
+cq/mixed66and70clients.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+
+// ClientCacheFactory tests
+cq/serialCQBridgeWithClientCache.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+
+cq/concCQBridgeWithClientCache.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+
+cq/concCQBridgeHAWithClientCache.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundancyLevel = 4 
+
+// Backward Compatibility test with 6.5.1 and later clients using ClientCacheFactory
+cq/serialCQBridgeBackwardCompatibilityWithClientCache.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+
+cq/statistics/cqStatsHCT.conf
+edgeHosts =1 edgeVMsPerHost = 1 edgeThreadsPerVM = 1
+bridgeHosts =1 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1

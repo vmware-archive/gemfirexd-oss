@@ -1,0 +1,10 @@
+A = pub
+B = miss
+pubHosts = 1
+pubVMsPerHost = 1
+pubThreadsPerVM = 1
+missHosts = 1
+missVMsPerHost = 1
+missThreadsPerVM = 1
+scope = ack
+perffmwk.comparisonKey = perf008

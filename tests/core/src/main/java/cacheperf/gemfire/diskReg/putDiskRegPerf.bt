@@ -1,0 +1,48 @@
+// *******Persist Tests *********
+//Persist-Asynch-Fixed oplog
+cacheperf/gemfire/diskReg/putDiskRegPersistAsynchPerf.conf vmQuantities=1 vmThreads=5 timeInterval=1000 dataSize=1024 queueSize=10 autoCompact=false maxOplogSize=0 
+
+//Persist-Asynch-AutoCompact-10GB maxOplog
+cacheperf/gemfire/diskReg/putDiskRegPersistAsynchPerf.conf vmQuantities=1 vmThreads=5 timeInterval=1000 dataSize=1024 queueSize=10 autoCompact=true maxOplogSize=10240 
+
+//Persist-Asynch-AutoCompact-10GB maxOplog-Time based Buffer
+cacheperf/gemfire/diskReg/putDiskRegPersistAsynchPerf.conf vmQuantities=1 vmThreads=5 timeInterval=1000 dataSize=1024 queueSize=0 autoCompact=true maxOplogSize=10240 
+
+//Persist-Synch-Fixed Oplog
+cacheperf/gemfire/diskReg/putDiskRegPersistSynchPerf.conf vmQuantities=1 vmThreads=5 autoCompact=false maxOplogSize=0
+
+//Persist-Synch-AutoCompact-10GB maxOplog
+cacheperf/gemfire/diskReg/putDiskRegPersistSynchPerf.conf vmQuantities=1 vmThreads=5 autoCompact=true maxOplogSize=10240 
+
+// *******Overflow Tests *********
+//Overflow-Asynch-Fixed oplog
+cacheperf/gemfire/diskReg/putDiskRegOverflowAsynchPerf.conf vmQuantities=1 vmThreads=5 timeInterval=1000 dataSize=1024 queueSize=10 autoCompact=false maxOplogSize=0 
+
+//Overflow-Asynch-AutoCompact-10GB maxOplog
+cacheperf/gemfire/diskReg/putDiskRegOverflowAsynchPerf.conf vmQuantities=1 vmThreads=5 timeInterval=1000 dataSize=1024 queueSize=10 autoCompact=true maxOplogSize=10240 
+
+//Overflow-Asynch-AutoCompact-10GB maxOplog-Time based Buffer
+cacheperf/gemfire/diskReg/putDiskRegOverflowAsynchPerf.conf vmQuantities=1 vmThreads=5 timeInterval=1000 dataSize=1024 queueSize=0 autoCompact=true maxOplogSize=10240 
+
+//Overflow-Synch-Fixed Oplog
+cacheperf/gemfire/diskReg/putDiskRegOverflowSynchPerf.conf vmQuantities=1 vmThreads=5 autoCompact=false maxOplogSize=0
+
+//Overflow-Synch-AutoCompact-10GB maxOplog
+cacheperf/gemfire/diskReg/putDiskRegOverflowSynchPerf.conf vmQuantities=1 vmThreads=5 autoCompact=true maxOplogSize=10240 
+
+// *******Overflow with Persist Tests *********
+//Overflow with Persist-Asynch-Fixed oplog
+cacheperf/gemfire/diskReg/putDiskRegOverflowPersistAsynchPerf.conf vmQuantities=1 vmThreads=5 timeInterval=1000 dataSize=1024 queueSize=10 autoCompact=false maxOplogSize=0 
+
+//Overflow with Persist-Asynch-AutoCompact-10GB maxOplog
+cacheperf/gemfire/diskReg/putDiskRegOverflowPersistAsynchPerf.conf vmQuantities=1 vmThreads=5 timeInterval=1000 dataSize=1024 queueSize=10 autoCompact=true maxOplogSize=10240 
+
+//Overflow with Persist-Asynch-AutoCompact-10GB maxOplog-Time based Buffer
+cacheperf/gemfire/diskReg/putDiskRegOverflowPersistAsynchPerf.conf vmQuantities=1 vmThreads=5 timeInterval=1000 dataSize=1024 queueSize=0 autoCompact=true maxOplogSize=10240 
+
+//Overflow with Persist-Synch-Fixed Oplog
+cacheperf/gemfire/diskReg/putDiskRegOverflowPersistSynchPerf.conf vmQuantities=1 vmThreads=5 autoCompact=false maxOplogSize=0
+
+//Overflow with Persist-Synch-AutoCompact-10GB maxOplog
+cacheperf/gemfire/diskReg/putDiskRegOverflowPersistSynchPerf.conf vmQuantities=1 vmThreads=5 autoCompact=true maxOplogSize=10240 
+

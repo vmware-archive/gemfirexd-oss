@@ -1,0 +1,7 @@
+INCLUDE $JTESTS/vsphere/regression/cqCsTx.bt
+INCLUDE $JTESTS/vsphere/regression/deltaCsTx.bt
+INCLUDE $JTESTS/vsphere/regression/durableClientsCsTx.bt
+INCLUDE $JTESTS/vsphere/regression/fixedPartitioningCsTx.bt
+INCLUDE $JTESTS/vsphere/regression/hctCsTx.bt
+INCLUDE $JTESTS/vsphere/regression/parRegCsTx.bt
+INCLUDE $JTESTS/vsphere/regression/txCsTx.bt

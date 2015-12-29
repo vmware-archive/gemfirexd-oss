@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<BODY bgcolor="#ffffff"><HTML>
+ <IMG SRC="../../../../docs/VMwareLogo.png" BORDER="0">
+ <HEAD>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+  <META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+  <LINK REL="STYLESHEET" HREF="DocIndex.css" CHARSET="ISO-8859-1" TYPE="text/css">
+<H1 align="center">
+vFabric<FONT size=6><b><sup><font size=-0>&#8482;</font></sup></b></FONT></font> GemFire<FONT size=6><b><sup><font size=-0>&#174;</font></sup></b></FONT></font></H1>
+     </b></FONT>
+  <H1 align="center">Portable Data Exchange</H1>
+<H2 align="center">Java Caching API Programming Example </H2>
+
+<hr color="#cc0000" size="2" align="left">
+
+<BODY TEXT="#000000" LINK="#0000B0" VLINK="#666699" BGCOLOR="#FFFFFF">
+<P>The <b>portableDataExchange</b> example demonstrates how to use gemfires Portable Data eXchange (PDX) framework to serialize objects efficiently. There are two examples which each show a different technique for serializing objects using PDX. In the first example, the domain objects extend the PdxSerializable interface. In the second example, a PdxSerializer is used to serialize multiple domain objects. Finally, the second example also shows how to use the built in ReflectionBasedAutoSerializer to serialize many objects without needing to write serialization code.
+ 
+<P>In every shell used to run this example application, configure your 
+environment according to the instructions provided in 
+  <a href="../../EnvSetup.html">examples/EnvSetup.html</a>.</P>
+<P>Once your 
+environment is set, change to the <code>examples/dist/portableDataExchange</code>
+directory to run the application. 
+
+<br><br>
+<B> Running the PdxSerializable example </B>
+<p> In this example domain objects which implement the PdxSerializable interface are created on a client. The client sends puts the object in a region which is stored on the server. The client then executes queries against the server to retrieve the objects. </p>
+
+<ol>
+  <li> Start a cache server using the given cache xml file.
+  <blockquote>
+    <code>cacheserver start cache-xml-file=server.xml</code>  </blockquote>
+  <li>When that returns, start the client same session </li>
+  <blockquote>
+  <code>java portableDataExchange.pdxserializable.Client</code>
+  </blockquote>
+  <p>When the client finishes it exits automatically.</p>
+</ol>
+
+Sample Output
+<pre>
+Created the GemFire Cache
+Obtained the Region from the Cache
+Populated some PortfolioPdx Objects
+Got the QueryService from the Pool
+ResultSet Query returned 3 rows
+StructSet Query returned 2 rows
+Row 1 Column 0 is named id, value is 2
+Row 1 Column 1 is named status, value is active
+Row 2 Column 0 is named id, value is 3
+Row 2 Column 1 is named status, value is inactive
+</pre>
+
+The server uses the LoggingCacheListener class to log create events to the log for the cacheserver. Look at cacheserver.log. The listener logged the following creates to the log, without fully deserializing the objects on the server.
+
+<pre>
+LoggingCacheListener: - 1 created at Tue Jul 19 18:54:47 PDT 2011
+LoggingCacheListener: - 2 created at Tue Jul 19 18:54:47 PDT 2011
+LoggingCacheListener: - 3 created at Tue Jul 19 18:54:47 PDT 2011
+</pre>
+
+<B> Running the PdxSerializer example </B>
+<p> This example is the same as the PdxSerialiable example, above, except that the domain objects are POJOs that do not implement any gemfire interface. Instead, a PdxSerializer that knows how to serialize these objects is registered with the cache </p>
+
+<ol>
+  <li> Start a cache server using the given cache xml file.
+  <blockquote>
+    <code>cacheserver start cache-xml-file=server.xml</code>  </blockquote>
+  <li>When that returns, start the client same session </li>
+  <blockquote>
+  <code>java portableDataExchange.serializer.Client</code>  </blockquote>
+  <p>When the client finishes it exits automatically.</p>
+  <li>The sample output will be the same as the PdxSerializable example </li>
+</ol>
+
+<B> Running the auto serializer example </B>
+<p> In this example, the built in reflection based serializer is used to automatically serialize the domain objects, without needed to write any serialization code. </p>
+<ol>
+  <li> Start a cache server using the given cache xml file.
+  <blockquote>
+    <code>cacheserver start cache-xml-file=server.xml</code>  </blockquote>
+  <li>When that returns, start the client same session auto. Pass the auto parameter to tell the client to use the auto serializer.</li>
+  <blockquote>
+  <code>java portableDataExchange.serializer.Client auto</code>  </blockquote>
+  <p>When the client finishes it exits automatically.</p>
+  <li>The sample output will be the same as the PdxSerializable example </li>
+</ol>
+
+
+  <hr color="#cc0000" size="2" align="left">
+
+</BODY>
+</HTML>
+

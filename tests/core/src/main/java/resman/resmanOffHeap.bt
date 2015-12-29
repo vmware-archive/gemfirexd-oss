@@ -1,0 +1,91 @@
+// This is test A in the resman test plan
+resman/criticalThresholdOffHeap.conf
+   A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=4
+   B=dataStore dataStoreHosts=1 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+   redundantCopies=0 evictionThreshold=45 criticalThreshold=70
+   offHeapMB=250 heapMB=250
+
+// Test E-A
+resman/criticalThresholdHAOffHeap.conf 
+   A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=4
+   B=dataStore dataStoreHosts=2 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+   redundantCopies=1 evictionThreshold=45 criticalThreshold=70
+   offHeapMB=250 heapMB=250
+   
+// This is test B in the resman test plan
+resman/criticalFromEvictionOffHeap.conf
+   A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=4
+   B=dataStore dataStoreHosts=1 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+   redundantCopies=0 evictionThreshold=45 criticalThreshold=70
+   offHeapMB=250 heapMB=250
+   
+// This is test C in the resman test plan
+resman/evictionThresholdOffHeap.conf
+   A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=4
+   B=dataStore dataStoreHosts=1 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+   redundantCopies=0 evictionThreshold=45 criticalThreshold=70
+   offHeapMB=250 heapMB=250
+   
+// This is test D in resman test plan
+resman/thresholdFullCycleOffHeap.conf
+   A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=4
+   B=dataStore dataStoreHosts=1 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+   redundantCopies=0 evictionThreshold=45 criticalThreshold=70
+   offHeapMB=250 heapMB=250
+   
+resman/criticalOffHeapFireHose.conf
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=4
+   C=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=4
+   offHeapMB=100 heapMB=250
+   
+resman/criticalOffHeapFireHoseWithRebal.conf
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=4
+   C=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=4
+   offHeapMB=100 heapMB=250
+   
+resman/criticalOffHeapFireHoseAddCapacity.conf
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   C=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   D=extraDataStore extraDataStoreHosts=4 extraDataStoreVMsPerHost=1 extraDataStoreThreadsPerVM=10
+   offHeapMB=250 heapMB=250
+   
+resman/rescueFromCriticalByDrainingGatewaysOffHeap.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=1
+   B=dataStore dataStoreHosts=1 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=1
+   redundantCopies=0 evictionThreshold=0 criticalThreshold=80
+   offHeapMB=250 heapMB=250 gatewayPuts=250000 criticalPuts=50000
+   
+resman/rescueFromCriticalByTurningOnEvictionOffHeap.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=1
+   B=dataStore dataStoreHosts=1 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=1
+   redundantCopies=0 evictionThreshold=0 criticalThreshold=80
+   offHeapMB=250 heapMB=250 criticalPuts=25000
+
+// distributed/replicated region tests
+resman/distCriticalOffHeapFireHose.conf
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=replicate replicateHosts=4 replicateVMsPerHost=1 replicateThreadsPerVM=4
+   offHeapMB=100 heapMB=100
+
+resman/criticalOffHeapFireHosePersist.conf
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=4
+   C=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=4
+   offHeapMB=100 heapMB=250
+   
+resman/criticalOffHeapFireHoseWithRebalPersist.conf
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=4
+   C=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=4
+   offHeapMB=100 heapMB=250
+   
+resman/criticalOffHeapFireHoseAddCapacityPersist.conf
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   C=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   D=extraDataStore extraDataStoreHosts=4 extraDataStoreVMsPerHost=1 extraDataStoreThreadsPerVM=10
+   offHeapMB=250 heapMB=250
+

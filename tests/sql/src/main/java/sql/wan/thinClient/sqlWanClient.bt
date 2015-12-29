@@ -1,0 +1,3 @@
+include $JTESTS/sql/wan/thinClient/sqlWanSingleSitePublisherClient.bt
+
+include $JTESTS/sql/wan/thinClient/sqlWanMultiSitePublisherClient.bt  

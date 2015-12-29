@@ -1,0 +1,98 @@
+INCLUDE $JTESTS/memscale/memscaleRegr.bt
+
+// -----------------------------------
+// Create and destroy tests, replicates
+// destroy < 100% (clear must be false since clear affects 100%)
+// fixed object size
+memscale/destroy.conf
+   peerHosts = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+   heapMB = 200
+   maxKeys = 25000 minObjectSize = 96 maxObjectSize=96
+   destroyPercentage = 10,50,80
+   executionCycles=50
+   useClear=false
+// destroy 100%, clear is both true and false
+// fixed object size
+memscale/destroy.conf
+   peerHosts = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+   heapMB = 200
+   maxKeys = 25000 minObjectSize=96 maxObjectSize=96
+   destroyPercentage = 100
+   executionCycles=50
+   useClear=true,false
+// destroy < 100% (clear must be false since clear affects 100%)
+// vary the object size
+memscale/destroy.conf
+   peerHosts = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+   heapMB = 200
+   maxKeys = 25000 minObjectSize=1 maxObjectSize=100
+   destroyPercentage = 10,50,80
+   executionCycles=50
+   useClear=false
+// destroy 100%, clear is both true and false
+// vary the object size
+memscale/destroy.conf
+   peerHosts = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+   heapMB = 200
+   maxKeys = 25000 minObjectSize=1 maxObjectSize=100
+   destroyPercentage = 100
+   executionCycles=50
+   useClear=true,false
+
+// -----------------------------------
+// Create and destroy tests, PRs
+// no clear option for PRs, fixed size data
+memscale/destroyPR.conf
+   peerHosts = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+   heapMB = 200
+   maxKeys = 25000 minObjectSize = 100 maxObjectSize=100
+   destroyPercentage = 10,50,80,100
+   executionCycles=50
+   redundantCopies=0,1
+// variable size data
+memscale/destroyPR.conf
+   peerHosts = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+   heapMB = 200
+   maxKeys = 25000 minObjectSize=1 maxObjectSize=100
+   destroyPercentage = 10,50,80,100
+   executionCycles=50
+   redundantCopies=0,1
+
+// Fixed size data that varies in a non-random way so as to fill off-heap entirely
+// destroyPercentage always 100% for these; minObjectSize and maxObjectSize MUST be equal
+memscale/destroyDataVariations.conf
+   peerHosts = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+   heapMB = 200
+   maxKeys = 25000 minObjectSize=80 maxObjectSize=80
+   executionCycles=50
+   useClear=true,false
+memscale/destroyPRDataVariations.conf
+   peerHosts = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+   heapMB = 200
+   maxKeys = 25000 minObjectSize=80 maxObjectSize=80
+   executionCycles=50
+   redundantCopies=0
+memscale/destroyPRDataVariations.conf
+   peerHosts = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+   heapMB = 200
+   maxKeys = 25000 minObjectSize=40 maxObjectSize=40
+   executionCycles=50
+   redundantCopies=1
+
+memscale/offHeapRecoveryReplicate.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=4 persistVMsPerHost=1 persistThreadsPerVM=3
+   numDiskStores = 5
+
+memscale/offHeapRecoveryPR.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=4 persistVMsPerHost=1 persistThreadsPerVM=3
+   numDiskStores = 5
+
+// number of oom members must not be larger than redundantCopies
+memscale/offHeapCeiling.conf
+   locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+   A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=5 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   C=oomDataStore oomDataStoreHosts=3 oomDataStoreVMsPerHost=1 oomDataStoreThreadsPerVM=1
+   redundantCopies=3

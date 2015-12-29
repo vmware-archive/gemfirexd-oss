@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<!-- Initializes a cache server to serve the DATA region, 
+    waiting for client communication on port 40404 -->
+
+<!DOCTYPE cache PUBLIC
+  "-//GemStone Systems, Inc.//GemFire Declarative Caching 6.5//EN"
+  "http://www.gemstone.com/dtd/cache6_5.dtd">
+<cache>
+  <cache-server port="40404"/>
+  <region name="DATA" refid="REPLICATE">
+      <region-attributes>
+        <cache-listener>
+          <class-name>cacheRunner.LoggingCacheListener</class-name>
+        </cache-listener>
+      </region-attributes>
+  </region>
+</cache>

@@ -1,0 +1,54 @@
+sql/sqlCallback/randomPartitionWithWriteThroughAccessorsHA.conf
+   A=store
+   B=accessor
+   accessorHosts=1
+   accessorThreadsPerVM=6
+   accessorVMsPerHost=3
+   dropIndex=true
+   redundantCopies=2
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=3
+sql/sqlTx/thinClient/randomPartitionTablesIndexTxWithBatchingClient.conf
+   clientHosts=2
+   clientThreadsPerVM=6
+   clientVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   serverHosts=1
+   serverThreadsPerVM=1
+   serverVMsPerHost=5
+   workIterationsPerThread=500
+sql/sqlCallback/randomPartitionWithListenerAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=1
+   accessorThreadsPerVM=6
+   accessorVMsPerHost=3
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=1
+sql/sqlCallback/randomPartitionWithWriteThroughAccessorsHA.conf
+   A=store
+   B=accessor
+   accessorHosts=1
+   accessorThreadsPerVM=6
+   accessorVMsPerHost=3
+   dropIndex=true
+   redundantCopies=2
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=3
+sql/sqlTx/thinClient/randomPartitionTablesIndexTxWithBatchingClientHA.conf
+   clientHosts=2
+   clientThreadsPerVM=6
+   clientVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   redundantCopies=1
+   serverHosts=1
+   serverThreadsPerVM=1
+   serverVMsPerHost=5
+   workIterationsPerThread=500

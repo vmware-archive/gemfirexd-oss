@@ -1,0 +1,18 @@
+locatorHosts = 1
+locatorVMsPerHost = 1
+locatorThreadsPerVM = 1
+
+A = peer
+peerHosts = 2
+peerVMsPerHost = 1
+peerThreadsPerVM = 1
+
+heapMB = 700
+maxKeys = 100000
+objectSize = 1024
+conserveSockets = false
+numUpdates = 1
+
+version = default
+
+perffmwk.comparisonKey=peerDataUpdate

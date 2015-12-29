@@ -1,0 +1,82 @@
+[DurableServer] This example demonstrates durable caching. This program is a server,
+[DurableServer] listening on a port for client requests. The client program connects and
+[DurableServer] requests data. The client in this example is also configured to forward
+[DurableServer] information on data destroys and updates.
+[DurableServer]
+[DurableServer] Connecting to the distributed system and creating the cache...
+[DurableServer] Connected to the distributed system.
+[DurableServer] Created the cache.
+[DurableServer] Example region "/exampleRegion" has been created in the cache.
+[DurableServer]
+[DurableServer] Please start the DurableClient now...
+[DurableServer] Initializing the cache:
+[DurableServer] Putting key1 => value1
+    Received afterCreate event for entry: key1, value1
+[DurableServer] Putting key2 => value2
+    Received afterCreate event for entry: key2, value2
+[DurableServer] Putting key3 => value3
+    Received afterCreate event for entry: key3, value3
+[DurableServer] Putting key4 => value4
+    Received afterCreate event for entry: key4, value4
+[DurableServer]
+[DurableServer] Press Enter in the server window to update the values in the cache, or 'Exit' to shut down.
+[DurableServer] Before updating, the values are:
+[DurableServer] key1 => value1
+[DurableServer] key2 => value2
+[DurableServer] key3 => value3
+[DurableServer] key4 => value4
+    Received afterUpdate event for entry: key1, value11
+    Received afterUpdate event for entry: key2, value22
+    Received afterUpdate event for entry: key3, value33
+    Received afterUpdate event for entry: key4, value44
+[DurableServer] The values have been updated in the server cache.
+[DurableServer] Press Enter in the client window to verify the Updates.
+[DurableServer]
+[DurableServer] After updating the values, new values in server cache are:
+[DurableServer] key1 => value11
+[DurableServer] key2 => value22
+[DurableServer] key3 => value33
+[DurableServer] key4 => value44
+[DurableServer]
+[DurableServer] Press Enter in the server window to update the values in the cache, or 'Exit' to shut down.
+[DurableServer] Before updating, the values are:
+[DurableServer] key1 => value11
+[DurableServer] key2 => value22
+[DurableServer] key3 => value33
+[DurableServer] key4 => value44
+    Received afterUpdate event for entry: key1, value111
+    Received afterUpdate event for entry: key2, value222
+    Received afterUpdate event for entry: key3, value333
+    Received afterUpdate event for entry: key4, value444
+[DurableServer] The values have been updated in the server cache.
+[DurableServer] Press Enter in the client window to verify the Updates.
+[DurableServer]
+[DurableServer] After updating the values, new values in server cache are:
+[DurableServer] key1 => value111
+[DurableServer] key2 => value222
+[DurableServer] key3 => value333
+[DurableServer] key4 => value444
+[DurableServer]
+[DurableServer] Press Enter in the server window to update the values in the cache, or 'Exit' to shut down.
+[DurableServer] Before updating, the values are:
+[DurableServer] key1 => value111
+[DurableServer] key2 => value222
+[DurableServer] key3 => value333
+[DurableServer] key4 => value444
+    Received afterUpdate event for entry: key1, value1111
+    Received afterUpdate event for entry: key2, value2222
+    Received afterUpdate event for entry: key3, value3333
+    Received afterUpdate event for entry: key4, value4444
+[DurableServer] The values have been updated in the server cache.
+[DurableServer] Press Enter in the client window to verify the Updates.
+[DurableServer]
+[DurableServer] After updating the values, new values in server cache are:
+[DurableServer] key1 => value1111
+[DurableServer] key2 => value2222
+[DurableServer] key3 => value3333
+[DurableServer] key4 => value4444
+[DurableServer]
+[DurableServer] Press Enter in the server window to update the values in the cache, or 'Exit' to shut down.
+[DurableServer]
+[DurableServer] Closing the cache and disconnecting...
+[DurableServer] Finished disconnecting from the distributed system. Exiting...

@@ -1,0 +1,11 @@
+//------------------------------------------------------------------------------
+// rdb
+//------------------------------------------------------------------------------
+cacheperf/poc/useCase14/rdb/rdb.conf
+  A = feed   feedHosts   =   1  feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+  B = bridge bridgeHosts =   1  bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+  C = edge   edgeHosts   =   1  edgeVMsPerHost   = 1  clientThreadsPerVM = 1
+  maxKeys = 250000 dataSize = 50000
+  pushPercentage = 100
+  interestPercentage = 100 interestKeyAllocation = sameKeys
+  workSeconds = 20

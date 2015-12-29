@@ -1,0 +1,98 @@
+TOPOLOGIES
+peer (just a few)
+empty peer to peer
+empty client to server
+empty peer to server to empty client
+empty client to server to empty peer listener (just a few)
+
+OPERATIONS
+create
+get
+put
+update (just a few)
+
+DATA POLICIES
+replicate
+partition
+persistentReplicate (run awhile longer)
+persistentPartition (run awhile longer)
+
+FEATURES
+bucket rebalancing
+bucket recovery
+bulk ops
+cq (semi-new)
+delta propagation, no cloning
+durable clients (semi-new)
+eviction, heap lru with overflow (semi-new) - resource manager threshold
+function execution
+listeners (built-in to topologies)
+subscription (built-in to topologies)
+
+persistence - sync, async (in progress)
+query (new)
+disk recovery (in progress)
+slow receiver
+transactions (new)
+
+MISC
+thinClientScalability?
+
+NEED SMOKEPERF
+custom partitioning (new tests)
+function execution (based on existing scaled tests)
+persistence, partition (based on existing smokeperf)
+pr listeners (new tests)
+recovery, disk (based on existing scaled tests)
+recovery, bucket (based on existing scaled tests)
+
+SKIP (some coverage in smokeperf)
+connection
+delta propagation, cloning
+dlock
+eviction using entry/mem lru and/or local destroy
+expiration
+loaders
+mixed operations
+multicast
+scope noack, local, global
+security
+thin client
+very small or large objects
+wan
+wbcl
+Solaris, Windows
+
+NOT COVERED 
+custom partitioning
+gii (except recovery as noted above)
+ha (except recovery as noted above)
+native client (in progress for smokeperf?)
+gfxd (will be covered separately)
+
+LIMITATIONS
+tests alternate conserveSockets true/false
+tests alternate objects 1K byte[] vs. 1K DataSerializable
+client/server tests alternate selector or not
+client/server tests alternate thread local connections or not
+client/server tests use pools with bridge servers not server locators
+all accessors (peers, clients) are empty
+all tests use scope dack for peers, local for clients
+all tests with partitioning use redundancy 1
+all tests use the default setting for pr single hop (enabled)
+all partition tests use 10 buckets per datahost
+all partition tests preassign buckets
+all tests use Long keys
+all tests run 32-bit JDK 1.6
+all tests use optimized gc
+all tests use the hs21 Linux hosts at the data center
+all tests use from 4 to 8 hosts (plus one for master)
+all tests use multiple operating threads per VM
+all tests use moderate amounts of data (1 million objects or so)
+total run time is 24 hours or less
+
+================================================================================
+================================================================================
+
+If needed, cut 002 and 010 since they are all local gets.
+Add eviction tests for more topologies.

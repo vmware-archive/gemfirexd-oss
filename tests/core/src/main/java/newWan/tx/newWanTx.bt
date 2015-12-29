@@ -1,0 +1,32 @@
+//serial
+//newWan/tx/p2pKill.conf
+     // wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+     // peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5
+
+//parReg/newWan/serial/tx/p2pKill.conf
+     // wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+     // peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5   
+      
+//newWan/tx/hctKill.conf
+     // wanSites = 2,3,4  maxOps=10000 resultWaitSec=600
+     // bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+     // edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+      
+//parReg/newWan/serial/tx/hctKill.conf
+     // wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+     // bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+     // edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+//parallel
+//parReg/newWan/parallel/tx/p2pKill.conf
+     // wanSites = 2,3,4 maxOps=15000 resultWaitSec=600 redundantCopies = 2
+     // peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5
+
+//parReg/newWan/parallel/tx/hctKill.conf
+     // wanSites = 2,3,4  maxOps=15000 resultWaitSec=600
+     // bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+     // edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+
+
+

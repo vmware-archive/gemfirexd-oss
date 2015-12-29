@@ -1,0 +1,22 @@
+// all partitioned tables [TBR]
+sql/wan/multiSitePublisherAccessorsPSIdentity.conf
+    wanSites= 3
+    A=datastore datastoreHostsPerSite=2 datastoreVMsPerHost=2 datastoreThreadsPerVM=1
+    B=accessor accessorHostsPerSite=2 accessorVMsPerHost=1 accessorThreadsPerVM=9
+    locatorHostsPerSite = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    enableQueueConflation=false
+    redundantCopies=1
+    withReplicatedTables=false
+    testMultiTableJoin=false
+    testUniqueKeys = true
+    securities=trade.securities:random
+    customers=trade.customers:random
+    networth=trade.networth:random
+    portfolio=trade.portfolio:random
+    sellorders=trade.sellorders:random
+    buyorders=trade.buyorders:random
+    txhistory=trade.txhistory:random
+    temp=trade.temp:random
+    trades=trade.trades:random
+    empemployee=emp.employees:random
+    defaultemployee=default1.employees:random

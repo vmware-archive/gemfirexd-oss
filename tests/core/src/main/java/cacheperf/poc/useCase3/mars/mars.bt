@@ -1,0 +1,2 @@
+cacheperf/poc/useCase3/mars/mars.conf
+  workSeconds = 86400 // 24 hours

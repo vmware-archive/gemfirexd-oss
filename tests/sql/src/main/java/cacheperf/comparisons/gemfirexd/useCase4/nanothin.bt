@@ -1,0 +1,66 @@
+cacheperf/comparisons/gemfirexd/useCase4/nanothin.conf
+  queryType = holdingAgg
+  clientHosts=2 clientVMsPerHost=1 clientThreadsPerVM=2
+  serverHosts=2 serverVMsPerHost=1 serverThreadsPerVM=1
+  clientHeapMB = 256 serverHeapMB = 2000 newSizeMB = 128
+  perffmwk.comparisonKey = holdingAgg
+cacheperf/comparisons/gemfirexd/useCase4/nanothin.conf
+  queryType = portSumm
+  clientHosts=2 clientVMsPerHost=1 clientThreadsPerVM=2
+  serverHosts=2 serverVMsPerHost=1 serverThreadsPerVM=1
+  clientHeapMB = 256 serverHeapMB = 2000 newSizeMB = 128
+  perffmwk.comparisonKey = portSumm
+cacheperf/comparisons/gemfirexd/useCase4/nanothin.conf
+  queryType = mktSumm
+  clientHosts=2 clientVMsPerHost=1 clientThreadsPerVM=2
+  serverHosts=2 serverVMsPerHost=1 serverThreadsPerVM=1
+  clientHeapMB = 256 serverHeapMB = 2000 newSizeMB = 128
+  perffmwk.comparisonKey = mktSumm
+cacheperf/comparisons/gemfirexd/useCase4/nanothin.conf
+  queryType = holdingCount
+  clientHosts=2 clientVMsPerHost=1 clientThreadsPerVM=2
+  serverHosts=2 serverVMsPerHost=1 serverThreadsPerVM=1
+  clientHeapMB = 256 serverHeapMB = 2000 newSizeMB = 128
+  perffmwk.comparisonKey = holdingCount
+cacheperf/comparisons/gemfirexd/useCase4/nanothin.conf
+  queryType = uptClosedOrderSelfJoin
+  clientHosts=2 clientVMsPerHost=1 clientThreadsPerVM=2
+  serverHosts=2 serverVMsPerHost=1 serverThreadsPerVM=1
+  clientHeapMB = 256 serverHeapMB = 2000 newSizeMB = 128
+  perffmwk.comparisonKey = uptClosedOrderSelfJoin
+cacheperf/comparisons/gemfirexd/useCase4/nanothin.conf
+  queryType = uptClosedOrder
+  clientHosts=2 clientVMsPerHost=1 clientThreadsPerVM=2
+  serverHosts=2 serverVMsPerHost=1 serverThreadsPerVM=1
+  clientHeapMB = 256 serverHeapMB = 2000 newSizeMB = 128
+  perffmwk.comparisonKey = uptClosedOrder
+cacheperf/comparisons/gemfirexd/useCase4/nanothin.conf
+  queryType = findOrderByStatus
+  clientHosts=2 clientVMsPerHost=1 clientThreadsPerVM=2
+  serverHosts=2 serverVMsPerHost=1 serverThreadsPerVM=1
+  clientHeapMB = 256 serverHeapMB = 2000 newSizeMB = 128
+  perffmwk.comparisonKey = findOrderByStatus
+cacheperf/comparisons/gemfirexd/useCase4/nanothin.conf
+  queryType = findOrderByAccAccId
+  clientHosts=2 clientVMsPerHost=1 clientThreadsPerVM=2
+  serverHosts=2 serverVMsPerHost=1 serverThreadsPerVM=1
+  clientHeapMB = 256 serverHeapMB = 2000 newSizeMB = 128
+  perffmwk.comparisonKey = findOrderByAccAccId
+cacheperf/comparisons/gemfirexd/useCase4/nanothin.conf
+  queryType = findOrderIdAndAccAccId
+  clientHosts=2 clientVMsPerHost=1 clientThreadsPerVM=2
+  serverHosts=2 serverVMsPerHost=1 serverThreadsPerVM=1
+  clientHeapMB = 256 serverHeapMB = 2000 newSizeMB = 128
+  perffmwk.comparisonKey = findOrderIdAndAccAccId
+cacheperf/comparisons/gemfirexd/useCase4/nanothin.conf
+  queryType = findOrderCntAccAccId
+  clientHosts=2 clientVMsPerHost=1 clientThreadsPerVM=2
+  serverHosts=2 serverVMsPerHost=1 serverThreadsPerVM=1
+  clientHeapMB = 256 serverHeapMB = 2000 newSizeMB = 128
+  perffmwk.comparisonKey = findOrderCntAccAccId
+cacheperf/comparisons/gemfirexd/useCase4/nanothin.conf
+  queryType = findOrderCntAccAccIdAndStatus
+  clientHosts=2 clientVMsPerHost=1 clientThreadsPerVM=2
+  serverHosts=2 serverVMsPerHost=1 serverThreadsPerVM=1
+  clientHeapMB = 256 serverHeapMB = 2000 newSizeMB = 128
+  perffmwk.comparisonKey = findOrderCntAccAccIdAndStatus

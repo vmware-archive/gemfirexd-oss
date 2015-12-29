@@ -1,0 +1,11 @@
+sql/rollingUpgrade/sqlDAP/multiTablesUniqDAPWithAccessorsHA.conf
+    A=store storeHosts=2 storeVMsPerHost=2 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=5 accessorThreadsPerVM=5
+    locatorHosts = 2 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    redundantCopies=1
+
+sql/rollingUpgrade/sqlDAP/multiTablesNonUniqDAPWithAccessorsHA.conf
+    A=store storeHosts=2 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=5 accessorThreadsPerVM=8
+    locatorHosts = 2 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    redundantCopies=3

@@ -1,0 +1,50 @@
+//------------------------------------------------------------------------------
+//
+//  GemFire manager perf test : Impact of Mgmt Service when enabled or disabled
+//
+//------------------------------------------------------------------------------
+	
+cacheperf/gemfire/management/mgmtService.conf 
+	perffmwk.comparisonKey=MgmtService
+	redundantCopies = 1
+	maxKeys = 100000 
+	dataSize = 1024
+	workSeconds = 60
+	bridgeVMSizeMB = 256
+	A=locator B=bridge
+	locatorHosts = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1	
+	bridgeHosts = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1	
+	conserveSockets = false
+	disableMgmtService=true 
+	managingHosts = 0 
+	managedHosts = 5
+	
+cacheperf/gemfire/management/mgmtService.conf 
+	perffmwk.comparisonKey=MgmtService
+	redundantCopies = 1 
+	conserveSockets = false
+	maxKeys = 100000 
+	dataSize = 1024
+	workSeconds = 60
+	bridgeVMSizeMB = 256
+	A=locator B=bridge
+	locatorHosts = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	bridgeHosts = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1		
+	disableMgmtService=false 
+	managingHosts = 0 
+	managedHosts = 5	
+	
+cacheperf/gemfire/management/mgmtService.conf 
+	perffmwk.comparisonKey=MgmtService
+	redundantCopies = 1
+	maxKeys = 100000 
+	dataSize = 1024
+	workSeconds = 60
+	bridgeVMSizeMB = 256
+	A=locator B=bridge
+	locatorHosts = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	bridgeHosts = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1	
+	conserveSockets = false
+	disableMgmtService=false 
+	managingHosts = 1 
+	managedHosts = 4	

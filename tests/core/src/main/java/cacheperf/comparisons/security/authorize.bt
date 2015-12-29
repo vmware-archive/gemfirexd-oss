@@ -1,0 +1,83 @@
+// replicated
+cacheperf/comparisons/security/get.conf
+  bridgeHosts = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHosts   = 4 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+  dataPolicy = replicated partitionScheme = none scope = dack
+  securityScheme = none, noop, ldap
+
+// partitioned
+cacheperf/comparisons/security/get.conf
+  bridgeHosts = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHosts   = 4 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+  dataPolicy = partitioned partitionScheme = partition scope = default
+  securityScheme = none, noop, ldap
+
+// replicated
+cacheperf/comparisons/security/put.conf
+  bridgeHosts = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHosts   = 4 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+  dataPolicy = replicated partitionScheme = none scope = dack
+  securityScheme = none, noop, ldap
+
+// partitioned
+cacheperf/comparisons/security/put.conf
+  bridgeHosts = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHosts   = 4 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+  dataPolicy = partitioned partitionScheme = partition scope = default
+  securityScheme = none, noop, ldap
+
+// replicated
+cacheperf/comparisons/security/query.conf
+  bridgeHosts = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHosts   = 4 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+  dataPolicy = replicated partitionScheme = none scope = dack
+  securityScheme = none, noop, ldap
+
+// partitioned
+cacheperf/comparisons/security/query.conf
+  bridgeHosts = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHosts   = 4 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+  dataPolicy = partitioned partitionScheme = partition scope = default
+  securityScheme = none, noop, ldap
+
+// replicated
+cacheperf/comparisons/security/queryIndex.conf
+  bridgeHosts = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHosts   = 4 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+  dataPolicy = replicated partitionScheme = none scope = dack
+  securityScheme = none, noop, ldap
+
+// partitioned
+cacheperf/comparisons/security/queryIndex.conf
+  bridgeHosts = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHosts   = 4 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+  dataPolicy = partitioned partitionScheme = partition scope = default
+  securityScheme = none, noop, ldap
+
+// replicated
+cacheperf/comparisons/security/regint.conf
+  bridgeHosts = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHosts   = 4 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+  dataPolicy = replicated partitionScheme = none scope = dack
+  securityScheme = none, noop, ldap
+
+// partitioned
+cacheperf/comparisons/security/regint.conf
+  bridgeHosts = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHosts   = 4 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+  dataPolicy = partitioned partitionScheme = partition scope = default
+  securityScheme = none, noop, ldap
+
+// replicated
+cacheperf/comparisons/security/feed.conf
+  bridgeHosts = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHosts   = 4 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+  dataPolicy = replicated partitionScheme = none scope = dack
+  securityScheme = none, noop, ldap
+
+// partitioned
+cacheperf/comparisons/security/feed.conf
+  bridgeHosts = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHosts   = 4 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+  dataPolicy = partitioned partitionScheme = partition scope = default
+  securityScheme = none, noop, ldap

@@ -1,0 +1,108 @@
+Grid clients are true clients.  They have an empty region for each of
+TradeCommand, IndicativeCommand, MarketCommand, PositionCommand, RiskCommand.
+They do various gets/queries on TIMP command regions to gather data, do
+computation on that data, then put the results to the R command region.
+Each client command region has a matching empty server command region.
+
+There are servers for Trade, Indicative, Market, Position, and Risk.
+T,I,M are colocated, as are P,R.  Each server command region lives in its own
+large 64-bit VM and has lots of other associated regions unique to it.
+The regions have widely varying sizes.  Each server has one main region,
+undecomposed, one decomposed region, and lots of small regions with a few keys.
+Only the main R region, the undecomposed one, is PR, region with redundancy 0.
+All others are replicated.  [ASK DEREK FOR LATEST CONFIGS]
+
+Regions are indexed.  The queries do not do a lot of joins.  There are no CQs.
+[ASK ERICZ AND ANIL FOR QUERIES: ALSO SEE LOGS FOR EXACT QUERIES AND THEIR
+DISTRIBUTION]
+
+When a client does a get/query on a TIMP command region, it triggers a
+CacheLoader on the server command region.  The loader translates the get/query
+into an OQL query (and/or other operations?) on the appropriate regions.
+The result is returned to the client, unchunked since it is a get return
+value not a client-to-server query.
+
+When a client gets its result, it computes a risk and puts to the R command
+region.  The key is just the client id.  This triggers a CacheWriter on the
+server command region, which generates a unique key.  This was formerly done
+with dlock, then a database, now (?).  Then it puts the result to the
+appropriate region.
+
+A "run" of risk calculations is expected to produce 20 million risk results
+in 30 minutes.  Runs take place periodically.  The results are browsed by the
+Risk Aggregation Portfolio Browser (RAPB).  The work of a run is divided evenly
+between the clients.  All clients are working concurrently in a firehose
+fashion, so the servers are kept busy, but an individual client spends much of
+its time on calculations, so while clients overlap with each other, all clients
+are not accessing servers simultaneously.  A client chunks its work and puts
+intermediate results on the R server. [ASK DEREK FOR MORE INFO]
+
+The data is not simply put to the TIMPR regions.  It is split into a
+non-serialized important part as needed for queries and indexing, and a
+data part serialized to a byte array.  For PRs, there is a single object
+with fields for the important parts plus one for the serialized data.
+For a non-PR, there are two regions, one for the important parts and one
+for the data.  Customer code explicitly preserializes the data part before
+the put in both cases by calling DataSerializer.  The data is deserialized
+before giving it to the user.
+
+The non-PR regions in the TIMP servers are persistent-replicate.  They use
+oplogs.  Writes waffle between synchronous and asynchronous.  They have some
+kind of database writer for added backup.
+
+Persistence on the PR region in the R server, which has only 37 buckets, is
+handled through a PersistenceListener.  A put to the PR region invokes the
+listener, which puts to a non-PR persistent region in the same VM that is
+gateway-enabled with WBCL, which writes to Oracle.  The Oracle connect waffles
+on and off, but when it is off, the WBCL always returns true.  So far UseCase3 has
+not had a database failure, which would cause runaway gateway queue growth.
+The database writes have so far kept pace with the updates, preventing
+excessive queue growth.  There are 15 parallel gateways.  Each has its own
+ID so they no nothing about each other.  The PersistenceListener logs errors
+caused by bad deployed code undetected.  The hydra test can watch for
+exceptions in the listener and make the test fail.
+
+The persistent gateway-enabled region "evicts" all entries in a special way.
+Rather than using normal eviction algorithms, there is a new CacheListener
+called EvictListener that explicitly evicts each entry.
+
+The TIMP (and R?) regions contain today's and yesterday's data.  Old data is
+deleted manually, which UseCase3 refers to as "eviction".
+
+The RAPB is not well known, but this is the only application that queries the
+R server.  [GET QUERIES FROM LOGS ON RISK SERVER]
+
+The R server does not use CMS.  This had terrible performance using Derek's
+risk app after 10 minutes.  The hydra test should try it out and see if it
+reproduces.  The heap was never analyzed.  Theory is the weird interplay
+between all of the various features thrown into that VM.  The other servers
+use CMS.  [GET GC CONFIG FROM USECASE1 SCRIPTS].
+
+The servers are always up.
+
+They are using JDK 1.5.
+
+Performance is impacted by the overhead of:
+        D database writes
+        R redundance/replication
+        I index maintenance
+        P persistence to disk
+
+Greg did a study of heap requirements.  With only 10 million risk results
+(half of that needed):
+         6.20g data region, as blobs
+         8.88g data region, deblobbed
+        18.51g above with indexes
+        20.48g above plus persistent region using partial eviction
+        25.10g above plus two gateways
+For 20 million results, they will need 50g of heap, actually more since growth
+is not linear with the number of entries.
+
+//------------------------------------------------------------------------------
+// STARTUP
+//
+
+UseCase3 complains about the cost of starting up.  They always start up from files.
+We have their scripts, which have tons of flags to tweak during startup.
+We have the persistence files (except a few for sensitive regions), and can
+do startup from them.

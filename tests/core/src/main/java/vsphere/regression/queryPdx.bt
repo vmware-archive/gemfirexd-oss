@@ -1,0 +1,50 @@
+/*pdx/query/serialQueryEntryPdx.conf
+pdx/query/serialQueryIndexEntryPdx.conf*/
+
+/*pdx/query/parReg/serialQueryEntryPdx.conf
+pdx/query/parReg/serialQueryEntryParRegPdx.conf
+pdx/query/parReg/serialQueryIndexEntryPdx.conf
+pdx/query/parReg/serialQueryIndexEntryParRegPdx.conf*/
+//pdx/query/parReg/serialQueryEntryParRegHAPdx.conf
+//pdx/query/parReg/serialQueryIndexEntryParRegHAPdx.conf
+//pdx/query/parReg/serialQueryEntryParRegPersistPdx.conf
+pdx/query/parReg/serialQueryEntryParRegHAPersistPdx.conf
+    threadGroupsName=default
+pdx/query/parReg/serialQueryIndexEntryParRegPersistPdx.conf
+    threadGroupsName=default
+pdx/query/parReg/serialQueryIndexEntryParRegHAPersistPdx.conf
+    threadGroupsName=default
+
+//pdx/query/concQueryEntryPdx.conf
+//pdx/query/concQueryIndexEntryPdx.conf
+pdx/query/concQueryEntryWithLimitPdx.conf queryLimit=10
+    threadGroupsName=default
+pdx/query/concQueryIndexEntryWithLimitPdx.conf queryLimit=10
+    threadGroupsName=default
+//pdx/query/parReg/concQueryEntryParRegPdx.conf
+//pdx/query/parReg/concQueryOnlyParRegPdx.conf
+//pdx/query/parReg/concQueryIndexEntryParRegPdx.conf
+//pdx/query/parReg/concQueryIndexParRegPdx.conf
+//pdx/query/parReg/concQueryEntryPdx.conf
+//pdx/query/parReg/concQueryIndexEntryPdx.conf
+//pdx/query/parReg/concQueryOnlyParRegHAPdx.conf
+//pdx/query/parReg/concQueryIndexParRegHAPdx.conf
+//pdx/query/parReg/concQueryEntryParRegWithLimitPdx.conf queryLimit=10
+//pdx/query/parReg/concQueryIndexEntryParRegWithLimitPdx.conf queryLimit=10
+pdx/query/parReg/concQueryEntryParRegPersistPdx.conf
+    threadGroupsName=default
+//pdx/query/parReg/concQueryOnlyParRegPersistPdx.conf
+pdx/query/parReg/concQueryIndexEntryParRegPersistPdx.conf
+    threadGroupsName=default
+pdx/query/parReg/concQueryIndexParRegPersistPdx.conf
+    threadGroupsName=default
+pdx/query/parReg/concQueryOnlyParRegHAPersistPdx.conf
+    threadGroupsName=default
+pdx/query/parReg/concQueryIndexParRegHAPersistPdx.conf
+    threadGroupsName=default
+pdx/query/parReg/concQueryEntryParRegWithLimitPersistPdx.conf queryLimit=10
+    threadGroupsName=default
+pdx/query/parReg/concQueryIndexEntryParRegWithLimitPersistPdx.conf queryLimit=10
+    threadGroupsName=default 
+
+

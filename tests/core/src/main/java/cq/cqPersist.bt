@@ -1,0 +1,24 @@
+// serial HA tests
+cq/persistence/serialCQBridgeHAPersist.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   redundancyLevel = 4 
+cq/persistence/serialCQBridgePRHAPersist.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   redundancyLevel = 3 redundantCopies = 3 
+
+// concurrent HA tests
+cq/persistence/concCQBridgeHAPersist.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundancyLevel = 4 
+cq/persistence/concCQBridgePRHAPersist.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundancyLevel = 3 redundantCopies = 3 
+
+cq/persistence/concCQBridgeHAPersistWithClientCache.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundancyLevel = 4 

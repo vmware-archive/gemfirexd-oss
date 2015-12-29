@@ -1,0 +1,50 @@
+
+PST6  Consistent Performance (with significant concurrent eviction)
+
+Description:
+We need to prove that GemFire can provide linear performance when
+accessing objects in the cache even when the evictor
+(LRU/TTL/IdleTime) is very busy removing cached objects. Specifically,
+GemFire by itself should not be the cause for introducing large pauses
+in the application. So, for instance, if the fetch response time goes
+from 3 ms to 100 ms for even a few fetches it is not acceptable to the
+customer (especially someone like Bloomberg that have to ensure a very
+high quality of service when it comes to application
+responsiveness). ;; Assume a back-end database to be significantly
+larger than the memory resource available for caching. The test
+application should be multi-threaded (30 concurrent threads) executing
+on at least 2 nodes. The client fetches data from a single region with
+DISTR_NO_ACK. The data arrives into the cache from a data loader
+configured in all cache instances. The loader typically fetches data
+from a RDB (simulate this). Cache entry is a 5K BLOB. Application
+usecase should involve constant misses (70% or more).  
+Use dual CPU Xeon machines for the test. Use standard 100Mbit ethernet.
+
+Goal:  All get times should be 100 ms or less
+
+
+
+To analyze:
+Look in the perfreport.txt file and look for "maxGetTime". This number
+is in nanos. Convert to millis (chop off the last 6 digits) and see if
+it meets the pst requirement of 100 ms or less. Currently, we run this
+test many times because the timings can vary for each run and we want 
+to see the best run. An easy way to look at the results when you have
+many runs of this test is to grep for the maxGetTime in the parent
+directory of the runs:
+
+grep "==> max=" */perfreport.txt
+
+This results in output like this:
+
+memLRUEvictVMReg-0107-035719/perfreport.txt:==> max=645559000
+memLRUEvictVMReg-0107-042935/perfreport.txt:==> max=666984000
+memLRUEvictVMReg-0107-050401/perfreport.txt:==> max=678412000
+memLRUEvictVMReg-0107-052943/perfreport.txt:==> max=1026320000
+memLRUEvictVMReg-0107-060107/perfreport.txt:==> max=663685000
+memLRUEvictVMReg-0107-063657/perfreport.txt:==> max=644068000
+memLRUEvictVMReg-0107-071437/perfreport.txt:==> max=648530000
+memLRUEvictVMReg-0107-074837/perfreport.txt:==> max=707022000
+
+Chop off the last 6 digits to get the milliseconds and find the
+best run, the one with the lowest time.

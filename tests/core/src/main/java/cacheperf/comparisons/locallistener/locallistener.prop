@@ -1,0 +1,8 @@
+# scope (distributedNoAck, distributedAck)
+scope = distributedNoAck 
+
+# characters in message payload string (this is half the byte size)
+messageSize = 0
+
+# number of publisher threads
+numThreads = 1

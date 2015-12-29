@@ -1,0 +1,1 @@
+Setup and used as a comparison to GemFireXD

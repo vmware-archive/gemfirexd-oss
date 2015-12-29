@@ -1,0 +1,9 @@
+hydra.numHosts = 1
+vmQuantities = 1
+vmThreads = 100
+trimSeconds = 150
+workSeconds = 210
+objectType = objects.ArrayOfByte
+scope = local
+dataPolicy = normal
+keyAllocation = sameKeysRandomWrap

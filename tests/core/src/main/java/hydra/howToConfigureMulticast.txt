@@ -1,0 +1,67 @@
+CONFIGURING MULTICAST IN HYDRA TESTS
+
+================================================================================
+How to:  enable multicast for a distributed system and use multicast for discovery
+================================================================================
+Add the following to .conf or local.conf:
+
+  hydra.GemFirePrms-enableMcast = true;   
+
+Hydra selects appropriate unique mcast-port and mcast-address.
+Use GemFirePrms to set multicast properties.   
+
+================================================================================
+How to:  enable multicast for a distributed system and use locator for discovery
+================================================================================
+Add the following to .conf or local.conf:
+
+  hydra.GemFirePrms-enableMcast = true;   
+  hydra.GemFirePrms-useLocator = true;
+
+Per CongoMulticast.doc (see gemfireSpecs repository) it is recommended to use 
+multicast and locators in the Congo release.
+
+Locator and Multicast section below describes how Hydra configures locator(s)
+when multicast is enabled.
+
+=================================================================
+How to:  use multicast for distribution (configurable per region)
+=================================================================
+In addition to setting GemFirePrms-enableMcast = true, you must also set the region attribute:
+multicastEnabled = true (the default is false).
+
+If using RegionDefinition include the following in the RegionDefPrms-regionSpecs:
+multicastEnabled = true
+
+============================================================================================================
+How to: specify multicast setting for distribution should match multicast setting for the distributed system
+============================================================================================================
+Set hydra.GemFirePrms-enableMcast = true; 
+
+If using RegionDefinition include the following in the RegionDefPrms-regionSpecs:
+useDsMulticastSetting = true
+
+Note:  This ensures region attributes will be consistent when ONEOF is used for enableMcast in the conf file.
+
+======================================================================================
+How to:  enable multicast for the distributed system, but use unicast for distribution
+======================================================================================
+Set hydra.GemFirePrms-enableMcast = true; 
+
+If using RegionDefinition include the following in the RegionDefPrms-regionSpecs:
+useDsMulticastSetting = false
+multicastEnabled = false
+
+
+======================
+Locators and Multicast
+======================
+For each distributed system in a test which uses locators: 
+1. Hydra creates a locator system directory (for system log and stat archive) 
+2. configures and starts a Locator using distributed system 
+   properties from GemFireDescription (including mcast port and address).
+
+The locator system directory is named locator_<distributed system name>_<pid> 
+and is in the user dir (the directory in which the test runs).  
+The locatoragent log is also in the user dir.
+

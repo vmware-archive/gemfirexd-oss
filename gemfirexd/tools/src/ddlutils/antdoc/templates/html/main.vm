@@ -1,0 +1,65 @@
+##
+## Licensed to the Apache Software Foundation (ASF) under one
+## or more contributor license agreements.  See the NOTICE file
+## distributed with this work for additional information
+## regarding copyright ownership.  The ASF licenses this file
+## to you under the Apache License, Version 2.0 (the
+## "License"); you may not use this file except in compliance
+## with the License.  You may obtain a copy of the License at
+##
+##   http://www.apache.org/licenses/LICENSE-2.0
+##
+## Unless required by applicable law or agreed to in writing,
+## software distributed under the License is distributed on an
+## "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+## KIND, either express or implied.  See the License for the
+## specific language governing permissions and limitations
+## under the License.
+##
+##
+## This template is the entry point for calling other templates.
+## The output of this template goes to stdout.
+##
+## Objects available in context:
+##
+## $velocity   - Helper object for processing other templates (of type VelocityFacade)
+## $antroot   - Contains all the Ant tasks/types (of type AntRoot)
+## $title         - Project title (of type String)
+##
+
+AntDoclet - Running project $title
+
+- Generating Task and Types documentation...
+##
+#foreach( $curTaskDoc in $antroot.getAll() ) ##
+  #if (!$curTaskDoc.isIgnored())
+
+- Processing $curTaskDoc.antName ##
+      #set ($taskDoc = $curTaskDoc)
+      $velocity.eval( "html/task.vm", "${curTaskDoc.getFullClassName()}.html" ) ##
+    #foreach ($curElement in $curTaskDoc.getNestedElements())
+      #set ($curElementDoc = $curTaskDoc.getElementDoc($curElement))
+      #if (!$curElementDoc.isIgnored() && $curElementDoc.sourceIncluded() && $curElementDoc.isTagged())
+
+    Processing sub element $curElementDoc.antName ##
+        #set ($taskDoc = $curElementDoc)
+        $velocity.eval( "html/task.vm", "${curElementDoc.getFullClassName()}.html" ) ##
+      #end
+    #end
+  #else ##
+- Ignoring $curTaskDoc.fullClassName()##
+  #end ##
+#end ##
+
+
+- Generating Navigation indexes...
+## Now, generate an "index" file for the categories, and one for each category
+$velocity.eval( "html/libindex.vm", "libindex.html" )
+$velocity.eval( "html/overview.vm", "overview.html" )
+#foreach( $category in $antroot.getCategories() )
+	$velocity.eval( "html/taskindex.vm", "index.${category}.html" )
+#end
+#set($category = "all")
+$velocity.eval( "html/taskindex.vm", "index.${category}.html" )
+
+- Done

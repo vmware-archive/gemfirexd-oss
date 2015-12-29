@@ -1,0 +1,7 @@
+include $JTESTS/hydratest/version/admin/admin.bt
+include $JTESTS/hydratest/version/clientcache/clientcache.bt
+include $JTESTS/hydratest/version/locator/locator.bt
+include $JTESTS/hydratest/version/partition/partition.bt
+include $JTESTS/hydratest/version/replication/replication.bt
+include $JTESTS/hydratest/version/wan/wan.bt
+include $JTESTS/hydratest/version/upgrade/upgrade.bt

@@ -1,0 +1,52 @@
+<HTML>
+<BODY>
+
+<P>This package contains a simple NASDAQ stock quote application using
+the GemFire JCache API and the NASDAQ FlashQuote web site.</p>
+
+<p>The Quote class is a command-line application that uses a cache Region to
+look up stock market quotes.  The Region has a QuoteLoader cache loader
+associated with it that is used to load missing quotes into the cache.</p>
+
+<p>If the requested stock quote is in shared memory, the Region merely
+returns it.  If not, the QuoteLoader is asked to provide the quote.
+QuoteLoader first performs a netSearch operation to see if there are
+any other GemFire caches holding the requested stock.  If there aren't,
+QuoteLoader performs a query against quotes.nasdaq.com (so you need to
+be able to access that web site to run this demo) and caches the result.</p>
+
+<p>Cached quotes expire after twenty seconds.</p>
+
+<P>This example can be run interactively as follows: Start the GemFire
+shared memory manager on one or more computers and configure the
+systems to listen on the same port.</p>
+
+<p>Run <code>java flashcache.Quote SUNW</code> to get a NASDAQ quote
+for Sun Microsystems. Run <code>java flashcache.Quote ORCL AMZN</code>
+to get quotes for Oracle and Amazon.  In each case you'll see the 
+QuoteLoader look for the value in peer systems, using <code>netSearch</code>
+and then go to quotes.nasdaq.com to get an up to date quote.</p>
+
+<p>If you've started other peer GemFire systems, you can go to those
+computers and perform the same queries and see, if you're fast enough
+to beat the expiration period, that the value is fetched from the first
+system.</p>
+
+<p>Here's some sample output</p>
+
+<pre>
+$ java flashcache.Quote
+Enter symbol: AMZN
+AMZN: last sale=19.8  net change=+0.8  volume=10,389,53
+Enter next symbol: ORCL
+(QuoteLoader netSearching for ORCL)
+(QuoteLoader querying nasdaq for ORCL)
+ORCL: last sale=9.5  net change=+0.4  volume=51,675,88
+</pre>
+
+<p>This example shows Amazon being found in the cache, but Oracle wasn't. 
+QuoteLoader queried quotes.nasdaq.com to find the current information on
+Oracle.</p>
+
+</BODY>
+</HTML>

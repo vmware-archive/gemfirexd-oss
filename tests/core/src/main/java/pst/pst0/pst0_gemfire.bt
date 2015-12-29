@@ -1,0 +1,183 @@
+//------------------------------------------------------------------------------
+// WITHOUT PAYLOAD -- WITHOUT SLEEP
+//------------------------------------------------------------------------------
+
+cacheperf/comparisons/useCase17/useCase17.conf
+  cacheVendor = gemfire scope = distributedNoAck
+        pubHosts = 1 pubVMs = 1 pubThreads = 1
+        subHosts = 1 subVMs = 1 subThreads = 1
+  messageSize = 0 sleepBeforeOp = false
+  perffmwk.comparisonKey = p0s0_1_01
+
+cacheperf/comparisons/useCase17/useCase17.conf
+  cacheVendor = gemfire scope = distributedNoAck
+        pubHosts = 1 pubVMs = 1 pubThreads = 1
+        subHosts = 2 subVMs = 3 subThreads = 1
+  messageSize = 0 sleepBeforeOp = false
+  perffmwk.comparisonKey = p0s0_1_06
+
+cacheperf/comparisons/useCase17/useCase17.conf
+  cacheVendor = gemfire scope = distributedNoAck
+        pubHosts = 1 pubVMs = 1 pubThreads = 1
+        subHosts = 2 subVMs = 6 subThreads = 1
+  messageSize = 0 sleepBeforeOp = false
+  perffmwk.comparisonKey = p0s0_1_12
+
+cacheperf/comparisons/useCase17/useCase17.conf
+  cacheVendor = gemfire scope = distributedNoAck
+        pubHosts = 1 pubVMs = 2 pubThreads = 1
+        subHosts = 1 subVMs = 1 subThreads = 1
+  messageSize = 0 sleepBeforeOp = false
+  perffmwk.comparisonKey = p0s0_2_01
+
+cacheperf/comparisons/useCase17/useCase17.conf
+  cacheVendor = gemfire scope = distributedNoAck
+        pubHosts = 1 pubVMs = 2 pubThreads = 1
+        subHosts = 2 subVMs = 3 subThreads = 1
+  messageSize = 0 sleepBeforeOp = false
+  perffmwk.comparisonKey = p0s0_2_06
+
+cacheperf/comparisons/useCase17/useCase17.conf
+  cacheVendor = gemfire scope = distributedNoAck
+        pubHosts = 1 pubVMs = 2 pubThreads = 1
+        subHosts = 2 subVMs = 6 subThreads = 1
+  messageSize = 0 sleepBeforeOp = false
+  perffmwk.comparisonKey = p0s0_2_12
+
+//------------------------------------------------------------------------------
+// WITHOUT PAYLOAD -- WITH SLEEP
+//------------------------------------------------------------------------------
+
+cacheperf/comparisons/useCase17/useCase17.conf
+  cacheVendor = gemfire scope = distributedNoAck
+        pubHosts = 1 pubVMs = 1 pubThreads = 1
+        subHosts = 1 subVMs = 1 subThreads = 1
+  messageSize = 0 sleepBeforeOp = true
+  perffmwk.comparisonKey = p0sN_1_01
+
+cacheperf/comparisons/useCase17/useCase17.conf
+  cacheVendor = gemfire scope = distributedNoAck
+        pubHosts = 1 pubVMs = 1 pubThreads = 1
+        subHosts = 2 subVMs = 3 subThreads = 1
+  messageSize = 0 sleepBeforeOp = true
+  perffmwk.comparisonKey = p0sN_1_06
+
+cacheperf/comparisons/useCase17/useCase17.conf
+  cacheVendor = gemfire scope = distributedNoAck
+        pubHosts = 1 pubVMs = 1 pubThreads = 1
+        subHosts = 2 subVMs = 6 subThreads = 1
+  messageSize = 0 sleepBeforeOp = true
+  perffmwk.comparisonKey = p0sN_1_12
+
+cacheperf/comparisons/useCase17/useCase17.conf
+  cacheVendor = gemfire scope = distributedNoAck
+        pubHosts = 1 pubVMs = 2 pubThreads = 1
+        subHosts = 1 subVMs = 1 subThreads = 1
+  messageSize = 0 sleepBeforeOp = true
+  perffmwk.comparisonKey = p0sN_2_01
+
+cacheperf/comparisons/useCase17/useCase17.conf
+  cacheVendor = gemfire scope = distributedNoAck
+        pubHosts = 1 pubVMs = 2 pubThreads = 1
+        subHosts = 2 subVMs = 3 subThreads = 1
+  messageSize = 0 sleepBeforeOp = true
+  perffmwk.comparisonKey = p0sN_2_06
+
+cacheperf/comparisons/useCase17/useCase17.conf
+  cacheVendor = gemfire scope = distributedNoAck
+        pubHosts = 1 pubVMs = 2 pubThreads = 1
+        subHosts = 2 subVMs = 6 subThreads = 1
+  messageSize = 0 sleepBeforeOp = true
+  perffmwk.comparisonKey = p0sN_2_12
+
+//------------------------------------------------------------------------------
+// WITH PAYLOAD -- WITHOUT SLEEP
+//------------------------------------------------------------------------------
+
+cacheperf/comparisons/useCase17/useCase17.conf
+  cacheVendor = gemfire scope = distributedNoAck
+        pubHosts = 1 pubVMs = 1 pubThreads = 1
+        subHosts = 1 subVMs = 1 subThreads = 1
+  messageSize = 512 sleepBeforeOp = false
+  perffmwk.comparisonKey = pNs0_1_01
+
+cacheperf/comparisons/useCase17/useCase17.conf
+  cacheVendor = gemfire scope = distributedNoAck
+        pubHosts = 1 pubVMs = 1 pubThreads = 1
+        subHosts = 2 subVMs = 3 subThreads = 1
+  messageSize = 512 sleepBeforeOp = false
+  perffmwk.comparisonKey = pNs0_1_06
+
+cacheperf/comparisons/useCase17/useCase17.conf
+  cacheVendor = gemfire scope = distributedNoAck
+        pubHosts = 1 pubVMs = 1 pubThreads = 1
+        subHosts = 2 subVMs = 6 subThreads = 1
+  messageSize = 512 sleepBeforeOp = false
+  perffmwk.comparisonKey = pNs0_1_12
+
+cacheperf/comparisons/useCase17/useCase17.conf
+  cacheVendor = gemfire scope = distributedNoAck
+        pubHosts = 1 pubVMs = 2 pubThreads = 1
+        subHosts = 1 subVMs = 1 subThreads = 1
+  messageSize = 512 sleepBeforeOp = false
+  perffmwk.comparisonKey = pNs0_2_01
+
+cacheperf/comparisons/useCase17/useCase17.conf
+  cacheVendor = gemfire scope = distributedNoAck
+        pubHosts = 1 pubVMs = 2 pubThreads = 1
+        subHosts = 2 subVMs = 3 subThreads = 1
+  messageSize = 512 sleepBeforeOp = false
+  perffmwk.comparisonKey = pNs0_2_06
+
+cacheperf/comparisons/useCase17/useCase17.conf
+  cacheVendor = gemfire scope = distributedNoAck
+        pubHosts = 1 pubVMs = 2 pubThreads = 1
+        subHosts = 2 subVMs = 6 subThreads = 1
+  messageSize = 512 sleepBeforeOp = false
+  perffmwk.comparisonKey = pNs0_2_12
+
+//------------------------------------------------------------------------------
+// WITH PAYLOAD -- WITH SLEEP
+//------------------------------------------------------------------------------
+
+cacheperf/comparisons/useCase17/useCase17.conf
+  cacheVendor = gemfire scope = distributedNoAck
+        pubHosts = 1 pubVMs = 1 pubThreads = 1
+        subHosts = 1 subVMs = 1 subThreads = 1
+  messageSize = 512 sleepBeforeOp = true
+  perffmwk.comparisonKey = pNsN_1_01
+
+cacheperf/comparisons/useCase17/useCase17.conf
+  cacheVendor = gemfire scope = distributedNoAck
+        pubHosts = 1 pubVMs = 1 pubThreads = 1
+        subHosts = 2 subVMs = 3 subThreads = 1
+  messageSize = 512 sleepBeforeOp = true
+  perffmwk.comparisonKey = pNsN_1_06
+
+cacheperf/comparisons/useCase17/useCase17.conf
+  cacheVendor = gemfire scope = distributedNoAck
+        pubHosts = 1 pubVMs = 1 pubThreads = 1
+        subHosts = 2 subVMs = 6 subThreads = 1
+  messageSize = 512 sleepBeforeOp = true
+  perffmwk.comparisonKey = pNsN_1_12
+
+cacheperf/comparisons/useCase17/useCase17.conf
+  cacheVendor = gemfire scope = distributedNoAck
+        pubHosts = 1 pubVMs = 2 pubThreads = 1
+        subHosts = 1 subVMs = 1 subThreads = 1
+  messageSize = 512 sleepBeforeOp = true
+  perffmwk.comparisonKey = pNsN_2_01
+
+cacheperf/comparisons/useCase17/useCase17.conf
+  cacheVendor = gemfire scope = distributedNoAck
+        pubHosts = 1 pubVMs = 2 pubThreads = 1
+        subHosts = 2 subVMs = 3 subThreads = 1
+  messageSize = 512 sleepBeforeOp = true
+  perffmwk.comparisonKey = pNsN_2_06
+
+cacheperf/comparisons/useCase17/useCase17.conf
+  cacheVendor = gemfire scope = distributedNoAck
+        pubHosts = 1 pubVMs = 2 pubThreads = 1
+        subHosts = 2 subVMs = 6 subThreads = 1
+  messageSize = 512 sleepBeforeOp = true
+  perffmwk.comparisonKey = pNsN_2_12

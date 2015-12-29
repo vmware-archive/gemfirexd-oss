@@ -1,0 +1,19 @@
+//------------------------------------------------------------------------------
+// useCase17 without async messaging configured
+//------------------------------------------------------------------------------
+
+cacheperf/comparisons/useCase17/useCase17.conf
+  pubHosts = 1,2    pubVMsPerHost = 1    pubThreadsPerVM = 1
+  subHosts = 1,3,6  subVMsPerHost = 1    subThreadsPerVM = 1
+  messageSize = 0,512 sleepBeforeOp = false,true
+  perffmwk.comparisonKey = autogenerate
+
+//------------------------------------------------------------------------------
+// useCase17 with async messaging configured
+//------------------------------------------------------------------------------
+
+cacheperf/gemfire/slowRecv/useCase17.conf
+  pubHosts = 1,2    pubVMsPerHost = 1    pubThreadsPerVM = 1
+  subHosts = 1,3,6  subVMsPerHost = 1    subThreadsPerVM = 1
+  messageSize = 0,512 sleepBeforeOp = false,true
+  perffmwk.comparisonKey = autogenerate

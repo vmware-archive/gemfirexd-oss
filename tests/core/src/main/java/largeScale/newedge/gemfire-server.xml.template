@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE cache PUBLIC
+  "-//GemStone Systems, Inc.//GemFire Declarative Caching 6.5//EN"
+  "http://www.gemstone.com/dtd/cache6_5.dtd">
+  
+<cache>
+
+    <cache-server notify-by-subscription="true" max-threads="50"
+        port="%CACHE_SERVER_PORT%">
+        <client-subscription capacity="100000" eviction-policy="entry"
+            disk-store-name="client-subscription-data" />
+    </cache-server>
+
+    <!--====================================================== -->
+    <!-- Persistent disk stores -->
+    <!--====================================================== -->
+    <disk-store name="client-subscription-data" auto-compact="true" write-buffer-size="1048576"
+        time-interval="15" queue-size="16000" max-oplog-size="1024">
+        <disk-dirs>
+            <disk-dir>%DISK_DIR%</disk-dir>
+        </disk-dirs>
+    </disk-store>
+
+    <disk-store name="static-data" auto-compact="true" write-buffer-size="1048576"
+        time-interval="15" queue-size="16000" max-oplog-size="1024">
+        <disk-dirs>
+            <disk-dir>%DISK_DIR%</disk-dir>
+        </disk-dirs>
+    </disk-store>
+
+    <disk-store name="trade-state-data" auto-compact="true" write-buffer-size="1048576"
+        time-interval="15" queue-size="16000" max-oplog-size="1024">
+        <disk-dirs>
+            <disk-dir>%DISK_DIR%</disk-dir>
+        </disk-dirs>
+    </disk-store>
+    
+    <!--====================================================== -->
+    <!-- Auxilary regions -->
+    <!--====================================================== -->
+    <!-- GFSH command region -->
+    <region name="__command">
+        <region-attributes data-policy="empty">
+        </region-attributes>
+    </region>
+
+    <!-- PRI<->DR replication test region -->
+    <region name="testDrReplication" refid="REPLICATE">
+        <region-attributes enable-gateway="true">
+        </region-attributes>
+    </region>
+
+    <!-- GLOBAL replication test region -->
+    <region name="testGlobalReplication" refid="REPLICATE">
+        <region-attributes enable-gateway="true">
+        </region-attributes>
+    </region>
+
+    <!--******************************************************** -->
+    <!-- Static data regions -->
+    <!--******************************************************** -->
+
+    <region name="routingRule" refid="REPLICATE_PERSISTENT">
+        <region-attributes 
+                enable-gateway="true" 
+                disk-store-name="static-data"
+                disk-synchronous="false">
+        </region-attributes>
+    </region>
+
+    <region name="routingEndpoint" refid="REPLICATE_PERSISTENT">
+        <region-attributes 
+                enable-gateway="true" 
+                disk-store-name="static-data"
+                disk-synchronous="false">
+        </region-attributes>
+    </region>
+
+    <region name="adapterAmqpState" refid="PARTITION">
+        <region-attributes enable-gateway="true"/>
+    </region>
+
+    <region name="matchRule" refid="REPLICATE_PERSISTENT">
+        <region-attributes 
+                enable-gateway="true" 
+                disk-store-name="static-data"
+                disk-synchronous="false">
+        </region-attributes>
+    </region>
+
+    <region name="backOfficeAccount" refid="REPLICATE_PERSISTENT">
+        <region-attributes 
+                enable-gateway="true" 
+                disk-store-name="static-data"
+                disk-synchronous="false">
+        </region-attributes>
+        <index name="backOfficeAccount_system">
+            <functional from-clause="/backOfficeAccount" expression="system" />
+        </index>
+        <index name="backOfficeAccount_environment">
+            <functional from-clause="/backOfficeAccount" expression="environment" />
+        </index>
+        <index name="backOfficeAccount_firm">
+            <functional from-clause="/backOfficeAccount" expression="firm" />
+        </index>
+    </region>
+
+    <region name="backOfficeAccountCollection" refid="REPLICATE_PERSISTENT">
+        <region-attributes 
+                enable-gateway="true" 
+                disk-store-name="static-data"
+                disk-synchronous="false">
+        </region-attributes>
+        <index name="backOfficeAccountCollection_accountCodes">
+            <functional from-clause="/backOfficeAccountCollection boac, boac.backOfficeAccountCodesList ac" expression="ac" />
+        </index>
+    </region>
+
+    <region name="product" refid="REPLICATE_PERSISTENT">
+        <region-attributes 
+                enable-gateway="true" 
+                disk-store-name="static-data"
+                disk-synchronous="false">
+        </region-attributes>
+        <index name="product_instrumentId">
+            <functional from-clause="/product" expression="instrumentId" />
+        </index>
+        <index name="product_exchangeProductCode">
+            <functional from-clause="/product" expression="productCode" />
+        </index>
+    </region>
+
+    <region name="allocationRules" refid="REPLICATE_PERSISTENT">
+        <region-attributes 
+                enable-gateway="true" 
+                disk-store-name="static-data"
+                disk-synchronous="false">
+        </region-attributes>
+    </region>
+
+    <!-- Trade state -->
+    <region name="tradeInstruction" refid="PARTITION_REDUNDANT_PERSISTENT">
+        <region-attributes disk-store-name="trade-state-data" 
+                enable-gateway="true" 
+                disk-synchronous="false"
+                statistics-enabled="true">
+            <entry-time-to-live>
+                <expiration-attributes timeout="604800" action="destroy"/>
+            </entry-time-to-live> 
+            <partition-attributes 
+                    redundant-copies="1"
+                    total-num-buckets="113"
+                    startup-recovery-delay="-1">
+            </partition-attributes>
+            <subscription-attributes interest-policy="cache-content"/>
+        </region-attributes>
+    </region>
+
+    <region name="break" refid="PARTITION_REDUNDANT_PERSISTENT">
+        <region-attributes disk-store-name="trade-state-data"  
+                enable-gateway="true" 
+                disk-synchronous="false"
+                statistics-enabled="true">
+            <entry-time-to-live>
+                <expiration-attributes timeout="604800" action="destroy"/>
+            </entry-time-to-live>     
+            <partition-attributes 
+                    colocated-with="tradeInstruction"
+                    redundant-copies="1"
+                    total-num-buckets="113"
+                    startup-recovery-delay="-1">
+            </partition-attributes>
+            <subscription-attributes interest-policy="cache-content"/>
+        </region-attributes>
+    </region>
+
+    <region name="tradeInstructionCommand" refid="PARTITION_REDUNDANT_PERSISTENT">
+        <region-attributes disk-store-name="trade-state-data"
+                enable-gateway="true" 
+                disk-synchronous="false"
+                statistics-enabled="true">
+            <partition-attributes 
+                    colocated-with="tradeInstruction"
+                    redundant-copies="1"
+                    total-num-buckets="113"
+                    startup-recovery-delay="-1">
+            </partition-attributes>
+            <subscription-attributes interest-policy="cache-content"/>
+        </region-attributes>
+    </region>
+
+    <region name="ldn_audit" refid="PARTITION_REDUNDANT_PERSISTENT">
+        <region-attributes disk-store-name="trade-state-data"
+                enable-gateway="true" 
+                disk-synchronous="false"
+                statistics-enabled="true">
+            <entry-time-to-live>
+                <expiration-attributes timeout="604800" action="destroy"/>
+            </entry-time-to-live>
+            <partition-attributes
+                    colocated-with="tradeInstruction"
+                    redundant-copies="1"
+                    total-num-buckets="113"
+                    startup-recovery-delay="-1">
+            </partition-attributes>
+            <subscription-attributes interest-policy="cache-content"/>
+        </region-attributes>
+    </region>
+
+    <region name="chi_audit" refid="PARTITION_REDUNDANT_PERSISTENT">
+        <region-attributes disk-store-name="trade-state-data" 
+                enable-gateway="true" 
+                disk-synchronous="false"
+                statistics-enabled="true">
+            <entry-time-to-live>
+                <expiration-attributes timeout="604800" action="destroy"/>
+            </entry-time-to-live> 
+            <partition-attributes
+                    colocated-with="tradeInstruction"
+                    redundant-copies="1"
+                    total-num-buckets="113"
+                    startup-recovery-delay="-1">
+            </partition-attributes>
+            <subscription-attributes interest-policy="cache-content"/>
+        </region-attributes>
+    </region>
+
+    <region name="kpiMetric" refid="PARTITION">
+        <region-attributes
+                statistics-enabled="true">
+            <entry-time-to-live>
+                <expiration-attributes timeout="1" action="destroy"/>
+            </entry-time-to-live> 
+        </region-attributes>
+    </region>
+    
+    <region name="latencyMetric" refid="PARTITION_REDUNDANT">
+        <region-attributes enable-gateway="true">
+                <entry-time-to-live>
+                    <!-- Live in cache for 4 days (covers t+2)-->
+                    <expiration-attributes timeout="345600" action="invalidate" />
+                </entry-time-to-live>
+        </region-attributes>
+    </region>
+
+	<region name="kpiRuleMetric" refid="PARTITION_REDUNDANT">
+        <region-attributes enable-gateway="true">
+            <entry-time-to-live>
+                <!-- Live in cache for 1 days -->
+                <expiration-attributes timeout="86400" action="destroy" />
+            </entry-time-to-live>
+        </region-attributes>
+    </region>
+
+    <region name="kpiMetricRollup" refid="PARTITION_REDUNDANT_PERSISTENT">
+        <region-attributes enable-gateway="true" 
+                disk-store-name="trade-state-data"
+                disk-synchronous="false">
+        </region-attributes>
+    </region>
+
+    <!-- TBD: Adapter specific regions. Should they reside in data grid at all? -->
+    <region name="resequence" refid="PARTITION_REDUNDANT">
+    </region>
+    
+    <region name="resequenceMapping" refid="LOCAL">
+        <region-attributes cloning-enabled="true" />
+    </region>
+
+    <!-- NEEDED for paginated queries -->
+    <region name="paginated_query_info" refid="PARTITION">
+        <region-attributes
+                statistics-enabled="true">
+            <entry-time-to-live>
+                <expiration-attributes timeout="60" action="destroy" />
+            </entry-time-to-live>
+        </region-attributes>
+    </region>
+    
+    <region name="adapterState" refid="REPLICATE_PERSISTENT">
+        <region-attributes 
+                scope="global" 
+                disk-store-name="trade-state-data"
+                disk-synchronous="false">
+        </region-attributes>
+    </region>
+
+    <!-- Adapter identity managment -->
+
+    <region name="ldn_applianceAllocation" refid="REPLICATE">
+        <region-attributes scope="global" 
+                statistics-enabled="true"/>
+        <region name="applianceHeartbeat" refid="REPLICATE">
+            <region-attributes>
+                <entry-time-to-live>
+                    <expiration-attributes timeout="15" action="invalidate" />
+                </entry-time-to-live>
+            </region-attributes>
+        </region>
+    </region>
+
+    <region name="chi_applianceAllocation" refid="REPLICATE">
+        <region-attributes scope="global" 
+                statistics-enabled="true"/>
+        <region name="applianceHeartbeat" refid="REPLICATE">
+            <region-attributes>
+                <entry-time-to-live>
+                    <expiration-attributes timeout="15" action="invalidate" />
+                </entry-time-to-live>
+            </region-attributes>
+        </region>
+    </region>
+    
+    <region name="cacheResponsibility" refid="REPLICATE">
+        <region-attributes enable-gateway="true">
+        </region-attributes>
+    </region>
+    
+      <region name="cacheAdmin" refid="PARTITION" >
+       <region-attributes enable-gateway="true" >          
+       </region-attributes>
+    </region> 
+
+</cache>

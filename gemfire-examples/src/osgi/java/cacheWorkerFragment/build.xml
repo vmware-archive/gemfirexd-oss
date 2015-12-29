@@ -1,0 +1,76 @@
+<project name="cacheWorkerFragment" default="all" basedir="."
+         xmlns:bundlor="antlib:com.springsource.bundlor.ant">
+
+  <property environment="env" />
+  <property name="bundlor.home" value="${env.BUNDLOR_HOME}" />
+  
+  <property name="target.dir" value="${basedir}/target"/>
+  <property name="classes.dir" value="${target.dir}/classes"/>
+
+  <property name="project.version" value="1.0.0"/>
+  <property name="package.name" value="cacheworker.fragment-${project.version}"/>
+
+  <property name="debug.dir" value="${basedir}/debug"/>
+
+  <target name="clean">
+    <delete dir="${debug.dir}"/>
+    <delete dir="${target.dir}"/>
+  </target>
+
+  <target name="init" description="Initializes the build process for the OSGi cacheWorkerFragment.">
+    <!-- NOTE uncomment if network issues occur causing Bundlor to freeze! -->
+    <!--echo level="info">'cacheWorkerFragment' using HTTP proxy settings: ${http.proxyHost}:${http.proxyPort}</echo-->
+    <!--setproxy proxyHost="${http.proxyHost}" proxyPort="${http.proxyPort}"/-->
+  </target>
+
+  <target name="package" depends="init">
+    <echo message="Creating fragment bundle JAR:" />
+    
+    <mkdir dir="${classes.dir}" />
+
+    <jar jarfile="${target.dir}/${package.name}.jar"
+         basedir="${classes.dir}"/>
+  </target>
+
+  <target name="bundle" depends="package">
+    <taskdef resource="com/springsource/bundlor/ant/antlib.xml"
+             uri="antlib:com.springsource.bundlor.ant">
+      <classpath id="bundlor.classpath">
+        <fileset dir="${bundlor.home}/dist"/>
+        <fileset dir="${bundlor.home}/lib"/>
+      </classpath>
+    </taskdef>
+
+    <bundlor:bundlor inputPath="${target.dir}/${package.name}.jar"
+                     outputPath="${target.dir}/${package.name}.jar"
+                     bundleVersion="${project.version}">
+                     
+      <manifestTemplate>
+Bundle-Vendor: Pivotal Software, Inc.
+Bundle-Classpath: .
+Bundle-ManifestVersion: 2
+Bundle-Name: cacheWorkerFragment
+Bundle-SymbolicName: cacheworker.fragment
+Bundle-Description: CacheWorker fragment bundle example for GemFie
+Fragment-Host: com.gemstone.gemfire;bundle-version="[6.6,8)"
+Import-Package: cacheworker;version="[1,2)"
+      </manifestTemplate>
+
+    </bundlor:bundlor>
+  </target>
+
+  <target name="debug">
+    <available file="${target.dir}/${package.name}.jar" property="package.jar.exists"/>
+    <fail message="Please execute the create-bundle target first.">
+      <condition>
+        <isfalse value="${package.jar.exists}"/>
+      </condition>
+    </fail>
+    
+    <mkdir dir="${debug.dir}"/>
+    <unjar src="${target.dir}/${package.name}.jar" dest="${debug.dir}" />
+  </target>
+  
+  <target name="all" depends="clean,bundle"/>
+  
+</project>

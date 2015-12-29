@@ -1,0 +1,37 @@
+//------------------------------------------------------------------------------
+//
+//  GemFire get initial image impact on gets for objects.ArrayOfByte
+//
+//------------------------------------------------------------------------------
+
+cacheperf/gemfire/getInitialImage/getInitialImageGetsImpact.conf
+  hydra.numHosts=3 dataPolicy=replicate scope=distributedNoAck
+
+cacheperf/gemfire/getInitialImage/getInitialImageGetsImpact.conf
+  hydra.numHosts=3 dataPolicy=replicate scope=distributedAck
+
+cacheperf/gemfire/getInitialImage/getInitialImageGetsImpact.conf
+  hydra.numHosts=3 dataPolicy=replicate scope=global
+
+//------------------------------------------------------------------------------
+
+cacheperf/gemfire/getInitialImage/getInitialImageGetsImpact.conf
+  hydra.numHosts=5 dataPolicy=replicate scope=distributedNoAck
+
+cacheperf/gemfire/getInitialImage/getInitialImageGetsImpact.conf
+  hydra.numHosts=5 dataPolicy=replicate scope=distributedAck
+
+cacheperf/gemfire/getInitialImage/getInitialImageGetsImpact.conf
+  hydra.numHosts=5 dataPolicy=replicate scope=global
+
+//------------------------------------------------------------------------------
+
+cacheperf/gemfire/getInitialImage/getInitialImageGetsImpact.conf
+  hydra.numHosts=9 dataPolicy=replicate scope=distributedNoAck
+
+cacheperf/gemfire/getInitialImage/getInitialImageGetsImpact.conf
+  hydra.numHosts=9 dataPolicy=replicate scope=distributedAck
+
+cacheperf/gemfire/getInitialImage/getInitialImageGetsImpact.conf
+  hydra.numHosts=9 dataPolicy=replicate scope=global
+

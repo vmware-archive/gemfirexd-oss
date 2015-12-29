@@ -1,0 +1,11 @@
+// useCase13Scenarios 
+useCase13Scenarios/killPrimarySteady.conf trimIterations=5000 workIterations=20000
+useCase13Scenarios/killSecondaryDuringGii.conf trimIterations=5000 workIterations=20000
+
+// diskReg
+diskReg/diskOverflowRecovery.conf maxKeys=100 objectType=objects.ArrayOfByte
+diskReg/crashOverflowRecovery.conf maxKeys=100 objectType=objects.ArrayOfByte
+diskReg/shutdownOverflowRecovery.conf maxKeys=100 objectType=objects.ArrayOfByte
+
+// dlock
+dlock/unlockperf.conf hydra.numHosts = 2 vmQuantities = 1

@@ -1,0 +1,87 @@
+//scenario 1
+ 
+query/remote/dataVerificationQueryTest.conf 
+bridgeHosts =  1 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 1
+edgeHosts   =  1 edgeVMsPerHost   = 4 edgeThreadsPerVM   = 1
+
+query/remote/dataVerificationQueryWithParamsTest.conf 
+bridgeHosts =  1 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 1
+edgeHosts   =  1 edgeVMsPerHost   = 4 edgeThreadsPerVM   = 1
+
+//scenario 2
+
+query/remote/entryOperationsDynamicQueryTest.conf 
+bridgeHosts =  1 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 1
+edgeHosts   =  1 edgeVMsPerHost   = 4 edgeThreadsPerVM   = 1
+
+//scenario 3 
+
+query/remote/distributedDataValidationQueryTest.conf
+A = bridge  bridgeHosts =  2 	bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+B = edge    edgeHosts   =  3 	edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+C = feed    feedHosts   =  1 	feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+
+// scenario 4 and 5 
+
+query/remote/multiServerClientScalabilityQueryTest.conf
+A = bridge  bridgeHosts =  5    bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+B = edge    edgeHosts   =  100  edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+C = feed    feedHosts   =  1    feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+onlyOnPlatforms=Linux, SunOS
+
+// reduced number of client for windows
+query/remote/multiServerClientScalabilityQueryTest.conf
+A = bridge  bridgeHosts =  5    bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+B = edge    edgeHosts   =  50   edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+C = feed    feedHosts   =  1    feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+onlyOnPlatforms=Windows
+
+//scenario 6 , cacheScalabilty
+
+query/remote/cacheScalabiltyQueryTest.conf
+A = bridge  bridgeHosts =  2 	bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+B = edge    edgeHosts   =  3 	edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+C = feed    feedHosts   =  1 	feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+
+
+//scenario 6 , payloadScalabilty
+
+query/remote/payloadScalabilityQueryTest.conf
+A = bridge  bridgeHosts =  2 	bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+B = edge    edgeHosts   =  3 	edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+C = feed    feedHosts   =  1 	feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+
+//scenario 7 eviction and overflow
+
+query/remote/serverEvictionQueryTest.conf
+A = bridge  bridgeHosts =  2 	bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+B = edge    edgeHosts   =  3 	edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+C = feed    feedHosts   =  1 	feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+
+query/remote/serverOverflowToDiskQueryTest.conf
+A = bridge  bridgeHosts =  2 	bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+B = edge    edgeHosts   =  3 	edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+C = feed    feedHosts   =  1 	feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+
+//scenario 8  //failover
+
+query/remote/remoteQueryFailoverTest.conf
+bridgeHosts =  1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+edgeHosts   =  1 edgeVMsPerHost   = 3 edgeThreadsPerVM   = 1
+
+query/remote/remoteQueryFailoverTest.conf
+bridgeHosts =  1 bridgeVMsPerHost = 4 bridgeThreadsPerVM = 1
+edgeHosts   =  1 edgeVMsPerHost   = 8 edgeThreadsPerVM   = 1
+
+query/remote/remoteQueryWithParamsFailoverTest.conf
+bridgeHosts =  1 bridgeVMsPerHost = 4 bridgeThreadsPerVM = 1
+edgeHosts   =  1 edgeVMsPerHost   = 8 edgeThreadsPerVM   = 1
+
+//scenario 9   // client events failover
+query/remote/clientEventsFailoverQueryTest.conf
+bridgeHosts =  1 bridgeVMsPerHost = 6 	bridgeThreadsPerVM = 1
+edgeHosts   =  1 edgeVMsPerHost   = 12 	edgeThreadsPerVM   = 1
+
+query/remote/clientEventsFailoverQueryUsingParamsTest.conf
+bridgeHosts =  1 bridgeVMsPerHost = 6 	bridgeThreadsPerVM = 1
+edgeHosts   =  1 edgeVMsPerHost   = 12 	edgeThreadsPerVM   = 1

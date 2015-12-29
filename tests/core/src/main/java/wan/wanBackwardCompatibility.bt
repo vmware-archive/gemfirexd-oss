@@ -1,0 +1,724 @@
+// wan p2p (various versions)
+wan/p2pBackwardCompatibility.conf
+       wanSites=3 peerMem = 256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       peerHostsPerSite=1 peerVMsPerHost=3 peerThreadsPerVM=2
+       version1=default    version2=57
+
+wan/p2pBackwardCompatibility.conf
+       wanSites=3 peerMem = 256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       peerHostsPerSite=1 peerVMsPerHost=3 peerThreadsPerVM=2
+       version1=57    version2=default
+
+wan/p2pBackwardCompatibility.conf
+       wanSites=3 peerMem = 256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       peerHostsPerSite=1 peerVMsPerHost=3 peerThreadsPerVM=2
+       version1=default    version2=651
+
+wan/p2pBackwardCompatibility.conf
+       wanSites=3 peerMem = 256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       peerHostsPerSite=1 peerVMsPerHost=3 peerThreadsPerVM=2
+       version1=651    version2=default
+
+wan/p2pBackwardCompatibility.conf
+       wanSites=3 peerMem = 256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       peerHostsPerSite=1 peerVMsPerHost=3 peerThreadsPerVM=2
+       version1=default    version2=664
+
+wan/p2pBackwardCompatibility.conf
+       wanSites=3 peerMem = 256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       peerHostsPerSite=1 peerVMsPerHost=3 peerThreadsPerVM=2
+       version1=664    version2=default
+
+wan/p2pBackwardCompatibility.conf
+       wanSites=3 peerMem = 256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       peerHostsPerSite=1 peerVMsPerHost=3 peerThreadsPerVM=2
+       version1=default    version2=700
+
+wan/p2pBackwardCompatibility.conf
+       wanSites=3 peerMem = 256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       peerHostsPerSite=1 peerVMsPerHost=3 peerThreadsPerVM=2
+       version1=700    version2=default
+
+// wan hct (various versions)
+wan/hctBackwardCompatibility.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=default   version2=57
+       onlyOnPlatforms=Linux,Windows,AIX
+
+wan/hctBackwardCompatibility.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=57   version2=default
+       onlyOnPlatforms=Linux,Windows,AIX
+
+wan/hctBackwardCompatibility.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=default   version2=651
+       onlyOnPlatforms=Linux,Windows,AIX
+
+wan/hctBackwardCompatibility.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=651   version2=default
+       onlyOnPlatforms=Linux,Windows,AIX
+
+wan/hctBackwardCompatibility.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=default   version2=664
+       onlyOnPlatforms=Linux,Windows,AIX
+
+wan/hctBackwardCompatibility.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=664   version2=default
+       onlyOnPlatforms=Linux,Windows,AIX
+
+wan/hctBackwardCompatibility.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=default   version2=700
+       onlyOnPlatforms=Linux,Windows,AIX
+
+wan/hctBackwardCompatibility.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=700   version2=default
+       onlyOnPlatforms=Linux,Windows,AIX
+
+// hct_async (various versions)
+// Solaris - uses async-distribution for gateway (accomodates slower systems)
+wan/hctBackwardCompatibility_async.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=default  version2=57
+       onlyOnPlatforms=SunOS
+
+wan/hctBackwardCompatibility_async.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=57   version2=default
+       onlyOnPlatforms=SunOS
+
+wan/hctBackwardCompatibility_async.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=default  version2=651
+       onlyOnPlatforms=SunOS
+
+wan/hctBackwardCompatibility_async.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=651   version2=default
+       onlyOnPlatforms=SunOS
+
+wan/hctBackwardCompatibility_async.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=default  version2=664
+       onlyOnPlatforms=SunOS
+
+wan/hctBackwardCompatibility_async.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=664   version2=default
+       onlyOnPlatforms=SunOS
+
+wan/hctBackwardCompatibility_async.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=default  version2=700
+       onlyOnPlatforms=SunOS
+
+wan/hctBackwardCompatibility_async.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=700   version2=default
+       onlyOnPlatforms=SunOS
+
+// cq/wan tests
+cq/wan/hctBackwardCompatibility.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=default   version2=57
+       onlyOnPlatforms=Linux,Windows,AIX
+
+cq/wan/hctBackwardCompatibility.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=57   version2=default
+       onlyOnPlatforms=Linux,Windows,AIX
+
+cq/wan/hctBackwardCompatibility.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=default   version2=651
+       onlyOnPlatforms=Linux,Windows,AIX
+
+cq/wan/hctBackwardCompatibility.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=651   version2=default
+       onlyOnPlatforms=Linux,Windows,AIX
+
+cq/wan/hctBackwardCompatibility.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=default   version2=664
+       onlyOnPlatforms=Linux,Windows,AIX
+
+cq/wan/hctBackwardCompatibility.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=664   version2=default
+       onlyOnPlatforms=Linux,Windows,AIX
+
+cq/wan/hctBackwardCompatibility.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=default   version2=700
+       onlyOnPlatforms=Linux,Windows,AIX
+
+cq/wan/hctBackwardCompatibility.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=700   version2=default
+       onlyOnPlatforms=Linux,Windows,AIX
+
+// cq/wan hct_async (various versions)
+// Solaris - uses async-distribution for gateway (accomodates slower systems)
+cq/wan/hctBackwardCompatibility_async.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=default  version2=57
+       onlyOnPlatforms=SunOS
+
+cq/wan/hctBackwardCompatibility_async.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=57   version2=default
+       onlyOnPlatforms=SunOS
+
+wan/hctBackwardCompatibility_async.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=default  version2=651
+       onlyOnPlatforms=SunOS
+
+cq/wan/hctBackwardCompatibility_async.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=651   version2=default
+       onlyOnPlatforms=SunOS
+
+cq/wan/hctBackwardCompatibility_async.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=default  version2=664
+       onlyOnPlatforms=SunOS
+
+cq/wan/hctBackwardCompatibility_async.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=664   version2=default
+       onlyOnPlatforms=SunOS
+
+cq/wan/hctBackwardCompatibility_async.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=default  version2=700
+       onlyOnPlatforms=SunOS
+
+cq/wan/hctBackwardCompatibility_async.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=700   version2=default
+       onlyOnPlatforms=SunOS
+
+// parReg/wan tests
+parReg/wan/p2pBackwardCompatibility.conf
+       wanSites=3 peerMem = 256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       peerHostsPerSite=1 peerVMsPerHost=3 peerThreadsPerVM=2
+       version1=default    version2=57
+
+parReg/wan/p2pBackwardCompatibility.conf
+       wanSites=3 peerMem = 256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       peerHostsPerSite=1 peerVMsPerHost=3 peerThreadsPerVM=2
+       version1=57    version2=default
+
+parReg/wan/p2pBackwardCompatibility.conf
+       wanSites=3 peerMem = 256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       peerHostsPerSite=1 peerVMsPerHost=3 peerThreadsPerVM=2
+       version1=default    version2=651
+
+parReg/wan/p2pBackwardCompatibility.conf
+       wanSites=3 peerMem = 256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       peerHostsPerSite=1 peerVMsPerHost=3 peerThreadsPerVM=2
+       version1=651    version2=default
+
+parReg/wan/p2pBackwardCompatibility.conf
+       wanSites=3 peerMem = 256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       peerHostsPerSite=1 peerVMsPerHost=3 peerThreadsPerVM=2
+       version1=default    version2=664
+
+parReg/wan/p2pBackwardCompatibility.conf
+       wanSites=3 peerMem = 256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       peerHostsPerSite=1 peerVMsPerHost=3 peerThreadsPerVM=2
+       version1=664    version2=default
+
+parReg/wan/p2pBackwardCompatibility.conf
+       wanSites=3 peerMem = 256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       peerHostsPerSite=1 peerVMsPerHost=3 peerThreadsPerVM=2
+       version1=default    version2=700
+
+parReg/wan/p2pBackwardCompatibility.conf
+       wanSites=3 peerMem = 256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       peerHostsPerSite=1 peerVMsPerHost=3 peerThreadsPerVM=2
+       version1=700    version2=default
+
+// wan hct (various versions)
+parReg/wan/hctBackwardCompatibility.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=default   version2=57
+       onlyOnPlatforms=Linux,Windows,AIX
+
+parReg/wan/hctBackwardCompatibility.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=57   version2=default
+       onlyOnPlatforms=Linux,Windows,AIX
+
+parReg/wan/hctBackwardCompatibility.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=default   version2=651
+       onlyOnPlatforms=Linux,Windows,AIX
+
+parReg/wan/hctBackwardCompatibility.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=651   version2=default
+       onlyOnPlatforms=Linux,Windows,AIX
+
+parReg/wan/hctBackwardCompatibility.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=default   version2=664
+       onlyOnPlatforms=Linux,Windows,AIX
+
+parReg/wan/hctBackwardCompatibility.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=664   version2=default
+       onlyOnPlatforms=Linux,Windows,AIX
+
+parReg/wan/hctBackwardCompatibility.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=default   version2=700
+       onlyOnPlatforms=Linux,Windows,AIX
+
+parReg/wan/hctBackwardCompatibility.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=700   version2=default
+       onlyOnPlatforms=Linux,Windows,AIX
+
+// hct_async (various versions)
+// Solaris - uses async-distribution for gateway (accomodates slower systems)
+parReg/wan/hctBackwardCompatibility_async.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=default  version2=57
+       onlyOnPlatforms=SunOS
+
+parReg/wan/hctBackwardCompatibility_async.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=57   version2=default
+       onlyOnPlatforms=SunOS
+
+parReg/wan/hctBackwardCompatibility_async.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=default  version2=651
+       onlyOnPlatforms=SunOS
+
+parReg/wan/hctBackwardCompatibility_async.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=651   version2=default
+       onlyOnPlatforms=SunOS
+
+parReg/wan/hctBackwardCompatibility_async.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=default  version2=664
+       onlyOnPlatforms=SunOS
+
+parReg/wan/hctBackwardCompatibility_async.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=664   version2=default
+       onlyOnPlatforms=SunOS
+
+parReg/wan/hctBackwardCompatibility_async.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=default  version2=700
+       onlyOnPlatforms=SunOS
+
+parReg/wan/hctBackwardCompatibility_async.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=700   version2=default
+       onlyOnPlatforms=SunOS
+
+// parReg/persistence wan tests (p2p and hct/hct_async)
+parReg/persistence/p2pPersist_backwardCompatibility.conf
+       wanSites=3 peerMem = 256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       peerHostsPerSite=1 peerVMsPerHost=3 peerThreadsPerVM=2
+       version1=default    version2=651
+
+parReg/persistence/p2pPersist_backwardCompatibility.conf
+       wanSites=3 peerMem = 256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       peerHostsPerSite=1 peerVMsPerHost=3 peerThreadsPerVM=2
+       version1=651    version2=default
+
+parReg/persistence/p2pPersist_backwardCompatibility.conf
+       wanSites=3 peerMem = 256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       peerHostsPerSite=1 peerVMsPerHost=3 peerThreadsPerVM=2
+       version1=default    version2=664
+
+parReg/persistence/p2pPersist_backwardCompatibility.conf
+       wanSites=3 peerMem = 256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       peerHostsPerSite=1 peerVMsPerHost=3 peerThreadsPerVM=2
+       version1=664    version2=default
+
+parReg/persistence/p2pPersist_backwardCompatibility.conf
+       wanSites=3 peerMem = 256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       peerHostsPerSite=1 peerVMsPerHost=3 peerThreadsPerVM=2
+       version1=default    version2=700
+
+parReg/persistence/p2pPersist_backwardCompatibility.conf
+       wanSites=3 peerMem = 256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       peerHostsPerSite=1 peerVMsPerHost=3 peerThreadsPerVM=2
+       version1=700    version2=default
+
+// parReg/persist hct (various versions)
+parReg/persistence/hctPersist_backwardCompatibility.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=default   version2=651
+       onlyOnPlatforms=Linux,Windows,AIX
+
+parReg/persistence/hctPersist_backwardCompatibility.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=651   version2=default
+       onlyOnPlatforms=Linux,Windows,AIX
+
+parReg/persistence/hctPersist_backwardCompatibility.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=default   version2=664
+       onlyOnPlatforms=Linux,Windows,AIX
+
+parReg/persistence/hctPersist_backwardCompatibility.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=664   version2=default
+       onlyOnPlatforms=Linux,Windows,AIX
+
+parReg/persistence/hctPersist_backwardCompatibility.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=default   version2=700
+       onlyOnPlatforms=Linux,Windows,AIX
+
+parReg/persistence/hctPersist_backwardCompatibility.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=700   version2=default
+       onlyOnPlatforms=Linux,Windows,AIX
+
+// hct_async (various versions)
+// Solaris - uses async-distribution for gateway (accomodates slower systems)
+parReg/persistence/hctPersist_backwardCompatibility_async.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=default  version2=651
+       onlyOnPlatforms=SunOS
+
+parReg/persistence/hctPersist_backwardCompatibility_async.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=651   version2=default
+       onlyOnPlatforms=SunOS
+
+parReg/persistence/hctPersist_backwardCompatibility_async.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=default  version2=664
+       onlyOnPlatforms=SunOS
+
+parReg/persistence/hctPersist_backwardCompatibility_async.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=664   version2=default
+       onlyOnPlatforms=SunOS
+
+parReg/persistence/hctPersist_backwardCompatibility_async.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=default  version2=700
+       onlyOnPlatforms=SunOS
+
+parReg/persistence/hctPersist_backwardCompatibility_async.conf
+       wanSites=3 serverMem=256m clientMem=256m
+       locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite=1 bridgeVMsPerHost=2 bridgeThreadsPerVM=1
+       edgeHostsPerSite=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+       version1=700   version2=default
+       onlyOnPlatforms=SunOS
+
+// security tests
+security/wan_p2p_backwardCompatibility.conf
+       validWanSites=3 invalidWanSites=3 locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1 bridgeHostsPerSite=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHostsPerSite=1 edgeVMsPerHost=1 edgeThreadsPerVM=1 peerMem = 256m
+       version1=default    version2=57
+
+security/wan_p2p_backwardCompatibility.conf
+       validWanSites=3 invalidWanSites=3 locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1 bridgeHostsPerSite=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHostsPerSite=1 edgeVMsPerHost=1 edgeThreadsPerVM=1 peerMem = 256m
+       version1=57         version2=default
+
+security/wan_p2p_backwardCompatibility.conf
+       validWanSites=3 invalidWanSites=3 locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1 bridgeHostsPerSite=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHostsPerSite=1 edgeVMsPerHost=1 edgeThreadsPerVM=1 peerMem = 256m
+       version1=default    version2=651
+
+security/wan_p2p_backwardCompatibility.conf
+       validWanSites=3 invalidWanSites=3 locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1 bridgeHostsPerSite=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHostsPerSite=1 edgeVMsPerHost=1 edgeThreadsPerVM=1 peerMem = 256m
+       version1=651        version2=default
+
+security/wan_p2p_backwardCompatibility.conf
+       validWanSites=3 invalidWanSites=3 locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1 bridgeHostsPerSite=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHostsPerSite=1 edgeVMsPerHost=1 edgeThreadsPerVM=1 peerMem = 256m
+       version1=default    version2=664
+
+security/wan_p2p_backwardCompatibility.conf
+       validWanSites=3 invalidWanSites=3 locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1 bridgeHostsPerSite=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHostsPerSite=1 edgeVMsPerHost=1 edgeThreadsPerVM=1 peerMem = 256m
+       version1=664        version2=default
+
+security/wan_p2p_backwardCompatibility.conf
+       validWanSites=3 invalidWanSites=3 locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1 bridgeHostsPerSite=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHostsPerSite=1 edgeVMsPerHost=1 edgeThreadsPerVM=1 peerMem = 256m
+       version1=default    version2=700
+
+security/wan_p2p_backwardCompatibility.conf
+       validWanSites=3 invalidWanSites=3 locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1 bridgeHostsPerSite=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHostsPerSite=1 edgeVMsPerHost=1 edgeThreadsPerVM=1 peerMem = 256m
+       version1=700        version2=default
+
+security/wan_hct_backwardCompatibility.conf
+       validWanSites=3 invalidWanSites=3 locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1 bridgeHostsPerSite=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHostsPerSite=1 edgeVMsPerHost=2 edgeThreadsPerVM=1 peerMem = 256m
+       version1=default    version2=57 
+
+security/wan_hct_backwardCompatibility.conf
+       validWanSites=3 invalidWanSites=3 locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1 bridgeHostsPerSite=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHostsPerSite=1 edgeVMsPerHost=2 edgeThreadsPerVM=1 peerMem = 256m
+       version1=57         version2=default
+
+security/wan_hct_backwardCompatibility.conf
+       validWanSites=3 invalidWanSites=3 locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1 bridgeHostsPerSite=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHostsPerSite=1 edgeVMsPerHost=2 edgeThreadsPerVM=1 peerMem = 256m
+       version1=default    version2=651
+
+security/wan_hct_backwardCompatibility.conf
+       validWanSites=3 invalidWanSites=3 locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1 bridgeHostsPerSite=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHostsPerSite=1 edgeVMsPerHost=2 edgeThreadsPerVM=1 peerMem = 256m
+       version1=651        version2=default
+
+security/wan_hct_backwardCompatibility.conf
+       validWanSites=3 invalidWanSites=3 locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1 bridgeHostsPerSite=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHostsPerSite=1 edgeVMsPerHost=2 edgeThreadsPerVM=1 peerMem = 256m
+       version1=default    version2=664
+
+security/wan_hct_backwardCompatibility.conf
+       validWanSites=3 invalidWanSites=3 locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1 bridgeHostsPerSite=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHostsPerSite=1 edgeVMsPerHost=2 edgeThreadsPerVM=1 peerMem = 256m
+       version1=664        version2=default
+
+security/wan_hct_backwardCompatibility.conf
+       validWanSites=3 invalidWanSites=3 locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1 bridgeHostsPerSite=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHostsPerSite=1 edgeVMsPerHost=2 edgeThreadsPerVM=1 peerMem = 256m
+       version1=default    version2=700
+
+security/wan_hct_backwardCompatibility.conf
+       validWanSites=3 invalidWanSites=3 locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1 bridgeHostsPerSite=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHostsPerSite=1 edgeVMsPerHost=2 edgeThreadsPerVM=1 peerMem = 256m
+       version1=700        version2=default
+
+security/wan_authorization_backwardCompatibility.conf
+       writerWanSites=3 readerWanSites=3 locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1 bridgeHostsPerSite=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHostsPerSite=1 edgeVMsPerHost=1 edgeThreadsPerVM=1 peerMem = 256m
+       version1=default    version2=57 
+
+security/wan_authorization_backwardCompatibility.conf
+       writerWanSites=3 readerWanSites=3 locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1 bridgeHostsPerSite=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHostsPerSite=1 edgeVMsPerHost=1 edgeThreadsPerVM=1 peerMem = 256m
+       version1=57         version2=default
+
+security/wan_authorization_backwardCompatibility.conf
+       writerWanSites=3 readerWanSites=3 locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1 bridgeHostsPerSite=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHostsPerSite=1 edgeVMsPerHost=1 edgeThreadsPerVM=1 peerMem = 256m
+       version1=default    version2=651
+
+security/wan_authorization_backwardCompatibility.conf
+       writerWanSites=3 readerWanSites=3 locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1 bridgeHostsPerSite=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHostsPerSite=1 edgeVMsPerHost=1 edgeThreadsPerVM=1 peerMem = 256m
+       version1=651        version2=default
+
+security/wan_authorization_backwardCompatibility.conf
+       writerWanSites=3 readerWanSites=3 locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1 bridgeHostsPerSite=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHostsPerSite=1 edgeVMsPerHost=1 edgeThreadsPerVM=1 peerMem = 256m
+       version1=default    version2=664
+
+security/wan_authorization_backwardCompatibility.conf
+       writerWanSites=3 readerWanSites=3 locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1 bridgeHostsPerSite=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHostsPerSite=1 edgeVMsPerHost=1 edgeThreadsPerVM=1 peerMem = 256m
+       version1=664        version2=default
+
+security/wan_authorization_backwardCompatibility.conf
+       writerWanSites=3 readerWanSites=3 locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1 bridgeHostsPerSite=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHostsPerSite=1 edgeVMsPerHost=1 edgeThreadsPerVM=1 peerMem = 256m
+       version1=default    version2=700
+
+security/wan_authorization_backwardCompatibility.conf
+       writerWanSites=3 readerWanSites=3 locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1 bridgeHostsPerSite=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHostsPerSite=1 edgeVMsPerHost=1 edgeThreadsPerVM=1 peerMem = 256m
+       version1=700        version2=default
+

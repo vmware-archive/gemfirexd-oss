@@ -1,0 +1,7 @@
+#!/bin/bash
+. ./setenv
+
+S_PATH=$S_HOME/product-gfxd/bin
+
+#run compareResults bt to compare data between _TMP & non _TMP tables
+$S_HOME/../../tests/bin/runBT.sh --osbuild $S_HOME 66 $S_HOME/../../../../regrResults varuna -DuseSSH=true -DtestJVM=/export/gcm/where/jdk/1.6.0_26/x86.linux/bin/java -Dbt.grepLogs=false -Dbt.removePassedTest=true -Dbt.numTimesToRun=1 -Dbt.moveRemoteDirs=true -Dproduct=gemfireXD $S_HOME/../../tests/sql/sqlCompareResults.bt 

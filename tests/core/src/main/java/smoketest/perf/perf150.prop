@@ -1,0 +1,26 @@
+locatorHosts = 1
+locatorVMsPerHost = 1
+locatorThreadsPerVM = 1
+
+A = feed
+feedHosts          = 1
+feedVMsPerHost     = 1
+feedThreadsPerVM   = 1
+
+B = bridge
+bridgeHosts        = 1
+bridgeVMsPerHost   = 2
+bridgeThreadsPerVM = 1
+
+C = edge
+edgeHosts          = 1
+edgeVMsPerHost     = 2
+edgeThreadsPerVM   = 1
+
+cloningEnabled = false
+conserveSockets = false
+getBeforeUpdate = false
+
+dataSize   = 1024
+
+perffmwk.comparisonKey = perf150

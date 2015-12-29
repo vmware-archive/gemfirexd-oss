@@ -1,0 +1,122 @@
+//serial
+newWan/serial/conflation/wanconflation.conf
+  wanSites = 4
+  locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  bridgeHostsPerSite = 1 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 2
+  edgeHostsPerSite   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+  maxKeys = 20   dataSize = 10 serverMem = 256m clientMem = 256m
+  enableSubscriptionConflation = false batchConflation = true
+
+newWan/serial/conflation/wanmonotonic.conf
+  wanSites = 4
+  locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  bridgeHostsPerSite = 1 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 2
+  edgeHostsPerSite   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+  maxKeys = 20   dataSize = 10 serverMem = 256m clientMem = 256m
+  enableSubscriptionConflation = false batchConflation = true
+
+newWan/serial/conflation/wanstrict.conf
+  wanSites = 4
+  locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  bridgeHostsPerSite = 1 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 2
+  edgeHostsPerSite   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+  maxKeys = 20   dataSize = 10 serverMem = 256m clientMem = 256m
+  enableSubscriptionConflation = false batchConflation = false
+
+newWan/serial/conflation/wanconflationPersist.conf
+  wanSites = 4
+  locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  bridgeHostsPerSite = 1 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 2
+  edgeHostsPerSite   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+  maxKeys = 20   dataSize = 10 serverMem = 256m clientMem = 256m
+  enableSubscriptionConflation = false batchConflation = true
+
+newWan/serial/conflation/wanmonotonicPersist.conf
+  wanSites = 4
+  locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  bridgeHostsPerSite = 1 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 2
+  edgeHostsPerSite   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+  maxKeys = 20   dataSize = 10 serverMem = 256m clientMem = 256m
+  enableSubscriptionConflation = false batchConflation = true
+  
+parReg/newWan/serial/conflation/wanconflation.conf
+  wanSites = 4
+  locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  bridgeHostsPerSite = 1 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 2
+  edgeHostsPerSite   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+  maxKeys = 20   dataSize = 10 serverMem = 256m clientMem = 256m
+  enableSubscriptionConflation = false batchConflation = true
+
+parReg/newWan/serial/conflation/wanmonotonic.conf
+  wanSites = 4
+  locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  bridgeHostsPerSite = 1 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 2
+  edgeHostsPerSite   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+  maxKeys = 20   dataSize = 10 serverMem = 256m clientMem = 256m
+  enableSubscriptionConflation = false batchConflation = true
+
+parReg/newWan/serial/conflation/wanconflationPersist.conf
+  wanSites = 3
+  locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  bridgeHostsPerSite = 1 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 2
+  edgeHostsPerSite   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+  maxKeys = 20   dataSize = 10 serverMem = 256m clientMem = 256m
+  enableSubscriptionConflation = false batchConflation = true
+
+parReg/newWan/serial/conflation/wanmonotonicPersist.conf
+  wanSites = 3
+  locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  bridgeHostsPerSite = 1 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 2
+  edgeHostsPerSite   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+  maxKeys = 20   dataSize = 10 serverMem = 256m clientMem = 256m
+  enableSubscriptionConflation = false batchConflation = true
+
+parReg/newWan/serial/conflation/wanconflationHA.conf
+  wanSites = 4
+  locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  bridgeHostsPerSite = 2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHostsPerSite   = 1 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+  maxKeys = 100   dataSize = 10 serverMem = 256m clientMem = 256m  
+  batchConflation = true
+
+//parallel  
+parReg/newWan/parallel/conflation/wanconflation.conf
+  wanSites = 4
+  locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  bridgeHostsPerSite = 1 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 2
+  edgeHostsPerSite   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+  maxKeys = 20   dataSize = 10 serverMem = 256m clientMem = 256m
+  enableSubscriptionConflation = false batchConflation = true
+
+parReg/newWan/parallel/conflation/wanmonotonic.conf
+  wanSites = 4
+  locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  bridgeHostsPerSite = 1 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 2
+  edgeHostsPerSite   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+  maxKeys = 20   dataSize = 10 serverMem = 256m clientMem = 256m
+  enableSubscriptionConflation = false batchConflation = true
+
+parReg/newWan/parallel/conflation/wanconflationPersist.conf
+  wanSites = 4
+  locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  bridgeHostsPerSite = 1 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 2
+  edgeHostsPerSite   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+  maxKeys = 20   dataSize = 10 serverMem = 256m clientMem = 256m
+  enableSubscriptionConflation = false batchConflation = true
+
+parReg/newWan/parallel/conflation/wanmonotonicPersist.conf
+  wanSites = 4
+  locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  bridgeHostsPerSite = 1 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 2
+  edgeHostsPerSite   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+  maxKeys = 20   dataSize = 10 serverMem = 256m clientMem = 256m
+  enableSubscriptionConflation = false batchConflation = true
+  
+parReg/newWan/parallel/conflation/wanconflationHA.conf
+  wanSites = 4
+  locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  bridgeHostsPerSite = 2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHostsPerSite   = 1 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+  maxKeys = 100   dataSize = 10 serverMem = 256m clientMem = 256m  
+  batchConflation = true
+  

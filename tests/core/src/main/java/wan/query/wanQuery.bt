@@ -1,0 +1,42 @@
+//wan/query/wanQueryHCT.conf
+//       wanSites = 2
+//locatorHostsPerSite = 1
+//locatorVMsPerHost = 1
+//locatorThreadsPerVM = 1
+//bridgeHostsPerSite = 1
+//bridgeVMsPerHost = 2
+//bridgeThreadsPerVM = 1
+//edgeHostsPerSite = 1
+//edgeVMsPerHost = 2
+//edgeThreadsPerVM = 1
+//serverMem = 256m
+//clientMem = 256m
+
+//wan/query/wanQueryHCTNewEdgeXML.conf
+wan/query/wanQueryHCTNewEdgeUpdatesQueryXML.conf
+       wanSites = 2
+locatorHostsPerSite = 2
+locatorVMsPerHost = 1
+locatorThreadsPerVM = 1
+bridgeHostsPerSite = 2
+bridgeVMsPerHost = 2
+bridgeThreadsPerVM = 1
+edgeHostsPerSite = 2
+edgeVMsPerHost = 10
+edgeThreadsPerVM = 1
+serverMem = 4096m
+clientMem = 256m
+
+wan/query/wanQueryHCTNewEdgeFeederXML.conf
+      wanSites = 2
+locatorHostsPerSite = 2
+locatorVMsPerHost = 1
+locatorThreadsPerVM = 1
+bridgeHostsPerSite = 2
+bridgeVMsPerHost = 2
+bridgeThreadsPerVM = 1
+edgeHostsPerSite = 2
+edgeVMsPerHost = 10
+edgeThreadsPerVM = 1
+serverMem = 4096m
+clientMem = 256m

@@ -1,0 +1,37 @@
+locatorHosts=1
+locatorVMsPerHost=1
+locatorThreadsPerVM=1
+
+A=client
+clientHosts=2
+clientVMsPerHost=1
+clientThreadsPerVM=2
+
+B=server
+serverHosts=2
+serverVMsPerHost=1
+serverThreadsPerVM=1
+
+api=GFXD
+
+txIsolation = none
+
+ddlFileName = useCase4.sql
+
+accounts = 100
+accountprofiles = 100
+holdings = 10000
+orders = 100000
+quotes = 100
+
+clientHeapMB = 256
+serverHeapMB = 3500
+newSizeMB = 500
+
+batchSeconds = 300
+trimSeconds =  60
+workSeconds = 180
+
+enableHistogram = true
+
+perffmwk.comparisonKey = useCase4

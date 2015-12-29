@@ -1,0 +1,8 @@
+mapregion/diskRegion/simplePutPerfTestForDiskRegion.conf threads = 1 dirs = 1
+mapregion/diskRegion/simplePutPerfTestForDiskRegion.conf threads = 2 dirs = 1
+mapregion/diskRegion/simplePutPerfTestForDiskRegion.conf threads = 3 dirs = 1
+mapregion/diskRegion/simplePutPerfTestForDiskRegion.conf threads = 5 dirs = 1
+mapregion/diskRegion/simplePutPerfTestForDiskRegion.conf threads = 1 dirs = 4
+mapregion/diskRegion/simplePutPerfTestForDiskRegion.conf threads = 2 dirs = 4
+mapregion/diskRegion/simplePutPerfTestForDiskRegion.conf threads = 3 dirs = 4
+mapregion/diskRegion/simplePutPerfTestForDiskRegion.conf threads = 5 dirs = 4

@@ -1,0 +1,50 @@
+//--------------------------------------------------------------------------------
+// Parallel wan horizontal scaling test
+//   - N is capacity mapped to dataHostsPerSite and accessorHostsPerSite
+//-------------------------------------------------------------------------------- 
+
+// N=1
+cacheperf/comparisons/newWan/parReg/parallelPubSubAccessor.conf
+  wanSites = 2
+  locatorHostsPerSite = 1 locatorVMsPerHost   = 1 locatorThreadsPerVM = 1
+  A = data dataHostsPerSite = 1 dataVMsPerHost = 2 dataThreadsPerVM = 1
+  B = accessor accessorHostsPerSite = 1 accessorVMsPerHost = 2 accessorThreadsPerVM = 3
+  objectSize = 1024 redundancy=0 
+  dataMem = 1g trimSeconds = 60 perffmwk.comparisonKey = vm2
+
+// N=2  
+cacheperf/comparisons/newWan/parReg/parallelPubSubAccessor.conf
+  wanSites = 2
+  locatorHostsPerSite = 1 locatorVMsPerHost   = 1 locatorThreadsPerVM = 1
+  A = data dataHostsPerSite = 2 dataVMsPerHost = 2 dataThreadsPerVM = 1
+  B = accessor accessorHostsPerSite = 2 accessorVMsPerHost = 2 accessorThreadsPerVM = 3
+  objectSize = 1024 redundancy=0
+  dataMem = 1g trimSeconds = 60 perffmwk.comparisonKey = vm4
+  
+// N=3  
+cacheperf/comparisons/newWan/parReg/parallelPubSubAccessor.conf
+  wanSites = 2
+  locatorHostsPerSite = 1 locatorVMsPerHost   = 1 locatorThreadsPerVM = 1
+  A = data dataHostsPerSite = 3 dataVMsPerHost = 2 dataThreadsPerVM = 1
+  B = accessor accessorHostsPerSite = 3 accessorVMsPerHost = 2 accessorThreadsPerVM = 3
+  objectSize = 1024 redundancy=0
+  dataMem = 1g trimSeconds = 60 perffmwk.comparisonKey = vm6
+
+// N=4    
+cacheperf/comparisons/newWan/parReg/parallelPubSubAccessor.conf
+  wanSites = 2
+  locatorHostsPerSite = 1 locatorVMsPerHost   = 1 locatorThreadsPerVM = 1
+  A = data dataHostsPerSite = 4 dataVMsPerHost = 2 dataThreadsPerVM = 1
+  B = accessor accessorHostsPerSite = 4 accessorVMsPerHost = 2 accessorThreadsPerVM = 3
+  objectSize = 1024 redundancy=0
+  dataMem = 1g trimSeconds = 60 perffmwk.comparisonKey = vm8
+
+// N=5
+cacheperf/comparisons/newWan/parReg/parallelPubSubAccessor.conf
+  wanSites = 2
+  locatorHostsPerSite = 1 locatorVMsPerHost   = 1 locatorThreadsPerVM = 1
+  A = data dataHostsPerSite = 5 dataVMsPerHost = 2 dataThreadsPerVM = 1
+  B = accessor accessorHostsPerSite = 5 accessorVMsPerHost = 2 accessorThreadsPerVM = 3
+  objectSize = 1024 redundancy=0
+  dataMem = 1g trimSeconds = 60 perffmwk.comparisonKey = vm10
+

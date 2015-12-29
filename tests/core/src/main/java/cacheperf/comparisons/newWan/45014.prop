@@ -1,0 +1,15 @@
+wanSites              = 2
+
+locatorHostsPerSite   = 1
+locatorVMsPerHost     = 2
+locatorThreadsPerVM   = 1
+
+peerHostsPerSite      = 3
+peerThreadsPerVM      = 5
+peerVMsPerHost        = 1
+
+dataSize          = 1024
+peerMem         = 1g
+
+trimSeconds  = 60
+perffmwk.comparisonKey = bug45014

@@ -1,0 +1,35 @@
+asyncMsg/serialRRConflation.conf 
+asyncMsg/serialRR.conf 
+asyncMsg/configOneAsync.conf 
+asyncMsg/concAsync.conf 
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1 
+   B=peer peerHosts=6 peerVMsPerHost=1 peerThreadsPerVM=5
+
+
+asyncMsg/concVerifyBurst.conf 
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1 
+   B=producer producerHosts=1 producerVMsPerHost=1 producerThreadsPerVM=1 
+   C=consumer consumerHosts=10 consumerVMsPerHost=1 consumerThreadsPerVM=1
+
+asyncMsg/concBurst.conf hydra.numHosts = 5
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=peer peerHosts=10 peerVMsPerHost=1 peerThreadsPerVM=5
+
+// gii 
+asyncMsg/gii/giiPreferenceVMReg.conf hydra.numHosts = 5 
+asyncMsg/gii/concGiiPreferenceVMReg.conf hydra.numHosts = 5
+
+//tx
+//disabled for #44146
+//asyncMsg/tx/concEntryEvent.conf
+//asyncMsg/tx/concGiiPreferenceVMReg.conf hydra.numHosts=5 
+//asyncMsg/tx/entryExpirActionTx.conf hydra.numHosts=6
+
+// async messaging disabled w/ssl?
+asyncMsg/ssl/concEntryEvent.conf
+
+// diskRegion
+asyncMsg/diskReg/concDiskRegHeap.conf
+asyncMsg/diskReg/concDiskRegLRU.conf
+asyncMsg/diskReg/concDiskRegMemLRU.conf
+asyncMsg/diskReg/mirroredOverflowRecovery.conf maxKeys=100 objectType=objects.NestedOrderVector

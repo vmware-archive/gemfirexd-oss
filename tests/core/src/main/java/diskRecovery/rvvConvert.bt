@@ -1,0 +1,83 @@
+diskRecovery/rvvSerialConvert.conf
+   A=oldVersionLocator oldVersionLocatorHosts=1 oldVersionLocatorVMsPerHost=1 oldVersionLocatorThreadsPerVM=1
+   B=oldVersion oldVersionHosts=5 oldVersionVMsPerHost=1 oldVersionThreadsPerVM=5
+   C=newVersionLocator newVersionLocatorHosts=1 newVersionLocatorVMsPerHost=1 newVersionLocatorThreadsPerVM=1
+   D=newVersion newVersionHosts=5 newVersionVMsPerHost=1 newVersionThreadsPerVM=5
+   E=oldVersionAdmin oldVersionAdminHosts=1 oldVersionAdminVMsPerHost=1 oldVersionAdminThreadsPerVM=1
+   convertWithNewVersionXml=true,false
+   valueClassName = util.ValueHolder, util.VHDataSerializable, util.VHDataSerializableInstantiator
+   registerSerializer = false
+   oldVersion=651,664 newVersion=default newVersionHome=default
+diskRecovery/rvvSerialConvert.conf
+   A=oldVersionLocator oldVersionLocatorHosts=1 oldVersionLocatorVMsPerHost=1 oldVersionLocatorThreadsPerVM=1
+   B=oldVersion oldVersionHosts=5 oldVersionVMsPerHost=1 oldVersionThreadsPerVM=5
+   C=newVersionLocator newVersionLocatorHosts=1 newVersionLocatorVMsPerHost=1 newVersionLocatorThreadsPerVM=1
+   D=newVersion newVersionHosts=5 newVersionVMsPerHost=1 newVersionThreadsPerVM=5
+   E=oldVersionAdmin oldVersionAdminHosts=1 oldVersionAdminVMsPerHost=1 oldVersionAdminThreadsPerVM=1
+   convertWithNewVersionXml=true,false
+   valueClassName = util.ValueHolder registerSerializer = true
+   oldVersion=651,664 newVersion=default newVersionHome=default
+
+diskRecovery/rvvConcConvert.conf
+   A=oldVersionLocator oldVersionLocatorHosts=1 oldVersionLocatorVMsPerHost=1 oldVersionLocatorThreadsPerVM=1
+   B=oldVersion oldVersionHosts=5 oldVersionVMsPerHost=1 oldVersionThreadsPerVM=5
+   C=newVersionLocator newVersionLocatorHosts=1 newVersionLocatorVMsPerHost=1 newVersionLocatorThreadsPerVM=1
+   D=newVersion newVersionHosts=5 newVersionVMsPerHost=1 newVersionThreadsPerVM=5
+   convertWithNewVersionXml=true,false
+   oldVersion=651,664 newVersion=default newVersionHome=default
+
+diskRecovery/rvvConvertMultiDiskStoreReplicate.conf
+   A=oldVersionLocator oldVersionLocatorHosts=1 oldVersionLocatorVMsPerHost=1 oldVersionLocatorThreadsPerVM=1
+   B=oldVersion oldVersionHosts=5 oldVersionVMsPerHost=1 oldVersionThreadsPerVM=5
+   C=newVersionLocator newVersionLocatorHosts=1 newVersionLocatorVMsPerHost=1 newVersionLocatorThreadsPerVM=1
+   D=newVersion newVersionHosts=5 newVersionVMsPerHost=1 newVersionThreadsPerVM=5
+   E=oldVersionAdmin oldVersionAdminHosts=1 oldVersionAdminVMsPerHost=1 oldVersionAdminThreadsPerVM=1
+   convertWithNewVersionXml=true,false 
+   numDiskStores=20
+   oldVersion=651,664 newVersion=default newVersionHome=default
+
+diskRecovery/rvvConvertMultiDiskStorePR.conf
+   A=oldVersionLocator oldVersionLocatorHosts=1 oldVersionLocatorVMsPerHost=1 oldVersionLocatorThreadsPerVM=1
+   B=oldVersion oldVersionHosts=5 oldVersionVMsPerHost=1 oldVersionThreadsPerVM=5
+   C=newVersionLocator newVersionLocatorHosts=1 newVersionLocatorVMsPerHost=1 newVersionLocatorThreadsPerVM=1
+   D=newVersion newVersionHosts=5 newVersionVMsPerHost=1 newVersionThreadsPerVM=5
+   E=oldVersionAdmin oldVersionAdminHosts=1 oldVersionAdminVMsPerHost=1 oldVersionAdminThreadsPerVM=1
+   convertWithNewVersionXml=true,false 
+   numDiskStores=20
+   oldVersion=651,664 newVersion=default newVersionHome=default
+
+diskRecovery/rvvConvertMultiDiskStoreMixed.conf
+   A=oldVersionLocator oldVersionLocatorHosts=1 oldVersionLocatorVMsPerHost=1 oldVersionLocatorThreadsPerVM=1
+   B=oldVersion oldVersionHosts=5 oldVersionVMsPerHost=1 oldVersionThreadsPerVM=5
+   C=newVersionLocator newVersionLocatorHosts=1 newVersionLocatorVMsPerHost=1 newVersionLocatorThreadsPerVM=1
+   D=newVersion newVersionHosts=5 newVersionVMsPerHost=1 newVersionThreadsPerVM=5
+   E=oldVersionAdmin oldVersionAdminHosts=1 oldVersionAdminVMsPerHost=1 oldVersionAdminThreadsPerVM=1
+   convertWithNewVersionXml=true,false 
+   numDiskStores=20
+   oldVersion=651,664 newVersion=default newVersionHome=default
+
+// todo@lhughes - need to extend to multiple vms per site
+diskRecovery/rvvConvertWAN.conf
+   A=oldVersion
+   oldVersionWanSites=3
+   oldVersionLocatorHostsPerSite=1 oldVersionLocatorVMsPerHost=1 oldVersionLocatorThreadsPerVM=1
+   oldVersionHostsPerSite=1 oldVersionVMsPerHost=1 oldVersionThreadsPerVM=10
+   B=newVersion
+   newVersionWanSites=3
+   newVersionLocatorHostsPerSite=1 newVersionLocatorVMsPerHost=1 newVersionLocatorThreadsPerVM=1
+   newVersionHostsPerSite=1 newVersionVMsPerHost=1 newVersionThreadsPerVM=3
+   convertWithNewVersionXml=true
+   oldVersion=651,664 newVersion=default newVersionHome=default
+
+// oldVersion WANs use orderPolicy (for parallel ops)
+diskRecovery/rvvConvertWanWithOrderPolicyKeys.conf
+   A=oldVersion
+   oldVersionWanSites=3
+   oldVersionLocatorHostsPerSite=1 oldVersionLocatorVMsPerHost=1 oldVersionLocatorThreadsPerVM=1
+   oldVersionHostsPerSite=1 oldVersionVMsPerHost=1 oldVersionThreadsPerVM=10
+   B=newVersion
+   newVersionWanSites=3
+   newVersionLocatorHostsPerSite=1 newVersionLocatorVMsPerHost=1 newVersionLocatorThreadsPerVM=1
+   newVersionHostsPerSite=1 newVersionVMsPerHost=1 newVersionThreadsPerVM=3
+   convertWithNewVersionXml=true
+   oldVersion=664 newVersion=default newVersionHome=default

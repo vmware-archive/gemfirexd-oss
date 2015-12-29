@@ -1,0 +1,2 @@
+ADD OFFHEAP READS AND OBJECTS TO STATSPEC
+vi perf001.spec perf005.spec perf008.spec perf014.spec perf020.spec perf022.spec perf023.spec perf024.spec perf026.spec perf028.spec perf032.spec perf036.spec perf038.spec perf051.spec perf058.spec perf059.spec perf081.spec perf138.spec perf140.spec

@@ -1,0 +1,32 @@
+cacheperf/comparisons/parReg/rebalance/hctGet.conf
+  bridgeHosts    = 2 bridgeVMsPerHost    = 1 bridgeThreadsPerVM    = 1
+  newbridgeHosts = 6 newbridgeVMsPerHost = 1 newbridgeThreadsPerVM = 1
+  edgeHosts      = 8 edgeVMsPerHost      = 1 edgeThreadsPerVM      = 5
+  maxKeys = 1000000 objectSize = 1024 heapMB = 1500
+  redundantCopies = 0
+  conserveSockets = false
+  perffmwk.comparisonKey = pr0_get_02_06_08_05
+cacheperf/comparisons/parReg/rebalance/hctPut.conf
+  bridgeHosts    = 2 bridgeVMsPerHost    = 1 bridgeThreadsPerVM    = 1
+  newbridgeHosts = 6 newbridgeVMsPerHost = 1 newbridgeThreadsPerVM = 1
+  edgeHosts      = 8 edgeVMsPerHost      = 1 edgeThreadsPerVM      = 5
+  maxKeys = 1000000 objectSize = 1024 heapMB = 1500
+  redundantCopies = 0
+  conserveSockets = false
+  perffmwk.comparisonKey = pr0_put_02_06_08_05
+cacheperf/comparisons/parReg/rebalance/hctGet.conf
+  bridgeHosts    = 2 bridgeVMsPerHost    = 1 bridgeThreadsPerVM    = 1
+  newbridgeHosts = 6 newbridgeVMsPerHost = 1 newbridgeThreadsPerVM = 1
+  edgeHosts      = 8 edgeVMsPerHost      = 1 edgeThreadsPerVM      = 5
+  maxKeys = 500000 objectSize = 1024 heapMB = 1500
+  redundantCopies = 1
+  conserveSockets = false
+  perffmwk.comparisonKey = pr1_get_02_06_08_05
+cacheperf/comparisons/parReg/rebalance/hctPut.conf
+  bridgeHosts    = 2 bridgeVMsPerHost    = 1 bridgeThreadsPerVM    = 1
+  newbridgeHosts = 6 newbridgeVMsPerHost = 1 newbridgeThreadsPerVM = 1
+  edgeHosts      = 8 edgeVMsPerHost      = 1 edgeThreadsPerVM      = 5
+  maxKeys = 500000 objectSize = 1024 heapMB = 1500
+  redundantCopies = 1
+  conserveSockets = false
+  perffmwk.comparisonKey = pr1_put_02_06_08_05

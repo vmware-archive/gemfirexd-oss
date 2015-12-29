@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlResults PUBLIC "-//GemStone Systems, Inc.//GemFireXD Test Results 1.0//EN"
+          "sqlResults1_0.dtd">
+<sqlResults>
+  <!--
+		Result expected from SYSCONGLOMERATES when creating a VOLUMEIDX index
+		without GLOBAL HASH specification.
+	-->
+	<resultSet id="orders_nogh">
+		<row>
+			<field name="CONGLOMERATENAME">VOLUMEIDX</field>
+			<field name="DESCRIPTOR">LOCALSORTEDMAP (2)</field>
+		</row>
+	</resultSet>
+	<!--
+		Result expected from SYSCONGLOMERATES when creating a VOLUMEIDX index
+		with GLOBAL HASH specification.
+	-->
+	<resultSet id="orders_gh">
+		<row>
+			<field name="CONGLOMERATENAME">VOLUMEIDX</field>
+			<field name="DESCRIPTOR">GLOBALHASH (2)</field>
+		</row>
+	</resultSet>
+	<resultSet id="DeltaMergeAndIndexUpdate">
+		<row>
+			<field name="ID">100</field>
+			<field name="VOL">1000</field>
+			<field name="SEC_ID">nid999</field>
+			<field name="CUST_ID">cust100</field>
+		</row>
+	</resultSet>
+	<!--
+		Result expected from EMP.PARTITIONTESTTABLE or EMP.REPLICATEDTESTTABLE
+		with FOURTH as 4.
+	-->
+	<resultSet id="testtable_four">
+		<row>
+			<field name="ID">1</field>
+			<field name="SECONDID">2</field>
+			<field name="THIRD">3</field>
+			<field name="FOURTH">4</field>
+			<field name="FIFTH">10</field>
+		</row>
+		<row>
+			<field name="ID">4</field>
+			<field name="SECONDID">5</field>
+			<field name="THIRD">6</field>
+			<field name="FOURTH">4</field>
+			<field name="FIFTH">11</field>
+		</row>
+		<row>
+			<field name="ID">7</field>
+			<field name="SECONDID">8</field>
+			<field name="THIRD">9</field>
+			<field name="FOURTH">4</field>
+			<field name="FIFTH">12</field>
+		</row>
+  </resultSet>
+	<!--
+		Result expected from TRADE.PORTFOLIO when persistence is enabled
+		and index is recovered due to a VM restart 
+	-->
+	<resultSet id="testBug47945">
+		<row>
+			<field name="CID">12</field>
+			<field name="SID">12</field>
+			<field name="SUBTOTAL">12001</field>
+    </row>
+	</resultSet>
+</sqlResults>

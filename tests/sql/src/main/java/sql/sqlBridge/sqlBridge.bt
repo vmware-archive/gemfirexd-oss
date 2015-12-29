@@ -1,0 +1,223 @@
+sql/sqlBridge/concGFEClient.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    A=conn connbridgeHosts=2 connbridgeVMsPerHost=1, 3 connbridgeThreadsPerVM=1
+    B=store storebridgeHosts=1 storebridgeVMsPerHost=2 storebridgeThreadsPerVM=1
+    edgeHosts = 1 edgeVMsPerHost = 5 edgeThreadsPerVM = 20
+    dropIndex = true
+    manageDerbyServer=false
+    testUniqueKeys=false
+
+sql/sqlBridge/concGFEClient.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    A=conn connbridgeHosts=2 connbridgeVMsPerHost=1, 3 connbridgeThreadsPerVM=1
+    B=store storebridgeHosts=1 storebridgeVMsPerHost=2 storebridgeThreadsPerVM=1
+    edgeHosts = 1 edgeVMsPerHost = 5 edgeThreadsPerVM = 6
+    dropIndex = true
+    manageDerbyServer=true
+    testUniqueKeys=true
+
+sql/sqlBridge/concGFEClientWithProcedure.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    A=conn connbridgeHosts=2 connbridgeVMsPerHost=1, 3 connbridgeThreadsPerVM=1
+    B=store storebridgeHosts=1 storebridgeVMsPerHost=3 storebridgeThreadsPerVM=1
+    edgeHosts = 1 edgeVMsPerHost = 5 edgeThreadsPerVM = 6
+    dropIndex = true
+    manageDerbyServer=false
+    testUniqueKeys=false
+       
+sql/sqlBridge/concGFEClientWithProcedure.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    A=conn connbridgeHosts=2 connbridgeVMsPerHost=1, 3 connbridgeThreadsPerVM=1
+    B=store storebridgeHosts=1 storebridgeVMsPerHost=3 storebridgeThreadsPerVM=1
+    edgeHosts = 1 edgeVMsPerHost = 5 edgeThreadsPerVM = 6
+    dropIndex = true
+    manageDerbyServer=true 
+    testUniqueKeys=true   
+
+sql/sqlBridge/concGFEClientHA.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    A=conn connbridgeHosts=1 connbridgeVMsPerHost=2 connbridgeThreadsPerVM=1
+    B=store storebridgeHosts=1 storebridgeVMsPerHost=2 storebridgeThreadsPerVM=1
+    edgeHosts = 1 edgeVMsPerHost =3 edgeThreadsPerVM = 10
+    redundantCopies=1, 2
+    dropIndex = true
+    manageDerbyServer=false
+    testUniqueKeys=false
+    
+sql/sqlBridge/concGFEClientHA.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    A=conn connbridgeHosts=1 connbridgeVMsPerHost=2 connbridgeThreadsPerVM=1
+    B=store storebridgeHosts=1 storebridgeVMsPerHost=3 storebridgeThreadsPerVM=1
+    edgeHosts = 1 edgeVMsPerHost =3 edgeThreadsPerVM = 10
+    redundantCopies=3
+    dropIndex = true
+    manageDerbyServer=false
+    testUniqueKeys=false   
+
+sql/sqlBridge/concGFEClientHA.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    A=conn connbridgeHosts=1 connbridgeVMsPerHost=2 connbridgeThreadsPerVM=1
+    B=store storebridgeHosts=1 storebridgeVMsPerHost=3 storebridgeThreadsPerVM=1
+    edgeHosts = 1 edgeVMsPerHost =3 edgeThreadsPerVM = 10
+    redundantCopies=1, 2, 3
+    dropIndex = true
+    manageDerbyServer=true
+    testUniqueKeys=true   
+    
+sql/sqlBridge/testDDLReplayClientHA.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    A=conn connbridgeHosts=1 connbridgeVMsPerHost=1 connbridgeThreadsPerVM=1
+    B=store storebridgeHosts=1 storebridgeVMsPerHost=3 storebridgeThreadsPerVM=1
+    edgeHosts = 1 edgeVMsPerHost =3 edgeThreadsPerVM = 10
+    redundantCopies=2, 3
+    dropIndex = true
+    securities=trade.securities:random
+    customers=trade.customers:random
+    networth=trade.networth:random
+    portfolio=trade.portfolio:random
+    sellorders=trade.sellorders:random
+    buyorders=trade.buyorders:random
+    txhistory=trade.txhistory:random
+    
+sql/sqlBridge/asynchDBSynchronizerClient.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    A=conn connbridgeHosts=1 connbridgeVMsPerHost=2 connbridgeThreadsPerVM=1
+    B=store storebridgeHosts=5 storebridgeVMsPerHost=2 storebridgeThreadsPerVM=1
+    edgeHosts = 1 edgeVMsPerHost = 5 edgeThreadsPerVM = 10
+    SGvms1=1 SGvms2=2 SGvms3=2 SGvms4=2 SGvms5=3 SGvms6=2
+    SGList1="random" SGList2="random" SGList3="random"
+    SGList4="random" SGList5="random" SGList6="random"
+    dropIndex = true
+    securities=trade.securities:random:default
+    customers=trade.customers:random:default
+    networth=trade.networth:random:default
+    portfolio=trade.portfolio:random:default
+    sellorders=trade.sellorders:random:default
+    buyorders=trade.buyorders:random:default
+    txhistory=trade.txhistory:random:default
+    
+sql/sqlBridge/concClientGFXDHAWithLocator.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=1 serverVMsPerHost=2 serverThreadsPerVM=1
+    clientHosts = 1 clientVMsPerHost =3 clientThreadsPerVM = 30
+    redundantCopies=1
+    dropIndex = true
+    securities=trade.securities:random
+    customers=trade.customers:random
+    networth=trade.networth:random
+    portfolio=trade.portfolio:random
+    sellorders=trade.sellorders:random
+    buyorders=trade.buyorders:random
+    txhistory=trade.txhistory:random
+
+sql/sqlBridge/concClientGFXDHAWithLocator.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=1 serverVMsPerHost=3 serverThreadsPerVM=1
+    clientHosts = 2 clientVMsPerHost =3 clientThreadsPerVM = 20
+    redundantCopies=2
+    dropIndex = true
+    securities=trade.securities:random
+    customers=trade.customers:random
+    networth=trade.networth:random
+    portfolio=trade.portfolio:random
+    sellorders=trade.sellorders:random
+    buyorders=trade.buyorders:random
+    txhistory=trade.txhistory:random
+    
+sql/sqlBridge/concClientGFXDHAWithLocator.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=1 serverVMsPerHost=4 serverThreadsPerVM=1
+    clientHosts = 2 clientVMsPerHost =3 clientThreadsPerVM = 20
+    redundantCopies=3
+    dropIndex = true
+    securities=trade.securities:random
+    customers=trade.customers:random
+    networth=trade.networth:random
+    portfolio=trade.portfolio:random
+    sellorders=trade.sellorders:random
+    buyorders=trade.buyorders:random
+    txhistory=trade.txhistory:random
+    
+sql/sqlBridge/concClientGFXDHAUniqWithLocator.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=1 serverVMsPerHost=2, 5 serverThreadsPerVM=1
+    clientHosts = 2 clientVMsPerHost =3 clientThreadsPerVM = 10
+    redundantCopies=1
+    dropIndex = true
+    securities=trade.securities:random
+    customers=trade.customers:random
+    networth=trade.networth:random
+    portfolio=trade.portfolio:random
+    sellorders=trade.sellorders:random
+    buyorders=trade.buyorders:random
+    txhistory=trade.txhistory:random
+
+sql/sqlBridge/concClientGFXDHAUniqWithLocator.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=1 serverVMsPerHost=3, 5 serverThreadsPerVM=1
+    clientHosts = 2 clientVMsPerHost =3 clientThreadsPerVM = 10
+    redundantCopies=2
+    dropIndex = true
+    securities=trade.securities:random
+    customers=trade.customers:random
+    networth=trade.networth:random
+    portfolio=trade.portfolio:random
+    sellorders=trade.sellorders:random
+    buyorders=trade.buyorders:random
+    txhistory=trade.txhistory:random
+    
+sql/sqlBridge/concClientGFXDHAUniqWithLocator.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=1 serverVMsPerHost=4, 7 serverThreadsPerVM=1
+    clientHosts = 2 clientVMsPerHost =3 clientThreadsPerVM = 10
+    redundantCopies=3
+    dropIndex = true
+    securities=trade.securities:random
+    customers=trade.customers:random
+    networth=trade.networth:random
+    portfolio=trade.portfolio:random
+    sellorders=trade.sellorders:random
+    buyorders=trade.buyorders:random
+    txhistory=trade.txhistory:random
+
+sql/sqlBridge/smallLoad.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=1 serverVMsPerHost=3 serverThreadsPerVM=1
+    clientHosts = 1 clientVMsPerHost =3 clientThreadsPerVM = 100
+    dropIndex = true
+    securities=trade.securities:random
+    customers=trade.customers:random
+    networth=trade.networth:random
+    portfolio=trade.portfolio:random
+    sellorders=trade.sellorders:random
+    buyorders=trade.buyorders:random
+    txhistory=trade.txhistory:random
+    
+sql/sqlBridge/clientGenerateDefaultIdHAUniqWithLocator.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=1 serverVMsPerHost= 5 serverThreadsPerVM=1
+    clientHosts = 2 clientVMsPerHost =3 clientThreadsPerVM = 10
+    redundantCopies=1
+    dropIndex = true
+    securities=trade.securities:random
+    customers=trade.customers:random
+    networth=trade.networth:random
+    portfolio=trade.portfolio:random
+    sellorders=trade.sellorders:random
+    buyorders=trade.buyorders:random
+    txhistory=trade.txhistory:random
+
+//limited tests that have concurrent ddl op with dml op
+sql/sqlBridge/concClientGFXDHAIndexUniqWithLocator.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=1 serverVMsPerHost=5 serverThreadsPerVM=1
+    clientHosts = 2 clientVMsPerHost =3 clientThreadsPerVM = 10
+    redundantCopies=2
+    dropIndex = true
+    securities=trade.securities:random
+    customers=trade.customers:random
+    networth=trade.networth:random
+    portfolio=trade.portfolio:random
+    sellorders=trade.sellorders:random
+    buyorders=trade.buyorders:random
+    txhistory=trade.txhistory:random

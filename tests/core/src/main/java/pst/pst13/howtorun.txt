@@ -1,0 +1,21 @@
+
+*******************************************************************************
+Use a local.conf (example in this dir) to specify 30 machines to act as hosts (Solaris 
+and/or Linux). Reserve as many machines as possible, making up the difference by asking 
+to use individual's machines.  The test runs for almost one hour so lunchtime is a good 
+time to run the test.  This is a PST test so exclusive use is required.
+
+Run the batterytest file pst13_gemfire.bt with local.conf file indicating
+the hosts and the base directories you want to use for system logs and archives.  
+
+The machine on which pst13_gemfire.bt runs is the "Master" host.  The "Master" host 
+must have file system and ssh access to all the machines in the test.  In addition
+all machines in the test must be able to access the file system on the "Master". If
+file system access is a problem, refresh automount tables using "super automount".
+
+Remember to use:
+1. correct GemFire version and 
+2. correct snapshot location 
+in all appropriate places in local.conf.
+
+

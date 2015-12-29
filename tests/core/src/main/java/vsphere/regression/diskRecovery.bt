@@ -1,0 +1,152 @@
+diskRecovery/compaction.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persistent persistentHosts=1 persistentVMsPerHost=1 persistentThreadsPerVM=5
+   C=replicate replicateHosts=3 replicateVMsPerHost=1 replicateThreadsPerVM=5
+   threadGroupsName=controllerThread
+// tests for recovering the latest disk files
+// tie with 2 vms
+/*diskRecovery/tie.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=peer peerHosts=2 peerVMsPerHost=1 peerThreadsPerVM=5
+   stopMode = nice_exit
+   concurrentRegionCreation = true, false*/
+// tie with many vms
+diskRecovery/tie.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=peer peerHosts=6 peerVMsPerHost=1 peerThreadsPerVM=5
+   stopMode = nice_exit
+   concurrentRegionCreation = true, false
+   threadGroupsName=controllerThread
+// vm with latest disk files restarts last
+// 2 vms
+/*diskRecovery/latestStartsLast.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=peer peerHosts=2 peerVMsPerHost=1 peerThreadsPerVM=5
+   stopMode = nice_exit
+   concurrentRegionCreation = true, false*/
+// many vms
+diskRecovery/latestStartsLast.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=peer peerHosts=6 peerVMsPerHost=1 peerThreadsPerVM=5
+   stopMode = nice_exit
+   concurrentRegionCreation = true, false
+   threadGroupsName=controllerThread
+
+// vm with latest disk files restarts first
+// 2 vms
+/*diskRecovery/latestStartsFirst.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=peer peerHosts=2 peerVMsPerHost=1 peerThreadsPerVM=5
+   stopMode = nice_exit
+   concurrentRegionCreation = true, false*/
+// many vms
+diskRecovery/latestStartsFirst.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=peer peerHosts=6 peerVMsPerHost=1 peerThreadsPerVM=5
+   stopMode = nice_exit
+   concurrentRegionCreation = true, false
+   threadGroupsName=controllerThread
+
+// user must force recovery
+// 2 vms
+/*diskRecovery/forceRecovery.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=peer peerHosts=2 peerVMsPerHost=1 peerThreadsPerVM=5
+   stopMode = nice_exit
+   concurrentRegionCreation = true, false*/
+// many vms
+diskRecovery/forceRecovery.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=peer peerHosts=6 peerVMsPerHost=1 peerThreadsPerVM=5
+   stopMode = nice_exit
+   concurrentRegionCreation = true, false
+   threadGroupsName=controllerThread
+
+// members not simultaneous
+// 3 vms
+/*diskRecovery/membersNotSimultaneous.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=group1 group1Hosts=1 group1VMsPerHost=1 group1ThreadsPerVM=5
+   C=group2 group2Hosts=1 group2VMsPerHost=1 group2ThreadsPerVM=5
+   D=group3 group3Hosts=1 group3VMsPerHost=1 group3ThreadsPerVM=5
+   stopMode = nice_exit
+   concurrentRegionCreation = true, false*/
+// many vms
+diskRecovery/membersNotSimultaneous.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=group1 group1Hosts=3 group1VMsPerHost=1 group1ThreadsPerVM=5
+   C=group2 group2Hosts=3 group2VMsPerHost=1 group2ThreadsPerVM=5
+   D=group3 group3Hosts=3 group3VMsPerHost=1 group3ThreadsPerVM=5
+   stopMode = nice_exit
+   concurrentRegionCreation = true, false
+   threadGroupsName=controllerThread
+
+// refuse recovery
+// 3 vms
+/*diskRecovery/refuseRecovery.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=group1 group1Hosts=1 group1VMsPerHost=1 group1ThreadsPerVM=5
+   C=group2 group2Hosts=1 group2VMsPerHost=1 group2ThreadsPerVM=5
+   stopMode = nice_exit
+   concurrentRegionCreation = true, false*/
+// many vms
+diskRecovery/refuseRecovery.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=group1 group1Hosts=3 group1VMsPerHost=1 group1ThreadsPerVM=5
+   C=group2 group2Hosts=3 group2VMsPerHost=1 group2ThreadsPerVM=5
+   stopMode = nice_exit
+   concurrentRegionCreation = true, false
+   threadGroupsName=controllerThread
+
+// disk recovery 
+/*diskRecovery/concRecoverLatest.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+diskRecovery/concRecoverAll.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3*/
+diskRecovery/recoverAfterGii.conf
+   threadGroupsName=default
+
+diskRecovery/concRecoverAllAfterShutDownAll.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+   threadGroupsName=controllerThread
+
+/*diskRecovery/multiDiskStoreReplicate.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+   numDiskStores = 20
+diskRecovery/multiDiskStorePR.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+   numDiskStores = 3*/
+diskRecovery/multiDiskStoreMixed.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+   numDiskStores = 3
+   threadGroupsName=controllerThread
+   
+/*diskRecovery/multiDiskStoreReplicateShutDownAll.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+   numDiskStores = 20
+diskRecovery/multiDiskStorePRShutDownAll.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+   numDiskStores = 3*/
+diskRecovery/multiDiskStoreMixedShutDownAll.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+   numDiskStores = 3
+   threadGroupsName=controllerThread
+
+//diskRecovery/concUpgrade.conf
+//   A=oldVersionLocator oldVersionLocatorHosts=1 oldVersionLocatorVMsPerHost=1 oldVersionLocatorThreadsPerVM=1
+//   B=oldVersion oldVersionHosts=5 oldVersionVMsPerHost=1 oldVersionThreadsPerVM=5
+//   C=newVersionLocator newVersionLocatorHosts=1 newVersionLocatorVMsPerHost=1 newVersionLocatorThreadsPerVM=1
+//   D=newVersion newVersionHosts=5 newVersionVMsPerHost=1 newVersionThreadsPerVM=5
+//   oldVersion=651 newVersion=default newVersionHome=default
+//   stopMode=shutDownAll,nice_exit,mean_exit
+//   threadGroupsName=newVersionLocatorThread
+

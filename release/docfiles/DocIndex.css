@@ -1,0 +1,133 @@
+A.link {
+	color: #330066;
+	text-decoration: underline;
+}
+A.visited {
+	color: #000000;
+	text-decoration: underline;
+}
+A.active {
+	color: #cc0000;
+	text-decoration: underline;
+}
+P.Body {
+	display: block;
+	text-align: left;
+	font-size: 10pt;
+	font-weight: medium;
+	font-style: Regular;
+	color: #000000;
+	text-decoration: none;
+	vertical-align: baseline;
+	text-transform: none;
+	font-family: "Palatino";
+}
+H1.Heading1, H2.Heading1, H3.Heading1, H4.Heading1, H5.Heading1, H6.Heading1 {
+	display: block;
+	text-align: left;
+	font-size: 16pt;
+	font-weight: Bold;
+	font-style: Regular;
+	color: #330066;
+	text-decoration: none;
+	vertical-align: baseline;
+	text-transform: none;
+	font-family: "Helvetica";
+}
+H1.Heading2, H2.Heading2, H3.Heading2, H4.Heading2, H5.Heading2, H6.Heading2 {
+	display: block;
+	text-align: left;
+	font-size: 12pt;
+	font-weight: Bold;
+	font-style: Regular;
+	color: #330066;
+	text-decoration: none;
+	vertical-align: baseline;
+	text-transform: none;
+	font-family: "Helvetica";
+}
+H1.Hanging, H2.Hanging, H3.Hanging, H4.Hanging, H5.Hanging, H6.Hanging {
+	display: block;
+	text-align: left;
+	text-indent: -18.000000pt;
+	margin-top: 6.000000pt;
+	margin-bottom: 6.000000pt;
+	margin-right: 0.000000pt;
+	margin-left: 18.000000pt;
+	font-size: 10.000000pt;
+	font-weight: medium;
+	font-style: Regular;
+	color: #330066;
+	text-decoration: none;
+	vertical-align: baseline;
+	text-transform: none;
+	font-family: "Palatino";
+}
+H1.HeadA, H2.HeadA, H3.HeadA, H4.HeadA, H5.HeadA, H6.HeadA {
+	display: block;
+	text-align: left;
+	font-size: 12pt;
+	font-weight: Bold;
+	font-style: Regular;
+	color: #330066;
+	text-decoration: none;
+	vertical-align: baseline;
+	text-transform: none;
+	font-family: "Helvetica";
+}
+P.i-Indented {
+	display: block;
+	text-align: left;
+	text-indent: 0.000000pt;
+	margin-top: 6.000000pt;
+	margin-bottom: 6.000000pt;
+	margin-right: 0.000000pt;
+	margin-left: 18.000000pt;
+	font-size: 10.000000pt;
+	font-weight: medium;
+	font-style: Regular;
+	color: #000000;
+	text-decoration: none;
+	vertical-align: baseline;
+	text-transform: none;
+	font-family: "Palatino";
+}
+EM.Bold-Text {
+	font-size: 10.000000pt;
+	font-weight: Bold;
+	font-family: "Palatino";
+}
+P.Body-Small {
+	display: block;
+	text-align: left;
+	text-indent: 0.000000pt;
+	margin-top: 1.000000pt;
+	margin-bottom: 5.000000pt;
+	margin-right: 0.000000pt;
+	margin-left: 0.000000pt;
+	font-size: 10.000000pt;
+	font-weight: medium;
+	font-style: Regular;
+	color: #000000;
+	text-decoration: none;
+	vertical-align: baseline;
+	text-transform: none;
+	font-family: "Palatino";
+}
+H1.Head, H2.Head, H3.Head, H4.Head, H5.Head, H6.Head {
+	display: block;
+	text-align: left;
+	text-indent: 0.000000pt;
+	margin-top: 10.000000pt;
+	margin-bottom: 0.000000pt;
+	margin-right: 0.000000pt;
+	margin-left: 0.000000pt;
+	font-size: 10.000000pt;
+	font-weight: Bold;
+	font-style: Regular;
+	color: #000000;
+	text-decoration: none;
+	vertical-align: baseline;
+	text-transform: uppercase;
+	font-family: "Helvetica";
+}

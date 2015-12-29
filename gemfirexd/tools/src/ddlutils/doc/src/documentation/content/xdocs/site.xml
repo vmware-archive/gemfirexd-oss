@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="ISO-8859-15"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+-->
+
+<!--
+Forrest site.xml
+
+This file contains an outline of the site's information content.  It is used to:
+- Generate the website menus (though these can be overridden - see docs)
+- Provide semantic, location-independent aliases for internal 'site:' URIs, eg
+<link href="site:changes"> links to changes.html (or ../changes.html if in
+  subdir).
+- Provide aliases for external URLs in the external-refs section.  Eg, <link
+  href="ext:cocoon"> links to http://cocoon.apache.org/ 
+
+See http://forrest.apache.org/docs/linking.html for more info
+-->
+
+<site label="DdlUtils" xmlns="http://apache.org/forrest/linkmap/1.0">
+
+  <about label="About">
+    <index label="Home" href="index.html" description="Welcome to DdlUtils"/>
+    <changes label="Release Notes" href="ext:ddlutils/jira-changelog" description="Release Notes" />
+    <mail-lists label="Mailing lists" href="mail-lists.html" description="Info about DdlUtils' mailing lists"/>
+    <jira label="Bug database (JIRA)" href="ext:ddlutils/jira"/>
+  </about>
+
+  <download label="How to get">
+    <binaries label="Binaries &amp; Source" href="download.html" description="Where to get binaries and source"/>
+    <svn-view label="View source repository" href="ext:ddlutils/svn-view" description="View the source repository (SVN)) online"/>
+    <svn-info label="Source repository info" href="svn-info.html" description="Info about getting DdlUtils from the source repository"/>
+  </download>
+
+  <documentation label="Documentation">
+    <index label="Summary" href="documentation.html"/>
+    <database-support label="Support for databases">
+      <general-info label="General info" href="database-support.html" description="General info about database support"/>
+      <axion-support label="Axion" href="databases/axion.html" description="Support for the Axion database"/>
+      <db2-support label="DB2" href="databases/db2.html" description="Support for the DB2 database"/>
+      <derby-support label="Derby/Cloudscape" href="databases/derby.html" description="Support for the Derby/Cloudscape databases"/>
+      <firebird-support label="Firebird" href="databases/firebird.html" description="Support for the Firebird database"/>
+      <hsqldb-support label="HSQLDB" href="databases/hsqldb.html" description="Support for the HSQLDB database"/>
+      <interbase-support label="Interbase" href="databases/interbase.html" description="Support for the Interbase database"/>
+      <maxdb-support label="MaxDB/SapDB" href="databases/maxdb.html" description="Support for the MaxDB/SapDB databases"/>
+      <mckoi-support label="McKoi" href="databases/mckoi.html" description="Support for the McKoi database"/>
+      <mysql-support label="MySql" href="databases/mysql.html" description="Support for the MySQL database"/>
+      <oracle-support label="Oracle" href="databases/oracle.html" description="Support for the Oracle database"/>
+      <postgresql-support label="PostgreSQL" href="databases/postgresql.html" description="Support for the PostgreSQL database"/>
+      <gemfirexd-support label="GemFireXD" href="databases/gemfirexd.html" description="Support for the GemFireXD database"/>
+      <sqlserver-support label="SQL Server" href="databases/sqlserver.html" description="Support for the SQL Server database"/>
+      <sybase-support label="Sybase" href="databases/sybase.html" description="Support for the Sybase database"/>
+    </database-support>
+    <schema label="The XML schema format" href="ext:ddlutils/schemadoc/" description="The schema format"/>
+    <data-schema label="Using the API" href="schema.html" description="The data schema"/>
+    <ant-tasks label="The Ant tasks" href="ext:ddlutils/antdoc/" description="How to use the Ant tasks"/>
+    <api-usage label="Using the API" href="api-usage.html" description="How to use DdlUtils in your code"/>
+    <javadoc label="Javadoc" href="ext:ddlutils/javadoc" description="The API documentation"/>
+  </documentation>
+<!-- 
+  <all label="Whole site">
+    <all_site label="Full HTML" href="wholesite.html"/>
+    <all_sitePDF label="Full PDF" href="wholesite.pdf"/>
+  </all>
+-->
+  <external-refs>
+    <ddlutils>
+      <jira href="http://issues.apache.org/jira/secure/BrowseProject.jspa?id=10731"/>
+      <jira-changelog href="http://issues.apache.org/jira/browse/DDLUTILS?report=com.atlassian.jira.plugin.system.project:changelog-panel"/>
+      <javadoc href="api/">
+        <model href="index.html?org/apache/ddlutils/model/package-summary.html"/>
+        <converter href="org/apache/ddlutils/io/converters/SqlTypeConverter.html"/>
+      </javadoc>
+      <schemadoc href="schema/"/>
+      <antdoc href="ant/"/>
+      <svn-view href="http://svn.apache.org/viewvc/db/ddlutils/trunk/"/>
+      <user-list>
+        <subscribe href="mailto:ddlutils-user-subscribe@db.apache.org"/>
+        <unsubscribe href="mailto:ddlutils-user-unsubscribe@db.apache.org"/>
+        <archive href="http://mail-archives.apache.org/mod_mbox/db-ddlutils-user/"/>
+      </user-list>
+      <dev-list>
+        <subscribe href="mailto:ddlutils-dev-subscribe@db.apache.org"/>
+        <unsubscribe href="mailto:ddlutils-dev-unsubscribe@db.apache.org"/>
+        <archive href="http://mail-archives.apache.org/mod_mbox/db-ddlutils-dev/"/>
+      </dev-list>
+    </ddlutils>
+
+    <ant href="http://ant.apache.org/">
+      <manual href="manual/">
+        <coretypes href="CoreTypes/">
+          <fileset href="fileset.html"/>
+        </coretypes>
+      </manual>
+    </ant>
+    <axion href="http://axion.tigris.org/">
+      <datatypes href="datatypes.html"/>
+    </axion>
+    <beanutils href="http://jakarta.apache.org/commons/beanutils/">
+      <dynabean href="apidocs/index.html?org/apache/commons/beanutils/DynaBean.html"/>
+    </beanutils>
+    <cloudscape href="http://www-306.ibm.com/software/data/cloudscape/">
+      <manual href="http://publib.boulder.ibm.com/epubs/pdf/c1892480.pdf"/>
+    </cloudscape>
+    <db2 href="http://www-130.ibm.com/developerworks/db2/">
+      <manual href="ftp://ftp.software.ibm.com/ps/products/db2/info/vr7/pdf/letter/db2s0e70.pdf"/>
+      <jdbc-mappings href="http://publib.boulder.ibm.com/infocenter/db2luw/v8/topic/com.ibm.db2.udb.doc/ad/rjvjdata.htm"/>
+    </db2>
+    <derby href="http://db.apache.org/derby/">
+      <manual href="manuals/index.html"/>
+    </derby>
+    <eclipse href="http://www.eclipse.org/"/>
+    <firebird href="http://www.firebirdsql.org/"/>
+    <hsqldb href="http://www.hsqldb.org/">
+      <sql-syntax href="doc/guide/ch09.html"/>
+    </hsqldb>
+    <idea href="http://www.jetbrains.com/idea/"/>
+    <interbase href="http://www.codegear.com/tabid/125/Default.aspx"/>
+    <jakarta href="http://jakarta.apache.org/">
+      <commons href="commons/">
+        <dbcp href="dbcp/">
+          <javadoc href="apidocs/"/>
+        </dbcp>
+      </commons>
+    </jakarta>
+    <java href="http://java.sun.com/">
+      <jdbc>
+        <guide href="http://java.sun.com/j2se/1.4.2/docs/guide/jdbc/getstart/GettingStartedTOC.fm.html">
+          <types href="http://java.sun.com/j2se/1.4.2/docs/guide/jdbc/getstart/mapping.html#996857"/>
+        </guide>
+        <spec href="http://java.sun.com/products/jdbc/download.html"/>
+      </jdbc>
+      <api href="j2se/1.4.2/docs/api/">
+        <databaseMetaData-getTables href="java/sql/DatabaseMetaData.html#getTables(java.lang.String,%20java.lang.String,%20java.lang.String,%20java.lang.String[])"/>
+      </api>
+    </java>
+    <maxdb href="http://www.mysql.com/products/maxdb/">
+      <manual href="http://dev.mysql.com/get/Downloads/MaxDB/7.5.00/maxdb-chmdoc-75.chm/from/pick"/>
+    </maxdb>
+    <mckoi href="http://www.mckoi.com/database/">
+      <manual href="docindex.html"/>
+    </mckoi>
+    <mysql href="http://www.mysql.com/products/mysql/">
+      <manual href="http://dev.mysql.com/doc/mysql/en/index.html"/>
+    </mysql>
+    <netbeans href="http://www.netbeans.org/">
+      <subversion-profile href="http://vcsgeneric.netbeans.org/profiles/index.html"/>
+    </netbeans>
+    <ojb href="http://db.apache.org/ojb/"/>
+    <oracle href="http://www.oracle.com/">
+      <otn href="technology/index.html"/>
+    </oracle>
+    <postgresql href="http://www.postgresql.org/">
+      <manual href="docs/7.4/interactive/index.html"/>
+    </postgresql>
+    <sapdb href="http://www.sapdb.org/">
+      <manual href="pdf/reference_72_73eng.pdf"/>
+    </sapdb>
+    <gemfirexd href="http://www.vmware.com/products/application-platform/vfabric-gemfirexd">
+      <ref-guide href="https://www.vmware.com/support/pubs/vfabric-gemfirexd.html"/>
+    </gemfirexd>
+    <sqlserver href="http://msdn2.microsoft.com/en-us/sql/default.aspx">
+      <manual-2000 href="http://msdn.microsoft.com/library/en-us/tsqlref/ts_tsqlcon_6lyk.asp"/>
+    </sqlserver>
+    <sybase>
+      <sqlserver href="http://www.sybase.com/products/archivedproducts/sqlserver"/>
+      <ase href="http://www.sybase.com:80/products/databasemanagement/adaptiveserverenterprise"/>
+      <manual-archive href="http://sybooks.sybase.com/onlinebooks/group-asarc/@Generic__CollectionView;pt=group-asarc"/>
+      <manual href="http://sybooks.sybase.com/as.html"/>
+    </sybase>
+    <tigris>
+      <subclipse href="http://subclipse.tigris.org/"/>
+      <svn href="http://subversion.tigris.org/"/>
+      <svn-up href="http://svnup.tigris.org/"/>
+      <tortoisesvn href="http://tortoisesvn.tigris.org"/>
+    </tigris>
+    <torque href="http://db.apache.org/torque/">
+      <dtd href="dtd/database.dtd"/>
+    </torque>
+  </external-refs>
+
+</site>

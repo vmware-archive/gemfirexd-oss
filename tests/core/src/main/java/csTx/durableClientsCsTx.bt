@@ -1,0 +1,49 @@
+// DurableClients (w/tx)
+csTx/durableClients/staticInterestPolicyAllKeys.conf
+bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=1 numOpThreads=5
+
+csTx/durableClients/staticInterestPolicyList.conf
+bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=1 numOpThreads=5
+
+csTx/durableClients/staticInterestPolicyPartialList.conf
+bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=1 numOpThreads=5
+
+csTx/durableClients/staticInterestPolicyRegex.conf
+bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=1 numOpThreads=5
+
+csTx/durableClients/staticInterestPolicyAllKeysLateOps.conf
+bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=1 numOpThreads=5
+
+csTx/durableClients/staticInterestPolicyListLateOps.conf
+bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=1 numOpThreads=5
+
+csTx/durableClients/staticInterestPolicyPartialListLateOps.conf
+bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=1 numOpThreads=5
+
+csTx/durableClients/staticInterestPolicyRegexLateOps.conf
+bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=1 numOpThreads=5
+
+csTx/durableClients/dynamicInterestPolicyAllKeys.conf
+bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHosts=7 edgeVMsPerHost=1 edgeThreadsPerVM=1 numOpThreads=5
+
+csTx/durableClients/dynamicInterestPolicyList.conf
+bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHosts=7 edgeVMsPerHost=1 edgeThreadsPerVM=1 numOpThreads=5
+
+csTx/durableClients/dynamicInterestPolicyPartialList.conf
+bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHosts=7 edgeVMsPerHost=1 edgeThreadsPerVM=1 numOpThreads=5
+
+csTx/durableClients/dynamicInterestPolicyRegex.conf
+bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHosts=7 edgeVMsPerHost=1 edgeThreadsPerVM=1 numOpThreads=5
+
+csTx/durableClients/dynamicInterestPolicyAllKeysPR.conf
+bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHosts=7 edgeVMsPerHost=1 edgeThreadsPerVM=1 numOpThreads=5
+
+csTx/durableClients/dynamicInterestPolicyListPR.conf
+bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHosts=7 edgeVMsPerHost=1 edgeThreadsPerVM=1 numOpThreads=5
+
+csTx/durableClients/dynamicInterestPolicyPartialListPR.conf
+bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHosts=7 edgeVMsPerHost=1 edgeThreadsPerVM=1 numOpThreads=5
+
+csTx/durableClients/dynamicInterestPolicyRegexPR.conf
+bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHosts=7 edgeVMsPerHost=1 edgeThreadsPerVM=1 numOpThreads=5
+

@@ -1,0 +1,52 @@
+For single host testing (gemfirexd + local HDFS Cluster), just run sql/hdfs/sqlhdfs.bt with sql/hdfs/local.hdfs.conf. 
+
+For running gemfirexd members on the same host with MasterController with a remote multi-node HDFS Cluster, uncomment remote-cluster configuration in local.hdfs.conf. 
+A sample remote-cluster configuration is shown below (with running a remote cluster with the nodename on w2-gst-pnq-06 and the datanodes on w2-gst-pnq-04 and w2-gst-pnq-05). 
+Logging is going to the "a" drives and the HDFS data to the "b" drives.
+
+hydra.HadoopPrms-nameNodeHosts      = w2-gst-pnq-06;
+hydra.HadoopPrms-nameNodeLogDrives  = a;
+hydra.HadoopPrms-nameNodeDataDrives = b;
+
+hydra.HadoopPrms-dataNodeHosts      = w2-gst-pnq-04  w2-gst-pnq-05;
+hydra.HadoopPrms-dataNodeLogDrives  = a;
+hydra.HadoopPrms-dataNodeDataDrives = b;
+
+------------------------------------------------------------------------------------------------------
+
+For running HDFS on the same host with the MasterController, but all clients from another host type (like Windows),
+  use local.hdfs.multiOS.conf. A sample local.hdfs.multiOS.conf is shown below. Logging is going to the "a" drive and the
+  HDFS data to the "b" drive. This setup assumes that you have the proper drives mapped on Windows (in this case,
+  j:, y:, & u:). The u: drive in this case is mapped to the same location that the test results will be stored. It
+  needs to be accessible by both hosts. Leave 'REGRESSION_EXTRA_PATH' as it will be replaced by Hydra at runtime.
+
+hydra.HadoopPrms-nameNodeHosts      = w1-gst-dev29;
+hydra.HadoopPrms-nameNodeLogDrives  = a;
+hydra.HadoopPrms-nameNodeDataDrives = b;
+
+hydra.HadoopPrms-dataNodeHosts      = w1-gst-dev29;
+hydra.HadoopPrms-dataNodeLogDrives  = a;
+hydra.HadoopPrms-dataNodeDataDrives = b;
+
+hydra.HostPrms-hostNames     = w1-gst-dev29  w1-gst-dev30;
+hydra.HostPrms-osTypes       = linux         windows;
+hydra.HostPrms-bootstrapPort = none          15343;
+hydra.HostPrms-javaHomes     = default       j:\where\jdk\1.7.0_05\x86_64.Windows_NT;
+hydra.HostPrms-gemfireHomes  = default       y:\GemFireBuild\gemfirexd_rebrand_Dec13\product;
+hydra.HostPrms-testDirs      = default       y:\GemFireBuild\gemfirexd_rebrand_Dec13\tests\classes;
+hydra.HostPrms-userDirs      = default       u:\testResults\$REGRESSION_EXTRA_PATH;
+
+// derby dependencies
+hydra.VmPrms-extraClassPaths      += "/export/gcm/where/java/derby/derby-10.8.2.2/jars/insane/derby.jar"       "j:/where/java/derby/derby-10.8.2.2/jars/insane/derby.jar";
+hydra.VmPrms-extraClassPaths      += "/export/gcm/where/java/derby/derby-10.8.2.2/jars/insane/derbyclient.jar" "j:/where/java/derby/derby-10.8.2.2/jars/insane/derbyclient.jar";
+hydra.VmPrms-extraClassPaths      += "/export/gcm/where/java/derby/derby-10.8.2.2/jars/insane/derbytools.jar"  "j:/where/java/derby/derby-10.8.2.2/jars/insane/derbytools.jar";
+hydra.Prms-derbyServerClassPath    = "/export/gcm/where/java/derby/derby-10.8.2.2/jars/insane/derbynet.jar";
+hydra.Prms-extraDerbyServerVMArgs += " -Xmx1024m -Dderby.storage.pageCacheSize=32000 -Dderby.locks.waitTimeout=30 -Dderby.locks.deadlockTimeout=20 ";
+
+// fix PermGen issues #49820
+hydra.VmPrms-extraVMArgsSUN += "-XX:MaxPermSize=128m";
+
+// use default configuration for hdfsstore
+sql.hdfs.HDFSTestPrms-useRandomConfig = false;
+
+------------------------------------------------------------------------------------------------------

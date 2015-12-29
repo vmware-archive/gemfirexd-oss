@@ -1,0 +1,14 @@
+scope = distributedNoAck 
+batchSize = 5000
+trimIterations =  100000
+workIterations = 1000000
+objectType = objects.EqStruct
+hydra.numHosts = 2
+A = pub
+pubHosts = 1
+pubVMsPerHost = 1
+pubThreadsPerVM = 1
+B = sub
+subHosts = 1
+subVMsPerHost= 1
+subThreadsPerVM = 1

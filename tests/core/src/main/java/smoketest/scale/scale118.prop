@@ -1,0 +1,17 @@
+perffmwk.comparisonKey = scale118
+wanSites            = 2
+locatorHostsPerSite = 1
+locatorVMsPerHost   = 2
+locatorThreadsPerVM = 1
+A = data
+dataHostsPerSite  = 2
+dataVMsPerHost    = 1
+dataThreadsPerVM  = 1
+B = accessor
+accessorHostsPerSite  = 1 
+accessorVMsPerHost    = 2
+accessorThreadsPerVM  = 5
+objectSize        = 1024
+dataMem           = 1g
+putsPerSec        = 4000
+trimSeconds       = 60

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlResults PUBLIC "-//GemStone Systems, Inc.//GemFireXD Test Results 1.0//EN"
+          "sqlResults1_0.dtd">
+<sqlResults>
+	<!-- The empty result set -->
+	<resultSet id="empty" />
+	<!--
+		Result set expected when no server group has been given in CREATE
+		SCHEMA EMP.
+	-->
+	<resultSet id="emp_nosg">
+		<row>
+			<field name="SCHEMANAME">EMP</field>
+			<field name="DEFAULTSERVERGROUPS"></field>
+			<field name="AUTHORIZATIONID">APP</field>
+		</row>
+	</resultSet>
+	<!--
+		Result set expected when server group has been given in CREATE SCHEMA
+		EMP. Deliberately changed the order of fields to check that the
+		code for unordered checking in XML comparison works correctly.
+	-->
+	<resultSet id="emp_sg">
+		<row>
+			<field name="DEFAULTSERVERGROUPS">SG1</field>
+			<field name="SCHEMANAME">EMP</field>
+		</row>
+	</resultSet>
+	<!--
+		Result set expected when selecting a single test row from a table in
+		the EMP schema.
+	-->
+	<resultSet id="emp_tab_sel">
+		<row>
+			<field name="ID">1</field>
+			<field name="DESCRIPTION">First</field>
+		</row>
+	</resultSet>
+</sqlResults>

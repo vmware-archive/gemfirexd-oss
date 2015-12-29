@@ -1,0 +1,343 @@
+gfxd> --
+--   Licensed to the Apache Software Foundation (ASF) under one or more
+--   contributor license agreements.  See the NOTICE file distributed with
+--   this work for additional information regarding copyright ownership.
+--   The ASF licenses this file to You under the Apache License, Version 2.0
+--   (the "License"); you may not use this file except in compliance with
+--   the License.  You may obtain a copy of the License at
+--
+--      http://www.apache.org/licenses/LICENSE-2.0
+--
+--   Unless required by applicable law or agreed to in writing, software
+--   distributed under the License is distributed on an "AS IS" BASIS,
+--   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+--   See the License for the specific language governing permissions and
+--   limitations under the License.
+--
+-- test for CURRENT SCHEMA and optional DB2 compatible SET SCHEMA statement
+--
+-- test SET SCHEMA syntax variations
+-- syntax is SET [CURRENT] SCHEMA [=] (<identifier> | USER | ? | '<string>')
+--			 SET CURRENT SQLID [=] (<identifier> | USER | ? | '<string>')
+--
+values current schema;
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+APP                                                                                                                             
+gfxd> set schema sys;
+0 rows inserted/updated/deleted
+gfxd> values current schema;
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+SYS                                                                                                                             
+gfxd> create schema app;
+ERROR X0Y68: Schema 'APP' already exists.
+gfxd> set current schema app;
+0 rows inserted/updated/deleted
+gfxd> values current schema;
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+APP                                                                                                                             
+gfxd> set schema =  sys;
+0 rows inserted/updated/deleted
+gfxd> values current schema;
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+SYS                                                                                                                             
+gfxd> set current schema = app;
+0 rows inserted/updated/deleted
+gfxd> values current schema;
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+APP                                                                                                                             
+gfxd> set schema sys;
+0 rows inserted/updated/deleted
+gfxd> -- user should use default schema if no user set
+set schema user;
+0 rows inserted/updated/deleted
+gfxd> values current schema;
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+APP                                                                                                                             
+gfxd> -- see what user does when there is a user
+create schema judy;
+0 rows inserted/updated/deleted
+gfxd> connect 'jdbc:gemfirexd:;mcast-port=0;user=judy' as judy;
+ij(JUDY)> set schema app;
+0 rows inserted/updated/deleted
+ij(JUDY)> values current schema;
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+APP                                                                                                                             
+ij(JUDY)> set schema user;
+0 rows inserted/updated/deleted
+ij(JUDY)> values current schema;
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+JUDY                                                                                                                            
+ij(JUDY)> disconnect;
+gfxd> set connection connection0;
+gfxd> -- check for default
+values current schema;
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+APP                                                                                                                             
+gfxd> -- check that current sqlid works as a synonym
+values current sqlid;
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+APP                                                                                                                             
+gfxd> -- check that sqlid still works as an identifer
+create table sqlid(sqlid int);
+0 rows inserted/updated/deleted
+gfxd> drop table sqlid;
+0 rows inserted/updated/deleted
+gfxd> -- check that set current sqlid works
+set current sqlid judy;
+0 rows inserted/updated/deleted
+gfxd> values current schema;
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+JUDY                                                                                                                            
+gfxd> -- check that set sqlid doesn't work (not DB2 compatible) - should get error
+set sqlid judy;
+ERROR 42X01: Syntax error: Encountered "sqlid" at line 2, column 5.
+Issue the 'help' command for general information on GFXD command syntax.
+Any unrecognized commands are treated as potential SQL commands and executed directly.
+Consult your DBMS server reference documentation for details of the SQL syntax supported by your server.
+gfxd> -- change schema and make sure that the current schema is correct
+set schema sys;
+0 rows inserted/updated/deleted
+gfxd> values current schema;
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+SYS                                                                                                                             
+gfxd> set schema app;
+0 rows inserted/updated/deleted
+gfxd> -- try using ? outside of a prepared statement
+set schema ?;
+ERROR 07000: At least one parameter to the current statement is uninitialized.
+gfxd> -- use set schema in a prepared statement
+autocommit off;
+gfxd> prepare p1 as 'set schema ?';
+gfxd> -- should get error with no parameters
+execute p1;
+ERROR 07000: At least one parameter to the current statement is uninitialized.
+gfxd> -- should get error if null is used
+create table t1(name varchar(128));
+0 rows inserted/updated/deleted
+gfxd> insert into t1 values(null);
+1 row inserted/updated/deleted
+gfxd> execute p1 using 'select name from t1';
+ERROR 42815: The replacement value for 'CURRENT SCHEMA' is invalid.
+gfxd> -- should get error if schema doesn't exist
+execute p1 using 'values(''notthere'')';
+ERROR 42Y07: Schema 'notthere' does not exist
+gfxd> -- should error with empty string
+execute p1 using 'values('''')';
+ERROR 42Y07: Schema '' does not exist
+gfxd> -- should get error if wrong case used
+execute p1 using 'values(''sys'')';
+ERROR 42Y07: Schema 'sys' does not exist
+gfxd> -- should get error if too many parameters
+execute p1 using 'values(''sys'',''app'')';
+ERROR XCL13: The parameter position '2' is out of range.  The number of parameters for this prepared  statement is '1'.
+gfxd> -- USER should return an error as it is interpreted as a string constant not an
+-- identifier
+execute p1 using 'values(''USER'')';
+ERROR 42Y07: Schema 'USER' does not exist
+gfxd> -- try positive test
+execute p1 using 'values(''SYS'')';
+0 rows inserted/updated/deleted
+gfxd> values current schema;
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+SYS                                                                                                                             
+gfxd> rollback;
+gfxd> autocommit on;
+gfxd> -- 
+-- try current schema in a number of statements types
+set schema app;
+0 rows inserted/updated/deleted
+gfxd> create table t1 ( a varchar(128));
+0 rows inserted/updated/deleted
+gfxd> -- insert
+insert into t1 values (current schema);
+1 row inserted/updated/deleted
+gfxd> select * from t1;
+A                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+APP                                                                                                                             
+gfxd> set schema judy;
+0 rows inserted/updated/deleted
+gfxd> insert into app.t1 values (current schema);
+1 row inserted/updated/deleted
+gfxd> select * from app.t1;
+A                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+APP                                                                                                                             
+JUDY                                                                                                                            
+gfxd> -- delete where clause
+delete from app.t1 where a = current schema;
+1 row inserted/updated/deleted
+gfxd> select * from app.t1;
+A                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+APP                                                                                                                             
+gfxd> set current schema app;
+0 rows inserted/updated/deleted
+gfxd> -- target list
+select current schema from t1;
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+APP                                                                                                                             
+gfxd> -- where clause
+select * from t1 where a = current schema;
+A                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+APP                                                                                                                             
+gfxd> -- update statement
+delete from t1;
+1 row inserted/updated/deleted
+gfxd> insert into t1 values ('test');
+1 row inserted/updated/deleted
+gfxd> select * from t1;
+A                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+test                                                                                                                            
+gfxd> update t1 set a = current schema;
+1 row inserted/updated/deleted
+gfxd> select * from t1;
+A                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+APP                                                                                                                             
+gfxd> set schema judy;
+0 rows inserted/updated/deleted
+gfxd> update app.t1 set a = current schema;
+1 row inserted/updated/deleted
+gfxd> select * from app.t1;
+A                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+JUDY                                                                                                                            
+gfxd> set schema app;
+0 rows inserted/updated/deleted
+gfxd> drop table t1;
+0 rows inserted/updated/deleted
+gfxd> -- default
+set schema APP;
+0 rows inserted/updated/deleted
+gfxd> create table t1 ( a int, b varchar(128) default current schema);
+0 rows inserted/updated/deleted
+gfxd> insert into t1 (a) values (1);
+1 row inserted/updated/deleted
+gfxd> set schema SYS;
+0 rows inserted/updated/deleted
+gfxd> insert into app.t1 (a) values (1);
+1 row inserted/updated/deleted
+gfxd> set schema judy;
+0 rows inserted/updated/deleted
+gfxd> insert into app.t1 (a) values (1);
+1 row inserted/updated/deleted
+gfxd> set schema APP;
+0 rows inserted/updated/deleted
+gfxd> select * from t1;
+A          |B                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------------------
+1          |APP                                                                                                                             
+1          |SYS                                                                                                                             
+1          |JUDY                                                                                                                            
+gfxd> drop table t1;
+0 rows inserted/updated/deleted
+gfxd> -- check constraint - this should fail
+create table t1 ( a varchar(128), check (a = current schema));
+ERROR 42Y39: 'CURRENT SCHEMA' may not appear in a CHECK CONSTRAINT definition because it may return non-deterministic results.
+gfxd> create table t1 ( a varchar(128), check (a = current sqlid));
+ERROR 42Y39: 'CURRENT SCHEMA' may not appear in a CHECK CONSTRAINT definition because it may return non-deterministic results.
+gfxd> -- try mix case
+create schema "MiXCase";
+0 rows inserted/updated/deleted
+gfxd> set schema "MiXCase";
+0 rows inserted/updated/deleted
+gfxd> values current schema;
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+MiXCase                                                                                                                         
+gfxd> set schema app;
+0 rows inserted/updated/deleted
+gfxd> values current schema;
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+APP                                                                                                                             
+gfxd> set schema 'MiXCase';
+0 rows inserted/updated/deleted
+gfxd> values current schema;
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+MiXCase                                                                                                                         
+gfxd> -- following should get error - schema not found
+set schema 'MIXCASE';
+ERROR 42Y07: Schema 'MIXCASE' does not exist
+gfxd> set schema mixcase;
+ERROR 42Y07: Schema 'MIXCASE' does not exist
+gfxd> -- try long schema names (maximum schema identifier length has been changed to 30 as part of DB2 compatibility work)
+create schema t23456789012345678901234567890;
+0 rows inserted/updated/deleted
+gfxd> values current schema;
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+MiXCase                                                                                                                         
+gfxd> set schema app;
+0 rows inserted/updated/deleted
+gfxd> values current schema;
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+APP                                                                                                                             
+gfxd> set schema t23456789012345678901234567890;
+0 rows inserted/updated/deleted
+gfxd> values current schema;
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+T23456789012345678901234567890                                                                                                  
+gfxd> set schema app;
+0 rows inserted/updated/deleted
+gfxd> values current schema;
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+APP                                                                                                                             
+gfxd> set schema 'T23456789012345678901234567890';
+0 rows inserted/updated/deleted
+gfxd> values current schema;
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+T23456789012345678901234567890                                                                                                  
+gfxd> set schema app;
+0 rows inserted/updated/deleted
+gfxd> values current schema;
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+APP                                                                                                                             
+gfxd> autocommit off;
+gfxd> prepare p1 as 'set schema ?';
+gfxd> execute p1 using 'values(''T23456789012345678901234567890'')';
+0 rows inserted/updated/deleted
+gfxd> values current schema;
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+T23456789012345678901234567890                                                                                                  
+gfxd> -- the following should fail - 129 length
+create schema TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT;
+ERROR 42622: The name 'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT' is too long. The maximum length is '128'.
+gfxd> set schema TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT;
+ERROR 42622: The name 'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT' is too long. The maximum length is '128'.
+gfxd> set schema 'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT';
+ERROR 42622: The name 'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT' is too long. The maximum length is '128'.
+gfxd> execute p1 using 'values(''TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT'')';
+ERROR 42815: The replacement value for 'CURRENT SCHEMA' is invalid.
+gfxd> rollback;
+gfxd> autocommit on;
+gfxd> -- clean up
+drop schema judy restrict;
+0 rows inserted/updated/deleted
+gfxd> drop schema TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT restrict;
+ERROR 42622: The name 'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT' is too long. The maximum length is '128'.
+gfxd> 

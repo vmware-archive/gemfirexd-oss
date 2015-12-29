@@ -1,0 +1,83 @@
+PST14 contains multiple tests:
+- create
+- mirrorcreate
+- miss
+- getInitialImage
+- getInitialImageGetsImpact
+- getInitialImagePutsImpact
+
+For 3.0, we were simply trying to get these tests to run more than anything else.  Therefore,
+they were only run for 4 Hosts, instead of gathering stats for scalability with 2, 4 and 8 host runs
+as indicated in the associated bt files.
+
+In order to compare the create, mirror creates and misses results with those collected for 3.0, 
+I first copied the results from 3.0 into test specific directories with the 3.5 results.  
+(For example, I made separate createResults, missResults and mirrorResult direcctories with my
+test runs in them and them copied the related files from the 3.0 runs into these directories).
+
+I manually altered the create.prop files in each directory to add a perffmwk.comparisonKey.  
+
+The comparison keys are based on:
+<numHosts>_<scope>_<mirror>
+scope := global local distAck distNoAck
+mirror := none keys keysValues
+
+I used sortperf, rawperf and perfcmp to sort the results into buckets and compare like tests.  There are separate sortperf, rawperf and perfcmp scripts in this directory for each of the create, miss and mirror results directories: 
+sortperf.<op>, rawperf.<op> and perfcmp.<op> where op=create, miss or mirror.
+
+The following stats are maintained for the create tests:
+================================================================================
+STATSPEC         OP          BASE           #1
+cpu              avg         err0         err0
+memory           del  51355648.00  57032704.00
+maxResponseTime  max 778554000.00 415901000.00
+createsPerSecond avg       792.78      1009.08
+================================================================================
+STATSPEC         OP     #1
+memory           del -1.11
+maxResponseTime  max  1.87
+createsPerSecond avg  1.27
+================================================================================
+
+The following stats are maintained for the mirrorcreate tests:
+================================================================================
+STATSPEC         OP           BASE           #1
+cpu              avg          err0         err0
+memory           del   38629376.00  42004480.00
+maxResponseTime  max 1101273000.00 883258000.00
+createsPerSecond avg        722.60       947.70
+================================================================================
+STATSPEC         OP     #1
+memory           del -1.09
+maxResponseTime  max  1.25
+createsPerSecond avg  1.31
+================================================================================
+
+The following stats are maintained for the miss tests:
+================================================================================
+STATSPEC        OP         BASE           #1
+cpu             avg        err0         err0
+memory          del 39084032.00  43528192.00
+maxResponseTime max 79658000.00 126257000.00
+getsPerSecond   avg    18770.11     21369.00
+================================================================================
+STATSPEC        OP     #1
+memory          del -1.11
+maxResponseTime max -1.58
+getsPerSecond   avg  1.14
+================================================================================
+
+The getInitialImage, getInitialImageGetsImpact and getInitialImagePutsImpact tests
+simply are required to run for now.  In fact, in GF 3.5, we now process updates during 
+getInitialImage, so we can't expect to compare the getInitialImageTime (it will be 
+much slower since we are doing additional processing during the gii).
+
+For any future releases, we should run for a varying number of hosts -- then see how
+this scales.  We should add a perffmwk.comparisonKey to the bt file as well, so we can
+use perfsort, compareperf and rawperf to easily obtain the interesting statistics.
+
+For getInitialImage.conf, the only interesting stat will be cacheOpenResponseTime.
+
+For getInitialImageGetsImpact.conf, cacheOpenResponseTime, getResponseTime, and getsPerSecond.
+
+For getInitialImagePutsImpact.conf, cacheOpenResponseTime, putResponseTime, and putsPerSecond.

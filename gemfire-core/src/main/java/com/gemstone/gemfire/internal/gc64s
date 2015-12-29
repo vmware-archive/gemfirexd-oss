@@ -1,0 +1,2 @@
+#! /bin/csh
+gcc64.sh $1 -DFLG_DEBUG |& less -iX

@@ -1,0 +1,3 @@
+hydratest/locators/cacheDS.conf
+#capCon/concRegEventLRU.conf hydra.numHosts=1 vmQuantities=5 vmThreads=10
+#conflation/destroy.conf bridgeHosts=1 bridgeThreadsPerVM=4 bridgeVMsPerHost=1 dataSize=10 edgeHosts=1 edgeThreadsPerVM=1 edgeVMsPerHost=2 enableSubscriptionConflation=true maxKeys=10

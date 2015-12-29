@@ -1,0 +1,127 @@
+<project name="cacheWorker" default="all" basedir="."
+         xmlns:bundlor="antlib:com.springsource.bundlor.ant">
+
+  <property environment="env" />
+  <property name="gemfire.home" value="${env.GEMFIRE_HOME}" />
+  <property name="gemfire.lib" value="${gemfire.home}/lib"/>
+
+  <property name="bundlor.home" value="${env.BUNDLOR_HOME}" />
+  
+  <property name="target.dir" value="${basedir}/target"/>
+  <property name="classes.dir" value="${target.dir}/classes"/>
+  <property name="lib.dir" value="${basedir}/lib"/>
+  <property name="build.src.dir" value="${basedir}/src/main/java"/>
+  <property name="build.config.dir" value="${basedir}/src/main/config"/>
+
+  <property name="project.version" value="1.0.0"/>
+  <property name="package.name" value="cacheworker-${project.version}"/>
+
+  <property name="debug.dir" value="${basedir}/debug"/>
+
+  <path id="compile.classpath">
+    <fileset dir="${lib.dir}">
+      <include name="osgi.core.jar"/>
+    </fileset>
+    <fileset dir="${gemfire.lib}">
+      <include name="gemfire.jar"/>
+    </fileset>
+  </path>
+
+  <target name="init">
+    <fail unless="gemfire.home"
+          message="Please set the property &quot;gemfire.home&quot; to point to a valid GemFire Enterprise installation (e.g. 'ant -Dgemfire.home=/opt/GemFire651')." />
+    <available file="${gemfire.lib}/gemfire.jar" property="gemfire.jar.exists"/>
+    <fail message="Unable to find gemfire.jar at ${gemfire.lib}/gemfire.jar.">
+      <condition>
+        <isfalse value="${gemfire.jar.exists}"/>
+      </condition>
+    </fail>
+    <!-- NOTE uncomment if network issues occur causing Bundlor to freeze! -->
+    <!--echo level="info">'cacheWorker' using HTTP proxy settings: ${http.proxyHost}:${http.proxyPort}</echo-->
+    <!--setproxy proxyHost="${http.proxyHost}" proxyPort="${http.proxyPort}"/-->
+  </target>
+  
+  <target name="clean">
+    <delete dir="${debug.dir}"/>
+    <delete dir="${target.dir}"/>
+  </target>
+
+  <target name="compile" depends="init">
+    <pathconvert pathsep="${line.separator}|-- " property="echo.compile.classpath" 
+                 refid="compile.classpath"/>
+
+    <echo message="compile classpath"/>
+    <echo message="|"/>
+    <echo message="|-- ${echo.compile.classpath}"/>
+
+    <mkdir dir="${classes.dir}" />
+    
+    <javac classpathref="compile.classpath"
+           destdir="${classes.dir}"
+           nowarn="false"
+           debug="true"
+           optimize="false"
+           deprecation="true"
+           target="1.7"
+           verbose="false"
+           fork="false"
+           source="1.7"
+           includeAntRuntime="false">
+      <src>
+        <pathelement location="${build.src.dir}"/>
+      </src>
+    </javac>
+    
+    <copy todir="${classes.dir}">
+      <fileset dir="${build.config.dir}"/>
+    </copy>
+  </target>
+
+  <target name="package" depends="compile">
+    <echo message="Creating application bundle JAR:" />
+    
+    <jar jarfile="${target.dir}/${package.name}.jar"
+         basedir="${classes.dir}"/>
+  </target>
+
+  <target name="bundle" depends="package">
+    <taskdef resource="com/springsource/bundlor/ant/antlib.xml"
+             uri="antlib:com.springsource.bundlor.ant">
+      <classpath id="bundlor.classpath">
+        <fileset dir="${bundlor.home}/dist"/>
+        <fileset dir="${bundlor.home}/lib"/>
+      </classpath>
+    </taskdef>
+    
+    <bundlor:bundlor inputPath="${target.dir}/${package.name}.jar"
+                     outputPath="${target.dir}/${package.name}.jar"
+                     bundleVersion="${project.version}">
+      <manifestTemplate>
+Bundle-Vendor: Pivotal Software, Inc.
+Bundle-Classpath: .
+Bundle-ManifestVersion: 2
+Bundle-Name: cacheWorker
+Bundle-SymbolicName: cacheworker
+Bundle-Description: CacheWorker application bundle example for GemFire
+Bundle-Activator: cacheworker.internal.CacheWorkerActivator
+Excluded-Exports: cacheworker.internal 
+Import-Template: com.gemstone.gemfire*;version="[6.6,8)", org.osgi.framework*;version="[1.5,2)", antlr.*;version="[2.7,3)";resolution:=optional, javax.transaction*;resolution:=optional
+      </manifestTemplate>
+    </bundlor:bundlor>
+  </target>
+
+  <target name="debug">
+    <available file="${target.dir}/${package.name}.jar" property="package.jar.exists"/>
+    <fail message="Please execute the create-bundle target first.">
+      <condition>
+        <isfalse value="${package.jar.exists}"/>
+      </condition>
+    </fail>
+    
+    <mkdir dir="${debug.dir}"/>
+    <unjar src="${target.dir}/${package.name}.jar" dest="${debug.dir}" />
+  </target>
+  
+  <target name="all" depends="clean,bundle"/>
+  
+</project>

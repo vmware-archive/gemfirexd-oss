@@ -1,0 +1,32 @@
+sql/hdfs/hadoopSecurityOn-GfxdOn.conf
+A=datastore B=accessor C=locator
+accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=3
+datastoreHosts=1 datastoreVMsPerHost=1 datastoreThreadsPerVM=1
+locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+customers=trade.customers:0
+redundantCopies=1
+securities=trade.securities:0
+testMultiTableJoin=false
+testUniqueKeys=false
+
+sql/hdfs/hadoopSecurityOn-GfxdOff.conf
+A=datastore B=accessor C=locator
+accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=1
+datastoreHosts=1 datastoreVMsPerHost=1 datastoreThreadsPerVM=1
+locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+customers=trade.customers:0
+redundantCopies=1
+securities=trade.securities:0
+testMultiTableJoin=false
+testUniqueKeys=false
+
+sql/hdfs/hadoopSecurityOff-GfxdOn.conf
+A=datastore B=accessor C=locator
+accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=1
+datastoreHosts=1 datastoreVMsPerHost=1 datastoreThreadsPerVM=1
+locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+customers=trade.customers:0
+redundantCopies=1
+securities=trade.securities:0
+testMultiTableJoin=false
+testUniqueKeys=false

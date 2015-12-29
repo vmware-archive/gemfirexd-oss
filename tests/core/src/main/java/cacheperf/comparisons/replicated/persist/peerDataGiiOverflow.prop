@@ -1,0 +1,13 @@
+locatorHosts = 1
+locatorVMsPerHost = 1
+locatorThreadsPerVM = 1
+
+A = peer
+
+heapMB = 6000
+conserveSockets = false
+
+synchronous = true
+
+version = default
+

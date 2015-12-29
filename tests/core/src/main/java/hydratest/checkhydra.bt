@@ -1,0 +1,47 @@
+hydratest/checktaskattributes.conf
+hydratest/checkbogustaskattribute.conf // F
+hydratest/checkhydra.conf
+hydratest/checkhydraserial.conf
+hydratest/checkhydraclients.conf
+hydratest/checkhydrastarttimes.conf
+hydratest/checkhydrasystem1.conf
+hydratest/checkhydrasystem2.conf
+hydratest/checkhydrathreadgroups.conf
+hydratest/checkhydrathreadgroups1.conf
+hydratest/checkhydrathreadgroups2.conf
+hydratest/checkhydrathreadgroups3.conf
+hydratest/checkhydrathreadgroups4.conf
+hydratest/checkhydrathreadgroups5.conf
+hydratest/checkhydrathreadgroups6.conf
+hydratest/checkblackboard.conf
+hydratest/checkrobing.conf
+hydratest/checkseqinittasks.conf
+hydratest/notasks.conf
+hydratest/checkfcn.conf hydra.numHosts=2 test.vmQuantities=1 test.vmThreads=4
+hydratest/checkplusequals.conf
+hydratest/checkvecprms.conf
+hydratest/stopscheduling.conf
+hydratest/stopschedulingtaskonclient.conf
+hydratest/stopschedulingtaskonclientserial.conf
+hydratest/checkroundrobin.conf
+hydratest/checklock.conf
+hydratest/checklockbad1.conf // F
+hydratest/checklockbad2.conf // F
+hydratest/checklockstress.conf
+hydratest/checkdisconnect2.conf
+hydratest/checkdisconnect3.conf
+hydratest/checkconnect3.conf
+hydratest/checkbarrier.conf
+hydratest/checkheapdump.conf
+//hydratest/checkjprobe.conf
+hydratest/checkhydraerror.conf // F, stop clients, and continue batterytest
+hydratest/checkhydratimeout.conf // H, leave clients running, and stop batterytest
+hydratest/checkhydratimeoutend.conf // H, leave clients running, and stop batterytest, with stacks dumped both before and after endtask
+hydratest/checkhydratimeoutex.conf // H, leave clients running, and stop batterytest
+hydratest/checkhydrahook.conf
+hydratest/checkhydrahookerror.conf // F
+hydratest/checkhydrahookerror2.conf // F
+hydratest/checkhydrahookerror3.conf // H
+hydratest/checkhydrahooktimeout.conf // H
+hydratest/checkhydrahooktimeout2.conf // H
+hydratest/checkhydrahooktimeout3.conf // H

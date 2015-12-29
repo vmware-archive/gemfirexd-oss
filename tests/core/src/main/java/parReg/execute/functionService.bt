@@ -1,0 +1,199 @@
+parReg/execute/functionExecutionWithOutCustomPartitioning.conf peerHosts=5 peerVMsPerHost=2 peerThreadsPerVM=20 numKeys=10000 byteArraySize=5 numOfAccessors=2 redundantCopies=0,1,2,3   
+parReg/execute/customPartitioningWithFunctionExecution.conf peerHosts=5 peerVMsPerHost=2 peerThreadsPerVM=20 numKeys=10000 byteArraySize=5 numOfAccessors=2	redundantCopies=0,1,2,3
+parReg/execute/functionExecutionWithColocation.conf peerHosts=5 peerVMsPerHost=2 peerThreadsPerVM=20 numKeys=1000 byteArraySize=5	redundantCopies=0,1,2,3
+/*commenting out for Cheetah release
+parReg/execute/hctFuncExecWOCustomPartition.conf
+   edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=1000 byteArraySize=500 redundancy=1 
+   redundantCopies=0,1,2,3  
+parReg/execute/hctFuncExecWithCustomPartitioning.conf
+   edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=1000 byteArraySize=500 redundancy=2
+   redundantCopies=0,1,2,3
+parReg/execute/hctFuncExecWithColocation.conf
+   edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=1000 byteArraySize=500 redundancy=3 
+   redundantCopies=0,1,2,3 */    
+parReg/execute/randomFunctionExecution.conf peerHosts=5 peerVMsPerHost=2 peerThreadsPerVM=20 numKeys=100 byteArraySize=5 redundantCopies=0,1,2,3
+/*commenting out for Cheetah release
+parReg/execute/hct_randomFunctionExecution.conf
+   edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=1000 byteArraySize=500 redundantCopies=0,1,2,3  */ 
+parReg/execute/nonPRFunctionExecuteTest.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=1      	  
+parReg/execute/resultSender.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=1
+/*commenting out for Cheetah release
+parReg/execute/hctResultSender.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=3
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=3
+   redundantCopies=1 */  
+parReg/execute/useCase1/UseCase1.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=2 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   redundantCopies=1   
+/*commenting out for Cheetah release
+parReg/execute/replicatedRegionExecution.conf
+   edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=3000 byteArraySize=500 redundancy=1
+parReg/execute/hctNonPRFunctionExecuteTest.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 */
+parReg/execute/p2pExceptionHandling.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=1
+/*commenting out for Cheetah release
+parReg/execute/hctExceptionHandling.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 */
+parReg/execute/p2pExceptionHandling_2.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=1
+/*commenting out for Cheetah release
+parReg/execute/hctExceptionHandling_2.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=1  
+   
+   // HA tests
+   
+parReg/execute/hctFuncExecWithColocationHA.conf
+   edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=10000 byteArraySize=500 redundancy=1 numVMsToStop=1
+   redundantCopies=1
+
+parReg/execute/hctFuncExecWithColocationHA.conf
+   edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=10000 byteArraySize=500 redundancy=2 numVMsToStop=2
+   redundantCopies=2
+
+parReg/execute/hctFuncExecWithColocationHA.conf
+   edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=10000 byteArraySize=500 redundancy=3 numVMsToStop=3
+   redundantCopies=3 */
+
+parReg/execute/functionExecutionWithColocationHA.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=7 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=10000  byteArraySize=5000 redundantCopies=1 numVMsToStop=1
+
+parReg/execute/functionExecutionWithColocationHA.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=7 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=10000  byteArraySize=5000 redundantCopies=2 numVMsToStop=2
+
+parReg/execute/functionExecutionWithColocationHA.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=7 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=10000  byteArraySize=5000 redundantCopies=3 numVMsToStop=3
+
+parReg/execute/p2p_parRegFunctionExecutionHA.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=7 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=10000 byteArraySize=500 redundantCopies=1 numVMsToStop=1 
+
+parReg/execute/p2p_parRegFunctionExecutionHA.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=7 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=10000 byteArraySize=500 redundantCopies=2 numVMsToStop=2
+
+parReg/execute/p2p_parRegFunctionExecutionHA.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=7 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=10000 byteArraySize=500 redundantCopies=3 numVMsToStop=3
+   
+/*commenting out for Cheetah release
+parReg/execute/replicatedRegionExecutionHA.conf
+   edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=15000 byteArraySize=500 redundancy=3 numVMsToStop=3 */
+   
+parReg/execute/distributedRegionExecutionHA.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=7 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=15000  byteArraySize=5000 redundantCopies=1 numVMsToStop=3 
+   
+/*commenting out for Cheetah release
+parReg/execute/hct_parRegFunctionExecutionHA.conf
+   edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=1000 byteArraySize=500 redundancy=3 numVMsToStop=1
+   redundantCopies=1
+   
+   
+ parReg/execute/hct_parRegFunctionExecutionHA.conf
+   edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=1000 byteArraySize=500 redundancy=3 numVMsToStop=2
+   redundantCopies=2
+   
+ parReg/execute/hct_parRegFunctionExecutionHA.conf
+   edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=1000 byteArraySize=500 redundancy=3 numVMsToStop=3
+   redundantCopies=3   
+   
+ parReg/execute/funcExecHA_withEmptyServer.conf
+   A=replicateBridge replicateBridgeHosts=3 replicateBridgeVMsPerHost=1 replicateBridgeThreadsPerVM=5
+   B=emptyBridge emptyBridgeHosts=1 emptyBridgeVMsPerHost=1 emptyBridgeThreadsPerVM=5
+   C=edge edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   numKeys=1000 byteArraySize=500 redundancy=0 numVMsToStop=1 */
+   
+ parReg/execute/randomFunctionExecutionHA.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=7 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=100 byteArraySize=5000 redundantCopies=3 numVMsToStop=3  
+   
+/*commenting out for Cheetah release
+ parReg/execute/hct_randomFunctionExecutionHA.conf
+   edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=100 byteArraySize=500 redundantCopies=3 numVMsToStop=3 */ 
+   
+ parReg/execute/p2p_FuncExecutionWithRebalancing.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=7 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   C=extraDataStore extraDataStoreHosts=10 extraDataStoreVMsPerHost=1 extraDataStoreThreadsPerVM=1
+   numKeys=500 byteArraySize=500 redundantCopies=1 
+   
+/*commenting out for Cheetah release
+ parReg/execute/hct_functionExecutionWithRebalancing.conf
+   A=partitionBridge partitionBridgeHosts=5 partitionBridgeVMsPerHost=1 partitionBridgeThreadsPerVM=5
+   B=extraBridge extraBridgeHosts=7 extraBridgeVMsPerHost=1 extraBridgeThreadsPerVM=1
+   C=edge edgeHosts=10 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   numKeys=500 byteArraySize=500 redundantCopies=1 redundancy=0   
+    
+parReg/execute/hctFuncExecWithColocationHA_NoSingleHop.conf
+   edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=10000 byteArraySize=500 redundancy=1 numVMsToStop=1
+   redundantCopies=1
+   
+parReg/execute/hctFuncExecWithColocationHA_SelectorNoSingleHop.conf  
+   edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=10000 byteArraySize=500 redundancy=1 numVMsToStop=1
+   redundantCopies=1
+   
+parReg/execute/hct_randomFunctionExecutionHA_NoSingleHop.conf
+   edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=100 byteArraySize=500 redundantCopies=3 numVMsToStop=3
+
+parReg/execute/hct_randomFunctionExecutionHA_SelectorNoSingleHop.conf  
+   edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=100 byteArraySize=500 redundantCopies=3 numVMsToStop=3     
+
+parReg/execute/hctPRSingleHopWithServerGroup.conf
+   edgeHosts=8 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=10 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=5000 byteArraySize=100 redundantCopies=1,2,3
+
+parReg/execute/hctPRSingleHopColocationWithServerGroup.conf
+   edgeHosts=8 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=10 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=5000 byteArraySize=100 redundantCopies=1,2,3 */
+
+  

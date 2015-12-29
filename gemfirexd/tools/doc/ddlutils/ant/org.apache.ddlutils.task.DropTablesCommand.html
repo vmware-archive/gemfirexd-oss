@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title>dropTables</title>
+<link href="styles.css" type="text/css" rel="stylesheet">
+</head>
+<body>
+<h2> dropTables</h2>
+<fieldset class="taskDescription">
+<legend><a class="anchor" name="description">Description</a></legend>
+<p>Java type: <a href="../api/org/apache/ddlutils/task/DropTablesCommand.html"><code>org.apache.ddlutils.task.DropTablesCommand</code></a></p>
+<p>Sub task for dropping tables.</p>
+</fieldset>
+<fieldset class="taskParameters">
+<legend><a class="anchor" name="parameters">Parameters</a></legend>
+  	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-tables">tables</a> : String
+  	</p>
+	<p class="taskParameterDescription">
+	Sets the names of the tables to be removed, as a comma-separated list. Escape a
+ comma via '\,' if it is part of the table name. Please note that table names are
+ not trimmed which means that whitespace characters should only be present in
+ this string if they are actually part of the table name (i.e. in delimited
+ identifer mode). <br/>
+        If no table filter is specified, then all tables will be dropped.
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-failonerror">failonerror</a> : boolean
+  	</p>
+	<p class="taskParameterDescription">
+	Specifies whether the execution shall stop if an error has occurred during the task runs. <br/>
+        By default execution will be stopped when an error is encountered.
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-tablefilter">tablefilter</a> : String
+  	</p>
+	<p class="taskParameterDescription">
+	Sets the regular expression matching the names of the tables to be removed.
+ For case insensitive matching, an uppercase name can be assumed. If no
+ regular expressionis specified <br/>
+        If no table filter is specified, then all tables will be dropped.
+  	</p>
+</fieldset>
+<fieldset class="taskNestedElements">
+<legend><a class="anchor" name="nestedElements">Nested elements</a></legend>
+</fieldset>
+<p>&copy;2005-2007 Apache Software Foundation</p>
+</body>
+</html>

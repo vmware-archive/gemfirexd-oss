@@ -1,0 +1,28 @@
+#!/bin/sh
+
+#-------------------------------------------------------------------------------
+# p2p trend
+#-------------------------------------------------------------------------------
+
+if [ -z "$1" ]
+then
+  echo "No path to tinyobject01 baseline was specified."
+  exit 0
+fi
+echo "Using path to tinyobject01 = " + $1
+
+echo "Doing ratio comparison for p2p..."
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m \
+  -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE \
+  -DomitFailedTests=true -DaddTestKey=true -DcompareByKey=true \
+  -Dmode=ratio -DcompReportFile=p2p.rr.trend.ratio.txt \
+  perffmwk.PerfComparer \
+  $1/p2p.gfxd p2p.gfxd
+
+echo "Doing raw comparison for p2p..."
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m \
+  -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE \
+  -DomitFailedTests=true -DaddTestKey=true -DcompareByKey=true \
+  -Dmode=raw -DcompReportFile=p2p.rr.trend.raw.txt \
+  perffmwk.PerfComparer \
+  $1/p2p.gfxd p2p.gfxd

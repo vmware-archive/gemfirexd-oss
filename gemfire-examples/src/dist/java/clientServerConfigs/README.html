@@ -1,0 +1,607 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<style type="text/css">
+<!--
+.style1 {font-style: italic}
+.style2 {font-style: italic}
+.style4 {font-size: medium}
+-->
+</style>
+<BODY bgcolor="#ffffff"><HTML>
+ <IMG SRC="../../../../docs/VMwareLogo.png" BORDER="0">
+ <HEAD>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+  <META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+  <LINK REL="STYLESHEET" HREF="DocIndex.css" CHARSET="ISO-8859-1" TYPE="text/css">
+<H1 align="center">
+vFabric<FONT size=6><b><sup><font size=-0>&#8482;</font></sup></b></FONT></font> GemFire<FONT size=6><b><sup><font size=-0>&#174;</font></sup></b></FONT></font></H1>
+     </b></FONT>
+  <H1 align="center">clientServerConfigs</H1>
+<H2 align="center">Java Caching API Programming Example </H2>
+
+<hr color="#cc0000" size="2" align="left">
+
+<P>The <b>clientServerConfigs</b> example uses the <a href="../cacheRunner/README.html" target="_blank">cacheRunner</a> example to demonstrate the common recommended cache server and client configurations for client/server caching. The example configurations are located under the GemFire installation in <code>examples/dist/clientServerConfigs</code>. For information on client/server 
+caching, see the <I>GemFire User's Guide</I> and 
+the online Java API documentation.</P>
+<OL>
+  <I>In client/server caching, it is vital that the server
+ and client tiers access different sets of data. If the servers and clients access the same 
+distributed region in the same distributed system, the client/server caching model will fail. The servers 
+should be in one distributed system accessing one distributed region. The 
+clients should either all be in a second distributed system or they should be 
+run as standalone applications.</I>
+</OL><br>
+<B>
+<h2>Cache Configuration</h2>
+</B>
+<P>The <code>examples/dist/clientServerConfigs</code>
+directory contains the XML cache configuration files for the cache server and client. There is one server file, <code>server.xml</code>, and one client file, <code>client.xml</code>. 
+In these files:</P>
+<UL>
+<LI>
+The client and server create the same region, <code>/root/cs_region</code>. The client 
+creates the region with local scope, which ensures region isolation. The 
+server creates it with <code>distributed-ack</code> scope and <code>replicate</code> data policy so multiple server instances have identical data. The server also creates a 
+very simple loader on the region.</LI>
+<BR>
+<LI>
+The server's file declares a cache server for the cache. This process listens 
+on port 40404 for client data requests for all server cache regions.</LI>
+<BR>
+<LI>
+The client's file configures a pool and sets the pool name attribute on the region.
+The pool is configured to access the server locator process running
+on the local host on port 41111. 
+The client and server are now configured to talk to each other.</LI>
+</UL>
+<OL>
+  <p><I>You may need to change the cache server communication port to avoid conflicting with processes already running on your system. If you do, just make sure to change  to 
+  the same setting for </I><code>cache-server</code> <code>port</code><I> in the </I><code>server.xml</code><I> file.</I></p>
+  <p><em>You may also need to change the locator communication port to avoid conflicting with processes already running on your system. If you do, just make sure to change 41111 to your new port number in the following files: </em><code>server/gemfire.properties</code><em>, and </em><code>client.xml</code><em>.    </em></p>
+</OL>
+<br>
+
+<h2><B>Distributed System Configuration</B></h2>
+The <code>clientServerConfigs</code> directory also contains subdirectories with <code>gemfire.properties</code> files in them. These provide the distributed system configurations for the various client/server 
+caching models. They specify the server and client <code>mcast-port</code> settings that
+define the distributed systems the VMs belong to. For the standalone client, they specify that the VM does not belong to any distributed system.
+<OL>
+  <I>You may need to change the </I><code>mcast-port</code><I> settings to 
+avoid conflicting with ports that are already in use on your system. If you do, </I><I>make sure
+the setting in </I><code>client_separate_dist_sys/gemfire.properties</code><I> 
+is still different from the setting in </I><code>server/gemfire.properties</code><I>. 
+Do not change any of the settings in </I><code>client_standalone/gemfire.properties</code>.<BR>
+  
+</OL><br>
+<B><h2>Environment Setup</h2></B>
+  
+  <P>You will need at least two terminal sessions: one to run a cache server VM and one to run 
+  a client VM. These examples show one server and one client running at
+  a time, but you can increase the number of either. However many you run, 
+  you need a separate terminal session for each.</p>
+  <ol>
+    <li>Start two terminal sessions and then cd to the GemFire product directory in both of them. For each session, set the environment according to the instructions in <a href="../../EnvSetup.html" target="_blank">examples/EnvSetup.html</a>. If you intend to run the security authentication and authorization part of this example, be sure to include the environment settings specific to that part. </li>
+
+    <li>Change directory in both sessions to <code>examples/dist/clientServerConfigs</code>. 
+      The rest of the example instructions are relative to this directory.</li>
+  </ol><br>
+  <B>
+<h2><a name="LocatorStart">Starting a Locator and the Cache Server</h2>
+  </B>
+  <p>
+  In one session, follow these steps to start a locator, start the cache server, and add some entries to the server's cache.</p>
+  <ol>
+    <li>Change directory to the <code>server</code> directory.</li><br>
+    <li>Start a locator with port number 41111: </li>
+    <pre>
+    gemfire start-locator -port=41111
+</pre>
+
+    <li>Run the server with the <code>server.xml</code> file:
+      </h3>
+      <pre>
+    java cacheRunner.CacheRunner ../server.xml </pre>
+      <p>      This starts the <code>cacheRunner</code> program with the server's XML file and the current working directory's <code>gemfire.properties</code> file settings. The XML file defines a region named <code>/root/cs_region</code> and gives it a loader and a listener. </p>
+      <p> When the server starts you see this prompt: </p>
+      <pre>
+    /root</pre>
+    </li>
+    <li>Enter the commands listed here in bold (most of the output is included in this listing). You 
+      define a value, <code>value1</code>, for the first entry, <code>entry1</code>, and you cause a loader
+      invocation by getting an entry, <code>entry2</code>, that doesn't exist in the cache. 
+      The loader is programmed to return a value that is the string equivalent of the key. The listener   reports on all entry creations, and specifies whether the value came from a load operation.
+  </P>
+    </li>
+  </ol>
+ 
+  <blockquote>
+    <pre>    /root> <B>chrgn cs_region</B>
+    /root/cs_region> <B>put entry1 value1</B>
+    CacheListener.afterCreate EntryEvent on region /root/cs_region
+      [distributed, not expiration, local origin]
+      [not load]
+      Key: entry1
+      Old value: null
+      New value: value1
+
+    /root/cs_region> <B>get entry2</B>
+    CacheListener.afterCreate EntryEvent on region /root/cs_region
+      [distributed, not expiration, local origin]
+      [local load]
+      Key: entry2
+      Old value: null
+      New value: entry2
+
+         entry2 -> String: "entry2"
+    /root/cs_region> <B>ls</B>
+    Region Entries:
+         entry1 -> byte[]: "value1"
+         entry2 -> String: "entry2"
+
+    Subregions:
+    /root/cs_region></pre>
+  Leave this running. The listener will report 
+when there are modifications to the server's cs_region.<BR>
+</blockquote>
+<B><h2>Running the Client</h2>
+</B>
+<p>
+  In the other session, follow these instructions for either of the client subdirectories 
+to see the client/server cache working.</p>
+<ol>
+  <li>Choose the client directory whose 
+    configuration you wish to try. Change to either the <code>client_standalone</code> or the <code>client_separate_dist_sys</code> directory and run the following: </li>
+
+  <pre>
+    java cacheRunner.CacheRunner ../client.xml true
+</pre>
+
+  <li>  Once the client is started, enter the commands below. 
+    <pre>
+    /root> <B>chrgn cs_region</B>
+    /root/cs_region> <B>registerInterest entry1</B>
+    Interest registered in entry1 
+    /root/cs_region> <B>get entry1</B>
+         entry1 -> byte[]: "value1"
+    /root/cs_region> <B>get entry2</B>
+         entry2 -> String: "entry2"
+    /root/cs_region> <B>des entry2</B>     
+    /root/cs_region> <B>get entry3</B>
+         entry3 -> String: "entry3"
+    /root/cs_region> <B>put entry1 valueFromClient</B>
+    /root/cs_region&gt;</pre>
+    <p>As you run the commands, note the output in the server VM.
+      When you ask for an entry that exists on the server, like <code>entry1</code>, it is passed  directly 
+      from the server cache. When you ask for an entry that the 
+      server does not have, like <code>entry3</code>, it invokes its loader, updates the server cache,
+      and returns the result. When you <code>put</code> an entry on the client side, the new value is passed up to the server.</p>
+  </li>
+
+  <li>Run <code>ls</code> on both the server and client to verify the cache contents. Both sides should report the same thing:
+    <pre>
+    /root/cs_region> <B>ls</B>
+    Region Entries: 
+    entry1 -&gt; byte[]: &quot;valueFromClient&quot;
+    entry3 -&gt; String: &quot;entry3&quot;</pre>
+    <p>The server  automatically sends entry update notification, with values, for the entries the client has registered interest in. For entries that are not registered, the client can get values explicitly, but receives no updates for server-side update operations. </p>
+  </li>
+
+  <li>Update  <code>entry1</code> and <code>entry2</code> in the server session.
+</ol>
+    <blockquote>
+      <pre>
+    /root/cs_region> <B>put entry1 serverValue1</B>
+        ...
+    /root/cs_region> <B>put entry2 serverValue2</B>
+        ...<B></B></pre>
+    </blockquote>
+<B><h3>Final Client Cache</h3>
+</B>
+
+The  client side <code>entry1</code> has the new server value. This is because the client registered interest in <code>entry1</code> at the beginning of this session. The other entry, <code>entry3</code>, is not changed, so at this point it does not match the server cache. Since the client did not register interest in <code>entry3</code>, the server does not propagate any information on the server-side modification.</p>
+<p>To see the results, run <code>ls</code> on the client side.</p>
+<pre>
+    /root/cs_region> <B>ls</B>
+    entry1 -> byte[]: "serverValue1"
+    entry3 -> String: "entry3"
+</pre>
+<h2>Stopping the Server and Client</h2>
+</B>
+  <p>In both sessions, enter <strong><code>quit</code></strong> to exit the program and return to the command line. You will use both sessions for the next example showing authentication and authorization.</p>
+<br>
+<B>
+<h2>Running the Server and Client with Authentication/Authorization Enabled</h2>
+</B>
+<p>
+GemFire can be configured so that a client attempting to connect to a server must first submit credentials to the server for authentication. Credentials are typically submitted as a username and a password. Client operations on the server can be authorized or denied based on the client's credentials.
+<p>Authentication and authorization in this example is configured in the <code>gemfire.properties</code> files for the server and client. Descriptions of the configuration properties are listed below.
+<blockquote>
+  <p><strong><em>Do not enter these values</em></strong>. These are descriptions of security properties for the server.</p>
+  <pre>
+# The sample implementation of LDAP server-based authentication.
+security-client-authenticator=templates.security.LdapUserAuthenticator.create
+	
+# Point to a valid LDAP server. 
+security-ldap-server=ldap
+	
+# The baseDN details (top level directory tree) of the LDAP server mentioned above.
+security-ldap-basedn=ou=ldapTesting,dc=pune,dc=gemstone,dc=com
+
+
+# The sample implementation of Xml-based authorization.
+security-client-accessor=templates.security.XmlAuthorization.create
+	
+# The xml configuration file for XmlAuthorization accessor mentioned above.
+# Modify the usernames in the provided XML to match those recognized by the
+# LDAP server mentioned above.
+security-authz-xml-uri=authz-ldap.xml	
+</pre>
+  <p><strong><em>Do not enter these values</em></strong>. These are descriptions of security properties for the client.  </p>
+  <pre>
+# The username/password-based sample implementation of AuthInitialize.
+security-client-auth-init=templates.security.UserPasswordAuthInit.create
+
+
+# The authentication credentials, such as a username and password.
+# These should be valid combinations recognized by the LDAP server mentioned
+# on the server side.
+security-username=gemfire
+security-password=gemfire</pre>
+</blockquote>
+ 
+<B>
+<h3>Running the Server with Authentication and Authorization</h3>
+</B>
+  <P>This uses the first session from the first example, above, and assumes you still have the locator running. See <a href="#LocatorStart">Starting a Locator and the Cache Server. </a></P>
+
+<P>Follow these steps to configure the cache server for authentication and authorization, then start the server.</P>
+<ol>
+  <li>Make a copy of the <code>gemfire.properties</code> file so the file can be restored to its original, unedited state. <br>
+  <br>  
+  <li> Set the following security properties in the <code>gemfire.properties</code> file.    
+
+    <pre>
+	security-ldap-server=ldap
+	security-ldap-basedn=ou=ldapTesting,dc=pune,dc=gemstone,dc=com
+	security-client-authenticator=templates.security.LdapUserAuthenticator.create
+	security-client-accessor=templates.security.XmlAuthorization.create
+	security-authz-xml-uri=authz-ldap.xml
+</pre>
+    <p>Refer to the <a href="#security_templates">Sample GemFire Security Implementations</a> section for other options for configuring and launching the server with <code>cacheRunner</code>.</p>
+ 
+  <li>Start the server with the <code>server.xml</code> file:
+    <pre>
+    java cacheRunner.CacheRunner ../server.xml
+    </pre>
+    <p>This starts the <code>cacheRunner</code> program with the server's XML file and the current working directory's <code>gemfire.properties</code> file settings. The <code>xml</code> file defines a region named <code>/root/cs_region</code> and gives it a loader and a listener.</p>
+    <p> Once the server has started, this prompt appears: </p>
+    <pre>
+    /root></pre>
+  <li>Enter the commands listed here in bold (most of the output is included in this listing).
+    <pre>    /root> <B>chrgn cs_region</B>
+    /root/cs_region> <B>put entry1 value1</B>
+    CacheListener.afterCreate EntryEvent on region /root/cs_region
+      [distributed, not expiration, local origin]
+      [not load]
+      Key: entry1
+      Old value: null
+      New value: value1
+
+    /root/cs_region> <B>ls</B>
+    Region Entries:
+         entry1 -> byte[]: "value1"
+
+    Subregions:
+    /root/cs_region</pre>
+  Leave this running. The listener will report when there are modifications to the server's cs_region. <BR>
+  
+  </li>
+</ol>
+  </li>
+</ol>
+<B><h3>Running the Client with Authentication and Authorization</h3>
+</B>
+<P>To see the client/server cache working with authentication and authorization, you will modify the configuration in the <code>client_standalone</code> subdirectory.  Make a copy of the <code>gemfire.properties</code> file in that directory so the file can be restored to its original, unedited state.<br>
+</P>
+<P CLASS="Head-D"><I><strong>With Valid Credentials:</strong></I></P>
+<ol>
+  <li>In the other open session, change directory to the <code>client_standalone</code> directory if it's not already in that directory.<br>
+  <br>
+  <li>Set the following security properties in the client's <code>gemfire.properties</code> file (be sure to remove <code>#</code> from the <code>security-</code> properties):
+    <pre>
+    security-client-auth-init=templates.security.UserPasswordAuthInit.create
+    security-username=gemfire3
+    security-password=gemfire3</pre>
+  <li>Run the client with the following command:
+
+<pre>
+	java cacheRunner.CacheRunner ../client.xml
+</pre>
+<li>Once the client is started, enter the commands below.
+<pre>
+	/root> <B>chrgn cs_region</B><br>
+	/root/cs_region> <B>ls</B><br>
+	Region Entries:
+	
+	Subregions:
+	/root/cs_region> <B>get entry1</B>
+	         entry1 -> byte[]: "value1"<br>
+	/root/cs_region> <B>ls</B>
+	Region Entries:
+	         entry1 -> byte[]: "value1"
+
+	Subregions:
+	/root/cs_region> <B>put key2 value2</B>
+</pre>
+The <code>put</code> operation results in this error message:    
+<p><code>com.gemstone.gemfire.cache.client.ServerOperationException:  com.gemstone.gemfire<br>
+  .security.NotAuthorizedException:  Not authorized to perform PUT operation on region  <br>
+  [/root/cs_region]</code></p>
+<p>
+The error message reports that the <code>put</code> operation is not authorized.
+Note that authorization is granted for the <code>get</code> operation. Review the roles and privileges table in <a href="#ldap_authentication">LDAP Authentication</a> to see that the <code>gemfire3</code> credentials authorize the client to perform <code>reader</code> operations, which includes <code>get</code>, but not <code>writer</code> operations, which includes <code>put</code>. <br>
+</p>
+  </li>
+</ol>
+<P CLASS="Head-D"><I><strong>With Invalid Credentials:</strong></I></P>
+
+<ol>
+  <li>Enter <strong><code>quit</code></strong> in the client session to stop the running client.  
+  <li>Change the <code>security-username</code> and <code>security-password</code> properties in <code>gemfire.properties</code> to start the client with invalid credentials:
+    <pre>
+	security-username=invalidUsr
+	security-password=invalidUsr</pre>
+  <li>Start the client. An <code>AuthenticationFailedException</code> occurs:<br>
+<br>
+	<pre>java cacheRunner.CacheRunner ../client.xml</pre>
+	<p><code>Exception  in thread &quot;main&quot;  com.gemstone.gemfire.security.AuthenticationFailedException:  <br>
+    LdapUserAuthenticator: Failure with provided username, password combination  for user name: invalidUsr</code>
+  </li>
+</ol>
+<P><I><strong>
+<br>
+With No Credentials</strong>:</I></P>
+
+<ol><li>Remove the <code>security-client-auth-init</code>, <code>security-username</code> and <code>security-password</code> properties from <code>gemfire.properties</code> to start the client without any credentials.</li>
+  <li>Start the client. An <code>AuthenticationRequiredException</code> exception occurs.</li>
+</ol>
+<blockquote>
+  <p><code>java cacheRunner.CacheRunner ../client.xml</code>
+    
+    <br>
+    <br>
+    <code>Exception  in thread &quot;main&quot;  com.gemstone.gemfire.security.AuthenticationRequiredException:  <br>
+    No security-* properties are provided<br>
+    </code></blockquote>
+
+<B>
+<h3>Stopping the Locator and Closing the Server and Client Sessions </h3>
+</B>
+<ol>
+  <li>In the server session, enter <strong><code>quit</code></strong> to stop the running server.
+  <li>In the server session, stop the locator by entering:</li>
+  <pre>gemfire stop-locator -port=41111</code></pre>  
+  <li>Enter <strong><code>exit</code></strong> to close the server session.  
+  <li>In the client session, enter <strong><code>exit</code></strong> to close the session.
+</ol>
+
+<H2><br>
+<a name="security_templates" id="security_templates"> Sample GemFire Security Implementations </a></H2>
+<P> There are two aspects to GemFire security:
+<ol>
+<li> <strong>Authentication</strong>: Handles the authentication of nodes in a peer-to-peer network, as well as clients that connect to the servers.<br>
+<li> <strong>Authorization</strong>&nbsp;: Evaluates the permission for GemFire operations by the clients. <br>
+</ol>
+<p> Authentication can be either Dummy, LDAP server-based, or PKCS-based, whereas authorization is XML-based only. For different authentication schemes, the corresponding authorization XML configuration file should be provided to the Sample Authorization module.<br>
+</P>
+  <H3> Dummy Authentication </H3>
+   <P>This authentication scheme is based on a simple username and password. The server side authenticator is in package <code>templates.security.DummyAuthenticator.create</code>. The client side initializer for it is  in <code>templates.security.UserPasswordAuthInit.create</code>.<br>
+   </P>
+
+<font size=2>
+<table border="1" align="top" cellspacing=4 cellpadding=4 width=1000 height=50 >
+ <caption align=left,top>
+ Mapping between Authentication credentials and Authorization roles & privileges
+ </caption>
+ <tr align=middle>
+  <th>Authentication User Name</th>
+  <th>Authorization Roles</th>
+
+  <th>Permission to the Roles</th>
+ </tr>
+ <tr align=middle>
+  <td valign=middle>root, admin, administrator</td>
+  <td valign=middle>reader, writer, cacheOps</td>
+  <td>
+    <table border=0 cellspacing=0 cellpadding=0>
+
+      <tr><td> <strong>reader</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: get, register_interest, unregister_interest, key_set, contains_key </td></tr>
+      <tr><td> <strong>writer</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: put, destroy, region_clear</td></tr>
+      <tr><td> <strong>cacheOps</strong>: query, execute_cq, stop_cq, close_cq, region_create, region_destroy</td></tr>
+    </table>  </td>
+ </tr>
+
+ <tr align=middle>
+  <td valign=middle>reader0, reader1, reader2</td>
+  <td valign=middle>reader</td>
+  <td>
+    <table border=0 cellspacing=0 cellpadding=0>
+
+      <tr><td> <strong>reader</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: get, register_interest, unregister_interest, key_set, contains_key </td></tr>
+    </table>  </td>
+ </tr>
+
+ <tr align=middle>
+  <td valign=middle>writer0, writer1, writer2</td>
+
+  <td valign=middle>writer</td>
+  <td>
+    <table border=0 cellspacing=0 cellpadding=0>
+      <tr><td> <strong>writer</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: put, destroy, region_clear</td></tr>
+    </table>  </td>
+ </tr>
+
+ <tr align=middle>
+  <td valign=middle>reader3, reader4</td>
+  <td valign=middle>queryRegions</td>
+  <td>
+    <table border=0 cellspacing=0 cellpadding=0>
+      <tr><td> <strong>queryRegions</strong>: query, execute_cq, stop_cq, close_cq</td></tr>
+    </table>  </td>
+ </tr>
+</table>
+</font>
+
+  <H3> <br>
+    <a name="ldap_authentication"></a>LDAP Authentication </H3>
+   <P>This scheme is based on the usernames and password configured in a LDAP server. Refer to the Security chapter in the <em>GemFire User's Guide</em> for more details. The server side authenticator is in package <code>templates.security.LdapUserAuthenticator.create</code> The client side initializer for it is  in <code>templates.security.UserPasswordAuthInit.create</code>.<br>
+   </P>
+   <font size=2>
+<table border="1" align="top" cellspacing=4 cellpadding=4 width=1000 height=50 >
+ <caption align=left,top>
+ Mapping between Authentication credentials and Authorization roles & privileges
+ </caption>
+ <tr align=middle>
+  <th>Authentication User Name</th>
+  <th>Authorization Roles</th>
+
+  <th>Permission to the Roles</th>
+ </tr>
+ <tr align=middle>
+  <td valign=middle>gemfire1, gemfire2</td>
+  <td valign=middle>reader, writer, cacheOps</td>
+  <td>
+    <table border=0 cellspacing=0 cellpadding=0>
+
+      <tr><td> <strong>reader</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: get, register_interest, unregister_interest, key_set, contains_key </td></tr>
+      <tr><td> <strong>writer</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: put, destroy, region_clear</td></tr>
+      <tr><td> <strong>cacheOps</strong>: query, execute_cq, stop_cq, close_cq, region_create, region_destroy</td></tr>
+    </table>  </td>
+ </tr>
+
+ <tr align=middle>
+  <td valign=middle>gemfire3, gemfire4, gemfire5</td>
+  <td valign=middle>reader</td>
+  <td>
+    <table border=0 cellspacing=0 cellpadding=0>
+
+      <tr><td> <strong>reader</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: get, register_interest, unregister_interest, key_set, contains_key </td></tr>
+    </table>  </td>
+ </tr>
+
+ <tr align=middle>
+  <td valign=middle>gemfire6, gemfire7, gemfire<font size="2">8</font></td>
+
+  <td valign=middle>writer</td>
+  <td>
+    <table border=0 cellspacing=0 cellpadding=0>
+      <tr><td> <strong>writer</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: put, destroy, region_clear</td></tr>
+    </table>  </td>
+ </tr>
+
+ <tr align=middle>
+  <td valign=middle>gemfire9, gemfire10</td>
+  <td valign=middle>queryRegions</td>
+  <td>
+    <table border=0 cellspacing=0 cellpadding=0>
+      <tr><td> <strong>queryRegions</strong>: query, execute_cq, stop_cq, close_cq</td></tr>
+    </table>  </td>
+ </tr>
+</table>
+</font>
+
+  <H3> <br>
+  PKCS Authentication </H3>
+   <P>This scheme is based on public/private key-based encryption and decryption. Refer to the Security chapter in the <em>GemFire User's Guide </em> for keystore configurations. The server-side authenticator is in package <code>templates.security.PKCSAuthenticator.create</code>. The client-side initializer is in <code>templates.security.PKCSAuthInit.create</code>.</P>
+   <P><strong>PKCS configuration details</strong>:
+   <ol>
+  <li>Create a keystore for aliases from <em>gemfire1</em> to <em>gemfire10</em>, as described in the Security chapter for the <em>GemFire User's Guide</em>.<br>
+
+  <br>
+  <li>Provide the following properties in <code>gemfire.properties</code> for client-side configuration.<br>
+    <span class="style1"><strong>Note:</strong> All of these properties are user-provided information to keytool<strong>-</strong>like utilities during public/private key generation and self-signing.    </span>
+    <blockquote> <p> <code> 
+
+% security-keystorepath=<i>&lt;absolute filepath to keystore where keys are generated&gt;</i><br>
+% security-alias=<i>&lt;alias name given while generating Public & Private key pair for the Client&gt;</i><br>
+% security-keystorepass=<i>&lt;password entered while generating Private key while Self-signing&gt;</i></code></p> 
+  </blockquote>
+<li>Provide the following properties in <code>gemfire.properties</code> for server side configuration.<br>
+
+   <span class="style2"><strong>Note:</strong> All of these properties are user-provided information to keytool-like utilities during TrustStore generation.   </span>
+   <blockquote> <p> <code> 
+% security-publickey-filepath=<i>&lt;absolute filepath to keystore where public keys are generated&gt;</i><br>
+% security-publickey-pass=<i>&lt;password entered while generating key to TrustStore&gt;</i></code></p> 
+  </blockquote>
+</ol>
+   </P>
+
+<font size=2>
+<table border="1" align="top" cellspacing=4 cellpadding=4 width=1000 height=50 >
+ <caption align=left,top>
+ Mapping between Authentication credentials and Authorization roles & privileges
+ </caption>
+ <tr align=middle>
+  <th>Authentication KeyStore Aliases</th>
+  <th>Authorization Roles</th>
+
+  <th>Permission to the Roles</th>
+ </tr>
+ <tr align=middle>
+  <td valign=middle>gemfire1, gemfire2</td>
+  <td valign=middle>reader, writer, cacheOps</td>
+  <td>
+    <table border=0 cellspacing=0 cellpadding=0>
+
+      <tr><td> <strong>reader</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: get, register_interest, unregister_interest, key_set, contains_key </td></tr>
+      <tr><td> <strong>writer</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: put, destroy, region_clear</td></tr>
+      <tr><td> <strong>cacheOps</strong>: query, execute_cq, stop_cq, close_cq, region_create, region_destroy</td></tr>
+    </table>  </td>
+ </tr>
+
+ <tr align=middle>
+  <td valign=middle>gemfire3, gemfire4, gemfire5</td>
+  <td valign=middle>reader</td>
+  <td>
+    <table border=0 cellspacing=0 cellpadding=0>
+
+      <tr><td> <strong>reader</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: get, register_interest, unregister_interest, key_set, contains_key </td></tr>
+    </table>  </td>
+ </tr>
+
+ <tr align=middle>
+  <td valign=middle>gemfire6, gemfire7, gemfire<font size="2">8</font></td>
+
+  <td valign=middle>writer</td>
+  <td>
+    <table border=0 cellspacing=0 cellpadding=0>
+      <tr><td> <strong>writer</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: put, destroy, region_clear</td></tr>
+    </table>  </td>
+ </tr>
+
+ <tr align=middle>
+  <td valign=middle>gemfire9, gemfire10</td>
+  <td valign=middle>queryRegions</td>
+  <td>
+    <table border=0 cellspacing=0 cellpadding=0>
+      <tr><td> <strong>queryRegions</strong>: query, execute_cq, stop_cq, close_cq</td></tr>
+    </table>  </td>
+ </tr>
+</table>
+</font>
+
+  <H3> <br>
+  XML-Based Authorization </H3>
+   <P>This authorization scheme is based on the prior mapping of authentication credentials to roles and privileges. Permissions in XML files are supplied corresponding to the authentication scheme. Refer to the Security chapter in the <em>GemFire User's Guide</em> for more information. The server-side <code>security-accessor</code> is in package <code>templates.security.XmlAuthorization.create</code>, and <code>security-authz-xml-uri</code> should point to either <a href="./server/authz-dummy.xml" target="_blank">authz-dummy.xml</a> or <a href="./server/authz-ldap.xml" target="_blank">authz-ldap.xml</a>, depending on the <code>security-authenticator</code> provided.<br>
+</P>
+
+
+<h3>Additional Example Scenarios</h3>
+  <P>There are a number of scenarios you can explore with this basic setup. You might add
+  other clients and see the effect on client peers when a client updates an entry. You could see how the behavior changes when subscriptions are disabled 
+ (in the client's XML configuration file, change the <code>true</code> value 
+  to <code>false</code> for the <code>"subscription-enabled"</code> attribute). </P><BR>
+</p>
+</BODY>
+</HTML>

@@ -1,0 +1,149 @@
+include $JTESTS/hydraconfig/hydraparams1.inc;
+include $JTESTS/hydraconfig/performance.inc;
+include $JTESTS/hydraconfig/topology_hct_locator.inc;
+include $JTESTS/cacheperf/comparisons/security/schemes.inc;
+
+hydra.Prms-testDescription = "Clients do ${opType} operations on a ${dataPolicy} region using security authorization scheme \"${securityScheme}\".";
+hydra.Prms-testRequirement = "Security has minimal impact on performance.";
+
+//------------------------------------------------------------------------------
+// Threadgroups
+//------------------------------------------------------------------------------
+
+THREADGROUP locator
+  totalThreads = fcn
+                 ${locatorHosts} * ${locatorVMsPerHost} * ${locatorThreadsPerVM}
+                 ncf
+  clientNames  = fcn "hydra.TestConfigFcns.generateNames
+                      (\"locator\", ${locatorHosts}, true)"
+                 ncf;
+THREADGROUP bridge
+  totalThreads = fcn
+                 ${bridgeHosts} * ${bridgeVMsPerHost} * ${bridgeThreadsPerVM}
+                 ncf
+  clientNames  = fcn "hydra.TestConfigFcns.generateNames
+                      (\"bridge\", ${bridgeHosts}, true)"
+                 ncf;
+THREADGROUP edge
+  totalThreads = fcn
+                 ${edgeHosts} * ${edgeVMsPerHost} * ${edgeThreadsPerVM}
+                 ncf
+  clientNames  = fcn "hydra.TestConfigFcns.generateNames
+                      (\"edge\", ${edgeHosts}, true)"
+                 ncf;
+
+//------------------------------------------------------------------------------
+// Tasks
+//------------------------------------------------------------------------------
+
+INITTASK  taskClass = cacheperf.CachePerfClient taskMethod = createAndStartLocatorTask
+          threadGroups = locator
+          ;
+INITTASK  taskClass = cacheperf.CachePerfClient taskMethod = openStatisticsTask
+          ;
+INITTASK  taskClass = cacheperf.CachePerfClient taskMethod = openCacheTask
+          hydra.ConfigPrms-cacheConfig = bridge
+          hydra.ConfigPrms-regionConfig = bridge
+          hydra.ConfigPrms-bridgeConfig = bridge
+          threadGroups = bridge
+          ;
+INITTASK  taskClass = cacheperf.CachePerfClient taskMethod = openCacheTask
+          hydra.ConfigPrms-cacheConfig = edge
+          hydra.ConfigPrms-regionConfig = edge
+          threadGroups = edge
+          ;
+INITTASK  taskClass = cacheperf.CachePerfClient taskMethod = createDataTask
+          batch
+          cacheperf.CachePerfPrms-keyAllocation = ownKeys
+          cacheperf.CachePerfPrms-warmupTerminatorMethod = none
+          cacheperf.CachePerfPrms-taskTerminatorMethod = terminateOnMaxKey
+          cacheperf.CachePerfPrms-taskTerminatorFrequency = 1 iterations
+          threadGroups = bridge
+          ;
+CLOSETASK taskClass = cacheperf.CachePerfClient taskMethod = closeCacheTask
+          threadGroups = edge
+          ;
+CLOSETASK taskClass = cacheperf.CachePerfClient taskMethod = closeCacheTask
+          threadGroups = bridge
+          ;
+CLOSETASK taskClass = cacheperf.CachePerfClient taskMethod = closeStatisticsTask
+          ;
+CLOSETASK taskClass = cacheperf.CachePerfClient taskMethod = reportTrimIntervalsTask
+          ;
+
+//------------------------------------------------------------------------------
+// Termination
+//------------------------------------------------------------------------------
+
+hydra.Prms-totalTaskTimeSec = 259200;  // workload-based
+hydra.Prms-maxResultWaitSec = 600;
+
+cacheperf.CachePerfPrms-batchTerminatorMethod     = terminateOnBatchSeconds;
+cacheperf.CachePerfPrms-batchSeconds              = 60;
+cacheperf.CachePerfPrms-warmupTerminatorMethod    = terminateOnTrimSeconds;
+cacheperf.CachePerfPrms-warmupTerminatorFrequency = 10 seconds;
+cacheperf.CachePerfPrms-trimSeconds               = 60;
+cacheperf.CachePerfPrms-taskTerminatorMethod      = terminateOnTotalSeconds;
+cacheperf.CachePerfPrms-taskTerminatorFrequency   = 10 seconds;
+cacheperf.CachePerfPrms-workSeconds               = 180;
+
+//------------------------------------------------------------------------------
+// Security
+//------------------------------------------------------------------------------
+
+hydra.GemFirePrms-securityName = ${securityScheme};
+hydra.GemFirePrms-sslName = ${sslScheme};
+
+//------------------------------------------------------------------------------
+// Cache and region
+//------------------------------------------------------------------------------
+
+hydra.CachePrms-names = bridge edge;
+
+hydra.RegionPrms-names         = bridge             edge;
+hydra.RegionPrms-dataPolicy    = ${dataPolicy}      empty;
+hydra.RegionPrms-partitionName = ${partitionScheme} none;
+hydra.RegionPrms-poolName      = none               pool;
+hydra.RegionPrms-scope         = ${scope}           local;
+
+hydra.PartitionPrms-names = partition;
+
+hydra.PoolPrms-names                  = pool;
+hydra.PoolPrms-readTimeout            = 10000000;
+hydra.PoolPrms-subscriptionEnabled    = false;
+hydra.PoolPrms-threadLocalConnections = true;
+
+hydra.BridgePrms-names = bridge;
+hydra.BridgePrms-maxThreads = ${maxThreads};
+
+//------------------------------------------------------------------------------
+// Data
+//------------------------------------------------------------------------------
+
+cacheperf.CachePerfPrms-maxKeys = ${maxKeys};
+cacheperf.CachePerfPrms-objectType = objects.AssetAccount;
+objects.AssetAccountPrms-size = ${objectSize};
+objects.AssetAccountPrms-encodeTimestamp = true;
+objects.AssetPrms-maxValue = ${maxKeys};
+
+//------------------------------------------------------------------------------
+// Performance
+//------------------------------------------------------------------------------
+
+hydra.VmPrms-extraVMArgs  = fcn "hydra.TestConfigFcns.duplicate
+                                 (\"-Xms128m -Xmx128m\", ${locatorHosts}, true)"
+                            ncf
+                            ,
+                            fcn "hydra.TestConfigFcns.duplicate
+                                 (\"-Xms512m -Xmx512m\", ${bridgeHosts}, true)"
+                            ncf
+                            ,
+                            fcn "hydra.TestConfigFcns.duplicate
+                                 (\"-Xms250m -Xmx250m\", ${edgeHosts}, true)"
+                            ncf;
+hydra.VmPrms-extraVMArgs += -XX:+UseParNewGC -XX:+UseConcMarkSweepGC
+                            -XX:+DisableExplicitGC;
+
+hydra.GemFirePrms-conserveSockets = ${conserveSockets};
+
+perffmwk.PerfReportPrms-statisticsSpecification = $JTESTS/smoketest/perf/common.spec;

@@ -1,0 +1,11 @@
+wanSites = 2
+locatorHostsPerSite = 1
+locatorVMsPerHost = 1
+locatorThreadsPerVM = 1
+peerHostsPerSite = 2
+peerVMsPerHost = 1
+peerThreadsPerVM = 1
+redundantCopies = 1
+
+# memory for peers
+peerMem = 256m

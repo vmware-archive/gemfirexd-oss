@@ -1,0 +1,28 @@
+This program demonstrates how the distributed locking service can be
+used to avoid access conflict on a resource. In this case, the resource
+used is a distributed, non-global data region.
+Another common use case for this is access to a common file.
+
+Connecting to the distributed system and creating the cache.
+I have obtained the lock on attempt #1
+Got key1 whose cached value is value1
+Put key1 with value memberPID_1
+Releasing lock ...
+
+I have obtained the lock on attempt #2
+Got key1 whose cached value is memberPID_1
+Put key1 with value memberPID_2
+Releasing lock ...
+
+I have obtained the lock on attempt #3
+Got key1 whose cached value is memberPID_2
+Put key1 with value memberPID_3
+Releasing lock ...
+
+I have obtained the lock on attempt #4
+Got key1 whose cached value is memberPID_3
+Put key1 with value memberPID_4
+Releasing lock ...
+
+Closing the cache and disconnecting...
+Closed the cache

@@ -1,0 +1,7 @@
+INCLUDE $JTESTS/csTx/cqCsTx.bt
+INCLUDE $JTESTS/csTx/deltaCsTx.bt
+INCLUDE $JTESTS/csTx/durableClientsCsTx.bt
+INCLUDE $JTESTS/csTx/fixedPartitioningCsTx.bt
+INCLUDE $JTESTS/csTx/hctCsTx.bt
+INCLUDE $JTESTS/csTx/parRegCsTx.bt
+INCLUDE $JTESTS/csTx/txCsTx.bt

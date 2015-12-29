@@ -1,0 +1,1188 @@
+// 660736 orphans
+sql/sqlTx/thinClient/concUpdateTxClient.conf
+   clientHosts=1
+   clientThreadsPerVM=5
+   clientVMsPerHost=6
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   nobatching=false
+   serverHosts=1
+   serverThreadsPerVM=1
+   serverVMsPerHost=5
+
+
+// 144470 orphans
+sql/sqlTx/concUpdateTxWithUpdatableResultSet.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=8
+   accessorVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=3
+
+
+// 131685 orphans
+sql/randomPartitionTablesProcedureIndexWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=10
+   accessorVMsPerHost=3
+   dropIndex=true
+   manageDerbyServer=false
+   redundantCopies=2
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=6
+   testUniqueKeys=false
+
+
+// 29091 orphans
+sql/concGFEIndexNonUniqWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=8
+   accessorVMsPerHost=8
+   dropIndex=true
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=4
+
+
+// 17573 orphans
+sql/sqlBridge/concGFEClientHA.conf
+   A=conn
+   B=store
+   connbridgeHosts=1
+   connbridgeThreadsPerVM=1
+   connbridgeVMsPerHost=2
+   dropIndex=true
+   edgeHosts=1
+   edgeThreadsPerVM=10
+   edgeVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   manageDerbyServer=true
+   redundantCopies=3
+   storebridgeHosts=1
+   storebridgeThreadsPerVM=1
+   storebridgeVMsPerHost=3
+   testUniqueKeys=true
+
+
+// 15566 orphans
+sql/sqlBridge/concGFEClientHA.conf
+   A=conn
+   B=store
+   connbridgeHosts=1
+   connbridgeThreadsPerVM=1
+   connbridgeVMsPerHost=2
+   dropIndex=true
+   edgeHosts=1
+   edgeThreadsPerVM=10
+   edgeVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   manageDerbyServer=true
+   redundantCopies=2
+   storebridgeHosts=1
+   storebridgeThreadsPerVM=1
+   storebridgeVMsPerHost=3
+   testUniqueKeys=true
+
+
+// 13297 orphans
+sql/sqlBridge/concGFEClientHA.conf
+   A=conn
+   B=store
+   connbridgeHosts=1
+   connbridgeThreadsPerVM=1
+   connbridgeVMsPerHost=2
+   dropIndex=true
+   edgeHosts=1
+   edgeThreadsPerVM=10
+   edgeVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   manageDerbyServer=false
+   redundantCopies=3
+   storebridgeHosts=1
+   storebridgeThreadsPerVM=1
+   storebridgeVMsPerHost=3
+   testUniqueKeys=false
+
+
+// 11351 orphans
+sql/sqlBridge/concGFEClientHA.conf
+   A=conn
+   B=store
+   connbridgeHosts=1
+   connbridgeThreadsPerVM=1
+   connbridgeVMsPerHost=2
+   dropIndex=true
+   edgeHosts=1
+   edgeThreadsPerVM=10
+   edgeVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   manageDerbyServer=false
+   redundantCopies=2
+   storebridgeHosts=1
+   storebridgeThreadsPerVM=1
+   storebridgeVMsPerHost=2
+   testUniqueKeys=false
+
+
+// 11211 orphans
+sql/sqlTx/thinClient/concUpdatableResultsetTxClient.conf
+   clientHosts=1
+   clientThreadsPerVM=5
+   clientVMsPerHost=6
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   nobatching=false
+   serverHosts=1
+   serverThreadsPerVM=1
+   serverVMsPerHost=2
+
+
+// 8523 orphans
+sql/sqlBridge/concGFEClientHA.conf
+   A=conn
+   B=store
+   connbridgeHosts=1
+   connbridgeThreadsPerVM=1
+   connbridgeVMsPerHost=2
+   dropIndex=true
+   edgeHosts=1
+   edgeThreadsPerVM=10
+   edgeVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   manageDerbyServer=true
+   redundantCopies=1
+   storebridgeHosts=1
+   storebridgeThreadsPerVM=1
+   storebridgeVMsPerHost=3
+   testUniqueKeys=true
+
+
+// 8271 orphans
+sql/sqlEviction/evictionOverflow.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=9
+   accessorVMsPerHost=2
+   maxHeapSize=64
+   setCriticalHeap=false
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=2
+   useHeapPercentage=true
+
+
+// 7913 orphans
+sql/dbCache/dbCacheEvictionOverflowSync.conf
+   A=store
+   B=accessor
+   accessorHosts=1
+   accessorThreadsPerVM=6
+   accessorVMsPerHost=3
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=1
+
+
+// 7669 orphans
+sql/sqlBridge/concGFEClient.conf
+   A=conn
+   B=store
+   connbridgeHosts=2
+   connbridgeThreadsPerVM=1
+   connbridgeVMsPerHost=1
+   dropIndex=true
+   edgeHosts=1
+   edgeThreadsPerVM=6
+   edgeVMsPerHost=5
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   manageDerbyServer=true
+   storebridgeHosts=1
+   storebridgeThreadsPerVM=1
+   storebridgeVMsPerHost=2
+   testUniqueKeys=true
+
+
+// 3221 orphans
+sql/sqlBridge/concGFEClient.conf
+   A=conn
+   B=store
+   connbridgeHosts=2
+   connbridgeThreadsPerVM=1
+   connbridgeVMsPerHost=3
+   dropIndex=true
+   edgeHosts=1
+   edgeThreadsPerVM=6
+   edgeVMsPerHost=5
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   manageDerbyServer=true
+   storebridgeHosts=1
+   storebridgeThreadsPerVM=1
+   storebridgeVMsPerHost=2
+   testUniqueKeys=true
+
+
+// 2460 orphans
+sql/sqlBridge/concClientGFXDHAWithLocator.conf
+   buyorders=trade.buyorders:random
+   clientHosts=2
+   clientThreadsPerVM=10
+   clientVMsPerHost=3
+   customers=trade.customers:random
+   dropIndex=true
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   networth=trade.networth:random
+   portfolio=trade.portfolio:random
+   redundantCopies=3
+   securities=trade.securities:random
+   sellorders=trade.sellorders:random
+   serverHosts=1
+   serverThreadsPerVM=1
+   serverVMsPerHost=4
+   txhistory=trade.txhistory:random
+
+
+// 2436 orphans
+sql/joins/concJoinIndexReplicateTables.conf
+   A=peer
+   dropIndex=false
+   peerHosts=3
+   peerThreadsPerVM=3
+   peerVMsPerHost=3
+
+
+// 2271 orphans
+sql/sqlTx/thinClient/repeatableRead/concMultiTablesRRTxClient.conf
+   clientHosts=2
+   clientThreadsPerVM=8
+   clientVMsPerHost=6
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   nobatching=false
+   serverHosts=2
+   serverThreadsPerVM=1
+   serverVMsPerHost=2
+
+
+// 1892 orphans
+sql/dbCache/dbCacheEvictionOverflowAsync.conf
+   A=store
+   B=accessor
+   accessorHosts=1
+   accessorThreadsPerVM=6
+   accessorVMsPerHost=3
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=1
+
+
+// 1162 orphans
+sql/sqlBridge/concClientGFXDHAWithLocator.conf
+   buyorders=trade.buyorders:random
+   clientHosts=1
+   clientThreadsPerVM=10
+   clientVMsPerHost=3
+   customers=trade.customers:random
+   dropIndex=true
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   networth=trade.networth:random
+   portfolio=trade.portfolio:random
+   redundantCopies=1
+   securities=trade.securities:random
+   sellorders=trade.sellorders:random
+   serverHosts=1
+   serverThreadsPerVM=1
+   serverVMsPerHost=2
+   txhistory=trade.txhistory:random
+
+
+// 1008 orphans
+sql/randomPartitionReplicateTablesNonUniqWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=3
+   accessorThreadsPerVM=6
+   accessorVMsPerHost=9
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=4
+
+
+// 1004 orphans
+sql/joins/concJoinIndexCustSecPortfolioNonUniqRangePartitionOneRepl.conf
+   A=peer
+   dropIndex=true
+   peerHosts=3
+   peerThreadsPerVM=10
+   peerVMsPerHost=5
+
+
+// 725 orphans
+sql/randomPartitionReplicateTablesNonUniqWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=3
+   accessorThreadsPerVM=4
+   accessorVMsPerHost=9
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=6
+
+
+// 712 orphans
+sql/randomPartitionClauseUniqWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=10
+   accessorVMsPerHost=3
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=1
+
+
+// 711 orphans
+sql/wan/singleSitePublisherAccessorsPSSenderFailover.conf
+   A=datastore
+   B=accessor
+   accessorHostsPerSite=2
+   accessorThreadsPerVM=9
+   accessorVMsPerHost=1
+   buyorders=trade.buyorders:random
+   customers=trade.customers:random
+   datastoreHostsPerSite=2
+   datastoreThreadsPerVM=1
+   datastoreVMsPerHost=2
+   defaultemployee=default1.employees:random
+   empemployee=emp.employees:random
+   enableQueueConflation=false
+   locatorHostsPerSite=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   networth=trade.networth:random
+   portfolio=trade.portfolio:random
+   redundantCopies=1
+   securities=trade.securities:random
+   sellorders=trade.sellorders:random
+   testMultiTableJoin=false
+   trades=trade.trades:random
+   txhistory=trade.txhistory:random
+   wanSites=3
+   withReplicatedTables=false
+
+
+// 631 orphans
+sql/truncateTablesUniqAccessorsHA.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=10
+   accessorVMsPerHost=3
+   dropIndex=true
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   redundantCopies=1
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=6
+   testUniqueKeys=true
+
+
+// 536 orphans
+sql/dbCache/dbCacheEvictionOverflowAsync.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=6
+   accessorVMsPerHost=2
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=2
+
+
+// 402 orphans
+sql/serialRandomPartitionTablesProcedureIndexWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=10
+   accessorVMsPerHost=3
+   dropIndex=true
+   redundantCopies=2
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=5
+
+
+// 375 orphans
+sql/sqlTx/thinClient/concUpdateTxClient.conf
+   clientHosts=1
+   clientThreadsPerVM=5
+   clientVMsPerHost=6
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   nobatching=true
+   serverHosts=1
+   serverThreadsPerVM=1
+   serverVMsPerHost=2
+
+
+// 363 orphans
+sql/sqlCallback/asynchDBSynchronizerWithAccessors.conf
+   A=store
+   B=accessor
+   SGList1=random
+   SGList2=random
+   SGList3=random
+   SGList4=random
+   SGList5=random
+   SGList6=random
+   SGvms1=1
+   SGvms2=2
+   SGvms3=2
+   SGvms4=2
+   SGvms5=3
+   SGvms6=2
+   accessorHosts=1
+   accessorThreadsPerVM=6
+   accessorVMsPerHost=3
+   buyorders=trade.buyorders:random:default
+   customers=trade.customers:random:default
+   dropIndex=true
+   networth=trade.networth:random:default
+   portfolio=trade.portfolio:random:default
+   securities=trade.securities:random:default
+   sellorders=trade.sellorders:random:default
+   storeHosts=6
+   storeThreadsPerVM=1
+   storeVMsPerHost=2
+   testUniqueKeys=false
+   txhistory=trade.txhistory:random:default
+   withReplicatedTables=false
+
+
+// 351 orphans
+sql/concMultiTablesUniqProcedureWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=10
+   accessorVMsPerHost=3
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=1
+
+
+// 332 orphans
+sql/serialRandomPartitionTablesProcedureIndexWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=10
+   accessorVMsPerHost=3
+   dropIndex=true
+   redundantCopies=3
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=5
+
+
+// 315 orphans
+sql/subquery/randomPartitionRepTablesSubqueryNonUniqWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=20
+   accessorVMsPerHost=5
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=4
+
+
+// 306 orphans
+sql/sqlBridge/concClientGFXDHAUniqWithLocator.conf
+   buyorders=trade.buyorders:random
+   clientHosts=2
+   clientThreadsPerVM=10
+   clientVMsPerHost=3
+   customers=trade.customers:random
+   dropIndex=true
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   networth=trade.networth:random
+   portfolio=trade.portfolio:random
+   redundantCopies=3
+   securities=trade.securities:random
+   sellorders=trade.sellorders:random
+   serverHosts=1
+   serverThreadsPerVM=1
+   serverVMsPerHost=7
+   txhistory=trade.txhistory:random
+
+
+// 279 orphans
+sql/randomPartitionReplicateTablesUniqWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=10
+   accessorVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=2
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=7
+
+
+// 202 orphans
+sql/randomPartitionReplicateTablesUniqWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=10
+   accessorVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=2
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=4
+
+
+// 170 orphans
+sql/sqlDAP/multiTablesUniqDAPWithAccessorsHA.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=5
+   accessorVMsPerHost=5
+   redundantCopies=2
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=3
+
+
+// 151 orphans
+sql/sqlBridge/concGFEClient.conf
+   A=conn
+   B=store
+   connbridgeHosts=2
+   connbridgeThreadsPerVM=1
+   connbridgeVMsPerHost=3
+   dropIndex=true
+   edgeHosts=1
+   edgeThreadsPerVM=6
+   edgeVMsPerHost=5
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   manageDerbyServer=false
+   storebridgeHosts=1
+   storebridgeThreadsPerVM=1
+   storebridgeVMsPerHost=2
+   testUniqueKeys=false
+
+
+// 135 orphans
+sql/sqlBridge/testDDLReplayClientHA.conf
+   A=conn
+   B=store
+   buyorders=trade.buyorders:random
+   connbridgeHosts=1
+   connbridgeThreadsPerVM=1
+   connbridgeVMsPerHost=1
+   customers=trade.customers:random
+   dropIndex=true
+   edgeHosts=1
+   edgeThreadsPerVM=10
+   edgeVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   networth=trade.networth:random
+   portfolio=trade.portfolio:random
+   redundantCopies=2
+   securities=trade.securities:random
+   sellorders=trade.sellorders:random
+   storebridgeHosts=1
+   storebridgeThreadsPerVM=1
+   storebridgeVMsPerHost=3
+   txhistory=trade.txhistory:random
+
+
+// 124 orphans
+sql/sqlBridge/concGFEClient.conf
+   A=conn
+   B=store
+   connbridgeHosts=2
+   connbridgeThreadsPerVM=1
+   connbridgeVMsPerHost=1
+   dropIndex=true
+   edgeHosts=1
+   edgeThreadsPerVM=6
+   edgeVMsPerHost=5
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   manageDerbyServer=false
+   storebridgeHosts=1
+   storebridgeThreadsPerVM=1
+   storebridgeVMsPerHost=2
+   testUniqueKeys=false
+
+
+// 114 orphans
+sql/sqlTx/concMultiTablesTxWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=8
+   accessorVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=3
+
+
+// 113 orphans
+sql/sqlTx/concMultiTablesTxIndexWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=8
+   accessorVMsPerHost=3
+   dropIndex=true
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=3
+
+
+// 106 orphans
+sql/sqlDAP/multiTablesUniqDAPWithAccessorsHA.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=5
+   accessorVMsPerHost=5
+   redundantCopies=1
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=2
+
+
+// 105 orphans
+sql/sqlTx/concMultiTablesTxTriggerCallProcedureWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=8
+   accessorVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=3
+
+
+// 83 orphans
+sql/sqlDAP/multiTablesUniqDAPWithAccessorsHA.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=5
+   accessorVMsPerHost=5
+   redundantCopies=1
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=2
+
+
+// 83 orphans
+sql/concGfxdNonUniqProcedureWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=10
+   accessorVMsPerHost=6
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=2
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=7
+
+
+// 82 orphans
+sql/alterTablesUniqWithDataAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=10
+   accessorVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=2
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=5
+
+
+// 76 orphans
+sql/sqlTx/concMultiTablesTxTriggerCallProcedureWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=1
+   accessorThreadsPerVM=12
+   accessorVMsPerHost=5
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=5
+
+
+// 73 orphans
+sql/sqlDAP/multiTablesNonUniqDAPWithAccessorsHA.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=5
+   accessorVMsPerHost=5
+   redundantCopies=3
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=2
+
+
+// 65 orphans
+sql/sqlTx/multiTablesTxNoConstCheckWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=6
+   accessorVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=3
+   workIterationsPerThread=500
+
+
+// 56 orphans
+sql/subquery/randomPartitionRepTablesSubqueryNonUniqWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=20
+   accessorVMsPerHost=5
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=7
+
+
+// 55 orphans
+sql/sqlTx/repeatableRead/randomPartitionTablesRRTxWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=4
+   accessorVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=3
+   workIterationsPerThread=500
+
+
+// 54 orphans
+sql/sqlTx/repeatableRead/concMultiTablesRRTxWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=8
+   accessorVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=3
+
+
+// 45 orphans
+sql/sqlDAP/multiTablesUniqDAPWithAccessorsHA.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=5
+   accessorVMsPerHost=5
+   redundantCopies=2
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=3
+
+
+// 38 orphans
+sql/sqlTx/randomPartitionReplicateTablesTxWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=3
+   accessorVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=3
+   workIterationsPerThread=500
+
+
+// 36 orphans
+sql/sqlBridge/concGFEClientWithProcedure.conf
+   A=conn
+   B=store
+   connbridgeHosts=2
+   connbridgeThreadsPerVM=1
+   connbridgeVMsPerHost=1
+   dropIndex=true
+   edgeHosts=1
+   edgeThreadsPerVM=6
+   edgeVMsPerHost=5
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   manageDerbyServer=false
+   storebridgeHosts=1
+   storebridgeThreadsPerVM=1
+   storebridgeVMsPerHost=3
+   testUniqueKeys=false
+
+
+// 29 orphans
+sql/sqlTx/multiTablesTxWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=3
+   accessorVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=3
+   workIterationsPerThread=500
+
+
+// 25 orphans
+sql/alterTablesNonUniqWithDataAccessorsHA.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=20
+   accessorVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=2
+   redundantCopies=1
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=5
+
+
+// 24 orphans
+sql/sqlBridge/clientGenerateDefaultIdHAUniqWithLocator.conf
+   buyorders=trade.buyorders:random
+   clientHosts=2
+   clientThreadsPerVM=10
+   clientVMsPerHost=3
+   customers=trade.customers:random
+   dropIndex=true
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   networth=trade.networth:random
+   portfolio=trade.portfolio:random
+   redundantCopies=1
+   securities=trade.securities:random
+   sellorders=trade.sellorders:random
+   serverHosts=1
+   serverThreadsPerVM=1
+   serverVMsPerHost=5
+   txhistory=trade.txhistory:random
+
+
+// 14 orphans
+sql/sqlTx/thinClient/concUpdatableResultsetTxClient.conf
+   clientHosts=1
+   clientThreadsPerVM=5
+   clientVMsPerHost=6
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   nobatching=true
+   serverHosts=1
+   serverThreadsPerVM=1
+   serverVMsPerHost=2
+
+
+// 14 orphans
+sql/sqlTx/thinClient/multiTablesTxClient.conf
+   clientHosts=1
+   clientThreadsPerVM=5
+   clientVMsPerHost=6
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   serverHosts=1
+   serverThreadsPerVM=1
+   serverVMsPerHost=2
+   workIterationsPerThread=500
+
+
+// 14 orphans
+sql/multiTablesGenerateIdAlwaysUniqAccessorsHA.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=10
+   accessorVMsPerHost=3
+   dropIndex=true
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   redundantCopies=1
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=6
+   testUniqueKeys=true
+
+
+// 13 orphans
+sql/sqlBridge/concGFEClientHA.conf
+   A=conn
+   B=store
+   connbridgeHosts=1
+   connbridgeThreadsPerVM=1
+   connbridgeVMsPerHost=2
+   dropIndex=true
+   edgeHosts=1
+   edgeThreadsPerVM=10
+   edgeVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   manageDerbyServer=false
+   redundantCopies=1
+   storebridgeHosts=1
+   storebridgeThreadsPerVM=1
+   storebridgeVMsPerHost=2
+   testUniqueKeys=false
+
+
+// 12 orphans
+sql/sqlBridge/concGFEClientWithProcedure.conf
+   A=conn
+   B=store
+   connbridgeHosts=2
+   connbridgeThreadsPerVM=1
+   connbridgeVMsPerHost=3
+   dropIndex=true
+   edgeHosts=1
+   edgeThreadsPerVM=6
+   edgeVMsPerHost=5
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   manageDerbyServer=false
+   storebridgeHosts=1
+   storebridgeThreadsPerVM=1
+   storebridgeVMsPerHost=3
+   testUniqueKeys=false
+
+
+// 11 orphans
+sql/sqlEviction/evictionOverflow.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=9
+   accessorVMsPerHost=2
+   maxHeapSize=64
+   setCriticalHeap=false
+   storeHosts=2
+   storeThreadsPerVM=1
+   storeVMsPerHost=2
+   useHeapPercentage=false
+
+
+// 10 orphans
+sql/sqlTx/thinClient/randomPartitionTablesTxClient.conf
+   clientHosts=1
+   clientThreadsPerVM=5
+   clientVMsPerHost=6
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   serverHosts=1
+   serverThreadsPerVM=1
+   serverVMsPerHost=5
+   workIterationsPerThread=500
+
+
+// 10 orphans
+sql/sqlBridge/concGFEClientWithProcedure.conf
+   A=conn
+   B=store
+   connbridgeHosts=2
+   connbridgeThreadsPerVM=1
+   connbridgeVMsPerHost=3
+   dropIndex=true
+   edgeHosts=1
+   edgeThreadsPerVM=6
+   edgeVMsPerHost=5
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   manageDerbyServer=true
+   storebridgeHosts=1
+   storebridgeThreadsPerVM=1
+   storebridgeVMsPerHost=3
+   testUniqueKeys=true
+
+
+// 10 orphans
+sql/testGFEWithAccessorHA.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=8
+   accessorVMsPerHost=3
+   redundantCopies=3
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=7
+
+
+// 7 orphans
+sql/sqlTx/thinClient/multiTablesTxClient.conf
+   clientHosts=1
+   clientThreadsPerVM=5
+   clientVMsPerHost=6
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=1
+   serverHosts=1
+   serverThreadsPerVM=1
+   serverVMsPerHost=5
+   workIterationsPerThread=500
+
+
+// 5 orphans
+sql/joins/concJoinTablesUniqWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=1
+   accessorThreadsPerVM=6
+   accessorVMsPerHost=5
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=7
+
+
+// 5 orphans
+sql/joins/testJoinServerGroupsUniqWithAccessors.conf
+   A=store
+   B=accessor
+   SGList1=random
+   SGList2=random
+   SGList3=random
+   SGList4=random
+   SGList5=random
+   SGList6=random
+   SGvms1=1
+   SGvms2=2
+   SGvms3=2
+   SGvms4=2
+   SGvms5=3
+   SGvms6=2
+   accessorHosts=1
+   accessorThreadsPerVM=10
+   accessorVMsPerHost=5
+   buyorders=trade.buyorders:random:random
+   customers=trade.customers:0:default
+   networth=trade.networth:random:random
+   portfolio=trade.portfolio:random:random
+   schemaSG=random
+   securities=trade.securities:0:default
+   sellorders=trade.sellorders:random:random
+   storeHosts=6
+   storeThreadsPerVM=1
+   storeVMsPerHost=2
+   txhistory=trade.txhistory:random:random
+
+
+// 5 orphans
+sql/alterTablesUniqWithDataAccessorsHA.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=10
+   accessorVMsPerHost=3
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=2
+   redundantCopies=1
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=5
+
+

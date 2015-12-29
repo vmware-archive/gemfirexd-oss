@@ -1,0 +1,10 @@
+
+hct/scaleEdges.conf
+      bridgeHosts =  1 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 20 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+        hc.serverMemSize = 1524m hc.edgeMemSize = 300m
+
+hct/scaleEdges_5M.conf
+      bridgeHosts =  1 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 20 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+        hc.serverMemSize = 1524m hc.edgeMemSize = 500m

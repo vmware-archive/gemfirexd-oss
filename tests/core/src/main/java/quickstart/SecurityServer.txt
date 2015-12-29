@@ -1,0 +1,13 @@
+
+This example demonstrates Security functionalities with ldap server.
+This program is a server, listening on a port for client requests.
+The client in this example is configured with security properties.
+Setting security properties for server
+
+Connecting to the distributed system and creating the cache.
+Example region, /exampleRegion, created in cache.
+
+Please start the security client, and press Enter when the client finishes all the operations.
+
+Closing the cache and disconnecting.
+Closed the Server Cache

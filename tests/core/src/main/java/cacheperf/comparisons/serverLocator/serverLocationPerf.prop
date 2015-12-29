@@ -1,0 +1,11 @@
+locatorHosts = 1
+locatorVMsPerHost = 1
+locatorThreadsPerVM = 1
+
+bridgeHosts = 1
+bridgeVMsPerHost = 20
+bridgeThreadsPerVM = 1
+
+edgeHosts = 2
+edgeVMsPerHost = 2
+edgeThreadsPerVM = 50

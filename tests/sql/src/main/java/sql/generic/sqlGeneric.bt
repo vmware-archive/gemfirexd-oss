@@ -1,0 +1,20 @@
+sql/generic/gfxdGeneric.conf
+    locatorHosts = 1 locatorVMsPerHost = 2 locatorThreadsPerVM = 1
+    A=store storeHosts=1 storeVMsPerHost=4 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=2 accessorThreadsPerVM=5
+    isHA=false numVMsToStop = 1
+	withServerGroup = false
+
+sql/generic/gfxdGeneric.conf
+    locatorHosts = 1 locatorVMsPerHost = 2 locatorThreadsPerVM = 1
+    A=store storeHosts=1 storeVMsPerHost=4 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=2 accessorThreadsPerVM=5
+    isHA=false numVMsToStop = 1
+	withServerGroup = true
+	
+sql/generic/gfxdGeneric.conf
+    locatorHosts = 1 locatorVMsPerHost = 2 locatorThreadsPerVM = 1
+    A=store storeHosts=1 storeVMsPerHost=4 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=2 accessorThreadsPerVM=5
+    isHA=true numVMsToStop = 1
+	withServerGroup = false,true    

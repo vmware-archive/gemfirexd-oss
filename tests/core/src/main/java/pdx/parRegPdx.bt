@@ -1,0 +1,93 @@
+// serial tests
+// serial PR peer, bridge, prPersist peer, prPersistBridge
+pdx/parReg/serialParRegPdx.conf peerHosts=3 peerVMsPerHost=3 peerThreadsPerVM=2 redundantCopies=0,1,3
+pdx/parReg/serialParRegBridgePdx.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   redundantCopies=0,1,3 numAccessors=1 numEmptyClients=1 numThinClients=1
+pdx/parReg/serialParRegPersistPdx.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=2 redundantCopies=0,1,3
+pdx/parReg/serialParRegBridgePersistPdx.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=6 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   numAccessors=0 numEmptyClients=1 numThinClients=1
+   redundantCopies=0,1,3
+
+// serial PR peer, bridge, prPersist peer, prPersistBridge with HA
+pdx/parReg/serialParRegHAPdx.conf 
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=2
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+   redundantCopies=1,3 numVMsToStop=unused
+pdx/parReg/serialParRegHABridgePdx.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   redundantCopies=1,3  numVMsToStop=unused
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+pdx/parReg/serialParRegHAPersistPdx.conf 
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=2
+   B=dataStore dataStoreHosts=6 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+   redundantCopies=0 numVMsToStop=3
+pdx/parReg/serialParRegHAPersistPdx.conf 
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=2
+   B=dataStore dataStoreHosts=6 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+   redundantCopies=3 numVMsToStop=3,7
+pdx/parReg/serialParRegHABridgePersistParOfflinePdx.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   numAccessors=0 numEmptyClients=1 numThinClients=1
+   redundantCopies=0 numVMsToStop=3
+pdx/parReg/serialParRegHABridgePersistPdx.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   numAccessors=0 numEmptyClients=1 numThinClients=1
+   redundantCopies=3 numVMsToStop=3,5
+
+// conc tests
+// concurent PR peer, bridge, prPersist peer, prPersistBridge
+pdx/parReg/concParRegPdx.conf peerHosts=3 peerVMsPerHost=3 peerThreadsPerVM=10 redundantCopies=0,1,3
+pdx/parReg/concParRegBridgePdx.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   bridgeOrderingWorkaround=uniqueKeys
+   redundantCopies=0,1,3 numAccessors=1 numEmptyClients=1 numThinClients=1
+pdx/parReg/concParRegPersistPdx.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies=0,1,3
+pdx/parReg/concParRegBridgePersistPdx.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=6 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numAccessors=0 numEmptyClients=1 numThinClients=1
+   bridgeOrderingWorkaround=uniqueKeys
+   redundantCopies=0,1,3
+
+// concurrent PR peer, bridge, prPersist peer, prPersistBridge with HA
+pdx/parReg/concParRegHAPdx.conf 
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   B=dataStore dataStoreHosts=7 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   redundantCopies=1,3 numVMsToStop=unused
+pdx/parReg/concParRegHABridgePdx.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=6 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=1,3 numVMsToStop=unused
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+pdx/parReg/concParRegHAPersistPdx.conf 
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=6 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   redundantCopies=0 numVMsToStop=3
+pdx/parReg/concParRegHAPersistPdx.conf 
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=6 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   redundantCopies=3 numVMsToStop=3,5
+pdx/parReg/concParRegHABridgePersistParOfflinePdx.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   numAccessors=0 numEmptyClients=1 numThinClients=1
+   redundantCopies=0 numVMsToStop=3
+pdx/parReg/concParRegHABridgePersistPdx.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   numAccessors=0 numEmptyClients=1 numThinClients=1
+   redundantCopies=3 numVMsToStop=3
+
+//disabled for #44146
+//include $JTESTS/pdx/csTxPdx.bt
+
+pdx/parReg/serialParRegPdxQuery.conf peerHosts=3 peerThreadsPerVM=2 peerVMsPerHost=3 redundantCopies=1
+

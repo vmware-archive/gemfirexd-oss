@@ -1,0 +1,14 @@
+Runs modestly scaled multihost GFE-convertible LargeObject tests with several topologies using GFXD and GFE, and using MYSQLC for thin clients only.  Tables are partitioned by primary key with 1 redundant copy.
+
+The suite can be used to compare:
+
+-- peerClient vs. thinClient for GFE and GFXD
+
+-- GFXD vs. GFE (all topologies)
+
+-- GFE vs. GFXD vs. MYSQLC (thin client only) 
+
+-- creates vs. puts vs. updates vs. gets for each topology and API
+   (requires modifying comparison keys)
+
+Note that GFE and GFXD are non-transactional, while MYSQLC is read-uncommitted.

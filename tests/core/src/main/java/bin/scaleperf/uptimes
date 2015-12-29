@@ -1,0 +1,22 @@
+#!/bin/bash
+
+#-------------------------------------------------------------------------------
+#
+# Shows the load on each of the $TEST_HOSTS:
+#
+#    ssh <test_host> uptime
+#
+#-------------------------------------------------------------------------------
+
+trap 'exit 1' 2 #traps Ctrl-C (signal 2)
+
+if [ -z "$TEST_HOSTS" ]
+then
+  echo "Environment variable TEST_HOSTS is not set."
+  exit 0
+fi
+
+for i in $TEST_HOSTS
+do
+  echo $i; ssh -q $i uptime
+done

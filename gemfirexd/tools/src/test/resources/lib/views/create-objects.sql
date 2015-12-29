@@ -1,0 +1,61 @@
+
+---------------------
+-- PROGRAM_UNIT_XWALK
+---------------------
+CREATE TABLE ERASV2.PROGRAM_UNIT_XWALK (
+ 	PROGRAM_INST_ID NUMERIC(8) NOT NULL, 
+	UNIT_ID VARCHAR(12) NOT NULL, 
+	ACGME_ID VARCHAR(20), 
+	GME_SPECIALTY_CD VARCHAR(10) NOT NULL, 
+	ACTIVE_IND CHAR(1) DEFAULT 'Y', 
+	UNIT_PGM_TYPE_CD VARCHAR(1),
+	CONSTRAINT XPKPROGRAM_UNIT_XWALK 
+		PRIMARY KEY (PROGRAM_INST_ID)
+   )
+   PERSISTENT;
+ 
+CREATE INDEX ERASV2.IDX_PUX_UNIT_ID 
+	ON ERASV2.PROGRAM_UNIT_XWALK (UNIT_ID);
+	
+
+--------------------
+-- SELECTED_PROGRAMS
+--------------------
+CREATE TABLE ERASV2.SELECTED_PROGRAMS
+(
+  APPLICANT_ID      VARCHAR(10)           NOT NULL,
+  UNIT_ID           VARCHAR(12)           NOT NULL,
+  INVOICE_SEQ_NBR   NUMERIC(14),
+  SP_PROCESSED_DT   DATE,
+  SP_APPLIED_DT     DATE,
+  SP_SCRAMBLE_IND   VARCHAR(1),
+  SP_PGY2           VARCHAR(50),
+  SP_WITHDRAWN_IND  VARCHAR(1),
+  SP_REAPPLIED_DT   DATE, 
+  CONSTRAINT XPKSELECTED_PROGRAMS
+	PRIMARY KEY (APPLICANT_ID, UNIT_ID)
+)
+PERSISTENT;
+	
+CREATE INDEX ERASV2.XIF109SELECTED_PROGRAMS
+	ON ERASV2.SELECTED_PROGRAMS (INVOICE_SEQ_NBR);
+
+CREATE INDEX ERASV2.XIF47SELECTED_PROGRAMS
+	ON ERASV2.SELECTED_PROGRAMS (UNIT_ID);
+	
+
+-----------------------
+-- VW_APPLICANT_PROGRAM
+-----------------------	
+CREATE VIEW ERASV2.VW_APPLICANT_PROGRAM AS SELECT 
+	a.applicant_id,
+    a.unit_id,
+    b.program_inst_id,
+    a.sp_processed_dt,
+    a.sp_processed_dt app_received_dt,
+    a.sp_withdrawn_ind,
+    b.unit_pgm_type_cd,
+    b.gme_specialty_cd
+  FROM erasv2.selected_programs a, erasv2.program_unit_xwalk b
+  WHERE a.unit_id = b.unit_id
+  AND a.sp_processed_dt IS NOT NULL; 

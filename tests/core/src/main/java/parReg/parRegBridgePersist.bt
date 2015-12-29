@@ -1,0 +1,19 @@
+parReg/persistence/serialParRegBridgePersist.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=6 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+   redundantCopies=0,1,2,3
+
+parReg/persistence/concParRegBridgePersist.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=6 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+   redundantCopies=0,1,2,3
+   bridgeOrderingWorkaround=registerInterest
+
+parReg/persistence/concParRegBridgePersist.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=6 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+   redundantCopies=0,1,2,3
+   bridgeOrderingWorkaround=uniqueKeys

@@ -1,0 +1,1 @@
+include $JTESTS/cacheperf/comparisons/peer2peer/latency_gemfire.bt

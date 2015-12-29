@@ -1,0 +1,15 @@
+// normal
+gfxdperf/tpch/gfxd/continuous/tpch_load.conf
+gfxdperf/tpch/gfxd/continuous/tpch_q01.conf
+gfxdperf/tpch/gfxd/continuous/tpch_q01a.conf
+gfxdperf/tpch/gfxd/continuous/tpch_q02.conf
+gfxdperf/tpch/gfxd/continuous/tpch_q02a.conf
+gfxdperf/tpch/gfxd/continuous/tpch_unload.conf
+
+// offheap
+//gfxdperf/tpch/gfxd/continuous/tpch_load_offheap.conf
+//gfxdperf/tpch/gfxd/continuous/tpch_q01.conf
+//gfxdperf/tpch/gfxd/continuous/tpch_q01a.conf
+//gfxdperf/tpch/gfxd/continuous/tpch_q02.conf
+//gfxdperf/tpch/gfxd/continuous/tpch_q02a.conf
+//gfxdperf/tpch/gfxd/continuous/tpch_unload_offheap.conf

@@ -1,0 +1,9 @@
+cacheperf/comparisons/puts/puts.conf
+  scope = noAck,ack,global dataPolicy = normal,replicate
+  peerHosts = 2,3,5 peerVMsPerHost = 1,2 peerThreadsPerVM = 1,4
+  objectType = objects.ArrayOfByte
+
+cacheperf/comparisons/puts/puts.conf
+  scope = noAck,ack,global dataPolicy = replicate
+  peerHosts = 2,3,5 peerVMsPerHost = 1,2 peerThreadsPerVM = 1,4
+  objectType = objects.NestedOrderVector

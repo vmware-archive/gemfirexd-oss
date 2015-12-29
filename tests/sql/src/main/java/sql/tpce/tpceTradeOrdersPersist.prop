@@ -1,0 +1,47 @@
+locatorHosts=1
+locatorVMsPerHost=1
+locatorThreadsPerVM=1
+
+A=peer
+peerHosts=1
+peerVMsPerHost=1
+peerThreadsPerVM=1
+
+B=customerserver
+customerserverHosts=1
+customerserverVMsPerHost=1
+customerserverThreadsPerVM=1
+
+C=marketserver
+marketserverHosts=1
+marketserverVMsPerHost=1
+marketserverThreadsPerVM=1
+
+api=GFXD
+
+/*
+tableFileNum = 3
+indexFileNum = 2
+createIndexes = true
+*/
+
+txIsolation = read_committed
+
+/*
+numWarehouses = 10
+numDistrictsPerWarehouse = 10
+numItems = 100000
+numCustomersPerDistrict = 3000
+*/
+
+clientHeapMB = 256
+customerserverHeapMB = 3500
+marketserverHeapMB = 1600
+
+trimSeconds =  60
+workSeconds = 1800
+
+logQueries = false
+queryPlanFrequency = 0
+
+//perffmwk.comparisonKey = tpcc

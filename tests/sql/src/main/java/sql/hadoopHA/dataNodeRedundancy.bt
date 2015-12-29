@@ -1,0 +1,97 @@
+// compromise data node redundancy (dfs.replication = 2, drop one data node via network partition)
+// host1: MC
+// host2: locator, accessors, datastores, namenode
+// host3: datanode1
+// host4: datanode2
+sql/hadoopHA/networkPartitionDataNodeRedundancyNoEvictRW.conf
+  A=datastore datastoreHosts=2 datastoreVMsPerHost=1 datastoreThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=9
+  locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  redundantCopies=1
+  testMultiTableJoin=false
+  testUniqueKeys=true
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:random
+  employees=emp.employees:random
+  hdfsComponentDescription = datanode
+
+// compromise data node redundancy (dfs.replication = 2, stop one data node)
+// host1: MC
+// host2: locator, accessors, datastores, namenode
+// host3: datanode1
+// host4: datanode2
+sql/hadoopHA/compromiseDataNodeRedundancyNoEvictRW.conf
+  A=datastore datastoreHosts=2 datastoreVMsPerHost=1 datastoreThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=9
+  locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  redundantCopies=1
+  testMultiTableJoin=false
+  testUniqueKeys=true
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:random
+  employees=emp.employees:random
+  hdfsComponentDescription = datanode
+
+// WITH EVICTION
+// compromise data node redundancy (dfs.replication = 2, drop one data node via network partition)
+// host1: MC
+// host2: locator, accessors, datastores, namenode
+// host3: datanode1
+// host4: datanode2
+sql/hadoopHA/networkPartitionDataNodeRedundancyEvictRW.conf
+  A=datastore datastoreHosts=2 datastoreVMsPerHost=1 datastoreThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=9
+  locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  redundantCopies=1
+  testMultiTableJoin=false
+  testUniqueKeys=true
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:random
+  employees=emp.employees:random
+  hdfsComponentDescription = datanode
+
+// compromise data node redundancy (dfs.replication = 2, stop one data node)
+// host1: MC
+// host2: locator, accessors, datastores, namenode
+// host3: datanode1
+// host4: datanode2
+sql/hadoopHA/compromiseDataNodeRedundancyEvictRW.conf
+  A=datastore datastoreHosts=2 datastoreVMsPerHost=1 datastoreThreadsPerVM=1
+  B=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=9
+  locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  redundantCopies=1
+  testMultiTableJoin=false
+  testUniqueKeys=true
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:random
+  employees=emp.employees:random
+  hdfsComponentDescription = datanode
+

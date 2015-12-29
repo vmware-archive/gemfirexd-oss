@@ -1,0 +1,903 @@
+/*
+
+  Derby - Class org.apache.derbyTesting.functionTests.tests.lang.OffsetFetchNextTest
+
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+*/
+
+/*
+ * Changes for GemFireXD distributed data platform (some marked by "GemStone changes")
+ *
+ * Portions Copyright (c) 2010-2015 Pivotal Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you
+ * may not use this file except in compliance with the License. You
+ * may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * permissions and limitations under the License. See accompanying
+ * LICENSE file.
+ */
+
+package org.apache.derbyTesting.functionTests.tests.lang;
+
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
+import java.sql.PreparedStatement;
+import java.sql.ParameterMetaData ;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
+import org.apache.derbyTesting.junit.BaseJDBCTestCase;
+import org.apache.derbyTesting.junit.CleanDatabaseTestSetup;
+import org.apache.derbyTesting.junit.JDBC;
+import org.apache.derbyTesting.junit.TestConfiguration;
+
+import com.pivotal.gemfirexd.internal.iapi.reference.SQLState;
+
+/**
+ * Test <result offset clause> and <fetch first clause>.
+ */
+public class OffsetFetchNextTest extends BaseJDBCTestCase {
+
+    private final static String LANG_FORMAT_EXCEPTION = "22018";
+    private final static String LANG_INTEGER_LITERAL_EXPECTED = "42X20";
+    private final static String LANG_INVALID_ROW_COUNT_FIRST = "2201W";
+    private final static String LANG_INVALID_ROW_COUNT_OFFSET = "2201X";
+    private final static String LANG_MISSING_PARMS = "07000";
+    private final static String LANG_SYNTAX_ERROR = "42X01";
+	private final static String LANG_ROW_COUNT_OFFSET_FIRST_IS_NULL = "2201Z";
+
+    public OffsetFetchNextTest(String name) {
+        super(name);
+    }
+
+    public static Test suite() {
+        TestSuite suite = new TestSuite("OffsetFetchNextTest");
+
+        suite.addTest(
+            baseSuite("OffsetFetchNextTest:embedded"));
+        suite.addTest(
+            TestConfiguration.clientServerDecorator(
+                baseSuite("OffsetFetchNextTest:client")));
+
+        return suite;
+    }
+
+    public static Test baseSuite(String suiteName) {
+        return new CleanDatabaseTestSetup(
+            new TestSuite(OffsetFetchNextTest.class,
+                          suiteName)) {
+            protected void decorateSQL(Statement s)
+                    throws SQLException {
+                createSchemaObjects(s);
+            }
+        };
+    }
+
+
+    /**
+     * Creates tables used by the tests (never modified, we use rollback after
+     * changes).
+     */
+    private static void createSchemaObjects(Statement st)
+            throws SQLException
+    {
+        // T1 (no indexes)
+        st.executeUpdate("create table t1 (a int, b bigint)");
+        st.executeUpdate("insert into t1 (a, b) " +
+                         "values (1,1), (1,2), (1,3), (1,4), (1,5)");
+
+        // T2 (primary key)
+        st.executeUpdate("create table t2 (a int primary key, b bigint)");
+        st.executeUpdate("insert into t2 (a, b) " +
+                         "values (1,1), (2,1), (3,1), (4,1), (5,1)");
+
+        // T3 (primary key + secondary key)
+        st.executeUpdate("create table t3 (a int primary key, " +
+                         "                 b bigint unique)");
+        st.executeUpdate("insert into t3 (a, b) " +
+                         "values (1,1), (2,2), (3,3), (4,4), (5,5)");
+    }
+
+    /**
+     * Negative tests. Test various invalid OFFSET and FETCH NEXT clauses.
+     */
+    public void testErrors()
+            throws Exception
+    {
+        Statement st = createStatement();
+
+        // Wrong range in row count argument
+
+        assertStatementError(LANG_INVALID_ROW_COUNT_OFFSET, st,
+                             "select * from t1 offset -1 rows");
+
+        assertStatementError(LANG_SYNTAX_ERROR, st,
+                             "select * from t1 offset -? rows");
+
+        assertStatementError(LANG_INVALID_ROW_COUNT_FIRST, st,
+                             "select * from t1 fetch first 0 rows only");
+
+        assertStatementError(LANG_INVALID_ROW_COUNT_FIRST, st,
+                             "select * from t1 fetch first -1 rows only");
+
+        // Wrong type in row count argument
+        assertStatementError(LANG_INTEGER_LITERAL_EXPECTED, st,
+                             "select * from t1 fetch first 3.14 rows only");
+
+        // Wrong order of clauses
+        assertStatementError(LANG_SYNTAX_ERROR, st,
+                             "select * from t1 " +
+                             "fetch first 0 rows only offset 0 rows");
+    }
+
+
+    /**
+     * Positive tests. Check that the new keyword OFFSET introduced is not
+     * reserved so we don't risk breaking existing apps.
+     */
+    public void testNewKeywordNonReserved()
+            throws Exception
+    {
+        setAutoCommit(false);
+        prepareStatement("select a,b as offset from t1 offset 0 rows");
+
+        // Column and table correlation name usage
+        prepareStatement("select a,b from t1 as offset");
+
+        prepareStatement("select a,b offset from t1 offset");
+        prepareStatement("select a,b offset from t1 offset +2 rows");
+        prepareStatement("select a offset,b from t1 offset ? rows");
+        prepareStatement("select offset.a, offset.b offset from t1 as offset offset ? rows");
+
+        // DERBY-4562
+        Statement s = createStatement();
+        s.executeUpdate("create table t4562(i int, offset int)");
+        ResultSet rs = s.executeQuery(
+            "select * from t4562 where i > 0 and offset + i < 0 offset 2 rows");
+        rs.next();
+
+        rs = s.executeQuery(
+            "select * from t4562 where i > 0 and offset - i < 0 offset 2 rows");
+        rs.next();
+
+        rs = s.executeQuery(
+            "select * from t4562 where i > 0 and offset * i < 0 offset 2 rows");
+        rs.next();
+
+        rs.close();
+
+        rollback();
+    }
+
+
+    /**
+     * Positive tests.
+     */
+    public void testOffsetFetchFirstReadOnlyForwardOnlyRS()
+            throws Exception
+    {
+        Statement stm = createStatement();
+
+        /*
+         * offset 0 rows (a no-op)
+         */
+
+        queryAndCheck(
+            stm,
+            "select a,b from t1 order by b offset 0 rows",
+            new String [][] {
+                {"1","1"}, {"1","2"},{"1","3"}, {"1","4"},{"1","5"}});
+        queryAndCheck(
+            stm,
+            "select a,b from t2 order by a offset 0 rows",
+            new String [][] {
+                {"1","1"}, {"2","1"},{"3","1"}, {"4","1"},{"5","1"}});
+        queryAndCheck(
+            stm,
+            "select a,b from t3  order by b offset 0 rows",
+            new String [][] {
+                {"1","1"}, {"2","2"},{"3","3"}, {"4","4"},{"5","5"}});
+
+        /*
+         * offset 1 rows
+         */
+
+        queryAndCheck(
+            stm,
+            "select a,b from t1  order by b offset 1 rows",
+            new String [][] {
+                {"1","2"},{"1","3"}, {"1","4"},{"1","5"}});
+        queryAndCheck(
+            stm,
+            "select a,b from t2 order by a offset 1 rows",
+            new String [][] {
+                {"2","1"},{"3","1"}, {"4","1"},{"5","1"}});
+        queryAndCheck(
+            stm,
+            "select a,b from t3 order by b offset 1 rows",
+            new String [][] {
+                {"2","2"},{"3","3"}, {"4","4"},{"5","5"}});
+
+        /*
+         * offset 4 rows
+         */
+
+        queryAndCheck(
+            stm,
+            "select a,b from t1 order by b offset 4 rows",
+            new String [][] {
+                {"1","5"}});
+        queryAndCheck(
+            stm,
+            "select a,b from t2 order by a offset 4 rows",
+            new String [][] {
+                {"5","1"}});
+        queryAndCheck(
+            stm,
+            "select a,b from t3 order by b offset 4 rows",
+            new String [][] {
+                {"5","5"}});
+
+        /*
+         * offset 1 rows fetch 1 row. Use "next"/"rows" syntax
+         */
+        queryAndCheck(
+            stm,
+            "select a,b from t1 order by b offset 1 row fetch next 1 rows only",
+            new String [][] {
+                {"1","2"}});
+        queryAndCheck(
+            stm,
+            "select a,b from t2 order by a offset 1 row fetch next 1 rows only",
+            new String [][] {
+                {"2","1"}});
+        queryAndCheck(
+            stm,
+            "select a,b from t3 order by b offset 1 row  fetch next 1 rows only",
+            new String [][] {
+                {"2","2"}});
+
+        /*
+         * offset 1 rows fetch so many rows we drain rs row. Use "first"/"row"
+         * syntax
+         */
+        queryAndCheck(
+            stm,
+            "select a,b from t1 order by b offset 1 rows fetch first 10 row only",
+            new String [][] {
+                {"1","2"},{"1","3"}, {"1","4"},{"1","5"}});
+        queryAndCheck(
+            stm,
+            "select a,b from t2 order by a offset 1 rows fetch first 10 row only",
+            new String [][] {
+                {"2","1"},{"3","1"}, {"4","1"},{"5","1"}});
+        queryAndCheck(
+            stm,
+            "select a,b from t3 order by b offset 1 rows  fetch first 10 row only",
+            new String [][] {
+                {"2","2"},{"3","3"}, {"4","4"},{"5","5"}});
+
+        /*
+         * offset so many rows that we see empty rs
+         */
+        queryAndCheck(
+            stm,
+            "select a,b from t1 offset 10 rows",
+            new String [][] {});
+        queryAndCheck(
+            stm,
+            "select a,b from t2 offset 10 rows",
+            new String [][] {});
+        queryAndCheck(
+            stm,
+            "select a,b from t3 offset 10 rows",
+            new String [][] {});
+
+        /*
+         * fetch first/next row (no row count given)
+         */
+        queryAndCheck(
+            stm,
+            "select a,b from t1 order by b fetch first row only",
+            new String [][] {{"1","1"}});
+        queryAndCheck(
+            stm,
+            "select a,b from t2 order by a fetch next row only",
+            new String [][] {{"1","1"}});
+        queryAndCheck(
+            stm,
+            "select a,b from t3 order by b fetch next row only",
+            new String [][] {{"1","1"}});
+
+        /*
+         * Combine with order by asc
+         */
+        queryAndCheck(
+            stm,
+            "select a,b from t1 order by b asc fetch first row only",
+            new String [][] {{"1","1"}});
+        queryAndCheck(
+            stm,
+            "select a,b from t2 order by a asc fetch next row only",
+            new String [][] {{"1","1"}});
+        queryAndCheck(
+            stm,
+            "select a,b from t3 order by a asc fetch next row only",
+            new String [][] {{"1","1"}});
+
+
+        /*
+         * Combine with order by desc.
+         */
+        queryAndCheck(
+            stm,
+            // Note: use column b here since for t1 all column a values are the
+            // same and order can change after sorting, want unique row first
+            // in rs so we can test it.
+            "select a,b from t1 order by b desc fetch first row only",
+            new String [][] {{"1","5"}});
+        queryAndCheck(
+            stm,
+            "select a,b from t2 order by a desc fetch next row only",
+            new String [][] {{"5","1"}});
+        queryAndCheck(
+            stm,
+            "select a,b from t3 order by a desc fetch next row only",
+            new String [][] {{"5","5"}});
+
+        /*
+         * Combine with group by, order by.
+         */
+        queryAndCheck(
+            stm,
+            "select max(a) from t1 group by b fetch first row only",
+            new String [][] {{"1"}});
+        queryAndCheck(
+            stm,
+            "select max(a) from t2 group by b offset 0 rows",
+            new String [][] {{"5"}});
+        queryAndCheck(
+            stm,
+            "select max(a) from t3 group by b " +
+            "    order by max(a) fetch next 2 rows only",
+            new String [][] {{"1"},{"2"}});
+
+        /*
+         * Combine with union
+         */
+
+        queryAndCheck(
+            stm,
+            "select * from t1 union all select * from t1 " +
+            "  order by a fetch first 2 row only",
+            new String [][] {{"1","1"}, {"1","2"}});
+
+        /*
+         * Combine with join
+         */
+        queryAndCheck(
+            stm,
+            "select t2.b, t3.b from t2,t3 where t2.a=t3.a " +
+            "  order by t2.a fetch first 2 row only",
+            new String [][] {{"1","1"}, {"1","2"}});
+
+        stm.close();
+    }
+
+
+    /**
+     * Positive tests.
+     */
+    public void DISABLED_testOffsetFetchFirstUpdatableForwardOnlyRS()
+            throws Exception
+    {
+        Statement stm = createStatement(ResultSet.TYPE_FORWARD_ONLY,
+          ResultSet.CONCUR_UPDATABLE);
+
+        setAutoCommit(false);
+
+        /*
+         * offset 0 rows (a no-op), update a row and verify result
+         */
+        // GemStone changes BEGIN
+        /*(original code) ResultSet rs = stm.executeQuery("select * from t1  offset 0 rows");*/
+        ResultSet rs = stm.executeQuery("select * from t1 offset 0 rows for update of a, b");
+      // GemStone changes END
+        
+        rs.next();
+        rs.next(); // at row 2
+        rs.updateInt(1, -rs.getInt(1));
+        rs.updateRow();
+        rs.close();
+
+        queryAndCheck(
+            stm,
+            "select a,b from t1",
+            new String [][] {
+                {"1","1"}, {"-1","2"},{"1","3"}, {"1","4"},{"1","5"}});
+
+        rollback();
+
+        /*
+         * offset 1 rows, update a row and verify result
+         */
+        rs = stm.executeQuery("select * from t1 offset 1 rows");
+        rs.next(); // at row 1, but row 2 of underlying rs
+
+        rs.updateInt(1, -rs.getInt(1));
+        rs.updateRow();
+        rs.close();
+
+        queryAndCheck(
+            stm,
+            "select a,b from t1",
+            new String [][] {
+                {"1","1"}, {"-1","2"},{"1","3"}, {"1","4"},{"1","5"}});
+
+        rollback();
+        stm.close();
+    }
+
+
+    /**
+     * Positive tests with scrollable read-only.
+     */
+    public void testOffsetFetchFirstReadOnlyScrollableRS()
+            throws Exception
+    {
+        Statement stm = createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+                                        ResultSet.CONCUR_READ_ONLY);
+
+        /*
+         * offset 0 rows (a no-op), update a row and verify result
+         */
+        ResultSet rs = stm.executeQuery("select * from t1 order by b offset 0 rows");
+        rs.next();
+        rs.next(); // at row 2
+        assertTrue(rs.getInt(2) == 2);
+        rs.close();
+
+        /*
+         * offset 1 rows, fetch 3 row, check that we have the right ones
+         */
+        rs = stm.executeQuery(
+            "select * from t1 order by b " + "offset 1 rows fetch next 3 rows only");
+        rs.next();
+        rs.next(); // at row 2, but row 3 of underlying rs
+
+        assertTrue(rs.getInt(2) == 3);
+
+        // Go backbards and update
+        rs.previous();
+        assertTrue(rs.getInt(2) == 2);
+
+        // Try some navigation and border conditions
+        rs.previous();
+        assertTrue(rs.isBeforeFirst());
+        rs.next();
+        rs.next();
+        rs.next();
+        rs.next();
+        assertTrue(rs.isAfterLast());
+
+        stm.close();
+    }
+
+
+    /**
+     * Positive tests with SUR (Scrollable updatable result set).
+     */
+    public void testOffsetFetchFirstUpdatableScrollableRS()
+            throws Exception
+    {
+      // GemStone changes BEGIN
+      Statement stm;
+      /* (original code)
+       Statement stm = createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+          ResultSet.CONCUR_UPDATABLE);
+       */
+        try {
+          stm = createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+              ResultSet.CONCUR_UPDATABLE);
+          fail("Revert back to orginal code once we start supporting updatable scrollable / forward only resultsets");
+        } catch (SQLException sqle) {
+          if (!SQLState.UPDATABLE_SCROLL_INSENSITIVE_NOT_SUPPORTED.startsWith(sqle
+              .getSQLState())) {
+            throw sqle;
+          }
+          return;
+        }
+     // GemStone changes END
+
+        setAutoCommit(false);
+
+        /*
+         * offset 0 rows (a no-op), update a row and verify result
+         * also try the "for update" syntax so we see that it still works
+         */
+        ResultSet rs = stm
+            .executeQuery("select * from t1  offset 0 rows for update");
+        rs = stm.executeQuery("select * from t1  offset 0 rows for update");
+        rs.next();
+        rs.next(); // at row 2
+        rs.updateInt(1, -rs.getInt(1));
+        rs.updateRow();
+        rs.close();
+
+        queryAndCheck(
+            stm,
+            "select a,b from t1",
+            new String [][] {
+                {"1","1"}, {"-1","2"},{"1","3"}, {"1","4"},{"1","5"}});
+
+        rollback();
+
+        /*
+         * offset 1 rows, fetch 3 row, update some rows and verify result
+         */
+        rs = stm.executeQuery(
+            "select * from t1 offset 1 rows fetch next 3 rows only");
+        rs.next();
+        rs.next(); // at row 2, but row 3 of underlying rs
+
+        rs.updateInt(1, -rs.getInt(1));
+        rs.updateRow();
+
+        // Go backbards and update
+        rs.previous();
+        rs.updateInt(1, -rs.getInt(1));
+        rs.updateRow();
+
+        // Try some navigation and border conditions
+        rs.previous();
+        assertTrue(rs.isBeforeFirst());
+        rs.next();
+        rs.next();
+        rs.next();
+        rs.next();
+        assertTrue(rs.isAfterLast());
+
+        // Insert a row
+        rs.moveToInsertRow();
+        rs.updateInt(1,42);
+        rs.updateInt(2,42);
+        rs.insertRow();
+
+        // Delete a row
+        rs.previous();
+        rs.deleteRow();
+
+        // .. and see that a hole is left in its place
+        rs.previous();
+        rs.next();
+        assertTrue(rs.rowDeleted());
+
+        rs.close();
+
+        queryAndCheck(
+            stm,
+            "select a,b from t1",
+            new String [][] {
+                {"1","1"}, {"-1","2"},{"-1","3"},{"1","5"},{"42","42"}});
+        rollback();
+
+        // Test with projection
+        rs = stm.executeQuery(
+            "select * from t1 where a + 1 < b offset 1 rows");
+        // should yield 2 rows
+        rs.absolute(2);
+        assertTrue(rs.getInt(2) == 5);
+        rs.updateInt(2, -5);
+        rs.updateRow();
+        rs.close();
+
+        queryAndCheck(
+            stm,
+            "select a,b from t1",
+            new String [][] {
+                {"1","1"}, {"1","2"},{"1","3"},{"1","4"},{"1","-5"}});
+        rollback();
+
+        stm.close();
+    }
+
+
+    public void testValues() throws SQLException {
+        Statement stm = createStatement();
+
+        queryAndCheck(
+            stm,
+            "values 4" +
+            "    fetch first 2 row only",
+            new String [][] {{"4"}});
+
+        queryAndCheck(
+            stm,
+            "values 4" +
+            "    offset 1 row",
+            new String [][] {});
+
+
+        stm.close();
+    }
+
+    /**
+     * Positive tests, result set metadata
+     */
+    public void testMetadata() throws SQLException {
+        Statement stm = createStatement();
+
+        ResultSet rs = stm.executeQuery("select * from t1 offset 1 rows");
+        ResultSetMetaData rsmd= rs.getMetaData();
+        int cnt = rsmd.getColumnCount();
+
+        String[] cols = new String[]{"A","B"};
+        int[] types = {Types.INTEGER, Types.BIGINT};
+
+        for (int i=1; i <= cnt; i++) {
+            String name = rsmd.getColumnName(i);
+            int type = rsmd.getColumnType(i);
+
+            assertTrue(name.equals(cols[i-1]));
+            assertTrue(type == types[i-1]);
+        }
+
+        rs.close();
+        stm.close();
+    }
+
+
+    /**
+     * Test that we see correct traces of the filtering in the statistics
+     */
+    public void testRunTimeStatistics() throws SQLException {
+        Statement stm = createStatement();
+
+        stm.executeUpdate("call syscs_util.set_runtimestatistics(1)");
+
+        queryAndCheck(
+            stm,
+            "select a,b from t1 order by a offset 2 rows",
+            new String [][] {
+                {"1","3"}, {"1","4"},{"1","5"}});
+
+        stm.executeUpdate("call syscs_util.set_runtimestatistics(0)");
+
+        ResultSet rs = stm.executeQuery(
+            "values syscs_util.get_runtimestatistics()");
+        rs.next();
+        String plan = rs.getString(1);
+
+        // Verify that the plan shows the filtering (2 rows of 3 seen):
+        assertTrue(plan, plan.indexOf("Row Count (1):\n" +
+                                "Number of opens = 1\n" +
+                                "Rows seen = 3\n" +
+                                "Rows filtered = 2") != -1);
+
+        rs.close();
+        stm.close();
+    }
+
+
+    /**
+     * Test against a bigger table
+     */
+    public void testBigTable() throws SQLException {
+        Statement stm = createStatement();
+
+        setAutoCommit(false);
+
+        stm.executeUpdate("declare global temporary table session.t (i int) " +
+                          "on commit preserve rows not logged");
+
+        PreparedStatement ps =
+            prepareStatement("insert into session.t values ?");
+
+        for (int i=1; i <= 100000; i++) {
+            ps.setInt(1, i);
+            ps.executeUpdate();
+
+            if (i % 10000 == 0) {
+                commit();
+            }
+        }
+
+        queryAndCheck(
+            stm,
+            "select count(*) from session.t",
+            new String [][] {
+                {"100000"}});
+
+        queryAndCheck(
+            stm,
+            "select i from session.t order by i offset 99999 rows",
+            new String [][] {
+                {"100000"}});
+
+        stm.executeUpdate("drop table session.t");
+        stm.close();
+    }
+
+    /**
+     * Test that the values of offset and fetch first are not forgotten if
+     * a {@code PreparedStatement} is executed multiple times (DERBY-4212).
+     */
+    public void testRepeatedExecution() throws SQLException {
+        PreparedStatement ps = prepareStatement(
+                "select * from t1 order by b " +
+                "offset 2 rows fetch next 2 rows only");
+        String[][] expected = {{"1", "3"}, {"1", "4"}};
+        for (int i = 0; i < 10; i++) {
+            JDBC.assertFullResultSet(ps.executeQuery(), expected);
+        }
+    }
+
+    /**
+     * Test dynamic arguments
+     */
+    public void testDynamicArgs() throws SQLException {
+        // Check look-ahead also for ? in grammar since offset is not reserved
+        PreparedStatement ps = prepareStatement(
+            "select * from t1 offset ? rows");
+
+        // Check range errors
+        ps = prepareStatement(
+            "select * from t1 order by b " +
+            "offset ? rows fetch next ? rows only");
+
+        ps.setInt(1, 0);
+        assertPreparedStatementError(LANG_MISSING_PARMS, ps);
+
+        ps.setInt(1, -1);
+        ps.setInt(2, 2);
+        assertPreparedStatementError(LANG_INVALID_ROW_COUNT_OFFSET, ps);
+
+        ps.setInt(1, 0);
+        ps.setInt(2, 0);
+        assertPreparedStatementError(LANG_INVALID_ROW_COUNT_FIRST, ps);
+
+        // Check non-integer values
+        try {
+            ps.setString(1, "aaa");
+        } catch (SQLException e) {
+            assertSQLState(LANG_FORMAT_EXCEPTION, e);
+        }
+
+        try {
+            ps.setString(2, "aaa");
+        } catch (SQLException e) {
+            assertSQLState(LANG_FORMAT_EXCEPTION, e);
+        }
+
+
+        // A normal case
+        String[][] expected = {{"1", "3"}, {"1", "4"}};
+        for (int i = 0; i < 2; i++) {
+            ps.setInt(1,2);
+            ps.setInt(2,2);
+            JDBC.assertFullResultSet(ps.executeQuery(), expected);
+        }
+
+        // Now, note that since we now have different values for offset and
+        // fetch first, we also exercise reusing the result set for this
+        // prepared statement (i.e. the values are computed at execution time,
+        // not at result set generation time). Try long value for change.
+        ps.setLong(1, 1L);
+        ps.setInt(2, 3);
+        expected = new String[][]{{"1", "2"}, {"1", "3"}, {"1", "4"}};
+        JDBC.assertFullResultSet(ps.executeQuery(), expected);
+
+
+        //  Try a large number
+        ps.setLong(1, Integer.MAX_VALUE * 2L);
+        ps.setInt(2, 5);
+        JDBC.assertEmpty(ps.executeQuery());
+
+        // Mix of prepared and not
+        ps = prepareStatement(
+            "select * from t1 order by b " +
+             "offset ? rows fetch next 3 rows only");
+        ps.setLong(1, 1L);
+        JDBC.assertFullResultSet(ps.executeQuery(), expected);
+
+        ps = prepareStatement(
+            "select * from t1 order by b " +
+             "offset 4 rows fetch next ? rows only");
+        ps.setLong(1, 1L);
+        JDBC.assertFullResultSet(ps.executeQuery(),
+                                 new String[][]{{"1", "5"}});
+
+        // Mix of other dyn args and ours:
+        ps = prepareStatement(
+            "select * from t1 where a = ? order by b " +
+             "offset ? rows fetch next 3 rows only");
+        ps.setInt(1, 1);
+        ps.setLong(2, 1L);
+        JDBC.assertFullResultSet(ps.executeQuery(), expected);
+
+        ps = prepareStatement(
+            "select * from t1 where a = ? order by b " +
+             "offset 1 rows fetch next ? rows only");
+        ps.setInt(1, 1);
+        ps.setLong(2, 2L);
+        expected = new String[][]{{"1", "2"}, {"1", "3"}};
+        JDBC.assertFullResultSet(ps.executeQuery(), expected);
+
+
+        // NULLs not allowed (Note: parameter metadata says "isNullable" for
+        // all ? args in Derby...)
+        ps = prepareStatement(
+            "select * from t1 order by b " +
+             "offset ? rows fetch next ? rows only");
+        ps.setNull(1, Types.BIGINT);
+        ps.setInt(2, 2);
+        assertPreparedStatementError(LANG_ROW_COUNT_OFFSET_FIRST_IS_NULL, ps);
+
+        ps.setInt(1,1);
+        ps.setNull(2, Types.BIGINT);
+        assertPreparedStatementError(LANG_ROW_COUNT_OFFSET_FIRST_IS_NULL, ps);
+
+        ps.close();
+    }
+
+    /**
+     * Test dynamic arguments
+     */
+    public void testDynamicArgsMetaData() throws SQLException {
+
+    	//since there is no getParameterMetaData() call available in JSR169 
+    	//implementations, do not run this test if we are running JSR169
+    	if (JDBC.vmSupportsJSR169()) return;
+
+        PreparedStatement ps = prepareStatement(
+            "select * from t1 where a = ? order by b " +
+            "offset ? rows fetch next ? rows only");
+
+        ParameterMetaData pmd = ps.getParameterMetaData();
+        int[] expectedTypes = { Types.INTEGER, Types.BIGINT, Types.BIGINT };
+
+        for (int i = 0; i < 3; i++) {
+            assertEquals("Unexpected parameter type",
+                         expectedTypes[i], pmd.getParameterType(i+1));
+            assertEquals("Derby ? args are nullable",
+                         // Why is that? Cf. logic in ParameterNode.setType
+                         ParameterMetaData.parameterNullable,
+                         pmd.isNullable(i+1));
+        }
+        ps.close();
+    }
+
+    private void queryAndCheck(
+        Statement stm,
+        String queryText,
+        String [][] expectedRows) throws SQLException {
+
+        ResultSet rs = stm.executeQuery(queryText);
+        JDBC.assertFullResultSet(rs, expectedRows);
+    }
+}

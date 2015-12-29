@@ -1,0 +1,16 @@
+A = pub
+pubHosts        = 1
+pubVMsPerHost   = 1
+pubThreadsPerVM = 2
+B = sub
+subHosts          = 1
+subVMsPerHost     = 1
+subThreadsPerVM   = 1
+
+conserveSockets = false
+
+dataSize = 1024
+
+trimSeconds = 60
+
+perffmwk.comparisonKey = perf038

@@ -1,0 +1,138 @@
+memscale/regr/cmRegion.conf dataPolicy=replicate scope=global serialExecution=true
+
+memscale/regr/peerFDCycleWellness.conf maxConcNumForcedDisconnects=4
+   peerHosts=7 peerThreadsPerVM=5 peerVMsPerHost=1
+
+// remove pdx for cheetah
+//memscale/regr/serialParRegPdx.conf
+//   peerHosts=3 peerThreadsPerVM=2 peerVMsPerHost=3 redundantCopies=1
+
+// remove tx for cheetah
+//memscale/regr/mixedRegionSerialView.conf
+//   interestPolicy=cache_content redundantCopies=0 useLocalKeySet=true
+
+memscale/regr/concPersistMultDiskReg.conf
+
+// remove delta for cheetah
+//memscale/regr/serialDeltaPRBridge.conf
+//   bridgeHosts=3 bridgeThreadsPerVM=1 bridgeVMsPerHost=1
+//   cloningEnabled=true conserveSockets=true
+//   edgeHosts=2 edgeThreadsPerVM=1 edgeVMsPerHost=1
+//   redundantCopies=0 scope=unused
+
+memscale/regr/concDiskRegHeap.conf
+
+memscale/regr/multiDiskStoreMixedShutDownAll.conf
+   A=controller B=persist
+   controllerHosts=1 controllerThreadsPerVM=1 controllerVMsPerHost=1
+   numDiskStores=3
+   persistHosts=10 persistThreadsPerVM=3 persistVMsPerHost=1
+
+memscale/regr/concParRegStopStart.conf
+   numVMsToStop=3
+   peerHosts=9
+   peerThreadsPerVM=10
+   peerVMsPerHost=1
+   redundantCopies=0
+
+memscale/regr/mapregion.conf
+   dataPolicy=normal
+   scope=noAck
+   serialExecution=false
+
+memscale/regr/bridgeForcedDisc.conf
+   bridgeHosts=9
+   bridgeThreadsPerVM=5
+   bridgeVMsPerHost=1
+   edgeHosts=2
+   edgeThreadsPerVM=5
+   edgeVMsPerHost=1
+   maxConcNumForcedDisconnects=1
+
+// remove tx for cheetah
+//memscale/regr/prCollectionsTest.conf
+
+memscale/regr/concParRegHAShutDownAllPersist.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=6 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   redundantCopies=1 numVMsToStop=-1 // numVMsToStop is unused
+
+// -----------------------------------
+// Create and destroy tests, replicates
+// destroy < 100% (clear must be false since clear affects 100%)
+// fixed object size
+memscale/destroy.conf
+   peerHosts = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+   heapMB = 200
+   maxKeys = 25000 minObjectSize = 96 maxObjectSize=96
+   destroyPercentage = 50
+   executionCycles=25
+   useClear=false
+// destroy 100%, clear is both true and false
+// fixed object size
+memscale/destroy.conf
+   peerHosts = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+   heapMB = 200
+   maxKeys = 25000 minObjectSize=96 maxObjectSize=96
+   destroyPercentage = 100
+   executionCycles=25
+   useClear=true
+// destroy < 100% (clear must be false since clear affects 100%)
+// vary the object size
+memscale/destroy.conf
+   peerHosts = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+   heapMB = 200
+   maxKeys = 25000 minObjectSize=1 maxObjectSize=100
+   destroyPercentage = 50
+   executionCycles=25
+   useClear=false
+// destroy 100%, clear is both true and false
+// vary the object size
+memscale/destroy.conf
+   peerHosts = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+   heapMB = 200
+   maxKeys = 25000 minObjectSize=1 maxObjectSize=100
+   destroyPercentage = 100
+   executionCycles=25
+   useClear=false
+
+// -----------------------------------
+// Create and destroy tests, PRs
+// no clear option for PRs, fixed size data
+memscale/destroyPR.conf
+   peerHosts = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+   heapMB = 200
+   maxKeys = 25000 minObjectSize = 100 maxObjectSize=100
+   destroyPercentage = 100
+   executionCycles=25
+   redundantCopies=0
+// variable size data
+memscale/destroyPR.conf
+   peerHosts = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+   heapMB = 200
+   maxKeys = 25000 minObjectSize=1 maxObjectSize=100
+   destroyPercentage = 100
+   executionCycles=25
+   redundantCopies=1
+
+// Fixed size data that varies in a non-random way so as to fill off-heap entirely
+// destroyPercentage always 100% for these; minObjectSize and maxObjectSize MUST be equal
+memscale/destroyDataVariations.conf
+   peerHosts = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+   heapMB = 200
+   maxKeys = 25000 minObjectSize=80 maxObjectSize=80
+   executionCycles=25
+   useClear=true
+memscale/destroyPRDataVariations.conf
+   peerHosts = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+   heapMB = 200
+   maxKeys = 25000 minObjectSize=80 maxObjectSize=80
+   executionCycles=25
+   redundantCopies=0
+memscale/destroyPRDataVariations.conf
+   peerHosts = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+   heapMB = 200
+   maxKeys = 25000 minObjectSize=40 maxObjectSize=40
+   executionCycles=25
+   redundantCopies=1
+

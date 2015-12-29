@@ -1,0 +1,92 @@
+rebalance/addCapacity.conf 
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=1
+   C=dataStore dataStoreHosts=8 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   D=extraDataStore extraDataStoreHosts=10 extraDataStoreVMsPerHost=1 extraDataStoreThreadsPerVM=1
+   localMaxMemory = 5
+rebalance/addCapacityFewBuckets.conf 
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=1
+   C=dataStore dataStoreHosts=8 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   D=extraDataStore extraDataStoreHosts=10 extraDataStoreVMsPerHost=1 extraDataStoreThreadsPerVM=1
+   localMaxMemory = default
+rebalance/addCapacityManyBuckets.conf 
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=1
+   C=dataStore dataStoreHosts=8 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   D=extraDataStore extraDataStoreHosts=10 extraDataStoreVMsPerHost=1 extraDataStoreThreadsPerVM=1
+   localMaxMemory = 5
+rebalance/addCapacityVariedLMM.conf 
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=1
+   C=dataStore dataStoreHosts=8 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   D=extraDataStore extraDataStoreHosts=10 extraDataStoreVMsPerHost=1 extraDataStoreThreadsPerVM=1
+   localMaxMemory = incrementBy_5
+rebalance/addCapacityUnevenBuckets.conf 
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=1
+   C=dataStore dataStoreHosts=8 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   D=extraDataStore extraDataStoreHosts=10 extraDataStoreVMsPerHost=1 extraDataStoreThreadsPerVM=1
+   localMaxMemory = default   
+rebalance/replaceCapacity.conf
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=1
+   C=dataStore dataStoreHosts=15 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   localMaxMemory = default
+rebalance/fillRateVariedLMM.conf
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=1
+   C=dataStore dataStoreHosts=10 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   localMaxMemory = incrementBy_10
+   redundantCopies = 0
+rebalance/fillRateVariedLMM.conf
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=1
+   C=dataStore dataStoreHosts=10 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   localMaxMemory = incrementBy_10
+   redundantCopies = 1
+rebalance/fillRateVariedLMM.conf
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=1
+   C=dataStore dataStoreHosts=10 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   localMaxMemory = incrementBy_10
+   redundantCopies = 2
+rebalance/fillRateVariedLMM.conf
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=1
+   C=dataStore dataStoreHosts=10 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   localMaxMemory = incrementBy_10
+   redundantCopies = 3
+/*commenting out for Cheetah release
+rebalance/rebalServerGroupsExtraReplicate.conf
+   A=serverGroup1 serverGroup1Hosts=4 serverGroup1VMsPerHost=1 serverGroup1ThreadsPerVM=5
+   B=serverGroup2 serverGroup2Hosts=4 serverGroup2VMsPerHost=1 serverGroup2ThreadsPerVM=5
+   C=edgeClient1 edgeClient1Hosts=1 edgeClient1VMsPerHost=1 edgeClient1ThreadsPerVM=1
+   D=edgeClient2 edgeClient2Hosts=1 edgeClient2VMsPerHost=1 edgeClient2ThreadsPerVM=1
+rebalance/rebalServerGroupsExtraPR.conf
+   A=serverGroup1 serverGroup1Hosts=4 serverGroup1VMsPerHost=1 serverGroup1ThreadsPerVM=5
+   B=serverGroup2 serverGroup2Hosts=4 serverGroup2VMsPerHost=1 serverGroup2ThreadsPerVM=5
+   C=edgeClient1 edgeClient1Hosts=1 edgeClient1VMsPerHost=1 edgeClient1ThreadsPerVM=1
+   D=edgeClient2 edgeClient2Hosts=1 edgeClient2VMsPerHost=1 edgeClient2ThreadsPerVM=1
+
+rebalance/addCapacityBridge.conf 
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=edge edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   C=bridge bridgeHosts=8 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   D=extraBridge extraBridgeHosts=10 extraBridgeVMsPerHost=1 extraBridgeThreadsPerVM=1
+rebalance/addCapacityFewBucketsBridge.conf 
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=edge edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   C=bridge bridgeHosts=8 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   D=extraBridge extraBridgeHosts=10 extraBridgeVMsPerHost=1 extraBridgeThreadsPerVM=1
+rebalance/addCapacityManyBucketsBridge.conf 
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=edge edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   C=bridge bridgeHosts=8 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   D=extraBridge extraBridgeHosts=10 extraBridgeVMsPerHost=1 extraBridgeThreadsPerVM=1
+rebalance/addCapacityUnevenBucketsBridge.conf 
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=edge edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   C=bridge bridgeHosts=8 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   D=extraBridge extraBridgeHosts=10 extraBridgeVMsPerHost=1 extraBridgeThreadsPerVM=1 */
+

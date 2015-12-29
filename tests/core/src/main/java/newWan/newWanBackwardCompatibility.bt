@@ -1,0 +1,71 @@
+// Set version1 and version2 to 7.0 or above, and version3 to below 7.0
+
+newWan/multiVersionP2P.conf
+version1 = default version2 = default version3 = 57
+
+newWan/multiVersionHct.conf
+version1 = default version2 = default version3 = 57
+
+parReg/newWan/serial/multiVersionP2P.conf
+version1 = default version2 = default version3 = 57
+
+parReg/newWan/serial/multiVersionHct.conf
+version1 = default version2 = default version3 = 57
+
+parReg/newWan/parallel/multiVersionP2P.conf
+version1 = default version2 = default version3 = 57
+
+parReg/newWan/parallel/multiVersionHct.conf
+version1 = default version2 = default version3 = 57
+
+
+newWan/multiVersionP2P.conf
+version1 = default version2 = default version3 = 651
+
+newWan/multiVersionHct.conf
+version1 = default version2 = default version3 = 651
+
+parReg/newWan/serial/multiVersionP2P.conf
+version1 = default version2 = default version3 = 651
+
+parReg/newWan/serial/multiVersionHct.conf
+version1 = default version2 = default version3 = 651
+
+parReg/newWan/parallel/multiVersionP2P.conf
+version1 = default version2 = default version3 = 651
+
+parReg/newWan/parallel/multiVersionHct.conf
+version1 = default version2 = default version3 = 651
+
+
+newWan/multiVersionP2P.conf
+version1 = default version2 = default version3 = 664
+
+newWan/multiVersionHct.conf
+version1 = default version2 = default version3 = 664
+
+parReg/newWan/serial/multiVersionP2P.conf
+version1 = default version2 = default version3 = 664
+
+parReg/newWan/serial/multiVersionHct.conf
+version1 = default version2 = default version3 = 664
+
+parReg/newWan/parallel/multiVersionP2P.conf
+version1 = default version2 = default version3 = 664
+
+parReg/newWan/parallel/multiVersionHct.conf
+version1 = default version2 = default version3 = 664
+
+
+newWan/multiVersionP2P.conf
+version1 = default version2 = 700 version3 = 700
+
+parReg/newWan/serial/multiVersionHct.conf
+version1 = default version2 = 700 version3 = 700
+
+parReg/newWan/parallel/multiVersionP2P.conf
+version1 = default version2 = 700 version3 = 700
+
+parReg/newWan/parallel/multiVersionHct.conf
+version1 = default version2 = 700 version3 = 700
+

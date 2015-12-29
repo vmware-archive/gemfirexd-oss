@@ -1,0 +1,179 @@
+This is the list of functional tests that should be run for a full regression.
+This does not include PST testing.
+
+capCon/capCon.bt
+regression/distFuncScale1.bt
+regression/misc.bt
+regression/diskReg.bt
+dlock/dlock.bt
+getInitialImage/getInitialImage.bt
+license/regr.bt
+parReg/parReg.bt
+parReg/parRegHA.bt
+parReg/query/parRegQuery.bt
+asyncMsg/asyncMsg.bt
+regression/roles.bt
+splitBrain/splitBrain.bt
+parReg/parRegHALimitWrites.bt
+parReg/colocation/prColocation.bt
+parReg/execute/functionService.bt
+parReg/eviction/prEviction.bt
+recovDelay/recovDelay.bt
+rebalance/rebalanceRegr.bt
+rebalance/rebalance.bt
+diskRecovery/diskRecovery.bt
+parReg/parRegPersist.bt
+parReg/parRegHAPersist.bt
+parReg/execute/persistence/functionServicePersist.bt
+parReg/colocation/persistence/prColocationPersist.bt
+parReg/fixedPartitioning/fixedPartitioning.bt
+parReg/wbcl/parRegWBCL.bt
+versioning/versioning.bt
+management/test/jmx.bt
+management/test/federation.bt
+newWan/newWanBasic.bt
+newWan/newWanConflation.bt
+newWan/newWanFilters.bt
+newWan/newWanEviction.bt          (should not run on hs20 machines)
+newWan/newWanSerialParReg.bt      (should not run on hs20 machines)
+newWan/newWanParallelParReg.bt    (should not run on hs20 machines)
+newWan/newWanRebalance.bt         (should not run on hs20 machines)
+newWan/newWanParRegHA.bt
+newWan/newWanSenderOperations.bt
+newWan/orderPolicy/newWanOrderPolicy.bt
+management/test/cli/cli.bt
+memscale/memscale.bt
+deltagii/deltagii.bt
+hdfs/hdfs.bt
+resman/resmanOffHeap.bt
+
+
+
+// This bt tests rolling upgrade for minor GemFire version numbers so don't include for 7.5: pdx/compat/pdxCompat.bt
+
+The following tests need to be run with a local.conf, as noted:
+regression/pureJava.bt               (use -Dlocal.conf=$productCheckoutDir/tests/regression/local.pureJava.conf)
+regression/transportMcastTcp.bt      (use -Dlocal.conf=$productCheckout/tests/regression/local.mcast.tcp.conf)
+regression/transportMcastUdp.bt      (use -Dlocal.conf=$productCheckout/tests/regression/local.mcast.udp.conf)
+regression/transportUdp.bt           (use -Dlocal.conf=$productCheckout/tests/regression/local.udp.conf)
+splitBrain/splitBrainRegr.bt (use -Dlocal.conf=$productCheckoutDir/tests/regression/local.split.conf)
+regression/ipv6.bt                   (use -Dlocal.conf=$productCheckoutDir/tests/regression/local.ipv6.conf)
+regression/ipv6Udp.bt                (use -Dlocal.conf=$productCheckoutDir/tests/regression/local.ipv6.udp.conf)
+parReg/parRegUniqueHosts.bt          (use -Dlocal.conf=$productCheckoutDir/tests/parReg/local.uniqueHosts.conf and edit to specify 5 hosts)
+recovDelay/recovDelayUniqueHosts.bt  (use -Dlocal.conf=$productCheckoutDir/tests/recovDelay/local.recovDelayUniqueHosts.conf and edit to specify 10 hosts, at leaste 4 of which are unique)
+versioning/versioningRegr.bt         (use -Dlocal.conf=$productCheckoutDir/tests/versioning/local.concurrencyChecksEnabled.conf)
+newWan/discovery/newWanDiscovery.bt  (use -Dlocal.conf=$productCheckoutDir/tests/regression/local.2hosts.conf and edit to specify 2 hosts)
+
+When running with Java1.7, run resman.bt as is with the SUN 1.7 JDK and again with G1 GC 
+resman/resman.bt                     (use -Dlocal.conf=$productCheckoutDir/tests/resman/local.g1gc.conf)
+
+sql/sql.bt     (for linux and solaris: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.conf)
+sql/sql.bt     (for Windows: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.Windows.conf)
+sql/joins/sqlJoin.bt (for linux and solaris: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.conf)
+sql/joins/sqlJoin.bt (for Windows: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.Windows.conf)
+sql/joins/thinClient/sqlJoinThinClien.bt (for linux and solaris: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.conf)
+sql/joins/thinClient/sqlJoinThinClien.bt (for Windows: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.Windows.conf)
+sql/sqlBridge/sqlBridge.bt (for linux and solaris: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.conf)
+sql/sqlBridge/sqlBridge.bt (for Windows: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.Windows.conf)
+sql/sqlCallback/sqlCallback.bt (for linux and solaris: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.uniqueKeyOnly.conf)
+sql/sqlCallback/sqlCallback.bt (for Windows: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.uniqueKeyOnly.Windows.conf)
+sql/sqlDisk/sqlDisk.bt (for linux and solaris: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.conf)
+sql/sqlDisk/sqlDisk.bt (for Windows: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.Windows.conf)
+sql/subquery/subquery.bt (for linux and solaris: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.conf)
+sql/subquery/subquery.bt (for Windows: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.Windows.conf)
+sql/security/sqlSecurity.bt (for linux and solaris: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.conf)
+sql/security/sqlSecurity.bt (for Windows: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.Windows.conf)
+sql/alterTable/alterTable.bt (for linux and solaris: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.conf)
+sql/alterTable/alterTable.bt (for Windows: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.Windows.conf)
+sql/trigger/trigger.bt (for linux and solaris: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.conf)
+sql/trigger/trigger.bt (for Windows: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.Windows.conf)
+sql/dbCache/dbCache.bt (for linux and solaris: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.conf)
+sql/dbCache/dbCache.bt (for Windows: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.Windows.conf)
+sql/sqlTx/sqlDistTx.bt (for linux and solaris: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.conf)
+sql/sqlTx/sqlDistTx.bt (for Windows: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.Windows.conf)
+sql/sqlTx/thinClient/thinClientTx.bt (for linux and solaris: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.conf)
+sql/sqlTx/thinClient/thinClientTx.bt (for Windows: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.Windows.conf)
+sql/sqlDAP/sqlDAP.bt (for linux and solaris: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.conf)
+sql/sqlDAP/sqlDAP.bt (for Windows: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.Windows.conf)
+sql/sqlEviction/sqlEviction.bt (for linux and solaris: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.conf)
+sql/sqlEviction/sqlEviction.bt (for Windows: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.Windows.conf)
+sql/sqlTx/sqlTxCallbacks/sqlTxCallbacks.bt (for linux and solaris: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.conf)
+sql/sqlTx/sqlTxCallbacks/sqlTxCallbacks.bt (for Windows: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.Windows.conf)
+sql/sqlTx/repeatableRead/sqlRRTx.bt (for linux and solaris: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.conf)
+sql/sqlTx/repeatableRead/sqlRRTx.bt (for Windows: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.Windows.conf)
+sql/sqlTx/thinClient/repeatableRead/thinClientRRTx.bt (for linux and solaris: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.conf)
+sql/sqlTx/thinClient/repeatableRead/thinClientRRTx.bt (for Windows: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.Windows.conf)
+sql/sqlTx/sqlTxPersistence/sqlTxPersist.bt (for linux and solaris: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.conf)
+sql/sqlTx/sqlTxPersistence/sqlTxPersist.bt (for Windows: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.Windows.conf)
+sql/view/sqlView.bt (for linux and solaris: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.conf)
+sql/view/sqlView.bt (for Windows: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.Windows.conf)
+sql/ciIndex/caseInsensitiveIndex.bt (for linux and solaris: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.conf)
+sql/ciIndex/caseInsensitiveIndex.bt (for Windows: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.Windows.conf)
+sql/sqlTx/sqlTx.bt (for linux and solaris: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.conf)
+sql/sqlTx/sqlTx.bt (for Windows: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.Windows.conf)
+//tpce.bt needs to be run on better boxes
+sql/tpce/tpce.bt (for linux and solaris: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.conf)
+sql/tpce/tpce.bt (for Windows: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.Windows.conf)
+
+sql/wan/sqlWanOnePublisher.bt (for linux and solaris: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.wanhost.uniqueKeyOnly.conf and edit to provide the actual hostNames)
+sql/wan/sqlWanOnePublisher.bt (for Windows: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.wanhost.uniqueKeyOnly.Windows.conf and edit to provide the actual hostNames)
+sql/wan/sqlWanMultiPublishers.bt (for linux and solaris: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.wanhost.uniqueKeyOnly.conf and edit to provide the actual hostNames)
+sql/wan/sqlWanMultiPublishers.bt (for Windows: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.wanhost.uniqueKeyOnly.Windows.conf and edit to provide the actual hostNames)
+sql/wan/thinClient/sqlWanSingleSitePublisherClient.bt (for linux and solaris: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.wanhost.uniqueKeyOnly.conf and edit to provide the actual hostNames)
+sql/wan/thinClient/sqlWanSingleSitePublisherClient.bt (for Windows: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.wanhost.uniqueKeyOnly.Windows.conf and edit to provide the actual hostNames)
+sql/wan/thinClient/sqlWanMultiSitePublisherClient.bt (for linux and solaris: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.wanhost.uniqueKeyOnly.conf and edit to provide the actual hostNames)
+sql/wan/thinClient/sqlWanMultiSitePublisherClient.bt (for Windows: use -Dlocal.conf=$productCheckoutDir/tests/regression/local.sql.wanhost.uniqueKeyOnly.Windows.conf and edit to provide the actual hostNames)
+
+sql/networkPartition/sqlNetworkPartition3host.bt (for linux: use local.sqlNetworkPartition3hosts.conf)
+sql/networkPartition/sqlNetworkPartition3hostPartition.bt (for linux: use local.sqlNetworkPartition3hostsPR.conf)
+sql/networkPartition/sqlNetworkPartition3hostMix.bt (for linux: use local.sqlNetworkPartition3hostMix.conf)
+sql/networkPartition/sqlNetworkPartition3hostMixPartition.bt (for linux: use local.sqlNetworkPartition3hostMixPR.conf)
+sql/networkPartition/sqlNetworkPartition4host.bt (for linux: use local.sqlNetworkPartition4hosts.conf)
+sql/networkPartition/sqlNetworkPartition4hostPartition.bt (for linux: use local.sqlNetworkPartition4hostsPR.conf)
+sql/hdfs/sqlHdfs.bt (for linux: use sql/hdfs/local.hdfs.conf)
+sql/hdfs/sqlHdfsRandom.bt (for linux: use sql/hdfs/local.hdfsRandom.conf)
+sql/hadoopHA/hadoopHA.bt (for linux: use sql/hdfs/local.hdfs.conf)
+sql/wan/sqlParallelWanOnePublisher.bt (use regression/local.sql.conf)
+sql/wan/thinClient/sqlParallelWanOnePublisherClient.bt (use regression/local.sql.conf)
+
+sql/hadoopHA/dataNodeRedundancy.bt (use sql/hadoopHA/local.dataNodeRedundancy.conf and edit to provide actual hostnames)
+sql/hadoopHA/networkPartitionPrimaryAEQ.bt (use sql/hadoopHA/local.hdfsNetworkPartitionPrimaryAEQ.conf and edit to provide actual hostnames)
+sql/networkPartition/sqlHdfsAutoReconnect.bt (use sql/networkPartition/local.sqlHdfsAutoReconnect.conf and edit to provide actual hostnames)
+ 
+//Run this bt with following JVM parameters: -Dproduct=gemfirexd -Dbt.release.dir=/export/gcm/where/gemfireXD/releases
+sql/rollingUpgrade/sqlRollingUpgrade.bt (Use sql/rollingUpgrade/local.rollUpgradeMultiHosts.conf and edit to provide actual host names)    
+
+GemFireXD (sql.bt, sqlJoin.bt, etc) is only supported on 1.6, so do not run the sql bts on 1.5 JREs.
+GemFireXD wan related bts (sqlWanOnePublisher.bt, sqlWanMultiPublishers.bt needs to be run on better boxes in WDC)
+
+The following tests are to be run on all VMs except Hitachi, because it lacks appropriate GC modes:
+resman/resman.bt
+
+The following tests (with appropriate local.confs) are to be run on Linux only (as the netDown scripts are specific to Linux):
+splitBrain/netDown.bt (use -Dlocal.conf = $productCheckoutDir/tests/splitBrain/local.netDown.conf and edit to provide the actual hostNames)
+splitBrain/networkPartition2hosts.bt (use -Dlocal.conf = $productCheckoutDir/tests/splitBrain/local.networkPartition.conf and edit to provide the actual hostNames)
+splitBrain/networkPartitionWithWeightedMembers.bt (use -Dlocal.conf = $productCheckoutDir/tests/splitBrain/local.weightedMembers.conf and edit to provide the actual hostNames)
+rebalance/splitBrain/netDown.bt (use -Dlocal.conf = $productCheckoutDir/tests/splitBrain/local.netDown.conf and edit to provide the actual hostNames)
+newWan/serial/splitBrain/newWanNetworkPartition3hosts.bt (use -Dlocal.conf=$productCheckoutDir/tests/splitBrain/local.networkPartition.conf and edit to specify 3 hosts)
+sql/hadoopHA/hdfsNetworkPartition.bt (use -Dlocal.conf = $productCheckoutDir/tests/sql/hadoopHA/local.hdfsNetworkPartition.conf and edit to provide the actual hostNames where the test starts on host1 (master controller), gemfirexd members run on host2 and hadoop runs on host3.
+
+The following 64-bit tests are to be run on Linux only, following all instructions in the specified local conf files, which must be edited before use:
+scale64/scale64.bt   (use -Dlocal.conf=$productCheckoutDir/tests/regression/local.6hosts64bit.conf)
+scale64/scalewan64.bt   (use -Dlocal.conf=$productCheckoutDir/tests/regression/local.6hosts64bitwan.conf)
+scale64/diskRecovery/diskRecovery64.bt
+scale64/resman/resman64.bt   (use -Dlocal.conf=$productCheckoutDir/tests/scale64/resman/local.resman64.conf)
+
+// The secureHdfs tests MUST run on shdfs-01 (configured to run secure hdfs)
+hdfs/gfSecureHdfs.bt (use -local.conf=$productCheckoutDir/tests/hdfs/local.gfSecureHdfs.conf)
+sql/hdfs/sqlSecureHdfs.bt (use -local.conf=$productCheckoutDir/tests/sql/hdfs/local.secureHdfs.conf)
+
+HDFS backward compatibility tests
+hdfs/backwardCompatibility/hdfsBackwardCompatibility.bt 
+sql/hdfs/backwardCompatibility/sqlHdfsBackwardCompatibility.bt
+sql/hdfs/backwardCompatibility/sqlHdfsMapReduceBackwardCompatibility.bt
+
+Lastly, manualTests/pullPlug.bt needs to be run as per the instructions in
+manualTests/howtorun.txt each release.   (use
+-Dlocal.conf=$productCheckoutDir/tests/manualTests/local.pullPlug.conf
+(requires editing))
+

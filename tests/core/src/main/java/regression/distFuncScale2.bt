@@ -1,0 +1,2 @@
+include $JTESTS/cacheLoader/hc/hc.bt
+include $JTESTS/cacheperf/gemfire/messaging/intell_msg.bt

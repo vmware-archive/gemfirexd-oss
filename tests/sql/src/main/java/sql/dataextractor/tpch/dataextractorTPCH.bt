@@ -1,0 +1,66 @@
+sql/dataextractor/tpch/p2pTPCHDataExtract.conf
+    locatorHosts = 1 locatorVMsPerHost=2 locatorThreadsPerVM = 1
+    A=peer peerHosts=1 peerVMsPerHost=1 peerThreadsPerVM=2
+    B=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+    performUpdatesWhileShuttingDown = true
+    simultaneousShutdownVMs = false
+    product=sqlfire
+    importfile=importdata1g
+    createtablefile=create_tpch_tables_no_constraints_replicate_persistent
+    api = GFXD
+
+sql/dataextractor/tpch/p2pTPCHDiskRecovery.conf
+    locatorHosts = 1 locatorVMsPerHost=2 locatorThreadsPerVM = 1
+    A=peer peerHosts=1 peerVMsPerHost=1 peerThreadsPerVM=2
+    B=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+    performUpdatesWhileShuttingDown = true
+    simultaneousShutdownVMs = false
+    product=sqlfire
+    importfile=importdata1g
+    createtablefile=create_tpch_tables_no_constraints_replicate_persistent
+    api = GFXD
+
+sql/dataextractor/tpch/p2pTPCHDataExtract.conf
+    locatorHosts = 1 locatorVMsPerHost=2 locatorThreadsPerVM = 1
+    A=peer peerHosts=1 peerVMsPerHost=2 peerThreadsPerVM=2
+    B=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+    performUpdatesWhileShuttingDown = true
+    simultaneousShutdownVMs = false
+    product=sqlfire
+    importfile=importdata1g
+    createtablefile=create_tpch_tables_no_constraints_replicate_persistent
+    api = GFXD
+
+sql/dataextractor/tpch/p2pTPCHDiskRecovery.conf
+    locatorHosts = 1 locatorVMsPerHost=2 locatorThreadsPerVM = 1
+    A=peer peerHosts=1 peerVMsPerHost=2 peerThreadsPerVM=2
+    B=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+    performUpdatesWhileShuttingDown = true
+    simultaneousShutdownVMs = false
+    product=sqlfire
+    importfile=importdata1g
+    createtablefile=create_tpch_tables_no_constraints_replicate_persistent
+    api = GFXD
+    
+sql/dataextractor/tpch/p2pTPCHDataExtract.conf
+    locatorHosts = 1 locatorVMsPerHost=2 locatorThreadsPerVM = 1
+    A=peer peerHosts=1 peerVMsPerHost=4 peerThreadsPerVM=2
+    B=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+    performUpdatesWhileShuttingDown = true
+    simultaneousShutdownVMs = false
+    product=sqlfire
+    importfile=importdata1g
+    createtablefile=create_tpch_tables_no_constraints_persistent
+    api = GFXD
+
+sql/dataextractor/tpch/p2pTPCHDiskRecovery.conf
+    locatorHosts = 1 locatorVMsPerHost=2 locatorThreadsPerVM = 1
+    A=peer peerHosts=1 peerVMsPerHost=4 peerThreadsPerVM=2
+    B=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+    performUpdatesWhileShuttingDown = true
+    simultaneousShutdownVMs = false
+    product=sqlfire
+    importfile=importdata1g
+    createtablefile=create_tpch_tables_no_constraints_persistent
+    api = GFXD
+    

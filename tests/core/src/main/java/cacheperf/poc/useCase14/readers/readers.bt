@@ -1,0 +1,8 @@
+//------------------------------------------------------------------------------
+// concurrent readers
+//------------------------------------------------------------------------------
+cacheperf/poc/useCase14/readers/readers.conf
+  A = feed   feedHosts   =  1  feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+  B = bridge bridgeHosts =  5  bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+  C = edge   edgeHosts   =  5  edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+  dataSize = 50000 scope = distributedNoAck

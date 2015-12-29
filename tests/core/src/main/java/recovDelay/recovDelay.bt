@@ -1,0 +1,36 @@
+include $JTESTS/recovDelay/basicRecovDelay.inc
+
+// kill during departed recovery
+recovDelay/knownKeysKillDuringRecovery.conf
+   A=accessor accessorHosts=3 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=5 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=150000 byteArraySize=5000 redundantCopies=2 numVMsToStop=2
+   recoveryDelay = 0 startupRecoveryDelay = -1 
+recovDelay/knownKeysKillDuringRecovery.conf
+   A=accessor accessorHosts=3 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=7 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=150000 byteArraySize=2500 redundantCopies=3 numVMsToStop=3
+   recoveryDelay = 0 startupRecoveryDelay = -1 
+
+// kill during startup recovery
+recovDelay/knownKeysKillDuringRecovery.conf
+   A=accessor accessorHosts=3 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=2 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=150000 byteArraySize=5000 redundantCopies=1 numVMsToStop=1
+   recoveryDelay = -1 startupRecoveryDelay = 15000
+recovDelay/knownKeysKillDuringRecovery.conf
+   A=accessor accessorHosts=3 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=150000 byteArraySize=5000 redundantCopies=2 numVMsToStop=2
+   recoveryDelay = -1 startupRecoveryDelay = 15000
+recovDelay/knownKeysKillDuringRecovery.conf
+   A=accessor accessorHosts=3 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=150000 byteArraySize=2500 redundantCopies=3 numVMsToStop=3
+   recoveryDelay = -1 startupRecoveryDelay = 15000
+
+// listeners/ops occur during recovery
+recovDelay/knownKeysEventsDuringRecovery.conf
+   A=accessor accessorHosts=3 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   numKeys=100000 byteArraySize=500 redundantCopies=3 numVMsToStop=3

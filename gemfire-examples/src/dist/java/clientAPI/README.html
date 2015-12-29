@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<BODY bgcolor="#ffffff"><HTML>
+ <IMG SRC="../../../../docs/VMwareLogo.png" BORDER="0">
+ <HEAD>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+  <META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+  <LINK REL="STYLESHEET" HREF="DocIndex.css" CHARSET="ISO-8859-1" TYPE="text/css">
+<H1 align="center">
+vFabric<FONT size=6><b><sup><font size=-0>&#8482;</font></sup></b></FONT></font> GemFire<FONT size=6><b><sup><font size=-0>&#174;</font></sup></b></FONT></font></H1>
+     </b></FONT>
+  <H1 align="center">clientAPI</H1>
+<H2 align="center">Java Caching API Programming Example </H2>
+
+<hr color="#cc0000" size="2" align="left">
+
+<P>The <b>clientAPI</b> <a href="Client.java">example</a> demonstrates how to configure your client applications through the  GemFire API instead of through the <code>cache.xml</code>. For information on client/server 
+caching, see the <I>GemFire User's Guide</I> and 
+the online Java documentation under the <code>com.gemstone.gemfire.cache</code> package in subpackages <code>util</code>, <code>client</code>, and <code>server</code>.</P>
+<p><B>The Configuration Files </B> <BR> 
+The <code>gemfire.properties</code> distributed system configuration file is used by the locator and cacheserver processes that you will be running. </p>
+<p>The cacheserver also uses the <code>server.xml</code> cache configuration file. The client does not use any configuration files. </p>
+<p><B>The Client/Server Processes  </B> <BR>
+  The processes used for this example are: </p>
+<UL>
+  <LI> The  GemFire locator service. The locator runs as a member of the server's distributed system, using the same <code>gemfire.properties</code> file as the server. The locator maintains a dynamic list of the  members of its system, and knows which of them are running as servers. The locator provides both peer member discovery for the server system and  server discovery for any clients that connect to it.  </LI>
+  <BR>
+  <LI>The cacheserver process. The server runs with the same distributed system configuration as the locator, and connects to the locator at startup to join the distributed system.</LI>
+  <BR>
+<LI>The client processes. The <code>Client.java</code> application can be run in two modes: publisher and subscriber. All client configuration is done inside the application. The client runs outside of the server distributed system as a standalone application. In  its cache configuration, the client defines a server connection pool, which specifies  the locator's address as the place to go for server connection information. At startup, whether running as publisher or subscriber, the client connects only to the server process and not to any peer applications. 
+  The subscriber creates its region with a CacheListener to report on entry updates. It  sends a subscription request to the server for all entry events in the region.  It then waits for 10 puts to arrive in its cache. The publisher creates the same region and puts 10 entries into it. The puts are forwarded to the server, who forwards them to the subscriber.
+</UL>
+
+<B>Running the Examples</B><BR>
+Follow these instructions to run the configuration examples.<BR>
+<OL>
+  <p><I>When you run the examples, if you get a startup failure with a message indicating socket creation failure or that the port   is already in use, make sure you are not starting a second copy of the same GemFire process, with the same port configuration. If you are not, then the port specification probably conflicts with some other non-GemFire application. Follow the instructions in <a href="#ChangingPorts" target="_self">Changing the ports used in the examples</a> for the process that is failing to start. </I></p>
+</OL>
+<p>
+You need two terminal sessions: one to run the locator,  cacheserver,  and client subscriber, and the other to run the client publisher.  For both sessions, make sure the environment is set
+according to the instructions in <a href="../../EnvSetup.html">examples/EnvSetup.html</a>.</p>
+<ol>
+  <li>Change directory to <code>examples/dist/clientAPI</code>. 
+    The example instructions assume you are starting from that  directory.<br></li>
+	<br>
+  <li>In one session, start the locator:</li>
+
+
+  <blockquote>
+    <strong><code>gemfire start-locator -port=41111</code></strong>  </blockquote>
+  <li>When that returns, run the cacheserver in the same session: 
+    </p>
+  </li>
+
+  <blockquote>
+    <strong><code>cacheserver start cache-xml-file=server.xml</code></strong>  </blockquote>
+  <li>When that returns, start the client subscriber in the same session: </li>
+
+  <blockquote>
+  <strong><code>java clientAPI.Client subscriber</code></strong>  </blockquote>
+  The subscriber starts, connects to the server, and reports that it is waiting for the publisher to do its puts.
+  <br><br>
+  <li>Start the client publisher in the other session:</li>
+   <blockquote> 
+  <strong><code>java clientAPI.Client publisher</code></strong>  </blockquote>
+  <p>When the clients finish, both exit automatically.</p>
+  <li>In the first session, stop the locator and cacheserver:</li>
+  <pre>
+    <strong>cacheserver stop</strong> 
+    <strong>gemfire stop-locator -port=41111</strong></pre></OL>
+<B><a name="ChangingPorts"></a>Changing the ports used in the examples</B>
+<BR>
+To change the server port,  substitute your  port number  for the <code>port</code> specification in the <code>cache-server</code> configuration in <code>server.xml</code>.</p>
+To change the locator port,  substitute your  port number in these places:
+<UL>
+  <LI>Change the command-line <code>-port</code> specification for <code>gemfire  start-locator</code> and <code>gemfire stop-locator</code>.</LI>
+  <LI>Change the <code>locators</code> specification in the <code>gemfire.properties</code> file.</LI>
+  <LI>Add <code>-DlocatorPort=</code>&lt;<em>yourPortNumber</em>&gt; to the <code>java</code> command-line invocation for the subscriber and the publisher, like this:.</LI>
+<pre>
+     <strong>java -DlocatorPort=40100 clientAPI.Client subscriber</strong>
+     <strong>java -DlocatorPort=40100 clientAPI.Client publisher</strong></pre>
+  <LI>When you finish the example, stop the locator and specify the new port number by entering the following command in one of the open sessions:</LI>
+  <pre>
+     <strong>gemfire stop-locator -port=40100</strong></pre>
+</UL>
+</HTML>
+

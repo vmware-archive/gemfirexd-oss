@@ -1,0 +1,36 @@
+gemfirexd.drda.traceDirectory=MACHINE_SPECIFIC_DIR
+gemfirexd.drda.maxThreads=0
+gemfirexd.drda.sslMode=off
+gemfirexd.drda.keepAlive=true
+gemfirexd.drda.minThreads=0
+gemfirexd.drda.portNumber=1527
+gemfirexd.drda.logConnections=false
+gemfirexd.drda.timeSlice=0
+gemfirexd.drda.startNetworkServer=false
+gemfirexd.drda.host=xxxFILTERED_HOSTNAMExxx
+gemfirexd.drda.traceAll=false
+Properties with tracing on
+gemfirexd.drda.traceDirectory=MACHINE_SPECIFIC_DIR
+gemfirexd.drda.maxThreads=0
+gemfirexd.drda.sslMode=off
+gemfirexd.drda.trace.3=true
+gemfirexd.drda.keepAlive=true
+gemfirexd.drda.minThreads=0
+gemfirexd.drda.portNumber=1527
+gemfirexd.drda.logConnections=true
+gemfirexd.drda.timeSlice=0
+gemfirexd.drda.startNetworkServer=false
+gemfirexd.drda.host=xxxFILTERED_HOSTNAMExxx
+gemfirexd.drda.traceAll=false
+Properties with tracing on
+gemfirexd.drda.traceDirectory=MACHINE_SPECIFIC_DIR
+gemfirexd.drda.maxThreads=0
+gemfirexd.drda.sslMode=off
+gemfirexd.drda.keepAlive=true
+gemfirexd.drda.minThreads=0
+gemfirexd.drda.portNumber=1527
+gemfirexd.drda.logConnections=true
+gemfirexd.drda.timeSlice=0
+gemfirexd.drda.startNetworkServer=false
+gemfirexd.drda.host=xxxFILTERED_HOSTNAMExxx
+gemfirexd.drda.traceAll=true

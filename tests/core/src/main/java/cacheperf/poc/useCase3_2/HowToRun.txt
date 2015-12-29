@@ -1,0 +1,10 @@
+
+
+        HOW TO RUN THE USECASE3_2 AND STRESS TEST SCENARIOS
+
+
+*) Reserve hosts with sufficient RAM and put them in the local.conf in thie directory, then build.
+
+*) For the useCase3 scenario, change run.sh to use JRockit 1.6.0_26.
+
+*) Run $JTESTS/cacheperf/poc/useCase3_2/run.sh.

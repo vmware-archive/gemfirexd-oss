@@ -1,0 +1,6 @@
+gfxdperf/tpch/oracle/continuous/tpch_load.conf
+gfxdperf/tpch/oracle/continuous/tpch_q01.conf
+gfxdperf/tpch/oracle/continuous/tpch_q01a.conf
+gfxdperf/tpch/oracle/continuous/tpch_q02.conf
+gfxdperf/tpch/oracle/continuous/tpch_q02a.conf
+gfxdperf/tpch/oracle/continuous/tpch_unload.conf

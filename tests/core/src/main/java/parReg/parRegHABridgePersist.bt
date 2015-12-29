@@ -1,0 +1,80 @@
+// serial
+parReg/persistence/serialParRegHABridgePersistParOffline.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+   redundantCopies=0 numVMsToStop=1,3,5
+
+parReg/persistence/serialParRegHABridgePersist.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+   redundantCopies=1 numVMsToStop=1
+parReg/persistence/serialParRegHABridgePersistParOffline.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+   redundantCopies=1 numVMsToStop=3,5
+
+parReg/persistence/serialParRegHABridgePersist.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+   redundantCopies=2 numVMsToStop=2
+parReg/persistence/serialParRegHABridgePersistParOffline.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+   redundantCopies=2 numVMsToStop=3,5
+
+parReg/persistence/serialParRegHABridgePersist.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+   redundantCopies=3 numVMsToStop=2
+parReg/persistence/serialParRegHABridgePersistParOffline.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+   redundantCopies=3 numVMsToStop=3,5
+
+
+// concurrent
+parReg/persistence/concParRegHABridgePersistParOffline.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+   redundantCopies=0 numVMsToStop=1,3,5
+
+parReg/persistence/concParRegHABridgePersist.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+   redundantCopies=1 numVMsToStop=1
+parReg/persistence/concParRegHABridgePersistParOffline.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+   redundantCopies=1 numVMsToStop=3,5
+
+parReg/persistence/concParRegHABridgePersist.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+   redundantCopies=2 numVMsToStop=2
+parReg/persistence/concParRegHABridgePersistParOffline.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+   redundantCopies=2 numVMsToStop=3,5
+
+parReg/persistence/concParRegHABridgePersist.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+   redundantCopies=3 numVMsToStop=1,3
+parReg/persistence/concParRegHABridgePersistParOffline.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+   redundantCopies=3 numVMsToStop=5

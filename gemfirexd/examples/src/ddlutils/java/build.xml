@@ -1,0 +1,122 @@
+<?xml version="1.0"?>
+
+<project name="test" default="writeDDLToXML" basedir=".">
+
+<path id="runtime-classpath">
+  <fileset dir="../dist">
+    <include name="**/*.jar"/>
+    <include name="**/*.zip"/>
+  </fileset>
+  <fileset dir="../lib">
+    <include name="**/*.jar"/>
+    <include name="**/*.zip"/>
+  </fileset>
+  <fileset dir="../..">
+    <include name="*.jar"/>
+  </fileset>
+  <fileset dir="../../../ext-lib">
+    <include name="*.jar"/>
+  </fileset>
+</path>
+
+ <!-- This will output all the object in the database 'test' and output the schema definition
+   to a file 'db-schema1.xml'. This will also extract the data and output this to 'data.xml'
+  -->
+<target name="writeDDLToXML" description="Dumps the database structure">
+  <taskdef name="databaseToDdl"
+           classname="org.apache.ddlutils.task.DatabaseToDdlTask">
+    <classpath refid="runtime-classpath"/>
+
+  </taskdef>
+  <databaseToDdl verbosity="debug">
+  <!--
+    <database url="jdbc:gemfirexd://localhost:1527"
+              driverClassName="com.pivotal.gemfirexd.jdbc.ClientDriver"
+              username="app"
+              password="app"/>
+  -->
+
+    <database url="jdbc:mysql://camus.vmware.com/test"
+              driverClassName="com.mysql.jdbc.Driver" />
+
+    <writeSchemaToFile outputFile="db-schema1.xml" failonerror="false" />
+
+    <!-- Comment line below if the source DB is too big -->
+    <writeDataToFile outputFile="data.xml"/>
+  </databaseToDdl>
+
+</target>
+
+
+ <!-- This will create the tables, etc in GemFireXD.
+      If your table names or column names contain embedded spaces, set
+      usedelimitedsqlidentifiers to true.
+  -->
+<target name="createDBFromXML" description="Create the DB tables ..">
+  <taskdef classname="org.apache.ddlutils.task.DdlToDatabaseTask"
+          name="ddlToDatabase"
+          classpathref="runtime-classpath"/>
+
+   <ddlToDatabase usedelimitedsqlidentifiers="false">
+     <database driverclassname="com.pivotal.gemfirexd.jdbc.ClientDriver"
+             url="jdbc:gemfirexd://localhost:1527"
+             username="app"
+             password="app"/>
+   <fileset dir=".">
+     <include name="db-schema1.xml"/>
+   </fileset>
+
+   <!--   <createdatabase failonerror="false"/>  -->
+
+   <writeschematodatabase alterdatabase="true"
+                          failonerror="false"/>
+   </ddlToDatabase>
+</target>
+
+
+ <!-- Extract DDL for a schema and write this out as a 'SQL' script file (db-schema1.sql).
+      EDIT THIS FILE TO CHANGE THE TABLES TO BE CUSTOM PARTITIONED, REPLICATED, PERSISTENT, ETC
+      Then, execute the SQL script using 'IJ' or your favorite tool (like SQuirrel)
+ -->
+<target name="writeDDLToSQL" description="Dumps the database structure">
+  <taskdef name="databaseToDdl"
+           classname="org.apache.ddlutils.task.DatabaseToDdlTask">
+    <classpath refid="runtime-classpath"/>
+
+  </taskdef>
+  <databaseToDdl verbosity="debug">
+    <database url="jdbc:gemfirexd://localhost:1527"
+              driverClassName="com.pivotal.gemfirexd.jdbc.ClientDriver"
+              username="app"
+              password="app"/>
+
+    <writeSchemaSqlToFile outputFile="db-schema1.sql" dodrops="true" failonerror="false" alterdatabase="false"/>
+  </databaseToDdl>
+</target>
+
+
+ <!-- Imports data rows into a database.
+      If your table names or column names contain embedded spaces, set
+      usedelimitedsqlidentifiers to true.
+  -->
+<target name="ImportDataToDB" description="Import the data ..">
+  <taskdef classname="org.apache.ddlutils.task.DdlToDatabaseTask"
+          name="ddlToDatabase"
+          classpathref="runtime-classpath"/>
+
+   <ddlToDatabase usedelimitedsqlidentifiers="false">
+    <database url="jdbc:gemfirexd://localhost:1527"
+              driverClassName="com.pivotal.gemfirexd.jdbc.ClientDriver"
+              username="app"
+              password="app"/>
+   <fileset dir=".">
+     <include name="db-schema1.xml"/>
+   </fileset>
+
+   <writedatatodatabase datafile="data.xml"
+                        usebatchmode="true"
+                        batchsize="1000"/>
+ </ddlToDatabase>
+</target>
+
+</project>

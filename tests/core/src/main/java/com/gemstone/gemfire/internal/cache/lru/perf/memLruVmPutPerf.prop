@@ -1,0 +1,4 @@
+vmThreads=1
+trimIterations=20000
+workIterations=300000
+vmQuantities=1

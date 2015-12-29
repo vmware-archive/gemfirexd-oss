@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE client-cache PUBLIC "-//GemStone Systems, Inc.//GemFire Declarative Caching 6.6//EN" "http://www.gemstone.com/dtd/cache6_6.dtd">
+
+<!-- Well-formed and valid xml file -->
+<client-cache>
+  <pool name="examplePool"  subscription-enabled="true" >
+    <server host="localhost" port="40404" />    
+  </pool>
+  
+  <pdx ignore-unread-fields="true"/>
+   
+  <region name = "Portfolios" >
+     <region-attributes refid="CACHING_PROXY" pool-name="examplePool" />
+  </region>	
+</client-cache>

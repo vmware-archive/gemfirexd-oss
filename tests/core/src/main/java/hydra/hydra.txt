@@ -1,0 +1,176 @@
+
+The MasterController Duty Cycle
+--------------------------------
+
+The "main" Java class in hydra is called MasterController--it's 
+responsible for both GemFire system startup and direction of 
+client VMs.  Here's how MasterController does its stuff: 
+
+  o  MasterController first reads the hydra configuration file 
+     (described in detail below) to figure out what needs to
+     be done.  That file contains instructions about file and process
+     locations, test duration, test tasks, and so on.
+
+  o  If hydra needs to build a new GemFire system instead of using
+     existing files or even existing processes, MasterController
+     creates directories, modifies configuration files, and starts
+     GemFire.
+
+     If the system creation step fails for some reason, MasterController 
+     puts a note to that effect in its log file and then exits.
+
+   o Once a suitable GemFire system is running, MasterController 
+     looks for special task definitions labeled "STARTTASK" in the 
+     config file.  If such tasks are present, MasterController 
+     creates a new VM and assigns the start tasks to that VM for
+     immediate execution before other tasks are allowed to proceed.
+     If multiple systems are running, it uses a separate VM for each
+     system, or for the systems specified in the hydra configuration file.
+     This enables you to build test data, etc. before the real show begins. 
+
+   o After the start tasks are finished, MasterController begins
+     to spawn the number and kind of client threads you've
+     specified in the config file.  In order to squeak past Java exec() 
+     limitations and to allow for cross-platform process creation, 
+     MasterController calls on hostagent to do most of this work.
+
+   o When all of the client threads have come up and registered   
+     their existence with the MasterController, the master then looks for  
+     task definitions labeled "INITTASK" in the config file.
+     If it finds any, it directs each client thread to execute
+     each inittask just once.  This gives you a way to set up 
+     some client thread initialization.
+
+   o After all of these preliminaries, MasterController begins the main
+     event, reading task definitions from the config file and assigning 
+     those tasks to clients.  If the file specifies random, asynchronous 
+     testing, MasterController's task scheduler tries to keep all clients 
+     busy all the time. Results are evaluated for correctness as they 
+     arrive at the master controller. 
+  
+   o MasterController periodically evaluates the number of errors, 
+     the number of tasks performed, and the elapsed time, trying to 
+     figure out whether the test has reached some end condition defined 
+     in the config file.  When the test reaches that stage, 
+     MasterController looks for task definitions labeled "CLOSETASK",
+     distributing any that it finds to the client threads.  After
+     all CLOSETASKS have been finished, MasterController shuts
+     down the clients.
+
+   o If there are any tasks labeled "ENDTASK", MasterController starts
+     a new client to execute those tasks.  ENDTASKs are typically
+     used for wrap-up activities such as final statistics calculations
+     and the like.  Like STARTTASKs, these can be executed on all or
+     a subset of the specified systems.
+      
+
+   o MasterController prints appends an error and performance
+     summary to its log file and  (if your config file directs it to 
+     do so) stops the GemFire system and delete logs. 
+
+
+By plugging in new test tasks, changing and adding to configuration
+parameters, and taking advantage of some special subclassing
+facilities, you can customize hydra's behavior drastically without
+having to modify the basic system code. 
+
+
+The Hydra Configuration File 
+-------------------------------
+The configuration file is the key element in defining and controlling 
+a hydra run.  A hydra config file can specify most of the 
+details of a GemFire configuration as well as several different
+kinds of test properties and activities. 
+
+You can also provide a list of lists, where a comma separates each
+list.  The following line, for example, sets numLists to be a three-element
+list of lists each of which has two elements:
+
+  mypackage.MyPrms-numLists = 1 2, 3 4, 5 6;
+
+Writing Hydra Test Code
+-----------------------
+
+In many cases, writing an effective hydra test is a matter of paying
+attention to just a small handful of items:
+
+  o Encapsulating small chunks of work (tasks) in static methods.
+ 
+  o Using hydra configuration files to transmit values that control
+    test activities.  This lets you change your tests in important
+    ways without rewriting your java code. 
+
+  o Taking advantage of bounded randomness so that tests continue
+    to do new things even without configuration file changes.
+
+  o Using some hydra utilities to encapsulate common system 
+    operations.  This reduces the amount of code you need to write
+    and brings those operations under the control of the hydra
+    framework in a consistent and convenient way. 
+
+
+The following method defines a task in the FakeTest test.  In that
+test, each of several client threads concurrently updates one of
+several objects in a list of test data.  Notice the way
+in which parameters for the current task execution are extracted 
+from the main configuration table:
+
+  /**
+  *
+  *  Invoked remotely as a hydra task, this method figures out the
+  *  right parameters (numWhatsits, etc) from the configuration info
+  *  and spawns another method that does the real work.
+  *
+  */
+  import hydra.*;
+  public static Boolean doWork() {
+     ConfigHashtable tab = TestConfig.tab();
+     int numWhatsits = tab.intAt(MyPrms.FakeTest-numWhatsits);
+     boolean zotzit = tab.booleanAt(MyPrms.FakeTest-zotzit);
+     return realWork(numWhatsits,zotsit);
+  }
+
+The "realWork()" method called from this one relies on methods in 
+support classes to do various and sundry operations.
+
+
+Task Definitions
+----------------- 
+Hydra tasks are little Work McChunklets that the master controller can assign
+to clients.  Each task definition specifies a job to do (a static method), the
+circumstances in which the task should operate, the maximum number of times it 
+should run, and the value it should return.   There are two main task
+types: 
+
+  o random.  Identified in your config file by the token TASK, these
+    are handed out to clients repeatedly in a semi-random, asynchronous 
+    fashion.   
+
+  o sequential.  Identified in your config file by the parameter
+                 hydra.Prms-serialExecution.
+
+See gemfire/tests/hydra/hydra_grammar.txt for the elements of a task definition.
+For example:
+
+  TASK taskClass=hydratest.TaskClient taskMethod=tryItOut2;
+
+********************************************************************************
+******************  FROM HERE DOWN IS OUT OF DATE ******************************
+********************************************************************************
+
+Here's what the fields in a task definition mean:
+
+<classname>       The name of a Java class (typically, one of your test 
+                  classes).
+
+<static selector> The selector of a static method defined by the class
+                  named <classname>.  This is the module that defines
+                  the computation to be performed by the task. 
+
+<maxThreads> An integer indicating the maximum number of clients
+             that should execute this task concurrently.  It makes
+             no sense, for example, to let multiple clients 
+             execute markForCollection concurrently.
+
+<maxTimesToRun> Put an integer here to indicate the maximum number of times
+                the task can be executed during a test run.  

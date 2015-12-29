@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<body>
+<link rel="stylesheet" type="text/css" href="/assets/css/bootstrap.css">
+<link rel="stylesheet" type="text/css" href="/assets/css/custom.css">
+
+
+<!-- Primary Navigation Bar -->
+<div class="navbar navbar-inverse">
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="/">Performance Jenkins</a>
+  </div>
+  <div class="navbar-collapse collapse navbar-responsive-collapse">
+    <ul class="nav navbar-nav">
+      <li {{ active_ratio }} ><a href="/reports">ratio</a></li>
+      <li {{ active_raw }} ><a href="/reports/raw">raw</a></li>
+      <li {{ active_key }} ><a href="/reports/key">key</a></li>
+    </ul>
+  </div>
+</div>
+<!-- end Primary Navigation Bar -->
+{{ data |safe }}
+
+
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<BODY bgcolor="#ffffff"><HTML>
+ <IMG SRC="../../../../docs/VMwareLogo.png" BORDER="0">
+ <HEAD>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+  <META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+  <LINK REL="STYLESHEET" HREF="DocIndex.css" CHARSET="ISO-8859-1" TYPE="text/css">
+<H1 align="center">
+vFabric<FONT size=6><b><sup><font size=-0>&#8482;</font></sup></b></FONT></font> GemFire<FONT size=6><b><sup><font size=-0>&#174;</font></sup></b></FONT></font></H1>
+     </b></FONT>
+  <H1 align="center">Partitioned Persistence</H1>
+<H2 align="center">Java Caching API Programming Example </H2>
+
+<hr color="#cc0000" size="2" align="left">
+
+<BODY TEXT="#000000" LINK="#0000B0" VLINK="#666699" BGCOLOR="#FFFFFF">
+<P>The <b>partitionedPersistence</b> example uses <b>gfsh</b> to demonstrate how to use the GemFire partitioned region feature, which spreads your data across multiple servers using GemFire persistence. This feature allows you to keep a persistent copy of data on disk. Each server uses separate files, so your data can be partitioned across the disks of multiple machines.
+
+<p><B>The Configuration Files </B> <BR>
+No configuration files are needed for this example.</p>
+<p><B>The Locator/Server Processes  </B> <BR>
+  The processes used for this example are: </p>
+<UL>
+  <LI>The locator process.  The locator process runs the JMX Manager and is the end-point for the gfsh client.  All gfsh commands are first sent to the JMX Manager and then distributed to the appropriate servers.</LI>
+  <BR>
+  <LI>Two server processes.</LI>
+</UL>
+
+<B>Running the Examples</B><BR>
+Follow these instructions to run the configuration examples.<BR>
+<OL>
+  <p><I>When you run the examples, if you get a startup failure with a message indicating socket creation failure or that the port is already in use, make sure you are not starting a second copy of the same GemFire process, with the same port configuration. If you are not, then the port specification probably conflicts with some other non-GemFire application.</I></p>
+</OL>
+<p>
+You need two terminal windows.  In both of the windows, make sure the environment is set according to the instructions in <a href="../../EnvSetup.html">examples/EnvSetup.html</a>.</p>
+<ol>
+  <li>Change directory to <code>SampleCode/examples/dist/partitionedPersistence</code>. 
+    The example instructions assume you are starting from that directory.<br></li>
+	<br>
+  <li>In the first window, begin a gfsh session and then start a locator. The locator will start a JMX Manager on the default port and gfsh will immediately connect to it.</li>
+  
+  <blockquote><code>$<strong>gfsh</strong></code></blockquote>
+  <blockquote><code>gfsh><strong>start locator --name=locator</strong></code></blockquote>
+  
+  <li>In the first window, start the two servers.
+  
+  <blockquote><code>gfsh><strong>start server --name=server1 --server-port=40404</strong></code></blockquote>
+  <blockquote><code>gfsh><strong>start server --name=server2 --server-port=40405</strong></code></blockquote>
+   
+  <li>In the first window, create a disk store and a region which uses the disk store.</li>
+  
+  <blockquote><code>gfsh><strong>create disk-store --name=store --dir=store</strong></code></blockquote>
+  <blockquote><code>gfsh><strong>create region --name=region --type=PARTITION_PERSISTENT --disk-store=store</code></strong></blockquote>
+
+  <li>You now have two servers hosting a partitioned region. In the first window, put several entries into the region. The entries will be spread out across both servers.</li>
+
+  <blockquote><code>gfsh><strong>put --region=region --key=key0 --value=value0</strong></code></blockquote>
+  <blockquote><code>gfsh><strong>put --region=region --key=key1 --value=value1</strong></code></blockquote>
+  <blockquote><code>gfsh><strong>put --region=region --key=key2 --value=value2</strong></code></blockquote>
+
+  <li>In the first window, stop the first server and attempt to retrieve the values by key. Some of your entries will be unavailable because the server that was hosting them is offline.</li>
+
+  <blockquote><code>gfsh><strong>stop server --name=server1</code></strong></blockquote>
+  <blockquote><code>gfsh><strong>get --region=region --key=key0</strong></code></blockquote>
+  <blockquote><code>gfsh><strong>get --region=region --key=key1</strong></code></blockquote>
+  <blockquote><code>gfsh><strong>get --region=region --key=key2</strong></code></blockquote>
+
+  <li>In the first window, stop the second server and attempt to restart the first. You'll notice that the first server hangs on startup because it's waiting to connect to the second.</li>
+
+  <blockquote><code>gfsh><strong>stop server --name=server2</code></strong></blockquote>
+  <blockquote><code>gfsh><strong>start server --name=server1 --server-port=40404</code></strong></blockquote>
+  
+  <li>In the second window, begin a gfsh session then connect to the already running JMX Manager and show the missing disk stores. It should show the missing disk store on the second server.</li>
+  
+  <blockquote><code>$<strong>gfsh</strong></code></blockquote>
+  <blockquote><code>gfsh><strong>connect</strong></code></blockquote>
+  <blockquote><code>gfsh><strong>show missing-disk-stores</strong></code></blockquote>
+  
+  <li>In the second window, start the second server. Both servers should now fully start.</li>
+  <blockquote><code>gfsh><strong>start server --name=server2 --server-port=40405</strong></code></blockquote>
+  
+  <li>Now let's simulate catastrophic data loss. In the first window, stop the first server and remove its data.</li>
+  <blockquote><code>gfsh><strong>stop server --name=server1</code></strong></blockquote>
+  <blockquote><code>gfsh><strong>sh rm -f server1/store/*</code></strong></blockquote>
+  
+  <li>In the first window, try to update the keys. You should get an error for some of the entries indicating that the data is offline.</li>
+  <blockquote><code>gfsh><strong>put --region=region --key=key0 --value=value0_2</strong></code></blockquote>
+  <blockquote><code>gfsh><strong>put --region=region --key=key1 --value=value1_2</strong></code></blockquote>
+  <blockquote><code>gfsh><strong>put --region=region --key=key2 --value=value2_2</strong></code></blockquote>
+  
+  <li>In order to fix this situation you need to let GemFire know that you have completely lost the data for those partitions. In the first window, show the missing disk stores again and then use the displayed ID in the revoke missing disk store command. Your ID will be different than the one displayed below.</li>
+ <blockquote><code>gfsh><strong>show missing-disk-stores</strong></code></blockquote>
+ <blockquote><code>gfsh><strong>revoke missing-disk-store --id=2eedbe31-e66b-4cae-909c-047873feda4d</strong></code></blockquote>
+ 
+  <li>At this point you will no longer get errors when updating/inserting data. In the first window, start the first server and update the data.</li>
+  <blockquote><code>gfsh><strong>start server --name=server1 --server-port=40404</code></strong></blockquote>
+  <blockquote><code>gfsh><strong>put --region=region --key=key0 --value=value0_2</strong></code></blockquote>
+  <blockquote><code>gfsh><strong>put --region=region --key=key1 --value=value1_2</strong></code></blockquote>
+  <blockquote><code>gfsh><strong>put --region=region --key=key2 --value=value2_2</strong></code></blockquote>
+ </ol>
+
+</pre>
+<b> Online backups </b>
+<p> To avoid losing data in the future, you should backup your data. The first technique to prevent data loss is to use <code> redundant-copies </code> feature of partitioned regions. With <code>redundancy-copies</code> equal to 1, GemFire will keep a live copy of the data in your region spread out over all of the members in the distributed system. 
+<p>See <a href= "http://gemfire.docs.pivotal.io/latest/userguide/index.html#developing/partitioned_regions/configuring_ha_for_pr.html" target=_top>Configuring High Availability for a Partition Region</a> in the <i>Pivotal GemFire User's Guide</i> for more information on how to use redundancy.</p>
+
+<p> You may also want to backup your region contents at particular points in time. GemFire allows you to perform live physical backups of all of the persistent regions in your distributed system. In the first window, execute the gfsh backup command. This will backup all disk stores to the locator's file-system.
+
+<blockquote><code>gfsh><strong>backup disk-store --dir=backup</code></strong></blockquote>
+
+<p>
+In the second window you may <B>exit</B> gfsh and take a minute to explore the contents of the locator/backup directory. It should contain a sub-directory for the time the backup was taken. That should have three sub-directories, one for each member that was backed up. There will be a restore.sh or restore.bat script generated in each sub-directory that will restore the backup for that member.
+<p>
+<p><b> Graceful shutdown </b><p>
+If you stop servers with persistent regions one at time GemFire needs to perform expensive work on startup to ensure consistency between copies of your data when you are using <code>redundant-copies</code>. You can improve the recovery time for persistent partitioned regions with redundancy by shutting down all of the members at once. In the first window, type
+<blockquote><code>gfsh><strong>shutdown</code></strong></blockquote>
+
+Using <B>shutdown</B> guarantees that all redundant copies of your region are consistent at the time of shutdown, so recovery will happen quickly.
+
+<hr color="#cc0000" size="2" align="left">
+
+</BODY>
+</HTML>
+

@@ -1,0 +1,12 @@
+A = getter
+getterHosts        = 1
+getterVMsPerHost   = 1
+getterThreadsPerVM = 2
+B = data
+dataHosts          = 1
+dataVMsPerHost     = 1
+dataThreadsPerVM   = 1
+
+dataSize = 1024
+
+perffmwk.comparisonKey = perf035

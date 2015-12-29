@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+	<!-- persistence-unit name="tpce-persistence" transaction-type="RESOURCE_LOCAL" -->
+	<!-- transaction-type default to  RESOURCE_LOCAL in SE and JTA in JEE-->
+	<persistence-unit name="tpce-persistence" transaction-type="JTA" >
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+		<jta-data-source>java:jboss/datasources/tpcegfxdds</jta-data-source>
+		<!--jta-data-source>java:jboss/datasources/tpcederbyds</jta-data-source-->
+		<class>com.pivotal.gemfirexd.app.tpce.jpa.entity.AccountPermission</class>
+		<class>com.pivotal.gemfirexd.app.tpce.jpa.entity.AccountPermissionPK</class>
+		<class>com.pivotal.gemfirexd.app.tpce.jpa.entity.Address</class>
+		<class>com.pivotal.gemfirexd.app.tpce.jpa.entity.Broker</class>
+		<class>com.pivotal.gemfirexd.app.tpce.jpa.entity.CashTransaction</class>
+		<class>com.pivotal.gemfirexd.app.tpce.jpa.entity.Charge</class>
+		<class>com.pivotal.gemfirexd.app.tpce.jpa.entity.ChargePK</class>
+		<class>com.pivotal.gemfirexd.app.tpce.jpa.entity.CommissionRate</class>
+		<class>com.pivotal.gemfirexd.app.tpce.jpa.entity.CommissionRatePK</class>
+		<class>com.pivotal.gemfirexd.app.tpce.jpa.entity.Company</class>
+		<class>com.pivotal.gemfirexd.app.tpce.jpa.entity.CompanyCompetitor</class>
+		<class>com.pivotal.gemfirexd.app.tpce.jpa.entity.CompanyCompetitorPK</class>
+		<class>com.pivotal.gemfirexd.app.tpce.jpa.entity.Customer</class>
+		<class>com.pivotal.gemfirexd.app.tpce.jpa.entity.CustomerAccount</class>
+		<class>com.pivotal.gemfirexd.app.tpce.jpa.entity.DailyMarket</class>
+		<class>com.pivotal.gemfirexd.app.tpce.jpa.entity.DailyMarketPK</class>
+		<class>com.pivotal.gemfirexd.app.tpce.jpa.entity.Exchange</class>
+		<class>com.pivotal.gemfirexd.app.tpce.jpa.entity.Financial</class>
+		<class>com.pivotal.gemfirexd.app.tpce.jpa.entity.FinancialPK</class>
+		<class>com.pivotal.gemfirexd.app.tpce.jpa.entity.Holding</class>
+		<class>com.pivotal.gemfirexd.app.tpce.jpa.entity.HoldingHistory</class>
+		<class>com.pivotal.gemfirexd.app.tpce.jpa.entity.HoldingHistoryPK</class>
+		<class>com.pivotal.gemfirexd.app.tpce.jpa.entity.Industry</class>
+		<class>com.pivotal.gemfirexd.app.tpce.jpa.entity.LastTrade</class>
+		<class>com.pivotal.gemfirexd.app.tpce.jpa.entity.NewsItem</class>
+		<class>com.pivotal.gemfirexd.app.tpce.jpa.entity.Sector</class>
+		<class>com.pivotal.gemfirexd.app.tpce.jpa.entity.Security</class>
+		<class>com.pivotal.gemfirexd.app.tpce.jpa.entity.Settlement</class>
+		<class>com.pivotal.gemfirexd.app.tpce.jpa.entity.StatusType</class>
+		<class>com.pivotal.gemfirexd.app.tpce.jpa.entity.Taxrate</class>
+		<class>com.pivotal.gemfirexd.app.tpce.jpa.entity.Trade</class>
+		<class>com.pivotal.gemfirexd.app.tpce.jpa.entity.TradeHistory</class>
+		<class>com.pivotal.gemfirexd.app.tpce.jpa.entity.TradeHistoryPK</class>
+		<class>com.pivotal.gemfirexd.app.tpce.jpa.entity.TradeRequest</class>
+		<class>com.pivotal.gemfirexd.app.tpce.jpa.entity.TradeType</class>
+		<class>com.pivotal.gemfirexd.app.tpce.jpa.entity.WatchList</class>
+		<class>com.pivotal.gemfirexd.app.tpce.jpa.entity.ZipCode</class>
+		<class>com.pivotal.gemfirexd.app.tpce.jpa.entity.HoldingSummary</class>
+		<properties>
+			<property name="hibernate.dialect" value="com.pivotal.gemfirexd.hibernate.v4.v0.GemFireXDDialect"/>
+			<!-- property name="hibernate.dialect" value="org.hibernate.dialect.DerbyTenFiveDialect"/ -->
+			<property name="hibernate.show_sql" value="true"/>
+			<property name="hibernate.connection.isolation" value="1"/>
+		</properties>
+	</persistence-unit>
+</persistence>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title>parameter</title>
+<link href="styles.css" type="text/css" rel="stylesheet">
+</head>
+<body>
+<h2> parameter</h2>
+<fieldset class="taskDescription">
+<legend><a class="anchor" name="description">Description</a></legend>
+<p>Java type: <a href="../api/org/apache/ddlutils/task/TableSpecificParameter.html"><code>org.apache.ddlutils.task.TableSpecificParameter</code></a></p>
+<p>Specifies a parameter for the creation of the tables. These are usually platform specific.
+ Note that parameters are only applied when creating new tables, not when altering existing ones.
+ Note also that if no table name is specified, the parameter is used for all created tables.</p>
+</fieldset>
+<fieldset class="taskParameters">
+<legend><a class="anchor" name="parameters">Parameters</a></legend>
+  	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-platforms">platforms</a> : String
+  	</p>
+	<p class="taskParameterDescription">
+	Specifies the platforms - a comma-separated list of platform names - for which this parameter
+ shall be used (see the <code>databaseType</code> attribute of the tasks for possible values).
+ For every platform not in this list, the parameter is ignored. <br/>
+        If not specified then the parameter is processed for every platform.
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-name">name</a> : String
+   <span class="requiredInfo">(required)</span> 	</p>
+	<p class="taskParameterDescription">
+	Specifies the name of the parameter. See the database support documentation
+ for details on the parameters supported by the individual platforms. <br/>
+        
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-tables">tables</a> : String
+  	</p>
+	<p class="taskParameterDescription">
+	Specifies the comma-separated list of table names in whose creation this parameter
+ shall be used. For every table not in this list, the parameter is ignored. <br/>
+        Use this or the <code>table</code> parameter. If neither is specified,
+                   the parameter is applied in the creation of all tables.
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-table">table</a> : String
+  	</p>
+	<p class="taskParameterDescription">
+	Specifies the name of the table in whose creation this parameter shall be applied. <br/>
+        Use this or the <code>tables</code> parameter. If neither is specified,
+                   the parameter is applied in the creation of all tables.
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-value">value</a> : String
+  	</p>
+	<p class="taskParameterDescription">
+	Specifies the parameter value. <br/>
+        If none is given, <code>null</code> is used.
+  	</p>
+</fieldset>
+<fieldset class="taskNestedElements">
+<legend><a class="anchor" name="nestedElements">Nested elements</a></legend>
+</fieldset>
+<p>&copy;2005-2007 Apache Software Foundation</p>
+</body>
+</html>

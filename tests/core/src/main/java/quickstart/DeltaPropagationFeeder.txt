@@ -1,0 +1,13 @@
+Connecting to the distributed system and creating the cache.
+Delta is 50%.
+Please press Enter to start the feeder.
+ServerListener received afterCreate Region : exampleRegion: 0->Value -> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+ServerListener received afterCreate Region : exampleRegion: 1->Value -> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+ServerListener received afterUpdate Region : exampleRegion: 0->Value -> 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 
+ServerListener received afterUpdate Region : exampleRegion: 1->Value -> 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 
+ServerListener received afterUpdate Region : exampleRegion: 0->Value -> 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 
+ServerListener received afterUpdate Region : exampleRegion: 1->Value -> 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 
+ServerListener received afterUpdate Region : exampleRegion: 0->Value -> 0, 3, 0, 3, 0, 3, 0, 3, 0, 3, 
+ServerListener received afterUpdate Region : exampleRegion: 1->Value -> 0, 3, 0, 3, 0, 3, 0, 3, 0, 3, 
+ServerListener received afterUpdate Region : exampleRegion: 0->Value -> 0, 4, 0, 4, 0, 4, 0, 4, 0, 4, 
+ServerListener received afterUpdate Region : exampleRegion: 1->Value -> 0, 4, 0, 4, 0, 4, 0, 4, 0, 4, 

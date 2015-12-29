@@ -1,0 +1,51 @@
+#!/bin/sh -f
+#
+# creates input for Summary spreadsheet 
+# (import into Excel as space delimited data)
+#
+if [ -e $1 ]; then
+  echo "Usage:  getsummary <svn revision number>"
+  exit
+fi
+
+firsttime=
+homedir=`pwd`
+# loop through regression directories ...
+# for each regrdir, find the most recently modified directory
+# tail batterytest.log to get the totals
+if [ -e ~/bin/regrdirs ]; then
+  for i in `cat ~/bin/regrdirs`                 
+  do
+    cd $i
+  # echo $i
+  # for each testsuite on this machine
+  # loop to get the most recent regression run for this testsuite
+    for j in `find . -name batterytest.log`
+    do
+      revision=`grep "Source Revision" $j | awk 'BEGIN { FS = ": "}; {print $2}'`
+# old test directories lying around may not have this string
+      if [ "$revision" = $1 ]; then
+        if [ -e $firsttime ]; then
+          productVersion=`grep "Product Version" $j | awk '{print $3}'`
+          osName=`grep "OS name" $j | awk 'BEGIN { FS = ": "}; {print $2}'`
+          branch=`grep "Source Repository" $j | awk 'BEGIN { FS = ": "}; {print $2}'`
+          javaVendor=`grep "Java vendor" $j | awk 'BEGIN { FS = ":"}; {print $2}'`
+          javaVersion=`grep "Java version" $j | awk 'BEGIN { FS = ":"}; {print $2}'`
+          firsttime=false
+          echo $productVersion "("$branch")" " " $osName $javaVersion, $javaVendor >> ${homedir}/r$1SummaryHdr.txt
+          echo "SVN Revision" $1 >> ${homedir}/r$1SummaryHdr.txt
+        fi
+#  display bt name, machine, total number of tests, failed count, hung count
+        testsuite=`echo $j | awk 'BEGIN { FS="/"}; { print $2 }'`
+        hostname=`echo $i | awk 'BEGIN { FS="/"}; { print $3 }'`
+        counts=`grep REPORT $j | awk '{print $8, $12, $14}'` 
+        echo ${testsuite} ${hostname} ${counts} >> ${homedir}/r$1Summary.tmp
+      fi
+    done
+  done 
+  cd $homedir
+  sort -d ${homedir}/r$1Summary.tmp >> ${homedir}/r$1Summary.txt
+  rm r$1Summary.tmp
+else
+  echo "Usage: getsummary requires a list of directories in ~/bin/regrdirs"
+fi

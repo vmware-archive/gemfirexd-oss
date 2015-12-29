@@ -1,0 +1,420 @@
+gfxd> --
+--   Licensed to the Apache Software Foundation (ASF) under one or more
+--   contributor license agreements.  See the NOTICE file distributed with
+--   this work for additional information regarding copyright ownership.
+--   The ASF licenses this file to You under the Apache License, Version 2.0
+--   (the "License"); you may not use this file except in compliance with
+--   the License.  You may obtain a copy of the License at
+--
+--      http://www.apache.org/licenses/LICENSE-2.0
+--
+--   Unless required by applicable law or agreed to in writing, software
+--   distributed under the License is distributed on an "AS IS" BASIS,
+--   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+--   See the License for the specific language governing permissions and
+--   limitations under the License.
+--
+-- tests for drop table
+--
+autocommit off;
+gfxd> --
+-- test simple table - all should work
+--
+create table t1 ( a int);
+0 rows inserted/updated/deleted
+gfxd> drop table t1;
+0 rows inserted/updated/deleted
+gfxd> -- t1 shouldn't be found
+select * from t1;
+ERROR 42X05: Table/View 'T1' does not exist.
+gfxd> create table t1 (a int);
+0 rows inserted/updated/deleted
+gfxd> drop table t1;
+0 rows inserted/updated/deleted
+gfxd> -- t1 shouldn't be found
+select * from t1;
+ERROR 42X05: Table/View 'T1' does not exist.
+gfxd> create table t1 (a int);
+0 rows inserted/updated/deleted
+gfxd> drop table t1;
+0 rows inserted/updated/deleted
+gfxd> -- t1 shouldn't be found
+select * from t1;
+ERROR 42X05: Table/View 'T1' does not exist.
+gfxd> --
+-- test table with unique constraint - all should work
+--
+create table t1 (a int not null unique);
+0 rows inserted/updated/deleted
+gfxd> drop table t1;
+0 rows inserted/updated/deleted
+gfxd> -- t1 shouldn't be found
+select * from t1;
+ERROR 42X05: Table/View 'T1' does not exist.
+gfxd> create table t1 (a int not null unique);
+0 rows inserted/updated/deleted
+gfxd> drop table t1;
+0 rows inserted/updated/deleted
+gfxd> -- t1 shouldn't be found
+select * from t1;
+ERROR 42X05: Table/View 'T1' does not exist.
+gfxd> create table t1 (a int not null unique);
+0 rows inserted/updated/deleted
+gfxd> drop table t1;
+0 rows inserted/updated/deleted
+gfxd> -- t1 shouldn't be found
+select * from t1;
+ERROR 42X05: Table/View 'T1' does not exist.
+gfxd> --
+-- test table with primary constraint - all should work
+--
+create table t1 ( a int not null primary key);
+0 rows inserted/updated/deleted
+gfxd> drop table t1;
+0 rows inserted/updated/deleted
+gfxd> -- t1 shouldn't be found
+select * from t1;
+ERROR 42X05: Table/View 'T1' does not exist.
+gfxd> create table t1 ( a int not null primary key);
+0 rows inserted/updated/deleted
+gfxd> drop table t1;
+0 rows inserted/updated/deleted
+gfxd> -- t1 shouldn't be found
+select * from t1;
+ERROR 42X05: Table/View 'T1' does not exist.
+gfxd> create table t1 ( a int not null primary key);
+0 rows inserted/updated/deleted
+gfxd> drop table t1;
+0 rows inserted/updated/deleted
+gfxd> -- t1 shouldn't be found
+select * from t1;
+ERROR 42X05: Table/View 'T1' does not exist.
+gfxd> --
+-- test table with check constraint - all should work
+--
+create table t1 ( a int check(a > 0));
+0 rows inserted/updated/deleted
+gfxd> drop table t1;
+0 rows inserted/updated/deleted
+gfxd> -- t1 shouldn't be found
+select * from t1;
+ERROR 42X05: Table/View 'T1' does not exist.
+gfxd> create table t1 ( a int check(a > 0));
+0 rows inserted/updated/deleted
+gfxd> drop table t1;
+0 rows inserted/updated/deleted
+gfxd> -- t1 shouldn't be found
+select * from t1;
+ERROR 42X05: Table/View 'T1' does not exist.
+gfxd> create table t1 ( a int check(a > 0));
+0 rows inserted/updated/deleted
+gfxd> drop table t1;
+0 rows inserted/updated/deleted
+gfxd> -- t1 shouldn't be found
+select * from t1;
+ERROR 42X05: Table/View 'T1' does not exist.
+gfxd> --
+-- test table with index - all should work
+--
+create table t1 ( a int);
+0 rows inserted/updated/deleted
+gfxd> create index t1index on t1(a);
+0 rows inserted/updated/deleted
+gfxd> drop table t1;
+0 rows inserted/updated/deleted
+gfxd> -- t1 shouldn't be found
+select * from t1;
+ERROR 42X05: Table/View 'T1' does not exist.
+gfxd> create table t1 (a int);
+0 rows inserted/updated/deleted
+gfxd> create index t1index on t1(a);
+0 rows inserted/updated/deleted
+gfxd> drop table t1;
+0 rows inserted/updated/deleted
+gfxd> -- t1 shouldn't be found
+select * from t1;
+ERROR 42X05: Table/View 'T1' does not exist.
+gfxd> create table t1 (a int);
+0 rows inserted/updated/deleted
+gfxd> create index t1index on t1(a);
+0 rows inserted/updated/deleted
+gfxd> drop table t1;
+0 rows inserted/updated/deleted
+gfxd> -- t1 shouldn't be found
+select * from t1;
+ERROR 42X05: Table/View 'T1' does not exist.
+gfxd> --
+-- test table with foreign key references;
+--
+create table t1(a int not null primary key);
+0 rows inserted/updated/deleted
+gfxd> create table t2(a int constraint reft1a references t1(a));
+0 rows inserted/updated/deleted
+gfxd> -- this should fail with a dependent constraint error
+drop table t1;
+ERROR X0Y25: Operation 'DROP CONSTRAINT' cannot be performed on object 'xxxxGENERATED-IDxxxx' because CONSTRAINT 'REFT1A' is dependent on that object.
+gfxd> -- this should fail with a dependent constraint error
+drop table t1;
+ERROR X0Y25: Operation 'DROP CONSTRAINT' cannot be performed on object 'xxxxGENERATED-IDxxxx' because CONSTRAINT 'REFT1A' is dependent on that object.
+gfxd> -- dropping dependent constraint
+alter table t2 drop constraint reft1a;
+0 rows inserted/updated/deleted
+gfxd> -- this should work since dependent constraint was dropped
+drop table t1;
+0 rows inserted/updated/deleted
+gfxd> -- t1 shouldn't be found
+select * from t1;
+ERROR 42X05: Table/View 'T1' does not exist.
+gfxd> -- the following should work since no referential constraint is left
+insert into t2 values(1);
+1 row inserted/updated/deleted
+gfxd> drop table t2;
+0 rows inserted/updated/deleted
+gfxd> --
+-- test table with view
+--
+create table t1(a int, b int);
+0 rows inserted/updated/deleted
+gfxd> create table t2(c int, d int);
+0 rows inserted/updated/deleted
+gfxd> create view vt1a as select a from t1;
+0 rows inserted/updated/deleted
+gfxd> create view vt1b as select b from t1;
+0 rows inserted/updated/deleted
+gfxd> create view vt1t2 as select * from t1, t2;
+0 rows inserted/updated/deleted
+gfxd> create view vvt1a as select * from vt1a;
+0 rows inserted/updated/deleted
+gfxd> create view vvvt1a as select * from vvt1a;
+0 rows inserted/updated/deleted
+gfxd> -- this should fail with view being a dependent object
+drop table t1;
+ERROR X0Y23: Operation 'DROP TABLE' cannot be performed on object 'T1' because VIEW 'VT1A' is dependent on that object.
+ERROR X0Y23: Operation 'DROP TABLE' cannot be performed on object 'T1' because VIEW 'VT1B' is dependent on that object.
+ERROR X0Y23: Operation 'DROP TABLE' cannot be performed on object 'T1' because VIEW 'VT1T2' is dependent on that object.
+ERROR X0Y23: Operation 'DROP TABLE' cannot be performed on object 'T1' because VIEW 'VVT1A' is dependent on that object.
+ERROR X0Y23: Operation 'DROP TABLE' cannot be performed on object 'T1' because VIEW 'VVVT1A' is dependent on that object.
+gfxd> -- this should fail with view being a dependent object
+drop table t1;
+ERROR X0Y23: Operation 'DROP TABLE' cannot be performed on object 'T1' because VIEW 'VT1A' is dependent on that object.
+ERROR X0Y23: Operation 'DROP TABLE' cannot be performed on object 'T1' because VIEW 'VT1B' is dependent on that object.
+ERROR X0Y23: Operation 'DROP TABLE' cannot be performed on object 'T1' because VIEW 'VT1T2' is dependent on that object.
+ERROR X0Y23: Operation 'DROP TABLE' cannot be performed on object 'T1' because VIEW 'VVT1A' is dependent on that object.
+ERROR X0Y23: Operation 'DROP TABLE' cannot be performed on object 'T1' because VIEW 'VVVT1A' is dependent on that object.
+gfxd> -- dropping dependent views
+drop view vvvt1a;
+0 rows inserted/updated/deleted
+gfxd> drop view vvt1a;
+0 rows inserted/updated/deleted
+gfxd> drop view vt1t2;
+0 rows inserted/updated/deleted
+gfxd> drop view vt1b;
+0 rows inserted/updated/deleted
+gfxd> drop view vt1a;
+0 rows inserted/updated/deleted
+gfxd> -- this should work after dependent views were dropped
+drop table t1;
+0 rows inserted/updated/deleted
+gfxd> -- this shouldn't find the view
+select * from vt1a;
+ERROR 42X05: Table/View 'VT1A' does not exist.
+gfxd> select * from vt1b;
+ERROR 42X05: Table/View 'VT1B' does not exist.
+gfxd> select * from vt1t2;
+ERROR 42X05: Table/View 'VT1T2' does not exist.
+gfxd> select * from vvt1a;
+ERROR 42X05: Table/View 'VVT1A' does not exist.
+gfxd> select * from vvvt1a;
+ERROR 42X05: Table/View 'VVVT1A' does not exist.
+gfxd> drop table t2;
+0 rows inserted/updated/deleted
+gfxd> --
+-- test table with prepared statement
+--
+create table t1(a int);
+0 rows inserted/updated/deleted
+gfxd> prepare t1stmt as 'select * from t1';
+gfxd> -- this should work, statement will be invalidated and will fail when recompiled
+drop table t1;
+0 rows inserted/updated/deleted
+gfxd> execute t1stmt;
+ERROR 42X05: Table/View 'T1' does not exist.
+gfxd> remove t1stmt;
+gfxd> create table t1(a int);
+0 rows inserted/updated/deleted
+gfxd> prepare t1stmt as 'select * from t1';
+gfxd> -- this should work, statement will be invalidated and will fail when recompiled
+drop table t1;
+0 rows inserted/updated/deleted
+gfxd> execute t1stmt;
+ERROR 42X05: Table/View 'T1' does not exist.
+gfxd> remove t1stmt;
+gfxd> create table t1(a int);
+0 rows inserted/updated/deleted
+gfxd> prepare t1stmt as 'select * from t1';
+gfxd> -- this should work, statement will be invalidated and will fail when recompiled
+drop table t1;
+0 rows inserted/updated/deleted
+gfxd> execute t1stmt;
+ERROR 42X05: Table/View 'T1' does not exist.
+gfxd> remove t1stmt;
+gfxd> --
+-- test table with triggers
+--
+create table t1(a int);
+0 rows inserted/updated/deleted
+gfxd> create table t2(a int);
+0 rows inserted/updated/deleted
+gfxd> create trigger t1trig after insert on t1 for each row insert into t2 values(1);
+0 rows inserted/updated/deleted
+gfxd> -- this should work - trigger should be deleted
+drop table t1;
+0 rows inserted/updated/deleted
+gfxd> -- t1 shouldn't be found
+select * from t1;
+ERROR 42X05: Table/View 'T1' does not exist.
+gfxd> create table t1(a int);
+0 rows inserted/updated/deleted
+gfxd> create trigger t1trig after insert on t1 for each row insert into t2 values(1);
+0 rows inserted/updated/deleted
+gfxd> -- this should work - trigger should be deleted
+drop table t1;
+0 rows inserted/updated/deleted
+gfxd> -- t1 shouldn't be found
+select * from t1;
+ERROR 42X05: Table/View 'T1' does not exist.
+gfxd> create table t1(a int);
+0 rows inserted/updated/deleted
+gfxd> create trigger t1trig after insert on t1 for each row insert into t2 values(1);
+0 rows inserted/updated/deleted
+gfxd> -- this should work - trigger should be deleted
+drop table t1;
+0 rows inserted/updated/deleted
+gfxd> -- t1 shouldn't be found
+select * from t1;
+ERROR 42X05: Table/View 'T1' does not exist.
+gfxd> drop table t2;
+0 rows inserted/updated/deleted
+gfxd> --
+-- test table within the body of a trigger on another table
+--
+create table t1(a int);
+0 rows inserted/updated/deleted
+gfxd> create table t2(a int);
+0 rows inserted/updated/deleted
+gfxd> create trigger t2trig after insert on t2 for each row insert into t1 values(1);
+0 rows inserted/updated/deleted
+gfxd> -- this should work
+drop table t1;
+0 rows inserted/updated/deleted
+gfxd> -- the following should get an error when trying to recompile the trigger action
+insert into t2 values(1);
+ERROR 42X05: Table/View 'T1' does not exist.
+gfxd> drop table t2;
+0 rows inserted/updated/deleted
+gfxd> create table t1(a int);
+0 rows inserted/updated/deleted
+gfxd> create table t2(a int);
+0 rows inserted/updated/deleted
+gfxd> create trigger t2trig after insert on t2 for each row insert into t1 values(1);
+0 rows inserted/updated/deleted
+gfxd> -- this should work
+drop table t1;
+0 rows inserted/updated/deleted
+gfxd> -- the following should get an error when trying to recompile the trigger action
+insert into t2 values(1);
+ERROR 42X05: Table/View 'T1' does not exist.
+gfxd> drop table t2;
+0 rows inserted/updated/deleted
+gfxd> create table t1(a int);
+0 rows inserted/updated/deleted
+gfxd> create table t2(a int);
+0 rows inserted/updated/deleted
+gfxd> create trigger t2trig after insert on t2 for each row insert into t1 values(1);
+0 rows inserted/updated/deleted
+gfxd> -- this should work
+drop table t1;
+0 rows inserted/updated/deleted
+gfxd> -- the following should get an error when trying to recompile the trigger action
+insert into t2 values(1);
+ERROR 42X05: Table/View 'T1' does not exist.
+gfxd> drop table t2;
+0 rows inserted/updated/deleted
+gfxd> --
+-- test drop view
+--
+create table t1(a int);
+0 rows inserted/updated/deleted
+gfxd> create view vt1 as select * from t1;
+0 rows inserted/updated/deleted
+gfxd> create view vvt1 as select * from vt1;
+0 rows inserted/updated/deleted
+gfxd> -- these should fail
+drop view vt1;
+ERROR X0Y23: Operation 'DROP VIEW' cannot be performed on object 'VT1' because VIEW 'VVT1' is dependent on that object.
+gfxd> drop view vt1 restrict;
+ERROR 42X01: Syntax error: Encountered "restrict" at line 1, column 15.
+Issue the 'help' command for general information on GFXD command syntax.
+Any unrecognized commands are treated as potential SQL commands and executed directly.
+Consult your DBMS server reference documentation for details of the SQL syntax supported by your server.
+gfxd> drop view vt1 cascade;
+ERROR 42X01: Syntax error: Encountered "cascade" at line 1, column 15.
+Issue the 'help' command for general information on GFXD command syntax.
+Any unrecognized commands are treated as potential SQL commands and executed directly.
+Consult your DBMS server reference documentation for details of the SQL syntax supported by your server.
+gfxd> -- 
+-- make sure that indexes are dropped for drop table
+--
+create table t2(a int not null primary key);
+0 rows inserted/updated/deleted
+gfxd> create table reft2(a int constraint ref1 references t2);
+0 rows inserted/updated/deleted
+gfxd> -- count should be 2
+select count(*) 
+from sys.sysconglomerates c, sys.systables t
+where t.tableid = c.tableid and
+t.tablename = 'REFT2';
+1          
+-----------
+2          
+gfxd> -- drop dependent referential constraint
+alter table reft2 drop constraint ref1;
+0 rows inserted/updated/deleted
+gfxd> -- should work since dependent constraint was previously dropped
+drop table t2;
+0 rows inserted/updated/deleted
+gfxd> -- count should be 1
+select count(*) 
+from sys.sysconglomerates c, sys.systables t
+where t.tableid = c.tableid and
+t.tablename = 'REFT2';
+1          
+-----------
+1          
+gfxd> -- unsuccessful drop table should not affect open cursor
+-- beetle 4393
+rollback;
+gfxd> create table T1 (i int, c varchar(255), d varchar(255));
+0 rows inserted/updated/deleted
+gfxd> insert into T1(i) values(1);
+1 row inserted/updated/deleted
+gfxd> insert into T1(i) values(2);
+1 row inserted/updated/deleted
+gfxd> get cursor X1 as 'select i from t1 for update of c';
+gfxd> prepare U as 'update t1 set c = CHAR(i) where current of X1';
+gfxd> next X1;
+I          
+-----------
+1          
+gfxd> drop table T1;
+ERROR X0X95: Operation 'DROP TABLE' cannot be performed on object 'T1' because there is an open ResultSet dependent on that object.
+gfxd> execute U;
+1 row inserted/updated/deleted
+gfxd> select * from T1;
+I          |C                                                                                                                               |D                                                                                                                               
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+1          |1                                                                                                                               |NULL                                                                                                                            
+2          |NULL                                                                                                                            |NULL                                                                                                                            
+gfxd> -- pretend all of the above didn't happen
+autocommit on;
+gfxd> 

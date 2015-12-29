@@ -1,0 +1,29 @@
+locatorHosts = 1
+locatorVMsPerHost = 1
+locatorThreadsPerVM = 1
+
+A = listen
+listenHosts = 1
+listenVMsPerHost = 1
+listenThreadsPerVM = 1
+
+B = bridge
+bridgeHosts = 1
+bridgeVMsPerHost = 1
+bridgeThreadsPerVM = 1
+
+C = edge
+edgeHosts = 1
+edgeVMsPerHost = 1
+edgeThreadsPerVM = 1
+
+heapMB = 1500
+maxKeys = 100000
+objectSize = 1024
+conserveSockets = false
+redundantCopies = 1
+bucketsPerDatahost = 10
+
+version = default
+
+perffmwk.comparisonKey=hctListenDataPut

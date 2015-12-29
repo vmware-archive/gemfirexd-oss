@@ -1,0 +1,33 @@
+<HTML>
+<BODY>
+
+<P>Contains {@linkplain dunit DUnit} tests that exercise the external
+{@link com.gemstone.gemfire.admin admin} API.  The classes in this
+package are designed so that they may extended to test multiple
+administraion configurations.  The root test class is {@link
+AdminDUnitTestCase} whose subclasses test the admin API.  All
+administration performed by these tests are VM-local.  These tests are
+also extends by classes in the {@link com.gemstone.gemfire.admin.jmx}
+package that test administation via JMX.  That package also contains
+an implementation of the admin interface API that is backed by JMX
+{@link javax.management.ObjectName}s allowing for remote
+administration.  The below diagram depicts the relationship of the
+admin DUnit tests.  The most important thing to note is that test
+methods are all defined once in the superclass and are inherited by
+all of the subclasses.</P>
+
+<CENTER>
+<IMG SRC="doc-files/class-hierarchy.gif" USEMAP="#class-hierarchy"
+     WIDTH="632" HEIGHT="587">
+<MAP NAME="class-hierarchy">
+<AREA COORDS="401,346,556,406" HREF="jmx/JMXAdminImpl.html" ALT="JMXAdminImpl">
+<AREA COORDS="506,461,621,481" HREF="jmx/JMXGemFireHealth.html" ALT="JMXGemFireHealth">
+<AREA COORDS="306,461,441,481" HREF="jmx/JMXDistributedSystem.html" ALT="JMXDistributedSystem">
+<AREA COORDS="43,176,188,226" HREF="GemFireHealthDUnitTest.html" ALT="GemFireHealthDUnitTest">
+<AREA COORDS="51,76,181,126" HREF="AdminDUnitTestCase.html" ALT="AdminDUnitTestCase">
+<AREA COORDS="26,531,221,576" HREF="jmx/GemFireHealthJMXRMIDunitTest.html" ALT="GemFireHealthJMXRMIDUnitTest">
+</MAP>
+</CENTER>
+
+</BODY>
+</HTML>

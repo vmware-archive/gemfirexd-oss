@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+
+<project name="test" default="writeDDLToXML" basedir=".">
+
+<path id="runtime-classpath">
+  <fileset dir="../dist">
+    <include name="**/*.jar"/>
+    <include name="**/*.zip"/>
+  </fileset>
+  <fileset dir="../lib">
+    <include name="**/*.jar"/>
+    <include name="**/*.zip"/>
+  </fileset>
+  <fileset dir="../..">
+    <include name="*.jar"/>
+  </fileset>
+  <fileset dir="../../../ext-lib">
+    <include name="*.jar"/>
+  </fileset>
+</path>
+
+ <!-- This will output all the object in the database 'test' and output the schema definition
+   to a file 'db-schema1.xml'. This will also extract the data and output this to 'data.xml'
+  -->
+<target name="writeDDLToXML" description="Dumps the database structure">
+  <taskdef name="databaseToDdl"
+           classname="org.apache.ddlutils.task.DatabaseToDdlTask">
+    <classpath refid="runtime-classpath"/>
+
+  </taskdef>
+  <databaseToDdl verbosity="debug" schemapattern="TPCEGFXD" databasetype="oracle">
+    <database url="jdbc:oracle:thin:tpcegfxd/tpcegfxd@vmc-ssrc-rh46.eng.vmware.com:1524:orclrh46"
+              driverClassName="oracle.jdbc.OracleDriver"
+              username="tpcegfxd"
+              password="tpcegfxd"/>
+    <writeSchemaToFile outputFile="tpce_oratogfxd.xml" failonerror="false" />
+
+    <!-- Comment line below if the source DB is too big -->
+    <writeDataToFile outputFile="tpce_oratogfxd.dat"/>
+  </databaseToDdl>
+
+</target>
+
+
+ <!-- This will create the tables, etc in GemFireXD.
+      If your table names or column names contain embedded spaces, set
+      usedelimitedsqlidentifiers to true.
+  -->
+<target name="createDBFromXML" description="Create the DB tables ..">
+  <taskdef classname="org.apache.ddlutils.task.DdlToDatabaseTask"
+          name="ddlToDatabase"
+          classpathref="runtime-classpath"/>
+
+   <ddlToDatabase usedelimitedsqlidentifiers="false">
+     <database driverclassname="com.pivotal.gemfirexd.jdbc.ClientDriver"
+             url="jdbc:gemfirexd://10.150.30.36:7711"
+             username="app"
+             password="app"/>
+   <fileset dir=".">
+     <include name="tpce_oratogfxd.xml"/>
+   </fileset>
+
+   <!--   <createdatabase failonerror="false"/>  -->
+
+   <writeschematodatabase alterdatabase="true"
+                          failonerror="false"/>
+   </ddlToDatabase>
+</target>
+
+
+ <!-- Extract DDL for a schema and write this out as a 'SQL' script file (db-schema1.sql).
+      EDIT THIS FILE TO CHANGE THE TABLES TO BE CUSTOM PARTITIONED, REPLICATED, PERSISTENT, ETC
+      Then, execute the SQL script using 'IJ' or your favorite tool (like SQuirrel)
+ -->
+<target name="writeDDLToSQL" description="Dumps the database structure">
+  <taskdef name="databaseToDdl"
+           classname="org.apache.ddlutils.task.DatabaseToDdlTask">
+    <classpath refid="runtime-classpath"/>
+
+  </taskdef>
+  <databaseToDdl verbosity="debug" schemapattern="TPCEGFXD" databasetype="oracle">
+    <database url="jdbc:oracle:thin:tpcegfxd/tpcegfxd@vmc-ssrc-rh46.eng.vmware.com:1524:orclrh46"
+              driverClassName="oracle.jdbc.OracleDriver"
+              username="tpcegfxd"
+              password="tpcegfxd"/>
+
+    <writeSchemaSqlToFile outputFile="tpce_oratogfxd.sql" dodrops="true" failonerror="false" alterdatabase="false"/>
+  </databaseToDdl>
+</target>
+
+
+ <!-- Imports data rows into a database.
+      If your table names or column names contain embedded spaces, set
+      usedelimitedsqlidentifiers to true.
+  -->
+<target name="ImportDataToDB" description="Import the data ..">
+  <taskdef classname="org.apache.ddlutils.task.DdlToDatabaseTask"
+          name="ddlToDatabase"
+          classpathref="runtime-classpath"/>
+
+   <ddlToDatabase usedelimitedsqlidentifiers="false">
+     <database driverclassname="com.pivotal.gemfirexd.jdbc.ClientDriver"
+             url="jdbc:gemfirexd://10.150.30.36:7711"
+             username="app"
+             password="app"/>
+   <fileset dir=".">
+     <include name="tpce_oratogfxd.xml"/>
+   </fileset>
+
+   <writedatatodatabase datafile="tpce_oratogfxd.dat"
+                        usebatchmode="true"
+                        batchsize="1000"/>
+ </ddlToDatabase>
+</target>
+
+</project>

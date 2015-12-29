@@ -1,0 +1,35 @@
+sql/sqlTx/bridgeClient/partitionByListTxClient.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    A=server serverbridgeHosts=2 serverbridgeVMsPerHost=2 serverbridgeThreadsPerVM=1
+    B=store storebridgeHosts=1 storebridgeVMsPerHost=3 storebridgeThreadsPerVM=1
+    edgeHosts = 1 edgeVMsPerHost = 5 edgeThreadsPerVM = 3
+    dropIndex = true
+    manageDerbyServer=true
+    testUniqueKeys=false
+
+sql/sqlTx/bridgeClient/partitionByListSingleOpTxClient.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    A=server serverbridgeHosts=2 serverbridgeVMsPerHost=2 serverbridgeThreadsPerVM=1
+    B=store storebridgeHosts=1 storebridgeVMsPerHost=3 storebridgeThreadsPerVM=1
+    edgeHosts = 1 edgeVMsPerHost = 5 edgeThreadsPerVM = 3
+    dropIndex = true
+    manageDerbyServer=true
+    testUniqueKeys=false
+
+sql/sqlTx/bridgeClient/partitionByRangeTxClient.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    A=server serverbridgeHosts=2 serverbridgeVMsPerHost=2 serverbridgeThreadsPerVM=1
+    B=store storebridgeHosts=1 storebridgeVMsPerHost=4 storebridgeThreadsPerVM=1
+    edgeHosts = 1 edgeVMsPerHost = 5 edgeThreadsPerVM = 3
+    dropIndex = true
+    manageDerbyServer=true
+    testUniqueKeys=false
+
+sql/sqlTx/bridgeClient/partitionByRangeSingleOpTxClient.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    A=server serverbridgeHosts=2 serverbridgeVMsPerHost=2 serverbridgeThreadsPerVM=1
+    B=store storebridgeHosts=1 storebridgeVMsPerHost=6 storebridgeThreadsPerVM=1
+    edgeHosts = 1 edgeVMsPerHost = 5 edgeThreadsPerVM = 3
+    dropIndex = true
+    manageDerbyServer=true
+    testUniqueKeys=false

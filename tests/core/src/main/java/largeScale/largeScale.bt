@@ -1,0 +1,5 @@
+largeScale/newedge/startupShutdown.conf
+   A=admin adminbridgeHosts=1 adminbridgeVMsPerHost=1 adminbridgeThreadsPerVM=1
+   B=server serverbridgeHosts=3 serverbridgeVMsPerHost=8 serverbridgeThreadsPerVM=1 // numThreads must be 1
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1

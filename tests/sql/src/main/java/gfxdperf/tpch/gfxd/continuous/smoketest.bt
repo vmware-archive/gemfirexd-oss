@@ -1,0 +1,4 @@
+gfxdperf/tpch/gfxd/continuous/tpch_validate_peer.conf
+gfxdperf/tpch/gfxd/continuous/tpch_validate_peer_offheap.conf
+gfxdperf/tpch/gfxd/continuous/tpch_validate_thin.conf
+gfxdperf/tpch/gfxd/continuous/tpch_validate_thin_offheap.conf

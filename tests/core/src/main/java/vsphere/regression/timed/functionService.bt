@@ -1,0 +1,6 @@
+vsphere/vijava/hctFuncExecWithColocationVMotion.conf
+   edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=1000 byteArraySize=500 redundancy=3 
+   redundantCopies=0     
+   threadGroupsName=clientVMThreads

@@ -1,0 +1,57 @@
+//------------------------------------------------------------------------------
+// delta
+//------------------------------------------------------------------------------
+
+csTx/delta/concDeltaReplicateBridge.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=4
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=4
+
+csTx/delta/concDeltaPRBridge.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=4
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=4
+   redundantCopies = nonZero
+
+csTx/delta/serialDeltaCQBridge.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   cloningEnabled = true
+csTx/delta/serialDeltaCQBridgePR.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   cloningEnabled = true
+csTx/delta/concDeltaCQBridge.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   cloningEnabled = true
+csTx/delta/concDeltaCQBridgePR.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   cloningEnabled = true
+
+csTx/delta/serialDeltaCQBridgeHA.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   redundancyLevel = 4 cloningEnabled = true
+csTx/delta/serialDeltaCQBridgePRHA.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   redundancyLevel = 3 redundantCopies = 3
+   cloningEnabled = true
+csTx/delta/concDeltaCQBridgeHA.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundancyLevel = 4
+   cloningEnabled = true
+csTx/delta/concDeltaCQBridgePRHA.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundancyLevel = 3 redundantCopies = 3
+   cloningEnabled = true
+
+//csTx/delta/deltaPropagationForAdjunctMessaging.conf
+  //A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=1
+  //B = feed    feedHosts   = 1  feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+  //C = defaultedge  defaultedgeHosts   = 1  defaultedgeVMsPerHost   = 1  defaultedgeThreadsPerVM   = 1
+  //D = emptyedge    emptyedgeHosts   = 1  emptyedgeVMsPerHost   = 1  emptyedgeThreadsPerVM   = 1
+  //nPutThreads=5 nPutKeyRange=10
+

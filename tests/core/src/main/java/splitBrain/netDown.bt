@@ -1,0 +1,50 @@
+// netDown.bt
+// These tests require a local.conf based on $JTESTS/splitBrain/local.netDown.conf
+// This local.conf forces the locator and surviving VMs onto the same host with
+// the losingSide on a separate host.  In the case of bridge tests, the edges
+// will be placed on a separate host from those dropping/restoring connections.
+// For example, running on host stut the following line places the locator
+// and survivingSide VMs onto bobo, with the losingSide on biscuit.  Any 
+// edge VMs will be run on stut.
+//hydra.HostPrms-hostNames = bobo bobo biscuit stut;
+//
+
+// parReg tests (with networkDrop)
+splitBrain/serialPRNetDown.conf redundantCopies = 3 
+   locatorHosts=1  locatorVMsPerHost=1 locatorThreadsPerVM=1
+   A=survivingSide survivingSideHosts=1 survivingSideVMsPerHost=4 survivingSideThreadsPerVM=5
+   B=losingSide    losingSideHosts=1  losingSideVMsPerHost=3  losingSideThreadsPerVM=5
+   onlyOnPlatforms=Linux
+
+splitBrain/concPRNetDown.conf redundantCopies = 3 
+   locatorHosts=1  locatorVMsPerHost=1 locatorThreadsPerVM=1
+   A=survivingSide survivingSideHosts=1 survivingSideVMsPerHost=4 survivingSideThreadsPerVM=5
+   B=losingSide    losingSideHosts=1  losingSideVMsPerHost=3  losingSideThreadsPerVM=5
+   onlyOnPlatforms=Linux
+
+// Bridge versions of above tests
+/*commenting out for Cheetah release
+splitBrain/serialPRBridgeNetDown.conf redundantCopies = 3 
+   locatorHosts=1  locatorVMsPerHost=1 locatorThreadsPerVM=1
+   A=survivingSide survivingSidebridgeHosts=1 survivingSidebridgeVMsPerHost=4 survivingSidebridgeThreadsPerVM=5
+   B=losingSide    losingSidebridgeHosts=1  losingSidebridgeVMsPerHost=3  losingSidebridgeThreadsPerVM=5
+   edgeHosts=4     edgeVMsPerHost=1   edgeThreadsPerVM=2
+   onlyOnPlatforms=Linux
+
+splitBrain/concPRBridgeNetDown.conf redundantCopies = 3 
+   locatorHosts=1  locatorVMsPerHost=1 locatorThreadsPerVM=1
+   A=survivingSide survivingSidebridgeHosts=1 survivingSidebridgeVMsPerHost=4 survivingSidebridgeThreadsPerVM=5
+   B=losingSide    losingSidebridgeHosts=1  losingSidebridgeVMsPerHost=3  losingSidebridgeThreadsPerVM=5
+   edgeHosts=4     edgeVMsPerHost=1   edgeThreadsPerVM=2
+   bridgeOrderingWorkaround=registerInterest
+   onlyOnPlatforms=Linux
+
+splitBrain/concPRBridgeNetDown.conf redundantCopies = 3 
+   locatorHosts=1  locatorVMsPerHost=1 locatorThreadsPerVM=1
+   A=survivingSide survivingSidebridgeHosts=1 survivingSidebridgeVMsPerHost=4 survivingSidebridgeThreadsPerVM=5
+   B=losingSide    losingSidebridgeHosts=1  losingSidebridgeVMsPerHost=3  losingSidebridgeThreadsPerVM=5
+   edgeHosts=4     edgeVMsPerHost=1   edgeThreadsPerVM=2
+   bridgeOrderingWorkaround=uniqueKeys
+   onlyOnPlatforms=Linux */
+
+

@@ -1,0 +1,870 @@
+/*
+
+   Derby - Class com.pivotal.gemfirexd.internal.impl.sql.compile.OrderByList
+
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to you under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
+ */
+
+/*
+ * Changes for GemFireXD distributed data platform (some marked by "GemStone changes")
+ *
+ * Portions Copyright (c) 2010-2015 Pivotal Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you
+ * may not use this file except in compliance with the License. You
+ * may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * permissions and limitations under the License. See accompanying
+ * LICENSE file.
+ */
+
+package	com.pivotal.gemfirexd.internal.impl.sql.compile;
+
+
+
+
+
+
+
+
+
+
+
+import com.pivotal.gemfirexd.internal.engine.sql.compile.CollectExpressionOperandsVisitor;
+import com.pivotal.gemfirexd.internal.iapi.error.StandardException;
+import com.pivotal.gemfirexd.internal.iapi.reference.ClassName;
+import com.pivotal.gemfirexd.internal.iapi.reference.Limits;
+import com.pivotal.gemfirexd.internal.iapi.reference.SQLState;
+import com.pivotal.gemfirexd.internal.iapi.services.classfile.VMOpcode;
+import com.pivotal.gemfirexd.internal.iapi.services.compiler.MethodBuilder;
+import com.pivotal.gemfirexd.internal.iapi.services.sanity.SanityManager;
+import com.pivotal.gemfirexd.internal.iapi.sql.compile.C_NodeTypes;
+import com.pivotal.gemfirexd.internal.iapi.sql.compile.CompilerContext;
+import com.pivotal.gemfirexd.internal.iapi.sql.compile.CostEstimate;
+import com.pivotal.gemfirexd.internal.iapi.sql.compile.RequiredRowOrdering;
+import com.pivotal.gemfirexd.internal.iapi.sql.compile.RowOrdering;
+import com.pivotal.gemfirexd.internal.iapi.store.access.ColumnOrdering;
+import com.pivotal.gemfirexd.internal.iapi.store.access.SortCostController;
+import com.pivotal.gemfirexd.internal.iapi.types.DataValueDescriptor;
+import com.pivotal.gemfirexd.internal.iapi.util.JBitSet;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.ActivationClassBuilder;
+
+/**
+ * An OrderByList is an ordered list of columns in the ORDER BY clause.
+ * That is, the order of columns in this list is significant - the
+ * first column in the list is the most significant in the ordering,
+ * and the last column in the list is the least significant.
+ *
+ */
+public class OrderByList extends OrderedColumnList
+						implements RequiredRowOrdering {
+
+	private boolean allAscending = true;
+	private boolean alwaysSort;
+	private ResultSetNode resultToSort;
+	private SortCostController scc;
+	private Object[] resultRow;
+	private ColumnOrdering[] columnOrdering;
+	private int estimatedRowSize;
+	private boolean sortNeeded = true;
+
+	/**
+		Add a column to the list
+	
+		@param column	The column to add to the list
+	 */
+	public void addOrderByColumn(OrderByColumn column) 
+	{
+		addElement(column);
+
+		if (! column.isAscending())
+			allAscending = false;
+	}
+
+	/**
+	 * Are all columns in the list ascending.
+	 *
+	 * @return	Whether or not all columns in the list ascending.
+	 */
+	boolean allAscending()
+	{
+		return allAscending;
+	}
+
+	/**
+		Get a column from the list
+	
+		@param position	The column to get from the list
+	 */
+	//GemStone changes BEGIN
+	/*public OrderByColumn getOrderByColumn(int position) {
+		if (SanityManager.DEBUG)
+		SanityManager.ASSERT(position >=0 && position < size());
+		return (OrderByColumn) elementAt(position);
+	}*/
+	
+	
+	//GemStone changes END
+
+	/**
+		Print the list.
+	
+		@param depth		The depth at which to indent the sub-nodes
+	 */
+	public void printSubNodes(int depth) {
+
+		if (SanityManager.DEBUG) 
+		{
+			for (int index = 0; index < size(); index++)
+			{
+				( (OrderByColumn) (elementAt(index)) ).treePrint(depth);
+			}
+		}
+	}
+
+	/**
+		Bind the update columns by their names to the target resultset
+		of the cursor specification.
+
+		@param target	The underlying result set
+	
+		@exception StandardException		Thrown on error
+	 */
+	public void bindOrderByColumns(ResultSetNode target)
+					throws StandardException {
+
+		/* Remember the target for use in optimization */
+		resultToSort = target;
+
+		int size = size();
+
+		/* Only 1012 columns allowed in ORDER BY clause */
+		if (size > Limits.DB2_MAX_ELEMENTS_IN_ORDER_BY)
+		{
+			throw StandardException.newException(SQLState.LANG_TOO_MANY_ELEMENTS,
+			    Limits.DB2_MAX_ELEMENTS_IN_ORDER_BY /* GemStoneAddition */);
+		}
+
+		for (int index = 0; index < size; index++)
+		{
+			OrderByColumn obc = (OrderByColumn) elementAt(index);
+			obc.bindOrderByColumn(target, this);
+
+			/*
+			** Always sort if we are ordering on an expression, and not
+			** just a column.
+			*/
+			if ( !
+			 (obc.getResultColumn().getExpression() instanceof ColumnReference))
+			{
+				alwaysSort = true;
+			}
+		}
+	}
+	
+	/**
+	 * Adjust addedColumnOffset values due to removal of a duplicate column
+	 *
+	 * This routine is called by bind processing when it identifies and
+	 * removes a column from the result column list which was pulled up due
+	 * to its presence in the ORDER BY clause, but which was later found to
+	 * be a duplicate. The OrderByColumn instance for the removed column
+	 * has been adjusted to point to the true column in the result column
+	 * list and its addedColumnOffset has been reset to -1. This routine
+	 * finds any other OrderByColumn instances which had an offset greater
+	 * than that of the column that has been deleted, and decrements their
+	 * addedColumOffset to account for the deleted column's removal.
+	 *
+	 * @param gap   column which has been removed from the result column list
+	 */
+	void closeGap(int gap)
+	{
+		for (int index = 0; index < size(); index++)
+		{
+			OrderByColumn obc = (OrderByColumn) elementAt(index);
+			obc.collapseAddedColumnGap(gap);
+		}
+	}
+
+	/**
+		Pull up Order By columns by their names to the target resultset
+		of the cursor specification.
+
+		@param target	The underlying result set
+	
+	 */
+	public void pullUpOrderByColumns(ResultSetNode target)
+					throws StandardException {
+
+		/* Remember the target for use in optimization */
+		resultToSort = target;
+
+		int size = size();
+		for (int index = 0; index < size; index++)
+		{
+			OrderByColumn obc = (OrderByColumn) elementAt(index);
+			obc.pullUpOrderByColumn(target);
+		}
+
+	}
+
+	/**
+	 * Is this order by list an in order prefix of the specified RCL.
+	 * This is useful when deciding if an order by list can be eliminated
+	 * due to a sort from an underlying distinct or union.
+	 *
+	 * @param sourceRCL	The source RCL.
+	 *
+	 * @return Whether or not this order by list an in order prefix of the specified RCL.
+	 */
+	boolean isInOrderPrefix(ResultColumnList sourceRCL)
+	{
+		boolean inOrderPrefix = true;
+		int rclSize = sourceRCL.size();
+
+		if (SanityManager.DEBUG)
+		{
+			if (size() > sourceRCL.size())
+			{
+				SanityManager.THROWASSERT(
+					"size() (" + size() + 
+					") expected to be <= sourceRCL.size() (" +
+					sourceRCL.size() + ")");
+			}
+		}
+
+		int size = size();
+		for (int index = 0; index < size; index++)
+		{
+			if (((OrderByColumn) elementAt(index)).getResultColumn() !=
+				(ResultColumn) sourceRCL.elementAt(index))
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Order by columns now point to the PRN above the node of interest.
+	 * We need them to point to the RCL under that one.  This is useful
+	 * when combining sorts where we need to reorder the sorting
+	 * columns.
+	 */
+	void resetToSourceRCs()
+	{
+		int size = size();
+		for (int index = 0; index < size; index++)
+		{
+			OrderByColumn obc = (OrderByColumn) elementAt(index);
+			obc.resetToSourceRC();
+		}
+	}
+
+	/**
+	 * Build a new RCL with the same RCs as the passed in RCL
+	 * but in an order that matches the ordering columns.
+	 *
+	 * @param resultColumns	The RCL to reorder.
+	 *	
+	 *	@exception StandardException		Thrown on error
+	 */
+	ResultColumnList reorderRCL(ResultColumnList resultColumns)
+		throws StandardException
+	{
+		ResultColumnList newRCL = (ResultColumnList) getNodeFactory().getNode(
+												C_NodeTypes.RESULT_COLUMN_LIST,
+												getContextManager());
+
+		/* The new RCL starts with the ordering columns */
+		int size = size();
+		for (int index = 0; index < size; index++)
+		{
+			OrderByColumn obc = (OrderByColumn) elementAt(index);
+			newRCL.addElement(obc.getResultColumn());
+			resultColumns.removeElement(obc.getResultColumn());
+		}
+
+		/* And ends with the non-ordering columns */
+		newRCL.destructiveAppend(resultColumns);
+		newRCL.resetVirtualColumnIds();
+		newRCL.copyOrderBySelect(resultColumns);
+		return newRCL;
+	}
+
+	/**
+		Remove any constant columns from this order by list.
+		Constant columns are ones where all of the column references
+		are equal to constant expressions according to the given
+		predicate list.
+	 */
+	void removeConstantColumns(PredicateList whereClause)
+	{
+		/* Walk the list backwards so we can remove elements safely */
+		for (int loc = size() - 1;
+			 loc >= 0;
+			 loc--)
+		{
+			OrderByColumn obc = (OrderByColumn) elementAt(loc);
+
+			if (obc.constantColumn(whereClause))
+			{
+				removeElementAt(loc);
+			}
+		}
+	}
+
+	/**
+		Remove any duplicate columns from this order by list.
+		For example, one may "ORDER BY 1, 1, 2" can be reduced
+		to "ORDER BY 1, 2".
+		Beetle 5401.
+	 */
+	void removeDupColumns()
+	{
+		/* Walk the list backwards so we can remove elements safely */
+		for (int loc = size() - 1; loc > 0; loc--)
+		{
+			OrderByColumn obc = (OrderByColumn) elementAt(loc);
+			int           colPosition = obc.getColumnPosition();
+
+			for (int inner = 0; inner < loc; inner++)
+			{
+				OrderByColumn prev_obc = (OrderByColumn) elementAt(inner);
+				if (colPosition == prev_obc.getColumnPosition())
+				{
+					removeElementAt(loc);
+					break;
+				}
+			}
+		}
+	}
+
+	/**
+    	generate the sort result set operating over the source
+		expression.
+
+		@param acb the tool for building the class
+		@param mb	the method the generated code is to go into
+		@exception StandardException thrown on failure
+	 */
+	public void generate(ActivationClassBuilder acb, 
+								MethodBuilder mb,
+								ResultSetNode child)
+							throws StandardException 
+	{
+		/*
+		** If sorting is not required, don't generate a sort result set -
+		** just return the child result set.
+		*/
+		if ( ! sortNeeded) {
+			child.generate(acb, mb);
+			return;
+		}
+
+		/* Get the next ResultSet#, so we can number this ResultSetNode, its
+		 * ResultColumnList and ResultSet.
+		 *
+		 * REMIND: to do this properly (if order bys can live throughout
+		 * the tree) there ought to be an OrderByNode that holds its own
+		 * ResultColumnList that is a lsit of virtual column nodes pointing
+		 * to the source's result columns.  But since we know it is outermost,
+		 * we just gloss over that and get ourselves a resultSetNumber
+		 * directly.
+		 */
+		CompilerContext cc = getCompilerContext();
+
+
+		/*
+			create the orderItem and stuff it in.
+		 */
+		int orderItem = acb.addItem(acb.getColumnOrdering(this));
+
+
+		/* Generate the SortResultSet:
+		 *	arg1: childExpress - Expression for childResultSet
+		 *  arg2: distinct - always false, we have a separate node
+		 *				for distincts
+		 *  arg3: isInSortedOrder - is the source result set in sorted order
+		 *  arg4: orderItem - entry in saved objects for the ordering
+		 *  arg5: rowAllocator - method to construct rows for fetching
+		 *			from the sort
+		 *  arg6: row size
+		 *  arg7: resultSetNumber
+		 *  arg8: estimated row count
+		 *  arg9: estimated cost
+		 */
+
+		acb.pushGetResultSetFactoryExpression(mb);
+
+		child.generate(acb, mb);
+
+		int resultSetNumber = cc.getNextResultSetNumber();
+
+		// is a distinct query
+		mb.push(false);
+
+		// not in sorted order
+		mb.push(false);
+
+		mb.push(orderItem);
+
+		// row allocator
+		child.getResultColumns().generateHolder(acb, mb);
+
+		mb.push(child.getResultColumns().getTotalColumnSize());
+
+		mb.push(resultSetNumber);
+
+		// Get the cost estimate for the child
+		// RESOLVE - we will eventually include the cost of the sort
+		CostEstimate costEstimate = child.getFinalCostEstimate(); 
+
+		mb.push(costEstimate.rowCount());
+		mb.push(costEstimate.getEstimatedCost());
+
+		mb.callMethod(VMOpcode.INVOKEINTERFACE, (String) null, "getSortResultSet",
+							ClassName.NoPutResultSet, 9);
+
+	}
+
+	/* RequiredRowOrdering interface */
+
+	/**
+	 * @see RequiredRowOrdering#sortRequired
+	 *
+	 * @exception StandardException		Thrown on error
+	 */
+	public int sortRequired(RowOrdering rowOrdering) throws StandardException
+	{
+		return sortRequired(rowOrdering, (JBitSet) null);
+	}
+
+	/**
+	 * @see RequiredRowOrdering#sortRequired
+	 *
+	 * @exception StandardException		Thrown on error
+	 */
+	public int sortRequired(RowOrdering rowOrdering, JBitSet tableMap)
+				throws StandardException
+	{
+		/*
+		** Currently, all indexes are ordered ascending, so a descending
+		** ORDER BY always requires a sort.
+		*/
+		if (alwaysSort)
+		{
+			return RequiredRowOrdering.SORT_REQUIRED;
+		}
+
+		/*
+		** Step through the columns in this list, and ask the
+		** row ordering whether it is ordered on each column.
+		*/
+		int position = 0;
+		int size = size();
+		for (int loc = 0; loc < size; loc++)
+		{
+		  //GemStone changes BEGIN
+			OrderedColumn obc = getOrderedColumn(loc);
+	                  //GemStone changes RND
+            // If the user specified NULLS FIRST or NULLS LAST in such a way
+            // as to require NULL values to be re-sorted to be lower than
+            // non-NULL values, then a sort is required, as the index holds
+            // NULL values unconditionally higher than non-NULL values
+            //
+            if (obc.isNullsOrderedLow())
+				return RequiredRowOrdering.SORT_REQUIRED;
+
+			// ResultColumn rc = obc.getResultColumn();
+
+			/*
+			** This presumes that the OrderByColumn refers directly to
+			** the base column, i.e. there is no intervening VirtualColumnNode.
+			*/
+			// ValueNode expr = obc.getNonRedundantExpression();
+			ValueNode expr = obc.getResultColumn().getExpression();
+
+			if ( ! (expr instanceof ColumnReference))
+			{
+				return RequiredRowOrdering.SORT_REQUIRED;
+			}
+
+			ColumnReference cr = (ColumnReference) expr;
+
+			/*
+			** Check whether the table referred to is in the table map (if any).
+			** If it isn't, we may have an ordering that does not require
+			** sorting for the tables in a partial join order.  Look for
+			** columns beyond this column to see whether a referenced table
+			** is found - if so, sorting is required (for example, in a
+			** case like ORDER BY S.A, T.B, S.C, sorting is required).
+			*/
+			if (tableMap != null)
+			{
+				if ( ! tableMap.get(cr.getTableNumber()))
+				{
+					/* Table not in partial join order */
+					for (int remainingPosition = loc + 1;
+						 remainingPosition < size();
+						 remainingPosition++)
+					{
+					     //GemStone changes BEGIN
+						OrderedColumn remainingobc = getOrderedColumn(loc);
+	                                             //GemStone changes END
+						ResultColumn remainingrc =
+												remainingobc.getResultColumn();
+
+						ValueNode remainingexpr = remainingrc.getExpression();
+
+						if (remainingexpr instanceof ColumnReference)
+						{
+							ColumnReference remainingcr =
+											(ColumnReference) remainingexpr;
+							if (tableMap.get(remainingcr.getTableNumber()))
+							{
+								return RequiredRowOrdering.SORT_REQUIRED;
+							}
+						}
+					}
+
+					return RequiredRowOrdering.NOTHING_REQUIRED;
+				}
+			}
+
+			if ( ! rowOrdering.alwaysOrdered(cr.getTableNumber()))
+			{
+				/*
+				** Check whether the ordering is ordered on this column in
+				** this position.
+				*/
+				if ( ! rowOrdering.orderedOnColumn(
+			  		obc.isAscending() ?
+								RowOrdering.ASCENDING : RowOrdering.DESCENDING,
+			  		position,
+			  		cr.getTableNumber(),
+			  		cr.getColumnNumber()
+			  		))
+				{
+					return RequiredRowOrdering.SORT_REQUIRED;
+				}
+
+				/*
+				** The position to ask about is for the columns in tables
+				** that are *not* always ordered.  The always-ordered tables
+				** are not counted as part of the list of ordered columns
+				*/
+				position++;
+			}
+		}
+
+		return RequiredRowOrdering.NOTHING_REQUIRED;
+	}
+
+	/**
+	 * @see RequiredRowOrdering#estimateCost
+	 *
+	 * @exception StandardException		Thrown on error
+	 */
+	public void estimateCost(double estimatedInputRows,
+								RowOrdering rowOrdering,
+								CostEstimate resultCost)
+					throws StandardException
+	{
+		/*
+		** Do a bunch of set-up the first time: get the SortCostController,
+		** the template row, the ColumnOrdering array, and the estimated
+		** row size.
+		*/
+		if (scc == null)
+		{
+			scc = getCompilerContext().getSortCostController();
+
+			resultRow =
+				resultToSort.getResultColumns().buildEmptyRow().getRowArray();
+			columnOrdering = getColumnOrdering();
+			estimatedRowSize =
+						resultToSort.getResultColumns().getTotalColumnSize();
+		}
+
+		long inputRows = (long) estimatedInputRows;
+		long exportRows = inputRows;
+		double sortCost;
+
+		sortCost = scc.getSortCost(
+									(DataValueDescriptor[]) resultRow,
+									columnOrdering,
+									false,
+									inputRows,
+									exportRows,
+									estimatedRowSize
+									);
+
+		resultCost.setCost(sortCost, estimatedInputRows, estimatedInputRows);
+	}
+
+	/** @see RequiredRowOrdering#sortNeeded */
+	public void sortNeeded()
+	{
+		sortNeeded = true;
+	}
+
+	/** @see RequiredRowOrdering#sortNotNeeded */
+	public void sortNotNeeded()
+	{
+		sortNeeded = false;
+	}
+
+	/**
+	 * Remap all ColumnReferences in this tree to be clones of the
+	 * underlying expression.
+	 *
+	 * @exception StandardException		Thrown on error
+	 */
+	void remapColumnReferencesToExpressions() throws StandardException
+	{
+	}
+
+	/**
+	 * Get whether or not a sort is needed.
+	 *
+	 * @return Whether or not a sort is needed.
+	 */
+	public boolean getSortNeeded()
+	{
+		return sortNeeded;
+	}
+
+	/**
+	 * Determine whether or not this RequiredRowOrdering has a
+	 * DESCENDING requirement for the column referenced by the
+	 * received ColumnReference.
+	 */
+	boolean requiresDescending(ColumnReference cRef, int numOptimizables)
+		throws StandardException
+	{
+		int size = size();
+
+		/* Start by getting the table number and column position for
+		 * the table to which the ColumnReference points.
+		 */
+		JBitSet tNum = new JBitSet(numOptimizables);
+		BaseTableNumbersVisitor btnVis = new BaseTableNumbersVisitor(tNum);
+
+		cRef.accept(btnVis);
+		int crTableNumber = tNum.getFirstSetBit();
+		int crColPosition = btnVis.getColumnNumber();
+
+		if (SanityManager.DEBUG)
+		{
+			/* We assume that we only ever get here if the column
+			 * reference points to a specific column in a specific
+			 * table...
+			 */
+			if ((crTableNumber < 0) || (crColPosition < 0))
+			{
+				SanityManager.THROWASSERT(
+					"Failed to find table/column number for column '" +
+					cRef.getColumnName() + "' when checking for an " +
+					"ORDER BY requirement.");
+			}
+
+			/* Since we started with a single ColumnReference there
+			 * should be exactly one table number.
+			 */
+			if (!tNum.hasSingleBitSet())
+			{
+				SanityManager.THROWASSERT(
+					"Expected ColumnReference '" + cRef.getColumnName() +
+					"' to reference exactly one table, but tables found " +
+					"were: " + tNum);
+			}
+		}
+
+		/* Walk through the various ORDER BY elements to see if
+		 * any of them point to the same table and column that
+		 * we found above.
+		 */
+		for (int loc = 0; loc < size; loc++)
+		{
+		  //GemStone changes BEGIN
+			OrderedColumn obc = getOrderedColumn(loc);
+		               //GemStone changes END
+			ResultColumn rcOrderBy = obc.getResultColumn();
+
+			btnVis.reset();
+			rcOrderBy.accept(btnVis);
+			int obTableNumber = tNum.getFirstSetBit();
+			int obColPosition = btnVis.getColumnNumber();
+
+			/* ORDER BY target should always have a table number and
+			 * a column position.  It may not necessarily be a base
+			 * table, but there should be some FromTable for which
+			 * we have a ResultColumnList, and the ORDER BY should
+			 * reference one of the columns in that list (otherwise
+			 * we shouldn't have made it this far).
+			 */
+			if (SanityManager.DEBUG)
+			{
+				/* Since we started with a single ResultColumn there
+				 * should exactly one table number.
+				 */
+				if (!tNum.hasSingleBitSet())
+				{
+					SanityManager.THROWASSERT("Expected ResultColumn '" +
+						rcOrderBy.getColumnName() + "' to reference " +
+						"exactly one table, but found: " + tNum);
+				}
+
+				if (obColPosition < 0)
+				{
+					SanityManager.THROWASSERT(
+						"Failed to find orderBy column number " +
+						"for ORDER BY check on column '" + 
+						cRef.getColumnName() + "'.");
+				}
+			}
+
+			if (crTableNumber != obTableNumber)
+				continue;
+
+			/* They point to the same base table, so check the
+			 * column positions.
+			 */
+
+			if (crColPosition == obColPosition)
+			{
+				/* This ORDER BY element points to the same table
+				 * and column as the received ColumnReference.  So
+				 * return whether or not this ORDER BY element is
+				 * descending.
+				 */
+				return !obc.isAscending();
+			}
+		}
+
+		/* None of the ORDER BY elements referenced the same table
+		 * and column as the received ColumnReference, so there
+		 * is no descending requirement for the ColumnReference's
+		 * source (at least not from this OrderByList).
+		 */
+		return false;
+	}
+
+	/**
+	 * Adjust the OrderByList after removal of window function columns.
+	 *
+	 * @exception StandardException		Thrown on error
+	 */
+	public void adjustForWindowFunctionColumns() 	
+		throws StandardException
+	{	
+		/* 
+		 * Recreate the template due to removal of window function columns 
+		 * in the resultToSort RCL.
+		 */
+		resultRow =				
+				resultToSort.getResultColumns().buildEmptyRow().getRowArray();				
+		/*
+		 * Adjust the VirtualColumnIds OrderByColumns to the updated RCL. 
+		 */
+		for (int index = 0; index < size(); index++)
+		{
+			OrderByColumn obc = (OrderByColumn) elementAt(index);
+			obc.bindOrderByColumn(resultToSort, this);
+		}
+		/* 
+		 * Update the columOrdering
+		 *
+		 * TODO - is this really necessary?
+		 */
+		columnOrdering = getColumnOrdering();		
+	}
+	
+// GemStone changes BEGIN
+	/**
+	 * This function determines if distinctAndOrderBy
+	 * can be merged. OrderBy is bound by Projection
+	 * columns and Projection is bound by Group By
+	 * columns but order by can have expression constituting
+	 * grouping columns that may not be part of projection.
+	 * 
+	 * e.g. select d+q from t group by q,d order by q+d
+	 * e.g. select distinct d+q from t order by q*d
+	 * 
+	 * So, we treat expression as a black box and only 
+	 * ColumnReferences in order by are allowed to be 
+	 * merged with distinct select.
+	 *
+	 * @returns true - indicating order by columns and distinct
+	 *  columns can be merged. 
+	 *   
+	 */
+	public boolean isDistinctOrderable() {
+	  // first check if there is any NULLS FIRST specification
+	  if (hasNullsOrderedLow()) {
+	    return false;
+	  }
+	  boolean isExpr = false;
+	  for(int i = 0, size = size(); i < size && !isExpr ; i++) {
+	    
+	    OrderByColumn obc = (OrderByColumn) elementAt(i);
+	    ValueNode expr = obc.getResultColumn().getExpression();
+	    
+	    isExpr = (expr instanceof ColumnReference 
+	           || expr instanceof VirtualColumnNode );
+	  }
+	  
+	  return isExpr;
+	}
+
+	/** Returns true if there is an order by with nulls ordered low */
+	public final boolean hasNullsOrderedLow() {
+	  final int size = size();
+	  for (int loc = 0; loc < size; loc++) {
+	    OrderedColumn obc = getOrderedColumn(loc);
+	    if (obc.isNullsOrderedLow()) {
+	      return true;
+	    }
+	  }
+	  return false;
+	}
+	
+	/*
+	 * @return true if any column in order by list is aggreagate
+	 */
+        public boolean hasAnyAgrregateInOrderByList(
+            boolean isCompilationAsDataStoreNode) throws StandardException {
+          boolean isAgg = false;
+          CollectExpressionOperandsVisitor exprSubstitutor = new CollectExpressionOperandsVisitor(
+              null, null, isCompilationAsDataStoreNode);
+          for (int i = 0, size = size(); i < size && !isAgg; i++) {
+            OrderByColumn obc = (OrderByColumn)elementAt(i);
+            ValueNode expr = obc.getResultColumn().getExpression();
+            isAgg = exprSubstitutor.visitHasAggregateVisitorOnly(expr);
+          }
+      
+          return isAgg;
+        }
+// GemStone changes END
+}

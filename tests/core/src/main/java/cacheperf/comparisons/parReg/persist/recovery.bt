@@ -1,0 +1,43 @@
+// ============================================================
+// measure recovery performance for persistent partitioned region
+// NOTE: these must run with 64 bit vms for Linux with 3 hosts
+// one for the MasterController and one for each of 2 vms
+
+// 6G of memory per datastore, 4G of payload per datastore
+// recover with values
+cacheperf/comparisons/parReg/persist/peerDataRecoverWithValues.conf
+  peerHosts =  2 peerVMsPerHost = 1 peerThreadsPerVM = 1
+  maxKeys = 4194304 objectSize = 1024
+  redundantCopies = 0
+  perffmwk.comparisonKey = recovery
+  heapMB=6000
+
+// 6G of memory per datastore, 4G of payload per datastore
+// recover WITHOUT values
+cacheperf/comparisons/parReg/persist/peerDataRecoverNoValues.conf
+  peerHosts =  2 peerVMsPerHost = 1 peerThreadsPerVM = 1
+  maxKeys = 4194304 objectSize = 1024
+  redundantCopies = 0
+  perffmwk.comparisonKey = recovery
+  heapMB=6000
+
+// ============================================================
+// measure recovery performance for overflow-to-disk regions
+// 6G of memory per datastore, 4G of payload per datastore
+cacheperf/comparisons/parReg/persist/peerDataRecoverOverflowWithValues.conf
+  peerHosts =  2 peerVMsPerHost = 1 peerThreadsPerVM = 1
+  maxKeys = 4194304 objectSize = 1024
+  redundantCopies = 0
+  perffmwk.comparisonKey = recovery
+  heapMB=6000
+
+// 6G of memory per datastore, 4G of payload per datastore
+// recover WITHOUT values
+cacheperf/comparisons/parReg/persist/peerDataRecoverOverflowNoValues.conf
+  peerHosts =  2 peerVMsPerHost = 1 peerThreadsPerVM = 1
+  maxKeys = 4194304 objectSize = 1024
+  redundantCopies = 0
+  perffmwk.comparisonKey = recovery
+  heapMB=6000
+
+

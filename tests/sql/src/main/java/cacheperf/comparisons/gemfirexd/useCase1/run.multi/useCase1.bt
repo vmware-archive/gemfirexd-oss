@@ -1,0 +1,53 @@
+cacheperf.comparisons.gemfirexd.useCase1.useCase1InAndOutFullRDCNoBouncePeerMultiHost.conf
+
+  batchSize = 100
+
+  numSectChannelDataRows = 10000000
+
+  clientVMs = 1
+
+  etlClientThreads = 2
+  meClientThreads = 60 //,40,20
+
+  inclientHeapMB  = 8000
+  outclientHeapMB = 2048
+  etlclientHeapMB = 2048
+
+  serverHeapGB = 32
+
+  workSeconds = 14400
+
+  ddlSchemaFile = test-schema-0.93.sql
+  ddlGatewayFile11 = WAN_GW_Setup_11_RDC_ONLY.sql
+  ddlGatewayFile12 = WAN_GW_Setup_12_RDC_ONLY.sql
+  ddlMatchStoredProcFile11 = createMatchStoredProc.sql
+
+  txIsolation = none
+  logQueries = false
+
+cacheperf.comparisons.gemfirexd.useCase1.useCase1InAndOutFullRDCNoBounceMultiHost.conf
+
+  batchSize = 100
+
+  numSectChannelDataRows = 10000000
+
+  clientVMs = 1
+
+  etlClientThreads = 2
+  meClientThreads = 60 //,40,20
+
+  inclientHeapMB  = 8000
+  outclientHeapMB = 2048
+  etlclientHeapMB = 2048
+
+  serverHeapGB = 32
+
+  workSeconds = 14400
+
+  ddlSchemaFile = test-schema-0.93.sql
+  ddlGatewayFile11 = WAN_GW_Setup_11_RDC_ONLY.sql
+  ddlGatewayFile12 = WAN_GW_Setup_12_RDC_ONLY.sql
+  ddlMatchStoredProcFile11 = createMatchStoredProc.sql
+
+  txIsolation = none
+  logQueries = false

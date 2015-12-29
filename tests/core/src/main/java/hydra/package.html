@@ -1,0 +1,231 @@
+<HTML>
+<BODY>
+Hydra is a test framework that makes it easy to create and run multiuser tests.
+
+<p><b>OVERVIEW</b>
+<p>
+Hydra is a master-client test framework that uses RMI for interprocess communication.  It is written mostly in Java and invokes a few scripts and utilities.
+<p>
+Hydra is distributed, concurrent, and asynchronous.  Tests can specify multiple resources and multi-threaded client processes and distribute them across multiple hosts and platforms.  Tasks (units of work) are scheduled asynchronously.  Tasks run concurrently on client threads by default, but a test can optionally be configured to run tasks sequentially.
+<p>
+Testing with hydra involves:
+<ul>
+<p><li><i>Coding hydra tasks</i> - Tasks are units of work written in Java as public static zero-argument methods.  Hydra supports several different task types, each with their own scheduling algorithm: <i>starttask</i>, <i>inittask</i>, <i>task</i>, <i>closetask</i>, and <i>endtask</i>.  Hydra also supports the task type <i>unittest</i> for use by the distributed unit test framework, {@link dunit}.  Examples of hydra tasks can be found in the {@link hydratest.TaskClient} <code>tryItOut</code> methods, the client classes in {@link hydra.samples}, and throughout the test tree.  Tasks are usually designed so that they can be used by many tests.
+<p><li><i>Writing a hydra configuration file</i> - A test configuration file tells the master what to do by defining the various client processes, tasks, scheduling instructions, work environments, resources, and parameter settings required by the test.  It is a text file written according to <A href="hydra_grammar.txt">hydra_grammar.txt</A>.  Example hydra configuration files can be found in <A href="../../../tests/classes/hydraconfig/">hydraconfig</A>, the <code>.conf</code> files in {@link hydra.samples}, and throughout the test tree.
+<p><li><i>Running a hydra test</i> - A hydra test is run by executing the test driver, {@link hydra.MasterController} on a test configuration file.  Suites of tests can be run via {@link batterytest.BatteryTest}, which provides a layer on top of hydra.  Hydra can also used to run tests in conjunction with the JUnit framework: {@link smoketest} for hydra smoke tests and {@link dunit} for distributed unit tests.
+</ul>
+
+<P>The below diagram shows the architecture of a Hydra test.  A
+configuration file controls the {@link hydra.ClientPrms#vmQuantities
+number of client VMs}, the {@link hydra.ClientPrms#vmThreads number of
+Hydra threads in each client VM}, and the {@link
+hydra.HostPrms#hostNames hosts on which the VMs run}.</P>
+
+<CENTER>
+<IMG SRC="doc-files/architecture.gif"
+     WIDTH="713" HEIGHT="518"/>
+</CENTER>
+
+<p>
+At runtime, the hydra master controller parses the configuration file, configures and starts the required processes, schedules tasks on clients, monitors test progress, shuts down processes, and reports the outcome.  More specifically, the master:
+<ul>
+<p><li> Parses the given configuration file and postprocesses the result into a test configuration object that can be accessed by the master and its clients via {@link hydra.TestConfig#getInstance}.
+<p><li> Starts the RMI registry used for master-client communication.
+<p><li> Starts hostagents needed to create and manage processes on remote hosts, if any.
+<p><li> Creates, configures, and starts the resources, such as cache servers, if any.
+<p><li> Starts single-threaded VMs for the <i>starttasks</i>, if any.  Starttasks are typically used to do test initialization that produces side-effects visible to VMs started later for other task types.  Starttasks use the {@link hydra.ClientNameTaskScheduler}.  The master terminates these VMs when the starttasks complete.
+<p><li> Starts multi-threaded VMs for the <i>inittasks</i>.  Inittasks use the {@link hydra.SimpleTaskScheduler} and are typically used to initialize, on a per-VM and per-client-thread basis, any state needed for the main body of work to be carried out in the same VM by the <i>tasks</i>.
+<p><li> Schedules <i>tasks</i> in the same VMs using the {@link hydra.ComplexTaskScheduler}.  Tasks typically carry out the main body of work in a test.  Their scheduler can be configured in great detail.  For example, a task can be configured to run on particular client threads, at a particular interval, and with a particular priority.  The scheduler continues scheduling the tasks over and over until a configurable termination condition is reached.  Tasks can be configured to run for a certain amount of time, for a specified number of times, until an error condition is detected, and so forth.
+<p><li> Schedules <i>closetasks</i>.  Like starttasks, closetasks use the {@link hydra.SimpleTaskScheduler}.  They are typically used to validate results and summarize statistics, on a per-client-thread and per-VM basis, produced by the main body of work.  The master shuts down these VMs when all closetasks complete.
+<p><li> Starts VMs for the <i>endtasks</i>.  Endtasks are typically used to do statistic reporting, result analysis, and so forth, on a cross-VM basis, using information left behind by previous task VMs.  Like starttasks, endtasks use the {@link hydra.ClientNameTaskScheduler}.  The master terminates these VMs when the endtasks complete.
+<p><li> Shuts down any remaining processes it started, including hostagents, the RMI registry, and resources such as cache servers.
+<p><li> Reports the outcome of the test.
+</ul>
+<p>
+During a test run, client processes report task results to the master.  By default, the master will stop a test that has an error.  If the error is a perceived hang, it will leave processes running so a debugger can be attached.  Also, all test processes produce log output that can be monitored and analyzed.  Test code can write to the logs as needed.  The primary master log in a test run is Master_<pid>.log, which gives the final result of test execution.
+<p>
+In many cases, writing an effective hydra test is a matter of paying attention to just a small handful of items:
+<ul>
+<p><li> Encapsulating small chunks of work (tasks) in static methods.
+<p><li> Using hydra configuration parameters to transmit values that control test activities.  This lets you change your tests in important ways without rewriting your java code. 
+<p><li> Taking advantage of bounded randomness so that tests continue to do new things even without configuration file changes.  This is achieved with {@link hydra.GsRandom}, {@link hydra.OneOf}, {@link hydra.Range}, {@link hydra.Fcn}, and system property variables <code>${property}</code>.
+<p><li> Using utilities to encapsulate common operations.  This reduces the amount of code to write and brings those operations under the control of the test framework in a consistent and convenient way.  See <A href="../../../tests/classes/until/">util</A> and some of the classes in this package for examples.
+</ul>
+For more information, see the rest of this document and the javadocs for the various classes.
+
+<p><b>GETTING STARTED</b>
+<p><b>Sample hydra environment for Solaris</b>
+<pre>
+      setenv GEMFIRE   <i>path_to_gemfire_checkout</i>/build-artifacts/product
+      setenv JAVA_HOME $GEMFIRE/jre;
+      setenv JTESTS    $GEMFIRE/../tests/classes
+      setenv JPROBE    /home/tools/jprobe40
+      setenv CLASSPATH $JTESTS
+      setenv LD_LIBRARY_PATH $GEMFIRE/lib:$GEMFIRE/../hidden/lib:$LD_LIBRARY_PATH
+      set path = (. $GEMFIRE/bin $JAVA_HOME/bin vsd/vsdtree/bin $path)
+</pre>
+
+<p><b>Running hydra directly</b>
+<p>
+To run an existing hydra test, first find a <code>.conf</code> file in the test tree.  Then run hydra as described by {@link hydra.MasterController}.
+<p><b>Running hydra via batterytest</b>
+<p>
+To run an existing batterytest, first find a <code>.bt</code> file in the test tree.  Then run batterytest as described by {@link batterytest.BatteryTest}.
+<p><b>Running hydra smoketests</b>
+<p>
+To run the existing hydra smoke tests, run <code>build.sh run-smoke-tests</code>.
+
+<p><b>TEST CONFIGURATION</b>
+<p>
+The configuration file is the key element in defining and controlling a hydra run.  A hydra config file can specify most of the details of a GemFire configuration as well as several different kinds of test properties and activities. 
+
+<p><b>Include files</b>
+<p>
+...discuss include files, tests/hydraconfig...
+
+<p><b>Configuring hydra tasks</b>
+<p>
+See {@link hydra.TestTask}.
+
+<p><b>Configuring hydra thread groups</b>
+<p>
+See {@link hydra.HydraThreadGroup}.
+
+<p><b>Configuring hydra parameters</b>
+<p>
+Hydra allows a test configuration file to specify values for parameters defined in any subclass of {@link hydra.BasePrms} on the classpath.  The hydra package itself includes these parameter classes:
+<p>
+<ul>
+<p><li>{@link hydra.HostPrms} to configure hosts.  The operating system platform for each host is autogenerated by hydra.
+<p><li>{@link hydra.VmPrms} to configure VM environments, including the logical host name for each.
+<p><li>{@link hydra.GemFirePrms} to configure GemFire systems, including the logical host name for each.
+<p><li>{@link hydra.Prms} to configure the master controller.  The VM environment for the master is autogenerated by hydra.
+<p><li>{@link hydra.ClientPrms} to configure clients, including the logical VM name and optional logical GemFire name for each.
+<p><li>{@link hydra.log.LogPrms} to configure logging for hydra processes.  Logging for GemFire processes is configured through GemFirePrms.
+<p><li>{@link hydra.JProbePrms} to configure the JProbe performance and memory analysis tools.
+</ul>
+<p>
+Test packages can easily define additional parameter classes by subclassing {@link hydra.BasePrms}.  See the javadocs for BasePrms for how to do this.  Also see the javadoc'd and non-javadoc'd subclasses of BasePrms in the test tree for examples.
+
+<p><b>Specifying parameters</b>
+<p>
+Specify parameters in the hydra configuration file as <code><i>key</i> = <i>value</i>;</code>, where <i>key</i> is <code><i>fully_qualified_class_name</i>-<i>parameter_name</i></code>.  See the javadocs for the parameter to determine the type of <i>value</i> required, how it defaults, etc.
+For example:
+<pre>
+    hydra.Prms-totalTaskTimeSec   = 60; // run the test for 60 seconds
+
+    hydra.ClientPrms-names        = clientA clientB; // specifies two client types
+    hydra.ClientPrms-vmNames      = vm;   // logical vm name shared by both client types
+                                          // the vm must be configured elsewhere in the file
+    hydra.ClientPrms-vmQuantities = 1  2; // clientA has 1 VM and clientB has 2
+    hydra.ClientPrms-vmThreads    = 1 10; // clientA has 1 thread per VM and clientB has 10
+</pre>
+<p>
+Individual tokens in a parameter value can sometimes be replaced with one of the special types: {@link hydra.Range} if the token is numerical, and {@link hydra.OneOf} or {@link hydra.RobinG} for just about anything.  These types can also be nested.  For example,
+<pre>
+    // produces random value between 1 and 10
+    myPackage.MyTestPrms-prm1 = RANGE 1 10 EGNAR;
+
+    // produces random value: true or false
+    myPackage.MyTestPrms-prm3 = ONEOF true false FOENO;
+
+    // produces global round robin values in this order: 1 2 3 4 5
+    myPackage.MyTestPrms-prm4 = ROBING 1 2 3 4 5 GNIBOR;
+
+    // produces random value: 0 or a random value between 100 and 200
+    myPackage.MyTestPrms-prm2 = ONEOF 0 RANGE 100 200 EGNAR FOENO;
+</pre>
+<p>
+Parameters can also expect a list of lists, where a comma separates each list.  The following line, for example, sets <code>numLists</code> to be a three-element list of lists each of which has two elements:
+<pre>
+  mypackage.MyPrms-numLists = 1 2, 3 4, 5 6;
+</pre>
+<p>
+For more detail on syntax, see <A href="hydra_grammar.txt">hydra_grammar.txt</A>.  For examples, see the hydra include and configuration files in the <code>hydraconfig</code> and {@link hydra.samples} packages and elsewhere in the test tree.
+
+<p><b>Overriding parameters</b>
+<p>
+...discuss local.conf...
+
+<p><b>Accessing parameters at runtime</b>
+<p>
+The hydra master controller postprocesses the result of parsing the test configuration file into a {@link hydra.TestConfig} object for use by the master and its clients.  Hydra clients have access to configuration parameters at runtime via this {@link hydra.TestConfig} object.  The parameters are stored in a {@link hydra.ConfigHashtable}, which provides convenience methods for accessing various types of parameter values.  For example,
+<pre>
+    ConfigHashtable prms = TestConfig.getInstance().getParameters();
+    long totalTaskTimeSec = prms.longAt(Prms.totalTaskTimeSec);
+</pre>
+<p>
+If the parameter is a <i>range</i> or <i>oneof</i> type, and is read via ConfigHashtable methods, hydra will return a random value.  For example, if the configuration file contains:
+<pre>
+    myPackage.MyTestPrms-size = RANGE 1 10;
+</pre>
+Then at runtime,
+<pre>
+    int size = prms.intAt(MyTestPrms.size); // returns random int between 1 and 10
+</pre>
+<p>
+The master also postprocesses certain parameters into description
+objects for the various test processes and stores them in the {@link
+hydra.TestConfig object}.  The relationship (the "arrow" represents a
+"has a" relationship) between these objects is:
+<p>
+<pre>
+                         {@link hydra.HostDescription}
+                                ^
+                     ___________|__________
+                    |                      |
+            {@link hydra.GemFireDescription}       {@link hydra.VmDescription}
+                   ^                      ^ ^
+           ________|              ________| |________
+          |                      |                   |
+                                      {@link hydra.MasterDescription}
+    {@link hydra.ClientDescription}
+
+
+</pre>
+<p>
+Descriptions are used primarily by hydra internals and to log the postprocessed test configuration.  Hydra makes commonly used information in the descriptions more directly available to clients via system properties and helper classes.  For example, for a client thread to get its test directory, it can navigate descriptions like so:
+<pre>
+    String clientName = System.getProperty(ClientPrms.CLIENT_NAME_PROPERTY);
+    File sysDir = TestConfig.getInstance()
+                            .getClientDescription(clientName)
+                            .getVmDescription()
+                            .getHostDescription()
+                            .getTestDir();
+</pre>
+But it can get this particular information more easily using:
+<pre>
+    String testDir = System.getProperty("JTESTS");
+</pre>
+<p>
+As another example, suppose a client thread wanted to determine its actual host name.  It could navigate its way through the TestConfig to the ClientDescription to the VmDescription to the HostDescription, but can more easily use {@link java.net.InetAddress#getLocalHost} or, even better, the convenience method {@link hydra.HostHelper#getLocalHost}.
+
+<p><b>LOGGING</b>
+<p>
+Hydra automatically logs task assignments, results, etc.
+<p>
+Tests can do additional logging as needed.  Hydra makes a singleton instance of {@link com.gemstone.gemfire.LogWriter} available to clients at runtime via the static method {@link hydra.Log#getLogWriter()}.  Messages written to this logger appear in the normal client logs.  Messages written to <code>System.out</code> and <code>System.err</code> appear in bgexec files.
+<p>
+Logging is configured via {@link hydra.log.LogPrms}.  GemFire system logging is configured via {@link hydra.GemFirePrms}.
+<p>
+Each hydra process produces one or more log files.  All log files for all test processes on all hosts go the test directory where master controller is running.  Startup information for master and client VMs goes to its corresponding bgexec log.  Additional information goes to the Master, taskmaster, and client vm logs.  The process id is included in the log file name and can be used to match the bgexec and vm_ files for a process.
+
+Watch Master_<pid>.log, taskmaster_<pid>.log, and bgexecmaster_<pid>.log for output from the master controller.  Watch bgexec<id>_<pid>.log and vm_<vmid>_<clientname>_<host>_<pid>.log for output from clients.
+
+<p><b>ANALYZING TEST RESULTS</b>
+<p>
+Hydra reports test errors in the file "errors.txt" in the test directory.
+
+<p><b>USING JPROBE WITH HYDRA</b>
+<p>
+<b>Attaching to a process</b>
+<p>
+JProbe allows attaching to and monitoring a running process.  To do this, turn on monitoring for the desired JProbe configuration in the test configuration file, for example:
+<pre>
+    hydra.JProbePrms-monitor = true;
+    hydra.JProbePrms-recordFromStart = false;
+    hydra.JProbePrms-finalSnapshot = false;
+</pre>
+This causes hydra to start the VMs that use this JProbe configuration using a randomly generated port.  JProbe causes the VM to hang on startup until the jpprofiler or jpmemorydebugger is used to attach.  Watch the log file for the process for the connection message.  For clients, this is the bgexec file.  Look for the port on which the process is waiting.  The port is also given in the taskmaster log file.  Use the desired JProbe tool to attach to the process.  Check the log to see that it has received the connection and proceeded.
+</BODY>
+</HTML>

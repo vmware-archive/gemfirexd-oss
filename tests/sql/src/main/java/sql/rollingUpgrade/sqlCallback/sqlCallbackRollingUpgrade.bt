@@ -1,0 +1,6 @@
+sql/rollingUpgrade/sqlCallback/randomPartitionWithWriteThroughAccessorsHA.conf
+ A=store storeHosts=1 storeVMsPerHost=3 storeThreadsPerVM=1
+ B=accessor accessorHosts=1 accessorVMsPerHost=3 accessorThreadsPerVM=6
+ locatorHosts = 2 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+ redundantCopies=2
+ dropIndex=true

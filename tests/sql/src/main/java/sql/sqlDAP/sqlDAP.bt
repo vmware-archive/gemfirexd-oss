@@ -1,0 +1,99 @@
+sql/sqlDAP/multiTablesUniqDAPWithAccessors.conf
+    A=store storeHosts=2 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=5 accessorThreadsPerVM=5
+
+sql/sqlDAP/multiTablesUniqDropDAPWithAccessors.conf
+    A=store storeHosts=2 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=5 accessorThreadsPerVM=5
+
+    
+sql/sqlDAP/multiTablesUniqDAPWithAccessorsHA.conf
+    A=store storeHosts=1 storeVMsPerHost=2 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=5 accessorThreadsPerVM=5
+    redundantCopies=1
+
+sql/sqlDAP/multiTablesUniqDAPWithAccessorsHA.conf
+    A=store storeHosts=2 storeVMsPerHost=2 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=5 accessorThreadsPerVM=5
+    redundantCopies=1
+
+sql/sqlDAP/multiTablesUniqDAPWithAccessorsHA.conf
+    A=store storeHosts=1 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=5 accessorThreadsPerVM=5
+    redundantCopies=2
+
+sql/sqlDAP/multiTablesUniqDAPWithAccessorsHA.conf
+    A=store storeHosts=2 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=5 accessorThreadsPerVM=5
+    redundantCopies=2
+
+sql/sqlDAP/multiTablesUniqDAPWithAccessorsHA.conf
+    A=store storeHosts=2 storeVMsPerHost=2 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=5 accessorThreadsPerVM=5
+    redundantCopies=3
+
+sql/sqlDAP/multiTablesUniqDAPWithAccessorsHA.conf
+    A=store storeHosts=2 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=5 accessorThreadsPerVM=5
+    redundantCopies=3
+
+sql/sqlDAP/updateWrongServerGroupUniqDAPWithAccessors.conf
+    A=store storeHosts=4 storeVMsPerHost=2 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=5 accessorThreadsPerVM=5
+    SGvms=2
+    securities=trade.securities:random:random
+    customers=trade.customers:random:random
+    networth=trade.networth:random:random
+    portfolio=trade.portfolio:random:random
+    sellorders=trade.sellorders:random:random
+    buyorders=trade.buyorders:random:random
+    txhistory=trade.txhistory:random:random
+    schemaSG=random
+    cidByRange = true, false
+    
+sql/sqlDAP/serverGroupsUniqDAPWithAccessors.conf
+    A=store storeHosts=5 storeVMsPerHost=2 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=5 accessorThreadsPerVM=5
+    SGvms=2
+    securities=trade.securities:random:random
+    customers=trade.customers:random:random
+    networth=trade.networth:random:random
+    portfolio=trade.portfolio:random:random
+    sellorders=trade.sellorders:random:random
+    buyorders=trade.buyorders:random:random
+    txhistory=trade.txhistory:random:random
+    schemaSG=random
+    cidByRange = true, false
+    
+sql/sqlDAP/multiTablesNonUniqDAPWithAccessors.conf
+    A=store storeHosts=2 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=5 accessorThreadsPerVM=10
+
+sql/sqlDAP/multiTablesNonUniqDropDAPWithAccessors.conf
+    A=store storeHosts=2 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=5 accessorThreadsPerVM=10
+
+sql/sqlDAP/multiTablesNonUniqDAPWithAccessorsHA.conf
+    A=store storeHosts=2 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=5 accessorThreadsPerVM=8
+    redundantCopies=3
+
+sql/sqlDAP/multiTablesNonUniqDAPWithAccessorsHA.conf
+    A=store storeHosts=2 storeVMsPerHost=2 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=5 accessorThreadsPerVM=5
+    redundantCopies=3
+
+sql/sqlDAP/multiTablesUniqCustomProcessorWithAccessors.conf
+    A=store storeHosts=2 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=5 accessorThreadsPerVM=5
+    redundantCopies=1
+ 
+sql/poc/useCase2/useCase2ListAgg.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=1 serverVMsPerHost=4 serverThreadsPerVM=1
+    clientHosts = 2 clientVMsPerHost =3 clientThreadsPerVM = 20
+    
+sql/poc/useCase2/useCase2ListAggPeer.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    A=store storeHosts=1 storeVMsPerHost=12 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=5 accessorThreadsPerVM=20

@@ -1,0 +1,105 @@
+﻿<UserControl x:Class="ado_net_gemfirexd_client.Views.CustomerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:ado_net_gemfirexd_client.Views"
+             xmlns:ado_net_gemfirexd_client="clr-namespace:ado_net_gemfirexd_client"
+             xmlns:Utilities="clr-namespace:ado_net_gemfirexd_client.Utilities" mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <local:ConcatNamesConverter x:Key="namesConverter" />
+        <DataTemplate x:Key="friendlyCustomerName">
+            <TextBlock>
+                    <TextBlock.Text>
+                        <MultiBinding Converter="{StaticResource namesConverter}">
+                            <Binding Path="LastName" />
+                            <Binding Path="FirstName" />
+                            <Binding Path="Title" />
+                        </MultiBinding>
+                    </TextBlock.Text>
+            </TextBlock>
+        </DataTemplate>
+        <DataTemplate x:Key="friendlyCustomerNameLB">
+            <StackPanel>
+                <TextBlock FontWeight="Bold">
+                    <TextBlock.Text>
+                        <MultiBinding Converter="{StaticResource namesConverter}">
+                            <Binding Path="LastName" />
+                            <Binding Path="FirstName" />
+                            <Binding Path="Title" />
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+                <TextBlock Text="{Binding CompanyName}" />
+            </StackPanel>
+        </DataTemplate>
+    </UserControl.Resources>
+    <Grid>
+        <StackPanel>
+            <Border Width="Auto" Height="Auto" BorderBrush="#FF000000" BorderThickness="0,0,0,1" Padding="0,0,0,5">
+                <StackPanel Margin="0,0,0,0" Width="Auto" Height="Auto" Orientation="Horizontal">
+                    <Label Width="Auto" Height="Auto" Content="Customer: " FontWeight="Bold"/>
+                    <ComboBox x:Name="CustomerListBox" SelectedIndex="0" Width="160" Height="Auto" ItemsSource="{Binding}" IsSynchronizedWithCurrentItem="True" ItemTemplate="{StaticResource friendlyCustomerName}"/>
+                    <Button Content="New" Width="70" Margin="5,0,0,0" Command="{x:Static Utilities:Commands.NewCustomer}"/>
+                    <Button Content="Delete" Width="70" Margin="5,0,0,0" Command="{x:Static Utilities:Commands.DeleteCustomer}"/>
+                    <Button Content="Update" Width="70" Margin="5,0,0,0" Command="{x:Static Utilities:Commands.UpdateCustomer}"/>
+                </StackPanel>
+            </Border>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="175" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel>
+                    <Label Content="Sort By" />
+                    <RadioButton Content="By Surname" IsChecked="True" />
+                    <RadioButton Content="By Company" IsEnabled="False"/>
+                    <ListBox ItemsSource="{Binding}" IsSynchronizedWithCurrentItem="True" ItemTemplate="{StaticResource friendlyCustomerNameLB}"/>
+                </StackPanel>
+                <StackPanel DataContext="{Binding Path=/}" Grid.Column="1">
+                    <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                        <Label Content="Last Name: " FontWeight="Bold" Width="110" />
+                        <TextBox Text="{Binding Path=LastName, Mode=TwoWay, UpdateSourceTrigger=Explicit}" Width="200" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Width="Auto" Height="Auto">
+                        <Label Content="Middle Name: " FontWeight="Bold" Width="110" />
+                        <TextBox Text="{Binding Path=MiddleName, Mode=TwoWay, UpdateSourceTrigger=Explicit}" Width="200" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Width="Auto" Height="Auto">
+                        <Label Content="First Name: " FontWeight="Bold" Width="110" />
+                        <TextBox Text="{Binding Path=FirstName, Mode=TwoWay, UpdateSourceTrigger=Explicit}" Width="200" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Width="Auto" Height="Auto">
+                        <Label Content="Title: " FontWeight="Bold" Width="110" />
+                        <TextBox Text="{Binding Path=Title, Mode=TwoWay, UpdateSourceTrigger=Explicit}" Width="200" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Width="Auto" Height="Auto">
+                        <Label Content="Company Name:" FontWeight="Bold" Width="110" />
+                        <TextBox Text="{Binding Path=CompanyName, Mode=TwoWay, UpdateSourceTrigger=Explicit}" Width="200" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Width="Auto" Height="Auto">
+                        <Label Content="Email Address:" FontWeight="Bold" Width="110" />
+                        <TextBox Text="{Binding Path=EmailAddress, Mode=TwoWay, UpdateSourceTrigger=Explicit}" Width="200" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Width="Auto" Height="Auto">
+                        <Label Content="Phone: " FontWeight="Bold" Width="110" />
+                        <TextBox Text="{Binding Path=Phone, Mode=TwoWay, UpdateSourceTrigger=Explicit}" Width="200" />
+                    </StackPanel>
+                    <ListView ItemsSource="{Binding CustomerAddresses}" Margin="0,10,0,0">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn DisplayMemberBinding="{Binding Address.AddressLine1}" Header="Address Line 1" />
+                                <GridViewColumn DisplayMemberBinding="{Binding Address.AddressLine2}" Header="Address Line 2" />
+                                <GridViewColumn DisplayMemberBinding="{Binding Address.City}" Header="City" />
+                                <GridViewColumn DisplayMemberBinding="{Binding Address.StateProvince}" Header="State/Province" />
+                                <GridViewColumn DisplayMemberBinding="{Binding Address.CountryRegion}" Header="Country/Region" />
+                                <GridViewColumn DisplayMemberBinding="{Binding Address.PostalCode}" Header="PostalCode" />
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+    </Grid>
+</UserControl>

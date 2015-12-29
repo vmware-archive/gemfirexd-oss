@@ -1,0 +1,15 @@
+wanPerf.bt and concurrencyLevelPerf.bt are based on existing smoketest/perf tests for WAN Gateways.
+
+In order to run these on multiple hosts, I have created separate copies here.
+Each runs the same set of tests: wanPerf.bt runs with concurrencyLevel = 0.
+concurrencyLevelPerf.bt runs with a varying concurrencyLevel.
+
+Modify the corresponding local.confs (local.wanPerf.conf and local.concurrencyLevelPerf.conf) for your hostnames.  In addition, you may want to modify and uncomment these lines in the local.conf.
+
+// Avoid negative latency (when clocks are off)
+//hydra.timeserver.TimeServerPrms-clockSkewUpdateFrequencyMs = 1000;
+
+// log directly on remote hosts vs. incurring cost of logging across the network
+//hydra.HostPrms-resourceDirBaseMapFileName = /home/lhughes/bin/hosts/hostmap.prop;
+
+

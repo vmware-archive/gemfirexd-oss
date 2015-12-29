@@ -1,0 +1,227 @@
+sql/networkPartition/hdfsWithoutEvictionCriteriaRWAutoReconnect.conf
+  locatorHosts = 2 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+  A=survivingDatastore survivingDatastoreHosts=1 survivingDatastoreVMsPerHost=4 survivingDatastoreThreadsPerVM=1
+  B=losingDatastore losingDatastoreHosts=1 losingDatastoreVMsPerHost=2 losingDatastoreThreadsPerVM=1
+  C=accessor accessorHosts=2 accessorVMsPerHost=2 accessorThreadsPerVM=2
+  redundantCopies=2
+  testMultiTableJoin=false
+  testUniqueKeys=true
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:replicate
+  employees=emp.employees:replicate
+  product=gemfirexd
+  
+  sql/networkPartition/hdfsEvictionCriteriaRWAutoReconnect.conf
+  locatorHosts = 2 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+  A=survivingDatastore survivingDatastoreHosts=1 survivingDatastoreVMsPerHost=4 survivingDatastoreThreadsPerVM=1
+  B=losingDatastore losingDatastoreHosts=1 losingDatastoreVMsPerHost=2 losingDatastoreThreadsPerVM=1
+  C=accessor accessorHosts=2 accessorVMsPerHost=2 accessorThreadsPerVM=2
+  redundantCopies=2
+  testMultiTableJoin=false
+  testUniqueKeys=true
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:replicate
+  employees=emp.employees:replicate
+  product=gemfirexd
+
+// with index
+sql/networkPartition/hdfsEvictionCriteriaRWIndexAutoReconnect.conf
+  locatorHosts = 2 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+  A=survivingDatastore survivingDatastoreHosts=1 survivingDatastoreVMsPerHost=4 survivingDatastoreThreadsPerVM=1
+  B=losingDatastore losingDatastoreHosts=1 losingDatastoreVMsPerHost=2 losingDatastoreThreadsPerVM=1
+  C=accessor accessorHosts=2 accessorVMsPerHost=2 accessorThreadsPerVM=2
+  redundantCopies=2
+  testMultiTableJoin=false
+  testUniqueKeys=true 
+  dropIndex=true
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:replicate
+  employees=emp.employees:replicate  
+  product=gemfirexd
+
+sql/networkPartition/hdfsWithoutEvictionCriteriaRWIndexAutoReconnect.conf
+  locatorHosts = 2 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+  A=survivingDatastore survivingDatastoreHosts=1 survivingDatastoreVMsPerHost=4 survivingDatastoreThreadsPerVM=1
+  B=losingDatastore losingDatastoreHosts=1 losingDatastoreVMsPerHost=2 losingDatastoreThreadsPerVM=1
+  C=accessor accessorHosts=2 accessorVMsPerHost=2 accessorThreadsPerVM=2
+  redundantCopies=2
+  testMultiTableJoin=false
+  testUniqueKeys=true 
+  dropIndex=true
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:replicate
+  employees=emp.employees:replicate
+  product=gemfirexd
+
+sql/networkPartition/hdfsMrRWAutoReconnect.conf  
+  locatorHosts = 2 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+  A=survivingDatastore survivingDatastoreHosts=1 survivingDatastoreVMsPerHost=4 survivingDatastoreThreadsPerVM=1
+  B=losingDatastore losingDatastoreHosts=1 losingDatastoreVMsPerHost=2 losingDatastoreThreadsPerVM=1
+  C=accessor accessorHosts=2 accessorVMsPerHost=2 accessorThreadsPerVM=2
+  redundantCopies=2
+  testMultiTableJoin=false
+  testUniqueKeys=true
+  mapredVersion1=true
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:replicate
+  employees=emp.employees:replicate
+  product=gemfirexd
+  
+sql/networkPartition/hdfsMrWriteOnlyAutoReconnect.conf  
+  locatorHosts = 2 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+  A=survivingDatastore survivingDatastoreHosts=1 survivingDatastoreVMsPerHost=4 survivingDatastoreThreadsPerVM=1
+  B=losingDatastore losingDatastoreHosts=1 losingDatastoreVMsPerHost=2 losingDatastoreThreadsPerVM=1
+  C=accessor accessorHosts=2 accessorVMsPerHost=2 accessorThreadsPerVM=2
+  redundantCopies=2
+  testMultiTableJoin=false
+  testUniqueKeys=true
+  mapredVersion1=true
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:replicate
+  employees=emp.employees:replicate 
+  product=gemfirexd
+  
+sql/networkPartition/hdfsWithoutEvictionCriteriaRWAutoReconnectClient.conf
+  locatorHosts = 2 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  A=surviving survivingserverHosts=1 survivingserverVMsPerHost=4 survivingserverThreadsPerVM=3
+  B=losing losingserverHosts=1 losingserverVMsPerHost=2 losingserverThreadsPerVM=2
+  clientHosts=2 clientVMsPerHost=2 clientThreadsPerVM=2
+  redundantCopies=2
+  testMultiTableJoin=false
+  testUniqueKeys=true
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:replicate
+  employees=emp.employees:replicate
+  product=gemfirexd
+  
+sql/networkPartition/hdfsEvictionCriteriaRWAutoReconnectClient.conf
+  locatorHosts = 2 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+  A=surviving survivingserverHosts=1 survivingserverVMsPerHost=4 survivingserverThreadsPerVM=3
+  B=losing losingserverHosts=1 losingserverVMsPerHost=2 losingserverThreadsPerVM=2
+  clientHosts=2 clientVMsPerHost=2 clientThreadsPerVM=2
+  redundantCopies=2
+  testMultiTableJoin=false
+  testUniqueKeys=true
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:replicate
+  employees=emp.employees:replicate
+  product=gemfirexd
+
+  sql/networkPartition/hdfsMrVerifyAllUpdateWriteOnlyAutoReconnect.conf
+  locatorHosts = 2 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+  A=survivingDatastore survivingDatastoreHosts=1 survivingDatastoreVMsPerHost=4 survivingDatastoreThreadsPerVM=1
+  B=losingDatastore losingDatastoreHosts=1 losingDatastoreVMsPerHost=2 losingDatastoreThreadsPerVM=1
+  C=accessor accessorHosts=2 accessorVMsPerHost=2 accessorThreadsPerVM=2
+  redundantCopies=2
+  testMultiTableJoin=false
+  testUniqueKeys=true
+  mapredVersion1=true
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:replicate
+  employees=emp.employees:replicate    
+  product=gemfirexd
+
+sql/networkPartition/hdfsMrWriteOnlyAutoReconnect.conf  
+  locatorHosts = 2 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+  A=survivingDatastore survivingDatastoreHosts=1 survivingDatastoreVMsPerHost=4 survivingDatastoreThreadsPerVM=1
+  B=losingDatastore losingDatastoreHosts=1 losingDatastoreVMsPerHost=2 losingDatastoreThreadsPerVM=1
+  C=accessor accessorHosts=2 accessorVMsPerHost=2 accessorThreadsPerVM=2
+  redundantCopies=2
+  testMultiTableJoin=false
+  testUniqueKeys=true
+  mapredVersion1=false
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:replicate
+  employees=emp.employees:replicate 
+  product=gemfirexd
+  
+  sql/networkPartition/hdfsMrVerifyAllUpdateWriteOnlyAutoReconnect.conf
+  locatorHosts = 2 locatorVMsPerHost=1 locatorThreadsPerVM = 1
+  A=survivingDatastore survivingDatastoreHosts=1 survivingDatastoreVMsPerHost=4 survivingDatastoreThreadsPerVM=1
+  B=losingDatastore losingDatastoreHosts=1 losingDatastoreVMsPerHost=2 losingDatastoreThreadsPerVM=1
+  C=accessor accessorHosts=2 accessorVMsPerHost=2 accessorThreadsPerVM=2
+  redundantCopies=2
+  testMultiTableJoin=false
+  testUniqueKeys=true
+  mapredVersion1=false
+  securities=trade.securities:random
+  customers=trade.customers:random
+  networth=trade.networth:random
+  portfolio=trade.portfolio:random
+  sellorders=trade.sellorders:random
+  buyorders=trade.buyorders:random
+  txhistory=trade.txhistory:random
+  companies=trade.companies:random
+  trades=trade.trades:replicate
+  employees=emp.employees:replicate    
+  product=gemfirexd

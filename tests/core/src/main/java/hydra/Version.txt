@@ -1,0 +1,38 @@
+
+                        HYDRA-SUPPORTED PRODUCT VERSIONS
+
+Hydra transparently ports test configurations from the current build to earlier versions of the product.
+
+When running a hydra client VM using an earlier version:
+
+-- Parameters added in later versions are omitted from the test configuration
+   for the VM.
+
+-- Parameters removed in later versions are added to the test configuration,
+   using default values from the earlier version, unless deprecated, in which
+   case they are simply removed.
+
+-- Parameters renamed or providing equivalent functionality are backported.
+
+See the NOTES sections for incompatibilities that cannot be ported.
+
+//------------------------------------------------------------------------------
+// 1.0.0
+//   compression
+//   off heap memory
+//   autoreconnect
+
+PRODUCT CHANGES...
+A cache.RegionAttributes compressor
+A cache.RegionAttributes enable-off-heap-memory
+A distributed.internal.DistributionConfig disable-auto-reconnect
+A distributed.internal.DistributionConfig off-heap-memory-size
+
+HYDRA CHANGES...
+A hydra.RegionPrms-compressor
+A hydra.RegionPrms-compressorSingleton
+A hydra.AdminPrms-disableAutoReconnect
+A hydra.GemFirePrms-disableAutoReconnect
+A hydra.GemFirePrms-offHeapMemorySize
+A hydra.RegionPrms-enableOffHeapMemory
+A hydra.gemfirexd.FabricServerPrms-disableAutoReconnect

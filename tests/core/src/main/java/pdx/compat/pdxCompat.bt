@@ -1,0 +1,39 @@
+// Suds/Gester/team decision, Feb 10, 2012; we will document that shutDownAll cannot
+// be used with a mix of 661 and 662/663 jvms, so the following test must be run with shutDownAll=false
+
+// 661 to 663
+//pdx/compat/rollingUpgradeWithEnumFlagPersist.conf
+   //A=controller controllerHosts=1 controllerThreadsPerVM=1 controllerVMsPerHost=1
+   //B=oldVersion oldVersionHosts=5 oldVersionThreadsPerVM=5 oldVersionVMsPerHost=1
+   //C=newVersionWithFlag newVersionWithFlagHosts=5 newVersionWithFlagThreadsPerVM=5 newVersionWithFlagVMsPerHost=1
+   //D=newVersionWithoutFlag newVersionWithoutFlagHosts=5 newVersionWithoutFlagThreadsPerVM=5 newVersionWithoutFlagVMsPerHost=1
+   //oldVersion=661 newVersion=default newVersionHome=default
+   //pdxReadSerialized=true,false redundantCopies=0,1,3
+   //shutDownAll=false
+
+//pdx/compat/rollingUpgradeWithEnumFlag.conf
+   //A=controller controllerHosts=1 controllerThreadsPerVM=1 controllerVMsPerHost=1
+   //B=oldVersion oldVersionHosts=5 oldVersionThreadsPerVM=5 oldVersionVMsPerHost=1
+   //C=newVersionWithFlag newVersionWithFlagHosts=5 newVersionWithFlagThreadsPerVM=5 newVersionWithFlagVMsPerHost=1
+   //D=newVersionWithoutFlag newVersionWithoutFlagHosts=5 newVersionWithoutFlagThreadsPerVM=5 newVersionWithoutFlagVMsPerHost=1
+   //oldVersion=661 newVersion=default newVersionHome=default
+   //pdxReadSerialized=true,false redundantCopies=0,1,3
+   //shutDownAll=false
+
+// 7.0 to 7.0.1
+pdx/compat/rollingUpgradePersist.conf
+   A=controller controllerHosts=1 controllerThreadsPerVM=1 controllerVMsPerHost=1
+   B=oldVersion oldVersionHosts=8 oldVersionThreadsPerVM=5 oldVersionVMsPerHost=1
+   C=newVersion newVersionHosts=8 newVersionThreadsPerVM=5 newVersionVMsPerHost=1
+   oldVersion=700 newVersion=default newVersionHome=default
+   pdxReadSerialized=true,false redundantCopies=0,1,3
+   shutDownAll=true,false
+
+pdx/compat/rollingUpgrade.conf
+   A=controller controllerHosts=1 controllerThreadsPerVM=1 controllerVMsPerHost=1
+   B=oldVersion oldVersionHosts=8 oldVersionThreadsPerVM=5 oldVersionVMsPerHost=1
+   C=newVersion newVersionHosts=8 newVersionThreadsPerVM=5 newVersionVMsPerHost=1
+   oldVersion=700 newVersion=default newVersionHome=default
+   pdxReadSerialized=true,false redundantCopies=0,1,3
+   shutDownAll=true,false
+

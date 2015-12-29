@@ -1,0 +1,393 @@
+hydratest/locators/adminDS.conf
+hydratest/locators/adminDSstop.conf
+hydratest/locators/cacheDS.conf
+hydratest/locators/cacheDS1.conf
+hydratest/locators/cacheDS2.conf
+hydratest/locators/badConfig.conf
+
+//---- master-managed locators ----//
+
+hydratest/locators/topology_2.conf
+  A = bert   B = ernie
+  bertHosts    = 1 bertVMsPerHost    = 3 bertThreadsPerVM    = 2
+  ernieHosts   = 3 ernieVMsPerHost   = 2 ernieThreadsPerVM   = 2
+hydratest/locators/topology_2.conf
+  A = bert   B = ernie
+  bertHosts    = 3 bertVMsPerHost    = 2 bertThreadsPerVM    = 2
+  ernieHosts   = 1 ernieVMsPerHost   = 3 ernieThreadsPerVM   = 2
+
+hydratest/locators/topology_3.conf
+  A = larry  B = moe  C = curly
+  larryHosts   = 1 larryVMsPerHost   = 3 larryThreadsPerVM   = 2
+  moeHosts     = 2 moeVMsPerHost     = 1 moeThreadsPerVM     = 2
+  curlyHosts   = 2 curlyVMsPerHost   = 3 curlyThreadsPerVM   = 2
+hydratest/locators/topology_3.conf
+  A = larry  B = moe  C = curly
+  larryHosts   = 3 larryVMsPerHost   = 1 larryThreadsPerVM   = 2
+  moeHosts     = 3 moeVMsPerHost     = 2 moeThreadsPerVM     = 2
+  curlyHosts   = 2 curlyVMsPerHost   = 1 curlyThreadsPerVM   = 2
+
+hydratest/locators/topology_4.conf
+  A = fall   B = winter  C = spring  D = summer
+  fallHosts    = 1 fallVMsPerHost    = 3 fallThreadsPerVM    = 2
+  winterHosts  = 2 winterVMsPerHost  = 1 winterThreadsPerVM  = 2
+  springHosts  = 2 springVMsPerHost  = 3 springThreadsPerVM  = 2
+  summerHosts  = 5 summerVMsPerHost  = 1 summerThreadsPerVM  = 2
+hydratest/locators/topology_4.conf
+  A = fall   B = winter  C = spring  D = summer
+  fallHosts    = 2 fallVMsPerHost    = 1 fallThreadsPerVM    = 2
+  winterHosts  = 1 winterVMsPerHost  = 3 winterThreadsPerVM  = 2
+  springHosts  = 5 springVMsPerHost  = 1 springThreadsPerVM  = 2
+  summerHosts  = 2 summerVMsPerHost  = 3 summerThreadsPerVM  = 2
+
+hydratest/locators/topology_5.conf
+  A = apple  B = banana  C = carrot  D = date  E = egg
+  appleHosts   = 1 appleVMsPerHost   = 3 appleThreadsPerVM   = 2
+  bananaHosts  = 2 bananaVMsPerHost  = 1 bananaThreadsPerVM  = 2
+  carrotHosts  = 2 carrotVMsPerHost  = 3 carrotThreadsPerVM  = 2
+  dateHosts    = 1 dateVMsPerHost    = 2 dateThreadsPerVM    = 2
+  eggHosts     = 2 eggVMsPerHost     = 3 eggThreadsPerVM     = 2
+hydratest/locators/topology_5.conf
+  A = apple  B = banana  C = carrot  D = date  E = egg
+  appleHosts   = 2 appleVMsPerHost   = 1 appleThreadsPerVM   = 2
+  bananaHosts  = 1 bananaVMsPerHost  = 3 bananaThreadsPerVM  = 2
+  carrotHosts  = 5 carrotVMsPerHost  = 1 carrotThreadsPerVM  = 2
+  dateHosts    = 2 dateVMsPerHost    = 1 dateThreadsPerVM    = 2
+  eggHosts     = 2 eggVMsPerHost     = 3 eggThreadsPerVM     = 2
+
+hydratest/locators/topology_6.conf
+  A = apple  B = banana  C = carrot  D = date  E = egg  F = fig
+  appleHosts   = 1 appleVMsPerHost   = 3 appleThreadsPerVM   = 2
+  bananaHosts  = 2 bananaVMsPerHost  = 1 bananaThreadsPerVM  = 2
+  carrotHosts  = 2 carrotVMsPerHost  = 3 carrotThreadsPerVM  = 2
+  dateHosts    = 1 dateVMsPerHost    = 2 dateThreadsPerVM    = 2
+  eggHosts     = 2 eggVMsPerHost     = 3 eggThreadsPerVM     = 2
+  figHosts     = 2 figVMsPerHost     = 3 figThreadsPerVM     = 2
+hydratest/locators/topology_6.conf
+  A = apple  B = banana  C = carrot  D = date  E = egg  F = fig
+  appleHosts   = 2 appleVMsPerHost   = 1 appleThreadsPerVM   = 2
+  bananaHosts  = 1 bananaVMsPerHost  = 3 bananaThreadsPerVM  = 2
+  carrotHosts  = 5 carrotVMsPerHost  = 1 carrotThreadsPerVM  = 2
+  dateHosts    = 2 dateVMsPerHost    = 1 dateThreadsPerVM    = 2
+  eggHosts     = 2 eggVMsPerHost     = 3 eggThreadsPerVM     = 2
+  figHosts     = 2 figVMsPerHost     = 3 figThreadsPerVM     = 2
+
+hydratest/locators/topology_p2p.conf
+  peerHosts    = 1 peerVMsPerHost    = 3 peerThreadsPerVM    = 2
+hydratest/locators/topology_p2p.conf
+  peerHosts    = 3 peerVMsPerHost    = 2 peerThreadsPerVM    = 2
+
+hydratest/locators/topology_p2p_1.conf
+  A = pal
+  palHosts     = 1 palVMsPerHost     = 3 palThreadsPerVM     = 2
+hydratest/locators/topology_p2p_1.conf
+  A = pal
+  palHosts     = 3 palVMsPerHost     = 2 palThreadsPerVM     = 2
+
+hydratest/locators/topology_p2p_2.conf
+  A = pub    B = sub
+  pubHosts     = 1 pubVMsPerHost     = 3 pubThreadsPerVM     = 2
+  subHosts     = 3 subVMsPerHost     = 2 subThreadsPerVM     = 2
+hydratest/locators/topology_p2p_2.conf
+  A = pub    B = sub
+  pubHosts     = 3 pubVMsPerHost     = 2 pubThreadsPerVM     = 2
+  subHosts     = 1 subVMsPerHost     = 3 subThreadsPerVM     = 2
+
+hydratest/locators/topology_hct.conf
+  bridgeHosts  = 1 bridgeVMsPerHost  = 3 bridgeThreadsPerVM  = 2
+  edgeHosts    = 3 edgeVMsPerHost    = 2 edgeThreadsPerVM    = 2
+hydratest/locators/topology_hct.conf
+  bridgeHosts  = 3 bridgeVMsPerHost  = 2 bridgeThreadsPerVM  = 2
+  edgeHosts    = 1 edgeVMsPerHost    = 3 edgeThreadsPerVM    = 2
+
+//---- client-managed locators (admin DS) ----//
+
+hydratest/locators/topology_2_locator.conf
+  A = bert   B = ernie
+  locatorHosts = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  bertHosts    = 1 bertVMsPerHost    = 3 bertThreadsPerVM    = 2
+  ernieHosts   = 3 ernieVMsPerHost   = 2 ernieThreadsPerVM   = 2
+hydratest/locators/topology_2_locator.conf
+  A = bert   B = ernie
+  locatorHosts = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  bertHosts    = 3 bertVMsPerHost    = 2 bertThreadsPerVM    = 2
+  ernieHosts   = 1 ernieVMsPerHost   = 3 ernieThreadsPerVM   = 2
+
+hydratest/locators/topology_3_locator.conf
+  A = larry  B = moe  C = curly
+  locatorHosts = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  larryHosts   = 1 larryVMsPerHost   = 3 larryThreadsPerVM   = 2
+  moeHosts     = 2 moeVMsPerHost     = 1 moeThreadsPerVM     = 2
+  curlyHosts   = 2 curlyVMsPerHost   = 3 curlyThreadsPerVM   = 2
+hydratest/locators/topology_3_locator.conf
+  A = larry  B = moe  C = curly
+  locatorHosts = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  larryHosts   = 3 larryVMsPerHost   = 1 larryThreadsPerVM   = 2
+  moeHosts     = 3 moeVMsPerHost     = 2 moeThreadsPerVM     = 2
+  curlyHosts   = 2 curlyVMsPerHost   = 1 curlyThreadsPerVM   = 2
+
+hydratest/locators/topology_4_locator.conf
+  A = fall   B = winter  C = spring  D = summer
+  locatorHosts = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  fallHosts    = 1 fallVMsPerHost    = 3 fallThreadsPerVM    = 2
+  winterHosts  = 2 winterVMsPerHost  = 1 winterThreadsPerVM  = 2
+  springHosts  = 2 springVMsPerHost  = 3 springThreadsPerVM  = 2
+  summerHosts  = 5 summerVMsPerHost  = 1 summerThreadsPerVM  = 2
+hydratest/locators/topology_4_locator.conf
+  A = fall   B = winter  C = spring  D = summer
+  locatorHosts = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  fallHosts    = 2 fallVMsPerHost    = 1 fallThreadsPerVM    = 2
+  winterHosts  = 1 winterVMsPerHost  = 3 winterThreadsPerVM  = 2
+  springHosts  = 5 springVMsPerHost  = 1 springThreadsPerVM  = 2
+  summerHosts  = 2 summerVMsPerHost  = 3 summerThreadsPerVM  = 2
+
+hydratest/locators/topology_5_locator.conf
+  A = apple  B = banana  C = carrot  D = date  E = egg
+  locatorHosts = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  appleHosts   = 1 appleVMsPerHost   = 3 appleThreadsPerVM   = 2
+  bananaHosts  = 2 bananaVMsPerHost  = 1 bananaThreadsPerVM  = 2
+  carrotHosts  = 2 carrotVMsPerHost  = 3 carrotThreadsPerVM  = 2
+  dateHosts    = 1 dateVMsPerHost    = 2 dateThreadsPerVM    = 2
+  eggHosts     = 2 eggVMsPerHost     = 3 eggThreadsPerVM     = 2
+hydratest/locators/topology_5_locator.conf
+  A = apple  B = banana  C = carrot  D = date  E = egg
+  locatorHosts = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  appleHosts   = 2 appleVMsPerHost   = 1 appleThreadsPerVM   = 2
+  bananaHosts  = 1 bananaVMsPerHost  = 3 bananaThreadsPerVM  = 2
+  carrotHosts  = 5 carrotVMsPerHost  = 1 carrotThreadsPerVM  = 2
+  dateHosts    = 2 dateVMsPerHost    = 1 dateThreadsPerVM    = 2
+  eggHosts     = 2 eggVMsPerHost     = 3 eggThreadsPerVM     = 2
+
+hydratest/locators/topology_6_locator.conf
+  A = apple  B = banana  C = carrot  D = date  E = egg  F = fig
+  locatorHosts = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  appleHosts   = 1 appleVMsPerHost   = 3 appleThreadsPerVM   = 2
+  bananaHosts  = 2 bananaVMsPerHost  = 1 bananaThreadsPerVM  = 2
+  carrotHosts  = 2 carrotVMsPerHost  = 3 carrotThreadsPerVM  = 2
+  dateHosts    = 1 dateVMsPerHost    = 2 dateThreadsPerVM    = 2
+  eggHosts     = 2 eggVMsPerHost     = 3 eggThreadsPerVM     = 2
+  figHosts     = 2 figVMsPerHost     = 3 figThreadsPerVM     = 2
+hydratest/locators/topology_6_locator.conf
+  A = apple  B = banana  C = carrot  D = date  E = egg  F = fig
+  locatorHosts = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  appleHosts   = 2 appleVMsPerHost   = 1 appleThreadsPerVM   = 2
+  bananaHosts  = 1 bananaVMsPerHost  = 3 bananaThreadsPerVM  = 2
+  carrotHosts  = 5 carrotVMsPerHost  = 1 carrotThreadsPerVM  = 2
+  dateHosts    = 2 dateVMsPerHost    = 1 dateThreadsPerVM    = 2
+  eggHosts     = 2 eggVMsPerHost     = 3 eggThreadsPerVM     = 2
+  figHosts     = 2 figVMsPerHost     = 3 figThreadsPerVM     = 2
+
+hydratest/locators/topology_p2p_locator.conf
+  locatorHosts = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  peerHosts    = 1 peerVMsPerHost    = 3 peerThreadsPerVM    = 2
+hydratest/locators/topology_p2p_locator.conf
+  locatorHosts = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  peerHosts    = 3 peerVMsPerHost    = 2 peerThreadsPerVM    = 2
+
+hydratest/locators/topology_p2p_1_locator.conf
+  A = pal
+  locatorHosts = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  palHosts     = 1 palVMsPerHost     = 3 palThreadsPerVM     = 2
+hydratest/locators/topology_p2p_1_locator.conf
+  A = pal
+  locatorHosts = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  palHosts     = 3 palVMsPerHost     = 2 palThreadsPerVM     = 2
+
+hydratest/locators/topology_p2p_2_locator.conf
+  A = pub    B = sub
+  locatorHosts = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  pubHosts     = 1 pubVMsPerHost     = 3 pubThreadsPerVM     = 2
+  subHosts     = 3 subVMsPerHost     = 2 subThreadsPerVM     = 2
+hydratest/locators/topology_p2p_2_locator.conf
+  A = pub    B = sub
+  locatorHosts = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  pubHosts     = 3 pubVMsPerHost     = 2 pubThreadsPerVM     = 2
+  subHosts     = 1 subVMsPerHost     = 3 subThreadsPerVM     = 2
+
+hydratest/locators/topology_hct_locator.conf
+  locatorHosts = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  bridgeHosts  = 1 bridgeVMsPerHost  = 3 bridgeThreadsPerVM  = 2
+  edgeHosts    = 3 edgeVMsPerHost    = 2 edgeThreadsPerVM    = 2
+hydratest/locators/topology_hct_locator.conf
+  locatorHosts = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  bridgeHosts  = 3 bridgeVMsPerHost  = 2 bridgeThreadsPerVM  = 2
+  edgeHosts    = 1 edgeVMsPerHost    = 3 edgeThreadsPerVM    = 2
+
+hydratest/locators/topology_wan_p2p_locator.conf
+  wanSites = 4
+  locatorHostsPerSite = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  peerHostsPerSite    = 1 peerVMsPerHost    = 1 peerThreadsPerVM    = 2
+hydratest/locators/topology_wan_p2p_locator.conf
+  wanSites = 2
+  locatorHostsPerSite = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  peerHostsPerSite    = 3 peerVMsPerHost    = 2 peerThreadsPerVM    = 2
+
+hydratest/locators/topology_wan_p2p_2_locator.conf
+  wanSites = 3
+  A = bert   B = ernie
+  locatorHostsPerSite = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  bertHostsPerSite    = 1 bertVMsPerHost    = 1 bertThreadsPerVM    = 2
+  ernieHostsPerSite   = 1 ernieVMsPerHost   = 2 ernieThreadsPerVM   = 2
+hydratest/locators/topology_wan_p2p_2_locator.conf
+  wanSites = 2
+  A = bert   B = ernie
+  locatorHostsPerSite = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  bertHostsPerSite    = 3 bertVMsPerHost    = 2 bertThreadsPerVM    = 2
+  ernieHostsPerSite   = 1 ernieVMsPerHost   = 3 ernieThreadsPerVM   = 2
+
+hydratest/locators/topology_wan_hct_locator.conf
+  wanSites = 3
+  locatorHostsPerSite = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  bridgeHostsPerSite  = 1 bridgeVMsPerHost  = 2 bridgeThreadsPerVM  = 2
+  edgeHostsPerSite    = 3 edgeVMsPerHost    = 1 edgeThreadsPerVM    = 2
+hydratest/locators/topology_wan_hct_locator.conf
+  wanSites = 2
+  locatorHostsPerSite = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  bridgeHostsPerSite  = 3 bridgeVMsPerHost  = 2 bridgeThreadsPerVM  = 2
+  edgeHostsPerSite    = 1 edgeVMsPerHost    = 3 edgeThreadsPerVM    = 2
+
+//---- client-managed locators (non-admin DS) ----//
+
+hydratest/locators/topology_2_locator_cache.conf
+  A = bert   B = ernie
+  locatorHosts = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  bertHosts    = 1 bertVMsPerHost    = 3 bertThreadsPerVM    = 2
+  ernieHosts   = 3 ernieVMsPerHost   = 2 ernieThreadsPerVM   = 2
+hydratest/locators/topology_2_locator_cache.conf
+  A = bert   B = ernie
+  locatorHosts = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  bertHosts    = 3 bertVMsPerHost    = 2 bertThreadsPerVM    = 2
+  ernieHosts   = 1 ernieVMsPerHost   = 3 ernieThreadsPerVM   = 2
+
+hydratest/locators/topology_3_locator_cache.conf
+  A = larry  B = moe  C = curly
+  locatorHosts = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  larryHosts   = 1 larryVMsPerHost   = 3 larryThreadsPerVM   = 2
+  moeHosts     = 2 moeVMsPerHost     = 1 moeThreadsPerVM     = 2
+  curlyHosts   = 2 curlyVMsPerHost   = 3 curlyThreadsPerVM   = 2
+hydratest/locators/topology_3_locator_cache.conf
+  A = larry  B = moe  C = curly
+  locatorHosts = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  larryHosts   = 3 larryVMsPerHost   = 1 larryThreadsPerVM   = 2
+  moeHosts     = 3 moeVMsPerHost     = 2 moeThreadsPerVM     = 2
+  curlyHosts   = 2 curlyVMsPerHost   = 1 curlyThreadsPerVM   = 2
+
+hydratest/locators/topology_4_locator_cache.conf
+  A = fall   B = winter  C = spring  D = summer
+  locatorHosts = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  fallHosts    = 1 fallVMsPerHost    = 3 fallThreadsPerVM    = 2
+  winterHosts  = 2 winterVMsPerHost  = 1 winterThreadsPerVM  = 2
+  springHosts  = 2 springVMsPerHost  = 3 springThreadsPerVM  = 2
+  summerHosts  = 5 summerVMsPerHost  = 1 summerThreadsPerVM  = 2
+hydratest/locators/topology_4_locator_cache.conf
+  A = fall   B = winter  C = spring  D = summer
+  locatorHosts = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  fallHosts    = 2 fallVMsPerHost    = 1 fallThreadsPerVM    = 2
+  winterHosts  = 1 winterVMsPerHost  = 3 winterThreadsPerVM  = 2
+  springHosts  = 5 springVMsPerHost  = 1 springThreadsPerVM  = 2
+  summerHosts  = 2 summerVMsPerHost  = 3 summerThreadsPerVM  = 2
+
+hydratest/locators/topology_5_locator_cache.conf
+  A = apple  B = banana  C = carrot  D = date  E = egg
+  locatorHosts = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  appleHosts   = 1 appleVMsPerHost   = 3 appleThreadsPerVM   = 2
+  bananaHosts  = 2 bananaVMsPerHost  = 1 bananaThreadsPerVM  = 2
+  carrotHosts  = 2 carrotVMsPerHost  = 3 carrotThreadsPerVM  = 2
+  dateHosts    = 1 dateVMsPerHost    = 2 dateThreadsPerVM    = 2
+  eggHosts     = 2 eggVMsPerHost     = 3 eggThreadsPerVM     = 2
+hydratest/locators/topology_5_locator_cache.conf
+  A = apple  B = banana  C = carrot  D = date  E = egg
+  locatorHosts = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  appleHosts   = 2 appleVMsPerHost   = 1 appleThreadsPerVM   = 2
+  bananaHosts  = 1 bananaVMsPerHost  = 3 bananaThreadsPerVM  = 2
+  carrotHosts  = 5 carrotVMsPerHost  = 1 carrotThreadsPerVM  = 2
+  dateHosts    = 2 dateVMsPerHost    = 1 dateThreadsPerVM    = 2
+  eggHosts     = 2 eggVMsPerHost     = 3 eggThreadsPerVM     = 2
+
+hydratest/locators/topology_6_locator_cache.conf
+  A = apple  B = banana  C = carrot  D = date  E = egg  F = fig
+  locatorHosts = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  appleHosts   = 1 appleVMsPerHost   = 3 appleThreadsPerVM   = 2
+  bananaHosts  = 2 bananaVMsPerHost  = 1 bananaThreadsPerVM  = 2
+  carrotHosts  = 2 carrotVMsPerHost  = 3 carrotThreadsPerVM  = 2
+  dateHosts    = 1 dateVMsPerHost    = 2 dateThreadsPerVM    = 2
+  eggHosts     = 2 eggVMsPerHost     = 3 eggThreadsPerVM     = 2
+  figHosts     = 2 figVMsPerHost     = 3 figThreadsPerVM     = 2
+hydratest/locators/topology_6_locator_cache.conf
+  A = apple  B = banana  C = carrot  D = date  E = egg  F = fig
+  locatorHosts = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  appleHosts   = 2 appleVMsPerHost   = 1 appleThreadsPerVM   = 2
+  bananaHosts  = 1 bananaVMsPerHost  = 3 bananaThreadsPerVM  = 2
+  carrotHosts  = 5 carrotVMsPerHost  = 1 carrotThreadsPerVM  = 2
+  dateHosts    = 2 dateVMsPerHost    = 1 dateThreadsPerVM    = 2
+  eggHosts     = 2 eggVMsPerHost     = 3 eggThreadsPerVM     = 2
+  figHosts     = 2 figVMsPerHost     = 3 figThreadsPerVM     = 2
+
+hydratest/locators/topology_p2p_locator_cache.conf
+  locatorHosts = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  peerHosts    = 1 peerVMsPerHost    = 3 peerThreadsPerVM    = 2
+hydratest/locators/topology_p2p_locator_cache.conf
+  locatorHosts = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  peerHosts    = 3 peerVMsPerHost    = 2 peerThreadsPerVM    = 2
+
+hydratest/locators/topology_p2p_1_locator_cache.conf
+  A = pal
+  locatorHosts = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  palHosts     = 1 palVMsPerHost     = 3 palThreadsPerVM     = 2
+hydratest/locators/topology_p2p_1_locator_cache.conf
+  A = pal
+  locatorHosts = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  palHosts     = 3 palVMsPerHost     = 2 palThreadsPerVM     = 2
+
+hydratest/locators/topology_p2p_2_locator_cache.conf
+  A = pub    B = sub
+  locatorHosts = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  pubHosts     = 1 pubVMsPerHost     = 3 pubThreadsPerVM     = 2
+  subHosts     = 3 subVMsPerHost     = 2 subThreadsPerVM     = 2
+hydratest/locators/topology_p2p_2_locator_cache.conf
+  A = pub    B = sub
+  locatorHosts = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  pubHosts     = 3 pubVMsPerHost     = 2 pubThreadsPerVM     = 2
+  subHosts     = 1 subVMsPerHost     = 3 subThreadsPerVM     = 2
+
+hydratest/locators/topology_hct_locator_cache.conf
+  locatorHosts = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  bridgeHosts  = 1 bridgeVMsPerHost  = 3 bridgeThreadsPerVM  = 2
+  edgeHosts    = 3 edgeVMsPerHost    = 2 edgeThreadsPerVM    = 2
+hydratest/locators/topology_hct_locator_cache.conf
+  locatorHosts = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  bridgeHosts  = 3 bridgeVMsPerHost  = 2 bridgeThreadsPerVM  = 2
+  edgeHosts    = 1 edgeVMsPerHost    = 3 edgeThreadsPerVM    = 2
+
+hydratest/locators/topology_wan_p2p_locator_cache.conf
+  wanSites = 3
+  locatorHostsPerSite = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  peerHostsPerSite    = 1 peerVMsPerHost    = 1 peerThreadsPerVM    = 2
+hydratest/locators/topology_wan_p2p_locator_cache.conf
+  wanSites = 2
+  locatorHostsPerSite = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  peerHostsPerSite    = 3 peerVMsPerHost    = 2 peerThreadsPerVM    = 2
+
+hydratest/locators/topology_wan_p2p_2_locator_cache.conf
+  wanSites = 3
+  A = bert   B = ernie
+  locatorHostsPerSite = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  bertHostsPerSite    = 1 bertVMsPerHost    = 3 bertThreadsPerVM    = 2
+  ernieHostsPerSite   = 1 ernieVMsPerHost   = 2 ernieThreadsPerVM   = 2
+hydratest/locators/topology_wan_p2p_2_locator_cache.conf
+  wanSites = 2
+  A = bert   B = ernie
+  locatorHostsPerSite = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  bertHostsPerSite    = 3 bertVMsPerHost    = 2 bertThreadsPerVM    = 2
+  ernieHostsPerSite   = 1 ernieVMsPerHost   = 3 ernieThreadsPerVM   = 2
+
+hydratest/locators/topology_wan_hct_locator_cache.conf
+  wanSites = 3
+  locatorHostsPerSite = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  bridgeHostsPerSite  = 1 bridgeVMsPerHost  = 3 bridgeThreadsPerVM  = 2
+  edgeHostsPerSite    = 1 edgeVMsPerHost    = 2 edgeThreadsPerVM    = 2
+hydratest/locators/topology_wan_hct_locator_cache.conf
+  wanSites = 2
+  locatorHostsPerSite = 2 locatorVMsPerHost = 2 locatorThreadsPerVM = 2
+  bridgeHostsPerSite  = 3 bridgeVMsPerHost  = 2 bridgeThreadsPerVM  = 2
+  edgeHostsPerSite    = 1 edgeVMsPerHost    = 3 edgeThreadsPerVM    = 2

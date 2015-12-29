@@ -1,0 +1,246 @@
+// default case; set no jmxManager properties and connect to locator
+management/test/cli/autoStartManagerDefault.conf
+      locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+      A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=2
+      B=dataStore dataStoreHosts=8 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+      C=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+      D=cli cliHosts=4 cliVMsPerHost=1 cliThreadsPerVM=1
+      redundantCopies=2
+      numDataStoreMembersToHostRegion=6
+      numMembersJoinDSOnly=1 numMembersCreateCacheOnly=1
+
+// allow accessor member(s) to be a manager (locators are denied)
+management/test/cli/autoStartManagerInMembers.conf
+      locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+      A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=2
+      B=dataStore dataStoreHosts=8 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+      C=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+      D=cli cliHosts=4 cliVMsPerHost=1 cliThreadsPerVM=1
+      redundantCopies=2
+      numDataStoreMembersToHostRegion=6
+      numMembersJoinDSOnly=1 numMembersCreateCacheOnly=1
+      numEligibleAccessors=1,2 numEligibleDataStores=0
+
+// allow dataStore member(s) to be a manager (locators are denied)
+management/test/cli/autoStartManagerInMembers.conf
+      locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+      A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=2
+      B=dataStore dataStoreHosts=8 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+      C=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+      D=cli cliHosts=4 cliVMsPerHost=1 cliThreadsPerVM=1
+      redundantCopies=2
+      numDataStoreMembersToHostRegion=6
+      numMembersJoinDSOnly=0 numMembersCreateCacheOnly=1
+      numEligibleAccessors=0 numEligibleDataStores=1
+management/test/cli/autoStartManagerInMembers.conf
+      locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+      A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=2
+      B=dataStore dataStoreHosts=8 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+      C=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+      D=cli cliHosts=4 cliVMsPerHost=1 cliThreadsPerVM=1
+      redundantCopies=2
+      numDataStoreMembersToHostRegion=6
+      numMembersJoinDSOnly=1 numMembersCreateCacheOnly=1
+      numEligibleAccessors=0 numEligibleDataStores=4,8
+
+// allow all members to be a manager (locators are denied)
+management/test/cli/autoStartManagerInMembers.conf
+      locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+      A=accessor accessorHosts=4 accessorVMsPerHost=1 accessorThreadsPerVM=2
+      B=dataStore dataStoreHosts=12 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+      C=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+      D=cli cliHosts=4 cliVMsPerHost=1 cliThreadsPerVM=1
+      redundantCopies=2
+      numDataStoreMembersToHostRegion=6
+      numMembersJoinDSOnly=2 numMembersCreateCacheOnly=2
+      numEligibleAccessors=4 numEligibleDataStores=12
+
+// allow all members to be a manager (locators are enabled)
+management/test/cli/autoStartManagerInLocators.conf
+      locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+      A=accessor accessorHosts=4 accessorVMsPerHost=1 accessorThreadsPerVM=2
+      B=dataStore dataStoreHosts=12 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+      C=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+      D=cli cliHosts=4 cliVMsPerHost=1 cliThreadsPerVM=1
+      redundantCopies=2
+      numDataStoreMembersToHostRegion=6
+      numMembersJoinDSOnly=2 numMembersCreateCacheOnly=2
+
+// tests that force managers to be created, either with the API or with properties
+// Case 1: start manager(s) using API in locator(s)
+management/test/cli/forceManagers.conf
+      locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+      A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=2
+      B=dataStore dataStoreHosts=8 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+      C=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+      D=cli cliHosts=4 cliVMsPerHost=1 cliThreadsPerVM=1
+      nbrOfManagers=1,2 limitManagersToMembers=locator
+      testCase=Case1-startManagerInLocatorWithAPI-LocatorsEnabled
+
+// Case 1A: same as case 1 but start manager(s) with jxmManagerStart property
+management/test/cli/forceManagers.conf
+      locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+      A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=2
+      B=dataStore dataStoreHosts=8 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+      C=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+      D=cli cliHosts=4 cliVMsPerHost=1 cliThreadsPerVM=1
+      locator1-jmxManagerStart=true locator2-jmxManagerStart=true,false
+      testCase=Case1A-startManagersInLocatorWithProperty
+
+// Case 2: start manager(s) using API in accessor
+management/test/cli/forceManagers.conf
+      locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+      A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=2
+      B=dataStore dataStoreHosts=8 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+      C=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+      D=cli cliHosts=4 cliVMsPerHost=1 cliThreadsPerVM=1
+      nbrOfManagers=1 limitManagersToMembers=accessor
+      remainder-jmxManager=true
+      testCase=Case2-startManagerInAccessorWithAPI-LocatorsEnabled
+management/test/cli/forceManagers.conf
+      locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+      A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=2
+      B=dataStore dataStoreHosts=8 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+      C=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+      D=cli cliHosts=4 cliVMsPerHost=1 cliThreadsPerVM=1
+      nbrOfManagers=1 limitManagersToMembers=accessor
+      locator1-jmxManager=false locator2-jmxManager=false
+      remainder-jmxManager=true
+      testCase=Case2-startManagerInAccessorWithAPI-LocatorsDenied
+
+// Case 2A: same as case 2 but start manager(s) with jmxManagerStart property
+management/test/cli/forceManagers.conf
+      locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+      A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=2
+      B=dataStore dataStoreHosts=8 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+      C=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+      D=cli cliHosts=4 cliVMsPerHost=1 cliThreadsPerVM=1
+      remainder-jmxManager=true accessor1-jmxManagerStart=true 
+      testCase=Case2A-startManagerInAccessorWithProperties-LocatorsEnabled
+management/test/cli/forceManagers.conf
+      locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+      A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=2
+      B=dataStore dataStoreHosts=8 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+      C=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+      D=cli cliHosts=4 cliVMsPerHost=1 cliThreadsPerVM=1
+      locator1-jmxManager=false locator2-jmxManager=false remainder-jmxManager=true
+      accessor1-jmxManagerStart=true 
+      testCase=Case2A-startManagerInAccessorWithProperties-LocatorsDenied
+
+// Case 3: start manager(s) using API in dataStore
+management/test/cli/forceManagers.conf
+      locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+      A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=2
+      B=dataStore dataStoreHosts=8 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+      C=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+      D=cli cliHosts=4 cliVMsPerHost=1 cliThreadsPerVM=1
+      nbrOfManagers=1 limitManagersToMembers=dataStore
+      remainder-jmxManager=true
+      testCase=Case3-startManagerInDataStoreWithAPI-LocatorsEnabled
+management/test/cli/forceManagers.conf
+      locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+      A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=2
+      B=dataStore dataStoreHosts=8 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+      C=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+      D=cli cliHosts=4 cliVMsPerHost=1 cliThreadsPerVM=1
+      nbrOfManagers=1 limitManagersToMembers=dataStore
+      locator1-jmxManager=false locator2-jmxManager=false
+      remainder-jmxManager=true
+      testCase=Case3-startManagerInDataStoreWithAPI-LocatorsDenied
+
+// Case 3A: same as case 3 but start manager(s) with jmxManagerStart property
+management/test/cli/forceManagers.conf
+      locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+      A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=2
+      B=dataStore dataStoreHosts=8 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+      C=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+      D=cli cliHosts=4 cliVMsPerHost=1 cliThreadsPerVM=1
+      remainder-jmxManager=true
+      dataStore1-jmxManagerStart=true dataStore2-jmxManagerStart=true
+      testCase=Case3A-startManagerInDataStoreWithProperties-LocatorEnabled
+management/test/cli/forceManagers.conf
+      locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+      A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=2
+      B=dataStore dataStoreHosts=8 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+      C=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+      D=cli cliHosts=4 cliVMsPerHost=1 cliThreadsPerVM=1
+      locator1-jmxManager=false locator2-jmxManager=false remainder-jmxManager=true
+      dataStore1-jmxManagerStart=true dataStore2-jmxManagerStart=true
+      testCase=Case3A-startManagerInDataStoreWithProperties-LocatorDenied
+
+// Case 4: start manager(s) using API in both accessors and dataStores
+management/test/cli/forceManagers.conf
+      locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+      A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=2
+      B=dataStore dataStoreHosts=8 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+      C=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+      D=cli cliHosts=4 cliVMsPerHost=1 cliThreadsPerVM=1
+      nbrOfManagers=all limitManagersToMembers=accessor-dataStore
+      remainder-jmxManager=true
+      testCase=Case4-startManagerInAccessorAndDataStoreWithAPI-LocatorsEnabled
+management/test/cli/forceManagers.conf
+      locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+      A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=2
+      B=dataStore dataStoreHosts=8 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+      C=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+      D=cli cliHosts=4 cliVMsPerHost=1 cliThreadsPerVM=1
+      nbrOfManagers=all limitManagersToMembers=accessor-dataStore
+      locator1-jmxManager=false locator2-jmxManager=false
+      remainder-jmxManager=true
+      testCase=Case4-startManagerInAccessorAndDataStoreWithAPI-LocatorsDenied
+
+// Case 4A: same as case 4 but start manager(s) with jmxManagerStart property
+management/test/cli/forceManagers.conf
+      locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+      A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=2
+      B=dataStore dataStoreHosts=8 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+      C=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+      D=cli cliHosts=4 cliVMsPerHost=1 cliThreadsPerVM=1
+      remainder-jmxManager=true
+      locator1-jmxManagerStart=false locator2-jmxManagerStart=false 
+         accessor1-jmxManagerStart=true accessor2-jmxManagerStart=true 
+         dataStore1-jmxManagerStart=true dataStore2-jmxManagerStart=true remainder-jmxManagerStart=true
+      testCase=Case4A-startManagersInAccessorAndDataStoreWithProperties-LocatorsEnabled
+management/test/cli/forceManagers.conf
+      locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+      A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=2
+      B=dataStore dataStoreHosts=8 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+      C=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+      D=cli cliHosts=4 cliVMsPerHost=1 cliThreadsPerVM=1
+      locator1-jmxManager=false locator2-jmxManager=false remainder-jmxManager=true
+         accessor1-jmxManagerStart=true accessor2-jmxManagerStart=true 
+         dataStore1-jmxManagerStart=true dataStore2-jmxManagerStart=true remainder-jmxManagerStart=true
+      testCase=Case4A-startManagersInAccessorAndDataStoreWithProperties-LocatorsDenied
+
+// Case 5: start manager(s) using API in accessors, dataStores and locators
+management/test/cli/forceManagers.conf
+      locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+      A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=2
+      B=dataStore dataStoreHosts=8 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+      C=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+      D=cli cliHosts=4 cliVMsPerHost=1 cliThreadsPerVM=1
+      nbrOfManagers=all limitManagersToMembers=all
+      testCase=Case5-startManagersInAllMembersWithAPI-LocatorsEnabled
+management/test/cli/forceManagers.conf
+      locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+      A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=2
+      B=dataStore dataStoreHosts=8 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+      C=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+      D=cli cliHosts=4 cliVMsPerHost=1 cliThreadsPerVM=1
+      nbrOfManagers=all limitManagersToMembers=all
+      locator1-jmxManager=false locator2-jmxManager=false
+      remainder-jmxManager=true
+      testCase=Case5-startManagersInAllMembersWithAPI-LocatorsDenied
+
+// Case 5A: same as case 5 but start manager(s) with jmxManagerStart property
+management/test/cli/forceManagers.conf
+      locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+      A=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=2
+      B=dataStore dataStoreHosts=8 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+      C=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+      D=cli cliHosts=4 cliVMsPerHost=1 cliThreadsPerVM=1
+      remainder-jmxManager=true
+      locator1-jmxManagerStart=true locator2-jmxManagerStart=true 
+         accessor1-jmxManagerStart=true accessor2-jmxManagerStart=true
+         dataStore1-jmxManagerStart=true dataStore2-jmxManagerStart=true remainder-jmxManagerStart=true
+      testCase=Case5A-startManagersInAllMembersWithProperties-LocatorsEnabled

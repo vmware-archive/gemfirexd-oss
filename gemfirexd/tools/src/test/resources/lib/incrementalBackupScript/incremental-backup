@@ -1,0 +1,10 @@
+#!/bin/bash
+. ./setenv
+
+D_ADDRESS=`uname -n`
+D_PORT=10101
+S_PATH=$S_HOME/product-gfxd/bin
+LOCATOR="$D_ADDRESS[$D_PORT]"
+
+#take baseline backup
+$S_PATH/gfxd backup -baseline=$S_HOME/../../../incBackup/ $S_HOME/../../../incBackup/ -locators=$LOCATOR

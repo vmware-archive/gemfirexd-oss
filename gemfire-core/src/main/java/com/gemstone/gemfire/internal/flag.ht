@@ -1,0 +1,980 @@
+/*
+ * Copyright (c) 2010-2015 Pivotal Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you
+ * may not use this file except in compliance with the License. You
+ * may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * permissions and limitations under the License. See accompanying
+ * LICENSE file.
+ */
+#ifndef FLAG_HT
+#define FLAG_HT TRUE
+/* if a C file has any includes of system include files, 
+ * it should have includes in this order:
+ *    flag.ht
+ *    system include files, and jni.h
+ *    global.ht
+ *     other gemfire includes
+ *
+ *  flag.ht must come first so that feature-control definitions in this file
+ *  like _GNU_SOURCE are defined before the system files are included.
+ */
+
+
+/* no more includes. KEEP THIS LINE */
+
+/*========================================================================
+ * Description: This file examines a native compilation flag, (predefined
+ *              macros set by a compiler) to determine which brand of
+ *              compiler (either VAX C, Sun C, MS C, or Turbo C) and then
+ *              sets the appropriate GemStone flags for that environment.
+ *
+ * NOTICE:  Flags are listed in alphabetical order.  Please maintain!
+ *
+ * Classes of Flags:
+ *  1) Architecture Flag -- currently supplied by all host compilers:
+ *      _MSDOS  -- Microsoft DOS or Windows NT, with MS C compiler
+ *      _M_IX86 -- if >= 300 then NT (this may change)
+ *      sparc (we also define sun4) -- Sun4 sparc chip
+ *	    also:  __sparc__ (provided by Gnu compiler)
+ *      __STDC__ -- ANSI C compiler
+ *	sun -- Sun Microsystems, Inc.'s SunOS
+ *	    also:  __sun__ (provided by Gnu compiler)
+ *      sun386 (we also define sun8) -- sun386i
+ *
+ *	The following architecture flags MUST be defined externally by the
+ *	user 
+ *	  OS2 -- OS/2 (Microsoft C 6.0)
+ *
+ *  From the above flags, we derive the following:
+ *
+ *  2) Operating System Flag, currently one of:
+ *      FLG_SOLARIS_UNIX -- SunOS 5.x
+ *
+ *  3) Compiler flag, currently one of:
+ *      FLG_MSC32 -- Microsoft C v7.00 32 bit
+ *      FLG_SUN_ACC -- Sun's ANSI C Compiler
+ *      FLG_SUN_CXX -- Sun native C++ compiler
+ *
+ *  4) OS Description -- to keep customer support sane
+ *      FLG_MACHINE_OS -- a string that describes architecture and OS
+ *   
+ *    FLG_VER_MACHINE_ARCH  - kind of CPU for which GemStone executables
+ *         were compiled
+ *
+ *  5) Functionality
+ *      Differences in environment are distinguished -- whenever practical --
+ *      by feature, rather than environment.  
+ *      As such, the flags in this section are preferred over those in the 
+ *      previous two sections.
+ *
+ *      BITS_IN_LONG -- self explanatory, not available from limits.h
+ *
+ *	BYTES_IN_LONG -- preprocessor-time sizeof(long)
+ *
+ *	BYTES_IN_POINTER -- preprocessor-time sizeof(void *)
+ *		Assume FAR pointer, add another macro if/when needed
+ *
+ *	BYTES_IN_SHORT -- preprocessor-time sizeof(short)
+ *
+ *      FLG_ANSI_CPP -- set if ## used to delimit tokens in cpp, as opposed
+ *	  to the older slash-star-star-slash in K&R compilers
+ *
+ *      FLG_ANSI_REMOVE -- set if the remove(2) function is implemented,
+ *
+ *	FLG_BAD_ATOF -- If your atof function returns incorrect results, or
+ *	  refuses to return results accurate to at least 22 decimal digits,
+ *	  set this flag.
+ *
+ *	FLG_BAD_GCVT -- set this if your C runtime library returns incorrect
+ *	  values for its binary-to-decimal conversion, or if it is completely
+ *	  missing.
+ *
+ *      FLG_BAD_NAN_COMPARES -- set this if the compiler may reverse the sense
+ *        of comparisons internally without regard for the fact that ANY 
+ *        relational operation involving a NaN float is FALSE.
+ *
+ *	FLG_BAD_TOUPPER -- set if toupper('3') returns garbage or
+ *	  toupper('X') != 'X'.
+ *	  Similar bug is presumed to apply to tolower.
+ *
+ *	FLG_BCOPY_AVAIL -- set if memmove() is not present but bcopy() is
+ *
+ *	FLG_VOID_STAR -- (not a bool) if the following program does not compile:
+ *
+ *	  void *x; int main() { x = 0; }
+ *
+ *	Then you have to use something besides void* in your declarations.
+ *
+ *      FLG_CACHE_LINE_SIZE -- (not a bool) -- maximum cache line size
+ *        expected for the target architecture.  Must be an integral number
+ *        of longs, or padding calculations will not work.
+ *
+ *
+ *      FLG_CLOSEDIR_RETURN_TYPE -- (not a Bool) -- Type returned by
+ *        closedir(), usually void
+ *
+ *      FLG_CONST_MEMALIGN -- set if system guarantees to attach shared 
+ *                            memory segments at the same address for each
+ *                            process (e.g. HP9000/700, HPUX8.07)
+ *
+ *      FLG_CONST_UNDERSTOOD -- set if your C understands the "const" keyword
+ *
+ *      FLG_CPU*  -- exactly one of these will be defined
+ *         FLG_CPU_IA32
+ *         FLG_CPU_IA64
+ *         FLG_CPU_SPARC
+ *         FLG_CPU_AMD64
+ *         FLG_CPU_PPC
+ *
+ *      FLG_DATE_TIME_DAY_CORRECTION  - The number of days between Jan 1, 1901
+ *	   (when the X3J20 calendar begins) and (time_t)0 on your machine.
+ *
+ *	FLG_DATE_TIME_EPOCH_YEAR  -- the year of (time_t)0 on your machine
+ *
+ *      FLG_EXTERN_VAR_REQUIRED -- set if your linker generates errors when
+ *	  two object modules declare the same variable, even without
+ *	  initializers.  This behavior is proscribed by the ANSI C standard.
+ *
+ *      FLG_FAST -- NO LONGER USED
+ *
+ *      FLG_NOOP - set only in noop builds
+ *         This flag should be used
+ *         with extreme caution.  We want to minimize the differences 
+ *         between fast and noop executables.
+ *
+ *      FLG_FFS_AVAIL -- set if ffs() is in your runtime library
+ *
+ *      FLG_FILEPOS_TYPE (not a Bool) -- Type passed to fgetpos()/fsetpos()
+ *        if you have it, otherwise type passed to fseek().  Must not be an
+ *        array type.
+ *
+ *      FLG_FNAME_SIZE (not a Bool) -- indicates max legal size of filenames
+ *        on your system
+ *
+ *      FLG_FREE_ARG_TYPE (not a Bool) -- define the argument type of your
+ *        free() function (typically void *)
+ *
+ *      FLG_FREE_RETURN_TYPE (not a Bool) -- define the return type of your
+ *        free() function (should be void)
+ *
+ *	FLG_HAS_ERRNO -- set if your stdio package returns errors in errno.
+ *
+ *	FLG_HAS_FPSETMASK -- set if your math pack uses fpsetmask()
+ *
+ *      FLG_HAS_LLSEEK  -- set if the operating system provides POSIX llseek()
+ *
+ *      FLG_HAS_LSEEK64 -- set if operating system provides llseek64()
+ *
+ *      FLG_GS_HAS_LONG_LONG -- Set if 64 bit longs exist.
+ *
+ *      FLG_HAS_ULONG -- Set if the type ulong exists
+ *
+ *	FLG_HAS_UTIME -- Set if you have the utime() call.
+ *
+ *	FLG_IEEE_BIG -- set if you have big-endian IEEE 754 binary floats
+ *      FLG_BIG_ENDIAN  -- set if you have big-endian longs
+ *
+ *	FLG_IEEE_LITTLE -- set if you have little-endian IEEE floats
+ *      FLG_LITTLE_ENDIAN  -- set if you have little-endian longs
+ *
+ *	FLG_LONG_INTEL -- set if your 32-bit long is Intel format (as opposed
+ *	   to network ordering)
+ *
+ *      FLG_LOW_BITS -- Suppose that you have a union with an int and a
+ *	   collection of bitfields.  Set this if the compiler assigns the bit
+ *	   fields starting with the lowest significant bit of the int.
+ *
+ *      FLG_MALLOC_RETURN_TYPE -- (not a bool) -- type returned from malloc()
+ *
+ *	FLG_MEMORY_TYPE -- (not a bool) type used to typically point at
+ *	    untyped memory, typically either char or void
+ *
+ *      FLG_MEMORY_INCOHERENT -- set if the coherency of shared memory
+ *         is suspect.  That is, if the _order_ of writes is not guaranteed.
+ *
+ *	FLG_MEMMOVE_AVAIL -- Set if you have memmove() in your library
+ *	   This is the preferred ANSI entry point.
+ *
+ *      FLG_NATIVE_THREADS -- Set if system supports native threads
+ *
+ *	FLG_NO_ALARM -- Define this if your system does not support
+ *	   alarm() and SIGALARM.  Note that special effort may additionally
+ *	   be needed if signals do not cause pending system calls to exit with
+ *	   errno == EINTR.  Finally, be forewarned that if this flag is set,
+ *	   we will implement timeouts by using busy waits :-(
+ *
+ *      FLG_NO_ATEXIT -- Define this flag if your system does not have (or,
+ *	   in the case of VAX/VMS, incorrectly implements) the atexit()
+ *	   function.
+ *
+ *	FLG_NO_FMOD -- Define this flag if your system does not have (or
+ *	   incorrectly implements) fmod().
+ *
+ *	FLG_NO_HOSTID -- Define this if your architecture does not have
+ *	   a guaranteed unique and unchangeable hostid.
+ *
+ *	FLG_NO_ISNAN -- Define this if your library has no isnan() function.
+ *
+ *      FLG_NO_LIMITS_H -- set if you have no limits.h include file.
+ *
+ *	FLG_NO_LOG2 -- set if you have no log2() function; we'll implement it
+ *	    in terms of log().
+ *
+ *	FLG_NO_OFFSETOF -- set if your system doesn't define the offsetof()
+ *	    macro.
+ *
+ *	FLG_NO_SCALBN -- set if you don't have scalbn(), or it returns wrong
+ *	   		 answers.
+ *
+ *      FLG_NO_SEMUN     -- set if <sys/sem.h> doesn't define union semun
+ *
+ *      FLG_NO_SETEGUID -- no seteuid() call. Like on hpux
+ *
+ *      FLG_NO_STRCMPI -- set if no strcmpi() in your library
+ *
+ *      FLG_NO_TM_GMTOFF -- set if struct tm (<time.h>) doesn't have tm_gmtoff
+ *
+ *      FLG_NO_UID_T  -- set if uid_t and gid_t are not defined
+ *
+ *      FLG_PROTOTYPE -- OBSOLETE, set to TRUE for backwards compatibility
+ *
+ *      FLG_READDIR_RETURN -- Not a bool.  Define to be the type returned
+ *			      by your readdir() call
+ *
+ *      FLG_RIGHT_SHIFT_SIGN_EXTENDS -- set if the C >> operator will
+ *        sign extend a negative long when shifting to the right.
+ *    
+ *	FLG_SETLOCALE -- set if 1) you have locale.h, 2) you have the
+ *			 setlocale() call, and 3) you should call it
+ *			 to set the default format of messages.
+ *
+ *
+ *      FLG_SETJMP_BSD -- set if you have a special setjmp in the 
+ *                        BSD style (_setjmp, _longjmp).
+ *
+ *      FLG_SHORT_FILENAMES -- file names limited to 8.3 characters
+ *			  in #include directives
+ *
+ *      FLG_SIGNED_MEMCMP -- If your memcmp compares signed chars instead
+ *                           of uninterpreted memory (unsigned chars),
+ *                           this flag should be set.
+ *
+ *	FLG_SIGNED_SIZE_T -- set if memset(), memcpy(), etc. will transfer
+ *	  zero bytes if the length argument, when regarded as a long, is
+ *	  negative.
+ *
+ *      FLG_SIGRET_TYPE -- Not a boolean flag!  Define to specify the return
+ *        type of the function passed to signal(2)
+ *
+ *      FLG_SMALL_MEM -- If your host has limited memory, set this flag
+ *
+ *	FLG_SPRINTF_RET_PTR -- set if sprintf() returns char * instead of int
+ *
+ *	FLG_SYS_ERRLIST_AVAIL -- set if sys_errlist[] and sys_nerr are available
+ *
+ *      FLG_TNET_BSD -- set if your TCP/IP implementation attempts to follow
+ *			    the BSD libraries
+ *
+ *      FLG_UNALIGNED_LONGS -- set if architecture allows longs to be aligned
+ *         usually FALSE for RISC, TRUE for Intel processors.
+ *
+ *	FLG_UNIX -- set if your OS is some flavor of Unix.
+ *
+ *	FLG_UNIX_* --- a collection of flags that are unix-specific but
+ *	  nonetheless useful:
+ *
+ *	FLG_UNIX_EINTR_EVERYWHERE --- Set if your system generates EINTR on
+ *	  system calls such as accept(), bind(), close(), fcntl(), 
+ *	  gethostbyaddr(), gethostbyname(), getpeername(), getservbyname(),
+ *	  getsockname(), getsockopt(), ioctl(), listen(), setsockopt(), or
+ *	  socket().
+ *
+ *	FLG_UNIX_FNAME --- set if your system uses TRUE unix filenames.  Note
+ *	  that MSDOS doesn't count because of its drive specifications...
+ *
+ *      FLG_UNIX_GETDTABLESIZE -- set if your machine has getdtablesize, and
+ *	  it should be used to determine the file descriptor limit.
+ *
+ *	FLG_UNIX_GETWD -- set if your machine has getwd, and it ought to be
+ *        used in preference to getcwd().
+ *
+ *	FLG_UNIX_IGN_SIGCHLD -- set if setting SIGCHLD to SIG_IGN can cause
+ *	  unpredictable hangs, esp. in system().
+ *
+ *	FLG_UNIX_NO_GETSPNAM -- set if your system does not have the
+ *	  getspnam() call.
+ *
+ *	FLG_UNIX_PARAM_H -- set if your system has sys/param.h
+ *
+ *	FLG_UNIX_POLL -- set if your system has poll.  Should be used in
+ *	  preference to FLG_UNIX_SELECT, assuming that both work.
+ *
+ *      FLG_UNIX_RETURN_CODES -- set if a return of 0 from main() indicates
+ *        no error, etc.
+ *
+ *	FLG_UNIX_RW_NOT_RESTARTABLE -- set if connect(), read() or write()
+ *	  cannot be safely restarted after an EINTR.
+ *
+ *	FLG_UNIX_SELECT -- set if your unix has select(), and it should be
+ *	  used in preference to poll().
+ *
+ *	FLG_UNIX_SELECT_RESTARTS -- set if select/poll is restarted when an
+ *        interrupt occurs. If this is the case then a pipe will be set up
+ *        the must be written to to wake up select/poll.
+ *
+ *      FLG_UNIX_SGTTYB -- set if your Unix uses BSD sgttyb instead of termios
+ *        for tty ioctls
+ *
+ *	FLG_UNIX_SIGPROCMASK -- set if your Unix has sigprocmask()
+ *
+ *      FLG_UNIX_SYSCONF -- set if your Unix has sysconf()
+ *
+ *      FLG_UNIX_USE_INITGROUPS -- use initgroups() system call
+ *
+ *	FLG_UNIX_VFORK -- set if your Unix has vfork(); otherwise we'll use
+ *	  fork().
+ *
+ *	FLG_UNIX_WAIT3 -- set if your Unix should use wait3() instead of
+ *	  waitpid() to reap children.
+ *
+ *      FLG_UNSIGNED_TIME_T -- set if time_t is unsigned
+ *
+ *      FLG_USE_INITGROUPS -- use initgroups() system call
+ *
+ *      FLG_USES_DLLS -- uses dll/shared libraries for GCI.
+ *
+ *	FLG_USES_X11 -- set if your system (and libraries) have X11 support
+ *
+ *      FLG_VOLATILE_UNDERSTOOD -- set if your compiler understands the
+ *			     "volatile" keyword
+ *
+ *      FLG_WAIT_ARG_TYPE (not a bool) -- Set to be the argument type taken
+ *        by the wait() system call (if you have it)
+ *
+ *========================================================================
+ *   The following flags are set externally in GemStone makes, and are described
+ *   here for the sake of completeness:
+ *
+ *   FLG_DEBUG		Causes various (time-consuming) asserts to be
+ *			additionally added to code.  Also causes additional
+ *			functionality to be added to the system.  Examples of
+ *			the latter include:  DBF bootstrap (bom), bytecode
+ *			disassembler, DBF page decoding in pgsvr.
+ *
+ *   FLG_SHARED_LIB	Set when attempting to build a shared library in
+ *			SunOS; e.g., no static initializers permitted
+ *
+ * 
+ *
+ *========================================================================
+ */
+#if !defined(FLG_DEBUG)
+#if defined(_DEBUG) || defined(DEBUG) || defined(ASSERT)
+/* hotspot build flags */
+#define FLG_DEBUG 1
+#endif
+#endif
+
+/*========================================================================
+ *
+ * Determine environment from intrinsic flags passed from preprocessor...
+ *
+ *========================================================================
+ */
+
+
+/*========================================================================
+ *
+ * SunOS C & C++Compilers 
+ *
+ *========================================================================
+ */
+#if defined(__GNUC__)
+#define FLG_GNUC TRUE         /* Gnu C */
+#else  /* __GNUC__ */
+
+#if defined(__STDC__) 
+#if defined (__cplusplus)
+#define FLG_SUN_CXX TRUE    /* Sun's C++ compiler or ObjectCenter */
+#else /* __cplusplus */
+#define FLG_SUN_ACC TRUE	/* Sun's ANSI C Compiler */
+#endif /* __cplusplus */
+#endif /* __STDC__ */
+#endif /* __GNUC__ */
+
+/* The following fix bugs in the Sun environment */
+#if defined(sparc) || defined(__sparc) || defined(__sparc__)
+#define FLG_CPU_SPARC TRUE
+#if defined(FLG_CPU_IA32)
++++ port error
+#endif
+#endif
+
+#if !defined(FLG_SOLARIS_UNIX) 
+#if defined(__SOLARIS__) || defined(SOLARIS) || defined(__SUNOS__) || defined(sparc) || defined(__sparc) || defined(__sparc__)
+#define FLG_SOLARIS_UNIX    TRUE   /* Sun Solaris operating system */
+#endif /* FLG_SOLARIS_UNIX */
+#endif
+
+#if defined(FLG_SOLARIS_UNIX)
+#define FLG_MACHINE_OS    "SPARC (Solaris)"
+#define FLG_VER_MACHINE_ARCH "SPARC"
+#define FLG_VER_OS_NAME "Solaris"
+#define FLG_UNIX TRUE
+#if !defined(FLG_CPU_SPARC)
++++ unexpected cpu
+#endif
+#endif
+
+#if defined(FLG_SOLARIS_UNIX)
+#if defined(FLG_LINUX_UNIX)
++++ port error
+#endif
+#endif
+
+/*========================================================================
+ *
+ * Mac OS X on an i386
+ *
+ *========================================================================
+ */
+#if !defined(FLG_OSX_UNIX)
+#if defined(__APPLE__) && defined(__i386__)
+#define FLG_OSX_INTEL 1
+#define FLG_OSX_UNIX 1
+#elif defined(__APPLE__) && defined(__ppc__)
+#define FLG_OSX_PPC 1
+#define FLG_OSX_UNIX 1
+#endif
+#endif /* FLG_OSX_UNIX */
+
+#if defined(FLG_OSX_INTEL)
+#define FLG_MACHINE_OS  "x86 (MacOSX)"
+#define FLG_VER_MACHINE_ARCH "X86"
+#define FLG_UNALIGNED_LONGS TRUE
+#define FLG_GNUC TRUE
+#if defined(__i386__)
+#define FLG_CPU_IA32 1
+#else
++++ unexpected cpu 
+#endif
+#endif /* FLG_OSX_INTEL */
+
+#if defined(FLG_OSX_PPC)
+#define FLG_MACHINE_OS  "ppc (MacOSX)"
+#define FLG_VER_MACHINE_ARCH "ppc"
+#define FLG_UNALIGNED_LONGS TRUE
+#define FLG_GNUC TRUE
+#if defined(__ppc__)
+#define FLG_CPU_PPC 1
+#else
++++ unexpected cpu
+#endif
+#endif /* FLG_OSX_PPC */
+
+#if defined(FLG_OSX_UNIX)
+#define FLG_UNIX TRUE
+#define _GNU_SOURCE 1
+#endif /* FLG_OSX_UNIX */
+
+#if defined(FLG_OSX_INTEL)
+#if defined(FLG_SOLARIS_UNIX) || defined(FLG_OSX_PPC)
++++ port error
+#endif
+#endif
+
+#if defined(FLG_OSX_PPC)
+#if defined(FLG_SOLARIS_UNIX) || defined(FLG_OSX_INTEL)
++++ port error
+#endif
+#endif
+
+/*========================================================================
+ *
+ * Linux 2.4.7-10 on an i686
+ *
+ *========================================================================
+ */
+#if !defined(FLG_LINUX_UNIX)
+#if defined(linux)
+#define FLG_LINUX_UNIX 1
+#endif /* linux */
+#endif
+
+#if defined(FLG_LINUX_UNIX)
+#define FLG_MACHINE_OS  "x86 (Linux)"
+#define FLG_VER_MACHINE_ARCH "X86"
+#define FLG_UNALIGNED_LONGS TRUE
+#define FLG_GNUC TRUE
+#if defined(__i386__)
+#define FLG_CPU_IA32 1
+#elif defined(__x86_64)
+#define FLG_CPU_AMD64 1
+#else
++++ unexpected cpu 
+#endif
+#define FLG_UNIX TRUE
+#define _GNU_SOURCE 1
+#define _LARGEFILE64_SOURCE 1
+#endif /* FLG_LINUX_UNIX */
+
+#if defined(FLG_LINUX_UNIX)
+#if defined(FLG_SOLARIS_UNIX) || defined(FLG_OSX_UNIX)
++++ port error
+#endif
+#endif
+
+/*========================================================================
+ * WIN32  (Windows NT, Windows 2000, Windows XP)
+ *
+ *========================================================================
+ */
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
+#if !defined(FLG_MSWIN32)
+#define FLG_MSWIN32 TRUE
+#endif
+#define FLG_WINSOCK      TRUE       /* Windows Sockets API */
+#define _POSIX_ /* Define _POSIX_ so that limits.h will provide PATH_MAX */
+#if (_MSC_VER >= 800)
+#if !defined(FLG_MSC32)
+#define FLG_MSC32       TRUE       /* Microsoft C 32-bit compiler */
+#endif
+#undef FLG_GNUC
+
+#elif (__BORLANDC__ >= 0x400)
++++ not supported    /* Borland C 32-bit compiler */
+
+#elif defined(__GNUC__)
+#undef FLG_MSC32
+#define FLG_GNUC TRUE
+#undef __cdecl                  /* it's defined in initialization, but wrong? */
+#define __cdecl                 /* so that Visual C includes survive */
+#else /* what compiler are we? */
++++ port_err
+#endif
+
+#if defined(_M_IX86)
+#define FLG_CPU_IA32 TRUE
+#elif defined(_M_IA64)
+#define FLG_CPU_IA64 TRUE
+#elif defined(_M_AMD64)
+#define FLG_CPU_AMD64 TRUE
+#if defined(FLG_CPU_SPARC)
++++ port error
+#endif
+#endif
+
+#if defined(FLG_UNIX)
++++ port error
+#endif
+
+#endif /*WIN32*/
+
+/*========================================================================
+ *  cpu consistency checks and FLG_CPU_64BIT 
+ */
+#if defined(FLG_CPU_IA32)
+#if defined(FLG_CPU_SPARC) || defined(FLG_CPU_IA64) || defined(FLG_CPU_AMD64) || defined(FLG_CPU_PPC)
++++ error 2 cpus defined
+#endif
+#elif defined(FLG_CPU_SPARC)
+#define FLG_CPU_64BIT TRUE
+#if defined(FLG_CPU_IA32) || defined(FLG_CPU_IA64) || defined(FLG_CPU_AMD64) || defined(FLG_CPU_PPC)
++++ error 2 cpus defined
+#endif
+#elif defined(FLG_CPU_AMD64)
+#define FLG_CPU_64BIT TRUE
+#if defined(FLG_CPU_IA32) || defined(FLG_CPU_IA64) || defined(FLG_CPU_SPARC) || defined(FLG_CPU_PPC)
++++ error 2 cpus defined
+#endif
+#elif defined(FLG_CPU_IA64)
+#define FLG_CPU_64BIT TRUE
+#if defined(FLG_CPU_IA32) || defined(FLG_CPU_AMD64) || defined(FLG_CPU_SPARC) || defined(FLG_CPU_PPC)
++++ error 2 cpus defined
+#endif
+#elif defined(FLG_CPU_PPC)
+#define FLG_CPU_64BIT TRUE
+#if defined(FLG_CPU_IA32) || defined(FLG_CPU_IA64) || defined(FLG_CPU_SPARC) || defined(FLG_CPU_AMD64)
++++ error 2 cpus defined
+#endif
+#else
++++ unknown cpu
+#endif
+
+
+/*========================================================================
+ *
+ * Generic C++ compiler detection, for front-end GC++I compilations
+ *
+ *========================================================================
+ */
+#if defined(__cplusplus)
+  /* turn on flag indicating generic C++ compiler in use */
+#define FLG_CPLUSPLUS TRUE
+#endif
+
+/*========================================================================
+ *
+ * Set Up Feature Flags Based on Environment
+ *
+ *========================================================================
+ */
+#define BITS_IN_LONG 64
+#define LOG_BITS_PER_LONG 6
+
+#define BYTES_PER_LONG 8
+#define LOG_BYTES_PER_LONG 3
+
+
+/* ------- BITS_IN_INT ------- */
+#define BITS_IN_INT 32
+#define LOG_BITS_PER_INT 5
+
+/* ------- BYTES_IN_INT ------- */
+#define BYTES_IN_INT 4 
+#define LOG_BYTES_PER_INT 2
+
+/* ------- BYTES_IN_SHORT ------- */
+#define BYTES_IN_SHORT 2  
+
+#define BITS_IN_BYTE 8
+#define LOG_BITS_PER_BYTE 3
+
+/* ------- FLG_ANSI_CPP ------- */
+#if defined(FLG_GNUC)
+#define FLG_ANSI_CPP TRUE
+#elif  defined(FLG_MSC32) 
+#define FLG_ANSI_CPP TRUE
+#elif defined(FLG_SUN_ACC) 
+#define FLG_ANSI_CPP TRUE
+#endif
+
+/* ------- FLG_ANSI_REMOVE ------- */
+#if   defined(FLG_MSC32)
+#define FLG_ANSI_REMOVE TRUE
+#elif defined(FLG_SOLARIS_UNIX)
+#define FLG_ANSI_REMOVE TRUE
+#endif
+
+/* ------- FLG_BAD_ATOF ------- */
+/* David Hough has done a good job on Suns.  No need to set. */
+#if defined(FLG_MSC32)
+#define FLG_BAD_ATOF TRUE
+#endif
+
+/* ------- FLG_BAD_GCVT ------- */
+/* David Hough has done a good job on Suns.  No need to set. */
+#if  defined(FLG_MSC32)
+#define FLG_BAD_GCVT TRUE
+#endif
+
+/* ------- FLG_BAD_NAN_COMPARES -- */
+#if defined(FLG_MSWIN32) 
+#define FLG_BAD_NAN_COMPARES TRUE
+#endif
+
+/* ------- FLG_BAD_TOUPPER ------- */
+
+/* ------- FLG_BCOPY_AVAIL ------- */
+
+/* ------- FLG_CACHE_LINE_SIZE ------- */
+/* size of a memory cache line , in number of bytes.
+ * Must be an integral multiple of sizeof(long) or padding calculations
+ *  will not work.
+ *
+ */
+#define FLG_CACHE_LINE_SIZE 64 /* gemfire uses 64 for all architectures */
+
+/* ------- FLG_CLOSEDIR_RETURN_TYPE ------- */
+#if defined(FLG_SOLARIS_UNIX)
+#define FLG_CLOSEDIR_RETURN_TYPE int
+#endif
+
+/* ------- FLG_CONST_MEMALIGN ------- */
+
+/* ------- FLG_CONST_UNDERSTOOD ------- */
+#define FLG_CONST_UNDERSTOOD TRUE
+
+/* ------- FLG_EXTERN_VAR_REQUIRED ------- */
+#if defined(FLG_CPLUSPLUS)
+#define FLG_EXTERN_VAR_REQUIRED TRUE
+#endif
+
+/* ------- FLG_FFS_AVAIL ------- */
+/* on Solaris, HPUX, and AIX, our own implementation is faster */
+/*check*/
+
+/* ------- FLG_FNAME_SIZE ------- */
+#if defined(FLG_MSWIN32)
+#define FLG_FNAME_SIZE FILENAME_MAX
+#elif defined(FLG_UNIX) 
+#define FLG_FNAME_SIZE (MAXPATHLEN - 1)
+#else
++++ PORT_ERR filename size
+#endif
+
+#define FLG_VOID_STAR void *
+
+/* ------- FLG_GS_HAS_LONG_LONG ------- */
+#if defined(FLG_UNIX)
+#define FLG_GS_HAS_LONG_LONG TRUE
+#if defined(FLG_GNUC)
+#undef _NO_LONGLONG
+#endif
+#elif defined(FLG_MSC32)
+#define FLG_GS_HAS_LONG_LONG TRUE
+#endif
+
+#if defined(FLG_GS_HAS_LONG_LONG)
+#if defined(FLG_MSC32)
+typedef __int64 int64_t;
+typedef unsigned __int64 uint64_t;
+#else
+/* unix 64 bit*/
+#if defined(FLG_UNIX) 
+#include <sys/types.h>
+#else
+#ifndef _INT64_T
+#define _INT64_T
+typedef long long int64_t;
+#endif
+#endif /* Solaris */
+
+#if defined(FLG_UNIX) 
+  /* Solaris , types.h already included */
+#else
+#ifndef _UINT64_T
+#define _UINT64_T
+typedef unsigned long long uint64_t;
+#endif
+#endif /* Solaris 2.6 */
+
+#endif /*FLG_MSC32*/
+#endif /*FLG_GS_HAS_LONG_LONG*/
+
+/* ------- FLG_HAS_SYSV_IPC ------- */
+#if defined(FLG_UNIX)
+#define FLG_HAS_SYSV_IPC 1
+#endif
+
+/* ------- FLG_HAS_UTIME ------- */
+#if defined(FLG_MSC) 
+#define FLG_HAS_UTIME TRUE
+#endif
+
+/* ------- FLG_IEEE_BIG , FLG_BIG_ENDIAN ------- */
+#if defined(FLG_CPU_IA64)
++++ PORT_ERR IA64 is Bi-endian, not sure which one to specify here 
+#endif
+
+#if defined(FLG_CPU_SPARC) || defined(FLG_CPU_PPC) 
+#define FLG_IEEE_BIG TRUE
+#define FLG_BIG_ENDIAN TRUE
+#endif
+
+/* ------- FLG_IEEE_LITTLE , FLG_LITTLE_ENDIAN ------- */
+#if defined(FLG_CPU_IA32) || defined(FLG_CPU_AMD64)
+#define FLG_IEEE_LITTLE TRUE
+#define FLG_LITTLE_ENDIAN TRUE
+#endif
+
+#if defined(FLG_IEEE_BIG) && defined(FLG_IEEE_LITTLE)
++++ PORT_ERR can not have both
+#endif
+
+#if defined(FLG_BIG_ENDIAN) && defined(FLG_LITTLE_ENDIAN)
++++ PORT_ERR can not have both
+#endif
+
+#if !defined(FLG_BIG_ENDIAN) && !defined(FLG_LITTLE_ENDIAN)
++++ PORT_ERR must have one of these defined
+#endif
+
+
+/* --------FLG_DATE_TIME.....-----------*/
+#if defined(FLG_MSC)
++++
+   /* (time_t)0 is 31 Dec 1899 */
+#else /* Unix */
+  /* The Unix base time is 00:00 1-Jan-1970. */
+
+#define FLG_DATE_TIME_DAY_CORRECTION 25202 /* (69 * 365 + 17) */
+#define FLG_DATE_TIME_EPOCH_YEAR 1970
+
+#endif
+
+/* ------- FLG_LONG_INTEL ------- */
+#if defined(FLG_MSWIN32) || defined(FLG_LINUX_UNIX) || defined(FLG_OSX_INTEL)
+#define FLG_LONG_INTEL TRUE
+#elif defined(FLG_SOLARIS_UNIX) || defined(FLG_OSX_PPC)
+  /* MSBFIRST */
+#else
+  +++ PORT_ERROR byte ordering
+#endif
+
+
+/* ------- FLG_LOW_BITS ------- */
+#if  defined(FLG_MSC32)
+#define FLG_LOW_BITS TRUE
+#endif 
+
+/* ------- FLG_MALLOC_RETURN_TYPE ------- */
+#define FLG_MALLOC_RETURN_TYPE void *
+
+/* ------- FLG_MEMORY_INCOHERENT ------- */
+
+/* ------- FLG_NO_ALARM ------- */
+
+/* ------- FLG_NO_ATEXIT ------- */
+
+/* ------- FLG_NO_FMOD ------- */
+
+/* ------- FLG_NO_HOSTID ------- */
+#if defined(FLG_MSWIN32)
+#define FLG_NO_HOSTID TRUE
+#endif
+#if defined(FLG_MSWIN)
+#define FLG_NO_HOSTID TRUE
+#endif
+
+/* ------- FLG_NO_ISNAN ------- */
+#if defined(FLG_UNIX)
+/* isnan in libraries */
+#elif  defined(FLG_MSC32)
+#define FLG_NO_ISNAN
+#endif
+
+/* ------- FLG_NO_LOG2 ------- */
+#if defined(FLG_UNIX)
+#define FLG_NO_LOG2 TRUE
+#elif defined(FLG_MSWIN32) 
+#define FLG_NO_LOG2 TRUE
+#endif
+
+/* ------- FLG_NO_OFFSETOF ------- */
+
+/* ------- FLG_NO_SCALBN ------- */
+#if  defined(FLG_MSC32)
+#define FLG_NO_SCALBN TRUE
+#endif
+
+
+/* ------- FLG_NO_STRCMPI ------- */
+#if defined(FLG_UNIX)
+#define FLG_NO_STRCMPI TRUE
+#endif
+
+/* ------- FLG_NO_TM_GMTOFF ------- */
+#if defined(FLG_UNIX)
+#define FLG_NO_TM_GMTOFF TRUE
+#elif defined(FLG_MSWIN32) || defined(FLG_MSWIN)
+#define FLG_NO_TM_GMTOFF TRUE
+#endif
+
+/* ------- FLG_NO_UID_T ------- */
+#if defined(FLG_MSWIN) || defined(FLG_MSWIN32)
+#define FLG_NO_UID_T TRUE
+#endif
+
+/* ------- FLG_PROTOTYPE ------- */
+#define FLG_PROTOTYPE TRUE  
+
+/* ------- FLG_READDIR_RETURN ------- */
+#if defined(FLG_MSWIN32)
+#define FLG_READDIR_RETURN struct dirent
+#elif defined(FLG_UNIX) 
+#define FLG_READDIR_RETURN struct dirent
+#endif
+
+/* FLG_RIGHT_SHIFT_SIGN_EXTENDS -- set if the C >> operator will
+ *    sign extend a negative long when shifting to the right.  set if possible,
+ *    to improve performance of oop to long conversions.
+ */
+#define FLG_RIGHT_SHIFT_SIGN_EXTENDS TRUE    
+
+/* ------- FLG_SETLOCALE ------- */
+#if defined(FLG_UNIX)
+#define FLG_SETLOCALE TRUE
+#endif
+#if defined(FLG_MSWIN32)
+/* should this be on for FLG_MSWIN as well??? */
+#define FLG_SETLOCALE TRUE
+#endif
+
+/* ------- FLG_SETJMP_BSD ------- */
+/* Note: we don't bother with sigsetjmp since it tends to be slow */
+
+
+/* ------- FLG_SYS_ERRLIST_AVAIL ------- */
+#define FLG_SYS_ERRLIST_AVAIL TRUE
+
+/* ------- FLG_SYSV_SEMAPHORES ------- */
+#if defined(FLG_LINUX_UNIX)
+#define FLG_SYSV_SEMAPHORES  1
+#endif
+
+/* ------- FLG_TNET_BSD ------- */
+#if defined(FLG_SOLARIS_UNIX)
+#define FLG_TNET_BSD TRUE
+#endif
+
+/* ------- FLG_UNIX_FNAME ------- */
+#if defined(FLG_UNIX)
+#define FLG_UNIX_FNAME TRUE
+#endif
+
+/* ------- FLG_UNIX_GETDTABLESIZE ------- */
+/* if FLG_UNIX_SYSCONF is defined it will be used instead of getdtablesize */
+
+/* ------- FLG_UNIX_GETWD ------- */
+#if defined(FLG_UNIX)
+  /* must use getcwd() */
+#endif
+
+/* ------- FLG_UNIX_PARAM_H ------- */
+#if defined(FLG_UNIX)
+#define FLG_UNIX_PARAM_H TRUE
+#endif
+
+/* ------- FLG_UNIX_POLL ------- */
+#if defined(FLG_UNIX)
+#define FLG_UNIX_POLL TRUE
+#endif
+
+/* ------- FLG_UNIX_RETURN_CODES ------- */
+#if defined(FLG_UNIX)
+#define FLG_UNIX_RETURN_CODES TRUE
+#elif defined(FLG_MSWIN32) 
+#define FLG_UNIX_RETURN_CODES TRUE
+#endif
+
+/* ------- FLG_UNIX_SIGPROCMASK ------- */
+#if defined(FLG_UNIX)
+#define FLG_UNIX_SIGPROCMASK TRUE
+#endif
+
+/* ------- FLG_UNIX_SYSCONF ------- */
+#if defined(FLG_UNIX) 
+#define FLG_UNIX_SYSCONF TRUE
+#endif
+
+/* ------- FLG_UNSIGNED_SIZEOF ------- */
+#define FLG_UNSIGNED_SIZEOF TRUE
+
+/* ---------FLG_USES_DLLS ------ */
+#define FLG_USES_DLLS TRUE
+
+/* ------- FLG_USES_X11 ------- */
+#if defined(FLG_UNIX)
+#define FLG_USES_X11 TRUE
+#endif
+
+#endif /* FLAG_HT */

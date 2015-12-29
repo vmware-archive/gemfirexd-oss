@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlResults PUBLIC "-//GemStone Systems, Inc.//GemFireXD Test Results 1.0//EN"
+          "sqlResults1_0.dtd">
+<sqlResults>
+
+	<resultSet id="loader_get_1">
+		<row>
+			<field name="THIRDID">3</field>
+		</row>
+	</resultSet>
+	
+	<resultSet id="loader_get_2">
+		<row>
+			<field name="THIRDID">4</field>
+		</row>
+	</resultSet>
+	
+	<resultSet id="loader_get_3">
+		<row>
+			<field name="THIRDID">5</field>
+		</row>
+	</resultSet>	
+	
+	<resultSet id="loader_get">
+		<row>
+			<field name="ID">1</field>
+			<field name="SECONDID">2</field>
+			<field name="THIRDID">3</field>
+		</row>
+		<row>
+			<field name="ID">2</field>
+			<field name="SECONDID">3</field>
+			<field name="THIRDID">4</field>
+		</row>
+		<row>
+			<field name="ID">3</field>
+			<field name="SECONDID">4</field>
+			<field name="THIRDID">5</field>
+		</row>
+	</resultSet>
+	
+	<resultSet id="listenerWriter_Test_1">
+		<row>
+			<field name="ID">1</field>
+			<field name="SECONDID">2</field>
+			<field name="THIRDID">3</field>
+		</row>
+		<row>
+			<field name="ID">2</field>
+			<field name="SECONDID">3</field>
+			<field name="THIRDID">4</field>
+		</row>
+		<row>
+			<field name="ID">3</field>
+			<field name="SECONDID">4</field>
+			<field name="THIRDID">5</field>
+		</row>
+	</resultSet>
+	
+	<resultSet id="listenerWriter_Test_2">
+		<row>
+			<field name="ID">1</field>
+			<field name="SECONDID">2</field>
+			<field name="THIRDID">3</field>
+		</row>
+		<row>
+			<field name="ID">2</field>
+			<field name="SECONDID">3</field>
+			<field name="THIRDID">4</field>
+		</row>
+		<row>
+			<field name="ID">3</field>
+			<field name="SECONDID">4</field>
+			<field name="THIRDID">5</field>
+		</row>
+		<row>
+			<field name="ID">5</field>
+			<field name="SECONDID">6</field>
+			<field name="THIRDID">7</field>
+		</row>		
+	</resultSet>
+	
+	<resultSet id="listenerWriter_Test_3">
+		<row>
+			<field name="ID">1</field>
+			<field name="SECONDID">2</field>
+			<field name="THIRDID">7</field>
+		</row>
+		<row>
+			<field name="ID">2</field>
+			<field name="SECONDID">3</field>
+			<field name="THIRDID">4</field>
+		</row>
+		<row>
+			<field name="ID">3</field>
+			<field name="SECONDID">4</field>
+			<field name="THIRDID">5</field>
+		</row>
+		<row>
+			<field name="ID">5</field>
+			<field name="SECONDID">6</field>
+			<field name="THIRDID">7</field>
+		</row>	
+		<row>
+			<field name="ID">6</field>
+			<field name="SECONDID">7</field>
+			<field name="THIRDID">8</field>
+		</row>				
+	</resultSet>
+
+	<resultSet id="listenerWriter_Test_4">
+		<row>
+			<field name="ID">2</field>
+			<field name="SECONDID">3</field>
+			<field name="THIRDID">4</field>
+		</row>
+		<row>
+			<field name="ID">3</field>
+			<field name="SECONDID">4</field>
+			<field name="THIRDID">5</field>
+		</row>
+		<row>
+			<field name="ID">6</field>
+			<field name="SECONDID">7</field>
+			<field name="THIRDID">8</field>
+		</row>				
+	</resultSet>
+	
+</sqlResults>	
+	

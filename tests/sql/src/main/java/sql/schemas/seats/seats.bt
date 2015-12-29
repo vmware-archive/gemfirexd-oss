@@ -1,0 +1,39 @@
+sql/schemas/seats/seatsSchemaWithAccessors.conf
+  locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+  A=peer peerHosts=2 peerVMsPerHost=3 peerThreadsPerVM=10
+  B=server serverHosts=2 serverVMsPerHost=3 serverThreadsPerVM=1
+  C=verifier verifierHosts=1 verifierVMsPerHost=1 verifierThreadsPerVM=1
+  peerHeapMB = 10000 serverHeapMB = 5000 verifierHeapMB = 10000
+  importfile=importtable
+
+sql/schemas/seats/seatsSchemaWithAccessorsHA.conf
+  locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+  A=peer peerHosts=2 peerVMsPerHost=3 peerThreadsPerVM=8
+  B=server serverHosts=4 serverVMsPerHost=2 serverThreadsPerVM=1
+  C=verifier verifierHosts=1 verifierVMsPerHost=1 verifierThreadsPerVM=1
+  //peerHeapMB = 2048 serverHeapMB = 2000 verifierHeapMB = 10000
+  peerHeapMB = 10000 serverHeapMB = 5000 verifierHeapMB = 10000
+  importfile=importtable
+  redundantCopies = 1
+  
+sql/schemas/seats/seatsSchemaWithAccessorsHA.conf
+  locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+  A=peer peerHosts=2 peerVMsPerHost=3 peerThreadsPerVM=8
+  B=server serverHosts=4 serverVMsPerHost=2 serverThreadsPerVM=1
+  C=verifier verifierHosts=1 verifierVMsPerHost=1 verifierThreadsPerVM=1
+  //peerHeapMB = 2048 serverHeapMB = 2000 verifierHeapMB = 10000
+  peerHeapMB = 10000 serverHeapMB = 8000 verifierHeapMB = 10000
+  importfile=importtable
+  redundantCopies = 2  
+
+sql/schemas/seats/seatsSchemaWithAccessorsOffline.conf
+  locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+  A=peer peerHosts=2 peerVMsPerHost=3 peerThreadsPerVM=6
+  B=server serverHosts=4 serverVMsPerHost=2 serverThreadsPerVM=1
+  C=verifier verifierHosts=1 verifierVMsPerHost=1 verifierThreadsPerVM=1
+  //peerHeapMB = 2048 serverHeapMB = 2000 verifierHeapMB = 10000
+  peerHeapMB = 10000 serverHeapMB = 5000 verifierHeapMB = 10000
+  importfile=importtable
+  redundantCopies = 1
+ 
+ 

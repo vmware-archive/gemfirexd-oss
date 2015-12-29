@@ -1,0 +1,1002 @@
+gfxd> --
+--   Licensed to the Apache Software Foundation (ASF) under one or more
+--   contributor license agreements.  See the NOTICE file distributed with
+--   this work for additional information regarding copyright ownership.
+--   The ASF licenses this file to You under the Apache License, Version 2.0
+--   (the "License"); you may not use this file except in compliance with
+--   the License.  You may obtain a copy of the License at
+--
+--      http://www.apache.org/licenses/LICENSE-2.0
+--
+--   Unless required by applicable law or agreed to in writing, software
+--   distributed under the License is distributed on an "AS IS" BASIS,
+--   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+--   See the License for the specific language governing permissions and
+--   limitations under the License.
+--
+--
+-- this test shows the current supported schema functionality, which
+-- isn't much.  Currently, we have no CREATE SCHEMA statement, though
+-- we do understand schema names in table names
+--
+-- Catalog names are not supported, and result in syntax errors when used.
+--
+
+create table myschem.t(c int);
+0 rows inserted/updated/deleted
+gfxd> insert into t values (1);
+ERROR 42X05: Table/View 'T' does not exist.
+gfxd> insert into blah.t values (2);
+ERROR 42Y07: Schema 'BLAH' does not exist
+gfxd> insert into blah.blah.t values (3);
+ERROR 42X01: Syntax error: Encountered "." at line 1, column 22.
+Issue the 'help' command for general information on GFXD command syntax.
+Any unrecognized commands are treated as potential SQL commands and executed directly.
+Consult your DBMS server reference documentation for details of the SQL syntax supported by your server.
+gfxd> insert into blah.blah.blah.t values (3);
+ERROR 42X01: Syntax error: Encountered "." at line 1, column 22.
+Issue the 'help' command for general information on GFXD command syntax.
+Any unrecognized commands are treated as potential SQL commands and executed directly.
+Consult your DBMS server reference documentation for details of the SQL syntax supported by your server.
+gfxd> select "goofy name".t.c  from "goofy name".t;
+ERROR 42Y07: Schema 'goofy name' does not exist
+gfxd> -- catalog name not supported:
+create table mycat.myschem.s(c int);
+ERROR 42X01: Syntax error: Encountered "." at line 2, column 27.
+Issue the 'help' command for general information on GFXD command syntax.
+Any unrecognized commands are treated as potential SQL commands and executed directly.
+Consult your DBMS server reference documentation for details of the SQL syntax supported by your server.
+gfxd> -- name too long:
+create table myworld.mycat.myschem.s(c int);
+ERROR 42X01: Syntax error: Encountered "." at line 2, column 27.
+Issue the 'help' command for general information on GFXD command syntax.
+Any unrecognized commands are treated as potential SQL commands and executed directly.
+Consult your DBMS server reference documentation for details of the SQL syntax supported by your server.
+gfxd> create table myschem.s(c int);
+0 rows inserted/updated/deleted
+gfxd> insert into s values (1);
+ERROR 42X05: Table/View 'S' does not exist.
+gfxd> insert into honk.s values (2);
+ERROR 42Y07: Schema 'HONK' does not exist
+gfxd> insert into honk.blat.s values (3);
+ERROR 42X01: Syntax error: Encountered "." at line 1, column 22.
+Issue the 'help' command for general information on GFXD command syntax.
+Any unrecognized commands are treated as potential SQL commands and executed directly.
+Consult your DBMS server reference documentation for details of the SQL syntax supported by your server.
+gfxd> insert into loud.honk.blat.s values (4);
+ERROR 42X01: Syntax error: Encountered "." at line 1, column 22.
+Issue the 'help' command for general information on GFXD command syntax.
+Any unrecognized commands are treated as potential SQL commands and executed directly.
+Consult your DBMS server reference documentation for details of the SQL syntax supported by your server.
+gfxd> -- Catalog names in column expressions cause syntax errors.  Rather than
+-- fix this, I am checking it in this way, considering that no client we
+-- know of uses catalogs.
+--							-	Jeff
+--
+-- select honk.blat.s.c from honk.blat.s;
+
+drop table xyzzy.t;
+ERROR 42Y07: Schema 'XYZZY' does not exist
+gfxd> -- catalog name not supported:
+drop table goodness.gosh.s;
+ERROR 42X01: Syntax error: Encountered "." at line 2, column 25.
+Issue the 'help' command for general information on GFXD command syntax.
+Any unrecognized commands are treated as potential SQL commands and executed directly.
+Consult your DBMS server reference documentation for details of the SQL syntax supported by your server.
+gfxd> -- finds s, schema name ignored:
+drop table gosh.s;
+ERROR 42Y07: Schema 'GOSH' does not exist
+gfxd> -- tests for qualified names in select, relative to method invocations
+create table mytab (i int);
+0 rows inserted/updated/deleted
+gfxd> create table APP.mytab2 (i int);
+0 rows inserted/updated/deleted
+gfxd> insert into mytab values 1,2,3;
+3 rows inserted/updated/deleted
+gfxd> insert into APP.mytab2 values 1,2,3;
+3 rows inserted/updated/deleted
+gfxd> -- plain and just table names match up fine
+select i, mytab.i from mytab;
+I          |I          
+-----------------------
+1          |1          
+2          |2          
+3          |3          
+gfxd> -- schema names on columns
+select APP.mytab2.i from APP.mytab2;
+I          
+-----------
+1          
+2          
+3          
+gfxd> select APP.mytab2.i from mytab2;
+I          
+-----------
+1          
+2          
+3          
+gfxd> select mytab2.i from APP.mytab2;
+I          
+-----------
+1          
+2          
+3          
+gfxd> -- schema names correlation names:
+select m.i from APP.mytab2 m;
+I          
+-----------
+1          
+2          
+3          
+gfxd> -- syntax errors on catalog names
+select nocatalogs.APP.mytab.i from mytab2;
+ERROR 42X04: Column 'NOCATALOGS.APP.MYTAB' is either not in any table in the FROM list or appears within a join specification and is outside the scope of the join specification or appears in a HAVING clause and is not in the GROUP BY list. If this is a CREATE or ALTER TABLE  statement then 'NOCATALOGS.APP.MYTAB' is not a column in the target table.
+gfxd> drop table mytab;
+0 rows inserted/updated/deleted
+gfxd> drop table APP.mytab2;
+0 rows inserted/updated/deleted
+gfxd> ------------------------------------------------
+--
+-- Now, we'll try to create and drop some schemas
+--
+------------------------------------------------
+create schema app;
+ERROR X0Y68: Schema 'APP' already exists.
+gfxd> create schema sys;
+ERROR 42939: An object cannot be created with the schema name 'SYS'.
+gfxd> -- negative drop test
+drop schema does_not_exist RESTRICT;
+ERROR 42Y07: Schema 'DOES_NOT_EXIST' does not exist
+gfxd> -- negative create test - should not be able to create existing system schemas;
+create schema app;
+ERROR X0Y68: Schema 'APP' already exists.
+gfxd> create schema APP;
+ERROR X0Y68: Schema 'APP' already exists.
+gfxd> create schema sys;
+ERROR 42939: An object cannot be created with the schema name 'SYS'.
+gfxd> create schema SYS;
+ERROR 42939: An object cannot be created with the schema name 'SYS'.
+gfxd> create schema sysibm;
+ERROR 42939: An object cannot be created with the schema name 'SYSIBM'.
+gfxd> create schema SYSIBM;
+ERROR 42939: An object cannot be created with the schema name 'SYSIBM'.
+gfxd> create schema syscat;
+ERROR 42939: An object cannot be created with the schema name 'SYSCAT'.
+gfxd> create schema SYSCAT;
+ERROR 42939: An object cannot be created with the schema name 'SYSCAT'.
+gfxd> create schema sysfun;
+ERROR 42939: An object cannot be created with the schema name 'SYSFUN'.
+gfxd> create schema SYSFUN;
+ERROR 42939: An object cannot be created with the schema name 'SYSFUN'.
+gfxd> create schema sysproc;
+ERROR 42939: An object cannot be created with the schema name 'SYSPROC'.
+gfxd> create schema SYSPROC;
+ERROR 42939: An object cannot be created with the schema name 'SYSPROC'.
+gfxd> create schema sysstat;
+ERROR 42939: An object cannot be created with the schema name 'SYSSTAT'.
+gfxd> create schema SYSSTAT;
+ERROR 42939: An object cannot be created with the schema name 'SYSSTAT'.
+gfxd> create schema syscs_diag;
+ERROR 42939: An object cannot be created with the schema name 'SYSCS_DIAG'.
+gfxd> create schema SYSCS_DIAG;
+ERROR 42939: An object cannot be created with the schema name 'SYSCS_DIAG'.
+gfxd> create schema syscs_util;
+ERROR 42939: An object cannot be created with the schema name 'SYSCS_UTIL'.
+gfxd> create schema SYSCS_UTIL;
+ERROR 42939: An object cannot be created with the schema name 'SYSCS_UTIL'.
+gfxd> create schema nullid;
+ERROR X0Y68: Schema 'NULLID' already exists.
+gfxd> create schema NULLID;
+ERROR X0Y68: Schema 'NULLID' already exists.
+gfxd> create schema sqlj;
+ERROR X0Y68: Schema 'SQLJ' already exists.
+gfxd> create schema SQLJ;
+ERROR X0Y68: Schema 'SQLJ' already exists.
+gfxd> -- negative create test - should not be able to objects in system schemas
+create table syscat.foo1 (a int);
+ERROR 42X62: 'CREATE TABLE' is not allowed in the 'SYSCAT' schema.
+gfxd> create table sysfun.foo2 (a int);
+ERROR 42X62: 'CREATE TABLE' is not allowed in the 'SYSFUN' schema.
+gfxd> create table sysproc.foo3 (a int);
+ERROR 42X62: 'CREATE TABLE' is not allowed in the 'SYSPROC' schema.
+gfxd> create table sysstat.foo4 (a int);
+ERROR 42X62: 'CREATE TABLE' is not allowed in the 'SYSSTAT' schema.
+gfxd> create table syscs_diag.foo6 (a int);
+ERROR 42X62: 'CREATE TABLE' is not allowed in the 'SYSCS_DIAG' schema.
+gfxd> create table nullid.foo7 (a int);
+ERROR 42X62: 'CREATE TABLE' is not allowed in the 'NULLID' schema.
+gfxd> create table sysibm.foo8 (a int);
+ERROR 42X62: 'CREATE TABLE' is not allowed in the 'SYSIBM' schema.
+gfxd> create table sqlj.foo8 (a int);
+ERROR 42X62: 'CREATE TABLE' is not allowed in the 'SQLJ' schema.
+gfxd> create table syscs_util.foo9 (a int);
+ERROR 42X62: 'CREATE TABLE' is not allowed in the 'SYSCS_UTIL' schema.
+gfxd> create table SYSCAT.foo1 (a int);
+ERROR 42X62: 'CREATE TABLE' is not allowed in the 'SYSCAT' schema.
+gfxd> create table SYSFUN.foo2 (a int);
+ERROR 42X62: 'CREATE TABLE' is not allowed in the 'SYSFUN' schema.
+gfxd> create table SYSPROC.foo3 (a int);
+ERROR 42X62: 'CREATE TABLE' is not allowed in the 'SYSPROC' schema.
+gfxd> create table SYSSTAT.foo4 (a int);
+ERROR 42X62: 'CREATE TABLE' is not allowed in the 'SYSSTAT' schema.
+gfxd> create table SYSCS_DIAG.foo6 (a int);
+ERROR 42X62: 'CREATE TABLE' is not allowed in the 'SYSCS_DIAG' schema.
+gfxd> create table SYSIBM.foo8 (a int);
+ERROR 42X62: 'CREATE TABLE' is not allowed in the 'SYSIBM' schema.
+gfxd> create table SQLJ.foo8 (a int);
+ERROR 42X62: 'CREATE TABLE' is not allowed in the 'SQLJ' schema.
+gfxd> create table SYSCS_UTIL.foo9 (a int);
+ERROR 42X62: 'CREATE TABLE' is not allowed in the 'SYSCS_UTIL' schema.
+gfxd> -- negative drop test - should not be able to drop system schema's
+drop schema app RESTRICT;
+0 rows inserted/updated/deleted
+gfxd> drop schema APP RESTRICT;
+ERROR 42Y07: Schema 'APP' does not exist
+gfxd> drop schema sys RESTRICT;
+ERROR 42Y67: Schema 'SYS' cannot be dropped.
+gfxd> drop schema SYS RESTRICT;
+ERROR 42Y67: Schema 'SYS' cannot be dropped.
+gfxd> drop schema sysibm RESTRICT;
+ERROR 42Y67: Schema 'SYSIBM' cannot be dropped.
+gfxd> drop schema SYSIBM RESTRICT;
+ERROR 42Y67: Schema 'SYSIBM' cannot be dropped.
+gfxd> drop schema syscat RESTRICT;
+ERROR 42Y67: Schema 'SYSCAT' cannot be dropped.
+gfxd> drop schema SYSCAT RESTRICT;
+ERROR 42Y67: Schema 'SYSCAT' cannot be dropped.
+gfxd> drop schema sysfun RESTRICT;
+ERROR 42Y67: Schema 'SYSFUN' cannot be dropped.
+gfxd> drop schema SYSFUN RESTRICT;
+ERROR 42Y67: Schema 'SYSFUN' cannot be dropped.
+gfxd> drop schema sysproc RESTRICT;
+ERROR 42Y67: Schema 'SYSPROC' cannot be dropped.
+gfxd> drop schema SYSPROC RESTRICT;
+ERROR 42Y67: Schema 'SYSPROC' cannot be dropped.
+gfxd> drop schema sysstat RESTRICT;
+ERROR 42Y67: Schema 'SYSSTAT' cannot be dropped.
+gfxd> drop schema SYSSTAT RESTRICT;
+ERROR 42Y67: Schema 'SYSSTAT' cannot be dropped.
+gfxd> drop schema syscs_diag RESTRICT;
+ERROR 42Y67: Schema 'SYSCS_DIAG' cannot be dropped.
+gfxd> drop schema SYSCS_DIAG RESTRICT;
+ERROR 42Y67: Schema 'SYSCS_DIAG' cannot be dropped.
+gfxd> drop schema syscs_util RESTRICT;
+ERROR 42Y67: Schema 'SYSCS_UTIL' cannot be dropped.
+gfxd> drop schema SYSCS_UTIL RESTRICT;
+ERROR 42Y67: Schema 'SYSCS_UTIL' cannot be dropped.
+gfxd> drop schema nullid RESTRICT;
+ERROR 42Y67: Schema 'NULLID' cannot be dropped.
+gfxd> drop schema NULLID RESTRICT;
+ERROR 42Y67: Schema 'NULLID' cannot be dropped.
+gfxd> drop schema sqlj RESTRICT;
+ERROR 42Y67: Schema 'SQLJ' cannot be dropped.
+gfxd> drop schema SQLJ RESTRICT;
+ERROR 42Y67: Schema 'SQLJ' cannot be dropped.
+gfxd> create schema app;
+0 rows inserted/updated/deleted
+gfxd> set schema app;
+0 rows inserted/updated/deleted
+gfxd> create table test (a int);
+0 rows inserted/updated/deleted
+gfxd> -- negative create test - should not be able to objects in system schemas
+set schema syscat;
+0 rows inserted/updated/deleted
+gfxd> create table foo1 (a int);
+ERROR 42X62: 'CREATE TABLE' is not allowed in the 'SYSCAT' schema.
+gfxd> create view foo1 as select * from app.test;
+ERROR 42X62: 'CREATE VIEW' is not allowed in the 'SYSCAT' schema.
+gfxd> set schema sysfun;
+0 rows inserted/updated/deleted
+gfxd> create table foo1 (a int);
+ERROR 42X62: 'CREATE TABLE' is not allowed in the 'SYSFUN' schema.
+gfxd> create view foo1 as select * from app.test;
+ERROR 42X62: 'CREATE VIEW' is not allowed in the 'SYSFUN' schema.
+gfxd> set schema sysproc;
+0 rows inserted/updated/deleted
+gfxd> create table foo1 (a int);
+ERROR 42X62: 'CREATE TABLE' is not allowed in the 'SYSPROC' schema.
+gfxd> create view foo1 as select * from app.test;
+ERROR 42X62: 'CREATE VIEW' is not allowed in the 'SYSPROC' schema.
+gfxd> set schema sysstat;
+0 rows inserted/updated/deleted
+gfxd> create table foo1 (a int);
+ERROR 42X62: 'CREATE TABLE' is not allowed in the 'SYSSTAT' schema.
+gfxd> create view foo1 as select * from app.test;
+ERROR 42X62: 'CREATE VIEW' is not allowed in the 'SYSSTAT' schema.
+gfxd> set schema sysstat;
+0 rows inserted/updated/deleted
+gfxd> create table foo1 (a int);
+ERROR 42X62: 'CREATE TABLE' is not allowed in the 'SYSSTAT' schema.
+gfxd> create view foo1 as select * from app.test;
+ERROR 42X62: 'CREATE VIEW' is not allowed in the 'SYSSTAT' schema.
+gfxd> set schema syscs_diag;
+0 rows inserted/updated/deleted
+gfxd> create table foo1 (a int);
+ERROR 42X62: 'CREATE TABLE' is not allowed in the 'SYSCS_DIAG' schema.
+gfxd> create view foo1 as select * from app.test;
+ERROR 42X62: 'CREATE VIEW' is not allowed in the 'SYSCS_DIAG' schema.
+gfxd> set schema syscs_util;
+0 rows inserted/updated/deleted
+gfxd> create table foo1 (a int);
+ERROR 42X62: 'CREATE TABLE' is not allowed in the 'SYSCS_UTIL' schema.
+gfxd> create view foo1 as select * from app.test;
+ERROR 42X62: 'CREATE VIEW' is not allowed in the 'SYSCS_UTIL' schema.
+gfxd> set schema nullid;
+0 rows inserted/updated/deleted
+gfxd> create table foo1 (a int);
+ERROR 42X62: 'CREATE TABLE' is not allowed in the 'NULLID' schema.
+gfxd> create view foo1 as select * from app.test;
+ERROR 42X62: 'CREATE VIEW' is not allowed in the 'NULLID' schema.
+gfxd> set schema sysibm;
+0 rows inserted/updated/deleted
+gfxd> create table foo1 (a int);
+ERROR 42X62: 'CREATE TABLE' is not allowed in the 'SYSIBM' schema.
+gfxd> create view foo1 as select * from app.test;
+ERROR 42X62: 'CREATE VIEW' is not allowed in the 'SYSIBM' schema.
+gfxd> set schema sqlj;
+0 rows inserted/updated/deleted
+gfxd> create table foo1 (a int);
+ERROR 42X62: 'CREATE TABLE' is not allowed in the 'SQLJ' schema.
+gfxd> create view foo1 as select * from app.test;
+ERROR 42X62: 'CREATE VIEW' is not allowed in the 'SQLJ' schema.
+gfxd> set schema SYSCAT;
+0 rows inserted/updated/deleted
+gfxd> create table foo1 (a int);
+ERROR 42X62: 'CREATE TABLE' is not allowed in the 'SYSCAT' schema.
+gfxd> create view foo1 as select * from app.test;
+ERROR 42X62: 'CREATE VIEW' is not allowed in the 'SYSCAT' schema.
+gfxd> set schema SYSFUN;
+0 rows inserted/updated/deleted
+gfxd> create table foo1 (a int);
+ERROR 42X62: 'CREATE TABLE' is not allowed in the 'SYSFUN' schema.
+gfxd> create view foo1 as select * from app.test;
+ERROR 42X62: 'CREATE VIEW' is not allowed in the 'SYSFUN' schema.
+gfxd> set schema SYSPROC;
+0 rows inserted/updated/deleted
+gfxd> create table foo1 (a int);
+ERROR 42X62: 'CREATE TABLE' is not allowed in the 'SYSPROC' schema.
+gfxd> create view foo1 as select * from app.test;
+ERROR 42X62: 'CREATE VIEW' is not allowed in the 'SYSPROC' schema.
+gfxd> set schema SYSSTAT;
+0 rows inserted/updated/deleted
+gfxd> create table foo1 (a int);
+ERROR 42X62: 'CREATE TABLE' is not allowed in the 'SYSSTAT' schema.
+gfxd> create view foo1 as select * from app.test;
+ERROR 42X62: 'CREATE VIEW' is not allowed in the 'SYSSTAT' schema.
+gfxd> set schema SYSSTAT;
+0 rows inserted/updated/deleted
+gfxd> create table foo1 (a int);
+ERROR 42X62: 'CREATE TABLE' is not allowed in the 'SYSSTAT' schema.
+gfxd> create view foo1 as select * from app.test;
+ERROR 42X62: 'CREATE VIEW' is not allowed in the 'SYSSTAT' schema.
+gfxd> set schema SYSCS_DIAG;
+0 rows inserted/updated/deleted
+gfxd> create table foo1 (a int);
+ERROR 42X62: 'CREATE TABLE' is not allowed in the 'SYSCS_DIAG' schema.
+gfxd> create view foo1 as select * from app.test;
+ERROR 42X62: 'CREATE VIEW' is not allowed in the 'SYSCS_DIAG' schema.
+gfxd> set schema SYSCS_UTIL;
+0 rows inserted/updated/deleted
+gfxd> create table foo1 (a int);
+ERROR 42X62: 'CREATE TABLE' is not allowed in the 'SYSCS_UTIL' schema.
+gfxd> create view foo1 as select * from app.test;
+ERROR 42X62: 'CREATE VIEW' is not allowed in the 'SYSCS_UTIL' schema.
+gfxd> set schema NULLID;
+0 rows inserted/updated/deleted
+gfxd> create table foo1 (a int);
+ERROR 42X62: 'CREATE TABLE' is not allowed in the 'NULLID' schema.
+gfxd> create view foo1 as select * from app.test;
+ERROR 42X62: 'CREATE VIEW' is not allowed in the 'NULLID' schema.
+gfxd> set schema SYSIBM;
+0 rows inserted/updated/deleted
+gfxd> create table foo1 (a int);
+ERROR 42X62: 'CREATE TABLE' is not allowed in the 'SYSIBM' schema.
+gfxd> create view foo1 as select * from app.test;
+ERROR 42X62: 'CREATE VIEW' is not allowed in the 'SYSIBM' schema.
+gfxd> set schema SQLJ;
+0 rows inserted/updated/deleted
+gfxd> create table foo1 (a int);
+ERROR 42X62: 'CREATE TABLE' is not allowed in the 'SQLJ' schema.
+gfxd> create view foo1 as select * from app.test;
+ERROR 42X62: 'CREATE VIEW' is not allowed in the 'SQLJ' schema.
+gfxd> -- Negative tests. Disable use of schemas starting with SYS
+set schema app;
+0 rows inserted/updated/deleted
+gfxd> create table t1 (c1 int);
+0 rows inserted/updated/deleted
+gfxd> create trigger sysblah.trig1 after update of c1 on t1 for each row insert into t1 values 1;
+ERROR 42X62: 'CREATE TRIGGER' is not allowed in the 'SYSBLAH' schema.
+gfxd> create procedure sysblah.dummy() language java external name 'NotReallyThere.NoMethod' parameter style java;
+ERROR 42X62: 'CREATE PROCEDURE' is not allowed in the 'SYSBLAH' schema.
+gfxd> drop table t1;
+0 rows inserted/updated/deleted
+gfxd> set schema app;
+0 rows inserted/updated/deleted
+gfxd> -- create a schema
+create schema test;
+0 rows inserted/updated/deleted
+gfxd> -- create it again, should fail
+create schema test;
+ERROR X0Y68: Schema 'TEST' already exists.
+gfxd> -- verify it
+select schemaname, authorizationid 
+	from sys.sysschemas 
+	where CAST(schemaname AS VARCHAR(128)) = 'TEST';
+SCHEMANAME                                                                                                                      |AUTHORIZATIONID                                                                                                                 
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+TEST                                                                                                                            |APP                                                                                                                             
+gfxd> -- create a table in test
+set schema test;
+0 rows inserted/updated/deleted
+gfxd> create table sampletab (c1 int constraint st_c1 check (c1 > 1), c2 char(20));
+0 rows inserted/updated/deleted
+gfxd> insert into sampletab values (1,'in schema: TEST');
+ERROR 23513: The check constraint 'ST_C1' was violated while performing an INSERT or UPDATE on table '"TEST"."SAMPLETAB"'.
+gfxd> insert into sampletab values (2,'in schema: TEST');
+1 row inserted/updated/deleted
+gfxd> -- verify it
+select schemaname, tablename, descriptor
+	from sys.sysschemas s, sys.sysconglomerates c , sys.systables t
+	where CAST(t.tablename AS VARCHAR(128)) = 'SAMPLETAB' 
+		and s.schemaid = c.schemaid
+		and c.tableid = t.tableid;
+SCHEMANAME                                                                                                                      |TABLENAME                                                                                                                       |DESCRIPTOR     
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+TEST                                                                                                                            |SAMPLETAB                                                                                                                       |NULL           
+gfxd> -- do some ddl on said table
+create index ixsampletab on sampletab(c1);
+0 rows inserted/updated/deleted
+gfxd> create index ix2sampletab on test.sampletab(c1);
+0 rows inserted/updated/deleted
+WARNING 01504: The new index is a duplicate of an existing index: IXSAMPLETAB.
+gfxd> create view vsampletab as select * from sampletab;
+0 rows inserted/updated/deleted
+gfxd> create view v2sampletab as select * from test.sampletab;
+0 rows inserted/updated/deleted
+gfxd> alter table sampletab add column c3 int;
+0 rows inserted/updated/deleted
+gfxd> -- switch schemas
+set schema APP;
+0 rows inserted/updated/deleted
+gfxd> -- create table with same name in APP
+create table sampletab (c1 int constraint st_c1 check(c1 > 1), c2 char(20));
+0 rows inserted/updated/deleted
+gfxd> insert into sampletab values (2,'in schema: APP');
+1 row inserted/updated/deleted
+gfxd> -- verify it
+--
+select schemaname, tablename, descriptor as descr
+from sys.sysschemas s, sys.sysconglomerates c , sys.systables t
+where CAST(t.tablename AS VARCHAR(128)) = 'SAMPLETAB' 
+	and s.schemaid = c.schemaid
+	and c.tableid = t.tableid
+order by schemaname, tablename;
+SCHEMANAME                                                                                                                      |TABLENAME                                                                                                                       |DESCR          
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+APP                                                                                                                             |SAMPLETAB                                                                                                                       |NULL           
+TEST                                                                                                                            |SAMPLETAB                                                                                                                       |BTREE (1)      
+TEST                                                                                                                            |SAMPLETAB                                                                                                                       |NULL           
+gfxd> -- select from both the tables
+select * from sampletab;
+C1         |C2                  
+--------------------------------
+2          |in schema: APP      
+gfxd> select * from test.sampletab;
+C1         |C2                  |C3         
+--------------------------------------------
+2          |in schema: TEST     |NULL       
+gfxd> -- switch to the test schema
+set schema test;
+0 rows inserted/updated/deleted
+gfxd> select * from sampletab;
+C1         |C2                  |C3         
+--------------------------------------------
+2          |in schema: TEST     |NULL       
+gfxd> select * from app.sampletab;
+C1         |C2                  
+--------------------------------
+2          |in schema: APP      
+gfxd> -- try a drop, should fail since we haven't
+-- cleaned out everything in the schema
+drop schema test RESTRICT;
+ERROR X0Y54: Schema 'TEST' cannot be dropped because it is not empty.
+gfxd> -- make sure use the correct schema for various ddl
+drop view vsampletab;
+0 rows inserted/updated/deleted
+gfxd> drop view v2sampletab;
+0 rows inserted/updated/deleted
+gfxd> drop index ixsampletab;
+0 rows inserted/updated/deleted
+gfxd> drop index ix2sampletab;
+ERROR 42X65: Index 'IX2SAMPLETAB' does not exist.
+gfxd> alter table sampletab add column c4 int;
+0 rows inserted/updated/deleted
+gfxd> select * from sampletab;
+C1         |C2                  |C3         |C4         
+--------------------------------------------------------
+2          |in schema: TEST     |NULL       |NULL       
+gfxd> -- get rid of last object in test
+drop table sampletab;
+0 rows inserted/updated/deleted
+gfxd> -- try a drop now, should be ok
+drop schema test RESTRICT;
+0 rows inserted/updated/deleted
+gfxd> -- use quoted id
+create schema "heLLo";
+0 rows inserted/updated/deleted
+gfxd> create schema "sys";
+0 rows inserted/updated/deleted
+gfxd> -- should fail
+drop schema "hello" RESTRICT;
+ERROR 42Y07: Schema 'hello' does not exist
+gfxd> -- ok
+drop schema "heLLo" RESTRICT;
+0 rows inserted/updated/deleted
+gfxd> drop schema "sys" RESTRICT;
+0 rows inserted/updated/deleted
+gfxd> -- try prepared statements, should fail
+prepare createSchema as 'create schema ?';
+ERROR 42X01: Syntax error: Encountered "?" at line 1, column 15.
+Issue the 'help' command for general information on GFXD command syntax.
+Any unrecognized commands are treated as potential SQL commands and executed directly.
+Consult your DBMS server reference documentation for details of the SQL syntax supported by your server.
+gfxd> prepare dropSchema as 'drop schema ? RESTRICT';
+ERROR 42X01: Syntax error: Encountered "?" at line 1, column 13.
+Issue the 'help' command for general information on GFXD command syntax.
+Any unrecognized commands are treated as potential SQL commands and executed directly.
+Consult your DBMS server reference documentation for details of the SQL syntax supported by your server.
+gfxd> --
+-- specific drop schema tests, all should fail
+--
+create schema x;
+0 rows inserted/updated/deleted
+gfxd> set schema x;
+0 rows inserted/updated/deleted
+gfxd> create view vx as select * from sys.sysschemas;
+0 rows inserted/updated/deleted
+gfxd> drop schema x RESTRICT;
+ERROR X0Y54: Schema 'X' cannot be dropped because it is not empty.
+gfxd> drop view x.vx;
+0 rows inserted/updated/deleted
+gfxd> create table x (x int);
+0 rows inserted/updated/deleted
+gfxd> drop schema x restrict;
+ERROR X0Y54: Schema 'X' cannot be dropped because it is not empty.
+gfxd> drop table x.x;
+0 rows inserted/updated/deleted
+gfxd> -- syntax not supported yet (but is in the parser)
+drop schema x cascade;
+ERROR 42X01: Syntax error: Encountered "cascade" at line 2, column 15.
+Issue the 'help' command for general information on GFXD command syntax.
+Any unrecognized commands are treated as potential SQL commands and executed directly.
+Consult your DBMS server reference documentation for details of the SQL syntax supported by your server.
+gfxd> set schema app;
+0 rows inserted/updated/deleted
+gfxd> drop schema x restrict;
+0 rows inserted/updated/deleted
+gfxd> --
+-- test using schema names and correlation names
+-- first test simple use of schema names
+create schema test;
+0 rows inserted/updated/deleted
+gfxd> set schema test;
+0 rows inserted/updated/deleted
+gfxd> autocommit off;
+gfxd> -- create the all type tables
+create table s (i int, s smallint, c char(30), vc char(30));
+0 rows inserted/updated/deleted
+gfxd> create table t (i int, s smallint, c char(30), vc char(30));
+0 rows inserted/updated/deleted
+gfxd> create table tt (ii int, ss smallint, cc char(30), vcvc char(30));
+0 rows inserted/updated/deleted
+gfxd> create table ttt (iii int, sss smallint, ccc char(30), vcvcvc char(30));
+0 rows inserted/updated/deleted
+gfxd> -- populate the tables
+insert into s values (null, null, null, null);
+1 row inserted/updated/deleted
+gfxd> insert into s values (0, 0, '0', '0');
+1 row inserted/updated/deleted
+gfxd> insert into s values (1, 1, '1', '1');
+1 row inserted/updated/deleted
+gfxd> insert into t values (null, null, null, null);
+1 row inserted/updated/deleted
+gfxd> insert into t values (0, 0, '0', '0');
+1 row inserted/updated/deleted
+gfxd> insert into t values (1, 1, '1', '1');
+1 row inserted/updated/deleted
+gfxd> insert into t values (1, 1, '1', '1');
+1 row inserted/updated/deleted
+gfxd> insert into tt values (null, null, null, null);
+1 row inserted/updated/deleted
+gfxd> insert into tt values (0, 0, '0', '0');
+1 row inserted/updated/deleted
+gfxd> insert into tt values (1, 1, '1', '1');
+1 row inserted/updated/deleted
+gfxd> insert into tt values (1, 1, '1', '1');
+1 row inserted/updated/deleted
+gfxd> insert into tt values (2, 2, '2', '2');
+1 row inserted/updated/deleted
+gfxd> insert into ttt values (null, null, null, null);
+1 row inserted/updated/deleted
+gfxd> insert into ttt values (11, 11, '11', '11');
+1 row inserted/updated/deleted
+gfxd> insert into ttt values (11, 11, '11', '11');
+1 row inserted/updated/deleted
+gfxd> insert into ttt values (22, 22, '22', '22');
+1 row inserted/updated/deleted
+gfxd> commit;
+gfxd> set schema app;
+0 rows inserted/updated/deleted
+gfxd> -- test simple statements which use schema names
+insert into test.t values (2, 2, '2', '2');
+1 row inserted/updated/deleted
+gfxd> update test.t set s = 2 where i = 2;
+1 row inserted/updated/deleted
+gfxd> update test.t set s = 2 where test.t.i = 2;
+1 row inserted/updated/deleted
+gfxd> delete from test.t where i = 1;
+2 rows inserted/updated/deleted
+gfxd> select * from test.t;
+I          |S     |C                             |VC                            
+--------------------------------------------------------------------------------
+NULL       |NULL  |NULL                          |NULL                          
+0          |0     |0                             |0                             
+2          |2     |2                             |2                             
+gfxd> insert into test.t values (1, 1, '1', '1');
+1 row inserted/updated/deleted
+gfxd> insert into test.t values (1, 1, '1', '1');
+1 row inserted/updated/deleted
+gfxd> -- test correlated names with tables and schema names
+select * from test.t t1;
+I          |S     |C                             |VC                            
+--------------------------------------------------------------------------------
+NULL       |NULL  |NULL                          |NULL                          
+0          |0     |0                             |0                             
+2          |2     |2                             |2                             
+1          |1     |1                             |1                             
+1          |1     |1                             |1                             
+gfxd> -- test subqueries
+
+select * from test.s where exists (select test.s.* from test.t);
+I          |S     |C                             |VC                            
+--------------------------------------------------------------------------------
+NULL       |NULL  |NULL                          |NULL                          
+0          |0     |0                             |0                             
+1          |1     |1                             |1                             
+gfxd> select * from test.s t where exists (select t.* from test.t);
+I          |S     |C                             |VC                            
+--------------------------------------------------------------------------------
+NULL       |NULL  |NULL                          |NULL                          
+0          |0     |0                             |0                             
+1          |1     |1                             |1                             
+gfxd> select * from test.s u where exists (select u.* from test.t);
+I          |S     |C                             |VC                            
+--------------------------------------------------------------------------------
+NULL       |NULL  |NULL                          |NULL                          
+0          |0     |0                             |0                             
+1          |1     |1                             |1                             
+gfxd> -- column reference in select list
+select * from test.s where exists (select i from test.t);
+I          |S     |C                             |VC                            
+--------------------------------------------------------------------------------
+NULL       |NULL  |NULL                          |NULL                          
+0          |0     |0                             |0                             
+1          |1     |1                             |1                             
+gfxd> select * from test.s where exists (select test.t.i from test.t);
+I          |S     |C                             |VC                            
+--------------------------------------------------------------------------------
+NULL       |NULL  |NULL                          |NULL                          
+0          |0     |0                             |0                             
+1          |1     |1                             |1                             
+gfxd> -- derived table in the from list
+select 1 from test.s where exists (select * from (select * from test.t) x);
+1          
+-----------
+1          
+1          
+1          
+gfxd> select 1 from test.s where exists (select * from (select * from test.t) x (i, s, c, vc) );
+1          
+-----------
+1          
+1          
+1          
+gfxd> -- subquery in derived table
+select * from 
+(select * from test.s where exists (select * from test.t) and i = 0) a;
+I          |S     |C                             |VC                            
+--------------------------------------------------------------------------------
+0          |0     |0                             |0                             
+gfxd> -- exists under an OR
+select * from test.s where (1=2) or exists (select * from test.t);
+I          |S     |C                             |VC                            
+--------------------------------------------------------------------------------
+NULL       |NULL  |NULL                          |NULL                          
+0          |0     |0                             |0                             
+1          |1     |1                             |1                             
+gfxd> select * from test.s where (1=1) or exists (select * from test.t where (1=2));
+I          |S     |C                             |VC                            
+--------------------------------------------------------------------------------
+NULL       |NULL  |NULL                          |NULL                          
+0          |0     |0                             |0                             
+1          |1     |1                             |1                             
+gfxd> -- expression subqueries
+-- non-correlated
+select * from test.s where i = (select i from test.t where i = 0);
+I          |S     |C                             |VC                            
+--------------------------------------------------------------------------------
+0          |0     |0                             |0                             
+gfxd> -- ? parameter on left hand side of expression subquery
+prepare subq1 as 'select * from test.s where ? = (select i from test.t where i = 0)';
+gfxd> execute subq1 using 'values (0)';
+I          |S     |C                             |VC                            
+--------------------------------------------------------------------------------
+NULL       |NULL  |NULL                          |NULL                          
+0          |0     |0                             |0                             
+1          |1     |1                             |1                             
+gfxd> remove subq1;
+gfxd> -- subquery = subquery
+select * from test.s where
+(select i from test.t where i = 0) = (select s from test.t where s = 0);
+I          |S     |C                             |VC                            
+--------------------------------------------------------------------------------
+NULL       |NULL  |NULL                          |NULL                          
+0          |0     |0                             |0                             
+1          |1     |1                             |1                             
+gfxd> select * from test.s t1 where
+(select i from test.t t2 where i = 0) = (select s from test.t t3 where s = 0);
+I          |S     |C                             |VC                            
+--------------------------------------------------------------------------------
+NULL       |NULL  |NULL                          |NULL                          
+0          |0     |0                             |0                             
+1          |1     |1                             |1                             
+gfxd> -- multiple subqueries at the same level
+select * from test.s 
+where i = (select s from test.t where s = 0) and
+	  s = (select i from test.t where i = 2);
+I          |S     |C                             |VC                            
+--------------------------------------------------------------------------------
+gfxd> -- nested subqueries
+select * from test.s 
+where i = (select i from test.t where s = (select i from test.t where s = 2));
+I          |S     |C                             |VC                            
+--------------------------------------------------------------------------------
+gfxd> select * from test.s  t1
+where i = (select i from test.t t2 where s = (select i from test.t t3 where s = 2));
+I          |S     |C                             |VC                            
+--------------------------------------------------------------------------------
+gfxd> -- correlated subqueries
+
+-- exists disallowed in select clause
+select (exists (select * from test.ttt 
+				where iii = (select 11 from test.tt where ii = i and ii <> 1)) )
+a
+from test.s
+order by a;
+ERROR 42X01: Syntax error: Encountered "exists" at line 4, column 9.
+Issue the 'help' command for general information on GFXD command syntax.
+Any unrecognized commands are treated as potential SQL commands and executed directly.
+Consult your DBMS server reference documentation for details of the SQL syntax supported by your server.
+gfxd> -- negative tests
+
+-- multiple matches at parent level
+select * from test.s, test.t where exists (select i from test.tt);
+ERROR 42X03: Column name 'I' is in more than one table in the FROM list.
+gfxd> -- match is against base table, but not derived column list
+select * from test.s ss (c1, c2, c3, c4) where exists (select i from test.tt);
+ERROR 42X04: Column 'I' is either not in any table in the FROM list or appears within a join specification and is outside the scope of the join specification or appears in a HAVING clause and is not in the GROUP BY list. If this is a CREATE or ALTER TABLE  statement then 'I' is not a column in the target table.
+gfxd> select * from test.s ss (c1, c2, c3, c4) where exists (select ss.i from test.tt);
+ERROR 42X04: Column 'SS.I' is either not in any table in the FROM list or appears within a join specification and is outside the scope of the join specification or appears in a HAVING clause and is not in the GROUP BY list. If this is a CREATE or ALTER TABLE  statement then 'SS.I' is not a column in the target table.
+gfxd> -- correlation name exists at both levels, but only column match is at
+-- parent level
+select * from test.s where exists (select s.i from test.tt s);
+ERROR 42X04: Column 'S.I' is either not in any table in the FROM list or appears within a join specification and is outside the scope of the join specification or appears in a HAVING clause and is not in the GROUP BY list. If this is a CREATE or ALTER TABLE  statement then 'S.I' is not a column in the target table.
+gfxd> -- only match is at peer level
+select * from test.s where exists (select * from test.tt) and exists (select ii from test.t);
+ERROR 42X04: Column 'II' is either not in any table in the FROM list or appears within a join specification and is outside the scope of the join specification or appears in a HAVING clause and is not in the GROUP BY list. If this is a CREATE or ALTER TABLE  statement then 'II' is not a column in the target table.
+gfxd> -- correlated column in a derived table
+select * from test.s, (select * from test.tt where test.s.i = ii) a;
+ERROR 42X04: Column 'TEST.S.I' is either not in any table in the FROM list or appears within a join specification and is outside the scope of the join specification or appears in a HAVING clause and is not in the GROUP BY list. If this is a CREATE or ALTER TABLE  statement then 'TEST.S.I' is not a column in the target table.
+gfxd> -- positive tests
+
+-- skip levels to find match
+select * from test.s where exists (select * from test.ttt where iii = 
+								(select 11 from test.tt where ii = i and ii <> 1));
+I          |S     |C                             |VC                            
+--------------------------------------------------------------------------------
+0          |0     |0                             |0                             
+gfxd> -- join in subquery
+select * from test.s where i in (select i from test.t, test.tt where test.s.i <> i and i = ii);
+I          |S     |C                             |VC                            
+--------------------------------------------------------------------------------
+gfxd> select * from test.s t1 where i in (select i from test.t t2, test.tt t3 where t1.i <> i and i = ii);
+I          |S     |C                             |VC                            
+--------------------------------------------------------------------------------
+gfxd> -- joins in both query blocks
+select test.s.i, test.t.i from test.s, test.t 
+where test.t.i = (select ii from test.ttt, test.tt where test.s.i = test.t.i and test.t.i = test.tt.ii and iii = 22 and ii <> 1);
+I          |I          
+-----------------------
+0          |0          
+gfxd> select t1.i, t2.i from test.s t1, test.t t2 
+where t2.i = (select ii from test.ttt t3, test.tt t4 where t1.i = t2.i and t2.i = t4.ii and iii = 22 and ii <> 1);
+I          |I          
+-----------------------
+0          |0          
+gfxd> ----------------------------------
+-- update
+create table test.u (i int, s smallint, c char(30), vc char(30));
+0 rows inserted/updated/deleted
+gfxd> insert into test.u select * from test.s;
+3 rows inserted/updated/deleted
+gfxd> select * from test.u;
+I          |S     |C                             |VC                            
+--------------------------------------------------------------------------------
+NULL       |NULL  |NULL                          |NULL                          
+0          |0     |0                             |0                             
+1          |1     |1                             |1                             
+gfxd> update test.u set i = 2
+where vc <> (select vc from test.s where vc = '1');
+1 row inserted/updated/deleted
+gfxd> select * from test.u;
+I          |S     |C                             |VC                            
+--------------------------------------------------------------------------------
+NULL       |NULL  |NULL                          |NULL                          
+2          |0     |0                             |0                             
+1          |1     |1                             |1                             
+gfxd> delete from test.u;
+3 rows inserted/updated/deleted
+gfxd> insert into test.u select * from test.s;
+3 rows inserted/updated/deleted
+gfxd> -- delete
+delete from test.u where c < (select c from test.t where c = '2');
+2 rows inserted/updated/deleted
+gfxd> select * from test.u;
+I          |S     |C                             |VC                            
+--------------------------------------------------------------------------------
+NULL       |NULL  |NULL                          |NULL                          
+gfxd> -- reset autocommit
+autocommit on;
+gfxd> -- bug 5146 - drop schema did not invalidate plan for create table.
+-- now schemas are implictly created.
+create schema B5146;
+0 rows inserted/updated/deleted
+gfxd> create table B5146.DT(i int);
+0 rows inserted/updated/deleted
+gfxd> insert into B5146.DT values 5146, 6415;
+2 rows inserted/updated/deleted
+gfxd> create schema A5146;
+0 rows inserted/updated/deleted
+gfxd> prepare PS5146_TABLE as 'create table A5146.I(i int)';
+gfxd> drop schema A5146 restrict;
+0 rows inserted/updated/deleted
+gfxd> execute PS5146_TABLE;
+0 rows inserted/updated/deleted
+gfxd> insert into A5146.I values 3;
+1 row inserted/updated/deleted
+gfxd> select * from A5146.I;
+I          
+-----------
+3          
+gfxd> drop table A5146.I;
+0 rows inserted/updated/deleted
+gfxd> prepare PS5146_VIEW as 'create view A5146.V AS SELECT * FROM B5146.DT';
+gfxd> drop schema A5146 restrict;
+0 rows inserted/updated/deleted
+gfxd> execute PS5146_VIEW;
+0 rows inserted/updated/deleted
+gfxd> select * from A5146.V;
+I          
+-----------
+5146       
+6415       
+gfxd> drop view A5146.V;
+0 rows inserted/updated/deleted
+gfxd> prepare PS5146_TRIGGER as 'create trigger A5146.DT_TRIG AFTER INSERT ON B5146.DT FOR EACH STATEMENT UPDATE  B5146.DT SET I = I + 1';
+gfxd> drop schema A5146 restrict;
+0 rows inserted/updated/deleted
+gfxd> execute PS5146_TRIGGER;
+0 rows inserted/updated/deleted
+gfxd> drop trigger A5146.DT_TRIG;
+0 rows inserted/updated/deleted
+gfxd> prepare PS5146_PROCEDURE as 'create procedure A5146.DUMMY() language java external name ''asdf.asdf'' parameter style java';
+gfxd> drop schema A5146 restrict;
+0 rows inserted/updated/deleted
+gfxd> execute PS5146_PROCEDURE;
+0 rows inserted/updated/deleted
+gfxd> drop procedure A5146.DUMMY;
+0 rows inserted/updated/deleted
+gfxd> -- check implicit schema creation for all CREATE statements that create schema objects.
+-- TABLE,VIEW,PROCEDURE TRIGGER, STATEMENT
+-- Cloudscape requires that the INDEX schema matches the (existing) table schema so
+-- there is no implict schema creation for CREATE INDEX.
+
+prepare ISC_TABLE as 'create table ISC.I(i int)';
+gfxd> execute ISC_TABLE;
+0 rows inserted/updated/deleted
+gfxd> insert into ISC.I values 3;
+1 row inserted/updated/deleted
+gfxd> select * from ISC.I;
+I          
+-----------
+3          
+gfxd> drop table ISC.I;
+0 rows inserted/updated/deleted
+gfxd> drop schema ISC restrict;
+0 rows inserted/updated/deleted
+gfxd> prepare ISC_VIEW as 'create view ISC.V AS SELECT * FROM B5146.DT';
+gfxd> execute ISC_VIEW;
+0 rows inserted/updated/deleted
+gfxd> select * from ISC.V;
+I          
+-----------
+5146       
+6415       
+gfxd> drop view ISC.V;
+0 rows inserted/updated/deleted
+gfxd> drop schema ISC restrict;
+0 rows inserted/updated/deleted
+gfxd> prepare ISC_TRIGGER as 'create trigger ISC.DT_TRIG AFTER INSERT ON B5146.DT FOR EACH STATEMENT UPDATE  B5146.DT SET I = I + 1';
+gfxd> execute ISC_TRIGGER;
+0 rows inserted/updated/deleted
+gfxd> insert into B5146.DT values 999;
+1 row inserted/updated/deleted
+gfxd> drop trigger ISC.DT_TRIG;
+0 rows inserted/updated/deleted
+gfxd> drop schema ISC restrict;
+0 rows inserted/updated/deleted
+gfxd> select * from B5146.DT;
+I          
+-----------
+5147       
+6416       
+1000       
+gfxd> prepare ISC_PROCEDURE as 'create procedure ISC.DUMMY() language java external name ''asdf.asdf'' parameter style java';
+gfxd> execute ISC_PROCEDURE;
+0 rows inserted/updated/deleted
+gfxd> CALL ISC.DUMMY();
+ERROR 42X51: The class 'asdf' does not exist or is inaccessible. This can happen if the class is not public.
+ERROR XJ001: Java exception: 'asdf: java.lang.ClassNotFoundException'.
+gfxd> drop procedure ISC.DUMMY;
+0 rows inserted/updated/deleted
+gfxd> drop schema ISC restrict;
+0 rows inserted/updated/deleted
+gfxd> -- check declare of a temp table does not create a SESSION schema.
+DECLARE GLOBAL TEMPORARY TABLE SESSION.ISCT(c21 int) on commit delete rows not logged;
+0 rows inserted/updated/deleted
+gfxd> select count(*) from SYS.SYSSCHEMAS WHERE CAST(SCHEMANAME AS VARCHAR(128)) = 'SESSION';
+1          
+-----------
+0          
+gfxd> drop table SESSION.ISCT;
+0 rows inserted/updated/deleted
+gfxd> drop table B5146.DT;
+0 rows inserted/updated/deleted
+gfxd> drop schema B5146 restrict;
+0 rows inserted/updated/deleted
+gfxd> create schema SYSDJD;
+ERROR 42939: An object cannot be created with the schema name 'SYSDJD'.
+gfxd> drop schema SYSDJD restrict;
+ERROR 42Y07: Schema 'SYSDJD' does not exist
+gfxd> create schema "sys";
+0 rows inserted/updated/deleted
+gfxd> drop schema "sys" restrict;
+0 rows inserted/updated/deleted
+gfxd> set schema test;
+0 rows inserted/updated/deleted
+gfxd> -- drop the tables
+drop table s;
+0 rows inserted/updated/deleted
+gfxd> drop table t;
+0 rows inserted/updated/deleted
+gfxd> drop table tt;
+0 rows inserted/updated/deleted
+gfxd> drop table ttt;
+0 rows inserted/updated/deleted
+gfxd> drop table u;
+0 rows inserted/updated/deleted
+gfxd> set schema app;
+0 rows inserted/updated/deleted
+gfxd> drop schema test restrict;
+0 rows inserted/updated/deleted
+gfxd> 

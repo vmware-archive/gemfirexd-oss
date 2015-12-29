@@ -1,0 +1,75 @@
+//serial wbcl
+parReg/wbcl/newWan/concParRegSerialWBCL.conf 
+   A=wbcl wbclHosts=2 wbclVMsPerHost=1 wbclThreadsPerVM=10
+   B=peer peerHosts=2 peerVMsPerHost=3 peerThreadsPerVM=10 
+   redundantCopies=1
+
+parReg/wbcl/newWan/concParRegSerialWBCL.conf 
+   A=wbcl wbclHosts=2 wbclVMsPerHost=1 wbclThreadsPerVM=10
+   B=peer peerHosts=2 peerVMsPerHost=3 peerThreadsPerVM=10 
+   redundantCopies=3
+   
+parReg/wbcl/newWan/concParRegSerialWBCLHA.conf
+   A=wbcl wbclHosts=2 wbclVMsPerHost=1 wbclThreadsPerVM=10
+   B=dataStore dataStoreHosts=2 dataStoreVMsPerHost=2 dataStoreThreadsPerVM=10 
+   redundantCopies=1 numVMsToStop=1
+
+parReg/wbcl/newWan/concParRegSerialWBCLHA.conf
+   A=wbcl wbclHosts=3 wbclVMsPerHost=1 wbclThreadsPerVM=10
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=2 dataStoreThreadsPerVM=10 
+   redundantCopies=3 numVMsToStop=2
+      
+//parallel wbcl   
+parReg/wbcl/newWan/concParRegParallelWBCL.conf    
+   A=peer peerHosts=2 peerVMsPerHost=3 peerThreadsPerVM=10 
+   redundantCopies=1
+
+parReg/wbcl/newWan/concParRegParallelWBCL.conf    
+   A=peer peerHosts=2 peerVMsPerHost=3 peerThreadsPerVM=10 
+   redundantCopies=3   
+
+parReg/wbcl/newWan/concParRegParallelWBCLHA.conf    
+   A=dataStore dataStoreHosts=2 dataStoreVMsPerHost=3 dataStoreThreadsPerVM=10 
+   redundantCopies=1 numVMsToStop=1
+
+parReg/wbcl/newWan/concParRegParallelWBCLHA.conf    
+   A=dataStore dataStoreHosts=2 dataStoreVMsPerHost=3 dataStoreThreadsPerVM=10 
+   redundantCopies=3 numVMsToStop=2
+
+//conflation tests  
+parReg/wbcl/newWan/concParRegSerialWBCLConflation.conf 
+   A=wbcl wbclHosts=2 wbclVMsPerHost=1 wbclThreadsPerVM=10
+   B=peer peerHosts=2 peerVMsPerHost=3 peerThreadsPerVM=10 
+   redundantCopies=1
+      
+parReg/wbcl/newWan/concParRegParallelWBCLConflation.conf    
+   A=peer peerHosts=2 peerVMsPerHost=3 peerThreadsPerVM=10 
+   redundantCopies=1      
+   
+parReg/wbcl/newWan/concParRegSerialWBCLConflationHA.conf 
+   A=wbcl wbclHosts=2 wbclVMsPerHost=1 wbclThreadsPerVM=10
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=2 dataStoreThreadsPerVM=10 
+   redundantCopies=1 numVMsToStop=1
+      
+parReg/wbcl/newWan/concParRegParallelWBCLConflationHA.conf    
+   A=dataStore dataStoreHosts=2 dataStoreVMsPerHost=3 dataStoreThreadsPerVM=10 
+   redundantCopies=1 numVMsToStop=1     
+   
+// order policy tests
+parReg/wbcl/newWan/p2p_PR_serialWbcl_keyOrder.conf
+   A=wbcl wbclHosts=2 wbclVMsPerHost=1 wbclThreadsPerVM=1
+   B=peer peerHosts=2 peerVMsPerHost=3 peerThreadsPerVM=2    
+   
+parReg/wbcl/newWan/p2p_PR_serialWbcl_keyOrder_HA.conf
+   A=wbcl wbclHosts=2 wbclVMsPerHost=1 wbclThreadsPerVM=1
+   B=peer peerHosts=2 peerVMsPerHost=2 peerThreadsPerVM=2       
+
+parReg/wbcl/newWan/p2p_PR_serialWbcl_threadOrder.conf
+   A=wbcl wbclHosts=2 wbclVMsPerHost=1 wbclThreadsPerVM=1
+   B=peer peerHosts=2 peerVMsPerHost=3 peerThreadsPerVM=2    
+   
+parReg/wbcl/newWan/p2p_PR_serialWbcl_threadOrder_HA.conf
+   A=wbcl wbclHosts=2 wbclVMsPerHost=1 wbclThreadsPerVM=1
+   B=peer peerHosts=2 peerVMsPerHost=2 peerThreadsPerVM=2  
+
+

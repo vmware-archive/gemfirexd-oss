@@ -1,0 +1,16 @@
+//
+// VOLUME TESTING
+//
+// Scaled up 64-bit functional tests with large heaps and lots of data.
+//
+// Run these tests on sufficient 64-bit hosts with a minimum of 8 GB RAM to
+// avoid swapping.  Run BatteryTest with -DmasterHeapMB=3000 to support larger
+// blackboards.  Also run with -DmoveRemoteDirs=true and with system directories
+// local to each VM to accommodate overflow.
+//
+// To collect more complete logs, set hydra.log.LogPrms-file_maxKBPerVM to a
+// very large value.  It is currently set to 25000 KB in all tests.
+//
+
+include $JTESTS/scale64/parReg/parReg64.bt
+include $JTESTS/scale64/query/query64.bt

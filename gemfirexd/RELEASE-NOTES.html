@@ -1,0 +1,583 @@
+<html>
+<title>Release Notes for Derby 10.4.2.0</title>
+<body>
+<h1>
+<a name="Release Notes for Derby 10.4.2.0"></a>Release Notes for Derby 10.4.2.0</h1>
+<blockquote>
+<p>These notes describe the difference between Derby release 10.4.2.0 and the preceding release 10.4.1.3.</p>
+</blockquote>
+<ul>
+<li>
+<a href="#Overview">Overview</a>
+</li>
+<li>
+<a href="#New Features">New Features</a>
+</li>
+<li>
+<a href="#Bug Fixes">Bug Fixes</a>
+</li>
+<li>
+<a href="#Issues">Issues</a>
+</li>
+<li>
+<a href="#Build Environment">Build Environment</a>
+</li>
+</ul>
+<h2>
+<a name="Overview"></a>Overview</h2>
+<blockquote>
+
+
+<p>
+Derby is a pure Java relational database engine using standard SQL and
+JDBC as its APIs.
+</p>
+
+
+<p>
+Derby functionality includes:
+</p>
+
+
+<ul>
+
+<li>Embedded engine with JDBC drivers</li>
+
+<li>Network Server</li>
+
+<li>Network client JDBC drivers</li>
+
+<li>Command line tools: ij (SQL scripting), dblook (schema dump), and sysinfo (system info)</li>
+
+</ul>
+
+
+</blockquote>
+<h2>
+<a name="New Features"></a>New Features</h2>
+<blockquote>
+
+
+<p>
+This is a maintenance release. No new features were added.
+</p>
+
+
+</blockquote>
+<h2>
+<a name="Bug Fixes"></a>Bug Fixes</h2>
+<blockquote>
+<p>The following issues are addressed by Derby release 10.4.2.0. These issues are not addressed in the preceding 10.4.1.3 release.</p>
+<table border="2">
+<tr>
+<td><b>Issue Id</b></td><td><b>Description</b></td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3836">DERBY-3836</a></td><td>On 10.4 branch JMX tests fail with security exceptions when run against classes</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3827">DERBY-3827</a></td><td>Add Apache 2.0 license headers to a number of files</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3816">DERBY-3816</a></td><td>Administration Guide topics on unsupported DB2 driver should be removed</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3813">DERBY-3813</a></td><td>Derby tests for the existance of BigDecimal methods toPlainString and bdPrecison but does not check if they were found before using them.</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3803">DERBY-3803</a></td><td>'org.apache.derbyTesting.functionTests.tests.lang.XMLTypeAndOpsTest' failures on JVM 1.5 on trunk, 10.4 and 10.3</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3799">DERBY-3799</a></td><td>NullPointerException when accessing a clob through a pooled connection</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3791">DERBY-3791</a></td><td>Excessive memory usage when fetching small Clobs</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3786">DERBY-3786</a></td><td>Assert failure in CacheEntry.unkeepForRemove when running stress.multi</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3783">DERBY-3783</a></td><td>LOBStreamControl shouldn't throw SQLException</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3781">DERBY-3781</a></td><td>PositionedStoreStream.reposition(pos) with pos greater than length leaves the stream object in an inconsistent state</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3779">DERBY-3779</a></td><td>Add client side JDBC statement pool documentation</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3777">DERBY-3777</a></td><td>SecureServerTest, SSLTest are failed on Zos with exit code 143 starting network server</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3776">DERBY-3776</a></td><td>testGetBytes under BlobClob4BlobTest failed on Zos  with encoding issue</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3775">DERBY-3775</a></td><td>BlobStoredProcedureTest failed on Zos: AssertionFailedError: Error SYSIBM.BLOBGETPOSITIONFROMLOCATOR returns the wrong value for the position of the Blob  expected:&lt;8&gt; but was:&lt;-1&gt;</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3774">DERBY-3774</a></td><td>jdbc4/ClobTest fails on Zos with AssertionFailedError: Streams differ at index 0 expected:&lt;200&gt; but was:&lt;72&gt;</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3773">DERBY-3773</a></td><td>ImportExportLobTest failed on Zos  Clobs differ at index 1 expected:&lt;99&gt; but was:&lt;196&gt;</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3771">DERBY-3771</a></td><td>testClasspathChecker under SysinfoCPCheckTest failed on Zos</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3768">DERBY-3768</a></td><td>Make EmbedBlob.length use skip instead of read</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3766">DERBY-3766</a></td><td>EmbedBlob.setPosition is highly ineffective for streams</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3764">DERBY-3764</a></td><td>Union Query fail on Derby 10.4.1.3</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3763">DERBY-3763</a></td><td>Rename BaseJDBCTestCase.usingDerbyNet</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3745">DERBY-3745</a></td><td>Derby can leak classloaders in an app server environment</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3741">DERBY-3741</a></td><td>SQL LENGTH function materializes CLOB into memory</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3736">DERBY-3736</a></td><td>Revoking a column level privilege from a user, a prepared statement relying on that privilege can still be executed</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3735">DERBY-3735</a></td><td>Incorrect position calculation in PositionedStoreStream with read(byte[],...)</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3734">DERBY-3734</a></td><td>Maximum value allowed for gemfirexd.storage.fileCacheSize (100) is too low for large system.  Increase the maximum value and redocument the property.</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3732">DERBY-3732</a></td><td>SQL Length function materializes BLOB  into memory</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3730">DERBY-3730</a></td><td>Bundle-SymbolicName: needed in Derby manifest for OSGi 4 environment</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3726">DERBY-3726</a></td><td>Don't call RAFContainer.padFile() from instances of RAFContainer4</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3725">DERBY-3725</a></td><td>add more information to the XSDB1:ERROR XSDB1: Unknown page format at page  error</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3723">DERBY-3723</a></td><td>Reset current schema to default (user name) when creating a new logical connection in the client driver</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3718">DERBY-3718</a></td><td>NPE when firing a trigger</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3709">DERBY-3709</a></td><td>Exception printed by replication test: Could not perform operation because the database is not in replication master mode.</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3708">DERBY-3708</a></td><td>setting tracedirectory from the command line does not work</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3704">DERBY-3704</a></td><td>If an IOException is encountered during establishment of the connection, Network Server should print the root exception to the console instead of a generic message</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3701">DERBY-3701</a></td><td>java.lang.Exception: DRDA_UnableToAccept.S:Unable to accept connections and client hang if tracing is turned on but traceDirectory does not exist</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3695">DERBY-3695</a></td><td>NullPointerException when invoking statement event listeners if one of the listeners is null</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3693">DERBY-3693</a></td><td>Deadlocks accessing DB metadata</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3692">DERBY-3692</a></td><td>'javax.transaction.xa.XAException' ++  in  'J2EEDataSourceTest'</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3690">DERBY-3690</a></td><td>EmbedPooledConnection doesn't reset schema when creating a new logical connection</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3668">DERBY-3668</a></td><td>Remove JDBC 3.0-specific topics from Reference Manual and merge implementation notes as needed</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3658">DERBY-3658</a></td><td>LOBStateTracker should not use SYSIBM.CLOBRELEASELOCATOR when the database is soft-upgraded from 10.2</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3657">DERBY-3657</a></td><td>Comment in template security policy incorrectly says that JMX is not enabled by default</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3649">DERBY-3649</a></td><td>can't call a stored function with an aggregate argument without getting the following error: ERROR 42Y29</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3629">DERBY-3629</a></td><td>Tools Guide should document continuation marker for ij</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3625">DERBY-3625</a></td><td>XSDA3 error in concateTests in lang.LangHarnessJavaTest caused by bug in SYSCS_UTIL.INPLACE_COMPRESS_TABLE()</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3622">DERBY-3622</a></td><td>SYSCS_UTIL.EMPTY_STATEMENT_CACHE needs a better description in the reference manual</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3613">DERBY-3613</a></td><td>SELECT DISTINCT field FROM TABLE_NAME GROUP BY field,  field2</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3612">DERBY-3612</a></td><td>Developer's Guide needs correction on garbage collection</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3602">DERBY-3602</a></td><td>If derbytesting.jar is in a different directory than the derby jars SystemPrivilegesPermissionTest fails with java.security.AccessControlException</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3596">DERBY-3596</a></td><td>Creation of logical connections from a pooled connection causes resource leak on the server</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3595">DERBY-3595</a></td><td>TableFunctionTest.SpecialCollation and NoSpecialCollation fail with IBM iseries in checkGetXXXCalls</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3588">DERBY-3588</a></td><td>suites.All fails to run on Jvm 1.5 when built with JDK 1.5 (Failed to invoke suite(): .jdbc4._Suite)</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3581">DERBY-3581</a></td><td>Changing certain properties on client DataSource objects causes existing connections to reflect the new values</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3579">DERBY-3579</a></td><td>The Developer's Guide incorrectly describes the behavior of transactions inside procedures and functions</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3574">DERBY-3574</a></td><td>With client, attempting to get the lob length after commit  or connection close if there  was a call to length() before commit does not throw an exception</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3546">DERBY-3546</a></td><td>Failed to get database schemas of a JAR database</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3543">DERBY-3543</a></td><td>NetworkServerControl with options but no command does not give usage message</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3469">DERBY-3469</a></td><td>Clob.length() doesn't detect a closed underlying connection in a consistent way</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3446">DERBY-3446</a></td><td>Make ResultSet.getStatement return the correct statement when created by a logical statement</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3409">DERBY-3409</a></td><td>Remove JDBC 2.0-specific topics from Reference Manual and merge implementation notes as needed</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3401">DERBY-3401</a></td><td>Removing a ConnectionEventListener from a PooledConnection during its connectionClosed() callback causes other ConnectionEventListener callbacks to be missed</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3397">DERBY-3397</a></td><td>Derby 10.3.1.4 and 10.3.2.1 break scrollable result sets? Hibernate Query.setFirstResult and/or setMaxResults</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3381">DERBY-3381</a></td><td>"ERROR XSDA3: Limitation: Record cannot be updated or inserted due to lack of space on the page...." in suites.All</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3360">DERBY-3360</a></td><td>Invalid method java.lang.Integer &gt;&gt; void &lt;init&gt;(short) because java.lang.NoSuchMethodException: java.lang.Integer.&lt;init&gt;(short)</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3338">DERBY-3338</a></td><td>CancelQueryTask.forgetContext() could be simplified.</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3313">DERBY-3313</a></td><td>JDBC client driver statement cache</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-3307">DERBY-3307</a></td><td>NPE in PooledConnction event notification handling if a null listener is added</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-1848">DERBY-1848</a></td><td>jdbcapi/SetQueryTimeoutTest.java fails on IBM  wctme 5.7</td>
+</tr>
+<tr>
+<td><a href="http://issues.apache.org/jira/browse/DERBY-48">DERBY-48</a></td><td> A connection request that has a default schema that is being created by another transaction will fail to connect</td>
+</tr>
+</table>
+</blockquote>
+<h2>
+<a name="Issues"></a>Issues</h2>
+<blockquote>
+<p>Compared with the previous release (10.4.1.3), Derby release 10.4.2.0 introduces the following new features and incompatibilities. These merit your special attention.</p>
+<ul>
+<li>
+<a href="#Note for DERBY-3701">
+<p>Note for DERBY-3701: 
+  An error message will be logged to gemfirexd.log if the Network Server tracing file cannot be created.
+  Starting with version 10.5, the Network Server will attempt to create the trace directory if it does not exist. Any intervening directories in the given path will also be created if possible.
+
+</p>
+</a>
+</li>
+<li>
+<a href="#Note for DERBY-48">
+<p>Note for DERBY-48: 
+In Derby, a user's <b>initial default schema</b> is named the same as
+the user name, or APP if a user is not provided at connect time. This
+schema is implicitly auto-created the first time a schema object is
+created in that schema.
+</p>
+</a>
+</li>
+</ul>
+<hr>
+<h3>
+<a name="Note for DERBY-3701"></a>Note for DERBY-3701</h3>
+<blockquote>
+
+<!-- 
+  SUMMARIZE THE ISSUE. This is a one line summary of the issue.
+
+  For instance:
+
+  Applications may no longer open two InputStreams on the same ResultSet column.
+-->
+
+
+<h4>Summary of Change</h4>
+
+<p>
+  An error message will be logged to gemfirexd.log if the Network Server tracing file cannot be created.
+  Starting with version 10.5, the Network Server will attempt to create the trace directory if it does not exist. Any intervening directories in the given path will also be created if possible.
+
+</p>
+
+
+<!-- 
+  DESCRIBE WHAT IT IS THAT THE USER ACTUALLY SEES WHEN THE PROBLEM OCCURS.
+
+  For instance:
+
+  In the previous release, applications were able to open two
+  InputStreams on the same column. Depending on how these streams
+  interacted, the value siphoned out of the column was erratic. Now
+  Derby raises a SQLException when the application attempts to create
+  the second InputStream.
+-->
+
+
+<h4>Symptoms Seen by Applications Affected by Change</h4>
+
+<p>
+Before the fix for DERBY-3110, if gemfirexd.drda.traceAll was set to true
+and the gemfirexd.drda.traceDirectory was set to a non-existent directory,
+no tracing would occur and no error would occur. After the fix for
+DERBY-3110, an error "java.lang.Exception:
+DRDA_UnableToAccept.S:Unable to accept connections" would occur and
+the client would hang and no tracing would occur.  With this fix for
+version 10.5 and higher, the Network Server will attempt to create the
+trace directory if possible. For 10.4.2 (and the next release on the
+10.3 branch), the Network Server will still not try to create the directory. For all
+these releases the Network Server will print an error on session
+connect if there is any problem creating the trace file, but the
+Network Server will not cause the session connection to fail.  Users who have trace turned on and the trace directory set to a non-existent directory may now see exceptions in the gemfirexd.log on connect indicating that the trace file is not found <b> or </b> with 10.5 or higher they may see tracing occur where it did not before.
+
+</p>
+
+
+<!-- 
+  OPTIONAL: DESCRIBE INCOMPATIBILITIES WITH PREVIOUS RELEASE, IF ANY.
+
+  For instance:
+
+  Applications which open two InputStreams on the ResultSet column now
+  fail.
+-->
+
+
+<h4>Incompatibilities with Previous Release</h4>
+
+<p>
+Tracing properties will not be ignored or cause the client to hang if the trace directory is set to a non-existent directory.  
+
+</p>
+
+
+<!-- 
+  DESCRIBE WHY THE CHANGE WAS MADE.
+
+  For instance:
+
+  The previous behavior violated the JDBC standard. The new behavior
+  is correct.
+-->
+
+
+<h4>Rationale for Change</h4>
+
+<p>
+
+The tracing properties should not be summarily ignored or cause the client to hang if the trace directory does not exist.  
+</p>
+
+
+<!-- 
+  OPTIONAL: DESCRIBE HOW TO REVERT TO THE PREVIOUS BEHAVIOR OR
+  OTHERWISE AVOID THE INCOMPATIBILITIES INTRODUCED BY THIS CHANGE.
+
+  For instance:
+
+  Users must recode applications which open multiple streams on the same column.
+-->
+
+
+<h4>Application Changes Required</h4>
+
+<p>
+Applications that counted on the gemfirexd.drda.traceAll property being ignored if gemfirexd.drda.traceDirectory was set to a non-existent directory, need to turn tracing off or they may now see many errors in the gemfirexd.log or large amounts of tracing.
+
+</p>
+
+
+
+</blockquote>
+<hr>
+<h3>
+<a name="Note for DERBY-48"></a>Note for DERBY-48</h3>
+<blockquote>
+
+<!-- 
+  SUMMARIZE THE ISSUE. This is a one line summary of the issue.
+
+  For instance:
+
+  Applications may no longer open two InputStreams on the same ResultSet column.
+-->
+
+
+<h4>Summary of Change</h4>
+
+<p>
+In Derby, a user's <b>initial default schema</b> is named the same as
+the user name, or APP if a user is not provided at connect time. This
+schema is implicitly auto-created the first time a schema object is
+created in that schema.
+</p>
+
+<p>
+Previously, this auto-creation would be performed as part of the user
+transaction. This would sometimes lead to locking issues as described
+in this issue. With this change, the auto-creation is now performed
+and committed immediately in a separate sub-transaction.
+</p>
+
+
+<!-- 
+  DESCRIBE WHAT IT IS THAT THE USER ACTUALLY SEES WHEN THE PROBLEM OCCURS.
+
+  For instance:
+
+  In the previous release, applications were able to open two
+  InputStreams on the same column. Depending on how these streams
+  interacted, the value siphoned out of the column was erratic. Now
+  Derby raises a SQLException when the application attempts to create
+  the second InputStream.
+-->
+
+
+<h4>Symptoms Seen by Applications Affected by Change</h4>
+
+<p>
+The initial default schema will be present in cases where it
+previously would not yet have been created: If the user transaction
+that creates a schema object leading to auto-creation of the initial
+default schema rolls back for some reason after having created the
+schema, up till now the auto-creation of the initial default schema
+would be rolled back as well. Since it is now created and committed in
+a sub-transaction, the schema creation will not be rolled back: the
+default schema will persist.
+</p>
+
+
+<!-- 
+  OPTIONAL: DESCRIBE INCOMPATIBILITIES WITH PREVIOUS RELEASE, IF ANY.
+
+  For instance:
+
+  Applications which open two InputStreams on the ResultSet column now
+  fail.
+-->
+
+
+<h4>Incompatibilities with Previous Release</h4>
+
+<p>
+Most applications should not be impacted by this change, but there are
+some corner cases as described below:
+</p>
+
+<p>
+If the application tests for the existence of the initial default
+schema by querying Derby system tables, the results could now be
+different than in earlier releases, if the test is made after a
+rollback as described in the previous section.
+</p>
+
+<p>
+Since the initial default schema will now potentially exist in cases
+where it would previously not exist, schema operations may be
+impacted, e.g.  where before a DROP SCHEMA &lt;default schema name&gt;
+RESTRICT would fail due to it not yet existing, it could now work (if
+empty), depending on when the drop attempt is made.
+</p>
+
+<!-- 
+  DESCRIBE WHY THE CHANGE WAS MADE.
+
+  For instance:
+
+  The previous behavior violated the JDBC standard. The new behavior
+  is correct.
+-->
+
+
+<h4>Rationale for Change</h4>
+
+<p>
+Implicit schema creation is now performed in its own transaction to
+avoid deadlocks with other connections accessing the same schema.
+</p>
+
+<p>
+Doing this is a separate transaction avoids holding dictionary locks
+longer than necessary,
+cf. <a href="https://issues.apache.org/jira/browse/DERBY-48">DERBY-48</a>
+and thus reduces the chance for deadlocks.
+</p>
+
+
+<!-- 
+  OPTIONAL: DESCRIBE HOW TO REVERT TO THE PREVIOUS BEHAVIOR OR
+  OTHERWISE AVOID THE INCOMPATIBILITIES INTRODUCED BY THIS CHANGE.
+
+  For instance:
+
+  Users must recode applications which open multiple streams on the same column.
+-->
+
+
+<h4>Application Changes Required</h4>
+
+<p>
+Verify that the application code does not rely on the initial default schema
+being absent after a rollback.
+</p>
+
+
+
+</blockquote>
+</blockquote>
+<h2>
+<a name="Build Environment"></a>Build Environment</h2>
+<blockquote>
+<p>Derby release 10.4.2.0 was built using the following environment:</p>
+<ul>
+<li>
+<b>Branch</b> - Source code came from the 10.4 branch.</li>
+<li>
+<b>Machine</b> - Mac OS X Version 10.5.4</li>
+<li>
+<b>Ant</b> - Apache Ant version 1.7.0 compiled on December 13 2006.</li>
+<li>
+<b>JDK 1.4</b> - Java(TM) 2 Runtime Environment, Standard Edition (build 1.4.2_16-b05-302)</li>
+<li>
+<b>Java 6</b> - Java(TM) SE Runtime Environment (build 1.6.0_01-dp-b06-101)</li>
+<li>
+<b>OSGi</b> - The Apache Felix project supplied felix.jar, which was used to build com.pivotal.gemfirexd.internal.osgi.EmbeddedActivator.</li>
+<li>
+<b>Compiler</b> - A Java 5 compiler was used to build all classes: Java(TM) 2 Runtime Environment, Standard Edition (build 1.5.0_13-b05-237)</li>
+<li>
+<b>JSR 169</b> - J2ME libraries were supplied by phoneme.dev.java.net (CDC, Foundation Profile, and Personal Basis Profile meeting the 1.1.2 specifications). JSR169 libraries were supplied by java.sun.com.</li>
+</ul>
+</blockquote>
+</body>
+</html>

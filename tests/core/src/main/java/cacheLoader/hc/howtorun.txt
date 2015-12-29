@@ -1,0 +1,49 @@
+Cache Bridge Loader tests
+
+cacheLoader/hc/hc.bt includes the basic list of tests to run.
+
+Make sure Oracle is up and running, and that data has been preloaded.
+If necessary, modify config values from cacheLoader/hc/dbparms.inc.
+To preload the Oracle DB, run reloadRDB.conf. 
+
+These tests expect oracle to be running on orahost.  If oracle isn't
+running,  follow the instructions below:
+
+1. login to orahost as user oracle
+2. execute:
+
+   % dbstart
+   % lsnrctl start
+
+For additional information about oracle, including oracle users and passwords, you can look at /home/stever/checkouts/gss64bit_11x/tests/connecttst/aaareadme.txt.
+
+You can check out this file from CVS if you want your own copy:
+
+cvs checkout -d oracleinfo gss64bit/tests/connecttst/aaareadme.txt
+
+Also, you can reference /home/users/oracle/.rdbmsrc for $ORACLE_HOME and $ORACLE_SID settings on the various hosts where oracle is installed.
+
+Run the hc.bt file to exercise all test variations:
+- getTimeout* tests try to read data, but always time out.
+- other get* tests read data, never timing out.  They use a variety of
+  capacity controllers.
+- mix* tests read data, occasionally timing out.  They use a variety of
+  capacity controllers.
+
+By default, these tests us 2 edge clients and 3 cache servers.
+It is best to run each set on a different host.  To do so, add 
+something like the following to your local.conf:
+
+  hydra.HostPrms-names = // bridges on host "pope" and edges on host "biker"
+      fcn "hydra.TestConfigFcns.pool(\"pope\",  ${bridgeHosts})" ncf
+      fcn "hydra.TestConfigFcns.pool(\"biker\", ${edgeHosts})"   ncf;
+
+To run on one low-powered box, such as a standard windows desktop,
+run a modified hc.bt file using these sizing properties for each test:
+
+  bridgeHosts = 1 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 3
+
+Most tests run for about 15 minutes (totalTaskTimeSec = 600).
+getTimeout* tests have a totalTaskTimeSec of 60 seconds.
+

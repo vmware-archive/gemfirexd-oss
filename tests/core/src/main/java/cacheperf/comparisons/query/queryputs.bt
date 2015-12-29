@@ -1,0 +1,65 @@
+
+cacheperf/comparisons/query/puts.conf
+  scope=noAck dataPolicy=replicate
+  hydra.numHosts=2 vmQuantities=1 vmThreads=1
+  objectType=parReg.query.NewPortfolio
+  createIndex=false
+  maxKeys=100000
+  numOfIndexes=0
+
+cacheperf/comparisons/query/puts.conf
+  scope=noAck dataPolicy=replicate
+  hydra.numHosts=2 vmQuantities=1 vmThreads=1
+  objectType=parReg.query.NewPortfolio
+  createIndex=true
+  maxKeys=100000
+  numOfIndexes=1
+
+cacheperf/comparisons/query/puts.conf
+  scope=noAck dataPolicy=replicate
+  hydra.numHosts=2 vmQuantities=1 vmThreads=1
+  objectType=parReg.query.NewPortfolio
+  createIndex=true
+  maxKeys=100000
+  numOfIndexes=2
+
+cacheperf/comparisons/query/puts.conf
+  scope=noAck dataPolicy=replicate
+  hydra.numHosts=2 vmQuantities=1 vmThreads=1
+  objectType=parReg.query.NewPortfolio
+  createIndex=true
+  maxKeys=100000
+  numOfIndexes=3
+
+cacheperf/comparisons/query/putspartition.conf
+  scope=default dataPolicy=partition
+  hydra.numHosts=2 vmQuantities=1 vmThreads=1
+  objectType=parReg.query.NewPortfolio
+  maxKeys=100000
+  createIndex=false
+  numOfIndexes = 0 
+
+cacheperf/comparisons/query/putspartition.conf
+  scope=default dataPolicy=partition
+  hydra.numHosts=2 vmQuantities=1 vmThreads=1
+  objectType=parReg.query.NewPortfolio
+  maxKeys=100000
+  createIndex=true
+  numOfIndexes = 1
+
+cacheperf/comparisons/query/putspartition.conf
+  scope=default dataPolicy=partition
+  hydra.numHosts=2 vmQuantities=1 vmThreads=1
+  objectType=parReg.query.NewPortfolio
+  maxKeys=100000
+  createIndex=true
+  numOfIndexes = 2
+
+cacheperf/comparisons/query/putspartition.conf
+  scope=default dataPolicy=partition
+  hydra.numHosts=2 vmQuantities=1 vmThreads=1
+  objectType=parReg.query.NewPortfolio
+  maxKeys=100000
+  createIndex=true
+  numOfIndexes = 3
+

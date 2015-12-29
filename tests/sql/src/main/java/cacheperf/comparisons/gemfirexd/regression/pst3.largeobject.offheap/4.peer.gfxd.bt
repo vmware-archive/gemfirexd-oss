@@ -1,0 +1,7 @@
+cacheperf/comparisons/gemfirexd/largeobject/peerClient/getTest.conf
+  api = GFXD
+  clientHosts=4 clientVMsPerHost=1 clientThreadsPerVM=10
+  serverHosts=4 serverVMsPerHost=1 serverThreadsPerVM=1
+  numLargeObjectsPerServer=75000
+  heapMB = 15000
+  queryPlanFrequency = 0

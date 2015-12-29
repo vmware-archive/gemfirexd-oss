@@ -1,0 +1,22 @@
+wanSites            = 2
+
+locatorHostsPerSite = 1
+locatorVMsPerHost   = 2
+locatorThreadsPerVM = 1
+
+A = data
+dataHostsPerSite  = 3
+dataVMsPerHost    = 1
+dataThreadsPerVM  = 1
+
+B = edge
+edgeHostsPerSite  = 1 
+edgeVMsPerHost    = 2
+edgeThreadsPerVM  = 5
+
+objectSize        = 1024
+dataMem           = 1g
+putsPerSec        = 5000
+
+trimSeconds            = 60
+perffmwk.comparisonKey = parRegHctSerialSender

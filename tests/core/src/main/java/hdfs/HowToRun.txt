@@ -1,0 +1,59 @@
+The HDFS tests have been updated to use the hydra support for configuring, starting and stopping the HDFS Cluster.
+
+For single host testing (gemfire + local HDFS Cluster), just run hdfs/hdfs.bt or hdfs/shorthdfs.bt as usual. 
+
+------------------------------------------------------------------------------------------------------
+#! /bin/csh -f
+
+# setup env vars for testing gemfire
+
+setenv GEMFIRE /export/w2-gst-pnq-03a/users/lhughes/cheetah_dev_May13/product
+
+setenv TEST_BASE /export/w2-gst-pnq-03a/users/lhughes/cheetah_dev_May13
+setenv JTESTSROOT ${TEST_BASE}/tests
+setenv JTESTS $JTESTSROOT/classes
+echo "JTESTS     :"$JTESTS
+
+setenv CLASSPATH .:$JTESTSROOT/classes:$GEMFIRE/lib/gemfire.jar
+echo "CLASSPATH     :" $CLASSPATH
+------------------------------------------------------------------------------------------------------
+
+For running gemfire members on the same host with MasterController with a remote multi-node HDFS Cluster, use
+  local.remoteCluster.conf. A sample local.remoteCluster.conf is shown below (with running a remote cluster
+  with the nodename on w2-gst-pnq-06 and the datanodes on w2-gst-pnq-04 and w2-gst-pnq-05).
+  Logging is going to the "a" drives and the HDFS data to the "b" drives.
+
+hydra.HadoopPrms-names              = hadoop;
+hydra.HadoopPrms-nameNodeHosts      = w2-gst-pnq-06;
+hydra.HadoopPrms-nameNodeLogDrives  = a;
+hydra.HadoopPrms-nameNodeDataDrives = b;
+
+hydra.HadoopPrms-dataNodeHosts      = w2-gst-pnq-04  w2-gst-pnq-05;
+hydra.HadoopPrms-dataNodeLogDrives  = a;
+hydra.HadoopPrms-dataNodeDataDrives = b;
+
+------------------------------------------------------------------------------------------------------
+
+For running HDFS on the same host with the MasterController, but all clients from another host type (like Windows),
+  use local.multiOS.conf. A sample local.multiOS.conf is shown below. Logging is going to the "a" drive and the
+  HDFS data to the "b" drive. This setup assumes that you have the proper drives mapped on Windows (in this case,
+  j:, y:, & u:). The u: drive in this case is mapped to the same location that the test results will be stored. It
+  needs to be accessible by both hosts. Leave 'REGRESSION_EXTRA_PATH' as it will be replaced by Hydra at runtime.
+
+hydra.HadoopPrms-nameNodeHosts      = w2-gst-pnq-01;
+hydra.HadoopPrms-nameNodeLogDrives  = a;
+hydra.HadoopPrms-nameNodeDataDrives = b;
+
+hydra.HadoopPrms-dataNodeHosts      = w2-gst-pnq-01;
+hydra.HadoopPrms-dataNodeLogDrives  = a;
+hydra.HadoopPrms-dataNodeDataDrives = b;
+
+hydra.HostPrms-hostNames     = w2-gst-pnq-01  w1-gst-dev11;
+hydra.HostPrms-osTypes       = linux          windows;
+hydra.HostPrms-bootstrapPort = none           15342;
+hydra.HostPrms-javaHomes     = default        j:\where\jdk\1.7.0_05\x86.Windows_NT;
+hydra.HostPrms-gemfireHomes  = default        y:\GemFireBuild\gemfirexd_rebrand_Dec13\product;
+hydra.HostPrms-testDirs      = default        y:\GemFireBuild\gemfirexd_rebrand_Dec13\tests\classes;
+hydra.HostPrms-userDirs      = default        u:\testResults\$REGRESSION_EXTRA_PATH;
+
+------------------------------------------------------------------------------------------------------

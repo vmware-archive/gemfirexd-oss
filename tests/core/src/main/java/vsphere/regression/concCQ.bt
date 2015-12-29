@@ -1,0 +1,155 @@
+cq/edgesPerformingAllOps.conf
+bridgeHosts =  1 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+edgeHosts   =  1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 6
+doExecuteWithInitialResultsCQ = true
+threadGroupsName=bridge
+
+/*cq/dedicatedEdgesForCQOps.conf
+bridgeHosts =  1 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 1
+edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 3
+doExecuteWithInitialResultsCQ = true
+
+cq/serverFailoverAndCQOps.conf
+bridgeHosts =  2 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 1
+edgeHosts   =  2 edgeVMsPerHost   = 3 edgeThreadsPerVM   = 3
+doExecuteWithInitialResultsCQ = true
+
+cq/edgesPerformingAllOps.conf
+bridgeHosts =  1 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+edgeHosts   =  1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+doExecuteWithInitialResultsCQ = false*/
+
+cq/dedicatedEdgesForCQOps.conf
+bridgeHosts =  1 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 1
+edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 3
+doExecuteWithInitialResultsCQ = false
+threadGroupsName=bridge
+
+/*cq/serverFailoverAndCQOps.conf
+bridgeHosts =  2 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 1
+edgeHosts   =  2 edgeVMsPerHost   = 3 edgeThreadsPerVM   = 3
+doExecuteWithInitialResultsCQ = false*/
+
+cq/multRegServerFailoverAndCQOps.conf
+A=feed    feedHosts   =  1 feedVMsPerHost   = 1 feedThreadsPerVM   = 2
+B=bridge  bridgeHosts =  2 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 1
+C=edge    edgeHosts   =  2 edgeVMsPerHost   = 3 edgeThreadsPerVM   = 3
+threadGroupsName=bridge
+
+cq/multRegCQOpsWithFeeder.conf
+A=feed    feedHosts   =  1 feedVMsPerHost   = 1 feedThreadsPerVM   = 2
+B=bridge  bridgeHosts =  1 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 1
+C=edge    edgeHosts   =  1 edgeVMsPerHost   = 4 edgeThreadsPerVM   = 3
+threadGroupsName=bridge
+
+/*cq/multRegCQOps.conf
+bridgeHosts =  1 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 1
+edgeHosts   =  1 edgeVMsPerHost   = 4 edgeThreadsPerVM   = 1*/
+
+cq/cqListenerAndServerFailover.conf
+A=feed    feedHosts   =  1 feedVMsPerHost   = 1 feedThreadsPerVM   = 3
+B=bridge  bridgeHosts =  2 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 1
+C=edge    edgeHosts   =  2 edgeVMsPerHost   = 3 edgeThreadsPerVM   = 1
+threadGroupsName=bridge
+
+cq/multRegCQListener.conf
+A=feed    feedHosts   =  1 feedVMsPerHost   = 1 feedThreadsPerVM   = 2
+B=bridge  bridgeHosts =  1 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 1
+C=edge    edgeHosts   =  1 edgeVMsPerHost   = 4 edgeThreadsPerVM   = 3
+CQsOn = true
+threadGroupsName=bridge
+
+/*cq/multRegCQListenerWithFeeder.conf
+A=feed    feedHosts   =  1 feedVMsPerHost   = 1 feedThreadsPerVM   = 3
+B=bridge  bridgeHosts =  1 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 1
+C=edge    edgeHosts   =  1 edgeVMsPerHost   = 4 edgeThreadsPerVM   = 1
+
+cq/multRegCQVerifyResult.conf
+A=feed    feedHosts   =  1 feedVMsPerHost   = 1 feedThreadsPerVM   = 3
+B=bridge  bridgeHosts =  1 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 1
+C=edge    edgeHosts   =  1 edgeVMsPerHost   = 4 edgeThreadsPerVM   = 1*/
+
+cq/multRegCQVerifyResultWithServerFailover.conf
+A=feed    feedHosts   =  1 feedVMsPerHost   = 1 feedThreadsPerVM   = 2
+B=bridge  bridgeHosts =  1 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 1
+C=edge    edgeHosts   =  1 edgeVMsPerHost   = 4 edgeThreadsPerVM   = 3
+threadGroupsName=bridge
+
+cq/dedicatedEdgesForCQOpsVerify.conf
+bridgeHosts =  1 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 1
+edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 3
+doExecuteWithInitialResultsCQ = true
+threadGroupsName=bridge
+
+/*cq/dedicatedEdgesForCQOpsVerify.conf
+bridgeHosts =  1 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 1
+edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 3
+doExecuteWithInitialResultsCQ = false*/
+
+cq/multRegCQPutOnlyWithVerifyResult.conf
+A=feed    feedHosts   =  1 feedVMsPerHost   = 2 feedThreadsPerVM   = 2
+B=bridge  bridgeHosts =  1 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 1
+C=edge    edgeHosts   =  1 edgeVMsPerHost   = 4 edgeThreadsPerVM   = 3
+threadGroupsName=bridge
+
+/*cq/multRegCQPutOnlyNotVerifyResult.conf
+A=feed    feedHosts   =  1 feedVMsPerHost   = 1 feedThreadsPerVM   = 2
+B=bridge  bridgeHosts =  1 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 1
+C=edge    edgeHosts   =  1 edgeVMsPerHost   = 4 edgeThreadsPerVM   = 3*/
+
+cq/multRegCQVerifyResultWithPrimaryIndex.conf
+A=feed    feedHosts   =  1 feedVMsPerHost   = 1 feedThreadsPerVM   = 3
+B=bridge  bridgeHosts =  1 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 1
+C=edge    edgeHosts   =  1 edgeVMsPerHost   = 4 edgeThreadsPerVM   = 3
+createPrimaryIndex = true
+threadGroupsName=bridge
+
+/*cq/multRegCQVerifyResultWithFunctionalIndex.conf
+A=feed    feedHosts   =  1 feedVMsPerHost   = 1 feedThreadsPerVM   = 3
+B=bridge  bridgeHosts =  1 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 1
+C=edge    edgeHosts   =  1 edgeVMsPerHost   = 4 edgeThreadsPerVM   = 3
+createQtyIndex = true
+createMktValueIndex = false*/
+
+cq/multRegCQVerifyResultWithFunctionalIndex.conf
+A=feed    feedHosts   =  1 feedVMsPerHost   = 1 feedThreadsPerVM   = 3
+B=bridge  bridgeHosts =  1 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 1
+C=edge    edgeHosts   =  1 edgeVMsPerHost   = 4 edgeThreadsPerVM   = 3
+createQtyIndex = false
+createMktValueIndex = true
+threadGroupsName=bridge
+
+/*cq/multRegOpsCQListenerWithFeeder.conf
+A=feed    feedHosts   =  1 feedVMsPerHost   = 1 feedThreadsPerVM   = 6
+B=bridge  bridgeHosts =  1 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 1
+C=edge    edgeHosts   =  1 edgeVMsPerHost   = 4 edgeThreadsPerVM   = 1*/
+
+cq/serialMultRegOpsCQListenerWithFeeder.conf
+A=feed    feedHosts   =  1 feedVMsPerHost   = 1 feedThreadsPerVM   = 6
+B=bridge  bridgeHosts =  1 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 1
+C=edge    edgeHosts   =  1 edgeVMsPerHost   = 4 edgeThreadsPerVM   = 1
+threadGroupsName=bridge
+
+/*cq/multRegCQPutAllOnlyHA.conf
+A=feed    feedHosts   =  1 feedVMsPerHost   = 1 feedThreadsPerVM   = 1
+B=bridge  bridgeHosts =  1 bridgeVMsPerHost = 4 bridgeThreadsPerVM = 1
+C=edge    edgeHosts   =  1 edgeVMsPerHost   = 5 edgeThreadsPerVM   = 3
+
+cq/multRegCQPutAllOnlyPR.conf
+A=feed    feedHosts   =  1 feedVMsPerHost   = 1 feedThreadsPerVM   = 1
+B=bridge  bridgeHosts =  1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 2
+C=edge    edgeHosts   =  1 edgeVMsPerHost   = 5 edgeThreadsPerVM   = 4*/
+    
+cq/multRegCQPutAllWithFailover.conf
+A=feed    feedHosts   =  1 feedVMsPerHost   = 1 feedThreadsPerVM   = 1
+B=bridge  bridgeHosts =  1 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 1
+C=edge    edgeHosts   =  1 edgeVMsPerHost   = 4 edgeThreadsPerVM   = 3
+threadGroupsName=bridge
+
+cq/multRegCQPutAllOnlyPRHA.conf
+A=feed    feedHosts   =  1 feedVMsPerHost   = 1 feedThreadsPerVM   = 1
+B=bridge  bridgeHosts =  1 bridgeVMsPerHost = 4 bridgeThreadsPerVM = 2
+C=edge    edgeHosts   =  1 edgeVMsPerHost   = 5 edgeThreadsPerVM   = 4
+threadGroupsName=bridge
+
+

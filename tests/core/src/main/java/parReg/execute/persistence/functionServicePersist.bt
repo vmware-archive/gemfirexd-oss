@@ -1,0 +1,25 @@
+parReg/execute/persistence/funcExeWithoutCustomPartitioningPersist.conf 
+   peerHosts=5 peerVMsPerHost=2 peerThreadsPerVM=20 
+   numKeys=5000 byteArraySize=5 numOfAccessors=2 redundantCopies=unused   
+parReg/execute/persistence/customPartitioningWithFuncExePersist.conf 
+   peerHosts=5 peerVMsPerHost=2 peerThreadsPerVM=20 
+   numKeys=5000 byteArraySize=5 numOfAccessors=2 redundantCopies=unused
+parReg/execute/persistence/funcExeWithColocationPersist.conf 
+   peerHosts=5 peerVMsPerHost=2 peerThreadsPerVM=20 
+   numKeys=1000 byteArraySize=5 redundantCopies=unused
+/*commenting out for Cheetah release
+parReg/execute/persistence/hctFuncExecWOCustomPartitionPersist.conf
+   edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=1000 byteArraySize=500 redundancy=1 
+   redundantCopies=unused
+parReg/execute/persistence/hctFuncExecWithCustomPartitioningPersist.conf
+   edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=1000 byteArraySize=500 redundancy=2
+   redundantCopies=unused
+parReg/execute/persistence/hctFuncExecWithColocationPersist.conf
+   edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=1000 byteArraySize=500 redundancy=3 
+   redundantCopies=unused */

@@ -1,0 +1,86 @@
+## Repository layout
+
+The master branch now mostly mimics the layout of Apache Geode layout for GemFire components and a more structured one for GemFireXD components. It uses gradle based build that can build entire GemFire+GemFireXD+hydra sources and run unit tests (running hydra tests still needs to be added).
+
+Some details on the directories in GemFire layout are mentioned below:
+
+ gemfire-shared/src/main/java                   ===> Code shared between GemFire and GemFireXD client.
+
+ gemfire-joptsimple/src/main/java               ===> A copy of JOpt Simple adapted for GemFire.
+
+ gemfire-json/src/main/java                     ===> A copy of org.json adapted for GemFire.
+
+ gemfire-core/src/main/java                     ===> Core GemFire code.
+
+ gemfire-examples/src/main/java                 ===> GemFire Tutorial, Quickstart and helloworld.
+
+ gemfire-examples/src/(dist,osgi)/java          ===> Other GemFire examples.
+
+ gemfire-core/src/main/java/templates           ===> Example implementations for Authentication etc.
+
+ tests/core/src/main/java/com                   ===> The JUnit and DUnit test suite for GemFire.
+
+ tests/core/src/main/java                       ===> Hydra test framework and full GemFire hydra test suite.
+
+ tests/core/src/(version1,version2)             ===> Hydra tests for GemFire product versioning.
+
+
+The GemFireXD layout is divided into separate logical modules namely:
+
+1) shared
+
+2) client
+
+3) prebuild
+
+4) core
+
+5) tools
+
+6) examples
+
+ gemfirexd/shared/src/main/java                 ===> Code shared between GemFireXD client and server/tools.
+
+ gemfirexd/client/src/main/java                 ===> GemFireXD JDBC client.
+
+ gemfirexd/client/src/main/gfxdcpp,gfxdodbc     ===> gemfirexd/client/src/main/java,gfxdcpp,gfxdodbc
+
+ gemfirexd/csharp                               ===> gemfirexd/client/csharp
+
+ gemfirexd/java/tools,gemfirexd/tools           ===> various dirs under gemfirexd/tools
+
+ gemfirexd/build                                ===> gemfirexd/prebuild
+
+ gemfirexd/java/engine and other core code      ===> gemfirexd/core/src/main/java and other directories under gemfirexd/core
+
+ tests/sql, gfxdperf and other GFXD test code   ===> testing/sql/src/main/java
+
+ demo and other such code                       ===> gemfirexd/examples
+
+
+## Build targets
+
+GemFireXD now builds completely using gradle. Due to the repository layout changes, the older ant builds no longer work (unless someone takes the effort to change them). The new scripts are much simpler, cleaner and way faster than old ant scripts but are still missing a bunch of old targets. Plan is to add them progressively as required.
+
+  * Switch to "master" branch if not on that already. Update the branch to the latest version. Then test the build with: ./gradlew clean && ./gradlew assemble testClasses
+  * Run a a GemFireXD junit test: ./gradlew :gemfirexd:tools:test -Dtest.single=\*\*/BugsTest
+
+
+## Setting up Intellij with gradle
+
+If the build works fine, then import into Intellij:
+  * Update Intellij to the latest version just to be sure. Double check that Gradle plugin is enabled in File->Settings->Plugins.
+  * Select import project, then point to the GemFireXD directory. Use external Gradle import. Add -XX:MaxPermSize=350m to VM options in global Gradle settings. Select defaults, next, next ... finish. Ignore "Gradle location is unknown warning". Ensure that a JDK7 installation has been selected.
+  * Once import finishes, go to File->Settings->Editor->Code Style->Java. Set the scheme as "Project". Then OK to apply and close it. Next copy codeStyleSettings.xml to .idea directory created by Intellij and then File->Synchronize just to be sure. Check that settings are now applied in File->Settings->Editor->Code Style->Java which should show TabSize, Indent as 2 and continuation indent as 4.
+  * If the Gradle tab is not visible immediately, then select it from window list popup at the left-bottom corner of IDE. If you click on that window list icon, then the tabs will appear permanently.
+  * Generate GemFireXD required sources by expanding :gemfirexd->Tasks->other. Right click on "generateSources" and run it. The Run item may not be available if indexing is still in progress, so wait for it to finish. This step has to be done only first time, or if ./gradlew clean has been run, or you have made changes to javacc source files.
+  * Increase the compiler heap sizes else build can take quite long. In File->Settings->Build, Execution, Deployment->Compiler increase "Build process heap size" to say 1536 or 2048.
+  * Test the full build.
+  * Open Run->Edit Configurations. Expand Defaults, and select JUnit. Append "/build-artifacts" to the working directory i.e. the directory should be "$MODULE_DIR$/build-artifacts".
+  * Try Run->Run... on a test like CreateSchemaTest. Select the normal junit configuration (red+green arrows icon) and not gradle configuration (green round icon).
+
+
+### Running a junit test
+
+ * When selecting a run configuration for junit, avoid selecting the gradle one (green round icon) otherwise that will launch an external gradle process that will start building the project all over again. Use the normal junit (red+green arrows icon).
+ * For JUnit tests, ensure that working directory is "$MODULE_DIR$/build-artifacts" as mentioned before. Otherwise many GemFireXD tests will fail to find the resource files required in many tests. They will also pollute the checkouts with large number of log files etc, so this will allow those to go into build-artifacts that can also be cleaned up easily.

@@ -1,0 +1,43 @@
+#!/bin/bash
+#set -xv
+#
+# This script is used by the unit test framework . Instead
+# of invoking java directly, this script is invoked to redirect
+# java 's stdout and stderr to a log file, so that failures
+# are debuggable.  If junit is used for the redirection ,
+# we can't see output until the test finishes.
+
+ERRORSDIR=$1
+shift
+
+# JRE_JAVA is the complete path to the java vm, to allow specifying
+#   the 32 bit or 64 bit VM 
+JRE_JAVA=$1
+shift
+
+foundit=0
+for arg; do
+   if [ $foundit -eq 1 ]; then
+     TestName=$arg
+     break;
+   else
+     if [ "$arg" == "org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner" ]; then
+       foundit=1
+       #echo "found JUnitTestRunner marker"
+     fi
+   fi
+done
+
+# removed colons from time output since otherwise Xcode interprets line as
+# error in emacs format
+echo "`date +%H%M%S`: ${TestName}"
+MYLOG=${TestName}.txt
+#$JRE_JAVA $JUNIT_VMARGS -Dgemfire.log-file=${MYLOG}.stdout "$@" >> $MYLOG 2>&1
+#JUNIT_VMARGS="-Xdebug -Xrunjdwp:transport=dt_socket,address=8008,suspend=y,server=y"
+echo "tests/bin/runtest: $JRE_JAVA $JUNIT_VMARGS $@" > $MYLOG
+$JRE_JAVA $JUNIT_VMARGS "$@" >> $MYLOG 2>&1
+status=$?
+if [[ "$status" != "0" ]]; then
+  cp $MYLOG $ERRORSDIR
+  exit $status
+fi

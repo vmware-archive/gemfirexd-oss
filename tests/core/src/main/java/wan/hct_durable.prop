@@ -1,0 +1,15 @@
+# wan scaleout
+wanSites = 1
+locatorHostsPerSite = 1
+locatorVMsPerHost = 1
+locatorThreadsPerVM = 1
+bridgeHostsPerSite = 1
+bridgeVMsPerHost = 1
+bridgeThreadsPerVM = 1
+edgeHostsPerSite = 1
+edgeVMsPerHost = 1
+edgeThreadsPerVM = 1
+
+# memory for cache servers and clients
+serverMem = 256m
+clientMem = 256m

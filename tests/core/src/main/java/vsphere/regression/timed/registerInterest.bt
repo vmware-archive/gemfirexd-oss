@@ -1,0 +1,5 @@
+//vMotion during Register Interest
+hct/serialBridgeNotify.conf
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+      threadGroupsName=bridge

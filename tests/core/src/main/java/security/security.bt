@@ -1,0 +1,177 @@
+security/clientAuthnAndAuthzFailoverTest.conf
+A = bridge  bridgeHosts =  5 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+B = writer    writerHosts   =  5 writerVMsPerHost   = 1  writerThreadsPerVM   = 3
+C = reader    readerHosts   =  5 readerVMsPerHost   = 1  readerThreadsPerVM   = 3
+D = query    queryHosts   =  5 queryVMsPerHost   = 1  queryThreadsPerVM   = 1
+E = invalid    invalidHosts   =  1 invalidVMsPerHost   = 1  invalidThreadsPerVM   = 1
+nPutKeyRange=200
+
+security/clientAuthnAndAuthzTest.conf
+A = bridge  bridgeHosts =  1 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+B = writer    writerHosts   =  1 writerVMsPerHost   = 1  writerThreadsPerVM   = 3
+C = reader    readerHosts   =  1 readerVMsPerHost   = 1  readerThreadsPerVM   = 3
+D = query    queryHosts   =  1 queryVMsPerHost   = 1  queryThreadsPerVM   = 1
+E = invalid    invalidHosts   =  1 invalidVMsPerHost   = 1  invalidThreadsPerVM   = 1
+nPutKeyRange=200
+
+security/ServerAuthTest.conf
+A = locator  locatorHosts =  1 locatorVMsPerHost = 1  locatorThreadsPerVM = 1
+B = validBridge    validBridgeHosts   =  4 validBridgeVMsPerHost   = 1  validBridgeThreadsPerVM   = 1
+C = invalidBridge    invalidBridgeHosts   =  2 invalidBridgeVMsPerHost   = 1  invalidBridgeThreadsPerVM   = 1
+D = edge    edgeHosts   =  5 edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+nPutKeyRange=200
+
+security/LocatorAsGcTest.conf
+A = locatorA  locatorAHosts =  1 locatorAVMsPerHost = 1  locatorAThreadsPerVM = 1
+B = locatorB  locatorBHosts =  1 locatorBVMsPerHost = 1  locatorBThreadsPerVM = 1
+C = validBridge    validBridgeHosts   =  4 validBridgeVMsPerHost   = 1  validBridgeThreadsPerVM   = 1
+D = invalidBridge    invalidBridgeHosts   =  2 invalidBridgeVMsPerHost   = 1  invalidBridgeThreadsPerVM   = 1
+E = edge    edgeHosts   =  5 edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+
+security/registerInterestAuthorization.conf
+A = bridge  bridgeHosts =  8 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+B = writer    writerHosts   =  1 writerVMsPerHost   = 1  writerThreadsPerVM   = 3
+C = reader    readerHosts   =  2 readerVMsPerHost   = 1  readerThreadsPerVM   = 3
+D = query    queryHosts   =  2 queryVMsPerHost   = 1  queryThreadsPerVM   = 3
+E = admin    adminHosts   =  2 adminVMsPerHost   = 1  adminThreadsPerVM   = 3
+nPutKeyRange=200
+
+security/clientAuthnAndAuthzPrTest.conf
+A = bridge  bridgeHosts =  2 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+B = writer    writerHosts   =  1 writerVMsPerHost   = 1  writerThreadsPerVM   = 3
+C = reader    readerHosts   =  1 readerVMsPerHost   = 1  readerThreadsPerVM   = 3
+D = query    queryHosts   =  1 queryVMsPerHost   = 1  queryThreadsPerVM   = 1
+E = invalid    invalidHosts   =  1 invalidVMsPerHost   = 1  invalidThreadsPerVM   = 1
+nPutKeyRange=200 redundantCopies=0
+
+security/clientAuthnAndAuthzPrFailoverTest.conf
+A = bridge  bridgeHosts =  5 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+B = writer    writerHosts   =  5 writerVMsPerHost   = 1  writerThreadsPerVM   = 3
+C = reader    readerHosts   =  5 readerVMsPerHost   = 1  readerThreadsPerVM   = 3
+D = query    queryHosts   =  5 queryVMsPerHost   = 1  queryThreadsPerVM   = 1
+E = invalid    invalidHosts   =  1 invalidVMsPerHost   = 1  invalidThreadsPerVM   = 1
+nPutKeyRange=200 redundantCopies=2
+
+
+security/clientAuthnAndAuthzDRTest.conf
+A = bridge  bridgeHosts =  2 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+B = writer    writerHosts   =  1 writerVMsPerHost   = 1  writerThreadsPerVM   = 3
+C = reader    readerHosts   =  1 readerVMsPerHost   = 1  readerThreadsPerVM   = 3
+D = query    queryHosts   =  1 queryVMsPerHost   = 1  queryThreadsPerVM   = 1
+E = invalid    invalidHosts   =  1 invalidVMsPerHost   = 1  invalidThreadsPerVM   = 1
+nPutKeyRange=200 redundantCopies=0
+
+security/clientAuthnAndAuthzFailoverDRTest.conf
+A = bridge  bridgeHosts =  5 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+B = writer    writerHosts   =  5 writerVMsPerHost   = 1  writerThreadsPerVM   = 3
+C = reader    readerHosts   =  5 readerVMsPerHost   = 1  readerThreadsPerVM   = 3
+D = query    queryHosts   =  5 queryVMsPerHost   = 1  queryThreadsPerVM   = 1
+E = invalid    invalidHosts   =  1 invalidVMsPerHost   = 1  invalidThreadsPerVM   = 1
+nPutKeyRange=200 redundantCopies=2
+
+security/ServerAuthPrTest.conf
+A = locator  locatorHosts =  1 locatorVMsPerHost = 1  locatorThreadsPerVM = 1
+B = validBridge    validBridgeHosts   =  4 validBridgeVMsPerHost   = 1  validBridgeThreadsPerVM   = 1
+C = invalidBridge    invalidBridgeHosts   =  2 invalidBridgeVMsPerHost   = 1  invalidBridgeThreadsPerVM   = 1
+D = edge    edgeHosts   =  5 edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+nPutKeyRange=200 redundantCopies=2
+
+security/ServerAuthDRTest.conf
+A = locator  locatorHosts =  1 locatorVMsPerHost = 1  locatorThreadsPerVM = 1
+B = validBridge    validBridgeHosts   =  4 validBridgeVMsPerHost   = 1  validBridgeThreadsPerVM   = 1
+C = invalidBridge    invalidBridgeHosts   =  2 invalidBridgeVMsPerHost   = 1  invalidBridgeThreadsPerVM   = 1
+D = edge    edgeHosts   =  5 edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+nPutKeyRange=200
+
+security/wan_p2p.conf
+validWanSites=3 invalidWanSites=3 locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1 bridgeHostsPerSite=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHostsPerSite=1 edgeVMsPerHost=1 edgeThreadsPerVM=1 peerMem = 256m
+
+security/wan_hct.conf
+validWanSites=3 invalidWanSites=3 locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1 bridgeHostsPerSite=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHostsPerSite=1 edgeVMsPerHost=2 edgeThreadsPerVM=1 peerMem = 256m
+
+security/wan_authorization.conf
+writerWanSites=3 readerWanSites=3 locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1 bridgeHostsPerSite=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHostsPerSite=1 edgeVMsPerHost=1 edgeThreadsPerVM=1 peerMem = 256m
+
+security/funcExecutionAuthorization.conf
+A = bridge  bridgeHosts =  1 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+B = regionExecuteEdge    regionExecuteEdgeHosts   =  1 regionExecuteEdgeVMsPerHost   = 1  regionExecuteEdgeThreadsPerVM   = 3
+C = serverExecuteEdge    serverExecuteEdgeHosts   =  1 serverExecuteEdgeVMsPerHost   = 1  serverExecuteEdgeThreadsPerVM   = 3
+nPutKeyRange=20
+
+security/multiuserAuthnAndAuthzTest.conf
+A = bridge  bridgeHosts =  1 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+B = edge    edgeHosts   =  1 edgeVMsPerHost   = 1  edgeThreadsPerVM   = 3
+C = feed    feedHosts   =  1 feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+nPutKeyRange=200
+
+security/multiuserAuthnAndAuthzFailoverTest.conf
+A = bridge  bridgeHosts =  5 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+B = edge    edgeHosts   =  5 edgeVMsPerHost   = 1  edgeThreadsPerVM   = 3
+C = feed    feedHosts   =  1 feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+nPutKeyRange=200
+
+security/multiuserDurableCQTest.conf
+A = bridge  bridgeHosts =  1 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+B = edge    edgeHosts   =  2 edgeVMsPerHost   = 1  edgeThreadsPerVM   = 2
+C = reference referenceHosts = 1 referenceVMsPerHost = 1  referenceThreadsPerVM = 1
+D = feed    feedHosts   =  1 feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+hc.nPutThreads=3 nPutKeyRange=3
+
+security/multiuserAuthnAndAuthzPrTest.conf
+A = bridge  bridgeHosts =  1 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+B = edge    edgeHosts   =  1 edgeVMsPerHost   = 1  edgeThreadsPerVM   = 3
+C = feed    feedHosts   =  1 feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+nPutKeyRange=200 redundantCopies=0
+
+security/multiuserAuthnAndAuthzPrFailoverTest.conf
+A = bridge  bridgeHosts =  5 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+B = edge    edgeHosts   =  5 edgeVMsPerHost   = 1  edgeThreadsPerVM   = 3
+C = feed    feedHosts   =  1 feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+nPutKeyRange=200 redundantCopies=2
+
+security/multiuserAuthnAndAuthzDRTest.conf
+A = bridge  bridgeHosts =  2 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+B = edge    edgeHosts   =  1 edgeVMsPerHost   = 1  edgeThreadsPerVM   = 3
+C = feed    feedHosts   =  1 feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+nPutKeyRange=200 
+
+security/multiuserAuthnAndAuthzFailoverDRTest.conf
+A = bridge  bridgeHosts =  5 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+B = edge    edgeHosts   =  5 edgeVMsPerHost   = 1  edgeThreadsPerVM   = 3
+C = feed    feedHosts   =  1 feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+nPutKeyRange=200 
+
+// client/server tx tests
+//disabled for #44146
+//security/tx/clientAuthnAndAuthzFailoverTest.conf
+//A = bridge  bridgeHosts =  5 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+//B = writer    writerHosts   =  5 writerVMsPerHost   = 1  writerThreadsPerVM   = 3
+//C = reader    readerHosts   =  5 readerVMsPerHost   = 1  readerThreadsPerVM   = 3
+//D = query    queryHosts   =  5 queryVMsPerHost   = 1  queryThreadsPerVM   = 1
+//E = invalid    invalidHosts   =  1 invalidVMsPerHost   = 1  invalidThreadsPerVM   = 1
+//nPutKeyRange=200
+
+//security/tx/clientAuthnAndAuthzTest.conf
+//A = bridge  bridgeHosts =  1 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+//B = writer    writerHosts   =  1 writerVMsPerHost   = 1  writerThreadsPerVM   = 3
+//C = reader    readerHosts   =  1 readerVMsPerHost   = 1  readerThreadsPerVM   = 3
+//D = query    queryHosts   =  1 queryVMsPerHost   = 1  queryThreadsPerVM   = 1
+//E = invalid    invalidHosts   =  1 invalidVMsPerHost   = 1  invalidThreadsPerVM   = 1
+//nPutKeyRange=200
+
+//security/tx/clientAuthnAndAuthzPrTest.conf
+//A = bridge  bridgeHosts =  2 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+//B = writer    writerHosts   =  1 writerVMsPerHost   = 1  writerThreadsPerVM   = 3
+//C = reader    readerHosts   =  1 readerVMsPerHost   = 1  readerThreadsPerVM   = 3
+//D = query    queryHosts   =  1 queryVMsPerHost   = 1  queryThreadsPerVM   = 1
+//E = invalid    invalidHosts   =  1 invalidVMsPerHost   = 1  invalidThreadsPerVM   = 1
+//nPutKeyRange=200 redundantCopies=0
+
+//security/tx/clientAuthnAndAuthzPrFailoverTest.conf
+//A = bridge  bridgeHosts =  5 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+//B = writer    writerHosts   =  5 writerVMsPerHost   = 1  writerThreadsPerVM   = 3
+//C = reader    readerHosts   =  5 readerVMsPerHost   = 1  readerThreadsPerVM   = 3
+//D = query    queryHosts   =  5 queryVMsPerHost   = 1  queryThreadsPerVM   = 1
+//E = invalid    invalidHosts   =  1 invalidVMsPerHost   = 1  invalidThreadsPerVM   = 1
+//nPutKeyRange=200 redundantCopies=2
+

@@ -1,0 +1,38 @@
+// How to turn the knobs on this test:
+//   Controlling the number of entries per member
+//      If maxKeys is N, then each member (designated with peerHosts/peerVMsPerHost)
+//      will create N entries. This is true no matter how many threads you have doing
+//      the work in a member. However those entries are distributed to the other members since the
+//      dataPolicy is replicate.  For example, with maxKeys=100 and 2 members, each member creates 100 entries,
+//      and they are distributed to the other member, so each member will have 200 entries.
+//   Controlling the amount of payload put per member
+//      For a byte[] size of 1K (1024 bytes), use one of the following lines below in the test param section
+//         maxKeys = 1048576 objectSize = 1024 // 1G of payload
+//         maxKeys = 10485760 objectSize = 1024 // 10G of payload
+//         maxKeys = 20971520 objectSize = 1024 // 20G of payload
+//         maxKeys = 31457280 objectSize = 1024 // 30G of payload
+//         maxKeys = 41943040 objectSize = 1024 // 40G of payload
+//         maxKeys = 52428800 objectSize = 1024 // 50G of payload
+//      For a byte[] size of 100K (102400 bytes):
+//         maxKeys = 10486 objectSize = 102400 // 1G of payload
+//         maxKeys = 104858 objectSize = 102400 // 10G of payload
+//         maxKeys = 209715 objectSize = 102400 // 20G of payload
+//         maxKeys = 314573 objectSize = 102400 // 30G of payload
+//         maxKeys = 419430 objectSize = 102400 // 40G of payload
+//         maxKeys = 524288 objectSize = 102400 // 50G of payload
+//
+cacheperf/comparisons/replicated/memScale/peerDataPut.conf
+   peerHosts = 1 peerVMsPerHost = 1 peerThreadsPerVM = 5
+   heapMB = 60000
+   maxKeys = 314573 objectSize = 102400 // 30G of payload
+
+// The get case is not interesting in the heap case because the data is already
+// present in the region, thus the get does not have much work to do (with copyOnRead false, the default).
+// However this case is interesting in the off-heap case because the object
+// must be brought in from off-heap in a get.
+cacheperf/comparisons/replicated/memScale/peerDataGet.conf
+   peerHosts = 1 peerVMsPerHost = 1 peerThreadsPerVM = 5
+   heapMB = 10000
+   maxKeys = 314573 objectSize = 102400 // 30G of payload
+   copyOnRead=true,false
+

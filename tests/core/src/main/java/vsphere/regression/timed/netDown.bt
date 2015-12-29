@@ -1,0 +1,6 @@
+vsphere/regression/serialPRNetDown.conf redundantCopies = 3 
+   locatorHosts=1  locatorVMsPerHost=1 locatorThreadsPerVM=1
+   A=survivingSide survivingSideHosts=1 survivingSideVMsPerHost=4 survivingSideThreadsPerVM=5
+   B=losingSide    losingSideHosts=1  losingSideVMsPerHost=3  losingSideThreadsPerVM=5
+   onlyOnPlatforms=Linux
+

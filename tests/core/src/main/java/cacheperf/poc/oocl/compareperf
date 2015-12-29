@@ -1,0 +1,1 @@
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m -Dmode=raw -DcompareByKey=true -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE -DaddTestKey=true perffmwk.PerfComparer pr_vms/ pr_tds/ rr_vms/ rr_tds/

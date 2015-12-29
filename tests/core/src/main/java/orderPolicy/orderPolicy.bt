@@ -1,0 +1,66 @@
+orderPolicy/p2pOrderByThread.conf 
+   wanSites = 3 peerMem=768m byteArraySize=1000
+   peerHostsPerSite=1 peerVMsPerHost=3 peerThreadsPerVM=2 
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+
+orderPolicy/p2pOrderByThreadPersist.conf 
+   wanSites = 3 peerMem=768m byteArraySize=1000
+   peerHostsPerSite=1 peerVMsPerHost=3 peerThreadsPerVM=2 
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+
+orderPolicy/p2pOrderByThreadHA.conf 
+   wanSites = 3 peerMem=768m byteArraySize=1000
+   peerHostsPerSite=1 peerVMsPerHost=3 peerThreadsPerVM=2 
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+
+// client/server OrderPolicy.THREAD
+orderPolicy/hctOrderByThread.conf 
+   wanSites = 3 serverMem=400m clientMem=256m byteArraySize=1000
+   bridgeHostsPerSite=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 
+   edgeHostsPerSite=1 edgeVMsPerHost=2 edgeThreadsPerVM=2 
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+
+// peer OrderPolicy.KEY
+orderPolicy/p2pOrderByKey.conf 
+   wanSites = 3 peerMem=768m byteArraySize=1000
+   peerHostsPerSite=1 peerVMsPerHost=3 peerThreadsPerVM=2 
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+
+orderPolicy/p2pOrderByKeyPersist.conf 
+   wanSites = 3 peerMem=768m byteArraySize=1000
+   peerHostsPerSite=1 peerVMsPerHost=3 peerThreadsPerVM=2 
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+
+orderPolicy/p2pOrderByKeyHA.conf 
+   wanSites = 3 peerMem=768m byteArraySize=1000
+   peerHostsPerSite=1 peerVMsPerHost=3 peerThreadsPerVM=2 
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+
+// client/server OrderPolicy.KEY
+orderPolicy/hctOrderByKey.conf 
+   wanSites = 3 serverMem=256m clientMem=256m byteArraySize=1000
+   bridgeHostsPerSite=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 
+   edgeHostsPerSite=1 edgeVMsPerHost=2 edgeThreadsPerVM=2 
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+
+// pause/resume with persistence
+orderPolicy/p2pOrderByKeyPersistWithPause.conf 
+   wanSites = 3 peerMem=768m byteArraySize=1000
+   peerHostsPerSite=1 peerVMsPerHost=2 peerThreadsPerVM=2 
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+
+orderPolicy/p2pOrderByThreadPersistWithPause.conf 
+   wanSites = 3 peerMem=768m byteArraySize=1000
+   peerHostsPerSite=1 peerVMsPerHost=2 peerThreadsPerVM=2 
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+
+// stop/start with persistence
+orderPolicy/p2pOrderByKeyPersistWithStop.conf 
+   wanSites = 3 peerMem=768m byteArraySize=1000
+   peerHostsPerSite=1 peerVMsPerHost=2 peerThreadsPerVM=2 
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+
+orderPolicy/p2pOrderByThreadPersistWithStop.conf 
+   wanSites = 3 peerMem=768m byteArraySize=1000
+   peerHostsPerSite=1 peerVMsPerHost=2 peerThreadsPerVM=2 
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1

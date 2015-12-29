@@ -1,0 +1,42 @@
+How To Analyze PST12
+====================
+ 
+Test Description:
+Cache get/put performance for a GemFire cache using scope distributed ack, and objects 
+of type objects.ArrayOfByte and size 1K.  There are 100 threads per VM on 4 VMs on 3 hosts.  Threads 
+do 80% gets and 20% puts, using random keys.  A capacity controller ensures that some gets are cache misses.
+
+Results have previously been reported for linux boxes in the gbit network.  For example odin, thor & bobo.
+
+3.0 Results were reported as shown below:
+----------------------------------------------
+400 threads on 3 hosts (linux w/gbit network):
+    2917 gets/sec total throughput
+     728 puts/sec total throughput
+----------------------------------------------
+
+Results could be gathered from the perfreport.txt file, though I noticed in looking at the 3.0 runs, that 
+these did not match.  (The perfreport.txt gets & puts stats from 3.0 are shown below):
+--------------------------------------------------------------------------------
+getsPerSecond * cacheperf.CachePerfStats * gets
+filter=perSecond combine=combineAcrossArchives ops=min,max,mean?,stddev? trimspec=putgets
+--------------------------------------------------------------------------------
+==> min=0 max=2204000 mean=2761.78 stddev=74088.827
+
+putsPerSecond * cacheperf.CachePerfStats * puts
+filter=perSecond combine=combineAcrossArchives ops=min,max,mean?,stddev? trimspec=putgets
+--------------------------------------------------------------------------------
+==> min=0 max=584000 mean=689.959 stddev=19590.95
+--------------------------------------------------------------------------------
+
+However, if I went into VSD and brought up the CachePerfStats (gets & puts) OR the 
+cacheperf Thread-XXX, gets & puts and trimmed away the warmup & cooldown (determined visually), I get the 
+same values reported for 3.0.
+
+For 3.5, I simply reported the values from perfreport.txt
+gets - 2930
+puts - 731
+
+However, using the same ad hoc method with VSD stats used for 3.0, I can see:
+gets - 3095
+puts - 1150

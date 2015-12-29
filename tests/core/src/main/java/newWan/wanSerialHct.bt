@@ -1,0 +1,503 @@
+newWan/hct.conf
+	wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+	bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+	edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+newWan/hctKill.conf
+      wanSites = 2,3,4	maxOps=15000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+newWan/hctRing.conf
+      wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+newWan/hctHubAndSpoke.conf
+      wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+newWan/lazyReceiverHct.conf
+      wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+newWan/hct_durable.conf
+	wanSites=2,3,4 maxOps=1000 resultWaitSec=600
+	edgeVMsPerHost=3 edgeThreadsPerVM=5 bridgeVMsPerHost = 4
+	
+newWan/hctPersist.conf
+      wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+newWan/hctKillPersist.conf
+      wanSites = 2,3,4 maxOps=15000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+newWan/hctRingPersist.conf
+      wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+newWan/hctHubAndSpokePersist.conf
+      wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+newWan/lazyReceiverHctPersist.conf
+      wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+newWan/hct_durablePersist.conf
+      wanSites=2,3,4 maxOps=1000 resultWaitSec=600
+      edgeVMsPerHost=3 edgeThreadsPerVM=5 bridgeVMsPerHost = 4
+
+// partitioned region serial hct wan tests
+parReg/newWan/serial/hct.conf 
+	wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+	bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+	edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/serial/hctKill.conf
+      wanSites = 2,3,4 maxOps=15000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/serial/hctRing.conf
+      wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/serial/hctHubAndSpoke.conf
+      wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/serial/lazyReceiverHct.conf
+      wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2 
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/serial/hct_durable.conf
+      wanSites=2,3,4 maxOps=1000 resultWaitSec=600
+      edgeVMsPerHost=3 edgeThreadsPerVM=5 bridgeVMsPerHost = 4
+
+parReg/newWan/serial/persistence/hctPersist.conf 
+      wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+    		
+parReg/newWan/serial/persistence/hctKillPersist.conf
+      wanSites = 2,3,4 maxOps=15000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/serial/persistence/hctRingPersist.conf
+      wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/serial/persistence/hctHubAndSpokePersist.conf
+      wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/serial/persistence/lazyReceiverHctPersist.conf
+      wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/serial/persistence/hct_durablePersist.conf
+      wanSites=2,3,4 maxOps=1000 resultWaitSec=600
+      edgeVMsPerHost=3 edgeThreadsPerVM=5 bridgeVMsPerHost = 4
+
+parReg/newWan/serial/colocation/hctParRegColocation.conf
+      wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+    
+parReg/newWan/serial/colocation/hctKillParRegColocation.conf
+      wanSites = 2,3,4 maxOps=300 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/serial/colocation/hctRingParRegColocation.conf
+      wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/serial/colocation/hctHubAndSpoke.conf
+      wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/serial/colocation/lazyReceiverHct.conf
+      wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/serial/colocation/hct_durable.conf
+      wanSites=2,3,4 maxOps=1000 resultWaitSec=600
+      edgeVMsPerHost=3 edgeThreadsPerVM=5 bridgeVMsPerHost = 4
+
+parReg/newWan/serial/colocation/hctParRegColocationPersist.conf
+      wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/serial/colocation/hctKillParRegColocationPersist.conf
+      wanSites = 2,3,4 maxOps=15000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/serial/colocation/hctRingParRegColocationPersist.conf
+      wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/serial/colocation/hctHubAndSpokePersist.conf
+      wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/serial/colocation/lazyReceiverHctPersist.conf
+      wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/serial/colocation/hct_durablePersist.conf
+      wanSites=2,3,4 maxOps=1000 resultWaitSec=600
+      edgeVMsPerHost=3 edgeThreadsPerVM=5 bridgeVMsPerHost = 4
+
+newWan/queuePersistHct.conf
+      wanSites = 2,3,4 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 3
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+newWan/queuePersistRegionPersistHct.conf
+      wanSites = 2,3,4 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 3
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+    
+parReg/newWan/serial/queuePersistHct.conf
+	wanSites = 2,3,4 resultWaitSec=600
+	bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 3
+	edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5		
+
+parReg/newWan/serial/persistence/queuePersistRegionPersistHct.conf
+	wanSites = 2,3,4 resultWaitSec=600
+	bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 3
+	edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+	
+parReg/newWan/serial/colocation/queuePersistHct.conf
+	wanSites = 2,3,4 resultWaitSec=600
+	bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 3
+	edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5		
+
+parReg/newWan/serial/colocation/queuePersistRegionPersistHct.conf
+	wanSites = 2,3,4 resultWaitSec=600
+	bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 3
+	edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+//rebalance tests     	
+parReg/newWan/serial/concKnownKeysWANbridge.conf wanSites=2
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   bridgeHostsPerSite = 4 bridgeVMsPerHost=1 bridgeThreadsPerVM = 2
+   edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   numKeys = 30000 edgeVmSize=300 serverVmSize=350
+
+parReg/newWan/serial/concKnownKeysWANbridge.conf wanSites=3,4
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   bridgeHostsPerSite = 2 bridgeVMsPerHost=1 bridgeThreadsPerVM = 2
+   edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   numKeys = 30000 edgeVmSize=300 serverVmSize=350
+   
+parReg/newWan/serial/concKnownKeysWANbridgeWithCacheServer.conf wanSites=2
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   bridgeHostsPerSite = 4 bridgeVMsPerHost=1 bridgeThreadsPerVM = 2
+   edgeHostsPerSite = 3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   numKeys = 30000 edgeVmSize=300 serverVmSize=350    
+     
+parReg/newWan/serial/concKnownKeysWANbridgeWithCacheServer.conf wanSites=3,4
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   bridgeHostsPerSite = 2 bridgeVMsPerHost=1 bridgeThreadsPerVM = 2
+   edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   numKeys = 30000 edgeVmSize=300 serverVmSize=350 
+ 
+parReg/newWan/serial/persistence/concKnownKeysWANbridge.conf wanSites=2,3,4
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   bridgeHostsPerSite = 4 bridgeVMsPerHost=1 bridgeThreadsPerVM = 2
+   edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   numKeys = 20000 edgeVmSize=300 serverVmSize=350
+   
+parReg/newWan/serial/persistence/concKnownKeysWANbridgeWithCacheServer.conf wanSites=2,3,4
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   bridgeHostsPerSite = 4 bridgeVMsPerHost=1 bridgeThreadsPerVM = 2
+   edgeHostsPerSite = 3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   numKeys = 20000 edgeVmSize=300 serverVmSize=350    
+
+parReg/newWan/serial/colocation/concKnownKeysWANbridge.conf wanSites=2,3,4
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   bridgeHostsPerSite = 4 bridgeVMsPerHost=1 bridgeThreadsPerVM = 2
+   edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   numKeys = 10000 edgeVmSize=300 serverVmSize=350
+ 
+parReg/newWan/serial/colocation/concKnownKeysWANbridgePersist.conf wanSites=2,3,4
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   bridgeHostsPerSite = 4 bridgeVMsPerHost=1 bridgeThreadsPerVM = 2
+   edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   numKeys = 10000 edgeVmSize=300 serverVmSize=350
+      
+//hct tests for Sender start/stop/resume operations
+newWan/senderOperationsHct.conf
+    wanSites = 2,3,4 maxOps=5000 resultWaitSec=600
+    bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+    edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+newWan/senderOperationsHctKill.conf
+    wanSites = 2,3,4 maxOps=5000 resultWaitSec=600
+    bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+    edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/serial/colocation/senderOperationsHctParRegColocationPersist.conf
+    wanSites = 2,3,4 maxOps=5000 resultWaitSec=600
+    bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+    edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/serial/colocation/senderOperationsHctKillParRegColocationPersist.conf
+    wanSites = 2,3,4 maxOps=5000 resultWaitSec=600
+    bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+    edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+// discovery tests
+newWan/discovery/wanLocatorsHct.conf
+	wanSites = 2,3,4 maxOps=300 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1	
+
+newWan/discovery/wanLocatorsAllHct.conf
+	wanSites = 2,3,4 maxOps=300 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1	
+
+newWan/discovery/wanLocatorsPeerHAHct.conf
+	wanSites = 2,3,4 maxOps=300 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	
+newWan/discovery/wanAdminLocatorsPeerHAHct.conf
+	wanSites = 2,3,4 maxOps=300 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1		
+
+parReg/newWan/serial/discovery/wanLocatorsHct.conf
+	wanSites = 2,3,4 maxOps=300 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1	
+
+parReg/newWan/serial/discovery/wanLocatorsAllHct.conf
+	wanSites = 2,3,4 maxOps=300 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1	
+
+parReg/newWan/serial/discovery/wanLocatorsPeerHAHct.conf
+	wanSites = 2,3,4 maxOps=300 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+
+parReg/newWan/serial/discovery/wanAdminLocatorsPeerHAHct.conf
+	wanSites = 2,3,4 maxOps=300 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1	
+
+
+//cq tests (work load based)
+cq/newWan/serial/hct.conf
+       wanSites=2,3,4 bridgeVMsPerHost=4 edgeVMsPerHost=2 edgeThreadsPerVM=5
+
+cq/newWan/serial/cqParRegHct.conf
+       wanSites=2,3,4 bridgeVMsPerHost=4 edgeVMsPerHost=2 edgeThreadsPerVM=5
+       
+       
+// queue eviction tests
+newWan/serial/eviction/queueEvictionHct.conf
+	wanSites = 2,3,4 maxOps=50000 resultWaitSec=3600
+	bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+	edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+newWan/serial/eviction/queueEvictionHctPersist.conf
+	wanSites = 2,3,4 maxOps=50000 resultWaitSec=3600	
+	bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+	edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+	
+parReg/newWan/serial/queueEvictionHct.conf
+	wanSites = 2,3,4 maxOps=50000 resultWaitSec=3600	
+	bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+	edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/serial/persistence/queueEvictionHctPersist.conf
+	wanSites = 2,3,4 maxOps=50000 resultWaitSec=3600
+	bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+	edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/serial/colocation/queueEvictionHct.conf
+	wanSites = 2,3,4 maxOps=50000 resultWaitSec=3600
+	bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+	edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+	
+parReg/newWan/serial/colocation/queueEvictionHctPersist.conf
+	wanSites = 2,3,4 maxOps=50000 resultWaitSec=3600
+	bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+	edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5	
+	       
+// conflation tests (times based tests)
+newWan/serial/conflation/wanconflation.conf
+  wanSites = 4
+  locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  bridgeHostsPerSite = 1 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+  edgeHostsPerSite   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+  maxKeys = 20   dataSize = 10 serverMem = 256m clientMem = 256m
+  enableSubscriptionConflation = false batchConflation = true
+
+newWan/serial/conflation/wanmonotonic.conf
+  wanSites = 4
+  locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  bridgeHostsPerSite = 1 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+  edgeHostsPerSite   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+  maxKeys = 20   dataSize = 10 serverMem = 256m clientMem = 256m
+  enableSubscriptionConflation = false batchConflation = true
+
+newWan/serial/conflation/wanstrict.conf
+  wanSites = 4
+  locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  bridgeHostsPerSite = 1 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+  edgeHostsPerSite   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+  maxKeys = 20   dataSize = 10 serverMem = 256m clientMem = 256m
+  enableSubscriptionConflation = false batchConflation = false
+
+newWan/serial/conflation/wanconflationPersist.conf
+  wanSites = 4
+  locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  bridgeHostsPerSite = 1 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+  edgeHostsPerSite   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+  maxKeys = 20   dataSize = 10 serverMem = 256m clientMem = 256m
+  enableSubscriptionConflation = false batchConflation = true
+
+newWan/serial/conflation/wanmonotonicPersist.conf
+  wanSites = 4
+  locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  bridgeHostsPerSite = 1 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+  edgeHostsPerSite   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+  maxKeys = 20   dataSize = 10 serverMem = 256m clientMem = 256m
+  enableSubscriptionConflation = false batchConflation = true
+  
+  parReg/newWan/serial/conflation/wanconflation.conf
+  wanSites = 4
+  locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  bridgeHostsPerSite = 1 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+  edgeHostsPerSite   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+  maxKeys = 20   dataSize = 10 serverMem = 256m clientMem = 256m
+  enableSubscriptionConflation = false batchConflation = true
+
+parReg/newWan/serial/conflation/wanmonotonic.conf
+  wanSites = 4
+  locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  bridgeHostsPerSite = 1 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+  edgeHostsPerSite   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+  maxKeys = 20   dataSize = 10 serverMem = 256m clientMem = 256m
+  enableSubscriptionConflation = false batchConflation = true
+
+parReg/newWan/serial/conflation/wanconflationPersist.conf
+  wanSites = 3
+  locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  bridgeHostsPerSite = 1 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+  edgeHostsPerSite   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+  maxKeys = 20   dataSize = 10 serverMem = 256m clientMem = 256m
+  enableSubscriptionConflation = false batchConflation = true
+
+parReg/newWan/serial/conflation/wanmonotonicPersist.conf
+  wanSites = 3
+  locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  bridgeHostsPerSite = 1 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+  edgeHostsPerSite   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+  maxKeys = 20   dataSize = 10 serverMem = 256m clientMem = 256m
+  enableSubscriptionConflation = false batchConflation = true
+
+// tx tests
+newWan/tx/hctKill.conf
+      wanSites = 2,3,4	maxOps=10000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+      
+parReg/newWan/serial/tx/hctKill.conf
+      wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+        	       
+// pdx
+newWan/pdx/hctPdx.conf
+	wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+	bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+	edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+newWan/pdx/hctKillPdx.conf
+	wanSites = 2,3,4 maxOps=1000 resultWaitSec=600
+	bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+	edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/serial/pdx/hctPdx.conf
+	wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+	bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+	edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/serial/pdx/hctKillPdx.conf
+	wanSites = 2,3,4 maxOps=1000 resultWaitSec=600	
+	bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+	edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+		
+//filter tests
+newWan/serial/filters/hctBeforeEnqueueEventFilterHA.conf
+    wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+	bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+	edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+newWan/serial/filters/hctBeforeTransmitEventFilterHA.conf
+    wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+	bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+	edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+       
+newWan/serial/filters/hctTransportFilterHA.conf
+    wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+	bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+	edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+   
+newWan/serial/filters/hctEventTransportFilterHA.conf
+    wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+	bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+	edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/serial/filters/hctBeforeEnqueueEventFilterHA.conf
+    wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+	bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+	edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/serial/filters/hctBeforeTransmitEventFilterHA.conf
+    wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+	bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+	edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+       
+parReg/newWan/serial/filters/hctTransportFilterHA.conf
+    wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+	bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+	edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+   
+parReg/newWan/serial/filters/hctEventTransportFilterHA.conf
+    wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+	bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+	edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+		
+// version test
+newWan/multiVersionHct.conf
+parReg/newWan/serial/multiVersionHct.conf
+		
+// accessor test
+newWan/accessorHctHA.conf 
+    wanSites=2,3,4 maxOps=300 resultWaitSec=600 
+
+	

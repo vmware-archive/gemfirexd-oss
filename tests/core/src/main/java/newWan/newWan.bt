@@ -1,0 +1,70 @@
+//This bt is to list all new wan related sub bts.
+//Don't run this bt in regression as sub bts are added directly in the regression.  
+
+//requires 2 hosts, edit newWan/local.p2p.wan.2host.conf to provide host name
+INCLUDE $JTESTS/newWan/wanSerialP2P.bt
+INCLUDE $JTESTS/newWan/wanParallelP2P.bt
+
+//requires 2 hosts, edit newWan/local.hct.wan.2host.conf to provide host name
+INCLUDE $JTESTS/newWan/wanSerialHct.bt
+INCLUDE $JTESTS/newWan/wanParallelHct.bt
+
+//security tests requires only 1 host
+INCLUDE $JTESTS/newWan/security/newWanSecurity.bt
+
+//splitbrain tests
+//requires 3 host and edit splitBrain/local.networkPartition.conf to provide actual hosts
+INCLUDE $JTESTS/newWan/serial/splitBrain/newWanNetworkPartition3hosts.bt
+
+//requires single host to run, already added to splitBrain/mlRio.bt
+INCLUDE $JTESTS/newWan/serial/splitBrain/newWanMLRio.bt
+
+//orderPolicy tests
+INCLUDE $JTESTS/newWan/orderPolicy/newWanOrderPolicy.bt
+
+// concurrency tests with wan conflict resolver. Bt already included in versioning/newWan/wanVersioning.bt
+INCLUDE $JTESTS/versioning/newWan/wanVersioning.bt
+
+// test already added in parReg/wbcl/parRegWBCL.bt
+INCLUDE $JTESTS/parReg/wbcl/newWan/newWanWBCL.bt
+
+//---------------------------------------------------------------------------------------------
+// following bt are created after refactoring of wanSerialP2P.bt wanParallelP2P.bt wanSerialHct.bt and wanParallelHct.bt
+
+// backward compatibility tests, this also includes some additional tests variants with 6.6 versions, which adds 12 more tests.
+INCLUDE $JTESTS/newWan/newWanBackwardCompatibility.bt
+
+//basic wan tests for serial sender.
+INCLUDE $JTESTS/newWan/newWanBasic.bt
+
+//WAN locator discovery. This bt needs to be run on 2 hosts, edit regression/local.2hosts.conf.
+INCLUDE $JTESTS/newWan/discovery/newWanDiscovery.bt
+
+//rebalace tests
+INCLUDE $JTESTS/newWan/newWanRebalance.bt
+
+//sender operations tests
+INCLUDE $JTESTS/newWan/newWanSenderOperations.bt
+
+//partitioned region tests.
+INCLUDE $JTESTS/newWan/newWanSerialParReg.bt
+INCLUDE $JTESTS/newWan/newWanParallelParReg.bt
+
+//partitioned region HA tests
+INCLUDE $JTESTS/newWan/newWanParRegHA.bt
+
+//conflation tests
+INCLUDE $JTESTS/newWan/newWanConflation.bt
+
+//Eviction tests
+INCLUDE $JTESTS/newWan/newWanEviction.bt
+
+// pdx tests
+INCLUDE $JTESTS/newWan/pdx/newWanPdx.bt
+
+//  filters tests
+INCLUDE $JTESTS/newWan/newWanFilters.bt
+
+//transaction tests
+INCLUDE $JTESTS/newWan/tx/newWanTx.bt
+

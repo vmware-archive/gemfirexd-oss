@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlResults PUBLIC "-//GemStone Systems, Inc.//GemFireXD Test Results 1.0//EN"
+          "sqlResults1_0.dtd">
+<sqlResults>
+	<!-- The empty result set -->
+	<resultSet id="empty" />
+
+	<!--
+		Result set expected for single member query in
+		SYS.MEMBERS virtual table.
+	-->
+	<resultSet id="single_member">
+		<row>
+			<field name="KIND">datastore(normal)</field>
+			<field name="HOSTDATA">true</field>
+			<field name="ISELDER">true</field>
+			<field name="SERVERGROUPS"></field>
+			<field name="ROLES"></field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for single member query in
+		SYS.MEMBERS virtual table for a loner VM.
+	-->
+	<resultSet id="loner_member">
+		<row>
+			<field name="KIND">datastore(loner)</field>
+			<field name="HOSTDATA">true</field>
+			<field name="ISELDER">true</field>
+			<field name="SERVERGROUPS"></field>
+			<field name="ROLES"></field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for single member query in
+		SYS.MEMBERS virtual table with server groups and roles.
+	-->
+	<resultSet id="single_member_sgs">
+		<row>
+			<field name="KIND">datastore(normal)</field>
+			<field name="HOSTDATA">true</field>
+			<field name="ROLES">role1,role2</field>
+			<field name="SERVERGROUPS">SG1,SG2,SG3</field>
+			<field name="ISELDER">true</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for single member query in
+		SYS.MEMBERS virtual table with server groups and roles
+		for a loner VM.
+	-->
+	<resultSet id="loner_sgs">
+		<row>
+			<field name="KIND">datastore(loner)</field>
+			<field name="HOSTDATA">true</field>
+			<field name="ROLES">role1,role2</field>
+			<field name="SERVERGROUPS">SG1,SG2,SG3</field>
+			<field name="ISELDER">true</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for server client member query in
+		SYS.MEMBERS virtual table.
+	-->
+	<resultSet id="single_server">
+		<row>
+			<field name="KIND">datastore(normal)</field>
+			<field name="HOSTDATA">true</field>
+			<field name="ISELDER">false</field>
+			<field name="SERVERGROUPS"></field>
+			<field name="ROLES"></field>
+		</row>
+		<row>
+			<field name="KIND">locator(normal)</field>
+			<field name="HOSTDATA">false</field>
+			<field name="ISELDER">true</field>
+			<field name="SERVERGROUPS"></field>
+			<field name="ROLES"></field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for single server only filtered query in
+		SYS.MEMBERS virtual table.
+	-->
+	<resultSet id="single_server_only">
+		<row>
+			<field name="KIND">datastore(normal)</field>
+			<field name="HOSTDATA">true</field>
+			<field name="ISELDER">false</field>
+			<field name="SERVERGROUPS"></field>
+			<field name="ROLES"></field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for single server query in
+		SYS.MEMBERS virtual table with server groups and roles.
+	-->
+	<resultSet id="single_server_sgs">
+		<row>
+			<field name="KIND">locator(normal)</field>
+			<field name="HOSTDATA">false</field>
+			<field name="ROLES"></field>
+			<field name="SERVERGROUPS"></field>
+			<field name="ISELDER">true</field>
+		</row>
+		<row>
+			<field name="KIND">datastore(normal)</field>
+			<field name="HOSTDATA">true</field>
+			<field name="ROLES">role1,role2</field>
+			<field name="SERVERGROUPS">SG1,SG2,SG3</field>
+			<field name="ISELDER">false</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for single server only filtered query in
+		SYS.MEMBERS virtual table with server groups and roles.
+	-->
+	<resultSet id="single_server_only_sgs">
+		<row>
+			<field name="KIND">datastore(normal)</field>
+			<field name="HOSTDATA">true</field>
+			<field name="ROLES">role1,role2</field>
+			<field name="SERVERGROUPS">SG1,SG2,SG3</field>
+			<field name="ISELDER">false</field>
+		</row>
+	</resultSet>
+	<!--
+		Result set expected for single client member query in
+		SYS.MEMBERS virtual table.
+	-->
+	<resultSet id="single_client">
+		<row>
+			<field name="KIND">accessor(normal)</field>
+			<field name="HOSTDATA">false</field>
+			<field name="ISELDER">false</field>
+			<field name="SERVERGROUPS"></field>
+			<field name="ROLES"></field>
+		</row>
+		<row>
+			<field name="KIND">locator(normal)</field>
+			<field name="HOSTDATA">false</field>
+			<field name="ISELDER">true</field>
+			<field name="SERVERGROUPS"></field>
+			<field name="ROLES"></field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for single client only filtered query in
+		SYS.MEMBERS virtual table.
+	-->
+	<resultSet id="single_client_only">
+		<row>
+			<field name="KIND">accessor(normal)</field>
+			<field name="HOSTDATA">false</field>
+			<field name="ISELDER">false</field>
+			<field name="SERVERGROUPS"></field>
+			<field name="ROLES"></field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for single client query in
+		SYS.MEMBERS virtual table with server groups and roles.
+	-->
+	<resultSet id="single_client_sgs">
+		<row>
+			<field name="KIND">locator(normal)</field>
+			<field name="HOSTDATA">false</field>
+			<field name="ROLES"></field>
+			<field name="SERVERGROUPS"></field>
+			<field name="ISELDER">true</field>
+		</row>
+		<row>
+			<field name="KIND">accessor(normal)</field>
+			<field name="HOSTDATA">false</field>
+			<field name="ROLES">role1,role2</field>
+			<field name="SERVERGROUPS">SG1,SG2,SG3</field>
+			<field name="ISELDER">false</field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for single client only filtered query in
+		SYS.MEMBERS virtual table with server groups and roles.
+	-->
+	<resultSet id="single_client_only_sgs">
+		<row>
+			<field name="KIND">accessor(normal)</field>
+			<field name="HOSTDATA">false</field>
+			<field name="ROLES">role1,role2</field>
+			<field name="SERVERGROUPS">SG1,SG2,SG3</field>
+			<field name="ISELDER">false</field>
+		</row>
+	</resultSet>
+	<!--
+		Result set expected for multiple clients and servers query in
+		SYS.MEMBERS virtual table.
+	-->
+	<resultSet id="multiple_members">
+		<row>
+			<field name="KIND">accessor(normal)</field>
+			<field name="HOSTDATA">false</field>
+			<field name="ISELDER">false</field>
+			<field name="SERVERGROUPS"></field>
+			<field name="ROLES"></field>
+		</row>
+		<row>
+			<field name="KIND">locator(normal)</field>
+			<field name="HOSTDATA">false</field>
+			<field name="ISELDER">true</field>
+			<field name="SERVERGROUPS"></field>
+			<field name="ROLES"></field>
+		</row>
+		<row>
+			<field name="KIND">datastore(normal)</field>
+			<field name="HOSTDATA">true</field>
+			<field name="ISELDER">false</field>
+			<field name="SERVERGROUPS"></field>
+			<field name="ROLES"></field>
+		</row>
+		<row>
+			<field name="KIND">accessor(normal)</field>
+			<field name="HOSTDATA">false</field>
+			<field name="ISELDER">false</field>
+			<field name="SERVERGROUPS"></field>
+			<field name="ROLES"></field>
+		</row>
+		<row>
+			<field name="KIND">datastore(normal)</field>
+			<field name="HOSTDATA">true</field>
+			<field name="ISELDER">false</field>
+			<field name="SERVERGROUPS"></field>
+			<field name="ROLES"></field>
+		</row>
+		<row>
+			<field name="KIND">datastore(normal)</field>
+			<field name="HOSTDATA">true</field>
+			<field name="ISELDER">false</field>
+			<field name="SERVERGROUPS"></field>
+			<field name="ROLES"></field>
+		</row>
+	</resultSet>
+
+	<!--
+		Result set expected for multiple clients and servers query in
+		SYS.MEMBERS virtual table with server groups and roles.
+	-->
+	<resultSet id="multiple_members_sgs">
+		<row>
+			<field name="KIND">accessor(normal)</field>
+			<field name="HOSTDATA">false</field>
+			<field name="ISELDER">false</field>
+			<field name="ROLES">role1,role2</field>
+			<field name="SERVERGROUPS">SG1,SG2,SG3</field>
+		</row>
+		<row>
+			<field name="KIND">locator(normal)</field>
+			<field name="HOSTDATA">false</field>
+			<field name="ISELDER">true</field>
+			<field name="SERVERGROUPS"></field>
+			<field name="ROLES"></field>
+		</row>
+		<row>
+			<field name="KIND">datastore(normal)</field>
+			<field name="HOSTDATA">true</field>
+			<field name="ISELDER">false</field>
+			<field name="ROLES">role1,role2</field>
+			<field name="SERVERGROUPS">SG1,SG2,SG3</field>
+		</row>
+		<row>
+			<field name="KIND">accessor(normal)</field>
+			<field name="HOSTDATA">false</field>
+			<field name="ISELDER">false</field>
+			<field name="ROLES">role1,role2</field>
+			<field name="SERVERGROUPS">SG1,SG2,SG3</field>
+		</row>
+		<row>
+			<field name="KIND">datastore(normal)</field>
+			<field name="HOSTDATA">true</field>
+			<field name="ISELDER">false</field>
+			<field name="ROLES">role1,role2</field>
+			<field name="SERVERGROUPS">SG1,SG2,SG3</field>
+		</row>
+		<row>
+			<field name="KIND">datastore(normal)</field>
+			<field name="HOSTDATA">true</field>
+			<field name="ISELDER">false</field>
+			<field name="ROLES">role1,role2</field>
+			<field name="SERVERGROUPS">SG1,SG2,SG3</field>
+		</row>
+	</resultSet>
+</sqlResults>

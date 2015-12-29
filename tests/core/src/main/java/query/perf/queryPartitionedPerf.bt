@@ -1,0 +1,16 @@
+// This battery test contains all the query performance tests
+// for partitioned region querying.
+// Please refer the entire test matrix at below link:
+// https://wiki.gemstone.com/display/Query/Test+matrix+for+performance+tests+for+querying+and+region+operations+with+indexes
+smoketest/query/query001.conf numBuckets=10
+smoketest/query/query002.conf numBuckets=10
+smoketest/query/query005.conf numBuckets=10
+smoketest/query/query006.conf numBuckets=10
+smoketest/query/query009.conf numBuckets=10
+smoketest/query/query010.conf numBuckets=10
+smoketest/query/query013.conf numBuckets=10
+smoketest/query/query014.conf numBuckets=10
+smoketest/query/query017.conf numBuckets=10
+smoketest/query/query018.conf numBuckets=10
+smoketest/query/query021.conf numBuckets=10
+smoketest/query/query022.conf numBuckets=10

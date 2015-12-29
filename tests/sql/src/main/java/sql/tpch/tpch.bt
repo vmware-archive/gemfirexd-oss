@@ -1,0 +1,7 @@
+sql/tpch/tpchRunTxns.conf
+  api = GFXD
+  locatorHosts=4 locatorVMsPerHost=1 locatorThreadsThreadsPerVM=1
+  peerHosts=8 peerVMsPerHost=5 peerThreadsPerVM=1
+  peerHeapMB = 40960
+  queryPlanFrequency = 0
+  importfile=importdata58g

@@ -1,0 +1,52 @@
+cacheperf/comparisons/parReg/peerDataCreate.conf
+  peerHosts =  2 peerVMsPerHost = 1 peerThreadsPerVM = 10
+  maxKeys = 100000 objectSize = 1024
+  redundantCopies = 1
+  conserveSockets = false
+  perffmwk.comparisonKey = create_02_05
+cacheperf/comparisons/parReg/peerDataGet.conf
+  peerHosts =  2 peerVMsPerHost = 1 peerThreadsPerVM = 10
+  maxKeys = 100000 objectSize = 1024
+  redundantCopies = 1
+  conserveSockets = false
+  perffmwk.comparisonKey = get_02_05
+cacheperf/comparisons/parReg/peerDataPut.conf
+  peerHosts =  2 peerVMsPerHost = 1 peerThreadsPerVM = 10
+  maxKeys = 100000 objectSize = 1024
+  redundantCopies = 1
+  conserveSockets = false
+  perffmwk.comparisonKey = put_02_05
+hdfs/perf/peerDataUpdate.conf
+  peerHosts =  2 peerVMsPerHost = 1 peerThreadsPerVM = 10
+  maxKeys = 100000 objectSize = 1024
+  redundantCopies = 1
+  conserveSockets = false
+  perffmwk.comparisonKey = update_02_05
+hdfs/perf/peerDataMixGetPut.conf
+  putPercentage = 80
+  peerHosts =  2 peerVMsPerHost = 1 peerThreadsPerVM = 10
+  maxKeys = 100000 objectSize = 1024
+  redundantCopies = 1
+  conserveSockets = false
+  perffmwk.comparisonKey = mix_80_02_05_rc1
+hdfs/perf/peerDataMixGetPut.conf
+  putPercentage = 20
+  peerHosts =  2 peerVMsPerHost = 1 peerThreadsPerVM = 10
+  maxKeys = 100000 objectSize = 1024
+  redundantCopies = 1
+  conserveSockets = false
+  perffmwk.comparisonKey = mix_20_02_05_rc1
+hdfs/perf/peerDataUpdateZipfian.conf
+  peerHosts =  2 peerVMsPerHost = 1 peerThreadsPerVM = 10
+  maxKeys = 100000 objectSize = 1024
+  redundantCopies = 1
+  conserveSockets = false
+  perffmwk.comparisonKey = updateZipfian_02_05
+hdfs/perf/peerDataUpdateScrambledZipfian.conf
+  peerHosts =  2 peerVMsPerHost = 1 peerThreadsPerVM = 10
+  maxKeys = 100000 objectSize = 1024
+  redundantCopies = 1
+  conserveSockets = false
+  perffmwk.comparisonKey = updateScrambledZipfian_02_05
+
+

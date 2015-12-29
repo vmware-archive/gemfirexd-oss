@@ -1,0 +1,44 @@
+#!/bin/sh
+
+runtest() {
+  export GEMFIRE_BUILD=$1
+  export GEMFIRE=$GEMFIRE_BUILD/product
+  export LD_LIBRARY_PATH=$GEMFIRE/../hidden/lib:$GEMFIRE/lib
+  export JTESTS=$GEMFIRE/../tests/classes
+  export CLASSPATH=$GEMFIRE/lib/gemfire.jar:$JTESTS
+  export JAVA_HOME=/export/gcm/where/jdk/1.6.0_17/x86_64.linux
+  echo "Running $2 with $3..."
+  echo ""
+  $JAVA_HOME/bin/java -server \
+    -classpath $CLASSPATH:$GEMFIRE/../product-gfxd/lib/gemfirexd.jar -DGEMFIRE=$GEMFIRE -DJTESTS=$JTESTS \
+    -DprovideRegressionSummary=false -DnukeHungTest=true -DmoveRemoteDirs=true \
+    -DnumTimesToRun=1 -DtestFileName=$2 -DlocalConf=$3 \
+    batterytest.BatteryTest
+  echo "Saving test results to $4..."
+  echo ""
+  mkdir -p $4
+  /bin/mv *-*-* $4
+  /bin/mv batterytest.log batterytest.bt oneliner.txt $4
+  /bin/cp my.cnf config.ini $4
+  /bin/cp $2 $3 $4
+}
+
+#-------------------------------------------------------------------------------
+
+if [ -z "$1" ]
+then
+  echo "No gemfire build was specified."
+  exit 0
+fi
+
+runtest $1 thinClient.gfxd.joinPruneByPositionAmountAndInstrumentName.4.bt thinClient.pr1.local.conf thinClient.gfxd.joinPruneByPositionAmountAndInstrumentName.pr1/4_servers
+runtest $1 thinClient.gfxd.joinPruneByPositionAmountAndInstrumentName.5.bt thinClient.pr1.local.conf thinClient.gfxd.joinPruneByPositionAmountAndInstrumentName.pr1/5_servers
+runtest $1 thinClient.gfxd.joinPruneByPositionAmountAndInstrumentName.6.bt thinClient.pr1.local.conf thinClient.gfxd.joinPruneByPositionAmountAndInstrumentName.pr1/6_servers
+runtest $1 thinClient.gfxd.joinPruneByPositionAmountAndInstrumentName.7.bt thinClient.pr1.local.conf thinClient.gfxd.joinPruneByPositionAmountAndInstrumentName.pr1/7_servers
+runtest $1 thinClient.gfxd.joinPruneByPositionAmountAndInstrumentName.8.bt thinClient.pr1.local.conf thinClient.gfxd.joinPruneByPositionAmountAndInstrumentName.pr1/8_servers
+
+runtest $1 thinClient.gfxd.joinPruneByPositionAmountAndInstrumentName.4.bt thinClient.rep.local.conf thinClient.gfxd.joinPruneByPositionAmountAndInstrumentName.rep/4_servers
+runtest $1 thinClient.gfxd.joinPruneByPositionAmountAndInstrumentName.5.bt thinClient.rep.local.conf thinClient.gfxd.joinPruneByPositionAmountAndInstrumentName.rep/5_servers
+runtest $1 thinClient.gfxd.joinPruneByPositionAmountAndInstrumentName.6.bt thinClient.rep.local.conf thinClient.gfxd.joinPruneByPositionAmountAndInstrumentName.rep/6_servers
+runtest $1 thinClient.gfxd.joinPruneByPositionAmountAndInstrumentName.7.bt thinClient.rep.local.conf thinClient.gfxd.joinPruneByPositionAmountAndInstrumentName.rep/7_servers
+runtest $1 thinClient.gfxd.joinPruneByPositionAmountAndInstrumentName.8.bt thinClient.rep.local.conf thinClient.gfxd.joinPruneByPositionAmountAndInstrumentName.rep/8_servers

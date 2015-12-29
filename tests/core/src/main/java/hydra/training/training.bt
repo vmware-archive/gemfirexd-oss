@@ -1,0 +1,8 @@
+// All of the Hydra tests used for training
+hydra/training/loggingTest.conf
+hydra/training/rbq.conf
+hydra/training/rbqBB.conf
+hydra/training/loggingTest2Host.conf
+hydra/training/produceConsume.conf
+hydra/training/clientServer.conf
+hydra/training/clientServerFailover.conf

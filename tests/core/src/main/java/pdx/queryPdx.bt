@@ -1,0 +1,44 @@
+pdx/query/serialQueryEntryPdx.conf
+pdx/query/serialQueryIndexEntryPdx.conf
+
+pdx/query/parReg/serialQueryEntryPdx.conf
+pdx/query/parReg/serialQueryEntryParRegPdx.conf
+pdx/query/parReg/serialQueryIndexEntryPdx.conf
+pdx/query/parReg/serialQueryIndexEntryParRegPdx.conf
+pdx/query/parReg/serialQueryEntryParRegHAPdx.conf
+pdx/query/parReg/serialQueryIndexEntryParRegHAPdx.conf
+pdx/query/parReg/serialQueryEntryParRegPersistPdx.conf
+pdx/query/parReg/serialQueryEntryParRegHAPersistPdx.conf
+pdx/query/parReg/serialQueryIndexEntryParRegPersistPdx.conf
+pdx/query/parReg/serialQueryIndexEntryParRegHAPersistPdx.conf
+
+pdx/query/concQueryEntryPdx.conf
+pdx/query/concQueryIndexEntryPdx.conf
+pdx/query/concQueryEntryWithLimitPdx.conf queryLimit=10
+pdx/query/concQueryIndexEntryWithLimitPdx.conf queryLimit=10
+pdx/query/parReg/concQueryEntryParRegPdx.conf
+pdx/query/parReg/concQueryOnlyParRegPdx.conf
+pdx/query/parReg/concQueryIndexEntryParRegPdx.conf
+pdx/query/parReg/concQueryIndexParRegPdx.conf
+pdx/query/parReg/concQueryEntryPdx.conf
+pdx/query/parReg/concQueryIndexEntryPdx.conf
+pdx/query/parReg/concQueryOnlyParRegHAPdx.conf
+pdx/query/parReg/concQueryIndexParRegHAPdx.conf
+pdx/query/parReg/concQueryEntryParRegWithLimitPdx.conf queryLimit=10
+pdx/query/parReg/concQueryIndexEntryParRegWithLimitPdx.conf queryLimit=10
+pdx/query/parReg/concQueryEntryParRegPersistPdx.conf
+pdx/query/parReg/concQueryOnlyParRegPersistPdx.conf
+pdx/query/parReg/concQueryIndexEntryParRegPersistPdx.conf
+pdx/query/parReg/concQueryIndexParRegPersistPdx.conf
+pdx/query/parReg/concQueryOnlyParRegHAPersistPdx.conf
+pdx/query/parReg/concQueryIndexParRegHAPersistPdx.conf
+pdx/query/parReg/concQueryEntryParRegWithLimitPersistPdx.conf queryLimit=10
+pdx/query/parReg/concQueryIndexEntryParRegWithLimitPersistPdx.conf queryLimit=10
+
+pdx/query/serialQueryWithPdxString.conf
+pdx/query/concQueryWithPdxString.conf
+pdx/query/parReg/concQueryIndexEntryParRegWithPdxString.conf
+pdx/query/parReg/concQueryParRegWithPdxString.conf
+pdx/query/parReg/serialQueryIndexEntryParRegWithPdxString.conf
+pdx/query/parReg/serialQueryParRegWithPdxString.conf
+

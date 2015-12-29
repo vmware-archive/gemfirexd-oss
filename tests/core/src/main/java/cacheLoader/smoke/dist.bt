@@ -1,0 +1,13 @@
+// distributed cacheLoader tests
+
+cacheLoader/smoke/distNoExp.conf numHosts=2
+cacheLoader/smoke/distNoExp.conf numHosts=3
+//cacheLoader/smoke/distNoExp.conf numHosts=4
+
+cacheLoader/smoke/distInvalIdle.conf numHosts=2
+cacheLoader/smoke/distInvalTtl.conf numHosts=2
+cacheLoader/smoke/distDestIdle.conf numHosts=2
+cacheLoader/smoke/distDestTtl.conf numHosts=2
+
+cacheLoader/smoke/distInvalIdle.conf numHosts=3
+cacheLoader/smoke/distInvalTtl.conf numHosts=3

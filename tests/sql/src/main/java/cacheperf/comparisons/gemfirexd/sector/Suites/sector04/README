@@ -1,0 +1,7 @@
+Runs more highly scaled multihost Sector query tests with the thinClient topology using GFXD.  Runs both replicated and partitioned redundant Sector tables, the latter for eventual comparison to MYSQLC.  Runs with result size 3.
+
+The test scales clients until latency degrades, then scales servers to restore low latencies.  The amount of data stays constant in this case (it is not scaled with servers).
+
+Note that GFE and GFXD are non-transactional, while MYSQLC is read-uncommitted.
+
+The suite can be used to compare query throughput and response time histograms as clients and servers are scaled.

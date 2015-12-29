@@ -1,0 +1,58 @@
+#!/bin/bash
+
+testdir=$PWD
+if [ "" != "$1" ]; then
+  testdir="$1"
+fi
+
+while true
+do
+  clear
+  echo "******************"
+  echo DUnit Test Monitor
+  echo "******************"
+  echo $testdir
+  echo
+  if [ -e $testdir/dunit-progress-host1.txt ]; then
+    echo "`date`                Tests completed: `grep END $testdir/dunit-progress*.txt | wc -l`"
+  else
+    echo "`date`                ...Waiting for dunit progress file to show up..."
+  fi
+  echo
+  if [ -e $testdir/../oneliner.txt ]; then
+    echo oneliner:
+    echo ---------
+    cat $testdir/../oneliner.txt  
+    echo
+  fi
+  if [ -e $testdir/dunit-progress-host1.txt ]; then
+    echo Last Test Started:
+    echo ------------------
+    grep START $testdir/dunit-progress*.txt | tail -1 | cut -f3,8- -d" " 
+    echo
+  fi
+  if [ -e $testdir/dunit-passed-host1.txt ]; then
+    echo Passed:
+    echo -------
+    cat $testdir/dunit-passed*.txt | grep "." | cut -f3,8 -d" " | cut -c1-8,13- 
+    echo 
+  fi
+  if [ -e $testdir/failures ]; then
+    echo Failed:
+    echo -------
+    for each in `ls -t $testdir/failures`; do
+      num=`grep ^test $testdir/failures/$each | wc -l`
+      echo "$each  -->$num"
+    done
+    echo
+  fi
+  grep -s DEBUGGER *.log */*.log > $testdir/grepout  && {
+    echo Waiting for debugger:
+    echo ---------------------
+    cat grepout
+    grep Listening bg*.log */system.log
+  }
+  rm $testdir/grepout
+    echo 
+  sleep 5
+done

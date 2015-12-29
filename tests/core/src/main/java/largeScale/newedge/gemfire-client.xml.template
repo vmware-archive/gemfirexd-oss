@@ -1,0 +1,146 @@
+    <region name="chi_audit">
+        <region-attributes data-policy="empty" pool-name="clientPool"/> 
+    </region>
+    
+    <region name="chi_applianceAllocation">
+        <region-attributes data-policy="empty" pool-name="clientPool"/> 
+        <region name="applianceHeartbeat">
+            <region-attributes data-policy="empty" pool-name="clientPool"/> 
+        </region>
+    </region>    
+    
+    <region name="ldn_audit">
+        <region-attributes data-policy="empty" pool-name="clientPool"/> 
+    </region>
+    
+    <region name="ldn_applianceAllocation">
+        <region-attributes data-policy="empty" pool-name="clientPool"/> 
+        <region name="applianceHeartbeat">
+            <region-attributes data-policy="empty" pool-name="clientPool"/> 
+        </region>
+    </region>    
+    
+   <region name="adapterAmqpState">
+     <region-attributes data-policy="normal" pool-name="clientPool"/>
+  </region> 
+  
+    <region name="product">
+        <region-attributes data-policy="normal" pool-name="clientPool">
+            <eviction-attributes> 
+                <lru-heap-percentage action="local-destroy"/> 
+            </eviction-attributes> 
+        </region-attributes>
+    </region>
+    
+    <region name="allocationRules">
+        <region-attributes data-policy="normal" pool-name="clientPool">
+            <eviction-attributes> 
+                <lru-heap-percentage action="local-destroy"/> 
+            </eviction-attributes> 
+        </region-attributes>
+    </region>
+    
+    <region name="routingRule">
+        <region-attributes data-policy="normal" pool-name="clientPool">
+            <eviction-attributes> 
+                <lru-heap-percentage action="local-destroy"/> 
+            </eviction-attributes> 
+        </region-attributes> 
+    </region>
+    
+    <region name="routingEndpoint">
+        <region-attributes data-policy="normal" pool-name="clientPool">
+            <eviction-attributes> 
+                <lru-heap-percentage action="local-destroy"/> 
+            </eviction-attributes> 
+        </region-attributes> 
+    </region>
+
+    <region name="backOfficeAccount">
+        <region-attributes data-policy="normal" pool-name="clientPool">
+            <eviction-attributes> 
+                <lru-heap-percentage action="local-destroy"/> 
+            </eviction-attributes> 
+        </region-attributes> 
+    </region>
+    
+    <region name="backOfficeAccountCollection">
+        <region-attributes data-policy="normal" pool-name="clientPool">
+            <eviction-attributes> 
+                <lru-heap-percentage action="local-destroy"/> 
+            </eviction-attributes> 
+        </region-attributes> 
+    </region>
+
+    <region name="matchRule">
+        <region-attributes data-policy="normal" pool-name="clientPool">
+            <eviction-attributes> 
+                <lru-heap-percentage action="local-destroy"/> 
+            </eviction-attributes> 
+        </region-attributes> 
+    </region>
+
+    <region name="kpiMetric">
+        <region-attributes data-policy="empty" pool-name="clientPool">
+        </region-attributes>
+    </region>
+    
+    <region name="latencyMetric">
+        <region-attributes data-policy="empty" pool-name="clientPool">
+        </region-attributes>
+    </region>
+    <region name="kpiRuleMetric">
+        <region-attributes data-policy="empty" pool-name="clientPool">
+        </region-attributes> 
+    </region>
+
+    <region name="resequence">
+        <region-attributes data-policy="normal" pool-name="clientPool">
+            <eviction-attributes> 
+                <lru-heap-percentage action="local-destroy"/> 
+            </eviction-attributes> 
+        </region-attributes> 
+    </region>
+    
+     <region name="resequenceMapping">
+        <region-attributes data-policy="normal" pool-name="clientPool">
+            <eviction-attributes> 
+                <lru-heap-percentage action="local-destroy"/> 
+            </eviction-attributes> 
+        </region-attributes> 
+    </region>
+
+    <region name="adapterState">
+        <region-attributes data-policy="normal" pool-name="clientPool">
+            <eviction-attributes> 
+                <lru-heap-percentage action="local-destroy"/> 
+            </eviction-attributes> 
+        </region-attributes>  
+    </region>
+  
+    <region name="break">
+        <region-attributes data-policy="empty" pool-name="clientPool"/> 
+    </region>
+    
+    <region name="paginated_query_info">
+        <region-attributes data-policy="empty" pool-name="clientPool"/> 
+    </region>
+
+    <region name="tradeInstruction">
+        <region-attributes data-policy="empty" pool-name="clientPool"/> 
+    </region>
+    
+    <region name="tradeInstructionCommand">
+        <region-attributes data-policy="empty" pool-name="clientPool"/> 
+    </region>
+    
+    <region name="cacheResponsibility">
+        <region-attributes data-policy="empty" pool-name="clientPool"/> 
+    </region>
+    
+    <region name="cacheAdmin">
+        <region-attributes data-policy="empty" pool-name="clientPool"/>
+    </region>
+        
+    <resource-manager eviction-heap-percentage="75" critical-heap-percentage="85"/>
+

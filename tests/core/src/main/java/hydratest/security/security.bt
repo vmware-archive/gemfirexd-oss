@@ -1,0 +1,7 @@
+hydratest/security/userpassword.conf
+
+hydratest/security/path_locator.conf
+  locatorHosts = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  peerHosts    = 1 peerVMsPerHost    = 2 peerThreadsPerVM    = 1
+
+hydratest/security/peer.conf

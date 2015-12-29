@@ -1,0 +1,4 @@
+// Distributed eviction controller tests
+
+include $JTESTS/capCon/capCon.bt
+

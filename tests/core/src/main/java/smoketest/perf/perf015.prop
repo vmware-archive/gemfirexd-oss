@@ -1,0 +1,10 @@
+A = loader
+loaderHosts        = 1
+loaderVMsPerHost   = 1
+loaderThreadsPerVM = 100
+
+dataSize = 1024
+maxKeys = 1000
+optimizationCount = 10
+
+perffmwk.comparisonKey = perf015

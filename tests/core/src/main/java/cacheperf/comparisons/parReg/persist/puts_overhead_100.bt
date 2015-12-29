@@ -1,0 +1,34 @@
+// ============================================================
+// measure put performance for persistent partitioned regions
+// Note: add hydra.DiskStorePrms-autoCompact=false to local.conf
+
+// 100k bytes, 2 hosts
+// persist
+cacheperf/comparisons/parReg/persist/peerDataPut.conf
+  peerHosts =  2 peerVMsPerHost = 1 peerThreadsPerVM = 8
+  redundantCopies = 1
+  maxKeys = 5500 objectSize = 102400
+  perffmwk.comparisonKey = put_02x01x01
+  
+// no persist
+cacheperf/comparisons/parReg/peerDataPut.conf
+  peerHosts =  2 peerVMsPerHost = 1 peerThreadsPerVM = 8
+  redundantCopies = 1
+  maxKeys = 5500 objectSize = 102400
+  perffmwk.comparisonKey = put_02x01x01
+
+// 100 bytes, 2 hosts
+// persist
+cacheperf/comparisons/parReg/persist/peerDataPut.conf
+  peerHosts =  2 peerVMsPerHost = 1 peerThreadsPerVM = 8
+  redundantCopies = 1
+  maxKeys = 1900000 objectSize = 100
+  perffmwk.comparisonKey = put_02x01x01
+
+// no persist
+cacheperf/comparisons/parReg/peerDataPut.conf
+  peerHosts =  2 peerVMsPerHost = 1 peerThreadsPerVM = 8
+  redundantCopies = 1
+  maxKeys = 2400000 objectSize = 100
+  perffmwk.comparisonKey = put_02x01x01
+

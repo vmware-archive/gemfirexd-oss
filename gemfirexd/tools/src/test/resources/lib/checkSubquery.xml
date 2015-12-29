@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlResults PUBLIC "-//GemStone Systems, Inc.//GemFireXD Test Results 1.0//EN"
+          "sqlResults1_0.dtd">
+<sqlResults>
+	<!-- The empty result set -->
+	<resultSet id="empty" />
+
+	
+	<resultSet id="subquery_1">
+		<row>
+			<field name="CID">2</field>
+			<field name="TID">2</field>
+		</row>
+		<row>
+			<field name="CID">3</field>
+			<field name="TID">3</field>
+		</row>
+		<row>
+			<field name="CID">7</field>
+			<field name="TID">7</field>
+		</row>
+		<row>
+			<field name="CID">8</field>
+			<field name="TID">8</field>
+		</row>
+		<row>
+			<field name="CID">12</field>
+			<field name="TID">12</field>
+		</row>
+		<row>
+			<field name="CID">13</field>
+			<field name="TID">13</field>
+		</row>
+		
+	</resultSet>
+	
+</sqlResults>

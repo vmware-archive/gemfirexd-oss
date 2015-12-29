@@ -1,0 +1,12 @@
+A=client
+clientHosts=1
+clientVMsPerHost=1
+clientThreadsPerVM=1
+
+B=server
+serverHosts=1
+serverVMsPerHost=1
+serverThreadsPerVM=1
+
+clientHeap = 2g
+serverHeap = 2g

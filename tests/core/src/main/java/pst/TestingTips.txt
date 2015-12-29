@@ -1,0 +1,112 @@
+
+                      PERFORMANCE AND SCALABILITY TESTING
+
+This document provides information and tips on how to configure, certify, and run performance and scalability tests, and analyze and report results.
+
+Throughout the document, the word "tests" refers to performance and scalability tests only, not generic tests.
+
+See also javadocs for ...TBD...  See the portal at ...TBD...  See examples in ...TBD...
+________________________________________________________________________________
+
+CERTIFICATION functional validation
+
+Make sure the test actually did the work expected.
+
+This can come from statistics or from test-specific validation.  For example, statistics can be used to check that update events were received by listeners.  However, this does not ensure that the listeners actually got the expected callbacks.  Test-level validation can do a better job, but this must occur at the end of the test to avoid overhead.  The objects framework used to supply test objects allows for some simple validation after the workload is complete.  See various tests in cacheperf for examples.
+________________________________________________________________________________
+
+CERTIFICATION latest.conf
+
+Make sure the tests do not differ in unexpected ways.
+
+Do a diff on the latest.conf files from runs you are comparing to ensure that they differ and compare as expected.  The helper class hydra.TestConfigComparison will do this for you, independently of hydra.  It is also used by perffmwk.PerfComparer to report configuration differences between the test runs being compared.  These are appended at the bottom of the comparison report.
+________________________________________________________________________________
+
+TUNING workload
+
+Make sure the test does sufficient work to get reproducible results.
+
+Most tests are workload-based.  A test does a fixed amount of work, and all client threads performaing a particular operation do it the same number times.  That way, all statistics comparisons are meaningful across builds or vendors.  For example, comparing total memory use between two tests is meaningless unless both tests put the same number of entries in a cache.
+
+Each test must have sufficient workload to get stable performance numbers.  In general, all threads should work concurrently for at least 3 minutes after they are considered warmed up.
+
+There are a couple of downsides to workload-based testing.  Test workload and task granularity must be tuned any time there is a change in a product or the test hardware.  Also, tests can take widely varying amounts of time to run when one takes much longer than the other to do the same workload.  The workload must be tuned so that the fastest test runs long enough for stable results.
+________________________________________________________________________________
+
+TUNING warmup
+
+Make sure the test is sufficiently warmed up before measurements begin.
+
+A test must run long enough to reach its potential.  VSD should not show performance continuing to improve all the way to the end of the test.  You can run tests longer at first to make sure performance has peaked.  Then use VSD to see when the measured operations reach a steady state.  You can take the throughput line, see how long it took to get warm, set the line no No Filter, and see how many operations it took to get there.  Then you can make the test trim at that point by setting cacheperf.CachePerfPrms-trimIterations.   The perffmwk reporting and comparison tools will give results that trim off the warmup period.
+________________________________________________________________________________
+
+TUNING cooldown
+
+Make sure the test does not include idle threads in measurements.
+
+Test runs can show mild to severe performance drop-off toward the end, due to some threads finishing work ahead of others.  In VSD, look at the threads in uncombined mode, select all lines, and set them to No Filter.  That will show clearly the point at which the first thread finishes.  For perffmwk tools, I think they automatically trims the end at the point where the first thread completes work, but I need to check.  Tests using trim intervals complain and fail if there is no time when all threads overlap.
+________________________________________________________________________________
+
+TUNING trimmed stats
+
+Make sure trimmed stats include sufficient samples.
+
+When thread scheduling or servicing is grossly unfair, the period when all threads are working (and starving) concurrently can be too small.  When you trim in VSD or via trim imtervals in a perffmwk report, make sure there are sufficient samples (each sample represents one second).  However, for truly gross unfairness, the numbers can be difficult to interpret.  Some tests report a totalOperations statistic that can be checked, though how big is big enough depends on mean throughput.
+________________________________________________________________________________
+
+TUNING thread scheduling
+
+Make sure all threads are treated fairly.
+
+Take a look in VSD at all threads, uncombined.  In VSD, look at the threads in uncombined mode, select all lines, and set them to No Filter.  Make sure all threads are operating at relatively the same throughput.  If they are not, determine if this is a bug or a feature, and decide how to interpret the results.
+________________________________________________________________________________
+
+TUNING task granularity
+
+Make sure the task size is large enough.
+
+Each task being measured should take at least 1-5 minutes to run so that test overhead is insignificant.  Each task requires an RMI call, thread creation, and task initialization.  Use cacheperf.CachePerfPrms-batchSize to set this.
+________________________________________________________________________________
+
+TUNING vm size (-Xms -Xmx)
+
+Make sure the VMs are sized large enough but not too large.
+________________________________________________________________________________
+
+ANALYSIS statistics
+
+Check test-specific statistics and drill down as needed.
+
+First check test-specific measurements:
+        cacheperf.CachePerfStats
+If necessary, look further.  Check especially:
+        LinuxProcessStats.rssSize (actual memory use)
+        LinuxSystemStats.contextSwitches
+        LinuxSystemStats.cpuActive
+        LinuxSystemStats.allocatedSwap (no filter, no combine)
+                Make sure this always a flatline on every individual host.  If
+                it is not, check whether client VMs are configured too large for
+                available memory.
+        LinuxSystemStats.freeMemory (no filter, no combine)
+                Make sure this does not get too low on any individual host.  If
+                it does, check whether client VMs are configured too large for
+                available memory.
+        VMStats.freeMemory
+        VMStats.totalMemory
+CachePerfStats and DistributionStats are also useful, but only for GemFire tests.  TBD add useful ones.  You can use VSD templates to bring up charts of interest in a single click.  Report anything that gives GemFire a competitive edge.
+________________________________________________________________________________
+
+TROUBLE trim intervals don't overlap
+
+Explain why this happens.  If the test is otherwise valid, you can still look at results in VSD, and regenerate reports using new trim intervals obtained from VSD.
+________________________________________________________________________________
+
+TROUBLE zeroes in perfreport.txt
+
+Explain why this happens and how to fix it.
+________________________________________________________________________________
+
+TROUBLE negative latencies
+
+If you see negative latencies in VSD or perfreport.txt, this is due to clock skew between hosts.  You should not see this when using a single host.  Explain how to fix...
+________________________________________________________________________________

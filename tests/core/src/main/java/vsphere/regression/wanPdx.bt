@@ -1,0 +1,30 @@
+/*pdx/wan/p2pPdx.conf wanSites=/*1,2,*/3 peerVMsPerHost=1 peerThreadsPerVM=1
+    threadGroupsName=peer
+pdx/wan/p2pPdx.conf wanSites=1 peerVMsPerHost=3 peerThreadsPerVM=2
+    threadGroupsName=peer
+pdx/wan/p2p_explicitPdx.conf
+    threadGroupsName=peeri*/
+pdx/wan/p2pkillPdx.conf wanSites=1 peerVMsPerHost=3 peerThreadsPerVM=1
+    threadGroupsName=peer
+pdx/wan/p2pkillPdx.conf wanSites=2 peerVMsPerHost=2 peerThreadsPerVM=1,2
+    threadGroupsName=peer
+/*pdx/wan/hct_explicitPdx.conf
+    threadGroupsName=edge*/
+//pdx/wan/hctPdx.conf wanSites=1,2,3 edgeVMsPerHost=1 edgeThreadsPerVM=1
+//pdx/wan/hctPdx.conf wanSites=1,2/*,3*/ edgeVMsPerHost=3 edgeThreadsPerVM=2
+
+// Linux,Windows version - uses sync distribution for gateway
+//pdx/wan/hctPdx.conf wanSites=2 bridgeVMsPerHost=2 edgeVMsPerHost=1 edgeThreadsPerVm=1 onlyOnPlatforms=Linux,Windows,AIX
+//    threadGroupsName=edge
+// Solaris - uses async-distribution for gateway (accomodates slower systems)
+//pdx/wan/hct_asyncPdx.conf wanSites=3 bridgeVMsPerHost=2 edgeVMsPerHost=1 edgeThreadsPerVM=1 onlyOnPlatforms=SunOS
+//    threadGroupsName=edge
+
+// Linux,Windows version - uses sync distribution for gateway
+//pdx/wan/hctPdx.conf wanSites=1,2,3 bridgeVMsPerHost=2 edgeVMsPerHost=3 edgeThreadsPerVM=2 onlyOnPlatforms=Linux,Windows,AIX
+//    threadGroupsName=edge
+// Solaris - uses async-distribution for gateway (accomodates slower systems)
+//pdx/wan/hct_asyncPdx.conf wanSites=1,2 bridgeVMsPerHost=2 edgeVMsPerHost=3 edgeThreadsPerVM=2 onlyOnPlatforms=SunOS
+//pdx/wan/hct_asyncPdx.conf wanSites=3 bridgeVMsPerHost=2 edgeVMsPerHost=2 edgeThreadsPerVM=2 onlyOnPlatforms=SunOS
+//    threadGroupsName=edge
+

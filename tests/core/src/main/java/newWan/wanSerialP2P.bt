@@ -1,0 +1,339 @@
+// replicated serial p2p wan tests  
+newWan/p2p.conf 
+	wanSites = 2,3,4  maxOps=50000 resultWaitSec=600
+	locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+
+newWan/p2pKill.conf
+    wanSites = 2,3,4 maxOps=15000 resultWaitSec=600 
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5
+
+newWan/p2pPersist.conf 
+	wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+	locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+
+newWan/p2pKillPersist.conf
+    wanSites = 2,3,4 maxOps=15000 resultWaitSec=600
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5
+    
+newWan/p2pRing.conf 
+	wanSites = 2,3,4 maxOps=50000 resultWaitSec=600 
+	locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+	
+newWan/p2pHubAndSpoke.conf 
+	wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+	locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+	
+newWan/lazyReceiverP2p.conf   
+	wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5	
+
+newWan/queuePersistP2P.conf 
+	wanSites = 2,3,4 resultWaitSec=600
+	locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5	
+	
+newWan/queuePersistRegionPersistP2P.conf 
+	wanSites = 2,3,4 resultWaitSec=600
+	locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+		
+// partitioned region serial p2p wan tests
+parReg/newWan/serial/p2p.conf 
+	wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+	locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+
+parReg/newWan/serial/p2pKill.conf
+    wanSites = 2,3,4 maxOps=15000 resultWaitSec=600 redundantCopies=2
+    peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5 
+
+parReg/newWan/serial/p2pRing.conf 
+	wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+	locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+	
+parReg/newWan/serial/p2pHubAndSpoke.conf 
+	wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+	locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+	
+parReg/newWan/serial/lazyReceiverP2p.conf
+	wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5	
+	
+parReg/newWan/serial/colocation/p2pParRegColocation.conf
+	wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+	
+parReg/newWan/serial/colocation/p2pKillParRegColocation.conf
+	wanSites = 2,3,4 maxOps=15000 resultWaitSec=600 redundantCopies = 2
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+
+parReg/newWan/serial/colocation/p2pParRegColocationPersist.conf
+	wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+	
+parReg/newWan/serial/colocation/p2pKillParRegColocationPersist.conf
+	wanSites = 2,3,4 maxOps=15000 resultWaitSec=600
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+
+parReg/newWan/serial/colocation/p2pRing.conf 
+	wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+	locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+	
+parReg/newWan/serial/colocation/p2pHubAndSpoke.conf 
+	wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+	locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+	
+parReg/newWan/serial/colocation/lazyReceiverP2p.conf
+	wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5		
+	
+parReg/newWan/serial/colocation/p2pRingPersist.conf 
+	wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+	locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+	
+parReg/newWan/serial/colocation/p2pHubAndSpokePersist.conf 
+	wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+	locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+	
+parReg/newWan/serial/colocation/lazyReceiverP2pPersist.conf
+	wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+	
+parReg/newWan/serial/persistence/p2pRing.conf 
+	wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+	locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+	
+parReg/newWan/serial/persistence/p2pHubAndSpoke.conf 
+	wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+	locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+	
+parReg/newWan/serial/persistence/lazyReceiverP2p.conf
+	wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5	
+	
+parReg/newWan/serial/persistence/p2pPersist.conf 
+	wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+	locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+	
+parReg/newWan/serial/persistence/p2pKillPersist.conf
+    wanSites = 2,3,4 maxOps=15000 resultWaitSec=600 redundantCopies = 2
+    peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5 
+
+parReg/newWan/serial/queuePersistP2P.conf 
+	wanSites = 2,3,4 resultWaitSec=600
+	locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5	
+	
+parReg/newWan/serial/persistence/queuePersistRegionPersistP2P.conf
+	wanSites = 2,3,4  resultWaitSec=600
+	locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+
+parReg/newWan/serial/colocation/queuePersistP2P.conf
+	wanSites = 2,3,4 resultWaitSec=600
+	locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+	
+parReg/newWan/serial/colocation/queuePersistRegionPersistP2P.conf
+	wanSites = 2,3,4 resultWaitSec=600
+	locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+	
+// locator auto discovery tests
+newWan/discovery/wanLocatorsP2P.conf
+	wanSites = 2,3,4 maxOps=100 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1	
+
+newWan/discovery/wanLocatorsAllP2P.conf
+	wanSites = 2,3,4 maxOps=100 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1	
+
+newWan/discovery/wanLocatorsPeerHAP2P.conf
+	wanSites = 2,3,4 maxOps=100 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+
+newWan/discovery/wanAdminLocatorsPeerHAP2P.conf
+	wanSites = 2,3,4 maxOps=100 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1	
+
+parReg/newWan/serial/discovery/wanLocatorsP2P.conf
+	wanSites = 2,3,4 maxOps=100 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1 	
+
+parReg/newWan/serial/discovery/wanLocatorsAllP2P.conf
+	wanSites = 2,3,4 maxOps=100 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1	
+
+parReg/newWan/serial/discovery/wanLocatorsPeerHAP2P.conf
+	wanSites = 2,3,4 maxOps=100 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+
+parReg/newWan/serial/discovery/wanAdminLocatorsPeerHAP2P.conf
+	wanSites = 2,3,4 maxOps=100 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1	
+
+		
+// rebalance tests
+parReg/newWan/serial/concKnownKeysWANp2p.conf wanSites=2,3,4
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   peerHostsPerSite=4 peerVMsPerHost=1 peerThreadsPerVM=5
+   numKeys = 50000 
+
+parReg/newWan/serial/concKnownKeysWANp2pWithCacheServer.conf wanSites=2,3,4
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   peerHostsPerSite=4 peerVMsPerHost=1 peerThreadsPerVM=5
+   numKeys = 50000 
+   
+parReg/newWan/serial/persistence/concKnownKeysWANp2p.conf wanSites=2,3,4
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   peerHostsPerSite=4 peerVMsPerHost=1 peerThreadsPerVM=5
+   numKeys = 20000 
+     
+parReg/newWan/serial/persistence/concKnownKeysWANp2pWithCacheServer.conf wanSites=2,3,4
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   peerHostsPerSite=4 peerVMsPerHost=1 peerThreadsPerVM=5
+   numKeys = 20000 
+   
+parReg/newWan/serial/colocation/concKnownKeysWANp2p.conf wanSites=2,3,4
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   peerHostsPerSite=4 peerVMsPerHost=1 peerThreadsPerVM=5
+   numKeys = 10000   
+
+parReg/newWan/serial/colocation/concKnownKeysWANp2pPersist.conf wanSites=2,3,4
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   peerHostsPerSite=4 peerVMsPerHost=1 peerThreadsPerVM=5
+   numKeys = 10000  
+         
+// Sender start/stop/resume operations
+newWan/senderOperationsP2p.conf
+	wanSites = 2,3,4 maxOps=5000 resultWaitSec=600
+	locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+
+newWan/senderOperationsP2pKill.conf
+	wanSites = 2,3,4 maxOps=5000 resultWaitSec=600
+	locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+
+parReg/newWan/serial/colocation/senderOperationsP2pParRegColocationPersist.conf
+    wanSites = 2,3,4 maxOps=5000 resultWaitSec=600
+    locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+    peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+
+parReg/newWan/serial/colocation/senderOperationsP2pKillParRegColocationPersist.conf	
+    wanSites = 2,3,4 maxOps=5000 resultWaitSec=600
+    locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+    peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+
+// queue eviction tests
+newWan/serial/eviction/queueEvictionP2p.conf
+	wanSites = 2,3,4 maxOps=50000 resultWaitSec=3600
+	locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+	
+newWan/serial/eviction/queueEvictionP2pPersist.conf
+	wanSites = 2,3,4 maxOps=50000 resultWaitSec=3600
+	locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+		
+parReg/newWan/serial/queueEvictionP2p.conf 
+	wanSites = 2,3,4 maxOps=50000 resultWaitSec=3600
+	locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+
+parReg/newWan/serial/persistence/queueEvictionP2pPersist.conf 
+	wanSites = 2,3,4 maxOps=50000 resultWaitSec=3600
+	locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+	
+parReg/newWan/serial/colocation/queueEvictionP2p.conf 
+	wanSites = 2,3,4 maxOps=50000 resultWaitSec=3600
+	locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+
+parReg/newWan/serial/colocation/queueEvictionP2pPersist.conf 
+	wanSites = 2,3,4 maxOps=50000 resultWaitSec=3600
+	locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+
+// version tests
+newWan/multiVersionP2P.conf
+parReg/newWan/serial/multiVersionP2P.conf
+		   
+// filters
+newWan/serial/filters/p2pBeforeEnqueueEventFilterHA.conf
+    wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5
+
+newWan/serial/filters/p2pBeforeTransmitEventFilterHA.conf
+    wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5
+       
+newWan/serial/filters/p2pTransportFilterHA.conf
+    wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5
+   
+newWan/serial/filters/p2pEventTransportFilterHA.conf
+    wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5   
+
+parReg/newWan/serial/filters/p2pBeforeEnqueueEventFilterHA.conf
+    wanSites = 2,3,4 maxOps=1000 resultWaitSec=600
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5
+
+parReg/newWan/serial/filters/p2pBeforeTransmitEventFilterHA.conf
+    wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5
+       
+parReg/newWan/serial/filters/p2pTransportFilterHA.conf
+    wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5
+   
+parReg/newWan/serial/filters/p2pEventTransportFilterHA.conf
+    wanSites = 2,3,4 maxOps=1000 resultWaitSec=600
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5 
+    		   
+// tx test
+newWan/tx/p2pKill.conf
+    wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5
+
+parReg/newWan/serial/tx/p2pKill.conf
+    wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5    
+    
+// pdx
+newWan/pdx/p2pPdx.conf
+    wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 2
+
+newWan/pdx/p2pKillPdx.conf
+    wanSites = 2,3,4 maxOps=1000 resultWaitSec=600
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5
+
+parReg/newWan/serial/pdx/p2pPdx.conf
+    wanSites = 2,3,4 maxOps=50000 resultWaitSec=600
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 2
+
+parReg/newWan/serial/pdx/p2pKillPdx.conf
+    wanSites = 2,3,4 maxOps=1000 resultWaitSec=600
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5
+            
+// accessor test
+newWan/accessorP2PHA.conf 
+    wanSites=2,3,4 maxOps=300 resultWaitSec=600 
+
+         

@@ -1,0 +1,40 @@
+<html>
+  <body>
+    <P>This package contains classes that implement a logging
+    mechanism similar to the one in <A
+    href="http://java.sun.com/j2se/1.4/docs/guide/util/logging/overview.html">JDK
+    1.4</A>.  While the basic mechanism is present, many of the more
+    advanced features (such as writing logs as XML and performing
+    filtering) are not implemented.</P>
+
+<PRE>
+Logger logger = Logger.getLogger("com.gemstone.persistence.jdo");
+...
+// Send logging output to a file, by default it will go to System.err
+Handler handler = new StreamHandler(new FileOutputStream(file),
+                                    new SimpleFormatter());
+logger.addHandler(handler);
+...
+logger.warning("Could not find file: " + fileName);
+...
+// Ignore all messages that are lower than Level.INFO
+logger.setLevel(Level.INFO);  
+...
+logger.throwing("com.gemstone.persistence.jdo.StateManagerImpl",
+                "readFile", ex);
+..
+logger.info("Found these objects: ", objs);
+</PRE>  
+
+    <P>A Logger's level may also be specified at runtime using a
+      system propery.  To set the level of the logger name
+      "com.gemstone.persistence.jdo.Logger" to FINE use</P>
+
+    <P align="center"><TT>-Dcom.gemstone.persistence.jdo.Logger.LEVEL=FINE</TT></P>
+
+<P>If the <code>com.gemstone.persistence.logging.StackTraces</code>
+system property is set to <code>true</code>, then a stack trace will
+be printed along with every message.</P>
+
+  </body>
+</html>

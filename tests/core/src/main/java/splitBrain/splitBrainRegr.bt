@@ -1,0 +1,145 @@
+//admin
+splitBrain/regr/recycleConn.conf
+     locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+     A=client clientHosts=3 clientVMsPerHost=1 clientThreadsPerVM=1
+     B=admin  adminHosts=1  adminVMsPerHost=1  adminThreadsPerVM=1
+splitBrain/regr/adminCache.conf
+splitBrain/regr/jmxConcRegion.conf hydra.numHosts=4 vmQuantities=4
+
+//parRegHA
+splitBrain/regr/concParRegHA.conf
+     A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+     B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+     redundantCopies=1 numVMsToStop=1
+parReg/concKnownKeysHA.conf
+     A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+     B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+     numKeys=100000 byteArraySize=5000 redundantCopies=1 numVMsToStop=1
+
+//parRegHABridge
+/*commenting out for Cheetah release
+splitBrain/regr/concParRegHABridge.conf
+     edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+     bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+     redundantCopies=1 numVMsToStop=1 numAccessors = 1 numEmptyClients = 1 numThinClients=1
+parReg/bridge/concKnownKeysHABridge.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=3
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=180000 byteArraySize=1000 redundantCopies=1 numVMsToStop=1
+   edgeVmSize=600 serverVmSize=700 */
+
+//useCase13Scenarios
+splitBrain/regr/killPrimarySteady.conf
+    trimIterations = 100000
+    workIterations = 500000
+    batchSize = 1000
+    maxKeys = 10000
+splitBrain/regr/killSecondaryDuringGii.conf
+    trimIterations = 100000
+    workIterations = 500000
+    batchSize = 50000
+    maxKeys = 10000
+
+//diskReg
+splitBrain/regr/crashRecovery.conf maxKeys=100 objectType=objects.ArrayOfByte
+splitBrain/regr/crashOverflowRecovery.conf maxKeys=100 objectType=objects.NestedOrderVector
+
+//dlock
+splitBrain/regr/crashGrantor.conf
+dlock/elderRecoveryStress.conf  vmQuantities = 4
+
+//event
+splitBrain/regr/concEntryEventGlobalStopStart.conf
+splitBrain/regr/concRegionEventGlobalStopStart.conf
+
+//getInitialImage
+getInitialImage/giiWhileMultiplePublishing.conf
+     batchSize=25000
+     dataPolicy=replicate
+     hydra.numHosts=3
+     numGiiClients=10
+     scope=distributedAck
+     trimIterations=0
+     workIterations=250000
+splitBrain/regr/concGiiPreferenceVMReg.conf hydra.numHosts = 5
+
+//hct
+/*commenting out for Cheetah release
+hct/failover1.conf
+     bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+     edgeHosts   =  1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+     hc.serverMemSize = 300m
+hct/randomLB.conf
+     bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+     edgeHosts   =  1 edgeVMsPerHost   = 3 edgeThreadsPerVM   = 1
+     hc.serverMemSize = 350m
+
+//ha
+hct/ha/dataPropagationFailoverConflation.conf
+     A = bridge  bridgeHosts =  5 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+     B = feed    feedHosts   =  1 feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+     C = edge    edgeHosts   = 15  edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+     hc.nPutThreads=60 hc.nPutKeyRange=1
+hct/ha/dataPropagationFailoverNoConflation.conf
+     A = bridge  bridgeHosts = 4  bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+     B = feed    feedHosts   = 1  feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+     C = edge    edgeHosts   = 4  edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+     hc.nPutThreads=10 hc.nPutKeyRange=10000
+hct/ha/dataPropagationFailoverNoConflationFeederIsClient.conf
+     A = bridge  bridgeHosts = 4  bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+     B = feed    feedHosts   = 1  feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+     C = edge    edgeHosts   = 4  edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+     hc.nPutThreads=10 hc.nPutKeyRange=1000 */
+
+//roles
+splitBrain/regr/reconnectMultiRegionRoleMissing.conf
+     hydra.numHosts = 6
+splitBrain/regr/reconnectRandomRolePlayerShutDown.conf
+     hydra.numHosts = 16
+
+//tx
+//disabled for #44146
+//splitBrain/regr/concEntryEvent.conf
+
+//wan
+splitBrain/regr/p2pkill.conf
+     wanSites=2 peerVMsPerHost=2 peerThreadsPerVM=1,2
+     locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+     peerHostsPerSite = 1 peerMem = 768m
+/*commenting out for Cheetah release
+wan/hct.conf
+     wanSites=2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+     locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+     bridgeHostsPerSite = 1 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+     edgeHostsPerSite = 1 serverMem = 256m clientMem = 256m
+
+
+//durableClients
+durableClients/eventValidationAll_KeysFailOver.conf
+     A = bridge  bridgeHosts =  7 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+     B = feed    feedHosts   =  1 feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+     C = edge    edgeHosts   =  5 edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+     hc.nPutThreads=3 hc.nPutKeyRange=3
+durableClients/cqWithDurableClients.conf
+     A = bridge  bridgeHosts =  7 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+     B = feed    feedHosts   =  1 feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+     C = edge    edgeHosts   =  5 edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+     D = cqEdge  cqEdgeHosts = 1  cqEdgeVMsPerHost = 1  cqEdgeThreadsPerVM = 1
+     hc.nPutThreads=3 hc.nPutKeyRange=3
+
+//security
+security/clientAuthnAndAuthzFailoverTest.conf
+     A = bridge  bridgeHosts =  5 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+     B = writer    writerHosts   =  5 writerVMsPerHost   = 1  writerThreadsPerVM   = 3
+     C = reader    readerHosts   =  5 readerVMsPerHost   = 1  readerThreadsPerVM   = 3
+     D = query    queryHosts   =  5 queryVMsPerHost   = 1  queryThreadsPerVM   = 3
+     E = invalid    invalidHosts   =  1 invalidVMsPerHost   = 1  invalidThreadsPerVM   = 1
+     nPutKeyRange=200
+security/clientAuthnAndAuthzPrFailoverTest.conf
+     A = bridge  bridgeHosts =  5 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+     B = writer    writerHosts   =  5 writerVMsPerHost   = 1  writerThreadsPerVM   = 3
+     C = reader    readerHosts   =  5 readerVMsPerHost   = 1  readerThreadsPerVM   = 3
+     D = query    queryHosts   =  5 queryVMsPerHost   = 1  queryThreadsPerVM   = 3
+     E = invalid    invalidHosts   =  1 invalidVMsPerHost   = 1  invalidThreadsPerVM   = 1
+     nPutKeyRange=200 redundantCopies=2 */
+

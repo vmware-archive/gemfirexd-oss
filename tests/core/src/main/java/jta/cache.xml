@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE cache PUBLIC
+  "-//GemStone Systems, Inc.//GemFire Declarative Caching 6.0//EN"
+  "http://www.gemstone.com/dtd/cache6_0.dtd">
+<cache lock-lease="120" lock-timeout="60" search-timeout="300">
+	<vm-root-region name="root">
+		<region-attributes scope="distributed-no-ack" data-policy="normal" initial-capacity="16" load-factor="0.75" concurrency-level="16" statistics-enabled="true">
+			<region-time-to-live>
+				<expiration-attributes timeout="0" action="invalidate"/>
+			</region-time-to-live>
+			<region-idle-time>
+				<expiration-attributes timeout="0" action="invalidate"/>
+			</region-idle-time>
+			<entry-time-to-live>
+				<expiration-attributes timeout="0" action="invalidate"/>
+			</entry-time-to-live>
+			<entry-idle-time>
+				<expiration-attributes timeout="0" action="invalidate"/>
+			</entry-idle-time>
+		</region-attributes>
+		<entry>
+			<key>
+				<string>Application Version</string>
+			</key>
+			<value>
+				<string>1.0</string>
+			</value>
+		</entry>
+	</vm-root-region>
+</cache>
+  <!-- no jndi-binds => use GemFire Transaction Manager
+  -->

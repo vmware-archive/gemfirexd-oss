@@ -1,0 +1,11 @@
+/*sustainability/reconnectMultiRegionRoleMissing.conf
+threadGroupsName=producerRegionA*/
+sustainability/reconnectMultiRolePlayingVms.conf
+threadGroupsName=rolePlayerDoSomeThingThread
+sustainability/reconnectRandomRolePlayerShutDown.conf
+threadGroupsName=regionAProducerThread
+//sustainability/reconnectRoleLoss.conf
+//sustainability/reconnectRoleLossBackUP.conf
+//sustainability/reconnectRoleLossMultiTimes.conf
+//threadGroupsName=selfRolePlayerProducerThread
+//sustainability/reconnectSelfRolePlaying.conf

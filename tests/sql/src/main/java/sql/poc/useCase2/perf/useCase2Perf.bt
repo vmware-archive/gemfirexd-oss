@@ -1,0 +1,82 @@
+//without whereParams
+sql/poc/useCase2/perf/perfUseCase2ListAggPeer.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    A=store storeHosts=12 storeVMsPerHost=1 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=4 accessorThreadsPerVM=100
+    trimIterations =  50000
+    workIterations =  5000000
+    batchSize = 5000
+    useOldListAgg = false
+    useListAggNewImpl = true
+    createIndex = true
+    whichDAP = 1
+
+
+
+sql/poc/useCase2/perf/perfUseCase2ListAgg.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=12 serverVMsPerHost=1 serverThreadsPerVM=1
+    clientHosts = 1 clientVMsPerHost =4 clientThreadsPerVM = 100
+    trimIterations =  50000
+    workIterations =  5000000
+    batchSize = 5000
+    useOldListAgg = false
+    useListAggNewImpl = true
+    createIndex = true
+    whichDAP = 1
+
+//with whereParams
+sql/poc/useCase2/perf/perfUseCase2ListAggPeer.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    A=store storeHosts=12 storeVMsPerHost=1 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=4 accessorThreadsPerVM=100
+    trimIterations =  50000
+    workIterations =  5000000
+    batchSize = 5000
+    useOldListAgg = false
+    useListAggNewImpl = false
+    createIndex = true
+    whichDAP = 1
+
+
+
+sql/poc/useCase2/perf/perfUseCase2ListAgg.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=12 serverVMsPerHost=1 serverThreadsPerVM=1
+    clientHosts = 1 clientVMsPerHost =4 clientThreadsPerVM = 100
+    trimIterations =  50000
+    workIterations =  5000000
+    batchSize = 5000
+    useOldListAgg = false
+    useListAggNewImpl = false
+    createIndex =  true
+    whichDAP = 1
+
+    
+/*old impl should not be run anymore
+sql/poc/useCase2/perf/perfUseCase2ListAggPeer.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    A=store storeHosts=12 storeVMsPerHost=1 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=4 accessorThreadsPerVM=100
+    trimIterations =  50000
+    workIterations =  500000
+    batchSize = 5000
+    useOldListAgg = true
+    useListAggNewImpl = false
+    createIndex = true
+    whichDAP = 1
+
+
+
+sql/poc/useCase2/perf/perfUseCase2ListAgg.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=12 serverVMsPerHost=1 serverThreadsPerVM=1
+    clientHosts = 1 clientVMsPerHost =4 clientThreadsPerVM = 100
+    trimIterations =  50000
+    workIterations =  500000
+    batchSize = 5000
+    useOldListAgg = true
+    useListAggNewImpl = false
+    createIndex =  true
+    whichDAP = 1
+*/

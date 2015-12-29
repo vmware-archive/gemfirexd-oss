@@ -1,0 +1,33 @@
+
+This example demonstrates transactions on a GemFire cache.
+
+Connecting to the distributed system and creating the cache.
+Example region, /exampleRegion, created in cache. 
+
+Before the first transaction, the cache is empty.
+
+Putting entry: key0, CommitValue0
+Putting entry: key1, CommitValue1
+Putting entry: key2, CommitValue2
+
+After committing the first transaction, the cache contains:
+        entry: key0, CommitValue0
+        entry: key1, CommitValue1
+        entry: key2, CommitValue2
+
+Press Enter to continue to next transaction...
+Before the second transaction, the cache contains:
+        entry: key0, CommitValue0
+        entry: key1, CommitValue1
+        entry: key2, CommitValue2
+
+Putting entry: key0, RollbackValue0
+Putting entry: key1, RollbackValue1
+Putting entry: key2, RollbackValue2
+
+After rolling back the second transaction, the cache contains:
+        entry: key0, CommitValue0
+        entry: key1, CommitValue1
+        entry: key2, CommitValue2
+
+Closing the cache and disconnecting.

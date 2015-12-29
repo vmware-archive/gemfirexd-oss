@@ -1,0 +1,59 @@
+cacheperf/comparisons/dataFeed/partitionLatThr.conf
+  A = feed              B = bridge              C = edge
+  feedHosts        = 1  bridgeHosts        = 3  edgeHosts        = 24,48,72,96
+  feedVMsPerHost   = 1  bridgeVMsPerHost   = 1  edgeVMsPerHost   = 1
+  feedThreadsPerVM = 4  bridgeThreadsPerVM = 1  edgeThreadsPerVM = 1
+  totalBytes = 3000000000 dataSize = 1000,8000,32000,2000000,10000000
+  interestPercentage = 10 durable = false
+  useFixedKeys = false useFixedVal = false
+  trimSeconds = 120 workSeconds = 180
+
+cacheperf/comparisons/dataFeed/partitionThroughput.conf
+  A = feed              B = bridge              C = edge
+  feedHosts        = 1  bridgeHosts        = 3  edgeHosts        = 24,48,72,96
+  feedVMsPerHost   = 1  bridgeVMsPerHost   = 1  edgeVMsPerHost   = 1
+  feedThreadsPerVM = 4  bridgeThreadsPerVM = 1  edgeThreadsPerVM = 1
+  totalBytes = 3000000000 dataSize = 1000,8000,32000,2000000,10000000
+  interestPercentage = 10 durable = false
+  useFixedKeys = false useFixedVal = false
+  trimSeconds = 120 workSeconds = 180
+
+cacheperf/comparisons/dataFeed/partitionLatency.conf
+  A = feed              B = bridge              C = edge
+  feedHosts        = 1  bridgeHosts        = 3  edgeHosts        = 24,48,72,96
+  feedVMsPerHost   = 1  bridgeVMsPerHost   = 1  edgeVMsPerHost   = 1
+  feedThreadsPerVM = 1  bridgeThreadsPerVM = 1  edgeThreadsPerVM = 1
+  totalBytes = 3000000000 dataSize = 1000,8000,32000,2000000,10000000
+  interestPercentage = 10 durable = false
+  useFixedKeys = false useFixedVal = false
+  trimSeconds = 120 workSeconds = 180
+
+cacheperf/comparisons/dataFeed/replicateLatThr.conf
+  A = feed              B = bridge              C = edge
+  feedHosts        = 1  bridgeHosts        = 3  edgeHosts        = 24,48,72,96
+  feedVMsPerHost   = 1  bridgeVMsPerHost   = 1  edgeVMsPerHost   = 1
+  feedThreadsPerVM = 4  bridgeThreadsPerVM = 1  edgeThreadsPerVM = 1
+  totalBytes = 1000000000 dataSize = 1000,8000,32000,2000000,10000000
+  interestPercentage = 10 durable = false
+  useFixedKeys = false useFixedVal = false
+  trimSeconds = 120 workSeconds = 180
+
+cacheperf/comparisons/dataFeed/replicateThroughput.conf
+  A = feed              B = bridge              C = edge
+  feedHosts        = 1  bridgeHosts        = 3  edgeHosts        = 24,48,72,96
+  feedVMsPerHost   = 1  bridgeVMsPerHost   = 1  edgeVMsPerHost   = 1
+  feedThreadsPerVM = 4  bridgeThreadsPerVM = 1  edgeThreadsPerVM = 1
+  totalBytes = 1000000000 dataSize = 1000,8000,32000,2000000,10000000
+  interestPercentage = 10 durable = false
+  useFixedKeys = false useFixedVal = false
+  trimSeconds = 120 workSeconds = 180
+
+cacheperf/comparisons/dataFeed/replicateLatency.conf
+  A = feed              B = bridge              C = edge
+  feedHosts        = 1  bridgeHosts        = 3  edgeHosts        = 24,48,72,96
+  feedVMsPerHost   = 1  bridgeVMsPerHost   = 1  edgeVMsPerHost   = 1
+  feedThreadsPerVM = 1  bridgeThreadsPerVM = 1  edgeThreadsPerVM = 1
+  totalBytes = 1000000000 dataSize = 1000,8000,32000,2000000,10000000
+  interestPercentage = 10 durable = false
+  useFixedKeys = false useFixedVal = false
+  trimSeconds = 120 workSeconds = 180

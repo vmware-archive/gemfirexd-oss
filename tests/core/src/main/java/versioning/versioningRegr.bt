@@ -1,0 +1,322 @@
+// This bt is meant to be run with local.concurrencyChecksEnabled.conf 
+// as some bts are the original bts with multiple writers (bridgeOrderingWorkaround = none)
+// CQ (multipleWriters & versioning: useUniqueKeys = false + concurrencyChecksEnabled = true)
+/*commenting out for Cheetah release
+versioning/cq/concCQBridge.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+versioning/cq/concCQBridgePR.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+versioning/cq/concCQBridgeHA.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundancyLevel = 4
+versioning/cq/concCQBridgePRHA.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundancyLevel = 3 redundantCopies = 3 maxVMsToStop=2
+// Forced disconnect with cq (splitBrain)
+versioning/cq/concCQBridgeFD.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundancyLevel = 4
+
+// delta (multipleWriters & versioning: useUniqueKeys = false + concurrencyChecksEnabled = true)
+versioning/delta/concDeltaCQBridge.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   cloningEnabled = true, false
+versioning/delta/concDeltaCQBridgePR.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   cloningEnabled = true, false
+versioning/delta/concDeltaCQBridgeHA.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundancyLevel = 4
+   cloningEnabled = true, false
+versioning/delta/concDeltaCQBridgePRHA.conf
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundancyLevel = 3 redundantCopies = 3 maxVMsToStop=2
+   cloningEnabled = true, false */
+
+// diskRecovery (multiple writers: useUniqueKeys = false, concurrencyChecksEnabled is forced to try with persistence)
+versioning/diskRecovery/concRecoverLatest.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+versioning/diskRecovery/concRecoverAll.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+versioning/diskRecovery/concRecoverAllAfterShutDownAll.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+versioning/diskRecovery/recoverAfterGii.conf
+
+versioning/diskRecovery/multiDiskStoreReplicate.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+   numDiskStores = 20
+versioning/diskRecovery/multiDiskStoreReplicateShutDownAll.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+   numDiskStores = 20
+versioning/diskRecovery/multiDiskStorePR.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+   numDiskStores = 3
+versioning/diskRecovery/multiDiskStorePRShutDownAll.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+   numDiskStores = 3
+versioning/diskRecovery/multiDiskStoreMixed.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+   numDiskStores = 3
+versioning/diskRecovery/multiDiskStoreMixedShutDownAll.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+   numDiskStores = 3
+versioning/diskRecovery/multiDiskStoreMixedShutDownAllManySR.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=3 persistVMsPerHost=1 persistThreadsPerVM=3
+   numDiskStores = 3
+
+// fixed partitioning
+versioning/fixedPartitioning/concParRegHAPersist.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   redundantCopies=1 numVMsToStop=1
+
+// parRegBridge, parRegBridgePersist.bt (multiple writers)
+/*commenting out for Cheetah release
+parReg/bridge/concParRegBridge.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=0,1,2,3 numAccessors=1 numEmptyClients=1 numThinClients=1
+   bridgeOrderingWorkaround=none
+
+parReg/persistence/concParRegBridgePersist.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=6 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+   redundantCopies=0,1,2,3
+   bridgeOrderingWorkaround=none */
+
+// parRegHALimitWrites, parRegHABridgeLimitWrites (multiple writers)
+// ==== ordering workaround is unique keys
+// HA testing - concurrent (stop 1 VM at a time)
+parReg/concParRegHALimitWrites.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   bridgeOrderingWorkaround = none
+   redundantCopies=1 numVMsToStop=1
+parReg/concParRegHALimitWrites.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   bridgeOrderingWorkaround = none
+   redundantCopies=2 numVMsToStop=1
+parReg/concParRegHALimitWrites.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   B=dataStore dataStoreHosts=5 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   bridgeOrderingWorkaround = none
+   redundantCopies=3 numVMsToStop=1
+
+// HA testing - concurrent (stop 2 VMs at a time)
+parReg/concParRegHALimitWrites.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   B=dataStore dataStoreHosts=5 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   bridgeOrderingWorkaround = none
+   redundantCopies=2 numVMsToStop=2
+parReg/concParRegHALimitWrites.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   B=dataStore dataStoreHosts=6 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   bridgeOrderingWorkaround = none
+   redundantCopies=3 numVMsToStop=2
+
+// HA testing - concurrent (stop 3 VMs at a time)
+parReg/concParRegHALimitWrites.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   B=dataStore dataStoreHosts=7 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   bridgeOrderingWorkaround = none
+   redundantCopies=3 numVMsToStop=3
+
+// tests limited to mean_kill to increase chance of bug 34361
+parReg/concParRegHA_meanKillLimitWrites.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   bridgeOrderingWorkaround = none
+   redundantCopies=2 numVMsToStop=1
+parReg/concParRegHA_meanKillLimitWrites.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   B=dataStore dataStoreHosts=5 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   bridgeOrderingWorkaround = none
+   redundantCopies=3 numVMsToStop=1
+
+// HA testing - concurrent (stop 1 VM at a time)
+/*commenting out for Cheetah release
+parReg/bridge/concParRegHABridgeLimitWrites.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   bridgeOrderingWorkaround = none
+   redundantCopies=1,2,3 numVMsToStop=1
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+
+// HA testing - concurrent (stop 2 VMs at a time)
+parReg/bridge/concParRegHABridgeLimitWrites.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   bridgeOrderingWorkaround = none
+   redundantCopies=2,3 numVMsToStop=2
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+
+// HA testing - concurrent (stop 3 VMs at a time)
+parReg/bridge/concParRegHABridgeLimitWrites.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   bridgeOrderingWorkaround = none
+   redundantCopies=3 numVMsToStop=3
+   numAccessors=1 numEmptyClients=1 numThinClients=1 */
+
+// parRegHAPersist.bt, parRegHABridgePersist.bt
+// don't stop all datastores in this test; concParRegRecover does that
+versioning/parReg/concParRegHAPersist.conf 
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=6 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   redundantCopies=0,1,2,3 numVMsToStop=1,2,3,5
+
+versioning/parReg/concParRegHAShutDownAllPersist.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=6 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   redundantCopies=0,1,2,3 numVMsToStop=-1 // numVMsToStop is unused
+
+/*commenting out for Cheetah release
+versioning/parReg/concParRegHABridgePersistParOffline.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+   redundantCopies=0 numVMsToStop=1,3,5
+versioning/parReg/concParRegHABridgePersist.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+   redundantCopies=1 numVMsToStop=1
+versioning/parReg/concParRegHABridgePersistParOffline.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+   redundantCopies=1 numVMsToStop=3,5
+versioning/parReg/concParRegHABridgePersist.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+   redundantCopies=2 numVMsToStop=1
+versioning/parReg/concParRegHABridgePersistParOffline.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+   redundantCopies=2 numVMsToStop=3,5
+versioning/parReg/concParRegHABridgePersist.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+   redundantCopies=3 numVMsToStop=1,3
+versioning/parReg/concParRegHABridgePersistParOffline.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=2
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+   redundantCopies=3 numVMsToStop=5
+
+//resman.bt (bridgeOrderingWorkaround = none)
+versioning/resman/concParRegCriticalHABridge.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=10
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=10
+   redundantCopies=1 numVMsToStop=1
+   heapMB=250
+
+versioning/resman/concParRegCriticalBridge.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=10
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=10
+   redundantCopies=0 numVMsToStop=1
+   heapMB=250
+
+versioning/resman/concParRegCriticalBridge.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=10
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=10
+   redundantCopies=1 numVMsToStop=1
+   heapMB=250
+
+versioning/resman/concParRegCriticalBridgePersist.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=10
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=10
+   redundantCopies=0 numVMsToStop=1
+   heapMB=250
+
+versioning/resman/concParRegCriticalBridgePersist.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=10
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=10
+   redundantCopies=1 numVMsToStop=1
+   heapMB=250
+
+versioning/resman/concParRegCriticalHABridgePersist.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=10
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=10
+   redundantCopies=1 numVMsToStop=1
+   heapMB=250 */
+
+
+
+//Delta GII
+// delta gii (no operations occur while requester is offline)
+versioning/deltaGiiScenario1.conf
+   A=provider  providerHosts =1 providerVMsPerHost =1 providerThreadsPerVM =1
+   B=requester requesterHosts=1 requesterVMsPerHost=1 requesterThreadsPerVM=3
+
+versioning/deltaGiiScenario1Persist.conf
+   A=provider  providerHosts =1 providerVMsPerHost =1 providerThreadsPerVM =1
+   B=requester requesterHosts=1 requesterVMsPerHost=1 requesterThreadsPerVM=3
+
+// delta gii (provider initiates creates, updates and invalidate (no destroys) while requester is offline)
+versioning/deltaGiiScenario2.conf
+   A=provider  providerHosts =1 providerVMsPerHost =1 providerThreadsPerVM =1
+   B=requester requesterHosts=1 requesterVMsPerHost=1 requesterThreadsPerVM=3
+
+versioning/deltaGiiScenario2Persist.conf
+   A=provider  providerHosts =1 providerVMsPerHost =1 providerThreadsPerVM =1
+   B=requester requesterHosts=1 requesterVMsPerHost=1 requesterThreadsPerVM=3
+
+// full gii (provider does a tombstone-gc while requester is offline)
+//Removed untile #48116 is fixed
+//versioning/deltaGiiScenario3.conf
+//   A=provider  providerHosts =1 providerVMsPerHost =1 providerThreadsPerVM =1
+//   B=requester requesterHosts=1 requesterVMsPerHost=1 requesterThreadsPerVM=3
+
+//versioning/deltaGiiScenario3Persist.conf
+//   A=provider  providerHosts =1 providerVMsPerHost =1 providerThreadsPerVM =1
+//   B=requester requesterHosts=1 requesterVMsPerHost=1 requesterThreadsPerVM=3
+
+// delta gii (provider executes destroys (but no tombstone gc) while requester is offline)
+versioning/deltaGiiScenario4.conf
+   A=provider  providerHosts =1 providerVMsPerHost =1 providerThreadsPerVM =1
+   B=requester requesterHosts=1 requesterVMsPerHost=1 requesterThreadsPerVM=3
+
+versioning/deltaGiiScenario4Persist.conf
+   A=provider  providerHosts =1 providerVMsPerHost =1 providerThreadsPerVM =1
+   B=requester requesterHosts=1 requesterVMsPerHost=1 requesterThreadsPerVM=3
+
+// full gii (provider executes region.clear() while requester is offline)
+versioning/deltaGiiScenario5.conf
+   A=provider  providerHosts =1 providerVMsPerHost =1 providerThreadsPerVM =1
+   B=requester requesterHosts=1 requesterVMsPerHost=1 requesterThreadsPerVM=3
+
+// full gii (for new members joining while initial requester vms are doing a delta gii)
+versioning/deltaGiiScenario6.conf
+   A=provider  providerHosts =1 providerVMsPerHost =1 providerThreadsPerVM =1
+   B=requester requesterHosts=1 requesterVMsPerHost=1 requesterThreadsPerVM=3
+   C=newMember newMemberHosts=1 newMemberVMsPerHost=1 newMemberThreadsPerVM=3
+
+versioning/deltaGiiScenario6Persist.conf
+   A=provider  providerHosts =1 providerVMsPerHost =1 providerThreadsPerVM =1
+   B=requester requesterHosts=1 requesterVMsPerHost=1 requesterThreadsPerVM=3
+   C=newMember newMemberHosts=1 newMemberVMsPerHost=1 newMemberThreadsPerVM=3

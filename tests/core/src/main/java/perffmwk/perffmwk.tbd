@@ -1,0 +1,69 @@
+
+//==============================================================================
+//                              PERFFMWK TBD NOW
+//==============================================================================
+
+-- option in perffmwk.PerfComparer to display separate table per statistic, optionally omitting ones that do not apply (line is fully blank) rather than having lots of blank space.  Compute rollup number for each table.  Provide header table with all rollups.
+
+-- option to only report stats for test if any are non-zero (or present)
+
+-- statspecs should all include memory, load1, bytes transmitted/received.
+
+-- review comparison key generation and use
+
+-- use comparison key in PerfComparer, make comparable only by name and key so
+   can change properties without dead-ending the test
+
+-- add hydra.Prms-testTopology to reports
+
+-- ability to mark new baseline while keeping old results, with annotation
+
+//==============================================================================
+//                              PERFFMWK TBD
+//==============================================================================
+
+-- add ratio threshold to reports
+
+-- support expressions, especially division, involving logical statspec names
+   (w/Darrel), or at least do simple special cases (divide final answers)
+
+-- create frequently used statspec files to share (w/group)
+
+-- create os-dependent statspec files to share (w/group)
+
+-- extend tests/HowToAnalyze.txt (ongoing w/group)
+
+-- create and publish useful VSD templates (ongoing w/group)
+
+-- way to trim inittask performance.
+
+-- complain if client thread performance varies too much.
+
+-- mark results for tests that failed as "err" (when included)
+
+-- report nanoseconds as milliseconds
+
+-- omit flatline entries in perfreports and comparisons
+
+-- allow setting minimum samples or trim interval size per-statspec or globally
+
+-- report stddev of trim intervals per instance matched in perfreports
+
+-- allow setting max stddev per thread and cause test to fail if exceeded
+
+-- report number of stat instances matched in perfreports
+
+-- report average for raw value columns
+
+-- allow setting reverse chronological order for comparison reports
+
+-- allow formatting options to be set via properties file
+
+-- add user guide in package.html and increase documentation overall
+
+-- allow multiple runs of the same test in a directory being compared, by
+   optionally averaging the results or reporting each separately as 1a, 1b, etc
+
+-- add a GUI for running and viewing results of perf reports and comparisons
+
+-- generate results that can be imported into excel or other charting tool

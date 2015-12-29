@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="xslt-no-tags" default="all" basedir=".">
+  <property file="../testenv.properties"/>
+  <property name="build.compiler" value="${compiler}"/>
+  <property name="source" value="${basedir}" />
+  <property name="bean.ear" value="GemFireXDXATestEar"/>
+  <property name="dist" value="${source}/${bean.ear}"/>
+  <property name="ejb.name" value="GemFireXDXATestEjb"/>
+  <property name="package" value="sql/ecotests/wls/xa"/>
+  <property name="test.client.jar" value="test_client.jar"/>
+
+  <target name="all" depends="build, deploy"/>
+
+  <target name="build" depends="clean,
+                                prepare,
+                                build.ear,
+                                compile.client"/>
+
+  <target name="clean">
+    <delete dir="${dist}" failonerror="false"/>
+    <delete dir="${test.build.dir}/${bean.ear}" failonerror="false"/>
+    <delete file="${client.classes.dir}/${test.client.jar}" failonerror="false"/>
+    <delete dir="${client.classes.dir}/sql/ecotests/wls/xa"/>
+  </target>
+
+  <target name="prepare"
+    description="Prepare the test for compilation and deployment.">
+    <mkdir dir="${dist}"/>
+    <mkdir dir="${dist}/META-INF"/>
+    <mkdir dir="${dist}/${ejb.name}"/>
+    <mkdir dir="${dist}/${ejb.name}/${package}"/>
+    <antcall target="copy.files"/>
+  </target>
+
+  <target name="copy.files"
+    description="Copy test files to distribution structure.">
+    <copy todir="${dist}/META-INF">
+      <fileset dir="${source}">
+        <include name="*application.xml"/>
+      </fileset>
+    </copy>
+    <copy file="${source}/BMXATestBean.java"
+      tofile="${dist}/${ejb.name}/${package}/BMXATestBean.ejb"/>
+    <copy file="${source}/CMXATestBean.java"
+      tofile="${dist}/${ejb.name}/${package}/CMXATestBean.ejb"/>   
+    <copy file="${source}/GemFireXDXATestBean.java"
+      tofile="${dist}/${ejb.name}/${package}/GemFireXDXATestBean.ejb"/>   
+    <copy file="${source}/JMSQueueHelper.java"
+      tofile="${dist}/${ejb.name}/${package}/JMSQueueHelper.ejb"/>  
+    <copy file="${source}/GemFireXDXATestException.java"
+      tofile="${dist}/${ejb.name}/${package}/GemFireXDXATestException.ejb"/>       
+  </target>
+
+  <target name="build.ear">
+    <wlcompile
+      srcdir="${dist}"
+      destdir="${test.build.dir}/${bean.ear}"
+      includes="${ejb.name}">
+      <ejbgen source="${sourceVersion}"/>
+      <javac deprecation="${deprecation}" />
+      <javac debug="${debug}" debugLevel="${debugLevel}" />
+    </wlcompile>
+    <wlappc source="${test.build.dir}/${bean.ear}"
+      debug="${debug}" deprecation="${deprecation}"/>
+  </target>
+
+  <target name="deploy" description="Deploy ear to WebLogic on ${wls.hostname}:${wls.port}.">
+    <wldeploy
+      user="${wls.username}"
+      password="welcome1"
+      adminurl="${wls.protocal}://${wls.hostname}:${wls.port}"
+      action="deploy"
+      source="${test.build.dir}/${bean.ear}"
+      failonerror="false"/>
+  </target>
+
+  <target name="compile.client" description="Compile client.">
+    <echo message="${user.dir}" />
+    <move file="${user.dir}/${test.client.jar}"
+      tofile="${client.classes.dir}/${test.client.jar}"
+      failonerror="false"/>
+    <mkdir dir="${client.classes.dir}" />
+    <javac srcdir="${source}" destdir="${client.classes.dir}"
+        deprecation="${deprecation}" debug="${debug}" debugLevel="${debugLevel}"
+        classpath="${test.classpath};${client.classes.dir}/${test.client.jar}"
+        includes="Client.java"/>
+   </target>
+   
+  <target name="test" description="Run test.">
+  <property name="testsuite" value="" />
+  <property name="runthreads" value="1" />
+  <property name="iterations" value="1" />
+  <echo message="Test suite to be run: ${testsuite}; WLS Home: ${wl.home}"/>
+    <java classname="sql.ecotests.wls.xa.Client">
+       <classpath>
+        <pathelement path="${client.classes.dir}:${client.classes.dir}/${test.client.jar}"/>        
+        <pathelement path="${java.class.path}"/>
+      </classpath>
+      <sysproperty key="url" value="${wls.protocal}://${wls.hostname}:${wls.port}"/>
+      <sysproperty key="runthreads" value="${runthreads}"/>
+      <sysproperty key="iterations" value="${iterations}"/>
+      <arg value="${testsuite}" />
+    </java>
+  </target>
+</project>

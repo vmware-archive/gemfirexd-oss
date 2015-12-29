@@ -1,0 +1,5 @@
+hct/useCase1LoadMove.conf
+      useCase1LoadMoveServerHosts =  8
+      edgeHosts = 20 edgeVMsPerHost = 10 edgeThreadsPerVM = 3
+      hc.serverMemSize = 1500m dataSize = 20000
+      LBPolicy = sticky connectionsPerServer = 1

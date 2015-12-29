@@ -1,0 +1,30 @@
+WORKLOAD MANAGEMENT
+
+The "cacheperf" framework now supports both time-based and iteration-based workload management.  These can be used separately or together.  Note that unlike iteration-based values, time-based values are per-thread (unscaled).  Examples for a test doing cache puts:
+
+1) Run the test so that "put" tasks run in 5 minute batches, warm up for 10 minutes, then runs for another 20 minutes:
+    cacheperf.CachePerfPrms-batchTerminatorMethod = terminateOnBatchSeconds
+    cacheperf.CachePerfPrms-warmupTerminatorMethod = terminateOnTrimSeconds
+    cacheperf.CachePerfPrms-taskTerminatorMethod = terminateOnTotalSeconds
+    cacheperf.CachePerfPrms-batchSeconds =  300;
+    cacheperf.CachePerfPrms-trimSeconds  =  600;
+    cacheperf.CachePerfPrms-workSeconds  = 1200;
+In this case, client threads doing puts will execute the put task 6 times each, 2 for warmup and 4 for work.
+
+2) Run the test so that "put" tasks run in 5000 iteration batches, warm up for 10000 iterations, then run for another 20000 iterations:
+    cacheperf.CachePerfPrms-batchTerminatorMethod = terminateOnBatchIterations
+    cacheperf.CachePerfPrms-warmupTerminatorMethod = terminateOnTrimIterations
+    cacheperf.CachePerfPrms-taskTerminatorMethod = terminateOnTotalIterations
+    cacheperf.CachePerfPrms-batchIterations =  5000;
+    cacheperf.CachePerfPrms-trimIterations  = 10000;
+    cacheperf.CachePerfPrms-workIterations  = 20000;
+In this case, client threads doing puts will execute the put task 6 times each, 2 for warmup and 4 for work.  If there is 1 client thread, it will execute 5000 iterations per batch for a total of 30000 iterations.  If there are 10 client threads, they will execute 500 iterations per batch, for a total of 3000 iterations.
+
+3) Run the test so that "put" tasks run in 2 minute batches, warm up for 1,000,000 iterations, then run for another 20,000,000 iterations.
+    cacheperf.CachePerfPrms-batchTerminatorMethod = terminateOnBatchSeconds
+    cacheperf.CachePerfPrms-warmupTerminatorMethod = terminateOnTrimIterations
+    cacheperf.CachePerfPrms-taskTerminatorMethod = terminateOnTotalIterations
+    cacheperf.CachePerfPrms-batchSeconds    =   120;
+    cacheperf.CachePerfPrms-trimIterations  = 10000;
+    cacheperf.CachePerfPrms-workIterations  = 20000;
+In this case, client threads doing puts will execute the put task for 2 minutes each time, marking warmup after (10000/numThreads) iterations, and working for another (20000/numThreads) iterations.

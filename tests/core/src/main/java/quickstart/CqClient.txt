@@ -1,0 +1,52 @@
+Connecting to the distributed system and creating the cache...
+Example region "/exampleRegion" created in cache.
+Creating CQ "MyCq" with query
+"SELECT \* FROM /exampleRegion e where e='ClientFirstValue'"
+Executing CQ "MyCq"...
+This client will update the server cache and its CQ listener will
+get events for any changes to the CQ result set.
+CQ events provide the base operation \(the change to the server's cache\),
+and the query operation \(the change to the CQ's result set\).
+Press Enter to continue.
+___________________________________________________________________
+CQ looking for entries whose value is 'ClientFirstValue'...
+Putting key1 with value 'ClientFirstValue'
+This satisfies the query, so the CqListener will report a query
+creation event from the server cache.
+
+     CqListener:
+    Received cq event for entry: key1, ClientFirstValue
+    With BaseOperation = Create and QueryOperation = Create
+Press Enter to continue.
+___________________________________________________________________
+CQ looking for entries whose value is 'ClientFirstValue'...
+Updating key1 with value 'ClientSecondValue'
+This removes key1 from the CQ result set, to the CQListener will
+report a query destroy event.
+
+     CqListener:
+    Received cq event for entry: key1, ClientSecondValue
+    With BaseOperation = Update and QueryOperation = Destroy
+Press Enter to continue.
+___________________________________________________________________
+CQ looking for entries whose value is 'ClientFirstValue'...
+Updating key1 with value 'ClientFirstValue'
+This adds key1 back into the CQ result set, to the CQListener will
+report a query create event.
+
+     CqListener:
+    Received cq event for entry: key1, ClientFirstValue
+    With BaseOperation = Update and QueryOperation = Create
+Press Enter to continue.
+___________________________________________________________________
+CQ looking for entries whose value is 'ClientFirstValue'...
+Destroying key1...
+This removes key1 from the result set, to the CQListener will
+report a query destroy event.
+
+     CqListener:
+    Received cq event for entry: key1, 
+    With BaseOperation = Destroy and QueryOperation = Destroy
+Press Enter to continue.
+Closing the cache and disconnecting.
+Please stop the cacheserver with 'gfsh stop server --dir=server_cq'.

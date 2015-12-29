@@ -1,0 +1,1 @@
+w2-gst-cert-22 w2-gst-dev41 /w2-gst-dev41a/vms/w2-gst-cert-22/w2-gst-cert-22.vmx

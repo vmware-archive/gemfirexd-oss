@@ -1,0 +1,99 @@
+// ----------------------------------------------------------
+// HA testing - serial (stop 1 VM at a time)
+parReg/bridge/serialParRegHABridge.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   redundantCopies=1,2,3 numVMsToStop=1
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+
+// HA testing - concurrent (stop 1 VM at a time)
+parReg/bridge/concParRegHABridge.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=1,2,3 numVMsToStop=1
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+
+// ----------------------------------------------------------
+// HA testing - serial (stop 2 VMs at a time)
+parReg/bridge/serialParRegHABridge.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   redundantCopies=2,3 numVMsToStop=2
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+
+// HA testing - concurrent (stop 2 VMs at a time)
+parReg/bridge/concParRegHABridge.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=2,3 numVMsToStop=2
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+
+// ----------------------------------------------------------
+// HA testing - serial (stop 3 VMs at a time)
+parReg/bridge/serialParRegHABridge.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   redundantCopies=3 numVMsToStop=3
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+parReg/bridge/concParRegHABridge.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=6 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=3 numVMsToStop=3
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+
+// known keys ha testing
+parReg/bridge/concKnownKeysHABridge.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=3
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=180000 byteArraySize=1000 redundantCopies=1 numVMsToStop=1
+   edgeVmSize=600 serverVmSize=700
+parReg/bridge/concKnownKeysHABridge.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=3
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=100000 byteArraySize=1000 redundantCopies=2 numVMsToStop=2
+   edgeVmSize=400 serverVmSize=550
+parReg/bridge/concKnownKeysHABridge.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=3
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=75000 byteArraySize=1000 redundantCopies=3 numVMsToStop=3
+   edgeVmSize=350 serverVmSize=450
+
+// HA testing with ClientCacheFactory APIs
+parReg/bridge/concKnownKeysHABridgeWithClientCache.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=3
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=180000 byteArraySize=1000 redundantCopies=1 numVMsToStop=1
+   edgeVmSize=600 serverVmSize=700
+parReg/bridge/concKnownKeysHABridgeWithClientCache.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=3
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=100000 byteArraySize=1000 redundantCopies=2 numVMsToStop=2
+   edgeVmSize=400 serverVmSize=550
+parReg/bridge/concKnownKeysHABridgeWithClientCache.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=3
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=75000 byteArraySize=1000 redundantCopies=3 numVMsToStop=3
+   edgeVmSize=350 serverVmSize=450
+parReg/bridge/concParRegHABridgeWithClientCache.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=1,2,3 numVMsToStop=1
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+parReg/bridge/concParRegHABridgeWithClientCache.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=2,3 numVMsToStop=2
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+parReg/bridge/concParRegHABridgeWithClientCache.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=6 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=3 numVMsToStop=3
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+
+// backward compatibility testing
+//parReg/bridge/concParRegHABridgeCompat.conf
+//   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+//   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+//   redundantCopies=2 numVMsToStop=2
+//   numAccessors=1 numEmptyClients=1 numThinClients=1
+//   version1=default version2=default version3=700 version4=664

@@ -1,0 +1,123 @@
+//------------------------------------------------------------------------------
+// All tests currently in this .bt file override the generic topology
+// by setting vmQuantities and vmThreads to 1, so the VMsPerHost and
+// ThreadsPerVM settings below are ignored.  Change only the Hosts settings.
+//------------------------------------------------------------------------------
+  
+hct/ha/invalidatePropagationWithFailoverNoConflation.conf
+  A = bridge  bridgeHosts = 10 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+  B = feed    feedHosts   =  1 feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+  C = edge    edgeHosts   =  4 edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+  hc.nPutThreads=10 hc.nPutKeyRange=10
+  threadGroupsName=edge
+
+/*hct/ha/invalidatePropagationNoFailoverNoConflation.conf
+  A = bridge  bridgeHosts = 10 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+  B = feed    feedHosts   =  1 feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+  C = edge    edgeHosts   =  4 edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+  hc.nPutThreads=10 hc.nPutKeyRange=10
+
+hct/ha/haconflation.conf
+  A = bridge  bridgeHosts =  4  bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+  B = feed    feedHosts   =  1  feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+  C = edge    edgeHosts   = 20  edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+  hc.nPutThreads=60 hc.nPutKeyRange=1*/
+
+hct/ha/haconflationfailover.conf
+  A = bridge  bridgeHosts = 4  bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+  B = feed    feedHosts   = 1   feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+  C = edge    edgeHosts   = 4  edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+  hc.nPutThreads=60 hc.nPutKeyRange=1
+  threadGroupsName=edge
+
+/*hct/ha/dataPropagationNoConflation.conf
+  A = bridge  bridgeHosts = 4  bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+  B = feed    feedHosts   = 1  feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+  C = edge    edgeHosts   = 4  edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+  hc.nPutThreads=10 hc.nPutKeyRange=10
+
+hct/ha/dataPropagationFailoverNoConflation.conf
+  A = bridge  bridgeHosts = 4  bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+  B = feed    feedHosts   = 1  feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+  C = edge    edgeHosts   = 4  edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+  hc.nPutThreads=10 hc.nPutKeyRange=10000*/
+
+hct/ha/dataPropagationNoFailoverWithConflation.conf
+  A = bridge  bridgeHosts =  5 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+  B = feed    feedHosts   =  1 feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+  C = edge    edgeHosts   = 15 edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+  hc.nPutThreads=60 hc.nPutKeyRange=1
+  threadGroupsName=feed
+
+hct/ha/dataPropagationFailoverConflation.conf
+  A = bridge  bridgeHosts =  5 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+  B = feed    feedHosts   =  1 feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+  C = edge    edgeHosts   = 15  edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+  hc.nPutThreads=60 hc.nPutKeyRange=1
+  threadGroupsName=edge
+  
+/*hct/ha/emptySecondaryQueueValidation.conf // always use exactly 5 edgeHosts
+  A = bridge  bridgeHosts = 10 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+  B = feed    feedHosts   =  1 feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+  C = edge    edgeHosts   =  5 edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+  hc.nPutThreads=10 hc.nPutKeyRange=1000
+  threadGroupsName=feed*/
+  
+hct/ha/dataPropagationWithClientFailure.conf
+  A = bridge  bridgeHosts = 3  bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+  B = feed    feedHosts   = 1  feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+  C = edge    edgeHosts   = 4  edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+  hc.nPutThreads=60 hc.nPutKeyRange=1
+  threadGroupsName=edge
+
+/*hct/ha/dataPropagationFailoverNoConflationFeederIsClient.conf
+  A = bridge  bridgeHosts = 4  bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+  B = feed    feedHosts   = 1  feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+  C = edge    edgeHosts   = 4  edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+  hc.nPutThreads=10 hc.nPutKeyRange=1000*/
+
+hct/ha/dataPropagationFailoverNoConflationWithMultipleRegions.conf
+  A = bridge  bridgeHosts = 4  bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+  B = feed    feedHosts   = 1  feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+  C = edge    edgeHosts   = 4  edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+  hc.nPutThreads=5 hc.nPutKeyRange=100 hc.nRegions=10
+  threadGroupsName=edge
+  
+/*hct/ha/csTransactions.conf
+  A = bridge  bridgeHosts =  5 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+  B = edge    edgeHosts   = 10 edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+  hc.nPutThreads=10 hc.nPutKeyRange=10
+  threadGroupsName=bridge*/
+  
+/*hct/ha/clientQConflationWithServerConflation.conf
+  A = bridge  bridgeHosts =  5  bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+  B = feed    feedHosts   =  1  feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+  C = defaultEdge    defaultEdgeHosts   = 5  defaultEdgeVMsPerHost   = 1  defaultEdgeThreadsPerVM   = 1
+  D = conflationEdge    conflationEdgeHosts   = 5  conflationEdgeVMsPerHost   = 1  conflationEdgeThreadsPerVM   = 1
+  E = noConflationEdge    noConflationEdgeHosts   = 5  noConflationEdgeVMsPerHost   = 1  noConflationEdgeThreadsPerVM   = 1   
+  hc.nPutThreads=60 hc.nPutKeyRange=1*/
+  
+ hct/ha/clientQConflationNoServerConflationFailover.conf
+  A = bridge  bridgeHosts =  5  bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+  B = feed    feedHosts   =  1  feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+  C = defaultEdge    defaultEdgeHosts   = 5  defaultEdgeVMsPerHost   = 1  defaultEdgeThreadsPerVM   = 1
+  D = conflationEdge    conflationEdgeHosts   = 5  conflationEdgeVMsPerHost   = 1  conflationEdgeThreadsPerVM   = 1
+  E = noConflationEdge    noConflationEdgeHosts   = 5  noConflationEdgeVMsPerHost   = 1  noConflationEdgeThreadsPerVM   = 1
+  hc.nPutThreads=60 hc.nPutKeyRange=1
+  threadGroupsName=feed
+  
+// added for mem eviction policy
+  hct/ha/haOverflowWithMemEvictionPolicy.conf
+  A = bridge  bridgeHosts =  5 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+  B = feed    feedHosts   =  1 feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+  C = edge    edgeHosts   = 15 edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+  hc.nPutThreads=60 hc.nPutKeyRange=1
+  threadGroupsName=feed
+  
+// PR version of csTransactions test (to verify adjunct messaging)
+hct/ha/csTransactionsPR.conf
+  A = bridge  bridgeHosts =  5 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+  B = edge    edgeHosts   = 10 edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+  hc.nPutThreads=10 hc.nPutKeyRange=10
+  threadGroupsName=bridge
+    

@@ -1,0 +1,30 @@
+How To Analyze PST13 (maximum nodes)
+====================================
+
+Test Description:
+Cache get/put performance for a GemFire cache using scope distributed ack, a vm region, and objects 
+of type objects.ArrayOfByte and size 1K.  There are 10 threads per VM on 30 VMs on 30 hosts.  Threads 
+do 80% gets and 20% puts, using random keys.  A capacity controller ensures that some gets are cache misses.
+
+This test is run on 30 hosts in the development network (a mixture of linux & solaris).  The local.conf file
+lists all the machines involved in the test.
+
+For 3.0, the following results were reported:
+300 threads on 30 hosts (mixed linux and solaris):
+    1562 gets/sec total throughput
+     387 puts/sec total throughput
+
+There was an error during the ENDTASK, so results were gathered from the 
+VSD stats.
+
+getsPerSecond
+=============
+From one of the cacheperf.CachePerfStats Thread-XXX, select the gets stat.  Then right click in the top upper 
+window and choose Select > by Statistic.  (Note that combine and combine across files are set from the 'Main'
+drop down list).  Trim the warm up & cooldown (where we aren't doing any gets).  Use the mean value.
+
+putsPerSecond
+=============
+From one of the cacheperf.CachePerfStats Thread-XXX, select the puts stat.  Then right click in the top upper 
+window and choose Select > by Statistic.  (Note that combine and combine across files are set from the 'Main'
+drop down list).  Trim the warm up & cooldown (where we aren't doing any puts).  Use the mean value.

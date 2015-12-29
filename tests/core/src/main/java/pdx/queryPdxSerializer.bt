@@ -1,0 +1,37 @@
+pdx/query/serialQueryEntryPdxSerializer.conf
+pdx/query/serialQueryIndexEntryPdxSerializer.conf
+
+pdx/query/parReg/serialQueryEntryPdxSerializer.conf
+pdx/query/parReg/serialQueryEntryParRegPdxSerializer.conf
+pdx/query/parReg/serialQueryIndexEntryPdxSerializer.conf
+pdx/query/parReg/serialQueryIndexEntryParRegPdxSerializer.conf
+pdx/query/parReg/serialQueryEntryParRegHAPdxSerializer.conf
+pdx/query/parReg/serialQueryIndexEntryParRegHAPdxSerializer.conf
+pdx/query/parReg/serialQueryEntryParRegPersistPdxSerializer.conf
+pdx/query/parReg/serialQueryEntryParRegHAPersistPdxSerializer.conf
+pdx/query/parReg/serialQueryIndexEntryParRegPersistPdxSerializer.conf
+pdx/query/parReg/serialQueryIndexEntryParRegHAPersistPdxSerializer.conf
+
+pdx/query/concQueryEntryPdxSerializer.conf
+pdx/query/concQueryIndexEntryPdxSerializer.conf
+pdx/query/concQueryEntryWithLimitPdxSerializer.conf queryLimit=10
+pdx/query/concQueryIndexEntryWithLimitPdxSerializer.conf queryLimit=10
+pdx/query/parReg/concQueryEntryParRegPdxSerializer.conf
+pdx/query/parReg/concQueryOnlyParRegPdxSerializer.conf
+pdx/query/parReg/concQueryIndexEntryParRegPdxSerializer.conf
+pdx/query/parReg/concQueryIndexParRegPdxSerializer.conf
+pdx/query/parReg/concQueryEntryPdxSerializer.conf
+pdx/query/parReg/concQueryIndexEntryPdxSerializer.conf
+pdx/query/parReg/concQueryOnlyParRegHAPdxSerializer.conf
+pdx/query/parReg/concQueryIndexParRegHAPdxSerializer.conf
+pdx/query/parReg/concQueryEntryParRegWithLimitPdxSerializer.conf queryLimit=10
+pdx/query/parReg/concQueryIndexEntryParRegWithLimitPdxSerializer.conf queryLimit=10
+pdx/query/parReg/concQueryEntryParRegPersistPdxSerializer.conf
+pdx/query/parReg/concQueryOnlyParRegPersistPdxSerializer.conf
+pdx/query/parReg/concQueryIndexEntryParRegPersistPdxSerializer.conf
+pdx/query/parReg/concQueryIndexParRegPersistPdxSerializer.conf
+pdx/query/parReg/concQueryOnlyParRegHAPersistPdxSerializer.conf
+pdx/query/parReg/concQueryIndexParRegHAPersistPdxSerializer.conf
+pdx/query/parReg/concQueryEntryParRegWithLimitPersistPdxSerializer.conf queryLimit=10
+pdx/query/parReg/concQueryIndexEntryParRegWithLimitPersistPdxSerializer.conf queryLimit=10
+

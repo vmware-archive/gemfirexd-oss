@@ -1,0 +1,49 @@
+// edgeClients execute transactions on servers hosting PRs (using the same key across multiple co-located regions)
+// run with this in your local.conf to get EMPTY clients
+// hydra.RegionPrms-dataPolicy         = empty   partition;
+parReg/tx/colocatedTxBridge.conf sameKeyColocatedRegions=true
+  locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+  A=server serverbridgeHosts=3 serverbridgeVMsPerHost=1 serverbridgeThreadsPerVM=1
+  B=peer peerbridgeHosts=1 peerbridgeVMsPerHost=1 peerbridgeThreadsPerVM=1
+  edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+  threadGroupsName=edge
+
+// edgeClients execute transactions on servers hosting PRs (using function execution to get keySets from the servers and
+// executes txs on keys from a single server's keySet)
+// run with this in your local.conf to get EMPTY clients
+// hydra.RegionPrms-dataPolicy         = empty   partition;
+/*parReg/tx/colocatedTxBridge.conf sameKeyColocatedRegions=false
+  locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+  A=server serverbridgeHosts=3 serverbridgeVMsPerHost=1 serverbridgeThreadsPerVM=1
+  B=peer peerbridgeHosts=1 peerbridgeVMsPerHost=1 peerbridgeThreadsPerVM=1
+  edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5*/
+
+// edgeClients execute transactions on servers hosting PRs (using the same key across multiple co-located regions)
+// run with this in your local.conf to get EMPTY clients
+// hydra.RegionPrms-dataPolicy         = empty   partition;
+/*parReg/tx/colocatedTxMultiBridge.conf sameKeyColocatedRegions=true
+  locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+  bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+  edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5*/
+
+// edgeClients execute transactions on servers hosting PRs (using function execution to get keySets from the servers and
+// executes txs on keys from a single server's keySet)
+// run with this in your local.conf to get EMPTY clients
+// hydra.RegionPrms-dataPolicy         = empty   partition;
+parReg/tx/colocatedTxMultiBridge.conf sameKeyColocatedRegions=false
+  locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+  bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+  edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+  threadGroupsName=edge
+
+// an edgeClient executes a single transactions (with one put in it) on servers hosting PRs (using function execution to get keySets from the servers and
+// executes txs on keys from a single server's keySet)
+// run with this in your local.conf to get EMPTY clients
+// hydra.RegionPrms-dataPolicy         = empty   partition;
+parReg/tx/singleOpBridge.conf 
+  locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+  A=server serverbridgeHosts=1 serverbridgeVMsPerHost=1 serverbridgeThreadsPerVM=1
+  B=peer peerbridgeHosts=3 peerbridgeVMsPerHost=1 peerbridgeThreadsPerVM=1
+  edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=1
+  threadGroupsName=edge
+

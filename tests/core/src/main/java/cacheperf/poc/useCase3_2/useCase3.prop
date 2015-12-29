@@ -1,0 +1,69 @@
+###
+###
+###  Always set VMsPerHost = 1 for all VM types and use pooling
+###  in the local.conf to put multiple VMs on the same host.
+###
+###
+
+### always use 2 locators
+#
+locatorHosts = 2
+locatorVMsPerHost = 1
+locatorThreadsPerVM = 1
+
+#### always make total feed threads a multiple of the region count (4)
+#
+A = feed
+feedHosts = 7
+feedVMsPerHost = 1
+feedThreadsPerVM = 4
+
+#### always use an even number of dataHosts
+#
+B = data
+dataHosts = 12
+dataVMsPerHost = 1
+dataThreadsPerVM = 1
+
+#### always use an even number of serverHosts
+#
+C = server
+serverHosts = 12
+serverVMsPerHost = 1
+serverThreadsPerVM = 1
+
+#### always use a multiple of 10 clientHosts
+#
+D = client
+clientHosts = 120
+clientVMsPerHost = 1
+clientThreadsPerVM = 15
+
+### always use 2 agents
+#
+E = agent
+agentHosts = 2
+agentVMsPerHost = 1
+agentThreadsPerVM = 1
+
+dataHeapMB   = 5000
+serverHeapMB = 2600
+clientHeapMB =  300
+
+parKeysPerDatahost        = 80000
+parPersistKeysPerDatahost = 80000
+repPersistKeys            = 40000
+repKeys                   = 40000
+
+bucketsPerDatahost = 11
+
+bounceFrequency = 3600
+
+batchSec         = 300
+batchRangeMinSec = 60
+batchRangeMaxSec = 600
+totalTaskTimeSec = 86400
+
+version = default
+
+perffmwk.comparisonKey=useCase3

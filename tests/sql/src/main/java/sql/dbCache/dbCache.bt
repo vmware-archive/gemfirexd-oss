@@ -1,0 +1,16 @@
+sql/dbCache/dbCacheEvictionDestroy.conf
+    A=store storeHosts=1 storeVMsPerHost=1 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=3 accessorThreadsPerVM=6
+    
+sql/dbCache/dbCacheEvictionOverflowAsync.conf
+    A=store storeHosts=1 storeVMsPerHost=1 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=3 accessorThreadsPerVM=6
+    
+sql/dbCache/dbCacheEvictionOverflowSync.conf
+    A=store storeHosts=1 storeVMsPerHost=1 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=3 accessorThreadsPerVM=6
+    
+sql/dbCache/dbCacheEvictionOverflowAsync.conf
+    A=store storeHosts=2 storeVMsPerHost=2 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=2 accessorThreadsPerVM=6
+    

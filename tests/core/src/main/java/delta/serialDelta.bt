@@ -1,0 +1,84 @@
+# a series of quick serial tests to cover basic delta behavior in a variety of configurations
+# replicate regions
+delta/serialDeltaReplicatePeer.conf
+   peerHosts=3 peerVMsPerHost=1 peerThreadsPerVM=1
+   cloningEnabled=true,false conserveSockets=true,false scope=ack,global
+delta/serialDeltaReplicateBridge.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   cloningEnabled=true,false conserveSockets=true,false scope=ack,global
+# partitioned regions
+delta/serialDeltaPRPeer.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=1
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=1
+   redundantCopies=0 cloningEnabled=true,false conserveSockets=true,false
+delta/serialDeltaPRPeer.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=1
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=1
+   redundantCopies=nonZero cloningEnabled=true,false conserveSockets=true,false
+delta/serialDeltaPRBridge.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   scope=unused redundantCopies=0 cloningEnabled=true,false conserveSockets=true,false
+delta/serialDeltaPRBridge.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   scope=unused redundantCopies=nonZero cloningEnabled=true,false conserveSockets=true,false
+
+# test coding errors in user's delta methods
+delta/badDeltaPeer.conf
+   A=peer peerHosts=3 peerVMsPerHost=1 peerThreadsPerVM=1
+delta/badDeltaPRPeer.conf
+   A=accessor accessorHosts=3 accessorVMsPerHost=1 accessorThreadsPerVM=1
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=1
+   redundantCopies=0,nonZero  
+delta/badDeltaBridge.conf
+   A=bridge bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   B=edge edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   C=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+delta/badDeltaPRBridge.conf
+   A=bridge bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   B=edge edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   C=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   redundantCopies=0,nonZero
+delta/badDeltaBridge.conf
+   A=bridge bridgeHosts=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   B=edge edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   C=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+delta/badDeltaPRBridge.conf
+   A=bridge bridgeHosts=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   B=edge edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   C=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   redundantCopies=0
+
+# test for mixed keys (some delta, some not)
+delta/mixedDeltaPeer.conf
+   peerHosts=3 peerVMsPerHost=1 peerThreadsPerVM=1
+   cloningEnabled=true,false conserveSockets=unused
+delta/mixedDeltaBridge.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   cloningEnabled=true,false conserveSockets=unused
+
+delta/serialDeltaPRPeerMemLRU.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=1
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=1
+   redundantCopies=0,1,2,3 cloningEnabled=true,false conserveSockets=unused
+
+# serial tx delta (peer tests)
+//disabled for #44146
+//delta/tx/serialDeltaReplicatePeer.conf
+//   peerHosts=3 peerVMsPerHost=1 peerThreadsPerVM=1
+//   cloningEnabled=true conserveSockets=true,false scope=ack
+
+# partitioned regions
+//delta/tx/serialDeltaPRPeer.conf
+//   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=1
+//   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=1
+//   redundantCopies=0 cloningEnabled=true conserveSockets=true,false
+//delta/tx/serialDeltaPRPeer.conf
+//   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=1
+//   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=1
+//   redundantCopies=nonZero cloningEnabled=true conserveSockets=true,false
+
+

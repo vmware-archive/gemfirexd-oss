@@ -1,0 +1,28 @@
+#!/bin/bash
+
+compareperf()
+{
+  echo "Running $1 using default statspec..."
+  java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx1024m -DomitFailedTests=true \
+        -DgenerateCSVFile=false -DcsvFile=$1.$2.csv \
+        -DcompReportFile=$1.$2.txt -Dmode=$1 -DcompareByKey=true -DJTESTS=$JTESTS \
+        -Dgemfire.home=$GEMFIRE -DaddTestKey=true perffmwk.PerfComparer \
+        $3 $4 $5 $6 $7
+}
+
+########################## HORIZONTAL SCALE ############################
+
+scale()
+{
+  for i in ratio raw
+  do
+    compareperf $i scale.thin 2.thin 3.thin 4.thin 5.thin
+  done
+}
+
+########################## COMPARE ############################
+
+trap 'exit 1' 2 #traps Ctrl-C (signal 2)
+
+echo "Running reports for scale..."
+scale

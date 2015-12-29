@@ -1,0 +1,52 @@
+asyncMsg/serialRRConflation.conf
+    threadGroupsName=validators
+//asyncMsg/serialRR.conf
+//   threadGroupsName=validators
+asyncMsg/configOneAsync.conf
+   threadGroupsName=validators
+asyncMsg/concAsync.conf
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=peer peerHosts=6 peerVMsPerHost=1 peerThreadsPerVM=5
+   threadGroupsName=adminThread
+
+
+asyncMsg/concVerifyBurst.conf
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=producer producerHosts=1 producerVMsPerHost=1 producerThreadsPerVM=1
+   C=consumer consumerHosts=10 consumerVMsPerHost=1 consumerThreadsPerVM=1
+   threadGroupsName=adminThread
+
+/*asyncMsg/concBurst.conf hydra.numHosts = 5
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=peer peerHosts=10 peerVMsPerHost=1 peerThreadsPerVM=5
+   threadGroupsName=adminThread*/
+
+// gii
+asyncMsg/gii/giiPreferenceVMReg.conf hydra.numHosts = 5
+   threadGroupsName=opThreads
+//asyncMsg/gii/concGiiPreferenceVMReg.conf hydra.numHosts = 5
+//   threadGroupsName=opThreads
+
+//tx
+//asyncMsg/tx/concEntryEvent.conf
+//   threadGroupsName=default
+//tx
+asyncMsg/tx/concGiiPreferenceVMReg.conf hydra.numHosts=5
+   threadGroupsName=opThreads
+/*asyncMsg/tx/entryExpirActionTx.conf hydra.numHosts=6
+   threadGroupsName=controlTTLInvalThread*/
+
+// async messaging disabled w/ssl?
+asyncMsg/ssl/concEntryEvent.conf
+   threadGroupsName=default
+
+// diskRegion
+diskReg/concDiskRegHeap.conf
+   threadGroupsName=default
+//diskReg/concDiskRegLRU.conf
+//   threadGroupsName=default
+diskReg/concDiskRegMemLRU.conf
+   threadGroupsName=default
+diskReg/mirroredOverflowRecovery.conf maxKeys=100 objectType=objects.NestedOrderVector
+   threadGroupsName=accessor
+

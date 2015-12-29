@@ -1,0 +1,93 @@
+// ---------------------------------------
+// ptest.conf -- template Hydra configuration file
+// for the ptest system.
+//
+// Copy this (and the other files in this directory)
+// to a new blank directory and modify to taste.
+// 
+// Be sensitive to SVN updates to this directory, as you may wish to copy
+// over newer versions from time to time.
+// ---------------------------------------
+
+// ---------------------------------------
+// This is the same as the 'hostList' parameter to rungemfire.pl
+//
+// This is the list of hosts you are running on.
+// ---------------------------------------
+hydra.HostPrms-hostNames =
+     ptesta ptestc ptestd pteste ptestf
+     ;
+//     bensa bensc bensd bense bensf bensb
+
+// ---------------------------------------
+// This is the same as the SCRATCH argument to rungemfire.pl
+//
+// If you have multiple tests running concurrently, make sure that different
+// scratch folders are specified for each test.
+//
+// Note that the contents of these directories are REMOVED at the
+// end of rungemfire.pl (de-provisioned).
+// ---------------------------------------
+
+hydra.HostPrms-resourceDirBases =
+     /export/ptesta1/users/build/perfresults/scratch_jpenney
+     /export/ptestc1/users/build/perfresults/scratch_jpenney
+     /export/ptestd1/users/build/perfresults/scratch_jpenney
+     /export/pteste1/users/build/perfresults/scratch_jpenney
+     /export/ptestf1/users/build/perfresults/scratch_jpenney
+     /export/ptestb1/users/build/perfresults/scratch_jpenney
+     ;
+
+// ---------------------------------------
+// The rest of this file is to your taste.
+// ---------------------------------------
+
+//hydra.Prms-totalTaskTimeSec = 600;
+//hydra.Prms-maxResultWaitSec = 1200;
+//hydra.Prms-maxResultWaitSec = 2400;
+
+//hydra.Prms-totalTaskTimeSec = 1800;
+//hydra.Prms-maxResultWaitSec=1800;
+
+//hydra.Prms-maxResultWaitSec = 600;
+//hydra.Prms-totalTaskTimeSec = 600;
+
+
+
+distcache.gemfire.GemFireCachePrms-scope = distributedNoAck;
+
+
+
+hydra.VmPrms-extraVMArgs = 
+//    "-Xms256m -Xmx256m"
+    "-Xms320m -Xmx320m"
+//    "-Xms512m -Xmx512m"
+    ;
+
+//hydra.GemFirePrms-logLevel = fine;
+
+hydra.GemFirePrms-enableMcast = true;
+hydra.GemFirePrms-disableTcp = true;
+distcache.gemfire.GemFireCachePrms-multicastEnabled = true;
+hydra.GemFirePrms-useLocator = true;
+
+//hydra.GemFirePrms-mcastAddress = 224.0.0.250;
+//hydra.GemFirePrms-mcastPort = 10430;
+hydra.GemFirePrms-mcastAddress = 239.192.0.1;
+hydra.GemFirePrms-mcastPort = 10438;
+
+hydra.GemFirePrms-udpSendBufferSize=8388608;
+hydra.GemFirePrms-udpRecvBufferSize=8388608;
+hydra.GemFirePrms-mcastSendBufferSize=65536;
+hydra.GemFirePrms-mcastRecvBufferSize=8000000;
+hydra.GemFirePrms-udpFragmentSize=60000;
+hydra.GemFirePrms-memberTimeout=5000;
+
+hydra.GemFirePrms-mcastFlowControlByteAllowance=8000000;
+hydra.GemFirePrms-mcastFlowControlRechargeThreshold=0.2;
+hydra.GemFirePrms-mcastFlowControlRechargeBlockMs=10000;
+// for busier networks:
+//hydra.GemFirePrms-mcastFlowControlByteAllowance=75000;
+//hydra.GemFirePrms-mcastFlowControlRechargeThreshold=0.15;
+//hydra.GemFirePrms-mcastFlowControlRechargeBlockMs=10000;
+

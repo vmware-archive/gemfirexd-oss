@@ -1,0 +1,57 @@
+sourceSets.main.java {
+  exclude '**/BshServlet.java'
+
+  // required to be handled by the compile-proprietary-tests target
+  exclude 'cacheperf/poc/useCase3/**'
+}
+
+// need to exclude specificially in IDEA
+idea {
+  module {
+    excludeDirs += file('src/main/java/cacheperf/poc/useCase3')
+  }
+}
+
+dependencies {
+  // have to use jgroups output since we need the jg-magic-map.txt file from it
+  provided project(subprojectBase + 'gemfire-jgroups').sourceSets.main.output
+
+  compile project(subprojectBase + 'gemfire-core')
+  compile project(subprojectBase + 'gemfire-examples')
+
+  compile "junit:junit:${junitVersion}"
+  compile "org.apache.ant:ant:${antVersion}"
+  compile "org.apache.ant:ant-junit:${antVersion}"
+  compile 'org.hamcrest:hamcrest-core:1.1'
+  compile 'org.hamcrest:hamcrest-library:1.1'
+  compile "org.osgi:org.osgi.core:${osgiVersion}"
+  compile 'org.apache.bcel:bcel:5.2'
+  compile 'org.beanshell:bsh:2.0b5'
+  compile 'org.jmock:jmock:2.5.1'
+  compile 'org.jmock:jmock-legacy:2.5.1'
+  compile 'edu.umd.cs.mtc:multithreadedtc:1.01'
+  compile 'cglib:cglib-nodep:2.1_3'
+  compile 'org.objenesis:objenesis:1.0'
+  compile 'net.spy:spymemcached:2.12.0'
+  compile 'com.vmware:vijava:5.1'
+  compile 'org.jdom:jdom:1.1.3'
+  compile 'com.oracle:ojdbc6:11.2.0.3'
+  compile 'javax.servlet:javax.servlet-api:3.1.0'
+  compile "org.eclipse.jetty:jetty-server:${jettyVersion}"
+  compile "org.eclipse.jetty:jetty-servlet:${jettyVersion}"
+  compile "org.eclipse.jetty:jetty-util:${jettyVersion}"
+  compile "org.eclipse.jetty:jetty-webapp:${jettyVersion}"
+
+  provided 'net.sourceforge.jline:jline:1.0.S2-B'
+  provided files("${System.getProperty('java.home')}/../lib/tools.jar")
+  provided "org.apache.hadoop:hadoop-annotations:${hadoopVersion}"
+  provided "org.apache.hadoop:hadoop-auth:${hadoopVersion}"
+  provided "org.apache.hadoop:hadoop-common:${hadoopVersion}"
+  provided "org.apache.hadoop:hadoop-common:${hadoopVersion}:tests"
+  provided "org.apache.hadoop:hadoop-hdfs:${hadoopVersion}"
+  provided "org.apache.hadoop:hadoop-hdfs:${hadoopVersion}:tests"
+  provided "org.apache.hadoop:hadoop-mapreduce-client-core:${hadoopVersion}"
+  provided "org.apache.hbase:hbase:${hbaseVersion}"
+  provided "org.springframework:spring-core:${springVersion}"
+  provided 'org.springframework.shell:spring-shell:1.0.0.RELEASE'
+}

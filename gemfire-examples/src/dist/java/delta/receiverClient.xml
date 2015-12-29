@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<!-- Initializes a client of a cache server that runs on port 40404.
+     Loads values and sends updates to the server.  -->
+
+<!DOCTYPE client-cache PUBLIC
+  "-//GemStone Systems, Inc.//GemFire Declarative Caching 6.5//EN"
+  "http://www.gemstone.com/dtd/cache6_5.dtd">
+<client-cache>
+  <pool name="client" subscription-enabled="true" subscription-redundancy="1">
+    <server host="localhost" port="40450"/>
+  </pool>
+  <region-attributes id="clientAttributes" pool-name="client" refid="CACHING_PROXY"> 
+  </region-attributes>
+  <region name="cs_region" refid="clientAttributes"/>
+</client-cache>

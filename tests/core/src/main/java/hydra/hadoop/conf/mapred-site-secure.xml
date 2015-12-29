@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<!-- Put site-specific property overrides in this file. -->
+
+<configuration>
+      <property>
+         <name>mapreduce.framework.name</name>
+         <value>yarn</value>
+     </property>
+      <property>
+         <name>yarn.resourcemanager.address</name>
+         <value>${yarn.resourcemanager.address}</value>
+     </property>
+     <property>
+       <name>mapreduce.shuffle.port</name>
+       <value>${mapreduce.shuffle.port}</value>
+     </property>
+
+<!-- MapReduce Job History Server security configs -->
+
+<!-- Host and port for MapReduce Job History Server; default port is 10020 -->
+<!--
+<property>
+  <name>mapreduce.jobhistory.address</name>
+  <value>host:port</value>
+</property>
+-->
+
+<!-- path to the MAPRED keytab for the Job History Server -->
+<property>
+  <name>mapreduce.jobhistory.keytab</name>
+  <value>${mapred.secure.keytab.file}</value>
+</property>     
+<property>
+  <name>mapreduce.jobhistory.principal</name>   
+  <value>mapred/_HOST@GEMSTONE.COM</value>
+</property> 
+
+</configuration>

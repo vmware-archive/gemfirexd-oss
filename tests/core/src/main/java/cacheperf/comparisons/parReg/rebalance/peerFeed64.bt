@@ -1,0 +1,32 @@
+cacheperf/comparisons/parReg/rebalance/peerFeedDataGet.conf
+  dataHosts    = 2 dataVMsPerHost    = 1 dataThreadsPerVM    = 1
+  newdataHosts = 6 newdataVMsPerHost = 1 newdataThreadsPerVM = 1
+  feedHosts    = 8 feedVMsPerHost    = 1 feedThreadsPerVM    = 5
+  maxKeys = 4000000 objectSize = 1024 heapMB = 6000
+  redundantCopies = 0
+  conserveSockets = false
+  perffmwk.comparisonKey = pr0_get_02_06_08_05
+cacheperf/comparisons/parReg/rebalance/peerFeedDataPut.conf
+  dataHosts    = 2 dataVMsPerHost    = 1 dataThreadsPerVM    = 1
+  newdataHosts = 6 newdataVMsPerHost = 1 newdataThreadsPerVM = 1
+  feedHosts    = 8 feedVMsPerHost    = 1 feedThreadsPerVM    = 5
+  maxKeys = 4000000 objectSize = 1024 heapMB = 6000
+  redundantCopies = 0
+  conserveSockets = false
+  perffmwk.comparisonKey = pr0_put_02_06_08_05
+cacheperf/comparisons/parReg/rebalance/peerFeedDataGet.conf
+  dataHosts    = 2 dataVMsPerHost    = 1 dataThreadsPerVM    = 1
+  newdataHosts = 6 newdataVMsPerHost = 1 newdataThreadsPerVM = 1
+  feedHosts    = 8 feedVMsPerHost    = 1 feedThreadsPerVM    = 5
+  maxKeys = 2000000 objectSize = 1024 heapMB = 6000
+  redundantCopies = 1
+  conserveSockets = false
+  perffmwk.comparisonKey = pr1_get_02_06_08_05
+cacheperf/comparisons/parReg/rebalance/peerFeedDataPut.conf
+  dataHosts    = 2 dataVMsPerHost    = 1 dataThreadsPerVM    = 1
+  newdataHosts = 6 newdataVMsPerHost = 1 newdataThreadsPerVM = 1
+  feedHosts    = 8 feedVMsPerHost    = 1 feedThreadsPerVM    = 5
+  maxKeys = 2000000 objectSize = 1024 heapMB = 6000
+  redundantCopies = 1
+  conserveSockets = false
+  perffmwk.comparisonKey = pr1_put_02_06_08_05

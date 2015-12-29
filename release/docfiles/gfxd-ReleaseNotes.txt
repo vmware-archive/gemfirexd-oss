@@ -1,0 +1,4 @@
+
+Pivotal GemFire XD Release Notes 
+
+Support for older jdbc:sqlfire:// scheme has been dropped from client driver.

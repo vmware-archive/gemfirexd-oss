@@ -1,0 +1,14 @@
+A = archiver
+archiverHosts        = 1
+archiverVMsPerHost   = 1
+archiverThreadsPerVM = 1
+B = loner
+lonerHosts        = 1
+lonerVMsPerHost   = 1
+lonerThreadsPerVM = 1
+
+sleepMs = 20
+trimSeconds = 90
+workSeconds = 180
+
+perffmwk.comparisonKey = perf076

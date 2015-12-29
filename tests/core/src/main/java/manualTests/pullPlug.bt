@@ -1,0 +1,80 @@
+// Please refer to manualTests/howtorun.txt for instructions 
+
+// Region entry operations
+// dataPolicy = normal, replicate, persistentReplicate
+// scope = global, distributedAck
+//splitBrain/p2pNetworkPartition1-entryOps.conf 
+//splitBrain/p2pNetworkPartition2-entryOps.conf 
+//splitBrain/p2pNetworkPartition3-entryOps.conf 
+//splitBrain/p2pNetworkPartition4-entryOps.conf 
+
+// transactions operations
+// dataPolicy = normal, replicate
+// scope = distributedAck
+//splitBrain/p2pNetworkPartition1-tx.conf 
+//splitBrain/p2pNetworkPartition2-tx.conf 
+//splitBrain/p2pNetworkPartition3-tx.conf
+//splitBrain/p2pNetworkPartition4-tx.conf 
+
+// partitionedRegions
+// dataPolicy = partitioned
+// scope = default
+//splitBrain/p2pNetworkPartition1-pr.conf redundantCopies = 1
+//splitBrain/p2pNetworkPartition2-pr.conf redundantCopies = 1
+//splitBrain/p2pNetworkPartition3-pr.conf redundantCopies = 1
+//splitBrain/p2pNetworkPartition4-pr.conf redundantCopies = 1
+
+// WAN (p2p) tests 
+// dataPolicy = normal, replicate, persistentReplicate
+// global, distributedAck
+//splitBrain/wan_p2pNetworkPartition1.conf 
+//splitBrain/wan_p2pNetworkPartition2.conf 
+//splitBrain/wan_p2pNetworkPartition3.conf 
+//splitBrain/wan_p2pNetworkPartition4.conf 
+
+// bridge (client/server tests)
+// Normal, replicate, persistent_replicate configured dynamically (ONEOF)
+//splitBrain/bridgeNetworkPartition1-entryOps.conf 
+//splitBrain/bridgeNetworkPartition2-entryOps.conf 
+//splitBrain/bridgeNetworkPartition3-entryOps.conf 
+//splitBrain/bridgeNetworkPartition4-entryOps.conf 
+
+// replicate with clients registering cqs instead of registerInterest
+//splitBrain/bridgeNetworkPartition1-cq.conf 
+//splitBrain/bridgeNetworkPartition2-cq.conf 
+//splitBrain/bridgeNetworkPartition3-cq.conf 
+//splitBrain/bridgeNetworkPartition4-cq.conf 
+
+//splitBrain/bridgeNetworkPartition1-pr.conf redundantCopies=1
+//splitBrain/bridgeNetworkPartition2-pr.conf redundantCopies=1
+//splitBrain/bridgeNetworkPartition3-pr.conf redundantCopies=1
+//splitBrain/bridgeNetworkPartition4-pr.conf redundantCopies=1
+
+//splitBrain/wan_bridgeNetworkPartition1.conf 
+//splitBrain/wan_bridgeNetworkPartition2.conf 
+//splitBrain/wan_bridgeNetworkPartition3.conf 
+//splitBrain/wan_bridgeNetworkPartition4.conf 
+
+// prTx
+//splitBrain/p2pNetworkPartition1-prTx.conf redundantCopies = 1
+//splitBrain/p2pNetworkPartition2-prTx.conf redundantCopies = 1
+//splitBrain/p2pNetworkPartition3-prTx.conf redundantCopies = 1
+//splitBrain/p2pNetworkPartition4-prTx.conf redundantCopies = 1
+//splitBrain/bridgeNetworkPartition1-prTx.conf redundantCopies=1
+//splitBrain/bridgeNetworkPartition2-prTx.conf redundantCopies=1
+//splitBrain/bridgeNetworkPartition3-prTx.conf redundantCopies=1
+//splitBrain/bridgeNetworkPartition4-prTx.conf redundantCopies=1
+
+// persistent PR (p2p)
+// dataPolicy = persistentPartition
+//splitBrain/p2pNetworkPartition1-prPersist.conf redundantCopies = 2
+//splitBrain/p2pNetworkPartition2-prPersist.conf redundantCopies = 2
+//splitBrain/p2pNetworkPartition3-prPersist.conf redundantCopies = 2
+//splitBrain/p2pNetworkPartition4-prPersist.conf redundantCopies = 2
+
+// persistent PR (in bridgeServers)
+// dataPolicy = persistentPartition
+//splitBrain/bridgeNetworkPartition1-prPersist.conf redundantCopies=2
+//splitBrain/bridgeNetworkPartition2-prPersist.conf redundantCopies=2
+//splitBrain/bridgeNetworkPartition3-prPersist.conf redundantCopies=2
+//splitBrain/bridgeNetworkPartition4-prPersist.conf redundantCopies=2

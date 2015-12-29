@@ -1,0 +1,25 @@
+[DurableClient] Connecting to the distributed system and creating the cache.
+[DurableClient] Registering non-durable interest in keys key1 & key2.
+[DurableClient] Registering durable interest in keys key3 & key4.
+[DurableClient] Sending Client Ready...
+[DurableClient]
+[DurableClient] Press Enter in the server window to do an update on the server.
+[DurableClient] Then press Enter in the client window to continue.
+    Received afterRegionLive event, sent to durable clients after the server has finished replaying stored events.
+    Received afterCreate event for entry: key1, value1
+    Received afterCreate event for entry: key2, value2
+    Received afterCreate event for entry: key3, value3
+    Received afterCreate event for entry: key4, value4
+    Received afterUpdate event for entry: key1, value11
+    Received afterUpdate event for entry: key2, value22
+    Received afterUpdate event for entry: key3, value33
+    Received afterUpdate event for entry: key4, value44
+[DurableClient]
+[DurableClient] After the update on the server, the region contains:
+[DurableClient] key1 => value11
+[DurableClient] key2 => value22
+[DurableClient] key3 => value33
+[DurableClient] key4 => value44
+[DurableClient]
+[DurableClient] Closing the cache and disconnecting from the distributed system...
+[DurableClient] Finished disconnecting from the distributed system. Exiting...

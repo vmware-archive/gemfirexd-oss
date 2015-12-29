@@ -1,0 +1,9 @@
+A = updater
+updaterHosts        = 1
+updaterVMsPerHost   = 1
+updaterThreadsPerVM = 1
+
+dataSize = 102400
+maxKeys = 5000
+
+perffmwk.comparisonKey = perf143

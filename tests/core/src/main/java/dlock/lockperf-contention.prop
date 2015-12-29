@@ -1,0 +1,20 @@
+#===============================================================================
+#  TEST CONFIGURATION VARIABLES
+#===============================================================================
+
+  hydra.numHosts = 2
+  # see hydraconfig/systemparamsN.inc (number of hosts)
+
+  vmQuantities = 2
+  vmThreads = 1
+
+  scope = global
+
+  trimSeconds = 150
+  # see cacheperf.CachePerfPrms-trimSeconds
+
+  workSeconds = 210
+  # see cacheperf.CachePerfPrms-workSeconds
+
+  maxKeys = 1000
+  # see cacheperf.CachePerfPrms-maxKeys

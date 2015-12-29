@@ -1,0 +1,46 @@
+// useCase13Scenarios 
+useCase13Scenarios/killPrimarySteady.conf trimIterations=5000 workIterations=20000 maxKeys=5000
+useCase13Scenarios/killSecondaryDuringGii.conf trimIterations=5000 workIterations=20000 maxKeys=5000
+// diskReg
+diskReg/serialPersistence.conf
+diskReg/diskOverflowRecovery.conf maxKeys=100 objectType=objects.ArrayOfByte
+diskReg/crashOverflowRecovery.conf maxKeys=100 objectType=objects.ArrayOfByte
+diskReg/shutdownOverflowRecovery.conf maxKeys=100 objectType=objects.ArrayOfByte
+// dlock
+dlock/contention_entryLock.conf
+dlock/lockemallatonce.conf
+dlock/smokelock1_global.conf
+// koch stopstart
+koch/smokekoch.conf
+
+wan/p2p_explicit.conf
+
+wan/p2p.conf wanSites=1 peerVMsPerHost=1 peerThreadsPerVM=1
+wan/p2p.conf wanSites=2 peerVMsPerHost=1 peerThreadsPerVM=1
+wan/p2p.conf wanSites=3 peerVMsPerHost=1 peerThreadsPerVM=1
+
+wan/p2p.conf wanSites=1 peerVMsPerHost=3 peerThreadsPerVM=2
+wan/p2p.conf wanSites=2 peerVMsPerHost=3 peerThreadsPerVM=2
+wan/p2p.conf wanSites=3 peerVMsPerHost=3 peerThreadsPerVM=2
+
+wan/hct_explicit.conf
+
+wan/hct.conf wanSites=1 edgeVMsPerHost=1 edgeThreadsPerVM=1
+wan/hct.conf wanSites=2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+wan/hct.conf wanSites=3 edgeVMsPerHost=1 edgeThreadsPerVM=1
+
+wan/hct.conf wanSites=1 edgeVMsPerHost=3 edgeThreadsPerVM=2
+wan/hct.conf wanSites=2 edgeVMsPerHost=3 edgeThreadsPerVM=2
+wan/hct.conf wanSites=3 edgeVMsPerHost=3 edgeThreadsPerVM=2
+
+rollingupgrade/rollingUpgradeReplicate.conf
+   A=controller controllerHosts=1 controllerThreadsPerVM=1 controllerVMsPerHost=1
+   B=locator locatorHosts=2 locatorThreadsPerVM=1 locatorVMsPerHost=1
+   C=bridge bridgeHosts=2 bridgeThreadsPerVM=2 bridgeVMsPerHost=1
+   D=edge edgeHosts=2 edgeThreadsPerVM=2 edgeVMsPerHost=1
+
+rollingupgrade/rollingUpgradePersistentPartition.conf
+   A=controller controllerHosts=1 controllerThreadsPerVM=1 controllerVMsPerHost=1
+   B=locator locatorHosts=2 locatorThreadsPerVM=1 locatorVMsPerHost=1
+   C=bridge bridgeHosts=2 bridgeThreadsPerVM=2 bridgeVMsPerHost=1
+   D=edge edgeHosts=2 edgeThreadsPerVM=2 edgeVMsPerHost=1

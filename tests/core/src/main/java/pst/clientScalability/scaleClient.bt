@@ -1,0 +1,34 @@
+//------------------------------------------------------------------------------
+//  CLIENT SCALABILITY  
+//------------------------------------------------------------------------------
+
+/* 1 publisher, 1 VM, 1 Thread
+   128 subscribers, 128 VMs, 128 Threads, 
+   distributedAck
+   PSTObject size 150 bytes
+*/
+cacheperf/gemfire/clientScalability/scaleClient.conf
+  batchSize = 500000
+        pubHosts = 1 pubVMsPerHost = 1 pubThreadsPerVM = 1
+        subHosts = 2 subVMsPerHost = 1 subThreadsPerVM = 1
+  byteArraySize = 150 sleepBeforeOp = false
+  perffmwk.comparisonKey = p1_s2_nack_0000500
+  listenerClass = cacheperf.gemfire.WorkerLatencyListener
+  enableMcast = true   useLocator = true
+  multicastEnabled = true
+  scope = distributedNoAck
+  putSleepMsMin = 0
+  putSleepMsMax = 0
+
+cacheperf/gemfire/clientScalability/scaleClient.conf
+  batchSize = 500000
+        pubHosts = 1 pubVMsPerHost = 1 pubThreadsPerVM = 1
+        subHosts = 2 subVMsPerHost = 1 subThreadsPerVM = 1
+  byteArraySize = 150 sleepBeforeOp = false
+  perffmwk.comparisonKey = p1_s2_dack_0000500
+  listenerClass = cacheperf.gemfire.WorkerLatencyListener
+  enableMcast = true   useLocator = true
+  multicastEnabled = true
+  scope = distributedAck
+  putSleepMsMin = 0
+  putSleepMsMax = 0

@@ -1,0 +1,316 @@
+snapshot/exportImport.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   regionConfigName = persistentReplicateRegion, replicateRegion, persistentPartitionRegion, partitionRegion
+   exportStrategy = apiFromOneVm executeConcurrentOps = true, false executeConcurrentRebalance = false
+   useFilterOnExport = false useFilterOnImport = false
+   redundantCopies = 2
+
+// execute concurrent rebalance during export/import (partitionedRegions only)
+snapshot/exportImport.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   regionConfigName = persistentPartitionRegion, partitionRegion
+   exportStrategy = apiFromOneVm executeConcurrentOps = false executeConcurrentRebalance = true
+   useFilterOnExport = false useFilterOnImport = false
+   redundantCopies = 1
+
+// pdx (no persistence) tests
+snapshot/exportImportPdx.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   regionConfigName = replicateRegion, partitionRegion
+   exportStrategy = apiFromOneVm executeConcurrentOps = true, false executeConcurrentRebalance = false
+   useFilterOnExport = false useFilterOnImport = false
+   redundantCopies = 2
+
+// execute concurrent rebalance during export/import (partitionedRegions only)
+snapshot/exportImportPdx.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   regionConfigName = partitionRegion
+   exportStrategy = apiFromOneVm executeConcurrentOps = false executeConcurrentRebalance = true
+   useFilterOnExport = false useFilterOnImport = false
+   redundantCopies = 1
+
+// pdx tests (with persistence) 
+snapshot/exportImportPdxPersist.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   regionConfigName = persistentReplicateRegion, persistentPartitionRegion
+   exportStrategy = apiFromOneVm executeConcurrentOps = true, false executeConcurrentRebalance = false
+   useFilterOnExport = false useFilterOnImport = false
+   redundantCopies = 1
+
+snapshot/exportImportPdxPersist.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   regionConfigName = persistentPartitionRegion
+   exportStrategy = apiFromOneVm executeConcurrentOps = false executeConcurrentRebalance = true
+   useFilterOnExport = false useFilterOnImport = false
+   redundantCopies = 1
+
+// pdx variants (pdxInstance, pdxSerializer, pdxAutoSerializer)
+// pdx (no persistence) tests
+snapshot/exportImportPdxInstance.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   regionConfigName = replicateRegion, partitionRegion
+   exportStrategy = apiFromOneVm executeConcurrentOps = true, false executeConcurrentRebalance = false
+   useFilterOnExport = false useFilterOnImport = false
+   redundantCopies = 2
+
+// execute concurrent rebalance during export/import (partitionedRegions only)
+snapshot/exportImportPdxInstance.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=dataStore dataStoreHosts=2 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   regionConfigName = partitionRegion
+   exportStrategy = apiFromOneVm executeConcurrentOps = false executeConcurrentRebalance = true
+   useFilterOnExport = false useFilterOnImport = false
+   redundantCopies = 1
+
+snapshot/exportImportPdxSerializer.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   regionConfigName = replicateRegion, partitionRegion
+   exportStrategy = apiFromOneVm executeConcurrentOps = true, false executeConcurrentRebalance = false
+   useFilterOnExport = false useFilterOnImport = false
+   redundantCopies = 2
+
+// execute concurrent rebalance during export/import (partitionedRegions only)
+snapshot/exportImportPdxSerializer.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=dataStore dataStoreHosts=2 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   regionConfigName = partitionRegion
+   exportStrategy = apiFromOneVm executeConcurrentOps = false executeConcurrentRebalance = true
+   useFilterOnExport = false useFilterOnImport = false
+   redundantCopies = 1
+
+snapshot/exportImportPdxAutoSerializer.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   regionConfigName = replicateRegion, partitionRegion
+   exportStrategy = apiFromOneVm executeConcurrentOps = true, false executeConcurrentRebalance = false
+   useFilterOnExport = false useFilterOnImport = false
+   redundantCopies = 2
+
+// execute concurrent rebalance during export/import (partitionedRegions only)
+snapshot/exportImportPdxAutoSerializer.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=dataStore dataStoreHosts=2 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   regionConfigName = partitionRegion
+   exportStrategy = apiFromOneVm executeConcurrentOps = false executeConcurrentRebalance = true
+   useFilterOnExport = false useFilterOnImport = false
+   redundantCopies = 1
+
+// export from PRAccessor
+snapshot/exportFromPRAccessor.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=1
+   C=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   regionConfigName = persistentPartitionRegion, partitionRegion
+   exportStrategy = apiFromOneVm executeConcurrentOps = true, false executeConcurrentRebalance = false
+   useFilterOnExport = false useFilterOnImport = false
+   redundantCopies = 2
+
+snapshot/exportFromEdgeClient.conf
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   regionConfigName = persistentReplicateRegion, replicateRegion, persistentPartitionRegion, partitionRegion
+   exportStrategy = apiFromOneVm executeConcurrentOps = true, false executeConcurrentRebalance = false
+   useFilterOnExport = false useFilterOnImport = false
+   redundantCopies = 1
+
+// HA (during export)
+snapshot/exportImportHA.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=dataStore dataStoreHosts=2 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   C=killTarget killTargetHosts=1 killTargetVMsPerHost=1 killTargetThreadsPerVM=1
+   regionConfigName = persistentReplicateRegion, replicateRegion, persistentPartitionRegion, partitionRegion
+   exportStrategy = apiFromOneVm executeConcurrentOps = false executeConcurrentRebalance = false
+   useFilterOnExport = false useFilterOnImport = false
+   redundantCopies = 1
+
+snapshot/exportFromPRAccessorHA.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=dataStore  dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=1
+   C=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   D=killTarget killTargetHosts=1 killTargetVMsPerHost=1 killTargetThreadsPerVM=1
+   regionConfigName = persistentPartitionRegion, partitionRegion
+   exportStrategy = apiFromOneVm executeConcurrentOps = true, false executeConcurrentRebalance = false
+   useFilterOnExport = false useFilterOnImport = false
+   redundantCopies = 1
+
+snapshot/exportFromEdgeClientHA.conf
+   bridgeHosts=4 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   regionConfigName = persistentReplicateRegion, replicateRegion, persistentPartitionRegion, partitionRegion
+   exportStrategy = apiFromOneVm executeConcurrentOps = true, false executeConcurrentRebalance = false
+   useFilterOnExport = false useFilterOnImport = false
+   redundantCopies = 1
+
+// export cache (multiple region types)
+snapshot/cacheSnapshotReplicate.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+   useFilterOnExport = false useFilterOnImport = false
+   numDiskStores = 20
+
+snapshot/cacheSnapshotPR.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+   useFilterOnExport = false useFilterOnImport = false
+   numDiskStores = 3
+
+snapshot/cacheSnapshotMixed.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+   useFilterOnExport = false useFilterOnImport = false
+   numDiskStores = 3
+
+// snapshot with eviction
+snapshot/snapshotLRU.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   regionConfigName = persistentReplicateRegion, replicateRegion, persistentPartitionRegion, partitionRegion
+   useFilterOnExport = false useFilterOnImport = false
+   redundantCopies = 0
+
+snapshot/snapshotMemLRU.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   regionConfigName = persistentReplicateRegion, replicateRegion, persistentPartitionRegion, partitionRegion
+   useFilterOnExport = false useFilterOnImport = false
+   redundantCopies = 0
+
+snapshot/snapshotHeapLRU.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   regionConfigName = persistentReplicateRegion, replicateRegion, persistentPartitionRegion, partitionRegion
+   useFilterOnExport = false useFilterOnImport = false
+   redundantCopies = 0
+
+snapshot/snapshotTTL.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   regionConfigName = persistentReplicateRegion, replicateRegion, persistentPartitionRegion, partitionRegion
+   useFilterOnExport = false useFilterOnImport = false
+   redundantCopies = 0
+
+snapshot/snapshotIdleTO.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   regionConfigName = persistentReplicateRegion, replicateRegion, persistentPartitionRegion, partitionRegion
+   useFilterOnExport = false useFilterOnImport = false
+   redundantCopies = 0
+
+// SnapshotFilter testing (filters are dynamically configured based on key, value and valueType)
+snapshot/exportImport.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   regionConfigName = persistentReplicateRegion, replicateRegion, persistentPartitionRegion, partitionRegion
+   exportStrategy = apiFromOneVm executeConcurrentOps = false executeConcurrentRebalance = false
+   useFilterOnExport = true useFilterOnImport = false
+   redundantCopies = 2
+
+snapshot/exportImport.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   regionConfigName = persistentReplicateRegion, replicateRegion, persistentPartitionRegion, partitionRegion
+   exportStrategy = apiFromOneVm executeConcurrentOps = false executeConcurrentRebalance = false
+   useFilterOnExport = false useFilterOnImport = true  
+   redundantCopies = 2
+
+snapshot/exportFromPRAccessor.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=1
+   C=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   regionConfigName = persistentPartitionRegion, partitionRegion
+   exportStrategy = apiFromOneVm executeConcurrentOps = false executeConcurrentRebalance = false
+   useFilterOnExport = true useFilterOnImport = false
+   redundantCopies = 2
+
+snapshot/exportFromPRAccessor.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=1
+   C=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   regionConfigName = persistentPartitionRegion, partitionRegion
+   exportStrategy = apiFromOneVm executeConcurrentOps = false executeConcurrentRebalance = false
+   useFilterOnExport = false useFilterOnImport = true
+   redundantCopies = 2
+
+snapshot/exportFromEdgeClient.conf
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   regionConfigName = persistentReplicateRegion, replicateRegion, persistentPartitionRegion, partitionRegion
+   exportStrategy = apiFromOneVm executeConcurrentOps = false executeConcurrentRebalance = false
+   useFilterOnExport = true useFilterOnImport = false
+   redundantCopies = 1
+
+snapshot/exportFromEdgeClient.conf
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   regionConfigName = persistentReplicateRegion, replicateRegion, persistentPartitionRegion, partitionRegion
+   exportStrategy = apiFromOneVm executeConcurrentOps = false executeConcurrentRebalance = false
+   useFilterOnExport = false useFilterOnImport = true
+   redundantCopies = 1
+
+snapshot/cacheSnapshotReplicate.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+   useFilterOnExport = true useFilterOnImport = false
+   numDiskStores = 20
+
+snapshot/cacheSnapshotReplicate.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+   useFilterOnExport = false useFilterOnImport = true
+   numDiskStores = 20
+
+snapshot/cacheSnapshotPR.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+   useFilterOnExport = true useFilterOnImport = false
+   numDiskStores = 3
+
+snapshot/cacheSnapshotPR.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+   useFilterOnExport = false useFilterOnImport = true
+   numDiskStores = 3
+
+snapshot/cacheSnapshotMixed.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+   useFilterOnExport = true useFilterOnImport = false
+   numDiskStores = 3
+
+snapshot/cacheSnapshotMixed.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+   useFilterOnExport = false useFilterOnImport = true
+   numDiskStores = 3
+
+snapshot/exportImportColocated.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   regionConfigName = persistentPartitionRegion, partitionRegion
+   exportStrategy = apiFromOneVm executeConcurrentOps = false executeConcurrentRebalance = false
+   useFilterOnExport = false useFilterOnImport = false
+   redundantCopies = 1
+
+snapshot/exportImportColocated.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   regionConfigName = persistentPartitionRegion, partitionRegion
+   exportStrategy = apiFromOneVm executeConcurrentOps = false executeConcurrentRebalance = false
+   useFilterOnExport = true useFilterOnImport = false
+   redundantCopies = 1
+
+snapshot/exportImportColocated.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   regionConfigName = persistentPartitionRegion, partitionRegion
+   exportStrategy = apiFromOneVm executeConcurrentOps = false executeConcurrentRebalance = false
+   useFilterOnExport = false useFilterOnImport = true
+   redundantCopies = 1

@@ -1,0 +1,24 @@
+dependencies {
+  // have to use output since we exclude the dependent classes from jar :(
+  provided project(subprojectBase + 'gemfire-core').sourceSets.main.output
+  provided project(subprojectBase + 'gemfire-core')
+
+  compile "org.osgi:org.osgi.core:${osgiVersion}"
+}
+
+sourceSets.main.java.srcDirs = [ 'src/main/java', 'src/dist/java', 'src/osgi/java' ]
+
+task packageExamples(type: Jar, dependsOn: classes) {
+  classifier = 'sources'
+  from sourceSets.main.allSource
+}
+task packageExampleDocs(type: Jar, dependsOn: javadoc) {
+  classifier = 'sources'
+  from javadoc.destinationDir
+}
+
+artifacts {
+  archives jar
+  archives packageExamples
+  archives packageExampleDocs
+}

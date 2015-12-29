@@ -1,0 +1,173 @@
+===========================================================================
+Test Coverage Comments
+===========================================================================
+
+This file is a repository for comments on test coverage.  Input from
+anyone is welcome.  QA is responsible for periodically reviewing and
+updating or removing obsolete comments.
+
+
+---------------------------------------------------------------------------
+Console/GUI:
+
+[marilynd, 1Aug03]
+There is no QA testing of the Console.  Pete occasionally runs JFCUnit
+tests on basic Console operations (build target gui-unit-tests).
+
+---------------------------------------------------------------------------
+Misc. Admin QA:
+
+[marilynd, 1Aug03]
+There is no QA testing of non-API Admin features, such as variations
+in distribution configuration from the gemfire.properties file
+variations in cache configuration from the cache.xml file, and use of
+command-line tools.  These areas are currently covered only by the
+developers (unit tests) and ad-hoc usage of the product, both
+internally and externally.
+
+---------------------------------------------------------------------------
+Installation and Licensing:
+
+[marilynd, 1Aug03]
+The only testing done for Installation and Licensing is by those
+who have done the implementation -- i.e. there is no IV&V.
+
+---------------------------------------------------------------------------
+High Availability:
+
+[marilynd, 1Aug03]
+There is no QA coverage for general HA as it has been deferred.
+
+[lises, from specs/gemfire/PSRTestPlan30.txt]
+If high availability makes it into 3.0, we'll need to add appropriate
+tests here, covering node, system manager, C cache processor, host,
+and network crashes.
+
+---------------------------------------------------------------------------
+J2EE EJB Containers:
+
+[marilynd, 1Aug03]
+There is no QA coverage for using GemFire in J2EE/EJB containers.
+
+---------------------------------------------------------------------------
+Cross platform testing:
+
+[bruce, 19 Jun 2003]
+Do we have much in the way of testing heterogeneous mixes of machines?
+solaris-linux, linux-windows, solaris-windows, solaris-windows-linux
+
+---------------------------------------------------------------------------
+Mirroring plus CacheLoaders:
+
+[lises, 26 Jun 2003]
+See Bug 29470 for a hole in mirroring plus loaders.
+29470: netload doesn't search remote nodes if region is mirrored & key not defined
+
+Current port of 202 test to 30: tests use VM regions only.
+---------------------------------------------------------------------------
+Examples included with GemFire:
+
+[marilynd, 6Aug03]
+There are no tests yet for the C examples.  There are tests for all
+the Java examples.  Currently Gary runs these during each release
+cycle, but they could be added to the smoketests.
+
+[marilynd, 17Dec03]
+Judy will pick up Gary's tests and take over testing the examples
+for each release.
+---------------------------------------------------------------------------
+Distributed Scope variation
+
+[marilynd, 13Aug03]
+In Dave Monnie's brownbag today, the following was noted:
+It is possible to have entry A defined as GLOBAL in VMs 1 and 2 while
+defined as DISTRIBUTED (ACK or NO_ACK) in VMs 3 and 4.  This is allowed,
+but may not be tested.  Furthermore, if a cacheLoader is used, problems
+may arise.  This should be documented, too.
+---------------------------------------------------------------------------
+Short-lived application VMs
+
+[bruce, 12Aug03]
+> Do we have any test scenarios in smoke/moresmoke (or elsewhere)
+> that behave like RABA's region-queue application?  They pile a lot
+> of data into a mirrored region on one machine and then run
+> short-lived VMs on another machine that process chunks of that
+> data.  They'll pull off something like 100 items, process them, and
+> exit.  Another VM will run and do the same, and so on until all the
+> data has been processed.  Items taken from the region are destroyed
+> (one writer, one reader).
+[lynn, 12Aug03]
+We currently don't have full hydra support for running short-lived
+VMs. Lise and I talked about this last week. We want to schedule a
+time for the QA team to get together and discuss what we need from
+hydra, and how to specify VMs that come and go. Martin said not to
+try to put this into 2.0.2, but to plan it for 3.0.
+[marilynd, 13Aug03]
+In general, we need to run many of our tests with VMs starting and 
+stopping frequently throughout.  This came up in today's brownbag.
+
+---------------------------------------------------------------------------
+HTTP Session State Caching and Replication
+
+[davidw, 10Sep03]
+
+Sudhir passes along the following requirements for the HTTP Session
+State caching module.  They will need to be tested.
+
+Base HTTP Session Replication Requirements:
+
+1> Provide transparent session caching of HttpSession objects using GemFire
+2> Provide support for servlet spec 2.2 and 2.3
+3> Support WebSphere, WebLogic, JBoss ...
+4> Provide automatic session failover to a new web server(describe the
+failover timeout limits here)
+5> Replication mechanism should replicate only the changed attributes of a
+session (for efficiency reasons)
+
+Performance and scalability requirements
+1> Demonstrate that caching overhead for session retrieval is within X% of
+session retrieval
+   without GemFire
+2> Demonstrate that session replication works at least as fast as database
+based session replication (and/or
+	other comparable mechanisms)
+3> Document the number of web servers and GemFire instances that this
+feature reliably supports
+
+---------------------------------------------------------------------------
+C Distributed Caching Performance Test
+
+[lhughes, from specs/gemfire/CDistCachePerfTests.doc]
+- We lowered the priority of the puts w/ listener -- will only do this
+  if we determine a need to look at performance between a mix of Java
+  & C clients.
+- Tests use bytearrays only (ArrayOfByte is fine +
+  objects.ArrayOfByteParms-size config param).
+- We are currently not interested in simultaneous access (hits) as in
+  the Jerry Garcia scenario.  Want a full range of keys for both hits
+  & misses.
+
+---------------------------------------------------------------------------
+Custom Capacity Controllers
+
+[marilynd, 27Feb04]
+- We no longer have tests that exercise custom (user-written) capacity
+  controllers.
+- Back when we did have such tests, they uncovered bug 29412:
+29412  P2  Capacity controller that destroys causes hang
+             06/12/03  GemFire Distributed - 2.01, build 06/12/2003 08:35:48 PDT  [dmonnie]
+             Test: local changes to event/concObjEvent.conf  Filed by: lynn
+- We do not have tests that cover setting a custom ObjectSizer class
+
+---------------------------------------------------------------------------
+Out of disk space
+
+[marilynd, 29Jun04]
+- Need to test what happens when GemFire runs out of disk space.
+
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+

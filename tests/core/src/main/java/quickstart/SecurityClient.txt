@@ -1,0 +1,12 @@
+Setting security properties for client
+
+Connecting to the distributed system and creating the cache.
+Example region, /exampleRegion, created in cache.
+
+Putting three values in the cache...
+Putting entry: key1, value1
+Putting entry: key2, value2
+Putting entry: key3, value3
+Getting entry: key1
+^Get operation generated expected NotAuthorizedException: .*Not authorized to perform GET operation on region \[/exampleRegion\]$
+SecurityClient closed

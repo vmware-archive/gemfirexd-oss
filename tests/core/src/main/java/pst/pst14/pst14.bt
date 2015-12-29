@@ -1,0 +1,210 @@
+// batchSize, workIterations tuned for bensley configuration Feb 2006
+// NOTE: test runs without explicit adjustment of batchSize, workIterations
+// HAVE NOT BEEN TUNED.
+
+include $JTESTS/cacheperf/gemfire/miss/miss.bt
+
+//------------------------------------------------------------------------------
+//
+//  GemFire cache push creates for objects.ArrayOfByte
+//
+//------------------------------------------------------------------------------
+
+cacheperf/gemfire/create/create.conf
+  hydra.numHosts=4
+  mirrorType=none scope=distributedNoAck
+  perffmwk.comparisonKey=vm_4_distNoAck_none
+  batchSize=1250000
+  workIterations=2000000
+  objectType=objects.ArrayOfByte
+
+cacheperf/gemfire/create/create.conf
+  hydra.numHosts=4
+  mirrorType=none scope=distributedAck
+  perffmwk.comparisonKey=vm_4_distAck_none
+  batchSize=150000
+  workIterations=2000000
+  objectType=objects.ArrayOfByte
+
+cacheperf/gemfire/create/create.conf
+  hydra.numHosts=4
+  mirrorType=none scope=global
+  perffmwk.comparisonKey=vm_4_global_none
+  batchSize=30000
+  workIterations=2000000
+  objectType=objects.ArrayOfByte
+
+//------------------------------------------------------------------------------
+//
+//  GemFire cache mirror creates for objects.ArrayOfByte
+//
+//------------------------------------------------------------------------------
+
+cacheperf/gemfire/create/mirrorcreate.conf
+  hydra.numHosts=4
+  mirrorType=keys scope=distributedNoAck
+  perffmwk.comparisonKey=vm_4_distNoAck_keys
+
+cacheperf/gemfire/create/mirrorcreate.conf
+  hydra.numHosts=4
+  mirrorType=keys scope=distributedAck
+  perffmwk.comparisonKey=vm_4_distAck_keys
+
+cacheperf/gemfire/create/mirrorcreate.conf
+  hydra.numHosts=4
+  mirrorType=keys scope=global
+  perffmwk.comparisonKey=vm_4_global_keys
+
+cacheperf/gemfire/create/mirrorcreate.conf
+  hydra.numHosts=4
+  mirrorType=keysValues scope=distributedNoAck
+  perffmwk.comparisonKey=vm_4_distNoAck_keysValues
+  batchSize=750000
+  workIterations=1800000
+
+cacheperf/gemfire/create/mirrorcreate.conf
+  hydra.numHosts=4
+  mirrorType=keysValues scope=distributedAck
+  perffmwk.comparisonKey=vm_4_distAck_keysValues
+  batchSize=150000
+  workIterations=1800000
+
+cacheperf/gemfire/create/mirrorcreate.conf
+  hydra.numHosts=4
+  mirrorType=keysValues scope=global
+  perffmwk.comparisonKey=vm_4_global_keysValues
+  batchSize=30000
+  workIterations=1800000
+
+//------------------------------------------------------------------------------
+//
+//  GemFire get initial image for objects.ArrayOfByte
+//
+//------------------------------------------------------------------------------
+
+cacheperf/gemfire/getInitialImage/getInitialImage.conf
+  hydra.numHosts=4
+  mirrorType=keys scope=distributedNoAck
+
+cacheperf/gemfire/getInitialImage/getInitialImage.conf
+  hydra.numHosts=4
+  mirrorType=keys scope=distributedAck
+
+cacheperf/gemfire/getInitialImage/getInitialImage.conf
+  hydra.numHosts=4
+  mirrorType=keys scope=global
+
+cacheperf/gemfire/getInitialImage/getInitialImage.conf
+  hydra.numHosts=4
+  mirrorType=keysValues scope=distributedNoAck
+  batchSize=700000
+  workIterations=1000000
+
+cacheperf/gemfire/getInitialImage/getInitialImage.conf
+  hydra.numHosts=4
+  mirrorType=keysValues scope=distributedAck
+
+cacheperf/gemfire/getInitialImage/getInitialImage.conf
+  hydra.numHosts=4
+  mirrorType=keysValues scope=global
+
+//------------------------------------------------------------------------------
+//
+//  GemFire get initial image impact on gets for objects.ArrayOfByte
+//
+//------------------------------------------------------------------------------
+
+cacheperf/gemfire/getInitialImage/getInitialImageGetsImpact.conf
+  hydra.numHosts=3
+  mirrorType=keys scope=distributedNoAck
+
+cacheperf/gemfire/getInitialImage/getInitialImageGetsImpact.conf
+  hydra.numHosts=3
+  mirrorType=keys scope=distributedAck
+
+cacheperf/gemfire/getInitialImage/getInitialImageGetsImpact.conf
+  hydra.numHosts=3
+  mirrorType=keys scope=global
+
+cacheperf/gemfire/getInitialImage/getInitialImageGetsImpact.conf
+  hydra.numHosts=3
+  mirrorType=keysValues scope=distributedNoAck
+  batchSize=150000
+  workIterations=1000000
+
+cacheperf/gemfire/getInitialImage/getInitialImageGetsImpact.conf
+  hydra.numHosts=3
+  mirrorType=keysValues scope=distributedAck
+
+cacheperf/gemfire/getInitialImage/getInitialImageGetsImpact.conf
+  hydra.numHosts=3
+  mirrorType=keysValues scope=global
+
+//------------------------------------------------------------------------------
+//
+//  GemFire get initial image impact on puts for objects.ArrayOfByte
+//
+//------------------------------------------------------------------------------
+
+cacheperf/gemfire/getInitialImage/getInitialImagePutsImpact.conf
+  hydra.numHosts=3
+  mirrorType=keys scope=distributedNoAck
+
+cacheperf/gemfire/getInitialImage/getInitialImagePutsImpact.conf
+  hydra.numHosts=3
+  mirrorType=keys scope=distributedAck
+
+cacheperf/gemfire/getInitialImage/getInitialImagePutsImpact.conf
+  hydra.numHosts=3
+  mirrorType=keys scope=global
+
+cacheperf/gemfire/getInitialImage/getInitialImagePutsImpact.conf
+  hydra.numHosts=3
+  mirrorType=keysValues scope=distributedNoAck
+  batchSize=75000
+  workIterations=500000
+
+cacheperf/gemfire/getInitialImage/getInitialImagePutsImpact.conf
+  hydra.numHosts=3
+  mirrorType=keysValues scope=distributedAck
+
+cacheperf/gemfire/getInitialImage/getInitialImagePutsImpact.conf
+  hydra.numHosts=3
+  mirrorType=keysValues scope=global
+
+//------------------------------------------------------------------------------
+// some NestedOrderVector tests
+//------------------------------------------------------------------------------
+
+cacheperf/gemfire/create/create.conf
+  hydra.numHosts=4
+  mirrorType=none scope=distributedNoAck
+  perffmwk.comparisonKey=vm_4_distNoAck_none
+  batchSize=1250000
+  workIterations=2000000
+  objectType=objects.NestedOrderVector
+
+cacheperf/gemfire/create/create.conf
+  hydra.numHosts=4
+  mirrorType=none scope=distributedAck
+  perffmwk.comparisonKey=vm_4_distAck_none
+  batchSize=150000
+  workIterations=2000000
+  objectType=objects.NestedOrderVector
+
+cacheperf/gemfire/create/mirrorcreate.conf
+  hydra.numHosts=4
+  mirrorType=keysValues scope=distributedNoAck
+  perffmwk.comparisonKey=vm_4_distNoAck_keysValues
+  batchSize=750000
+  workIterations=1800000
+  objectType=objects.NestedOrderVector
+
+cacheperf/gemfire/create/mirrorcreate.conf
+  hydra.numHosts=4
+  mirrorType=keysValues scope=distributedAck
+  perffmwk.comparisonKey=vm_4_distAck_keysValues
+  batchSize=150000
+  workIterations=1800000
+  objectType=objects.NestedOrderVector
+

@@ -1,0 +1,28 @@
+.row-info {
+    background-color: #FFFFFF;
+    /* background-color: #FAFAFA; */ /* This is a very light grey */
+}
+.row-mild-gain {
+    background-color: #dff0d8;
+}
+.row-severe-gain {
+    background-color: #00FF00;
+}
+.row-mild-degradation {
+    background-color: #f2dede;
+}
+.row-degradation{
+    background-color: #FA5858;
+}
+.row-severe-degradation {
+    background-color: #FF0000;
+    font-weight: bold;
+}
+.row-failed {
+    background-color: #C0C0C0;
+    color: #C0C0C0;
+}
+thead th {
+    background-color: #222;
+    color: #fff;
+}

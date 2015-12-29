@@ -1,0 +1,42 @@
+//independent subquery
+sql/subquery/randomPartitionClauseSubqueryUniqWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=5, 9 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=10
+    
+sql/subquery/randomPartitionRepTablesSubqueryNonUniqWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=4, 7 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=5 accessorThreadsPerVM=20
+    
+sql/subquery/subqueryProcedureIndexUniqWithAccessorsHA.conf
+    locatorHosts = 1 locatorVMsPerHost =2 locatorThreadsPerVM = 1
+    A=store storeHosts=1 storeVMsPerHost=2,5 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=10
+    dropIndex= true
+    redundantCopies=1
+      
+sql/subquery/subqueryProcedureIndexUniqWithAccessorsHA.conf
+    locatorHosts = 1 locatorVMsPerHost =2 locatorThreadsPerVM = 1
+    A=store storeHosts=1 storeVMsPerHost=3,6 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=10
+    dropIndex= true
+    redundantCopies=2
+
+//colocated ones    
+sql/subquery/colocatedSubqueryCustSecPortfolioUniqHashJoinOneRepl.conf
+	A=peer peerHosts=2 peerVMsPerHost=4 peerThreadsPerVM=10 
+	
+sql/subquery/serialColocatedSubqueryNonUniqHashJoinOneRepl.conf
+	A=peer peerHosts=3 peerVMsPerHost=3 peerThreadsPerVM=10 	
+	
+sql/subquery/colocatedSubqueryWithReplicateTablesUniqWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=4 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=4 accessorThreadsPerVM=6
+    dropIndex = true
+
+sql/subquery/colocatedSubqueryMultiTablesJoinUniqWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=4 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=5 accessorThreadsPerVM=9
+    
+sql/subquery/colocatedSubqueryMultiTablesJoinUniqWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=7 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=5 accessorThreadsPerVM=7

@@ -1,0 +1,133 @@
+
+/*durableClients/durableClientsEventValidationAllKeys.conf
+ A = bridge  bridgeHosts =  6 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+ B = feed    feedHosts   =  1 feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+ C = edge    edgeHosts   =  3 edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+ hc.nPutThreads=3 hc.nPutKeyRange=3 */
+
+durableClients/eventValidationAll_KeysFailOver.conf
+ A = bridge  bridgeHosts =  6 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+ B = feed    feedHosts   =  1 feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+ C = edge    edgeHosts   =  3 edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+ hc.nPutThreads=3 hc.nPutKeyRange=3
+ threadGroupsName=edge
+
+/*durableClients/eventValidation_FullListFailOver.conf
+ A = bridge  bridgeHosts =  6 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+ B = feed    feedHosts   =  1 feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+ C = edge    edgeHosts   =  3 edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+ hc.nPutThreads=3 hc.nPutKeyRange=3*/
+
+durableClients/eventValidation_PartialListConflation.conf
+ A = bridge  bridgeHosts =  6 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+ B = feed    feedHosts   =  1 feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+ C = edge    edgeHosts   =  3 edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+ hc.nPutThreads=30 hc.nPutKeyRange=1
+ threadGroupsName=edge
+/*wan/hct_durable.conf
+wanSites=3 edgeVMsPerHost=3 edgeThreadsPerVM=2 bridgeVMsPerHost = 2
+threadGroupsName=edge*/
+
+durableClients/staticInterestPolicyAllKeys.conf
+bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=1 numOpThreads=5
+threadGroupsName=opThreads
+
+durableClients/staticInterestPolicyList.conf
+bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=1 numOpThreads=5
+threadGroupsName=opThreads
+
+//durableClients/staticInterestPolicyPartialList.conf
+//bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=1 numOpThreads=5
+
+//durableClients/staticInterestPolicyRegex.conf
+//bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=1 numOpThreads=5
+
+durableClients/staticInterestPolicyAllKeysLateOps.conf
+bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=1 numOpThreads=5
+threadGroupsName=opThreads
+
+//durableClients/staticInterestPolicyListLateOps.conf
+//bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=1 numOpThreads=5
+
+durableClients/staticInterestPolicyPartialListLateOps.conf
+bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=1 numOpThreads=5
+threadGroupsName=bridge
+
+durableClients/staticInterestPolicyRegexLateOps.conf
+bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=1 numOpThreads=5
+threadGroupsName=bridge
+
+//durableClients/staticUnregisterInterestAllKeys.conf
+//bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=1 numOpThreads=5
+
+durableClients/staticUnregisterInterestList.conf
+bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=1 numOpThreads=5
+threadGroupsName=default
+
+//durableClients/staticUnregisterInterestPartialList.conf
+//bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=1 numOpThreads=5
+
+durableClients/staticUnregisterInterestRegex.conf
+bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=1 numOpThreads=5
+threadGroupsName=default
+
+/*durableClients/cqWithDurableClients.conf
+A = bridge  bridgeHosts =  6 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+B = feed    feedHosts   =  1 feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+C = edge    edgeHosts   =  3 edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+hc.nPutThreads=3 hc.nPutKeyRange=3
+threadGroupsName=edge*/
+
+/*durableClients/dynamicInterestPolicyAllKeys.conf
+bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHosts=7 edgeVMsPerHost=1 edgeThreadsPerVM=1 numOpThreads=5
+threadGroupsName=bridge
+
+durableClients/dynamicInterestPolicyList.conf
+bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHosts=7 edgeVMsPerHost=1 edgeThreadsPerVM=1 numOpThreads=5
+threadGroupsName=bridge*/
+
+//durableClients/dynamicInterestPolicyPartialList.conf
+//bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHosts=7 edgeVMsPerHost=1 edgeThreadsPerVM=1 numOpThreads=5
+
+/*durableClients/dynamicInterestPolicyRegex.conf
+bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHosts=7 edgeVMsPerHost=1 edgeThreadsPerVM=1 numOpThreads=5
+threadGroupsName=bridge*/
+
+durableClients/durableClientsWithExpiration.conf
+A = bridge  bridgeHosts =  6 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+B = feed    feedHosts   =  1 feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+C = edge    edgeHosts   =  3 edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+hc.nPutThreads=3 hc.nPutKeyRange=3
+threadGroupsName=edge
+
+/*durableClients/durableCQWithCacheClose.conf
+A = bridge  bridgeHosts =  6 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+B = feed    feedHosts   =  1 feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+C = edge    edgeHosts   =  3 edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+hc.nPutThreads=3 hc.nPutKeyRange=3
+threadGroupsName=edge*/
+
+/*durableClients/durableClientQConflationNoServerConflation.conf
+  A = bridge  bridgeHosts =  4  bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+  B = feed    feedHosts   =  1  feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+  C = defaultEdge    defaultEdgeHosts   = 3  defaultEdgeVMsPerHost   = 1  defaultEdgeThreadsPerVM   = 1
+  D = conflationEdge    conflationEdgeHosts   = 3  conflationEdgeVMsPerHost   = 1  conflationEdgeThreadsPerVM   = 1
+  E = noConflationEdge    noConflationEdgeHosts   = 3  noConflationEdgeVMsPerHost   = 1  noConflationEdgeThreadsPerVM   = 1
+  hc.nPutThreads=30 hc.nPutKeyRange=1*/
+
+durableClients/durableClientQConflationWithServerConflation.conf
+  A = bridge  bridgeHosts =  4  bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+  B = feed    feedHosts   =  1  feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+  C = defaultEdge    defaultEdgeHosts   = 3  defaultEdgeVMsPerHost   = 1  defaultEdgeThreadsPerVM   = 1
+  D = conflationEdge    conflationEdgeHosts   = 3  conflationEdgeVMsPerHost   = 1  conflationEdgeThreadsPerVM   = 1
+  E = noConflationEdge    noConflationEdgeHosts   = 3  noConflationEdgeVMsPerHost   = 1  noConflationEdgeThreadsPerVM   = 1
+  hc.nPutThreads=30 hc.nPutKeyRange=1
+  threadGroupsName=defaultedge
+
+ // for ha overflow mem policy
+durableClients/durableWithMemEvictionPolicy.conf
+ A = bridge  bridgeHosts =  6 bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+ B = feed    feedHosts   =  1 feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+ C = edge    edgeHosts   =  3 edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+ hc.nPutThreads=3 hc.nPutKeyRange=3
+ threadGroupsName=edge

@@ -1,0 +1,11 @@
+diskReg/oplogs/concDiskRecoveryFromOplogs.conf
+
+diskReg/oplogs/diskRegionRecoveryThroughGIIAfterVmCrash.conf
+hydra.numHosts=4
+numVMsToStop = 2
+closeCacheDuringGii=false
+
+diskReg/oplogs/diskRegionRecoveryAfterVmCrash.conf
+hydra.numHosts=4
+numVMsToStop=3
+closeCacheDuringGii=true

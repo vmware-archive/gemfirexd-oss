@@ -1,0 +1,31 @@
+
+====== USAGE ====================================================================
+
+Prepare a batterytest configuration file following the syntax and
+grammar described later in this file.
+
+Before running a batterytest using your file, test it by setting up your
+environment as you would for a test run (see batterytest/BatteryTest.java).
+
+Then execute:
+
+  java -classpath $JTESTS:$GEMFIRE/lib/gemfire.jar \
+       -DGEMFIRE=$GEMFIRE                          \
+       -DJTESTS=$JTESTS                          \
+       -DtestFileName=<filename>
+        batterytest.ConfigParser <filename>
+
+See gemfire/tests/batterytest/parse for an example.
+
+Examine the result to make sure you are getting the settings you expect.
+
+====== GRAMMAR ==================================================================
+
+config :: (stmt)*
+
+stmt :: testname (systemproperty)*
+     || include batterytestfilename
+
+systemproperty :: <property>=value
+
+value :: <value> (COMMA <value>)*

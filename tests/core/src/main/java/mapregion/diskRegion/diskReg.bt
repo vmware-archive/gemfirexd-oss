@@ -1,0 +1,15 @@
+mapregion/diskRegion/concOverFlowRegion.conf autoCompact = true maxOplogSize = 2
+
+mapregion/diskRegion/concOverFlowRegion.conf autoCompact = false maxOplogSize = 2
+
+mapregion/diskRegion/concPersistRegion.conf autoCompact = true maxOplogSize = 2
+
+mapregion/diskRegion/concPersistRegion.conf autoCompact = false maxOplogSize = 2
+
+mapregion/diskRegion/concPersistOverFlowRegion.conf autoCompact = true maxOplogSize = 2
+
+mapregion/diskRegion/concPersistOverFlowRegion.conf autoCompact = false maxOplogSize = 2
+
+// ConcurrentMap tests
+mapregion/diskRegion/concCMOverFlowRegion.conf autoCompact = true maxOplogSize = 2
+mapregion/diskRegion/concCMOverFlowRegion.conf autoCompact = false maxOplogSize = 2

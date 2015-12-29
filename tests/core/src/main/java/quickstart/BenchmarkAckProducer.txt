@@ -1,0 +1,30 @@
+
+Benchmark configuration:
+	benchmark.number-of-samples = 60
+	benchmark.operations-per-sample = 5
+	benchmark.payload-bytes = 1024
+Please wait... this may take several minutes...
+
+Finished run. Collating benchmark totals now.
+
+Benchmark results:
+
+	Total Time = [\d]+\.[\d]+ seconds
+	Total Puts = 300 put operations
+	Total Samples = 60 benchmark samples
+	Total Kilobytes = 300 kilobytes
+
+	Average Puts Per Second = [\d]+\.[\d]+ puts
+	Average Kilobytes Per Second = [\d]+\.[\d]+ kilobytes of data
+	Average Operations Time = [\d]+\..* nanoseconds per put
+	Average Byte Time = [\d]+\..* milliseconds per byte of data
+
+	Best Puts Per Second = ([\d]+\.[\d]+|Infinity) puts
+	Best Kilobytes Per Second = ([\d]+\.[\d]+|Infinity) kilobytes of data
+	Best Operations Time = ([\d]+\..*|Infinity) nanoseconds per put
+	Best Byte Time = ([\d]+\..*|Infinity) milliseconds per byte of data
+	Note: Best sample is representative of performance after JVM warms up.
+
+Closing the cache and disconnecting.
+
+Please press Enter in the BenchmarkAckConsumer.

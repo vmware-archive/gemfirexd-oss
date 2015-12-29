@@ -1,0 +1,4 @@
+cacheperf/poc/mssb/mssb01.conf
+cacheperf/poc/mssb/mssb02.conf
+cacheperf/poc/mssb/mssb03.conf
+cacheperf/poc/mssb/mssb04.conf useMeanKill = true,false

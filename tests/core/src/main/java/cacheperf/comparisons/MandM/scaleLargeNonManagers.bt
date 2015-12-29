@@ -1,0 +1,26 @@
+// tests to determine the cpu by manager members when non-manager members are scaled up
+// compare a 7.0 run with 1 manager with a variable number of of non-managers
+// see what the CPU consumption is in the manager as the number of non-managers scales up
+// this scales up higher than scaleNonManagers.bt (numVMsPerHost is 10)
+
+//================================================================================ 
+// peers
+
+// run the current GF version
+// run peers with various number of non-managers
+cacheperf/comparisons/MandM/peerQuietSystem.conf
+      locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+      A=peer peerHosts=1,2,4,8,16 peerVMsPerHost=10 peerThreadsPerVM=1
+      heapMB=800 conserveSockets=false redundantCopies=1
+      numLocatorManagers=1 numPeerManagers=0
+      version=default
+
+// run 664
+// run peers with various number of non-managers
+cacheperf/comparisons/MandM/peerQuietSystem.conf
+      locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+      A=peer peerHosts=1,2,4,8,16 peerVMsPerHost=10 peerThreadsPerVM=1
+      heapMB=800 conserveSockets=false redundantCopies=1
+      numLocatorManagers=0 numPeerManagers=0
+      version=664
+

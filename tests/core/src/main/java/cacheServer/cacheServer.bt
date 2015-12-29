@@ -1,0 +1,11 @@
+// This test used to work because the CacheServer was a long running VM (not a bridgeServer)
+// Now, it is always a server and now needs a unique port in its xml 
+//    Add  <cache-server port="%CACHE_SERVER_PORT%" notify-by-subscription="false"/>
+//    A new client cache xml with Pools, etc ... needs to be added (now that the application vms are edge clients)
+//cacheServer/bounceCacheServer.conf
+//cacheServer/bounceCacheServer.conf hydra.numHosts=4 nServers=3
+
+INCLUDE $JTESTS/cacheServer/hct/csHct.bt
+INCLUDE $JTESTS/cacheServer/durableClients/csDurableClients.bt
+INCLUDE $JTESTS/cacheServer/wan/csWan.bt
+

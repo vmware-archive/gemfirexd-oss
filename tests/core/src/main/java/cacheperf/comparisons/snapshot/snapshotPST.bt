@@ -1,0 +1,29 @@
+// ============================================================
+// Load 100GB into a Distributed System with 50-60 nodes. 
+// Export the data (80-100GB) and import it into a system that has
+// 10-12 nodes (appropriately sized to handle 80-100G B of data)
+// NOTE-1: The PR is also configured to evict because we cannot hold
+// all the data in memory. 
+// NOTE-2: these must run with 64 bit vms for Linux with ?? hosts	
+// one for the MasterController and one for each of 2 vms
+
+// load 100G of data into 50 datastore vms
+// export region
+// start up 10 dataStore vms and recover from snapshot (each vm holds 10G)
+//   payload = 1024b 
+//   keySize = 16b (for 64-bit vm, 8b for 32-bit vm)
+//   overhead per entry: 200b
+//   total per entry: 1240b
+//   number entries in 10G: 8659208
+//   number entires in 4G: 3463683 (for overflow) 
+cacheperf/comparisons/snapshot/snapshotPST.conf
+  A=peer peerHosts = 50 peerVMsPerHost = 1 peerThreadsPerVM = 1
+  B=extra extraHosts = 10 extraVMsPerHost = 1 extraThreadsPerVM = 1
+  C=controller controllerHosts = 1 controllerVMsPerHost = 1 controllerThreadsPerVM = 1
+  maxKeys = 8659208 
+  objectSize = 1024
+  redundantCopies = 0 // because we have persistence
+  perffmwk.comparisonKey = snapshot
+  heapMB=6000
+  useShutDownAllMembers = true
+

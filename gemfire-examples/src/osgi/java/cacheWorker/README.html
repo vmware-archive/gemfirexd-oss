@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<BODY bgcolor="#ffffff"><HTML>
+ <HEAD>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+  <META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+  <LINK REL="STYLESHEET" HREF="DocIndex.css" CHARSET="ISO-8859-1" TYPE="text/css">
+
+<H1 align="center">
+vFabric<FONT size=6><b><sup><font size=-0>&#8482;</font></sup></b></FONT></font> GemFire<FONT size=6><b><sup><font size=-0>&#174;</font></sup></b></FONT></font></H1>
+     </b></FONT>
+  <H1 align="center">cacheWorker</H1>
+<H2 align="center">OSGi Application Bundle Example</H2>
+<hr color="#cc0000" size="2" align="left">
+<BODY TEXT="#000000" LINK="#0000B0" VLINK="#666699" BGCOLOR="#FFFFFF">
+
+<P>This project is part of the <a href="../README.html"><b>cacheWorker and
+cacheWorkerFragment OSGi Deployment Example</b></a>. Contained herein is the
+source code for the cacheWorker example application and the Ant build.xml for
+building it as a JAR that's ready to be deployed as an OSGi bundle. This
+project is presented as a template to extend and use for building your own
+GemFire application for deployment as an OSGi bundle.</P>
+
+<P><b>Locating the GemFire product</b></P>
+
+<P>By default, the Ant build.xml will attempt to use GEMFIRE_HOME if this is
+defined as an environment variable. You can edit the build.xml and hardcode
+the "gemfire.home" property value if you prefer:</P>
+
+<xmp><property name="gemfire.home" ialue="C:/vFabric_GemFire_70" /></xmp>
+
+<P>The value of "gemfire.home" must be a valid GemFire installation with a
+GEMFIRE_HOME/lib directory containing gemfire.jar.</P>
+
+<P><b>Locating the Bundlor task definitions for Ant</b></P>
+
+<P>You can download Bundlor from <a href="http://www.springsource.org/bundlor">
+http://www.springsource.org/bundlor</a>. Unzip the bundlor-1.0.0.RELEASE.zip
+file to BUNDLOR_HOME.</P>
+
+<P>By default the Ant build.xml will attempt to use BUNDLOR_HOME if this is
+defined as an environment variable. You can edit the build.xml and hardcode
+the "bundlor.home" property value if you prefer:</P>
+
+<xmp><property name="bundlor.home" value="C:/bundlor-1.0.0" /></xmp>
+
+<P><b>Modifying the GemFire configuration files</b></P>
+
+<P>The cacheWorker example application defines its GemFire Cache using the
+configuration files found in src/main/config:</P>
+<ul>
+<li><b>cache.xml</b> - defines the cache config</li>
+<li><b>gemfire.properties</b> - defines the distribution config</li>
+</ul>
+<P>These are examples; feel free to alter them for your environment. The
+example source code assumes it can find the "exampleRegion" defined in
+the cache.xml. Note that an OSGi bundle cannot export the "default" package
+and since these end up stored in the root of the cacheworker.jar, only the
+cacheWorker application in this bundle can access them and use them to
+configure GemFire.</P>
+
+<P><b>Using the Ant build.xml</b></P>
+
+<P>The supplied build.xml will locate all the necessary files, compile the
+example source code, package it as a .jar and use bundlor to transform
+it into an OSGi bundle.</P>
+
+<P>Simply type "ant". The default target is "all" which will compile, package,
+and use bundlor. The cacheWorker/target directory will contain the bundle
+cacheworker-1.0.0.jar ready for deploying into an OSGi container in which
+you've also deployed the GEMFIRE_HOME/lib/gemfire.jar,
+GEMFIRE_HOME/lib/antlr.jar and cacheworker.fragment-1.0.0.jar bundles.</P>
+
+<P>There's also a "debug" target to unjar the bundle as a convenience for
+viewing the  generated MANIFEST.MF and other contents of
+cacheworker-1.0.0.jar.</P>
+
+<P><b>About the example application</b></P>
+
+<P>The example application has lifecycle controlled by a bundle activator.
+When the bundle is started, the CacheWorkerActivator will start the
+CacheWorker which creates a GemFire Cache and then uses it. The Cache it
+defines will also register cacheworker.SimpleCacheListener which then receives
+various notifications and prints to System.out. The GemFire bundle will load
+the cacheworker.SimpleCacheListener class from the cacheWorker bundle via the
+imports defined by the attached cachWorkerFragment bundle. A GemFire thread
+then invokes the listener callbacks while the CacheWorker is running. When
+the CacheWorker's bundle is stopped, it will close the Cache it created.
+</P>
+
+<P><b>Instructions for running cacheWorker in Virgo Server 2.1.1</b></P>
+
+<P>Assuming VIRGO_HOME is the location for your installation of
+<a href="http://www.eclipse.org/virgo/">Virgo Server 2.1.1</a>, copy the
+GEMFIRE_HOME/lib/gemfire.jar and the GEMFIRE_HOME/lib/antlr.jar files into
+the VIRGO_HOME/repository/usr directory. The GEMFIRE/lib/antlr.jar bundle
+is required in order to use the GemFire QueryService.</P>
+
+<P>Next, copy the example cacheworker.fragment-1.0.0.jar into
+VIRGO_HOME/repostiory/usr. Startup the Virgo Server 2.1.1 process. After it has
+completed startup, copy the example cacheworker-1.0.0.jar into the
+VIRGO_HOME/pickup directory. Virgo will detect the presence of the JAR and
+initiate deployment of the example. The example will successfully start and
+begin using a GemFire Cache only if the GEMFIRE_HOME/lib/gemfire.jar,
+GEMFIRE_HOME/lib/antlr.jar and cacheworker.fragment-1.0.0.jar have all been
+copied into the VIRGO_HOME/repostiory/usr directory. Output from the example
+will print to the VIRGO_HOME/serviceability/logs/log.log file.</P>
+
+<hr color="#cc0000" size="2" align="left">
+
+</BODY>
+</HTML>
+

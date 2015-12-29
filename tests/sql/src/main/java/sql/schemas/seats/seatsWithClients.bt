@@ -1,0 +1,30 @@
+ sql/schemas/seats/seatsSchemaWithClients.conf
+  locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+  clientHosts=2 clientVMsPerHost=3 clientThreadsPerVM=10
+  A=data dataserverHosts=2 dataserverVMsPerHost=3 dataserverThreadsPerVM=1
+  B=verifier verifierserverHosts=1 verifierserverVMsPerHost=1 verifierserverThreadsPerVM=1
+  //clientHeapMB = 10000 dataserverHeapMB = 5000 verifierserverHeapMB = 10000
+  //avoid #51388
+  clientHeapMB = 10000 dataserverHeapMB = 10000 verifierserverHeapMB = 10000
+  importfile=importtable
+  
+sql/schemas/seats/seatsSchemaWithClientsHA.conf
+  locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+  clientHosts=2 clientVMsPerHost=3 clientThreadsPerVM=6
+  A=data dataserverHosts=2 dataserverVMsPerHost=4 dataserverThreadsPerVM=1
+  B=verifier verifierserverHosts=1 verifierserverVMsPerHost=1 verifierserverThreadsPerVM=1
+  //clientHeapMB = 10000 dataserverHeapMB = 5000 verifierserverHeapMB = 10000
+  clientHeapMB = 10000 dataserverHeapMB = 10000 verifierserverHeapMB = 10000
+  importfile=importtable
+  redundantCopies = 1, 2
+
+sql/schemas/seats/seatsSchemaWithClientsOffline.conf
+  locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+  clientHosts=2 clientVMsPerHost=3 clientThreadsPerVM=6
+  A=data dataserverHosts=2 dataserverVMsPerHost=4 dataserverThreadsPerVM=1
+  B=verifier verifierserverHosts=1 verifierserverVMsPerHost=1 verifierserverThreadsPerVM=1
+  //clientHeapMB = 10000 dataserverHeapMB = 5000 verifierserverHeapMB = 10000
+  clientHeapMB = 10000 dataserverHeapMB = 10000 verifierserverHeapMB = 10000
+  importfile=importtable
+  redundantCopies = 1
+ 

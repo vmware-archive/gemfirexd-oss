@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<BODY bgcolor="#ffffff"><HTML>
+ <IMG SRC="../../../../docs/VMwareLogo.png" BORDER="0">
+ <HEAD>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+  <META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+  <LINK REL="STYLESHEET" HREF="../DocIndex.css" CHARSET="ISO-8859-1" TYPE="text/css">
+<H1 align="center">
+vFabric<FONT size=6><b><sup><font size=-0>&#8482;</font></sup></b></FONT></font> GemFire<FONT size=6><b><sup><font size=-0>&#174;</font></sup></b></FONT></font></H1>
+     </b></FONT>
+  <H1 align="center">Transactions</H1>
+<H2 align="center">Java Caching API Programming Example </H2>
+
+<hr color="#cc0000" size="2" align="left">
+
+<BODY TEXT="#000000" LINK="#0000B0" VLINK="#666699" BGCOLOR="#FFFFFF">
+<P>The <b>Transactions</b> example uses two peer distributed system members to run  transactional operations on two colocated partitioned regions. You can choose to run both members as data hosts for the regions, or you can run one member as an empty data accessor, with a single member hosting all of the data. Operations that are run on non-local data are proxied. </P>
+<P>The example is located in the GemFire installation under <code>examples/dist/transactions</code>.</P>
+<P>The members connect as peers in a distributed system. The example uses 27267 as the mcast port. You can change this in the <code>gemfire.properties</code> file in the transactions directory.
+  </P>
+</P>
+<P> You can run a transaction on its own or within a function. </P>
+<P>To run the example:
+<UL>
+<LI>Open two shells.</LI>
+<LI>In each shell, configure your environment according to the instructions provided in <a href="../../EnvSetup.html">examples/EnvSetup.html</a>.</LI>
+<LI>In each shell, change the current working directory to <code>examples/dist/transaction</code>.</LI>
+<LI>Start the members and  follow the on-screen instructions to run  transactional operations.</LI>
+</UL>
+<p> <B>Running the members </B></p>
+<P>One or both members can be started as a data host: 
+<pre>
+       java transaction.TransactionalPeer
+</pre>
+
+<P>You can  start a member as an empty data accessor:
+<pre>
+       java transaction.TransactionalPeer empty
+</pre>
+
+<P>The VM hosting the transactional data logs the changes made by the transaction using the LoggingCacheListener</P>
+<P>Sample run: first VM</P>
+<pre>
+$ java transaction.TransactionalPeer
+Please start the other VM and press enter to populate regions
+
+Populating region...
+Entry Created in region   customer      key: CustId: 0  value:customer_0
+Entry Created in region      order      key:OrderId: 0  value:order_0
+Entry Created in region   customer      key: CustId: 3  value:customer_3
+Entry Created in region      order      key:OrderId: 3  value:order_3
+Entry Created in region   customer      key: CustId: 4  value:customer_4
+Entry Created in region      order      key:OrderId: 4  value:order_4
+Complete
+Press 1 to run a transaction, 2 to run a transactional function
+1
+Starting a transaction...
+for customer region updating CustId: 1
+for order region updating OrderId: 92
+transaction completed
+Press 1 to run a transaction, 2 to run a transactional function
+2
+Executing Function
+Invoking Function
+Function invocation completed
+Press 1 to run a transaction, 2 to run a transactional function
+</pre>
+<P>Sample run: second VM</P>
+<pre>
+$ java transaction.TransactionalPeer
+Please start the other VM and press enter to populate regions
+Entry Created in region   customer      key: CustId: 1  value:customer_1
+Entry Created in region      order      key:OrderId: 1  value:order_1
+Entry Created in region   customer      key: CustId: 2  value:customer_2
+Entry Created in region      order      key:OrderId: 2  value:order_2
+Entry Updated in region   customer      key: CustId: 1  value:updatedCustomer_524
+Entry Created in region      order      key:OrderId: 92 value:newOrder_524
+Starting a transaction...
+for customer region updating CustId: 7
+for order region updating OrderId: 32
+Entry Created in region   customer      key: CustId: 7  value:updatedCustomer_7_274
+Entry Created in region      order      key:OrderId: 32 value:newOrder_32_274
+transaction completed
+
+</pre>
+<P>To end the example, press <code>CTRL-C</code> in the  shells, then enter <code>exit</code> in shells to close them. </P>
+<hr color="#cc0000" size="2" align="left">
+</BODY>
+</HTML>

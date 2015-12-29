@@ -1,0 +1,14 @@
+
+                RUNNING THE MORGAN-STANLEY TESTS
+
+= Configure a typical multi-host "local.conf" with the maximum number of
+  hosts used in the test (currently 6).
+
+= Run the "morgan.bt" batterytest file.
+
+= Performance numbers are visible in both VSD and "perfreport.txt" except
+  for the "addMember" test, which uses only "perfreport.txt".
+
+= Tune the tests as desired.  For example, add multicast parameters to
+  "local.conf" for selected tests.  When happy with results, add tuning
+  parameters to the test configuration files.

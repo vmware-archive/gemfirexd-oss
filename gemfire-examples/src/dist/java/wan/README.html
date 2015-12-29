@@ -1,0 +1,165 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<style type="text/css">
+<!--
+.style1 {font-style: italic}
+.style2 {font-style: italic}
+.style4 {font-size: medium}
+-->
+</style>
+<BODY bgcolor="#ffffff"><HTML>
+<IMG SRC="../../../../docs/VMwareLogo.png" BORDER="0">
+ <HEAD>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+  <META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+  <LINK REL="STYLESHEET" HREF="DocIndex.css" CHARSET="ISO-8859-1" TYPE="text/css">
+<H1 align="center">
+vFabric<FONT size=6><b><sup><font size=-0>&#8482;</font></sup></b></FONT></font> GemFire<FONT size=6><b><sup><font size=-0>&#174;</font></sup></b></FONT></font></H1>
+     </b></FONT>
+<H1 align="center">WAN</H1>
+<H2 align="center">Java Caching API Programming Example </H2>
+
+<HR color="#cc0000" size="2" align="left">
+
+<P>The <b>WAN</b> example is an application that simulates two WAN sites, namely a US site
+and an EU site. The example is located in the GemFire installation under
+<code>examples/dist/wan</code>.</P>
+
+<P>The WAN example contains the following four components:</P>
+
+<UL>
+<LI>A US WAN client that puts entries into a WAN-enabled region
+<LI>A US WAN hub that receives those entries and distributes them to the EU WAN hub
+<LI>An EU WAN hub that receives the distributed WAN events from the US hub and distributes them to its clients
+<LI>An EU WAN client that receives the WAN events from the EU hub and displays them
+</UL>
+
+<P>In every shell used to run this example application, configure your
+environment according to the instructions provided in
+<a href="../../EnvSetup.html">examples/EnvSetup.html</a>.
+</P>
+
+<P>Once your environment is set, change to the
+<code>examples/dist/wan</code> directory to run the
+application.</P>
+
+<P>To run the WAN example, perform the following steps:</P>
+
+<OL>
+
+<LI>Launch a shell for the US gateway hub
+  <P>The US WAN hub is a cache server gateway to the EU WAN. This gateway forwards any client updates
+to entries in the trades region to the EU WAN. Entry updates received from the EU WAN hub are
+distributed to its clients.</P>
+  <P>Change to the <code>examples/dist/wan/us-hub</code> directory and run the following command:</P>
+<PRE>
+cacheserver start
+</PRE>
+This command logs output like shown below:
+<PRE>Starting CacheServer with pid: 18087
+CacheServer pid: 18087 status: running
+  </PRE>
+  
+<LI>Launch a shell for the EU gateway hub
+  <P>The EU WAN hub is a cache server gateway to the US WAN. This gateway forwards any client updates
+to entries in the trades region to the US WAN. Entry updates received from the US WAN hub will be
+distributed to its clients.</P>
+<P>Change to the <code>examples/dist/wan/eu-hub</code> directory and
+run the following command:</P>
+<PRE>
+cacheserver start
+</PRE>
+This command logs output like shown below:
+
+<PRE>Starting CacheServer with pid: 18686
+CacheServer pid: 18686 status: running
+</PRE>
+<LI>Launch a shell for the EU client
+<P>Change to the <code>examples/dist/wan/eu-client</code> directory and run the following command:.</P>
+<P>The EU WAN client listens for updates to entries in trades region.</P>
+<PRE>
+java wan.WANClient eu
+</PRE>
+
+<P>The <code>WANClient</code> class has a <code>main</code> method
+that creates either a US or EU WAN client using the 'us' or 'eu' parameters.
+Shown below is the <code>WANClient</code> usage.</P>
+
+<PRE>
+$ java wan.WANClient
+
+** Missing site name
+
+usage: java wan.WANClient <site>
+  site   The name of the WAN site (either 'us' or 'eu')
+
+Launches a WAN client
+</PRE>
+
+<P>This command logs output like shown below:</P>
+<PRE>
+Created GemFire cache: eu-client
+Retrieved region: com.gemstone.gemfire.internal.cache.LocalRegion[path='/trades';scope=LOCAL';data-type=NORMAL]
+Registered interest in [] for region trades
+</PRE>
+<LI>Launch a shell for the US client
+<P>The US WAN client launches mulitple threads, each putting entries into the trades region.</P>
+<P>Change to the <code>examples/dist/wan/us-client</code> directory and run the following command:</P>
+<PRE>
+java wan.WANClient us
+</PRE>
+
+<P>This command logs output like shown below:</P>
+<PRE>
+Created GemFire cache: us-client
+Retrieved region: com.gemstone.gemfire.internal.cache.LocalRegion[path='/trades';scope=LOCAL';data-policy=NORMAL]
+Thread-1: Putting key-704->704
+Thread-3: Putting key-2663->2663
+Thread-2: Putting key-2822->2822
+Thread-4: Putting key-853->853
+Thread-5: Putting key-3612->3612
+Thread-6: Putting key-1668->1668
+Thread-7: Putting key-1872->1872
+Thread-8: Putting key-4540->4540
+Thread-9: Putting key-442->442
+Thread-10: Putting key-1494->1494
+Thread-8: Putting key-2661->2661
+.
+.
+.
+</PRE>
+
+<P>In addition, output like shown below is displayed in the EU client window:</P>
+
+<PRE>
+WANListener received afterCreate event (1) for region trades: key-853->853
+WANListener received afterUpdate event (2) for region trades: key-1494->1494
+WANListener received afterCreate event (3) for region trades: key-4540->4540
+WANListener received afterCreate event (4) for region trades: key-704->704
+WANListener received afterUpdate event (5) for region trades: key-2822->2822
+WANListener received afterCreate event (6) for region trades: key-442->442
+WANListener received afterCreate event (7) for region trades: key-1872->1872
+WANListener received afterCreate event (8) for region trades: key-2663->2663
+WANListener received afterUpdate event (9) for region trades: key-1668->1668
+WANListener received afterUpdate event (10) for region trades: key-3612->3612
+WANListener received afterCreate event (11) for region trades: key-1926->1926
+WANListener received afterUpdate event (12) for region trades: key-2661->2661
+WANListener received afterCreate event (13) for region trades: key-2372->2372
+.
+.
+.
+</PRE>
+<LI>Stop the us-client and eu-client client VMs by pressing <code>CTRL-C</code> in both shells. Stop the us-hub and eu-hub cache server VMs
+by entering <code>cacheserver stop</code> in their shells.
+An example is shown below.
+<PRE>
+cacheserver stop
+CacheServer stopped</PRE>
+Close the four open shells by entering <code>exit</code> in each. 
+</OL>
+
+<HR color="#cc0000" size="2" align="left">
+
+</BODY>
+</HTML>
+

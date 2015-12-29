@@ -1,0 +1,21 @@
+task jgMagic (type: JavaExec, dependsOn: classes) {
+  description 'Creates the JGroups configuration file jg-magic-map.txt'
+  def magicXml = file 'src/main/resources/com/gemstone/org/jgroups/conf/jg-magic-map.xml'
+  def magicTxt = file "$buildDir/classes/main/com/gemstone/org/jgroups/conf/jg-magic-map.txt"
+  inputs.file magicXml
+  outputs.file magicTxt
+  
+  main 'com.gemstone.org.jgroups.conf.MagicNumberReader'
+  classpath sourceSets.main.runtimeClasspath
+  args magicXml
+  
+  doFirst {
+    standardOutput = magicTxt.newOutputStream()
+  }
+}
+
+jar {
+  dependsOn jgMagic
+
+  from sourceSets.main.output
+}

@@ -1,0 +1,49 @@
+cacheperf/comparisons/gemfirexd/useCase5/useCase5Thin.conf
+  clientHosts = 2
+  serverHosts = 2
+  clientThreadsPerVM = 50
+  logQueries = false
+
+  serverHeapMB = 8192
+  trimSeconds = 30
+  workSeconds = 120
+
+  ddlFile = ap-table-part-by-range-async.50x2.sql
+  persist = true
+cacheperf/comparisons/gemfirexd/useCase5/useCase5Thin.conf
+  clientHosts = 5
+  serverHosts = 5
+  clientThreadsPerVM = 50
+  logQueries = false
+
+  serverHeapMB = 8192
+  trimSeconds = 30
+  workSeconds = 120
+
+  ddlFile = ap-table-part-by-range-async.250x10.sql
+  persist = true
+
+cacheperf/comparisons/gemfirexd/useCase5/useCase5Peer.conf
+  clientHosts = 2
+  serverHosts = 2
+  clientThreadsPerVM = 50
+  logQueries = false
+
+  serverHeapMB = 8192
+  trimSeconds = 30
+  workSeconds = 120
+
+  ddlFile = ap-table-part-by-range-async.50x2.sql
+  persist = true
+cacheperf/comparisons/gemfirexd/useCase5/useCase5Peer.conf
+  clientHosts = 5
+  serverHosts = 5
+  clientThreadsPerVM = 50
+  logQueries = false
+
+  serverHeapMB = 8192
+  trimSeconds = 30
+  workSeconds = 120
+
+  ddlFile = ap-table-part-by-range-async.250x10.sql
+  persist = true

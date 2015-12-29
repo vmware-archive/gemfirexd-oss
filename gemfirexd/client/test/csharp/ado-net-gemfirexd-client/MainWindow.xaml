@@ -1,0 +1,42 @@
+﻿<Window x:Class="ado_net_gemfirexd_client.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="700" Width="700"
+        Loaded="Window_Loaded"
+        WindowStartupLocation="CenterScreen"
+        Background="Lavender" >
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes\DataGrid.Generic.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid Height="Auto" Width="Auto">
+        <StackPanel Height="Auto" Width="Auto" VerticalAlignment="Top" Margin="-12,0,0,0">
+            <DataGrid Name="QueryDataRow" SelectionMode="Extended" Height="424" Width="Auto">
+                <DataGrid.Columns>
+                    <!--<DataGridTextColumn Header="Item" IsReadOnly="True" Binding="{Binding Path=Key, Mode=Default}" />-->
+                    <DataGridTextColumn Header="Persisted Query List" TextBlock.TextAlignment="Center" IsReadOnly="True" Binding="{Binding Path=., Mode=Default}" />
+                </DataGrid.Columns>
+            </DataGrid>
+            <!--<DataGrid Name="QueryDataRow" SelectionMode="Extended" Height="424" Width="Auto" 
+                    SelectedItem="{Binding Path=SelectedGroup, Mode=TwoWay}" 
+                    ItemsSource="{Binding Path=., Mode=TwoWay}" DisplayMemberPath="Value" SelectedValuePath="Key">
+            </DataGrid>-->
+        </StackPanel>
+        <StackPanel Orientation="Vertical" Margin="0,438,327,12">
+            <Button Content="Bulk I/U/D Records" Height="23" Margin="10,15,0,0" Name="btnIUD" VerticalAlignment="Top" Width="165" Click="btnInsertUpdateDeleteClick" />
+            <Button Content="Product Related Queries" Height="23" Margin="10,15,0,0" Name="btnProduct" VerticalAlignment="Top" Width="165" Click="btnProduct_Queries_Click" />
+            <Button Content="SalesOrder Related Queries" Height="23" Margin="10,15,0,0" Name="btnSalesOrder" VerticalAlignment="Top" Width="165" Click="btnSalesOrder_Queries_Click" />
+            <Button Content="Customer Related Queries" Height="23" Margin="10,15,0,0" Name="btnCustomer" VerticalAlignment="Top" Width="165" Click="btnCustomer_Queries_Click" />
+            <Button Content="Execute DDL/DML Queries" Height="23" Margin="10,15,0,0" Name="btnDDLQuery" VerticalAlignment="Top" Width="165" Click="btnDDLQuery_Click" />
+        </StackPanel>
+        <StackPanel Height="211" VerticalAlignment="Center" Margin="357,438,12,12">
+            <Label Width="272" Height="26" Content="Enter number of threads per appDomain below:" />
+            <TextBox Name="AppDomainCount" Height="23" Width="119" Margin="10,0,0,0" SelectedText="1" />
+            <Button Content="Execute Query" Name="btnExecuteQuery" Click="btnExecuteQuery_Click" Height="23" Width="165"  Margin="10,15,0,0" />
+            <Button Content="_Exit" Height="23" Width="75" Name="btnDismissApp" Click="btnDismissApp_Click" Margin="10,15,0,0" />
+        </StackPanel>
+    </Grid>
+</Window>

@@ -1,0 +1,109 @@
+sql/rollingUpgrade/wanClientServerRollingUpgrade.conf
+    wanSites= 2
+    A=server serverHostsPerSite=1 serverVMsPerHost=2 serverThreadsPerVM=1
+    B=client clientHostsPerSite=1 clientVMsPerHost=2 clientThreadsPerVM=5
+    C=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+    locatorHostsPerSite = 1 locatorVMsPerHost =2 locatorThreadsPerVM = 1
+    enableQueueConflation=false
+    useSamePartitionAllWanSites=true
+    redundantCopies=1
+    tableDefaultPartitioned=false
+    testPartitionBy=true
+    performDDLOps=false
+    securities=trade.securities:replicate:random
+    customers=trade.customers:replicate:random
+    networth=trade.networth:replicate:random
+    portfolio=trade.portfolio:replicate:random
+    sellorders=trade.sellorders:replicate:random
+    buyorders=trade.buyorders:replicate:random
+    txhistory=trade.txhistory:replicate:random
+    employees=emp.employees:replicate:random
+    trades=trade.trades:replicate:random
+    defaultEmployees=default1.employees:replicate:random
+    
+sql/rollingUpgrade/wanP2PRollingUpgrade.conf
+    wanSites= 2
+    A=datastore datastoreHostsPerSite=1 datastoreVMsPerHost=3 datastoreThreadsPerVM=1
+    B=accessor accessorHostsPerSite=1 accessorVMsPerHost=3 accessorThreadsPerVM=4
+    C=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+    locatorHostsPerSite = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    enableQueueConflation=false
+    useSamePartitionAllWanSites=true
+    tableDefaultPartitioned=false
+    testPartitionBy=true
+    performDDLOps=false
+    redundantCopies=1
+    securities=trade.securities:replicate
+    customers=trade.customers:replicate
+    networth=trade.networth:replicate
+    portfolio=trade.portfolio:replicate
+    sellorders=trade.sellorders:replicate
+    buyorders=trade.buyorders:replicate
+    txhistory=trade.txhistory:replicate
+    employees=emp.employees:replicate
+    trades=trade.trades:replicate
+    defaultEmployees=default1.employees:replicate
+
+
+sql/rollingUpgrade/thinClientServerRollingUpgrade.conf
+    locatorHosts = 1 locatorVMsPerHost=2 locatorThreadsPerVM = 1
+    A=server serverHosts=1 serverVMsPerHost=2 serverThreadsPerVM=2
+    B=client clientHosts=1 clientVMsPerHost=2 clientThreadsPerVM=2
+    C=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+    tableDefaultPartitioned=false
+    testPartitionBy=true
+    performDDLOps=false
+    redundantCopies=1
+    createIndex=false
+    dropIndex=false
+    securities=trade.securities:replicate
+    customers=trade.customers:replicate
+    networth=trade.networth:replicate
+    portfolio=trade.portfolio:replicate
+    sellorders=trade.sellorders:replicate
+    buyorders=trade.buyorders:replicate
+    txhistory=trade.txhistory:replicate
+    employees=emp.employees:replicate
+    trades=trade.trades:replicate
+    product=gemfirexd
+    
+sql/rollingUpgrade/p2pRollingUpgrade.conf
+    locatorHosts = 1 locatorVMsPerHost=2 locatorThreadsPerVM = 1
+    A=peer peerHosts=1 peerVMsPerHost=4 peerThreadsPerVM=2
+    B=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+    tableDefaultPartitioned=false
+    testPartitionBy=true
+    performDDLOps=true
+    redundantCopies=1
+    securities=trade.securities:replicate
+    customers=trade.customers:replicate
+    networth=trade.networth:replicate
+    portfolio=trade.portfolio:replicate
+    sellorders=trade.sellorders:replicate
+    buyorders=trade.buyorders:replicate
+    txhistory=trade.txhistory:replicate
+    employees=emp.employees:replicate
+    trades=trade.trades:replicate
+    product=gemfirexd
+
+sql/rollingUpgrade/peerClientServerRollingUpgrade.conf
+    locatorHosts = 1 locatorVMsPerHost=2 locatorThreadsPerVM = 1
+    A=peerServer peerServerHosts=1 peerServerVMsPerHost=2 peerServerThreadsPerVM=2
+    B=peerClient peerClientHosts=1 peerClientVMsPerHost=2 peerClientThreadsPerVM=2
+    C=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+    tableDefaultPartitioned=false
+    testPartitionBy=true
+    performDDLOps=false
+    redundantCopies=1
+    securities=trade.securities:replicate
+    customers=trade.customers:replicate
+    networth=trade.networth:replicate
+    portfolio=trade.portfolio:replicate
+    sellorders=trade.sellorders:replicate
+    buyorders=trade.buyorders:replicate
+    txhistory=trade.txhistory:replicate
+    employees=emp.employees:replicate
+    trades=trade.trades:replicate
+    product=gemfirexd
+
+

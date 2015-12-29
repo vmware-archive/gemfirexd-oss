@@ -1,0 +1,96 @@
+GFsh command descriptor uses JSON String to describe the command to generate.
+Descriptor specifies all possible legal combinations so that user can generate
+them in regression test suites. See section "How to generate command that I want"
+for customisations supported by the descriptor.
+
+High Level Grammar :
+
+{
+	'command': <Command Name>,
+    'executor': <Executor Class Name>,
+    'arguments' : [Array of Strings specifying all arguments],
+    'modes' : <All possible modes of operation. For example export logs support exporting to database or file, See mode grammar below>
+    'mandatoryOptions' : <List of other mandatory options **NOT COVERED** in modes>,
+    'options' : <List of other options **NOT COVERED** in modes, See option grammar below>,
+}
+
+Mode Grammar :
+{
+	'name' : <Mode Name>,
+    'mandatoryOptions': [<Array of mandatory options, See option grammar below>],
+    'options': [<Array of options, See option grammar below>]
+}
+
+Option Grammar :
+{
+	'name' : <Name>,
+	'probability> : <from 0 to 100. 0 disable this option. Zero makes it part of every command generated. Default is 50>,
+	'alsoInclude' : <Any linked options. Make sure the this option is specified before options included here>
+}
+
+How Commands are Generated
+--------------------------------
+
+Once descriptor is parsed it is stored in BlackBoard. Below is general algorithm
+
+. Add command
+. Add argument
+. Select mode
+	. Add mandatory options specified for mode
+	. Add options specified for mode if random number generated <= option.probability
+		. Add any options linked with current option
+. Add mandatory options specified for command
+. Add options specified for command
+	. Add any options linked with current option	
+
+How to generate command that I want
+--------------------------------------
+
+1. See all command descriptor are stored in GfshCommands.inc file
+2. Over-ride this descriptor in your configuration file
+3. To disable any options set probability zero OR Dont add it
+4. To add option to command everytime set probability = 100
+5. You can any static command variation using mode also
+
+Example
+------------------- 	
+
+Below is export data command which has two mode : file and database.
+For database mode option user requires password also included.
+In Database mode configuration uses username-password everytime since
+probability is set to 100. 
+
+{
+    'command': 'export data',
+    'executor': 'management.operations.ops.cli.resolvers.ExportDataResolver',
+    'arguments' : [    	
+    ],
+    'modes' : [
+    		{
+    			'name' : 'database',
+    		 	'mandatoryOptions': [ 'database-table', 'driver', 'url'],
+    		 	'options': [
+	    			{
+	    				'name' : 'user',
+	    				'alsoInclude' : 'password',
+	    				'probability' : 100	    				
+			    	},
+					{
+						'name' : 'password'
+					}
+    		 	]
+    		},
+    		{
+    			'name' : 'file',
+    			'mandatoryOptions': [ 'file', 'format']
+    			'options': []
+    		}
+    ]    
+    'mandatoryOptions': [],
+    'options': [
+    	{
+    		'name' : 'region',
+    		
+    	}
+    ]
+}

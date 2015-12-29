@@ -1,0 +1,11 @@
+The TPCE application implementation includes following components:
+1. tpce-persistence: jpa entities, transaction service components
+2. tpce-def: components (utils, value objects etc) implemented strictly following TPC-E definitions for transaction inputs, outputs, constants etc
+3. tpce-jse: a layer on the top of the tpce-persistence, together with which it consists of a standalone JPA/Hibernate application
+4. tpce-ejb: an EJB layer on the top of the tpce-persistence, together with which it consists of an EJB/JPA/Hibenate application which will be deployed to application server like JBoss
+5. tpce-springjpa: a spring layer on the top of the tpce-persistence, together with which it consists of a Spring/JPA/Hibernate application.
+6. tpce-client: clients through which tpce harness creates and loads the transactions to tpce-jse/tpce-ejb/tpce-springjpa
+
+They are implemented/built as modules under Maven project tpce-main.
+
+Work (including implementation and some maven build) has not been done yet.

@@ -1,0 +1,18 @@
+// Parallel DBSynchronizer - All partitioned table
+
+sql/sqlCallback/parallelDBSynchronizerWithAccessors.conf
+    A=store storeHosts=2 storeVMsPerHost=2 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=1 accessorThreadsPerVM=9
+    dropIndex = true
+    testUniqueKeys= false
+    withReplicatedTables=false
+    securities=trade.securities:random
+    customers=trade.customers:random
+    networth=trade.networth:random
+    portfolio=trade.portfolio:random
+    sellorders=trade.sellorders:random
+    buyorders=trade.buyorders:random
+    txhistory=trade.txhistory:random
+    trades=trade.trades:random
+    empemployee=emp.employees:random
+    defaultemployee=default1.employees:random

@@ -1,0 +1,46 @@
+// ***** Peer To Peer ***** //                                                                                                                                                                                 
+compression/serialPeerDataValidation.conf
+  peerHosts           = 2
+  peerVMsPerHost      = 2
+  peerThreadsPerVM    = 1
+  nbrOfEmptyAccessors = 0,1
+
+// ***** P2P Overflow ***** //
+compression/serialPeerOverflowDataValidation.conf
+  peerHosts        = 2
+  peerVMsPerHost   = 2
+  peerThreadsPerVM = 1
+
+// ***** P2P Mixed Compressed & UnCompressed ***** //
+compression/serialPeerMixedDataValidation.conf
+  peerHosts              = 2
+  peerVMsPerHost         = 2
+  peerThreadsPerVM       = 1
+  nbrOfCompressedRegions = 2
+
+// ***** Peer To Peer SubRegions ***** //
+compression/serialPeerSubDataValidation.conf
+  peerHosts           = 2
+  peerVMsPerHost      = 2
+  peerThreadsPerVM    = 1
+//  nbrOfEmptyAccessors = 0,1
+
+// ***** Client / Server ***** //
+compression/serialCSDataValidation.conf
+  bridgeHosts         = 3
+  bridgeVMsPerHost    = 1
+  bridgeThreadsPerVM  = 1
+  edgeHosts           = 4
+  edgeVMsPerHost      = 1
+  edgeThreadsPerVM    = 1
+  nbrOfEmptyAccessors = 0,1
+
+// ***** C/S Mixed Compressed & UnCompressed ***** //
+compression/serialCSMixedDataValidation.conf
+  bridgeHosts            = 3
+  bridgeVMsPerHost       = 1
+  bridgeThreadsPerVM     = 1
+  edgeHosts              = 4
+  edgeVMsPerHost         = 1
+  edgeThreadsPerVM       = 1
+  nbrOfCompressedRegions = 2

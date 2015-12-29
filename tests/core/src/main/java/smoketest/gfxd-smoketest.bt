@@ -1,0 +1,41 @@
+include $JTESTS/cacheperf/comparisons/gemfirexd/tpcc/smoketest/tpcc.bt
+
+sql/concMultiTablesUniqIndexWithAccessorsSmokeTest.conf
+    locatorHosts=1 locatorVMsPerHost=2 locatorThreadsPerVM=1
+    A=store storeHosts=1 storeVMsPerHost=1 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=3 accessorThreadsPerVM=6
+    dropIndex=true
+
+// bug #48223
+//sql/concMultiTablesUniqProcedureIndexWithAccessorsHASmokeTest.conf
+//    locatorHosts=1 locatorVMsPerHost=2 locatorThreadsPerVM=1
+//    A=store storeHosts=1 storeVMsPerHost=4 storeThreadsPerVM=1
+//    B=accessor accessorHosts=1 accessorVMsPerHost=3 accessorThreadsPerVM=3
+//    dropIndex= true
+//    redundantCopies=2
+
+//add gfxd tx related test
+sql/sqlTx/randomPartitionReplicateTablesTxWithAccessors.conf
+    locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+    A=store storeHosts=1 storeVMsPerHost=5 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=3 accessorThreadsPerVM=3
+    workIterationsPerThread=100
+
+// bug #48223
+//sql/sqlTx/repeatableRead/multiTablesRRTxWithAccessors.conf
+//    locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+//    A=store storeHosts=1 storeVMsPerHost=5 storeThreadsPerVM=1
+//    B=accessor accessorHosts=1 accessorVMsPerHost=3 accessorThreadsPerVM=3
+//    workIterationsPerThread=100
+
+sql/sqlTx/thinClient/randomPartitionTablesTxClient.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=1 serverVMsPerHost=5 serverThreadsPerVM=1
+    clientHosts = 1 clientVMsPerHost =3 clientThreadsPerVM = 3
+    workIterationsPerThread=100
+
+sql/sqlTx/thinClient/repeatableRead/randomPartitionTablesRRTxClient.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=1 serverVMsPerHost=5 serverThreadsPerVM=1
+    clientHosts = 1 clientVMsPerHost =3 clientThreadsPerVM = 3
+    workIterationsPerThread=100

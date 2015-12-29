@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title>createDatabase</title>
+<link href="styles.css" type="text/css" rel="stylesheet">
+</head>
+<body>
+<h2> createDatabase</h2>
+<fieldset class="taskDescription">
+<legend><a class="anchor" name="description">Description</a></legend>
+<p>Java type: <a href="../api/org/apache/ddlutils/task/CreateDatabaseCommand.html"><code>org.apache.ddlutils.task.CreateDatabaseCommand</code></a></p>
+<p>The sub task for creating the target database. Note that this is only supported on some database
+ platforms. See the database support documentation for details on which platforms support this.<br/>
+ This sub task does not require schema files. Therefore the <code>fileset</code> subelement and
+ the <code>schemaFile</code> attribute of the enclosing task can be omitted.</p>
+</fieldset>
+<fieldset class="taskParameters">
+<legend><a class="anchor" name="parameters">Parameters</a></legend>
+  	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-failonerror">failonerror</a> : boolean
+  	</p>
+	<p class="taskParameterDescription">
+	Specifies whether the execution shall stop if an error has occurred during the task runs. <br/>
+        By default execution will be stopped when an error is encountered.
+  	</p>
+</fieldset>
+<fieldset class="taskNestedElements">
+<legend><a class="anchor" name="nestedElements">Nested elements</a></legend>
+    	<p class="taskNestedElementRef">&rArr;&nbsp;<a href="org.apache.ddlutils.task.Parameter.html"><code>parameter</code></a></p>
+  </fieldset>
+<p>&copy;2005-2007 Apache Software Foundation</p>
+</body>
+</html>

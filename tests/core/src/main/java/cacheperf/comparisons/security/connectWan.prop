@@ -1,0 +1,19 @@
+wanSites = 2
+
+locatorHostsPerSite = 1
+locatorVMsPerHost = 1
+locatorThreadsPerVM = 1
+
+peerHostsPerSite = 1
+peerVMsPerHost = 2
+peerThreadsPerVM = 1
+
+hubType = primary
+
+conserveSockets = true
+maxThreads = 0
+sslScheme = none
+
+sleepMs = 25
+
+perffmwk.comparisonKey=connectWan

@@ -1,0 +1,13 @@
+Transactional version of largeobject01.  All transactions do a single operation.
+
+The suite can be used to compare:
+
+-- transactional GFE vs. GFXD (all topologies)
+
+-- transactional GFE vs. GFXD vs. MYSQLC (thin client only) 
+
+-- non-transactional vs. transactional for GFE and GFXD
+   (if a largeobject01 run is available)
+
+-- transactional creates vs. puts vs. updates for each topology and API
+   (requires modifying comparison keys)

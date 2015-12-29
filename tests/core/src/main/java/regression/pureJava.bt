@@ -1,0 +1,8 @@
+// Pure Java tests
+// use with -Dlocal.conf=local.pureJava.conf
+// est. runtime: 18 hours
+
+include $JTESTS/pure.bt
+/*commenting out for Cheetah release
+include $JTESTS/hct/pure.bt */
+

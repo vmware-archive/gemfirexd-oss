@@ -1,0 +1,438 @@
+/*
+ * Copyright (c) 2010-2015 Pivotal Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you
+ * may not use this file except in compliance with the License. You
+ * may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * permissions and limitations under the License. See accompanying
+ * LICENSE file.
+ */
+#ifndef GLOBAL_HT
+#define GLOBAL_HT TRUE
+
+/* if a C file has any includes of system include files, 
+ * it should have includes in this order:
+ *    flag.ht
+ *    system include files, and jni.h
+ *    global.ht
+ *     other gemfire includes
+ */
+
+/*========================================================================
+ * Description: This file includes any constants and types that are global
+ *              in nature.  It should be included in all compilands.
+ *              There are individual sections in this file for all GemStone
+ *              supported operating environments.
+ *========================================================================
+*/
+
+#include "flag.ht"      /* GemStone flags for various environments */
+
+/* Here we do necessary gyrations to get includes read properly */
+
+#include <ctype.h>
+#include <stdio.h>
+#include <errno.h>
+#include <setjmp.h>
+#include <signal.h>
+
+#include "gemfire.h"
+
+#if defined(FLG_MSWIN32)
+typedef struct {
+  char * padding[48]; /* 48 bytes of padding to match the solaris size */
+  } sema_t;
+#endif
+
+/* Format strings for printing integers in both 32 and 64 bit builds
+ *
+ * FMT_I64 is format string for printing an int64  
+ * Use it only for int64 .
+ *
+ * Use  %ld to print an intptr_t regardless of whether compiling
+ * for 32 bit pointers or 64 bit pointers , since %ld assumes a 
+ * 64 bit int in a 64 bit build, and a 32 bit int in a 32 bit build .
+ *
+ * Always use %d to print an  int32.
+ */
+#ifdef _LP64
+/* 64 bit address space */
+#define FMT_I64 "%ld"
+#define FMT_U64 "%lu"
+#define FMT_X64 "0x%lx"
+
+#else
+/* 32 bit address space */
+#if defined(FLG_MSWIN32)
+#define FMT_I64      "%I64d"
+#define FMT_U64      "%I64d"
+#define FMT_X64      "0x%I64x"
+#else
+#define FMT_I64      "%lld"
+#define FMT_U64      "%llu"
+#define FMT_X64      "0x%llx"
+#endif
+#endif
+  
+/* Format string for printing pointers , %p automatically
+ *  handles the size of the pointer */
+#ifdef FLG_LINUX_UNIX
+/* Linux does the 0x prefix automatically */
+#define FMT_P "%p"
+#else
+#define FMT_P "0x%p"
+#endif
+
+
+#undef GF_SIGUSR
+#define GF_SIGUSR SIGUSR2
+#undef GF_SIGUSR_NAME
+#define GF_SIGUSR_NAME "SIGUSR2"
+
+#if defined(FLG_UNIX)
+#if defined(FLG_SOLARIS_UNIX)
+/* additional include files for "sigaction" signal processing */
+#include <siginfo.h>
+#elif defined(FLG_LINUX_UNIX)
+/* nothing */
+#elif defined(FLG_OSX_UNIX)
+/* nothing */
+#else
++++ port error
+#endif
+#include <ucontext.h>
+#endif
+
+#if defined(FLG_MSC32) 
+#include <io.h>
+#endif
+
+#include <string.h>
+
+#include <stddef.h>
+
+#include <stdlib.h>     /* (ANSI) miscellaneous standard functions */
+
+#if defined(FLG_UNIX_PARAM_H)
+#include <sys/param.h>  /* redefines NULL -- yuccch! */
+#endif
+
+#if defined(FLG_UNIX_PARAM_H) /* not right! */
+#include <sys/time.h>   /* Also includes normal "time.h" */
+#endif
+
+#if defined(FLG_MSC32)
+#include <sys/types.h>
+#include <time.h>
+#endif
+
+
+/* note Solaris does not use the timeb struct and if you include it you will
+ * get a ton of warnings about an unknown pragma!
+ */
+#if defined(FLG_MSC32) 
+#include <sys/timeb.h>  /* must come after sys/types.h */
+#endif
+
+#undef DOIT
+#if defined(FLG_UNIX)
+#define DOIT TRUE
+#endif
+#if defined(DOIT)
+#undef DOIT
+#include <sys/times.h>  /* must come after sys/types.h */
+#endif
+
+#undef DOIT
+#if defined(FLG_UNIX) 
+#define DOIT TRUE
+#endif
+#if defined(DOIT)
+#undef DOIT
+#include <unistd.h>
+#ifndef FLG_OSX_UNIX
+#include <values.h>
+#endif
+#endif
+
+/* Here we built required covers and patches */
+
+#if defined(FLG_UNSIGNED_SIZEOF)
+#define SIZEOF(x)       ((int)(sizeof(x)))
+#else
+#define SIZEOF(x)       (sizeof(x))
+#endif
+
+# include <stdarg.h>
+
+#if !defined(FLG_CONST_UNDERSTOOD)
+#define const
+#endif
+
+#if !defined(FLG_VOLATILE_UNDERSTOOD)
+#define volatile
+#endif
+
+#if !defined(FLG_ANSI_REMOVE)
+#define remove(foo) unlink(foo)  /* ANSI remove() not implemented */
+#endif
+
+typedef FLG_VOID_STAR VoidPtrType;
+
+#if defined(FLG_NO_LOG2)
+#if !defined(M_LN2)
+#define M_LN2	0.69314718055994530942
+#endif /* !defined(M_LN2) */
+#define LOG2(x) (log(x) / M_LN2)
+#else
+#define LOG2(x) log2(x)
+#endif /* FLG_NO_LOG2 */
+
+/*
+ * INTCONST -- used to define an integer constant named 'IC_name'
+ *             to be the integer expression 'IC_value'.
+ *             IC_value must be an expression that can be computed at
+ *             compile time.
+ *  Note: It is better to use INTCONST(x,1) instead  of #define x 1.
+ *        The INTCONST version has the normal lexical scoping and will
+ *        catch multiple definitions. It will also be visible from a
+ *        debugger.
+ *        The only reason not to use INTCONST is if your constant needs
+ *        to be visable to the preprocessor.
+ * USAGE: INTCONST(x,1);
+ *        whereever a data declaration is allowed.
+ */
+#define INTCONST(IC_name, IC_value)  enum { IC_name = (IC_value) }
+
+/* Boolean constants */
+#if !defined(TRUE)
+#define TRUE 1
+#endif
+
+#if !defined(FALSE)
+#define FALSE 0
+#endif
+
+/* sizeof PidType must be sizeof long.
+ * We don't use pid_t because it is a short on some systems.  
+ */
+typedef intptr_t PidType;
+
+INTCONST(INVALID_PID, -1);
+
+#if defined(FLG_NO_OFFSETOF)
+/* Macro for finding offset of an ID from a type */
+#define offsetof(type, identifier)  ((size_t)(&((type*) NULL)->identifier))
+#endif
+
+#if defined(FLG_BAD_TOUPPER)
+/* Sun has bad implementation of toupper and tolower */
+#undef toupper
+#undef tolower
+#undef _toupper
+#undef _tolower
+#define toupper(x) ((isascii(x) && islower(x)) ? ((x) - 'a' + 'A') : (x))
+#define tolower(x) ((isascii(x) && isupper(x)) ? ((x) - 'A' + 'a') : (x))
+#define _toupper(x) ((isascii(x) && islower(x)) ? ((x) - 'a' + 'A') : (x))
+#define _tolower(x) ((isascii(x) && isupper(x)) ? ((x) - 'A' + 'a') : (x))
+#endif
+
+#if defined(FLG_MSC32)
+#undef _toupper
+#undef _tolower
+#endif
+
+#if !defined(_toupper)
+#define _toupper(x) toupper(x)
+#define _tolower(x) tolower(x)
+#endif
+
+/* we always have a limits.h */
+#include <limits.h>
+
+#if defined(FLG_SOLARIS_UNIX) /* for Solaris semaphore type defs */
+#include "synch.h"
+#endif
+
+#ifdef FLG_HAS_SYSV_IPC
+#include <sys/ipc.h>
+#include <sys/sem.h>
+#include <sys/shm.h>
+#include <sys/stat.h> /* for umask */
+#if !defined(TRUE)
++++ port err
+#endif
+#endif /* HAS_SYSV_IPC */
+
+#if defined(FLG_UNIX)
+#include <pthread.h>
+#endif
+#if defined(FLG_SOLARIS_UNIX)
+#include <thread.h>
+#endif
+
+/* no more includes. KEEP THIS LINE */
+
+/*=========================================================================
+ * ILLEGAL_USE_OF_  definitions
+ *
+ * These defines are to make sure people don't use "long" in gemfire C code, 
+ * because it's not 64-bit-clean .  You should use int64 or int32 or intptr_t .
+ * All includes of system include files must come before here , or you
+ * will probably get errors in those include files.
+ *
+ * In order for includes of system header files and jni.h to work,
+ *  a C file must have includes in this order:
+ *    flag.ht
+ *    system include files, and jni.h
+ *    global.ht
+ *     other gemfire includes
+ */
+
+#if defined(FLG_MSWIN32) || !defined(NO_LICENSE)
+/* there are a few calls to Microsoft and Sentinel 
+ *  runtimes that must have a long* 
+ */
+typedef long* msInt32Ptr ;
+typedef long  msInt32 ;
+typedef unsigned long  msUint32 ;
+typedef unsigned long*  msUint32Ptr ;
+#endif
+
+#define long ILLEGAL_USE_OF_long   
+#define ulong ILLEGAL_USE_OF_ulong   
+
+/*=========================================================================*/
+
+
+#if !defined(INT16_MAX)
+#define INT16_MAX  (65535)
+#endif
+#if !defined(INT32_MAX)
+#define INT32_MAX  (2147483647L)
+#endif
+
+#if !defined(INT64_MAX)
+#if defined(FLG_MSWIN32)
+#define INT64_MAX  (9223372036854775807i64)
+#else
+#define INT64_MAX  (9223372036854775807LL)
+#endif
+#endif
+
+#if !defined(MEGABYTE)
+#define MEGABYTE (1048576)
+#endif
+
+#define MILLI_IN_SEC 1000
+
+
+/* Some systems have this in math.h, some in limits.h? */
+#ifndef M_LN10
+#define M_LN10 2.30258509299404568402
+#endif
+
+/* let's define a meaningful name for max short */
+#define SHORT_MAX  SHRT_MAX  
+#define USHORT_MAX  USHRT_MAX  
+
+/* delete SET_LONGLONG macros, use LL suffix on constants instead*/
+
+
+/* Redefine NULL to what WE expect it to be, causes too much grief to change... */
+#undef NULL
+#define NULL 0 
+
+
+/* Character mnemonics - change this later to ascii */
+#define BLANK   ' '
+#define ASCII_NULL                  0
+#define ASCII_BL                    7
+#define ASCII_BS                    8
+#define ASCII_TAB                   9
+#define ASCII_LF                   10
+#define ASCII_FF                   12
+#define ASCII_CR                   13
+#define ASCII_EM                   25   /* control-Y */
+#define ASCII_SUB                  26   /* control-Z */
+#define ASCII_ESC                  27   /* escape */
+#define ASCII_LAST                 127
+
+/* Needed numeric constants */
+#define TWO_TO_29                  536870912L
+
+/* Simple numeric macros */
+#define ABS(x)    (((x) > 0) ? (x) : - (x))
+
+#define ODD(x)    ((x) & 1)
+
+/* GemStone global types */
+typedef unsigned char          BoolByteType; 
+typedef char                   BoolType;
+typedef unsigned char          ByteType;
+
+/* use ArraySizeType to represent the size of an array */
+typedef unsigned int  ArraySizeType;
+
+/* macro to swap values of two variables 
+ */
+#define SWAP( x, y, aType )   { aType t; t = (x); (x) = (y); (y) = t; }
+
+/* macro for break statements that are unreachable */
+#if defined(FLG_UNIX)
+#define BREAK_UNREACHABLE
+#else
+#define BREAK_UNREACHABLE break ;
+#endif
+
+#ifdef FLG_MSC32
+#if  defined (GEMSTONE_DLL) /* building GEMSTONE DLL */
+#define EXTERN_GS_DEC(EGDtype) extern __declspec(dllexport) EGDtype
+#define EXTERN_GS_VAR(EGDtype) extern __declspec(dllexport) EGDtype
+#define EXTERN_GS_DEF(EGDEFtype) __declspec(dllexport) EGDEFtype
+#else
+/* was ifdef GS_STATIC */
+#define EXTERN_GS_DEC(EGDtype) extern EGDtype
+#define EXTERN_GS_VAR(EGDtype) extern EGDtype
+#define EXTERN_GS_DEF(EGDEFtype) EGDEFtype
+#endif
+/* was default else clause
+ * define EXTERN_GS_DEC(EGDtype) __declspec(dllimport) EGDtype
+ * define EXTERN_GS_VAR(EGDtype) __declspec(dllimport) EGDtype
+ * define EXTERN_GS_DEF(EGDEFtype) EGDEFtype
+ */
+#else
+/* all other compilers */
+#define EXTERN_GS_DEC(EGDtype) extern EGDtype
+#define EXTERN_GS_VAR(EGDtype) extern EGDtype
+#define EXTERN_GS_DEF(EGDEFtype) EGDEFtype
+#endif /* MSC32*/
+
+#undef MAX
+#define MAX(x, y) (((x) > (y)) ? (x) : (y))
+#undef MIN
+#define MIN(x, y) (((x) < (y)) ? (x) : (y))
+
+#if defined(FLG_MSWIN32)
+/* snprintf on VC++ 6.0 and above */
+#define snprintf _snprintf
+#endif
+
+#define INT_SIZEOF(x) ( (int)sizeof(x) )
+
+/*=========================================================================
+ * old memory macros
+ */
+#define MEMSET(d, c, l) memset((void*)(d), (c), (size_t)(l))
+
+/*=========================================================================*/
+
+
+#endif  /* GLOBAL.HT */

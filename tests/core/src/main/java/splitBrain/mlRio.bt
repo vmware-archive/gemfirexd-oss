@@ -1,0 +1,29 @@
+splitBrain/serialOpsMLRio.conf
+       wanSites=2
+       locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite = 2 bridgeVMsPerHost=1 bridgeThreadsPerVM = 1
+       edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=4
+       numRootRegions = 1 numDynamicRegions = 1
+
+splitBrain/mlRio.conf
+       wanSites=2
+       locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite = 2 bridgeVMsPerHost=1 bridgeThreadsPerVM = 1
+       edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=4
+       numRootRegions = 3  numDynamicRegions = 3 
+
+splitBrain/mlRioSequentialKeys.conf
+       wanSites=2
+       locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1 
+       bridgeHostsPerSite = 2 bridgeVMsPerHost=1 bridgeThreadsPerVM = 1 
+       edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+       numRootRegions = 3  numDynamicRegions = 3 
+
+splitBrain/mlRioWithConflation.conf
+       wanSites=2
+       locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1 
+       bridgeHostsPerSite = 2 bridgeVMsPerHost=1 bridgeThreadsPerVM = 1 
+       edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+       numRootRegions = 3  numDynamicRegions = 3 
+
+INCLUDE $JTESTS/newWan/serial/splitBrain/newWanMLRio.bt

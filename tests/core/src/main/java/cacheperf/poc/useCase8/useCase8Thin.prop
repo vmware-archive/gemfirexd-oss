@@ -1,0 +1,39 @@
+locatorHosts=1
+locatorVMsPerHost=1
+locatorThreadsPerVM=1
+
+A=connstore
+connstorebridgeHosts=2
+connstorebridgeVMsPerHost=1
+connstorebridgeThreadsPerVM=1
+
+B=store
+storebridgeHosts=2
+storebridgeVMsPerHost=1
+storebridgeThreadsPerVM=1
+
+edgeHosts=2
+edgeVMsPerHost=2
+edgeThreadsPerVM=2
+
+api=GFXD
+
+tableType = partitioned
+redundantCopies = 2
+createIndexes = true
+
+commitBatchSize = 1
+logQueries = false
+logResultSetSize = false
+maxKeys = 1000
+resultSetSize = 15
+usePreparedStatements = true
+validateResults = true
+
+clientHeapMB = 1024
+serverHeapMB = 1024
+
+trimSeconds =  30
+workSeconds = 300
+
+perffmwk.comparisonKey = useCase8_thin

@@ -1,0 +1,175 @@
+--------------------------------------------------------------------------------
+RUNNING ON HOSTS WITH IPV6 ENABLED
+--------------------------------------------------------------------------------
+
+NOTE: These instructions apply to hosts that have both IPv4 and IPv6 enabled.
+Testing IPv6 for GA releases should use IPv6 only.  See instructions later in
+this document.
+
+Running hydra tests with IPv6 requires special hardware and test configuration.
+As of 1/4/08, the machines (not all shared) that are configured for IPv6:
+
+    Linux
+        biscuit   inet6 addr: fdf0:76cf:a0ed:9449::6
+        bobo      inet6 addr: fdf0:76cf:a0ed:9449::3
+        boomer    inet6 addr: fdf0:76cf:a0ed:9449::a
+        *doom     inet6 addr: fdf0:76cf:a0ed:9449::1b 
+        *ent      inet6 addr: fdf0:76cf:a0ed:9449::16 (ask Bruce first)
+        *hs20f    inet6 addr: fdf0:76cf:a0ed:9449::9
+        *hs20g    inet6 addr: fdf0:76cf:a0ed:9449::26
+        *newton   inet6 addr: fdf0:76cf:a0ed:9449::5
+        *odin     inet6 addr: fdf0:76cf:a0ed:9449::1
+        oin       inet6 addr: fdf0:76cf:a0ed:9449::7
+        *pippin   inet6 addr: fdf0:76cf:a0ed:9449::8
+        *rook     inet6 addr: fdf0:76cf:a0ed:9449::1c
+        stut      inet6 addr: fdf0:76cf:a0ed:9449::2
+        *thor     inet6 addr: fdf0:76cf:a0ed:9449::4
+
+    Other blades are now running IPv6.  To check this on a particular blade,
+    use /sbin/ifconfig -a and look for an inet6 address.
+
+    Solaris
+        *big      inet6 addr: fdf0:76cf:a0ed:9449::12
+        *biker    inet6 addr: fdf0:76cf:a0ed:9449::11
+        *biwa     inet6 addr: fdf0:76cf:a0ed:9449::1e
+        *coop     inet6 addr: fdf0:76cf:a0ed:9449::1f 
+        *dewey    inet6 addr: fdf0:76cf:a0ed:9449::13
+        *dirt     inet6 addr: fdf0:76cf:a0ed:9449::b
+        *leeloo   inet6 addr: fdf0:76cf:a0ed:9449::e
+        *pope     inet6 addr: fdf0:76cf:a0ed:9449::f
+        *slug     inet6 addr: fdf0:76cf:a0ed:9449::1d
+
+    Windows Server 2003
+        *fool     inet6 addr: fdf0:76cf:a0ed:9449::19
+        *goof     inet6 addr: fdf0:76cf:a0ed:9449::18
+        panda     inet6 addr: fdf0:76cf:a0ed:9449::17
+        *quest    inet6 addr: fdf0:76cf:a0ed:9449::1a
+        *jpenny-desk inet6 addr: fdf0:76cf:a0ed:9449::50 
+
+    Windows XP SP2 
+        boon     inet6 addr: fdf0:76cf:a0ed:9449::10
+
+    AIX 5.3 
+        *adobeb     inet6 addr: fdf0:76cf:a0ed:9449:0:0:0:33 
+        *aether     inet6 addr: fdf0:76cf:a0ed:9449:0:0:0:31 (ask smalltalk)
+        *emeralda	inet6 addr: fdf0:76cf:a0ed:9449::34
+        *emeraldb   inet6 addr: fdf0:76cf:a0ed:9449::35
+
+* Denotes 64 bit capable hardware.
+
+The test must use a local.conf that includes this:
+
+        hydra.Prms-useIPv6 = true;
+
+To determine whether your test is really using IPv6 addresses, you can:
+
+1) make sure useIPv6 is set true in latest.prop.
+2) check the value of "locators" in the Startup Configuration in system logs
+   to make sure they are using IPv6 addresses.
+3) grep for "preferIPv6Addresses=true" in bgexec commands.
+
+Attempts to run IPv6 tests on non-IPv6-enabled hosts will produce this failure:
+
+  THREAD master_19932
+  ERROR MasterController.main -- unexpected exception
+
+  hydra.HydraRuntimeException: Unable to start locator agent for ds
+        at hydra.GemFireLocatorAgentMgr.startLocatorAgent(GemFireLocatorAgentMgr
+           .java:68)
+        at hydra.GemFireLocatorAgentMgr.startLocatorAgents(GemFireLocatorAgentMg
+           r.java:51)
+        at hydra.MasterController.runtest(MasterController.java:506)
+        at hydra.MasterController.main(MasterController.java:705)
+
+where the locator log shows this:
+
+  [severe 2008/01/04 11:19:40.046 PST <locatoragent_ds_fili_20165-0x4ec5> nid=0x
+   ac7d5bb0] Failed to start the GemFireDistributionLocator
+      hydra.HydraRuntimeException: IPv6 address is not available for host fili
+        at hydra.GemFireDescription.getDistributedSystemProperties(GemFireDescri
+           ption.java:484)
+        at hydra.GemFireLocatorAgent.run(GemFireLocatorAgent.java:86)
+        at java.lang.Thread.run(Thread.java:619)
+
+To run build targets using IPv6, add this to your build properties, which turns on the IPv6 parameter in the local.conf used by the target:
+
+        useIPv6=true
+
+--------------------------------------------------------------------------------
+RUNNING ON HOSTS WITH IPV6 ONLY (IPV4 DISABLED)
+--------------------------------------------------------------------------------
+
+This information is based on a test run with stut and might change drastically
+for future runs, so check with IS.
+
+Running on a host with IPv6 only requires IS to configure the host to disable
+IPv4 and set up a user account which must be used for access.  For example:
+
+        % ssh -6 stut6 -l ipv6test
+        Password: tempjan8
+
+This essentially isolates the host from the main network, so required elements
+of /gcm/where must be copied to the host, along with a checkout, if desired,
+and/or a build, and any other files needed for running tests.  This was
+sufficient for a recent setup Bruce did that supported builds (2471 MB):
+
+    ipv6test@stut:/stut2/users/bruce/gcm/where> ls *
+    antlr:
+    antlr.jar
+
+    backportJars:
+    backport-util-concurrent-3.0-src.zip  backport-util-concurrent15.jar
+    backport-util-concurrent14.jar        backport-util-concurrent16.jar
+
+    gemfire:
+    gemfireLicense.zip
+
+    java:
+    ant        doxygen     jakarta   jboss-cache  log4j           
+    charting   gigaspaces  javadocs  jms          marathon-0.90a  sleepycat
+    coherence  httpunit    javahelp  jmx          xdoclet
+
+    jdbcdriver:
+    oracle
+
+    jdk:
+    1.4.2_11  1.5.0_11  1.5.0_14  1.6.0_2
+
+    jre:
+    1.4.2.08  1.5.0_05  1.6.0_1
+
+    vsd:
+    i686.Linux  i686.Linux.new
+
+The test environment must be set up to point to the proper locations.  For
+example:
+
+    PATH=/sbin:/usr/local/bin:/usr/bin:/usr/X11R6/bin:\
+    /bin:/usr/games:/opt/gnome/bin:/opt/kde3/bin:/usr/lib/java/bin
+
+    export GCMDIR=/stut2/users/bruce/gcm
+    export ALT_ANT_HOME=/stut2/users/bruce/gcm/where/java/ant/apache-ant-1.6.2
+    export ANT_HOME=$ALT_ANT_HOME
+    export PATH=$ANT_HOME/bin:$PATH
+    PS1="\W> "
+
+    export JAVA_HOME=/stut2/users/bruce/gcm/where/jdk/1.6.0_2/x86.linux
+
+    export GEMFIRE_HOME=/stut2/users/ipv6test/gf51maint
+    export GEMFIRE_BUILD=$GEMFIRE_HOME/build-artifacts/linux
+    export GEMFIRE=$GEMFIRE_BUILD/product
+    export JTESTS=$GEMFIRE_BUILD/tests/classes
+
+    export LD_LIBRARY_PATH=$GEMFIRE/../hidden/lib:$GEMFIRE/lib
+    export CLASSPATH=$GEMFIRE/lib/gemfire.jar:$JTESTS
+
+    export PATH=.:$GEMFIRE_HOME/tests/bin:$GEMFIRE/bin:$JAVA_HOME/bin:\
+    $GEMFIRE/vsd/bin:$PATH
+
+Note that the value of "locators" in the Startup Configuration in system logs
+will report the IPv6 address using the host name, e.g., "stut", rather than
+"fdf0:76cf:a0ed:9449::2", since the host name is already an IPv6 address.
+
+No test has yet been run using multiple IPv6-only hosts.  IS will need to be
+consulted to make sure they can share files using NFS and access each other
+using passwordless ssh.

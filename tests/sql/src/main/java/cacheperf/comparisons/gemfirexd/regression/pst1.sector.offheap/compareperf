@@ -1,0 +1,13 @@
+#!/bin/sh
+
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m -DcompReportFile=ratio.txt -Dmode=ratio -DomitFailedTests=true -DcompareByKey=true -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE -DaddTestKey=true perffmwk.PerfComparer \
+pst1.mysql.dupe pst1.mysql pst1.gfxd
+
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m -DcompReportFile=raw.txt -Dmode=raw -DomitFailedTests=true -DcompareByKey=true -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE -DaddTestKey=true perffmwk.PerfComparer \
+pst1.mysql pst1.gfxd
+
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m -DcompReportFile=ratio.16.txt -Dmode=ratio -DomitFailedTests=true -DcompareByKey=true -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE -DaddTestKey=true perffmwk.PerfComparer \
+pst1.mysql.16 pst1.gfxd.16
+
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m -DcompReportFile=raw.16.txt -Dmode=raw -DomitFailedTests=true -DcompareByKey=true -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE -DaddTestKey=true perffmwk.PerfComparer \
+pst1.mysql.16 pst1.gfxd.16

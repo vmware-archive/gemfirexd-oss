@@ -1,0 +1,56 @@
+//partitioned region
+parReg/query/concBridgeNotify.conf
+        bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+        edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+
+
+parReg/query/serialQueryEntryParReg.conf
+parReg/query/serialCountQueryEntryParReg.conf
+parReg/query/concQueryEntryParReg.conf
+//more destroys
+parReg/query/concQueryEntryParRegMoreEntryDestroys.conf
+parReg/query/concQueryOnlyParReg.conf
+
+//parReg indexing 
+parReg/query/serialQueryIndexEntryParReg.conf
+parReg/query/serialCountQueryIndexEntryParReg.conf
+parReg/query/concQueryIndexEntryParReg.conf
+parReg/query/concQueryIndexParReg.conf
+
+//non partitioned region
+parReg/query/serialQueryEntry.conf
+query/concQueryEntry.conf
+
+
+//non partitioned indexing
+parReg/query/concQueryIndexEntry.conf
+parReg/query/serialQueryIndexEntry.conf
+
+//stopstart vms with other entry opretions
+parReg/query/serialQueryEntryParRegHA.conf
+parReg/query/serialQueryIndexEntryParRegHA.conf
+
+//stopstart vms with query concurrently
+parReg/query/concQueryOnlyParRegHA.conf
+parReg/query/concQueryIndexParRegHA.conf
+
+//queries with limit clause
+parReg/query/concQueryEntryParRegWithLimit.conf queryLimit=10
+parReg/query/concQueryIndexEntryParRegWithLimit.conf queryLimit=10
+
+// query with prPersistence
+parReg/query/persistence/concBridgeNotifyPersist.conf
+        bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+        edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+parReg/query/persistence/serialQueryEntryParRegPersist.conf
+parReg/query/persistence/concQueryEntryParRegPersist.conf
+parReg/query/persistence/concQueryOnlyParRegPersist.conf
+parReg/query/persistence/serialQueryIndexEntryParRegPersist.conf
+parReg/query/persistence/concQueryIndexEntryParRegPersist.conf
+parReg/query/persistence/concQueryIndexParRegPersist.conf
+parReg/query/persistence/serialQueryEntryParRegHAPersist.conf
+parReg/query/persistence/serialQueryIndexEntryParRegHAPersist.conf
+parReg/query/persistence/concQueryOnlyParRegHAPersist.conf
+parReg/query/persistence/concQueryIndexParRegHAPersist.conf
+parReg/query/persistence/concQueryEntryParRegWithLimitPersist.conf queryLimit=10
+parReg/query/persistence/concQueryIndexEntryParRegWithLimitPersist.conf queryLimit=10

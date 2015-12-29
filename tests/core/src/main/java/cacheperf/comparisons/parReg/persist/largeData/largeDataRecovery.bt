@@ -1,0 +1,85 @@
+// ============================================================
+// measure time to load a large amount of data into a persistent
+// PR. The PR is also configured to evict because we cannot hold
+// all the data in memory. Tests add a new datahost, rebalance,
+// shutdown and restart recovering from disk.
+// NOTE: these must run with 64 bit vms for Linux with 11 hosts
+// one for the MasterController and one for each of 2 vms
+
+// load 100G of data into 10 datastore vms; each vm holds 10G
+//   payload = 1024b 
+//   keySize = 16b (for 64-bit vm, 8b for 32-bit vm)
+//   overhead per entry: 200b
+//   total per entry: 1240b
+//   number entries in 10G: 8659208
+//   number entires in 4G: 3463683 (for overflow) 
+// recover with values
+cacheperf/comparisons/parReg/persist/largeData/peerDataRebalRecoverWithValues.conf
+  A=peer peerHosts = 10 peerVMsPerHost = 1 peerThreadsPerVM = 1
+  B=extra extraHosts = 1 extraVMsPerHost = 1 extraThreadsPerVM = 1
+  C=controller controllerHosts = 1 controllerVMsPerHost = 1 controllerThreadsPerVM = 1
+  maxKeys = 8659208 
+  objectSize = 1024
+  redundantCopies = 0 // because we have persistence
+  perffmwk.comparisonKey = recovery
+  heapMB=6000
+  useShutDownAllMembers = true
+
+
+// load 100G of data into 10 datastore vms; each vm holds 10G (50G + 1 redundantCopy)
+//   payload = 1024b 
+//   keySize = 16b (for 64-bit vm, 8b for 32-bit vm)
+//   overhead per entry: 200b
+//   total per entry: 1240b
+//   number entries in 5G: 4329604 (half the data of the test with redundantCopies = 0)
+//   number entires in 4G: 3463683 (for overflow) 
+// recover with values
+cacheperf/comparisons/parReg/persist/largeData/peerDataRebalRecoverWithValues.conf
+  A=peer peerHosts = 10 peerVMsPerHost = 1 peerThreadsPerVM = 1
+  B=extra extraHosts = 1 extraVMsPerHost = 1 extraThreadsPerVM = 1
+  C=controller controllerHosts = 1 controllerVMsPerHost = 1 controllerThreadsPerVM = 1
+  maxKeys = 4329604 
+  objectSize = 1024
+  redundantCopies = 1 
+  perffmwk.comparisonKey = recovery
+  heapMB=6000
+  useShutDownAllMembers = true
+
+// load 100G of data into 10 datastore vms; each vm holds 10G
+//   payload = 1024b 
+//   keySize = 16b (for 64-bit vm, 8b for 32-bit vm)
+//   overhead per entry: 200b
+//   total per entry: 1240b
+//   number entries in 10G: 8659208
+//   number entires in 4G: 3463683 (for overflow) 
+// recover without values
+cacheperf/comparisons/parReg/persist/largeData/peerDataRebalRecoverNoValues.conf
+  A=peer peerHosts = 10 peerVMsPerHost = 1 peerThreadsPerVM = 1
+  B=extra extraHosts = 1 extraVMsPerHost = 1 extraThreadsPerVM = 1
+  C=controller controllerHosts = 1 controllerVMsPerHost = 1 controllerThreadsPerVM = 1
+  maxKeys = 8659208 
+  objectSize = 1024
+  redundantCopies = 0 // because we have persistence
+  perffmwk.comparisonKey = recovery
+  heapMB=6000
+  useShutDownAllMembers = true
+
+// load 100G of data into 10 datastore vms; each vm holds 10G
+//   payload = 1024b
+//   keySize = 16b (for 64-bit vm, 8b for 32-bit vm)
+//   overhead per entry: 200b
+//   total per entry: 1240b
+//   number entries in 10G: 8659208
+//   number entires in 4G: 3463683 (for overflow)
+// recover without values
+// stops the 'extra', does puts in peers then restarts 'extra - performs DeltaGII
+cacheperf/comparisons/parReg/persist/largeData/peerDataRebalRecoverNoValuesDeltaGII.conf
+  A=peer peerHosts = 10 peerVMsPerHost = 1 peerThreadsPerVM = 1
+  B=extra extraHosts = 1 extraVMsPerHost = 1 extraThreadsPerVM = 1
+  C=controller controllerHosts = 1 controllerVMsPerHost = 1 controllerThreadsPerVM = 1
+  maxKeys = 4329604
+  objectSize = 1024
+  redundantCopies = 1 // because we have persistence
+  perffmwk.comparisonKey = recovery
+  heapMB=6000
+  useShutDownAllMembers = true

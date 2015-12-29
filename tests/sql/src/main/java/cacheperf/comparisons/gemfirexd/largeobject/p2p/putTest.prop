@@ -1,0 +1,25 @@
+api = GFXD
+
+locatorHosts = 1
+locatorVMsPerHost = 1
+locatorThreadsPerVM = 1
+
+A = clientserver
+clientserverHosts = 1
+clientserverVMsPerHost = 1
+clientserverThreadsPerVM = 1
+
+numLargeObjectsPerServer = 100000
+heapMB = 1024
+redundantCopies = 1
+bucketsPerServer = 10
+queryPlanFrequency = 60
+txIsolation = none
+conserveSockets = false
+
+enableHistogram = false
+logQueries = false
+logResultSetSize = false
+validateResults = true
+
+perffmwk.comparisonKey = put

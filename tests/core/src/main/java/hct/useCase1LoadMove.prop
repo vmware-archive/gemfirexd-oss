@@ -1,0 +1,9 @@
+A = useCase1LoadMoveServer
+    useCase1LoadMoveServerHosts = 1
+    useCase1LoadMoveServerVMsPerHost = 1
+    useCase1LoadMoveServerThreadsPerVM = 1
+
+B = edge
+    edgeHosts = 1
+    edgeVMsPerHost = 1
+    edgeThreadsPerVM = 1

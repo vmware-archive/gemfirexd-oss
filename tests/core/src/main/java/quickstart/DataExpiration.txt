@@ -1,0 +1,35 @@
+This example shows entry expiration.
+
+Connecting to the distributed system and creating the cache.
+
+Example region "/exampleRegion" created in cache.
+
+The region "/exampleRegion" is configured to
+DESTROY any cache entry that is idle for 
+10 seconds.
+
+Putting entry: key1 => value1
+    Received afterCreate event for entry: key1, value1
+Putting entry: key2 => value2
+    Received afterCreate event for entry: key2, value2
+Putting entry: key3 => value3
+    Received afterCreate event for entry: key3, value3
+
+The cache now contains:
+    key1 => value1
+    key2 => value2
+    key3 => value3
+
+Before the idle time expiration, access two of the entries...
+Getting entry: key1 => value1
+Putting entry: key2 => value2000
+
+    Received afterUpdate event for entry: key2, value2000
+Next, the listener should report on an expiration action... 
+
+    Received afterDestroy event for entry: key3
+After the expiration timeout, the cache contains:
+    key1 => value1
+    key2 => value2000
+
+Closing the cache and disconnecting.

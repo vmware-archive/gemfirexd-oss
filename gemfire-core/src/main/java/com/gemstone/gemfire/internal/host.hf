@@ -1,0 +1,278 @@
+/*
+ * Copyright (c) 2010-2015 Pivotal Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you
+ * may not use this file except in compliance with the License. You
+ * may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * permissions and limitations under the License. See accompanying
+ * LICENSE file.
+ */
+#ifndef HOST_HF
+#define HOST_HF TRUE
+/*========================================================================
+ * Description: Entry point templates for various implementations of
+ *              host or system dependent stuff.
+ *              For Unix, file is hostunix.c
+ *              For Microsoft OS's, file is hostdos.c
+ *
+ * Implementation Notes ::
+ *              hostunix.c is the most upto date so
+ *              it therefore contains the true intention
+ *              of the specifications described here. THE ADVICE is - read
+ *              the code in hostunix.c and see how close one can imitate it.
+ *
+ *========================================================================
+ */
+
+/*******  GemStone constants/types defined in this and other modules ********/
+
+#include "global.ht"
+
+/* no more includes. KEEP THIS LINE */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
+#if defined(FLG_EXTERN_VAR_REQUIRED) && !defined(UTL_C)
+#define EXTERN extern
+#else
+#define EXTERN
+#endif
+
+#if defined(FLG_MSWIN32)
+typedef DWORD WINAPI THREAD_FUNC(LPVOID arg);
+#define THREAD_FN DWORD WINAPI
+#define THREAD_FN_RTN DWORD
+#define THREAD_ARG LPVOID
+#define THREAD_ID DWORD
+#define THREAD_DETACH()
+#else
+typedef void *THREAD_FUNC(void *arg);
+#define THREAD_FN void *
+#define THREAD_FN_RTN void *
+#define THREAD_ARG void *
+#define THREAD_ID pthread_t
+#define THREAD_DETACH() pthread_detach(HostGetCurrentThreadId())
+#endif
+
+/*******  Macros defined in this module  ************************************/
+
+#if defined(FLG_BIG_ENDIAN)
+#define HOST_IS_BIG_ENDIAN TRUE
+#elif defined(FLG_LITTLE_ENDIAN)
+#define HOST_IS_BIG_ENDIAN FALSE
+#else
++++ PORT_ERR HOST_IS_BIG_ENDIAN
+#endif
+
+/*******  Functions defined in this module  ************************************/
+
+#if defined(FLG_DEBUG)
+#define HOST_EXIT(exitCond) HostCallDebugger(); exitCond
+#else
+#define HOST_EXIT(exitCond) UtlExit(exitCond)
+#endif
+
+#if defined(EINTR)
+#define HOST_IS_EINTR(x) ((x) == EINTR)
+#else
+#define HOST_IS_EINTR(x) FALSE
+#endif
+
+/* =========================================================================
+ * Name -  HostCallDebugger
+ *
+ * Purpose -  To be called in a fatal error situation.
+ *   On Solaris, forks a process to run pstack against this
+ *   process.  
+ *   Then if lib/delaycoredump.txt is present , waits forever
+ *   for a debugger to attach, otherwise does a coredump.
+ *========================================================================
+ */
+GFCEXTERN(int) HostCallDebugger(void);
+
+EXTERN_GS_DEC(int) HostCallDebugger_(BoolType fromSignalHandler);
+
+EXTERN_GS_DEC(int) HostCallDebuggerMsg(const char* msg);
+
+/*=========================================================================
+ * HostWaitForDebugger will cause the current process to sleep
+ * until a user attaches to it with a debugger.  It will wait forever,
+ * and is not affected by the delaycoredump.txt file .  It does
+ * not produce a pstack.log .
+ *=========================================================================
+ */
+EXTERN_GS_DEC(void) HostWaitForDebugger(void);
+
+/*=========================================================================
+ *
+ * Name - HostGetEnv
+ *
+ * PURPOSE
+ *   To return environmental information for this program
+ *  
+ *  INPUT
+ *   inStr -- null-terminated string containing environment name
+ *   outStr -- address of result string buffer
+ *   outSize -- size of buffer, in characters it can hold.  Result is
+ *     null-terminated (not included in outSize)
+ *  
+ *  OUTPUT
+ *   Function result -- TRUE on success
+ *
+ *===========================================================================
+ */
+  GFCEXTERN(BoolType)
+HostGetEnv(const char inStr[], char outStr[], ArraySizeType outSize);
+
+/*=========================================================================
+ *
+ * Name - HostGetCpuCount
+ *
+ * PURPOSE
+ *   To return the number of cpus in the host machine
+ *===========================================================================
+ */
+GFCEXTERN(int32)
+ HostGetCpuCount(void);
+
+/* =========================================================================*/
+/* cover for ftime, for systems that don't have it */
+EXTERN_GS_DEC(void) HostFtime(time_t *sec, unsigned short *millitm);
+
+/*=========================================================================
+ * Name - HostMilliSleep
+ *   Sleep for the specified number of milliseconds
+ *=========================================================================
+ */
+EXTERN_GS_DEC(void) HostMilliSleep(uint32 milliseconds);
+
+/*=========================================================================
+ * Name - HostNanoSleep
+ *   On Solaris uses the rt lib nanosleep,
+ *   on other platforms it uses millisleep
+ *=========================================================================
+ */
+GFCEXTERN(void) HostNanoSleep(uint32 nanoseconds);
+
+GFCEXTERN(void) HostYield(void);
+
+EXTERN_GS_DEC(int64) HostCurrentTimeNanos(void);
+
+GFCEXTERN(int64) HostCurrentTimeMs(void);
+
+/*=========================================================================
+ * Name - HostSleep
+ *   Sleep for the specified number of seconds
+ *=========================================================================
+ */
+EXTERN_GS_DEC(void) HostSleep(uint32 seconds);
+
+
+/*=========================================================================
+ *
+ *  FUNCTION: HostGetErrorText
+ *
+ *  PURPOSE: copies error message text to string
+ *
+ *  PARAMETERS:
+ *    errcode - the error code to translate
+ *    buf - destination buffer
+ *    bufSize - size of buffer
+ *
+ *  RETURN VALUE:
+ *    destination buffer
+ *=========================================================================
+ */
+EXTERN_GS_DEC(char*) HostGetErrorText(int32 errcode, char buf[], int32 bufSize);
+
+GFCEXTERN(int) HostGetCurrentThreadId(void);
+
+
+/*=========================================================================
+ *
+ *  FUNCTION: HostCreateThread
+ *
+ *  PURPOSE: Starts a thread runing the threadFunction provided
+ *
+ *  PARAMETERS:
+ *    threadFunction  the function to run
+ *    arg             an argument to the new thread function
+ *    threadId        an identifier for the thread 
+ *
+ *  RETURN VALUE:
+ *    int32           an error code if the creation failed
+ *=========================================================================
+ */
+GFCEXTERN(int32) HostCreateThread(THREAD_FUNC threadFunction, THREAD_ARG arg, THREAD_ID *thrId);
+
+/*=========================================================================
+ *
+ *  FUNCTION: HostJoinThread
+ *
+ *  PURPOSE: wait for the specified thread to exit
+ *
+ *  PARAMETERS:
+ *    threadId        an identifier for the thread 
+ *
+ *=========================================================================
+ */
+GFCEXTERN(void) HostJoinThread(THREAD_ID thrId);
+
+#if defined(FLG_MSWIN32)
+#define HOST_GETPID() GetCurrentProcessId()
+#else /* unix */  
+#if defined(FLG_LINUX_UNIX) || defined(FLG_OSX_UNIX)
+EXTERN_GS_DEC(int) HostGetLinuxPid(void);
+#define HOST_GETPID() HostGetLinuxPid()
+#else
+#define HOST_GETPID() getpid()
+#endif
+#endif
+
+EXTERN_GS_DEC(BoolType) HostProcessExists(int32 pid);
+
+EXTERN_GS_DEC(BoolType) HostFileExist(const char *path);
+
+BoolType HostDelayCoreFileExists(void);
+
+EXTERN_GS_DEC(void) DllMainGetPath(char *result, int maxLen);
+  /* implemented in dllmain.c */
+
+EXTERN_GS_DEC(int) HostVmPageSize(void);
+  /* returns the size of a virtual memory page */
+
+EXTERN_GS_DEC(void) HostProtectMem(char *addr, int size);
+
+EXTERN_GS_DEC(void) HostUnProtectMem(char *addr, int size);
+
+#ifdef FLG_UNIX
+EXTERN_GS_DEC(int) HostThrKill(int threadId, int sigNum);
+#endif
+
+EXTERN_GS_DEC(void) HostPrintStderr(const char* level, const char* msg1);
+
+EXTERN_GS_DEC(void) HostPrintStderr_(const char* level, const char* msg1, const char* msg2);
+
+EXTERN_GS_DEC(void) HostPrintLogMsg(FILE *file, const char* level, const char* msg1, const char* msg2);
+
+GFCEXTERN(void) HostGetTimeStr(char *bufPtr);
+
+EXTERN_GS_DEC(BoolType) HostInstallSigQuitHandler(/*JNIEnv *env*/void);
+
+#undef EXTERN
+
+#ifdef __cplusplus
+} /* extern "C" */
+#endif /* __cplusplus */
+
+#endif /* HOST_HF */

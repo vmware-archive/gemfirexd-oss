@@ -1,0 +1,59 @@
+
+// concKnownKeys tests
+rebalance/concKnownKeysTxSerialRebalance.conf
+A = peer peerHosts=5 peerVMsPerHost=2 peerThreadsPerVM=10 numKeys=10000
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1
+startupRecoveryDelay = 0 redundantCopies = 0
+
+rebalance/concKnownKeysTxSerialRebalance.conf
+A = peer peerHosts=5 peerVMsPerHost=2 peerThreadsPerVM=10 numKeys=10000
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1
+startupRecoveryDelay = 0 redundantCopies = 1
+
+rebalance/concKnownKeysTxSerialRebalance.conf
+A = peer peerHosts=5 peerVMsPerHost=2 peerThreadsPerVM=10 numKeys=10000
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1
+startupRecoveryDelay = -1 redundantCopies = 0
+
+rebalance/concKnownKeysTxSerialRebalance.conf
+A = peer peerHosts=5 peerVMsPerHost=2 peerThreadsPerVM=10 numKeys=10000
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1
+startupRecoveryDelay = -1 redundantCopies = 1
+
+rebalance/concKnownKeysTxConcRebalance.conf
+A = peer peerHosts=5 peerVMsPerHost=2 peerThreadsPerVM=10 numKeys=10000
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1
+startupRecoveryDelay = 0 redundantCopies = 0
+
+rebalance/concKnownKeysTxConcRebalance.conf
+A = peer peerHosts=5 peerVMsPerHost=2 peerThreadsPerVM=10 numKeys=10000
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1
+startupRecoveryDelay = 0 redundantCopies = 1
+
+rebalance/concKnownKeysTxConcRebalance.conf
+A = peer peerHosts=5 peerVMsPerHost=2 peerThreadsPerVM=10 numKeys=10000
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1
+startupRecoveryDelay = -1 redundantCopies = 0
+
+rebalance/concKnownKeysTxConcRebalance.conf
+A = peer peerHosts=5 peerVMsPerHost=2 peerThreadsPerVM=10 numKeys=10000
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1
+startupRecoveryDelay = -1 redundantCopies = 1
+
+// StopStart tests (with extra rebalance vm)
+rebalance/concParRegTxStopStartWithRebalance.conf
+A = peer peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies = 0 numVMsToStop = 2
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1
+
+rebalance/concParRegTxStopStartWithRebalance.conf
+A = peer peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies = 1 numVMsToStop = 2
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1
+
+rebalance/concParRegTxStopStartWithRebalance.conf
+A = peer peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies = 2 numVMsToStop = 2
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1
+
+rebalance/concParRegTxStopStartWithRebalance.conf
+A = peer peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies = 3 numVMsToStop = 2
+B = rebalance rebalanceHosts=1 rebalanceVMsPerHost=1 rebalanceThreadsPerVM=1
+

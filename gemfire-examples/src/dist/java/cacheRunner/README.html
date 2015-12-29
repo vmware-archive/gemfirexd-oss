@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<BODY bgcolor="#ffffff"><HTML>
+ <IMG SRC="../../../../docs/VMwareLogo.png" BORDER="0">
+ <HEAD>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+  <META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+  <LINK REL="STYLESHEET" HREF="DocIndex.css" CHARSET="ISO-8859-1" TYPE="text/css">
+<H1 align="center">
+vFabric<FONT size=6><b><sup><font size=-0>&#8482;</font></sup></b></FONT></font> GemFire<FONT size=6><b><sup><font size=-0>&#174;</font></sup></b></FONT></font></H1>
+     </b></FONT>
+  <H1 align="center">cacheRunner</H1>
+<H2 align="center">Java Caching API Programming Example </H2>
+
+<hr color="#cc0000" size="2" align="left">
+
+<BODY TEXT="#000000" LINK="#0000B0" VLINK="#666699" BGCOLOR="#FFFFFF">
+<P>The <strong>cacheRunner</strong> <a href="CacheRunner.java">example</a> performs distributed caching operations based on user commands. The example is located in the GemFire installation under <code>examples/dist/cacheRunner</code>.</P>
+
+<P>In every shell used to run this example application, configure your 
+environment according to the instructions provided in 
+  <a href="../../EnvSetup.html">examples/EnvSetup.html</a>.</P>
+<P>Once your 
+environment is set, change to the <code>examples/dist/cacheRunner</code>
+directory to run the application. You may wish to configure the example
+to run with non-default connection properties (to use a unique mcast-port, 
+for example). To do this, copy the <code>defaultConfigs/gemfire.properties</code> file
+to your <code>examples/dist/cacheRunner</code> directory and edit it as needed.</P>
+
+<P>The application takes a cache configuration file in input. You can use the example configuration files 
+provided in the example directory and you can create and test your own. 
+This sample  loads
+the <code>examples/cacheRunner/cache.xml</code> file for cache initialization:
+<pre>
+       java cacheRunner.CacheRunner cache.xml
+</pre>
+
+<p>Once started, the application allows you to perform most of the caching 
+  activities that are available through the Java API (the program's &quot;<code>help</code>&quot; lists all possible commands). With its free-form approach, this <code>cacheRunner</code> program allows you to to explore  the various caching models. The following examples guide you through three basic cache applications, but we encourage you to try your own.</P>
+<p>      <B>Example 1 - Exploring Data Distribution and Replication</B></p>
+<P>This first example runs two Java applications in one distributed system. The applications define the same cache regions:
+a root region, named "root", with three subregions: <code>rlocal</code> (no distribution), 
+<code>rdistnoack</code> (distribution with pull model), and <code>rglobalreplication</code> (complete replication of data). 
+</P>
+<P>To try out <code>cacheRunner</code> with these configuration files, set up two shells
+with the same environment settings and <code>cd</code> to the <code>examples/dist/cacheRunner</code> directory. You may need to change how these processes find each other  to avoid conflicting with processes that are already running. To do so, copy <code>gemfire.properties</code> from the <code>defaultConfigs</code> directory of the installation and modify the <code>mcast-port</code> setting.
+
+
+<P>In both shells, run:
+<pre>
+       java cacheRunner.CacheRunner cache.xml
+</pre>
+<p>This starts the applications and initializes their caches according to <code>cache.xml</code>. 
+
+  <BR/>
+  <BR/>
+  The program's <code>help</code> lists the available operations. In one shell, add 
+  some entries to the three subregions, <code>rlocal</code>, <code>rdistnoack</code>, and 
+  <code>rglobalreplication.</code>
+  From the other shell, list the region contents 
+  and note that <code>rglobalreplication</code> is already equivalent to its counterpart 
+  in the first shell. Still in the second shell, try to get entries that are already 
+  defined in the first shell and note the result. Add some entries to the 
+regions in the second shell and note the effects on the regions in the first shell.</p>
+<p>Enter <code>quit</code> in both shells to shut down <code>cacheRunner</code> for the next example. </p>
+  </p>
+</p>
+<B>Example 2 - Persisting Data to Disk</B>
+<P>The <code>backup_cache.xml</code> file configures a GemFire cache
+region, <code>root</code>, that backs up its contents to disk.  When data is placed into
+this region, it is scheduled for an asynchronous write to disk.
+You can run this example from the <code>examples/dist/cacheRunner</code> directory
+as follows:</P>
+
+<pre>
+       java cacheRunner.CacheRunner backup_cache.xml
+</pre>
+
+<P>After adding several entries to the root region using the <code>put</code> command, you can exit the program.  Upon restarting with the same XML
+configuration file, you can obtain the values of the entries you added
+using the <code>get</code> command.  The entries should have the values you put
+in the previous invocation of the <code>cacheRunner</code> example.</P>
+<P>Enter <code>quit</code> to shut down <code>cacheRunner</code>. </P>
+<P>The backup files are in the <code>cacheRunner</code> subdirectory 
+<code>BackupDirectory</code>. If you want to try out the rollover of 
+backup files, edit this 
+line in the <code>backup_cache.xml</code> to set the max-oplog-size to 1 megabyte:</P>
+
+<pre>
+       &lt;disk-store name="DEFAULT" auto-compact="true" max-oplog-size="20" queue-size="10000000" time-interval="15000"&gt;
+</pre>
+
+<P>Then do puts until you create more than a megabyte of data. Alternatively, 
+you can enter <code>forceRolling</code> at the command prompt.  
+The active backup file is <code>BACKUPds1_n.crf</code> and <code>BACKUPds1_n.drf</code>, where 
+<code>n</code> is a 
+sequence number. When the file rolls over, the current file is replaced by a 
+new file with the next sequence number. To save all 
+the backup files, rather than deleting the old ones,
+turn off auto-compact in the <code>backup_cache.xml</code>:</P> 
+
+<pre>
+       &lt;disk-store name="DEFAULT" auto-compact="false" max-oplog-size="20" queue-size="10000000" time-interval="15000"&gt;
+</pre>
+
+<p>
+This backup example won't work if you try to run with multiple java VMs because they will each try to write to the same disk files. If you want to try using replication and persistence, you will need to copy backup_cache.xml and change the directory specified in the <code> disk-dir </code> element. You can then start a second VM using the new backup_cache.xml file.
+</P>
+<B>Example 3 - Querying and Indexing</B>
+<P>The <code>queryPortfolios.xml</code> file configures a GemFire cache
+region with the <code>Portfolios</code> region that is discussed in the <em>Querying and Indexing</em> chapter
+of the <I>GemFire User's Guide</I>. The accompanying 
+script file, <code>queryPortfolios.in</code>, can be used to run most of the queries 
+that are listed in that chapter. To run those queries against the 
+<code>queryPortfolios.xml</code> data, execute this command:</P>
+<pre>
+       java cacheRunner.CacheRunner queryPortfolios.xml < queryPortfolios.in
+</pre>
+<P>This lists every query and its results, then exits. </P>
+<P>You can run your own queries against the same data by starting <code>cacheRunner</code> like this:</P>
+<pre>
+       java cacheRunner.CacheRunner queryPortfolios.xml 
+</pre>
+<P>For information on creating queries and indexes interactively, see the program help or the examples in the <code>queryPortfolios.in</code> file.</P>
+
+<P>Close the open sessions  by entering <code>exit</code> in each of them.</P>
+  <hr color="#cc0000" size="2" align="left">
+
+</BODY>
+</HTML>
+

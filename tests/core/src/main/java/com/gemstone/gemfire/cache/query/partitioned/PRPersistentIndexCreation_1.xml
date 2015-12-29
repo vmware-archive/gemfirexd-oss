@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE cache PUBLIC "-//GemStone Systems, Inc.//GemFire Declarative Caching 5.1//EN" "http://www.gemstone.com/dtd/cache6_6.dtd">
+<cache lock-lease="120" lock-timeout="60" search-timeout="300" is-server="false" copy-on-read="false">
+  <cache-transaction-manager/>
+  <disk-store name="sample" auto-compact="true" max-oplog-size="1024" queue-size="1000" time-interval="15">
+  <disk-dirs>
+                <disk-dir dir-size="4096">overflowData1</disk-dir>
+            </disk-dirs>
+  </disk-store> 
+  
+  <region name="PartionedPortfolios">
+    <region-attributes disk-store-name="sample" data-policy="persistent-partition" id="sample" early-ack="false" multicast-enabled="false" publisher="false" enable-async-conflation="false" enable-gateway="false" initial-capacity="16" load-factor="0.75" concurrency-level="16" statistics-enabled="false" ignore-jta="false" is-lock-grantor="false">
+      <value-constraint>com.gemstone.gemfire.cache.query.data.Portfolio</value-constraint>
+      <region-time-to-live>
+        <expiration-attributes timeout="0" action="invalidate"/>
+      </region-time-to-live>
+      <region-idle-time>
+        <expiration-attributes timeout="0" action="invalidate"/>
+      </region-idle-time>
+      <entry-time-to-live>
+        <expiration-attributes timeout="0" action="invalidate"/>
+      </entry-time-to-live>
+      <entry-idle-time>
+        <expiration-attributes timeout="0" action="invalidate"/>
+      </entry-idle-time>
+      <partition-attributes redundant-copies="0"/>
+      <subscription-attributes interest-policy="cache-content"/>
+    </region-attributes>
+    <index name="RegionIndex">
+      <functional from-clause="/PartionedPortfolios p" expression="p.status"/>
+    </index>
+  </region>
+</cache>

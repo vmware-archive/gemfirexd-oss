@@ -1,0 +1,215 @@
+diskRecovery/compaction.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persistent persistentHosts=1 persistentVMsPerHost=1 persistentThreadsPerVM=5
+
+// tests for recovering the latest disk files
+// tie with 2 vms
+diskRecovery/tie.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=peer peerHosts=2 peerVMsPerHost=1 peerThreadsPerVM=5
+   stopMode = nice_exit
+   concurrentRegionCreation = true, false
+// tie with many vms
+diskRecovery/tie.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=peer peerHosts=6 peerVMsPerHost=1 peerThreadsPerVM=5
+   stopMode = nice_exit
+   concurrentRegionCreation = true, false
+
+// vm with latest disk files restarts last
+// 2 vms
+diskRecovery/latestStartsLast.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=peer peerHosts=2 peerVMsPerHost=1 peerThreadsPerVM=5
+   stopMode = nice_exit
+   concurrentRegionCreation = true, false
+// many vms
+diskRecovery/latestStartsLast.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=peer peerHosts=6 peerVMsPerHost=1 peerThreadsPerVM=5
+   stopMode = nice_exit
+   concurrentRegionCreation = true, false
+
+// vm with latest disk files restarts first
+// 2 vms
+diskRecovery/latestStartsFirst.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=peer peerHosts=2 peerVMsPerHost=1 peerThreadsPerVM=5
+   stopMode = nice_exit
+   concurrentRegionCreation = true, false
+// many vms
+diskRecovery/latestStartsFirst.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=peer peerHosts=6 peerVMsPerHost=1 peerThreadsPerVM=5
+   stopMode = nice_exit
+   concurrentRegionCreation = true, false
+
+// user must force recovery
+// 2 vms
+diskRecovery/forceRecovery.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=peer peerHosts=2 peerVMsPerHost=1 peerThreadsPerVM=5
+   stopMode = nice_exit
+   concurrentRegionCreation = true, false
+// many vms
+diskRecovery/forceRecovery.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=peer peerHosts=6 peerVMsPerHost=1 peerThreadsPerVM=5
+   stopMode = nice_exit
+   concurrentRegionCreation = true, false
+
+// members not simultaneous
+// 3 vms
+diskRecovery/membersNotSimultaneous.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=group1 group1Hosts=1 group1VMsPerHost=1 group1ThreadsPerVM=5
+   C=group2 group2Hosts=1 group2VMsPerHost=1 group2ThreadsPerVM=5
+   D=group3 group3Hosts=1 group3VMsPerHost=1 group3ThreadsPerVM=5
+   stopMode = nice_exit
+   concurrentRegionCreation = true, false
+// many vms
+diskRecovery/membersNotSimultaneous.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=group1 group1Hosts=3 group1VMsPerHost=1 group1ThreadsPerVM=5
+   C=group2 group2Hosts=3 group2VMsPerHost=1 group2ThreadsPerVM=5
+   D=group3 group3Hosts=3 group3VMsPerHost=1 group3ThreadsPerVM=5
+   stopMode = nice_exit
+   concurrentRegionCreation = true, false
+
+// refuse recovery
+// 3 vms
+diskRecovery/refuseRecovery.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=group1 group1Hosts=1 group1VMsPerHost=1 group1ThreadsPerVM=5
+   C=group2 group2Hosts=1 group2VMsPerHost=1 group2ThreadsPerVM=5
+   stopMode = nice_exit
+   concurrentRegionCreation = true, false
+// many vms
+diskRecovery/refuseRecovery.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=group1 group1Hosts=3 group1VMsPerHost=1 group1ThreadsPerVM=5
+   C=group2 group2Hosts=3 group2VMsPerHost=1 group2ThreadsPerVM=5
+   stopMode = nice_exit
+   concurrentRegionCreation = true, false
+
+// disk recovery 
+diskRecovery/concRecoverLatest.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+diskRecovery/concRecoverAll.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+diskRecovery/recoverAfterGii.conf
+
+diskRecovery/concRecoverAllAfterShutDownAll.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+
+diskRecovery/multiDiskStoreReplicate.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+   numDiskStores = 20
+diskRecovery/multiDiskStorePR.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+   numDiskStores = 3
+diskRecovery/multiDiskStoreMixed.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+   numDiskStores = 3
+
+diskRecovery/multiDiskStoreReplicateShutDownAll.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+   numDiskStores = 20
+diskRecovery/multiDiskStorePRShutDownAll.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+   numDiskStores = 3
+diskRecovery/multiDiskStoreMixedShutDownAll.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+   numDiskStores = 3
+
+// for 7.0 we do not support disk files created by an older version to be recoverable by 7.0
+// test removed Apr 2012 for 7.0
+//diskRecovery/concUpgrade.conf
+//   A=oldVersionLocator oldVersionLocatorHosts=1 oldVersionLocatorVMsPerHost=1 oldVersionLocatorThreadsPerVM=1
+//   B=oldVersion oldVersionHosts=5 oldVersionVMsPerHost=1 oldVersionThreadsPerVM=5
+//   C=newVersionLocator newVersionLocatorHosts=1 newVersionLocatorVMsPerHost=1 newVersionLocatorThreadsPerVM=1
+//   D=newVersion newVersionHosts=5 newVersionVMsPerHost=1 newVersionThreadsPerVM=5
+//   oldVersion=651,664 newVersion=default newVersionHome=default
+//   stopMode=shutDownAll,nice_exit,mean_exit
+
+/*commenting out for Cheetah release
+diskRecovery/startupShutdownWithProxy.conf
+   A=admin adminbridgeHosts=1 adminbridgeVMsPerHost=1 adminbridgeThreadsPerVM=1
+   B=server serverbridgeHosts=5 serverbridgeVMsPerHost=1 serverbridgeThreadsPerVM=1 // numThreads must be 1
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+   numProxyJvms=2 */
+diskRecovery/activeAccessorWhileRecovering.conf
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=dataStore dataStoreHosts=5 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=1
+   C=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=3
+   locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+diskRecovery/shutDownAllDuringRecovery.conf
+   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=dataStore dataStoreHosts=5 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=1
+   C=accessor accessorHosts=3 accessorVMsPerHost=1 accessorThreadsPerVM=3
+   locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+diskRecovery/wanShutDownAll.conf
+   wanSites=2
+   locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+   A=admin adminHostsPerSite=1 adminVMsPerHost=1 adminThreadsPerVM=1
+   B=peer peerHostsPerSite=3 peerVMsPerHost=1 peerThreadsPerVM=5
+   batchConflation = true, false
+diskRecovery/multiDiskStoreMixedShutDownAllManySR.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=3 persistVMsPerHost=1 persistThreadsPerVM=3
+   numDiskStores = 3
+   
+// minor version compatibility is not supported for 7.5
+//diskRecovery/concRecoverAllAfterShutDownAllMinorVersionCompatibility.conf
+//   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+//   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=3
+//   oldVersion=700
+
+// Suds/Gester/team decision, Feb 10, 2012; we will document that shutDownAll cannot
+// be used with a mix of 661 and 662 jvms; removing test
+// mixed 661 and 662 jvms are not supported when networkPartitionDetection is true
+//diskRecovery/shutDownAllDuringRecoveryCompat.conf
+//   A=admin adminHosts=1 adminVMsPerHost=1 adminThreadsPerVM=1
+//   B=dataStore dataStoreHosts=6 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=1
+//   C=accessor accessorHosts=4 accessorVMsPerHost=1 accessorThreadsPerVM=3
+//   locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+//   oldVersion=661 newVersion=default newVersionHome=default
+//   networkPartitionDetection=false
+
+// Incremental Backup   
+diskRecovery/backupMultiDiskStoreMixed.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persist persistHosts=10 persistVMsPerHost=1 persistThreadsPerVM=1
+   numDiskStores = 3   
+
+// reapingTombstone tests (verify that the heap does not continue to grow as we recycle with tombstones
+diskRecovery/reapingTombstones.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persistent persistentHosts=3 persistentVMsPerHost=1 persistentThreadsPerVM=5
+   regionConfig=persistRegion destroyMethod=destroy numEntriesPerRegion=10000
+
+diskRecovery/reapingTombstones.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persistent persistentHosts=3 persistentVMsPerHost=1 persistentThreadsPerVM=5
+   regionConfig=persistRegion destroyMethod=clearRegion numEntriesPerRegion=10000
+
+diskRecovery/reapingTombstones.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persistent persistentHosts=3 persistentVMsPerHost=1 persistentThreadsPerVM=5
+   regionConfig=idleTORegion destroyMethod=expiration numEntriesPerRegion=10000
+
+diskRecovery/reapingTombstones.conf
+   A=controller controllerHosts=1 controllerVMsPerHost=1 controllerThreadsPerVM=1
+   B=persistent persistentHosts=3 persistentVMsPerHost=1 persistentThreadsPerVM=5
+   regionConfig=ttlRegion destroyMethod=expiration numEntriesPerRegion=10000
+

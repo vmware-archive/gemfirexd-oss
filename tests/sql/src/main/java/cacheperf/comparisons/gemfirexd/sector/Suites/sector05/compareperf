@@ -1,0 +1,83 @@
+#!/bin/sh
+
+#-------------------------------------------------------------------------------
+# GFXD peerClient v thinClient
+#-------------------------------------------------------------------------------
+
+echo "Comparing GFXD peerClient v thinClient ratio"
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m -Dgemfire.home=$GEMFIRE \
+     -DJTESTS=$JTESTS -DomitFailedTests=true -DaddTestKey=true \
+     -DcompareByKey=true \
+     -Dmode=ratio \
+     -DcompReportFile=peerClient.v.thinClient.gfxd.joinPruneByPositionAmountAndInstrumentName.ratio.txt \
+  perffmwk.PerfComparer \
+  peerClient.gfxd thinClient.gfxd
+
+echo "Comparing GFXD peerClient v thinClient raw"
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m -Dgemfire.home=$GEMFIRE \
+     -DJTESTS=$JTESTS -DomitFailedTests=true -DaddTestKey=true \
+     -DcompareByKey=true \
+     -DgenerateCSVFile=true -DcsvFile=peerClient.v.thinClient.gfxd.joinPruneByPositionAmountAndInstrumentName.raw.csv \
+     -Dmode=raw \
+     -DcompReportFile=peerClient.v.thinClient.gfxd.joinPruneByPositionAmountAndInstrumentName.raw.txt \
+  perffmwk.PerfComparer \
+  peerClient.gfxd thinClient.gfxd
+
+#-------------------------------------------------------------------------------
+# GFXD thinClient v MYSQL thinClient
+#-------------------------------------------------------------------------------
+
+echo "Comparing GFXD thinClient v MYSQL thinClient ratio"
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m -Dgemfire.home=$GEMFIRE \
+     -DJTESTS=$JTESTS -DomitFailedTests=true -DaddTestKey=true \
+     -DcompareByKey=true \
+     -Dmode=ratio \
+     -DcompReportFile=thinClient.gfxd.v.mysql.joinPruneByPositionAmountAndInstrumentName.ratio.txt \
+  perffmwk.PerfComparer \
+  thinClient.gfxd thinClient.mysql
+
+echo "Comparing GFXD thinClient v MYSQL thinClient raw"
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m -Dgemfire.home=$GEMFIRE \
+     -DJTESTS=$JTESTS -DomitFailedTests=true -DaddTestKey=true \
+     -DcompareByKey=true \
+     -Dmode=raw \
+     -DcompReportFile=thinClient.gfxd.v.mysql.joinPruneByPositionAmountAndInstrumentName.raw.txt \
+  perffmwk.PerfComparer \
+  thinClient.gfxd thinClient.mysql
+
+#-------------------------------------------------------------------------------
+# GFXD peerClient v thinClient including queryResponseTime excluding histogram
+#-------------------------------------------------------------------------------
+
+echo "Comparing GFXD peerClient v thinClient ratio"
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m -Dgemfire.home=$GEMFIRE \
+     -DJTESTS=$JTESTS -DomitFailedTests=true -DaddTestKey=true \
+     -DcompareByKey=true -DstatSpecFile=query.spec \
+     -Dmode=ratio \
+     -DcompReportFile=query.ratio.txt \
+  perffmwk.PerfComparer \
+  peerClient.gfxd thinClient.gfxd
+
+echo "Comparing GFXD peerClient v thinClient raw"
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m -Dgemfire.home=$GEMFIRE \
+     -DJTESTS=$JTESTS -DomitFailedTests=true -DaddTestKey=true \
+     -DcompareByKey=true -DstatSpecFile=query.spec \
+     -DgenerateCSVFile=true -DcsvFile=query.raw.csv \
+     -Dmode=raw \
+     -DcompReportFile=query.raw.txt \
+  perffmwk.PerfComparer \
+  peerClient.gfxd thinClient.gfxd
+
+#-------------------------------------------------------------------------------
+# GFXD peerClient v thinClient histogram
+#-------------------------------------------------------------------------------
+
+echo "Comparing GFXD peerClient v thinClient raw"
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m -Dgemfire.home=$GEMFIRE \
+     -DJTESTS=$JTESTS -DomitFailedTests=true -DaddTestKey=true \
+     -DcompareByKey=true -DstatSpecFile=queryhist.spec \
+     -DgenerateCSVFile=true -DcsvFile=query.histogram.raw.csv \
+     -Dmode=raw \
+     -DcompReportFile=query.histogram.raw.txt \
+  perffmwk.PerfComparer \
+  peerClient.gfxd thinClient.gfxd

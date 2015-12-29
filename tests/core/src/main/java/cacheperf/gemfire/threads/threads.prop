@@ -1,0 +1,21 @@
+#===============================================================================
+#  TEST CONFIGURATION VARIABLES
+#===============================================================================
+
+  hydra.numHosts = 4
+  # see hydraconfig/systemparamsN.inc (number of hosts)
+
+  vmQuantities = 1
+  # see hydra.ClientPrms-vmQuantities
+
+  vmThreads = 100
+  # see hydra.ClientPrms-vmThreads
+
+  trimIterations = 0
+  # see cacheperf.CachePerfPrms-trimIterations
+
+  workIterations = 800000
+  # see cacheperf.CachePerfPrms-workIterations
+
+  batchSize = 200000
+  # see cacheperf.CachePerfPrms-batchSize

@@ -1,0 +1,10 @@
+A = load
+B = miss
+loadHosts = 1
+loadVMsPerHost = 1
+loadThreadsPerVM = 1
+missHosts = 1
+missVMsPerHost = 1
+missThreadsPerVM = 1
+scope = ack
+perffmwk.comparisonKey = perf009

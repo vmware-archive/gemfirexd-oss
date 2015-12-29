@@ -1,0 +1,3 @@
+peerHosts = 1
+peerVMsPerHost = 1
+peerThreadsPerVM = 1

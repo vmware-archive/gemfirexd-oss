@@ -1,0 +1,32 @@
+//------------------------------------------------------------------------------
+// Run these tests using: 
+//
+//      local.i18n.conf
+//
+// WARNING: Most of the logging will be Japanese and render as ???????,
+//          to view the logs correctly use an UTF-8 aware terminal like uxterm.
+//          If this:
+//          これはテストメッセージである。
+//          looks like Japanese writting then you're ok.
+//
+//------------------------------------------------------------------------------
+
+admin/jmxAdminCache.conf
+admin/concRegion.conf hydra.numHosts=3 vmQuantities=1
+
+cq/serialEntryEventWithFeeder.conf
+   A=feed   feedHosts=1 feedVMsPerHost=1 feedThreadsPerVM=1
+   B=edge   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   C=bridge bridgeHosts=2 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   registerInterest = false
+
+diskReg/concDiskRegLRU.conf
+
+durableClients/dynamicInterestPolicyAllKeys.conf bridgeHosts=6 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHosts=10 edgeVMsPerHost=1 edgeThreadsPerVM=1 numOpThreads=5
+durableClients/dynamicInterestPolicyRegex.conf bridgeHosts=6 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 edgeHosts=10 edgeVMsPerHost=1 edgeThreadsPerVM=1 numOpThreads=5
+
+parReg/concParReg.conf peerHosts=2 peerVMsPerHost=2 peerThreadsPerVM=5 redundantCopies=0
+parReg/fillParReg.conf
+
+wan/queuePersist.conf wanSites=2 bridgeVMsPerHost=1 edgeVMsPerHost=1 edgeThreadsPerVM=1
+

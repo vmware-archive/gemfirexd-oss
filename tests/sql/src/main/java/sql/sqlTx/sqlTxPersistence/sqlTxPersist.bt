@@ -1,0 +1,66 @@
+//RC peer driver
+sql/sqlTx/sqlTxPersistence/persistTablesTxWithAccessors.conf
+    locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+    A=store storeHosts=2 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=5
+    workIterationsPerThread=500
+    
+sql/sqlTx/sqlTxPersistence/persistTablesTxUniqWithAccessors.conf
+    locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+    A=store storeHosts=2 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=5
+    workIterationsPerThread=500
+
+sql/sqlTx/sqlTxPersistence/concPersistTablesTxTriggerWithAccessors.conf
+    locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+    A=store storeHosts=2 storeVMsPerHost=5 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=5 accessorThreadsPerVM=12
+    
+sql/sqlTx/sqlTxPersistence/concUpdatePersistTablesTxWithAccessors.conf
+    locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+    A=store storeHosts=2 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=8
+
+//RC client driver with batching
+sql/sqlTx/sqlTxPersistence/persistTablesTxClient.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=1 serverVMsPerHost=5 serverThreadsPerVM=1
+    clientHosts = 1 clientVMsPerHost =6 clientThreadsPerVM = 5
+    workIterationsPerThread=500
+    
+sql/sqlTx/sqlTxPersistence/persistTablesTxUniqClient.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=1 serverVMsPerHost=5 serverThreadsPerVM=1
+    clientHosts = 1 clientVMsPerHost =6 clientThreadsPerVM = 5
+    workIterationsPerThread=500
+
+//RC client driver without batching
+sql/sqlTx/sqlTxPersistence/persistTablesTxNoBatchingClient.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=1 serverVMsPerHost=5 serverThreadsPerVM=1
+    clientHosts = 1 clientVMsPerHost =6 clientThreadsPerVM = 5
+    workIterationsPerThread=500
+    
+//RR peer driver
+sql/sqlTx/sqlTxPersistence/persistTablesRRTxWithAccessors.conf
+    locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+    A=store storeHosts=3 storeVMsPerHost=4 storeThreadsPerVM=1
+    B=accessor accessorHosts=3 accessorVMsPerHost=3 accessorThreadsPerVM=3
+    workIterationsPerThread=500
+    
+//RR client driver
+sql/sqlTx/sqlTxPersistence/persistTablesRRTxClient.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=2 serverVMsPerHost=5 serverThreadsPerVM=1
+    clientHosts = 1 clientVMsPerHost =6 clientThreadsPerVM = 8
+    workIterationsPerThread=500
+    
+//HA tests
+sql/sqlTx/sqlTxPersistence/persistTablesTxWithAccessorsHA.conf
+    locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+    A=store storeHosts=2 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=5
+    workIterationsPerThread=500
+    redundantCopies = 1
+    dropIndex = true
+    

@@ -1,0 +1,10 @@
+A = pub
+B = sub
+pubHosts = 1
+pubVMsPerHost = 1
+pubThreadsPerVM = 1
+subHosts = 1
+subVMsPerHost = 1
+subThreadsPerVM = 1
+scope = ack
+perffmwk.comparisonKey = perf005

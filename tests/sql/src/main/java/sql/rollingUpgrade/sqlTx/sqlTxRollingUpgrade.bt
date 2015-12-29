@@ -1,0 +1,27 @@
+
+sql/rollingUpgrade/sqlTx/concMultiTablesTxIndexWithAccessorsHA.conf
+    locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+    A=store storeHosts=2 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=8
+    dropIndex = true
+    redundantCopies = 1
+
+sql/rollingUpgrade/sqlTx/concMultiTablesTxTriggerWithAccessorsHA.conf 
+    locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+    A=store storeHosts=2 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=8
+    redundantCopies = 1
+
+sql/rollingUpgrade/sqlTx/concUpdateTxWithAccessorsHA.conf
+    locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+    A=store storeHosts=2 storeVMsPerHost=3 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=8
+    redundantCopies = 1
+
+sql/rollingUpgrade/sqlTx/randomPartitionReplicateTablesTxIndexWithAccessorsHA.conf
+    locatorHosts=2 locatorVMsPerHost=1 locatorThreadsPerVM=1
+    A=store storeHosts=2 storeVMsPerHost=1, 3 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=3
+    workIterationsPerThread=500
+    dropIndex = true
+    redundantCopies = 1

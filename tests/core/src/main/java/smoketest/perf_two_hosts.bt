@@ -1,0 +1,44 @@
+smoketest/perf/perf016.conf onlyOnPlatforms=Linux,SunOS,AIX
+smoketest/perf/perf017.conf onlyOnPlatforms=Linux,SunOS,AIX
+smoketest/perf/perf019.conf
+smoketest/perf/perf059.conf onlyOnPlatforms=Linux,SunOS,AIX
+smoketest/perf/perf060.conf onlyOnPlatforms=Linux,SunOS,AIX
+smoketest/perf/perf061.conf onlyOnPlatforms=Linux,SunOS,AIX
+smoketest/perf/perf062.conf
+smoketest/perf/perf063.conf
+smoketest/perf/perf064.conf onlyOnPlatforms=Linux,SunOS,AIX
+smoketest/perf/perf065.conf
+smoketest/perf/perf066.conf
+smoketest/perf/perf067.conf
+smoketest/perf/perf068.conf onlyOnPlatforms=Linux,SunOS,AIX
+smoketest/perf/perf069.conf
+smoketest/perf/perf070.conf
+smoketest/perf/perf071.conf onlyOnPlatforms=Linux,SunOS,AIX
+smoketest/perf/perf072.conf
+smoketest/perf/perf074.conf onlyOnPlatforms=Linux,SunOS,AIX
+smoketest/perf/perf074.conf onlyOnPlatforms=Windows sleepMs = 100
+smoketest/perf/perf076.conf
+smoketest/perf/perf082.conf onlyOnPlatforms=Linux,SunOS,AIX
+smoketest/perf/perf083.conf
+smoketest/perf/perf088.conf
+smoketest/perf/perf089.conf
+smoketest/perf/perf090.conf
+smoketest/perf/perf091.conf
+smoketest/perf/perf102.conf onlyOnPlatforms=Linux,SunOS,AIX
+smoketest/perf/perf102.conf onlyOnPlatforms=Windows sleepMs = 100
+smoketest/perf/perf103.conf onlyOnPlatforms=Linux,SunOS,AIX
+smoketest/perf/perf103.conf onlyOnPlatforms=Windows sleepMs = 100
+smoketest/perf/perf104.conf onlyOnPlatforms=Linux,SunOS,AIX
+smoketest/perf/perf104.conf onlyOnPlatforms=Windows sleepMs = 100
+smoketest/perf/perf105.conf onlyOnPlatforms=Linux,SunOS,AIX
+smoketest/perf/perf105.conf onlyOnPlatforms=Windows sleepMs = 200
+smoketest/perf/perf112.conf
+smoketest/perf/perf145.conf
+smoketest/perf/perf146.conf
+smoketest/perf/perf147.conf
+smoketest/perf/perf148.conf
+smoketest/perf/perf149.conf
+smoketest/perf/perf150.conf
+smoketest/perf/perf151.conf
+smoketest/perf/perf152.conf
+smoketest/perf/perf153.conf

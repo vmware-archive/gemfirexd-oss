@@ -1,0 +1,12 @@
+// Run with this in the local.conf:
+//
+//      hydra.GemFirePrms-socketBufferSize = 1000000;
+//
+cacheperf/comparisons/dataFeed/partitionRemoteGet.conf
+  bridgeHosts        = 3  edgeHosts        = 24,48,72,96
+  bridgeVMsPerHost   = 1  edgeVMsPerHost   = 1
+  bridgeThreadsPerVM = 1  edgeThreadsPerVM = 1
+  totalBytes = 3000000000 dataSize = 32000,2000000,10000000
+  keyAllocation = same
+  useFixedKeys = false useFixedVal = false
+  trimSeconds = 120 workSeconds = 180

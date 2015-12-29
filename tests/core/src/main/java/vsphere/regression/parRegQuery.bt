@@ -1,0 +1,45 @@
+//partitioned region
+/*parReg/query/concBridgeNotify.conf
+        bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+        edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+        threadGroupsName=opThread*/
+parReg/query/serialCountQueryEntryParReg.conf
+   threadGroupsName=default
+
+//parReg indexing 
+parReg/query/serialQueryIndexEntryParReg.conf
+   threadGroupsName=default
+parReg/query/serialCountQueryIndexEntryParReg.conf
+   threadGroupsName=default
+  
+//non partitioned region
+parReg/query/serialQueryEntry.conf
+   threadGroupsName=default
+query/concQueryEntry.conf
+   threadGroupsName=default
+
+//non partitioned indexing
+parReg/query/concQueryIndexEntry.conf
+   threadGroupsName=default
+parReg/query/serialQueryIndexEntry.conf
+   threadGroupsName=default
+
+// query with prPersistence
+/*parReg/query/persistence/concBridgeNotifyPersist.conf
+        bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+        edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+		threadGroupsName=opThread*/
+
+parReg/query/persistence/serialQueryEntryParRegHAPersist.conf
+   threadGroupsName=default
+parReg/query/persistence/serialQueryIndexEntryParRegHAPersist.conf
+   threadGroupsName=default
+parReg/query/persistence/concQueryOnlyParRegHAPersist.conf
+   threadGroupsName=default
+parReg/query/persistence/concQueryIndexParRegHAPersist.conf
+   threadGroupsName=default
+parReg/query/persistence/concQueryEntryParRegWithLimitPersist.conf queryLimit=10
+   threadGroupsName=default
+parReg/query/persistence/concQueryIndexEntryParRegWithLimitPersist.conf queryLimit=10
+  threadGroupsName=default
+

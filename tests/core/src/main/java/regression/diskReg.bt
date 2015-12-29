@@ -1,0 +1,9 @@
+// DiskRegion tests
+// estimated runtime = 8 hours
+
+include $JTESTS/diskReg/diskReg.bt
+include $JTESTS/mapregion/diskRegion/diskReg.bt
+include $JTESTS/diskReg/oplogs/diskRegMiscTest.bt
+include $JTESTS/diskReg/oplogs/oplogs.bt
+include $JTESTS/diskReg/oplogs/regionRecovery.bt
+include $JTESTS/diskReg/oplogs/multiDiskReg.bt

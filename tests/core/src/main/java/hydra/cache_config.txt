@@ -1,0 +1,278 @@
+
+                        Cache Configuration With Hydra
+--------------------------------------------------------------------------------
+
+Configuration API
+-----------------
+The new hydra cache configuration support is meant to be easier to use and more complete than the many alternatives.  To get started, build the javadocs for the test tree and explore the following classes in hydra/:
+
+    GemFirePrms                DistributedSystemHelper
+
+    CachePrms                  CacheHelper
+    RegionPrms                 RegionHelper
+    DiskStorePrms
+    PartitionPrms
+
+                               CacheServerHelper
+    BridgePrms                 BridgeHelper
+    PoolPrms                   PoolHelper and EdgeHelper
+
+    GatewayPrms                GatewayHelper
+    GatewayHubPrms             GatewayHubHelper
+
+    ConfigPrms (convenience class not used by hydra master controller)
+
+Also explore the topology include files in hydraconfig/:
+
+    topology_2.inc             topology_3.inc
+    topology_p2p.inc           topology_p2p_2.inc
+    topology_hct.inc
+    topology_wan_p2p.inc       topology_wan_hct.inc
+
+Using parameter classes
+-----------------------
+The new parameter classes are parsed into description instances by the hydra master controller at test configuration time.  They work just as the other hydra paramter classes do.  The "names" parameter is used to give a unique logical name to each description instance.  For example,
+
+    hydra.RegionPrms-names = bridge edge;
+
+produces two RegionDescriptions, named "bridge" and "edge".  Other parameters are assigned positionally with the usual default-left behavior.  For example,
+
+    hydra.RegionPrms-names = bridge edge;
+    hydra.RegionPrms-dataPolicy = replicate empty;
+    hydra.RegionPrms-scope = dack;
+
+gives the "bridge" region description the data policy "replicate" and the "edge" description "empty".  Both would use scope "dack".
+
+Use a value of hydra.PartitionPrms-names as the hydra.RegionPrms-partitionName, along with hydra.RegionPrms-dataPolicy=partition, to make a region partitioned.
+
+Use a value of hydra.DiskStorePrms-names as the hydra.RegionPrms-diskStoreName to configure disk writes in regions that use persistence.
+
+Use values of hydra.PoolPrms-names as the hydra.RegionPrms-poolName to connect clients to servers.
+
+To see how master controller has configured each description, look at "latest.prop" in the test directory.
+
+
+Using helper classes
+--------------------
+The new helper classes allow test tasks to create, access, and manage caches, regions, bridges, and gateways.  A hydra client VM can use helper methods to create its cache and region(s) and optionally turn itself into a bridge server and/or gateway hub.
+
+There are many ways to use helper methods.  For example,
+
+    RegionHelper.createRegion("portfolios");
+
+creates a region named "DefaultRegion" using the region description with logical name "portfolios":
+
+    hydra.RegionPrms-names = portfolios clients;
+    hydra.RegionPrms-scope = dack       local;
+
+and gives the region scope "dack".  The region name can be configured using an optional parameter:
+
+    hydra.RegionPrms-regionName = Portfolios ClientList;
+
+Or it can be specified as a helper method argument, overriding the parameter if it is specified:
+
+    RegionHelper.createRegion("Portfolios", "portfolios");
+
+Many regions can be created from a single region description:
+
+    for (int i = 0; i < NUM_PORTFOLIO_TYPES; i++) {
+      RegionHelper.createRegion("Portfolio" + i, "portfolios");
+    }
+
+It is up to the test to provide the glue between logical description names and hydra clients.  The logical description names can be hardwired as above, use the
+hydra convenience class ConfigPrms, or use test-specific parameters.  For
+example,
+
+    import hydra.ConfigPrms;
+    String regionConfig = ConfigPrms.getRegionConfig();
+    RegionHelper.createRegion(regionConfig);
+or
+    import mypkg.MyPrms;
+    String regionConfig = TestConfig.tab().stringAt(MyPrms.firstRegionConfig);
+    RegionHelper.createRegion(firstRegionConfig);
+
+where mypkg.MyPrms-firstRegionConfig is found in hydra.RegionPrms-names.
+
+Helper methods are typically used in a test task that is mapped to the relevant hydra THREADGROUP.  For example, a threadgroup can be used to manage which client VMs become bridge servers:
+
+    INITTASK taskClass = mypkg.MyCode taskMethod = initServerTask
+    threadGroups = bridge;
+
+    INITTASK taskClass = mypkg.MyCode taskMethod = initClientTask
+    threadGroups = edge;
+
+where the server method starts a bridge server but the client method does not:
+
+    public static void initServerTask() {
+      CacheHelper.createCache("bridge");
+      RegionHelper.createRegion("bridge");
+      BridgeHelper.startBridgeServer("bridge");
+    }
+    public static void initClientTaskTask() {
+      CacheHelper.createCache("edge");
+      RegionHelper.createRegion("edge");
+    }
+
+Alternatively, task attributes can be used to overload a task, provided they are read using TestConfig.tasktab().  For example,
+
+    INITTASK taskClass = mypkg.MyClient taskMethod = openCacheTask
+    hydra.ConfigPrms-cacheConfig = bridge
+    hydra.ConfigPrms-regionConfig = bridge
+    hydra.ConfigPrms-bridgeConfig = bridge
+    threadGroups = bridge;
+
+    INITTASK taskClass = mypkg.MyClient taskMethod = openCacheTask
+    hydra.ConfigPrms-cacheConfig = edge
+    hydra.ConfigPrms-regionConfig = edge
+    threadGroups = edge;
+
+But note that hydra configuration parameters cannot be used as task attributes.  These parameters are read only at test configuration time, and are global, not task-specific.
+
+Helper methods are intended for use by a VM that will use the result.  Few of the methods make sense in any other context.  In addition, some configuration parameters, such as ports, endpoints, and disk directory names, are not set until a helper method requires them, and their values derive from the configured environment in which the VM is executing.
+
+Since endpoint information for bridge servers and gateway hubs is autogenerated,
+certain helper methods must execute after others.  For example, a region with
+a pool using bridge endpoints cannot be created until after all bridges to which it wishes to connect have been created.  Otherwise, endpoint discovery will fail.  Hydra manages endpoint information using blackboards.  This allows a bridge server to be cycled, yet always use the same port.
+
+The old-style helper methods in util.CacheUtil and hydra.DistributedConnectionMgr are deprecated.  Use hydra.CacheHelper and hydra.DistributedSystemHelper instead.
+
+To stop and start bridge servers dynamically, use the ClientVmMgr API for dynamic hydra client stop/start.
+
+To see the complete and exact configuration used by a helper method, look at the log file of the VM that invoked the method for complete information.
+
+
+Tips for randomization
+----------------------
+Most configuration parameters can use ONEOF, RANGE, and ROBING to get some variation in values.  For example,
+
+    hydra.RegionPrms-names = bridge edge;
+    hydra.RegionPrms-scope = oneof noack ack global foeno // bridge
+                             local;                       // edge
+
+gives the "bridge" description a random one of the given scopes each time the test is run.  All regions created from the "bridge" description would then use the same scope.  The "edge" description would always use scope "local".
+
+Care must be taken to avoid unintended randomization.  For example,
+
+    hydra.RegionPrms-names = bridge1 bridge2 edge1 edge2;
+    hydra.RegionPrms-scope = oneof noack ack global foeno;
+
+reads the scope four times, once for each region description name, giving each description its own random scope.  That is, "bridge1" might get "ack" while "bridge2" gets "global".  Make sure this is what you want.
+
+To use the same random scope in regions created from the multiple region descriptions in the example above, add:
+
+    hydra.Prms-useFixedRandomInMaster= true;
+
+which forces the hydra master controller to use a fixed random value for each Range and Oneof it encounters.  That is, "bridge1", "bridge2", "edge1", and "edge2" would all get the same randomly chosen scope.
+
+If the number of permutations is manageable and full coverage is desired, use a test configuration variable:
+
+    hydra.RegionPrms-scope = ${scope};
+
+and set up a batterytest file that uses all settings:
+
+    mypkg/mytest.conf scope = ack, noack, global
+
+For cases that cannot be handled any other way, generate randomization in test-specific parameters and/or test code, then modify the configuration produced by the region description.  Use a hydra blackboard to coordinate sharing the same random value across multiple VMs, if needed.
+
+    AttributesFactory factory = RegionHelper.getAttributesFactory(config);
+    factory.setScope(myScopeGeneratedRandomly);
+    RegionHelper.createRegion(factory);
+
+It is especially important when using randomization to check the descriptions in latest.prop and the helper method log messages to make sure the test is configuring everything as intended.
+
+
+Tips for hierarchical cache: connection management
+--------------------------------------------------
+The product uses a java thread local to store connections for instances of Pool.  If the pool is configured to use thread local connections, then the same connection is used for each request.  However, hydra schedules tasks onto logical hydra threads.  Each time a task is assigned, a new Java thread is created to do the work.  This causes the thread local connection to be lost at the task boundary.
+
+EdgeHelper provides an API for managing thread local connections across hydra task boundaries.  It uses hydra thread locals to provide the equivalent functionality of the product's Java thread locals.
+
+When a logical hydra thread creates or accesses a region for the first time, invoke:
+
+    hydra.EdgeHelper#addThreadLocalConnection(Region region)
+
+Upon entering a task that will use the connection, invoke:
+
+    hydra.EdgeHelper.restoreThreadLocalConnections();
+
+And upon leaving the task, invoke:
+
+    hydra.EdgeHelper.saveThreadLocalConnections();
+
+Care must be taken to avoid races during cache close operations.  Invoke:
+
+    hydra.EdgeHelper.removeThreadLocalConnection(Region r);
+
+before closing the cache.
+
+Tips for hierarchical cache: load balancing
+-------------------------------------------
+Near-perfect load balancing is usually expected when there are many more edge clients than bridge servers.  However, if edges start up at the same time, the load balancing does not work that well.
+
+One way to improve the balance is for edges to start sequentially and slowly.  Another way is to choose a good "hydra.PoolPrms-contactAlgorithm".  The default algorithm, "PoolHelper.getRandomContacts" uses a NanoTimer-seeded random number generator to randomize the server locator list.  To guarantee perfect load balance, use EdgeHelper.getRoundRobinEndpoints",
+
+Using include files
+-------------------
+The new topology include files are meant to make it easier to configure hosts, vms, distributed systems, and clients, while building in the common scaling knobs such as number of hosts, VMs per host, and threads per VM.
+
+See the top of each file for a description of the topology and the test configuration properties required to make it run.  Each file includes a "hydra.Prms-testTopology" parameter that describes the topology in detail, so "hydra.Prms-testDescription" can omit this and focus solely on test behavior.
+
+The topologies divide VMs into logical named subgroups, as needed.  For example, "topology_hct.inc" divides VMs into "bridge" and "edge" types that can be separately scaled and mapped to things like hosts, extra VM arguments, and hydra threadgroups.
+
+Some files use nested properties to allow a test to choose the names for each subgroup.  For example, "topology_2.inc" divides VMs into two subgroups whose names are configurable, using, say, the properties A=bridge and B=edge.
+
+Note that all include files require the test configuration file to specify threadgroups, if any.  Commented out examples are included for convenience.  The same is true for hydra.Prms-extraVMArgs.
+
+In some cases, hydra.GemFirePrms-distributedSystem is also left to the test configuration.  Be sure to take note of what is and is not provided by the include file.
+
+
+Using XML
+---------
+The CacheHelper API allows tests to create caches and regions using XML that is
+generated from configuration descriptions.  This is the preferred method of
+using XML in tests.  However, if a test needs for some reason to use an
+existing XML file, the API exists to do that, but bridge port information
+must be replaced with a tag (see the javadocs for more information).
+
+At present, only cache, region (including dynamic regions), and bridge/edge
+configuration is supported.  If there is a need for additional support, such
+as gateways, send a request to lises@gemstone.com.
+
+
+Sample tests
+------------
+Here are some examples of tests using various include files and frameworks.  Take a look at the .conf files, their .prop files, their .bt entries, and the methods used by their tasks.
+
+    perftest/pub.conf
+        hydraconfig/topology_p2p.inc
+        hydra/CachePrms, CacheHelper, RegionPrms, RegionHelper
+
+    cacheperf/comparisons/useCase17.conf
+        hydraconfig/topology_p2p_2.inc
+        hydra/CachePrms, CacheHelper, RegionPrms, RegionHelper
+
+    conflation/conflation.conf
+        hydraconfig/topology_hct.con
+        hydra/CachePrms, CacheHelper, RegionPrms, RegionHelper
+        hydra/BridgePrms, BridgeHelper, PoolPrms, EdgeHelper
+
+    wan/p2pkill.conf
+        hydraconfig/topology_wan_p2p.inc
+        hydra/CachePrms, CacheHelper, RegionPrms, RegionHelper
+        hydra/GatewayHubPrms, GatewayHubHelper, GatewayPrms, GatewayHelper
+
+    wan/hct.conf
+        hydraconfig/topology_wan_hct.inc
+        hydra/CachePrms, CacheHelper, RegionPrms, RegionHelper
+        hydra/BridgePrms, BridgeHelper, PoolPrms, EdgeHelper
+        hydra/GatewayHubPrms, GatewayHubHelper, GatewayPrms, GatewayHelper
+
+    cacheServer/bounceCacheServer.conf
+        hydraconfig/systemparams1.inc
+        hydra/CacheServerHelper
+
+    hct/useCase1Failover.conf
+        hydraconfig/topology_3.inc
+        hydra.CacheHelper.createFromXml (bridge)
+        hydra/CachePrms, CacheHelper, RegionPrms, RegionHelper (edge)
+        hydra/PoolPrms, EdgeHelper (edge)

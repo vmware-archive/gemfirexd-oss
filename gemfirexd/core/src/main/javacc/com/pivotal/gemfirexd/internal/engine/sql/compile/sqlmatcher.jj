@@ -1,0 +1,2300 @@
+/*
+ * Copyright (c) 2010-2015 Pivotal Software, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you
+ * may not use this file except in compliance with the License. You
+ * may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * permissions and limitations under the License. See accompanying
+ * LICENSE file.
+ */
+/*
+   Portions taken from sqlgrammar.jj from Apache Derby having the following license.
+
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to you under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
+*/
+options
+{
+	STATIC = false;
+	LOOKAHEAD = 1;
+	DEBUG_PARSER = false;
+	DEBUG_LOOKAHEAD = false;
+	DEBUG_TOKEN_MANAGER = false;
+	ERROR_REPORTING = true;
+	USER_TOKEN_MANAGER = false;
+	USER_CHAR_STREAM = true;
+	COMMON_TOKEN_ACTION = true;
+	CACHE_TOKENS = true;
+	UNICODE_INPUT = true;
+}
+
+PARSER_BEGIN(SQLMatcher)
+
+package com.pivotal.gemfirexd.internal.engine.sql.compile;
+
+import com.pivotal.gemfirexd.internal.iapi.sql.Statement;
+import com.pivotal.gemfirexd.internal.iapi.sql.StatementType;
+
+/* aggregates */
+import com.pivotal.gemfirexd.internal.impl.sql.compile.CountAggregateDefinition;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.MaxMinAggregateDefinition;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.SumAvgAggregateDefinition;
+import com.pivotal.gemfirexd.internal.engine.sql.compile.ParameterizedConstantNode;
+
+import com.pivotal.gemfirexd.internal.impl.sql.compile.AggregateNode;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.BinaryOperatorNode;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.CallStatementNode;
+import	com.pivotal.gemfirexd.internal.impl.sql.compile.CharConstantNode;
+import	com.pivotal.gemfirexd.internal.impl.sql.compile.CastNode;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.ColumnDefinitionNode;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.ColumnReference;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.CursorNode;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.FromBaseTable;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.FromList;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.FromSubquery;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.GroupByList;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.HasNodeVisitor;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.JavaToSQLValueNode;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.JoinNode;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.MethodCallNode;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.NewInvocationNode;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.NumericConstantNode;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.QueryTreeNode;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.ReplaceAggregatesWithCRVisitor;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.ResultColumnList;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.ResultColumn;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.OrderByList;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.OrderByColumn;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.ResultSetNode;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.SelectNode;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.SubqueryNode;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.TableName;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.TernaryOperatorNode;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.ParameterNode;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.PrivilegeNode;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.ConstraintDefinitionNode;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.StatementNode;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.TableElementList;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.TableElementNode;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.TablePrivilegesNode;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.TriggerReferencingStruct;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.UnionNode;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.IntersectOrExceptNode;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.UnaryOperatorNode;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.UntypedNullConstantNode;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.UpdateNode;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.UserTypeConstantNode;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.ValueNode;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.ValueNodeList;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.GroupByColumn;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.CurrentDatetimeOperatorNode;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.DDLStatementNode;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.AlterTableNode;
+
+import com.pivotal.gemfirexd.internal.engine.sql.compile.ParseException;
+import com.pivotal.gemfirexd.internal.engine.sql.compile.Token;
+import com.pivotal.gemfirexd.internal.engine.sql.compile.TokenMgrError;
+import com.pivotal.gemfirexd.internal.engine.sql.compile.SQLMatcherConstants;
+import com.pivotal.gemfirexd.internal.engine.sql.compile.CharStream;
+import com.pivotal.gemfirexd.internal.impl.sql.execute.TablePrivilegeInfo;
+import com.pivotal.gemfirexd.internal.iapi.sql.dictionary.DataDictionary;
+import com.pivotal.gemfirexd.internal.iapi.sql.dictionary.TableDescriptor;
+import com.pivotal.gemfirexd.internal.iapi.sql.dictionary.TriggerDescriptor;
+import com.pivotal.gemfirexd.internal.iapi.sql.dictionary.ViewDescriptor;
+import com.pivotal.gemfirexd.internal.iapi.sql.dictionary.SchemaDescriptor;
+
+import com.pivotal.gemfirexd.internal.iapi.sql.conn.Authorizer;
+import com.pivotal.gemfirexd.internal.iapi.sql.execute.ConstantAction;
+import com.pivotal.gemfirexd.internal.iapi.sql.execute.ExecutionContext;
+
+import com.pivotal.gemfirexd.internal.iapi.types.DataTypeDescriptor;
+import com.pivotal.gemfirexd.internal.iapi.types.TypeId;
+import com.pivotal.gemfirexd.internal.iapi.sql.compile.TypeCompiler;
+import com.pivotal.gemfirexd.internal.iapi.sql.conn.LanguageConnectionContext;
+
+import com.pivotal.gemfirexd.internal.iapi.types.DateTimeDataValue;
+import com.pivotal.gemfirexd.internal.iapi.types.DataTypeDescriptor;
+import com.pivotal.gemfirexd.internal.iapi.types.DataTypeUtilities;
+import com.pivotal.gemfirexd.internal.iapi.types.SQLChar;
+import com.pivotal.gemfirexd.internal.iapi.types.SQLInteger;
+import com.pivotal.gemfirexd.internal.iapi.types.StringDataValue;
+import com.pivotal.gemfirexd.internal.iapi.types.DataValueDescriptor;
+
+import com.pivotal.gemfirexd.internal.iapi.error.StandardException;
+
+import com.pivotal.gemfirexd.internal.iapi.reference.Property;
+import com.pivotal.gemfirexd.internal.iapi.reference.SQLState;
+import com.pivotal.gemfirexd.internal.iapi.reference.JDBC30Translation;
+import com.pivotal.gemfirexd.internal.iapi.reference.JDBC40Translation;
+import com.pivotal.gemfirexd.internal.iapi.reference.Limits;
+
+import com.pivotal.gemfirexd.internal.iapi.sql.compile.CompilerContext;
+import com.pivotal.gemfirexd.internal.iapi.sql.compile.C_NodeTypes;
+import com.pivotal.gemfirexd.internal.iapi.sql.compile.TypeCompilerFactory;
+import com.pivotal.gemfirexd.internal.iapi.services.context.ContextManager;
+
+import com.pivotal.gemfirexd.internal.iapi.sql.compile.NodeFactory;
+
+import com.pivotal.gemfirexd.internal.iapi.services.sanity.SanityManager;
+
+import com.pivotal.gemfirexd.internal.catalog.AliasInfo;
+import com.pivotal.gemfirexd.internal.catalog.TypeDescriptor;
+import com.pivotal.gemfirexd.internal.catalog.types.RoutineAliasInfo;
+
+import com.pivotal.gemfirexd.internal.iapi.services.io.FormatableProperties;
+//import com.pivotal.gemfirexd.internal.iapi.services.io.StoredFormatIds;
+import com.pivotal.gemfirexd.internal.shared.common.StoredFormatIds;
+import com.pivotal.gemfirexd.internal.iapi.util.ReuseFactory;
+import com.pivotal.gemfirexd.internal.iapi.services.io.FormatableBitSet;
+import com.pivotal.gemfirexd.internal.iapi.util.StringUtil;
+
+import java.sql.Types;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Properties;
+import java.util.StringTokenizer;
+import java.util.Vector;
+import java.lang.Character;
+
+// GemStone changes BEGIN
+
+import com.gemstone.gemfire.cache.AttributesFactory;
+import com.gemstone.gemfire.cache.PartitionAttributesFactory;
+import com.gemstone.gemfire.cache.PartitionAttributes;
+import com.gemstone.gemfire.cache.RegionAttributes;
+
+import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
+
+// GemStone changes END
+
+public class SQLMatcher
+{
+    private boolean m_isValue;
+    // workaround for a weird error with some javacc generation
+    private boolean jj_lookingAhead;
+    private Token jj_scanpos;
+	private static final String[] SAVEPOINT_CLAUSE_NAMES = {"UNIQUE", "ON ROLLBACK RETAIN LOCKS", "ON ROLLBACK RETAIN CURSORS"};
+	private static final String[] ROUTINE_CLAUSE_NAMES =
+		{null, "SPECIFIC", "RESULT SET", "LANGUAGE", "EXTERNAL NAME", "PARAMETER STYLE", "SQL", "ON NULL INPUT"};
+	/**
+	   Clauses required for Java routines. Numbers correspond
+	   to offsets in ROUTINE_CLAUSE_NAMES.
+	   3 - "LANGUAGE"
+	   4 - "EXTERNAL NAME"
+	   5 - "PARAMETER STYLE"
+	*/
+	private static final int[] JAVA_ROUTINE_CLAUSES = {3,4,5};
+	private static final String[] TEMPORARY_TABLE_CLAUSE_NAMES = {"NOT LOGGED", "ON COMMIT", "ON ROLLBACK"};
+	/* The default length of a char or bit if the length is omitted */
+	private static final int	DEFAULT_STRING_COLUMN_LENGTH = 1;
+
+	// Defines for ON or USING clauses
+	private static final int	ON_OR_USING_CLAUSE_SIZE = 2;
+	private static final int	ON_CLAUSE = 0;
+	private static final int	USING_CLAUSE = 1;
+
+	// Defines for optional table clauses
+	private static final int	OPTIONAL_TABLE_CLAUSES_SIZE = 3;
+	private static final int	OPTIONAL_TABLE_CLAUSES_TABLE_PROPERTIES = 0;
+	private static final int	OPTIONAL_TABLE_CLAUSES_DERIVED_RCL = 1;
+	private static final int	OPTIONAL_TABLE_CLAUSES_CORRELATION_NAME = 2;
+
+	// Define for UTF8 max
+	private static final int	MAX_UTF8_LENGTH = 65535;
+
+    // Constants for set operator types
+    private static final int NO_SET_OP = 0;
+    private static final int UNION_OP = 1;
+    private static final int UNION_ALL_OP = 2;
+    private static final int EXCEPT_OP = 3;
+    private static final int EXCEPT_ALL_OP = 4;
+    private static final int INTERSECT_OP = 5;
+    private static final int INTERSECT_ALL_OP = 6;
+
+	private Object[]					paramDefaults;
+	private String						statementSQLText;
+	private NodeFactory					nodeFactory;
+	private ContextManager				cm;
+	private CompilerContext				compilerContext;
+
+	static final String SINGLEQUOTES = "\'\'";
+	static final String DOUBLEQUOTES = "\"\"";
+
+    /* The number of the next constant in DML */
+    private int         constantNumber = 0;
+
+	public final void setCompilerContext(CompilerContext cc) {
+		this.compilerContext = cc;
+		this.cm = cc.getContextManager();
+	}
+	
+	/**
+	  *	Get the NodeFactory for this database.
+	  *
+	  *	@return	The NodeFactory for this database.
+	  * @exception StandardException		Thrown on error
+	  */
+	private	final NodeFactory	getNodeFactory()	throws StandardException
+	{
+		if ( nodeFactory == null )
+		{
+			nodeFactory = getCompilerContext().getNodeFactory();
+		}
+
+		return	nodeFactory;
+	}
+
+	private final CompilerContext getCompilerContext()
+	{		
+		return compilerContext;			
+	}
+
+	private DataTypeDescriptor getDataTypeServices(int type, int precision, int scale,
+			int length)
+	{
+		return new DataTypeDescriptor(
+					TypeId.getBuiltInTypeId(type),
+					precision,
+					scale,
+					true, /* assume nullable for now, change it if not nullable */
+					length
+				);
+	}
+
+    /*
+	private DataTypeDescriptor getJavaClassDataTypeDescriptor(String javaClassName) 
+	{
+		return new DataTypeDescriptor(
+					TypeId.getUserDefinedTypeId(
+								javaClassName, 
+								lastTokenDelimitedIdentifier.booleanValue()),
+					true);
+	}*/
+	
+	private LanguageConnectionContext getLanguageConnectionContext()
+	{
+		return (LanguageConnectionContext) getContextManager().getContext(
+										LanguageConnectionContext.CONTEXT_ID);
+	}
+
+       private  TypeCompiler getTypeCompilerForLiteralToken(int tokKind, String tokImag)
+              throws StandardException 
+        {    
+           TypeCompilerFactory tcf = getCompilerContext().getTypeCompilerFactory();
+           TypeCompiler tc = null;
+           switch(tokKind) {
+           case STRING:
+              tc = tcf.getTypeCompiler(TypeId.CHAR_ID);
+              break;
+           case   EXACT_NUMERIC:
+              TypeId typeId = DataTypeUtilities.getNumericTypeIdForNumber(tokImag);
+              tc = tcf.getTypeCompiler(typeId);
+              break;  
+           case   APPROXIMATE_NUMERIC:
+            //Assume Double.
+            tc = tcf.getTypeCompiler(TypeId.getBuiltInTypeId(Types.DOUBLE));
+            break;
+          }
+           return tc;
+       }  
+ 
+	/**
+	 * check if the type length is ok for the given type.
+	 */
+	private void checkTypeLimits(int type, int length)
+		throws StandardException
+	{	
+	boolean valid = true;
+
+		
+	switch (type) {
+		case Types.BINARY:
+		case Types.CHAR:
+			if (length  > Limits.DB2_CHAR_MAXWIDTH)
+				valid = false;
+			break;
+			
+		case Types.VARBINARY:
+		case Types.VARCHAR:
+			if (length  > Limits.DB2_VARCHAR_MAXWIDTH)
+				valid = false;
+
+			break;
+		default:
+			break;
+	}
+	if (!valid)  // If these limits are too big 
+		{
+			DataTypeDescriptor charDTD = 
+				DataTypeDescriptor.getBuiltInDataTypeDescriptor(type, length);
+	
+			throw StandardException.newException(SQLState.LANG_DB2_LENGTH_PRECISION_SCALE_VIOLATION, charDTD.getSQLstring());
+		}	
+	}
+	
+	
+
+	// Get the current ContextManager
+	private final ContextManager getContextManager()
+	{
+		return cm;
+	}
+
+	/*
+	** Compress 2 adjacent (single or double) quotes into a single (s or d) quote when
+	** found in the beginning, middle or end of a String.
+	** NOTE:  """" or '''' will be compressed into "" or ''.
+	** 		  This function assumes that the leading and trailing quote from a
+	** 		  string or delimited identifier have already been removed.
+    */
+	private static String compressQuotes(String source, String quotes)
+	{
+		String	result = source;
+		int		index;
+	
+		/* Find the first occurrence of adjacent quotes. */
+		index = result.indexOf(quotes, 0);
+		
+		/* Replace each occurrence with a single quote and begin the
+		 * search for the next occurrence from where we left off.
+		 */
+		while (index != -1 && index != source.length())
+		{
+			result = result.substring(0, index + 1) + result.substring(index + 2);
+
+			index = result.indexOf(quotes, index + 1);
+		}
+
+		return result;
+	}
+	
+	private static void verifyImageLength(String image) throws StandardException
+		{
+		// beetle 2758.  For right now throw an error for literals > 64K
+		if (image.length() > MAX_UTF8_LENGTH)
+			{
+	   	throw StandardException.newException(SQLState.LANG_INVALID_LITERAL_LENGTH);
+			}	
+		}
+
+	/*
+	** Converts a delimited id to a canonical form.
+	** Post process delimited identifiers to eliminate leading and
+	** trailing " and convert all occurrences of "" to ".
+	*/
+	private static String normalizeDelimitedID(String str)
+	{
+		str = compressQuotes(str, DOUBLEQUOTES);
+		return str;
+	}
+	
+	private static boolean isDATETIME(int val)
+	{
+		if (val == DATE || val == TIME || val == TIMESTAMP)
+			return true;
+		else
+			return false;
+	}
+
+	/**
+	 * Determine whether a sequence of tokens represents one of
+	 * the common (built-in) datatypes.
+	 *
+	 * @param checkFollowingToken true if additonal token for NATIONAL
+	 *        or LONG should be checked
+	 * @param start starting token index of the sequence
+	 * @return	TRUE iff the next set of tokens names a common datatype
+	 */
+	boolean commonDatatypeName(int start, boolean checkFollowingToken)
+	{
+		boolean retval = false;
+
+		switch (getToken(start).kind)
+		{
+		  case CHARACTER:
+		  case CHAR:
+		  case VARCHAR:
+		  case NVARCHAR:
+		  case NCHAR:
+		  case BIT:
+		  case NUMERIC:
+		  case DECIMAL:
+		  case DEC:
+		  case INTEGER:
+		  case INT:
+		  case SMALLINT:
+		  case LONGINT:
+		  case FLOAT:
+		  case REAL:
+		  case DATE:
+		  case TIME:
+		  case TIMESTAMP:
+		  case BOOLEAN:
+		  case DOUBLE:
+		  case BLOB:
+		  case CLOB:
+		  case JSON:
+		  case NCLOB:
+		  case BINARY: // LARGE OBJECT
+		  case XML:
+			retval = true;
+			break;
+
+		  case LONG:
+			if (checkFollowingToken == true)
+			{
+				switch (getToken(start+1).kind)
+				{
+				  case VARCHAR:
+				  case NVARCHAR:
+				  case BINARY:
+				  case VARBINARY:
+				  case BIT:
+					retval = true;
+					break;
+				}
+				break;
+			}
+			else
+			{
+				retval = true;
+				break;
+			}
+
+		  case NATIONAL:
+			if (checkFollowingToken == true)
+			{
+				switch (getToken(start+1).kind)
+				{
+				  case CHAR:
+				  case CHARACTER:
+					retval = true;
+					break;
+				}
+				break;
+			}
+			else
+			{
+				retval = true;
+				break;
+			}
+		}
+
+		return retval;
+	}
+
+	/**
+	 * Determine whether the next token is the beginning of a propertyList(). 
+	 * A properties list is the comment "--gemfirexd-properties" followed by a 
+	 * dot-separated list, followed by an =, followed by a value all on that 
+	 * comment line. This means that the comment should start with the word
+	 * "gemfirexd-properties".
+	 *
+	 * @return	TRUE iff the next token is gemfirexd-properties 
+	 */
+	private boolean derbyPropertiesListFollows()
+	{
+		return 
+			getToken(1).kind == GEMFIREXDDASHPROPERTIES;
+	}
+
+	/**
+	 * Determine whether the next sequence of tokens can be the beginning
+	 * of a newInvocation(). A newInvocation() begins with the word "new"
+	 * followed by a dot-separated list of identifiers, followed
+	 * by a left parenthesis.
+	 *
+	 * @param startToken	Token to look for new at
+	 *
+	 * @return	TRUE iff the next set of tokens is the beginning of a
+	 *			newInvocation().
+	 */
+	private boolean newInvocationFollows(int startToken)
+	{
+		boolean retval = false;
+
+		// newInvocation() starts with the word "new"
+		if (getToken(startToken).kind == NEW)
+		{
+			// Look at every other token. Ignore the identifiers, because
+			// they are hard to test for.
+			for (int i = 2 + startToken; true; i += 2)
+			{
+				int tokKind = getToken(i).kind;
+
+				// If we find a left parenthesis without any intervening
+				// cruft, we have found a newInvocation()
+				if (tokKind == LEFT_PAREN)
+				{
+					retval = true;
+					break;
+				}
+				else if (tokKind != PERIOD)
+				{
+					// Anything other than a PERIOD is "cruft"
+					break;
+				}
+			}
+		}
+
+		return retval;
+	}
+	/**
+	 * Determine whether the next sequence of tokens is a class name
+	 *
+	 * @return	TRUE iff the next set of tokens is the java class name
+	 */
+	boolean javaClassFollows()
+	{
+		boolean retval = false;
+
+		// Look at every other token. Ignore the identifiers, because
+		// they are hard to test for.
+		for (int i = 2; true; i += 2)
+		{
+			int tokKind = getToken(i).kind;
+
+			// If we find a '::' without any intervening
+			// cruft, we have found a javaClass
+			if (tokKind == DOUBLE_COLON)
+			{
+				retval = true;
+				break;
+			}
+			else if (tokKind != PERIOD)
+			{
+				// Anything other than a PERIOD is "cruft"
+				break;
+			}
+		}
+
+		return retval;
+	}
+
+	/**
+	 * Determine whether the next sequence of tokens can be the beginning
+	 * of a FROM newInvocation(). A FROM newInvocation() begins with the words "from new"
+	 * followed by a dot-separated list of identifiers, followed
+	 * by a left parenthesis.
+	 *
+	 * @return	TRUE iff the next set of tokens is the beginning of a
+	 *			FROM newInvocation().
+	 */
+	private boolean fromNewInvocationFollows()
+	{
+		boolean retval = false;
+
+		// FROM newInvocation() starts with the words "from new"
+		return (getToken(1).kind == FROM && newInvocationFollows(2));
+	}
+
+	/**
+	 * Determine whether the next sequence of tokens can be the beginning
+	 * of another element in a PROPERTY list. These elements are of the
+	 * form:
+	 *
+	 *		COMMA dot.separated.list = ...
+	 *
+	 * Look for the COMMA, the dots in the dot-separated list, and the =
+	 *
+	 * @return	TRUE iff the next set of tokens is the beginning of a
+	 *			another element in a PROPERTY list.
+	 */
+	private boolean anotherPropertyFollows()
+	{
+		boolean retval = false;
+
+		// Element must start with COMMA
+		if (getToken(1).kind == COMMA)
+		{
+			// Rest of element is dot-separated list with = at end
+			int i = 3;
+			int tokKind;
+			do
+			{
+				tokKind = getToken(i).kind;
+
+				// If we've found nothing but PERIODs until the EQUALS_OPERATOR
+				// it is the beginning of another property list element.
+				if (tokKind == EQUALS_OPERATOR)
+				{
+					retval = true;
+					break;
+				}
+
+				i += 2;
+			} while (tokKind == PERIOD);
+		}
+
+		return retval;
+	}
+
+	private boolean isLiteralFollows()
+	{
+	    Token tok = getToken(1);
+		int tokenkind = tok.kind;
+    
+	    switch(tok.kind)
+	    {
+	        case SQLMatcherConstants.STRING: 
+	        case SQLMatcherConstants.HEX_STRING: 
+	        case SQLMatcherConstants.APPROXIMATE_NUMERIC:
+	        case SQLMatcherConstants.INTERVAL_LITERAL:
+	        case SQLMatcherConstants.INTERVAL_STRING:
+	        case SQLMatcherConstants.INTERVAL_QUALIFIER:
+	        case SQLMatcherConstants.SINGLE_DATETIME_FIELD:
+	        case SQLMatcherConstants.NON_SECOND_DATETIME_FIELD:
+	        case SQLMatcherConstants.YEAR_MONTH_LITERAL:
+	        case SQLMatcherConstants.DAY_TIME_LITERAL:
+	        case SQLMatcherConstants.DAY_TIME_INTERVAL:
+	        case SQLMatcherConstants.SECONDS_VALUE:
+	        case SQLMatcherConstants.TIME_INTERVAL:
+	           return true;
+	        case EOF: return false;
+	  }
+  
+      return false;
+	}
+	
+	    /**
+	     * Determine if we are seeing an offsetClause or the identifier OFFSET
+	     * (Derby does not make it a reserved word).  "n" must be an integer
+	     * literal or a dynamic parameter specification.
+	     *
+	     * @return true if it is an offsetClause.
+	     */
+	    private boolean seeingOffsetClause()
+	    {
+	        int nesting = 0;
+
+	        // Token number, i == 1: OFFSET
+	        int i = 1;
+
+	        int tokKind = getToken(i).kind;
+
+	        // check for integer literal or ? followed by ROW(S)
+	        if (tokKind == PLUS_SIGN ||
+	            tokKind == MINUS_SIGN) {
+
+	            tokKind = getToken(++i).kind;
+
+	            // GemStone changes BEGIN
+	            /*(original code) if (tokKind == EXACT_NUMERIC) {*/
+	            if (tokKind == EXACT_NUMERIC || tokKind == QUESTION_MARK) {
+	            // GemStone changes END
+
+	                tokKind = getToken(++i).kind;
+
+	                return (tokKind == ROW ||
+	                        tokKind == ROWS);
+	            }
+	        // GemStone changes BEGIN
+	        /*(original code) } else if (tokKind == EXACT_NUMERIC) {*/
+	        } else if (tokKind == EXACT_NUMERIC || tokKind == QUESTION_MARK) {
+	        // GemStone changes END
+
+	            tokKind = getToken(++i).kind;
+
+	            return (tokKind == ROW ||
+	                    tokKind == ROWS);
+	        }
+
+	        return false;
+	    }
+
+    /*
+    final public TableName
+    qualifiedName(int id_length_limit) throws ParseException, StandardException
+    {
+	return qualifiedName( C_NodeTypes.TABLE_NAME, id_length_limit);
+    }*/
+
+    private void initStatement( String statementSQLText, Object[] paramDefaults)
+        throws StandardException
+    {
+        /* Do per-statement initialization here */
+        this.statementSQLText = statementSQLText;
+        this.paramDefaults = paramDefaults;
+        nodeFactory = getNodeFactory();
+
+        this.constantNumber = 0;
+        
+    } // End of initStatement
+
+    private void checkIdentifierLengthLimit( String identifier, int identifier_length_limit) 
+        throws StandardException
+    {
+	if (identifier.length() > identifier_length_limit)
+		throw StandardException.newException(SQLState.LANG_IDENTIFIER_TOO_LONG, identifier, String.valueOf(identifier_length_limit));
+    }
+
+    private ValueNode getJdbcIntervalNode( int intervalType) throws StandardException
+    {
+        return (ValueNode) nodeFactory.getNode( C_NodeTypes.INT_CONSTANT_NODE,
+                                                ReuseFactory.getInteger( intervalType),
+                                                getContextManager());
+    }
+    
+    /**
+        Check to see if the required claues have been added
+        to a procedure or function defintion.
+        
+        @param required int array of require clauses
+        @param  clauses the array of declared clauses.
+    */
+    void checkRequiredRoutineClause(int[] required, Object[] clauses)
+        throws StandardException
+    {
+        for (int i = 0; i < required.length; i++)
+        {
+            int re = required[i];
+            if (clauses[re] == null)
+            {
+                throw StandardException.newException(SQLState.LANG_SYNTAX_ERROR,
+				 ROUTINE_CLAUSE_NAMES[re]);
+		    }
+		}
+    }
+
+	boolean isPrivilegeKeywordExceptTrigger(int tokenKind) {
+		return (tokenKind == SELECT ||
+				tokenKind == DELETE ||
+				tokenKind == INSERT ||
+				tokenKind == UPDATE ||
+				tokenKind == REFERENCES ||
+				tokenKind == EXECUTE ||
+				tokenKind == ALL);
+	}
+}
+
+PARSER_END(SQLMatcher)
+
+TOKEN_MGR_DECLS :
+{
+	void	CommonTokenAction(Token t)
+	{
+		t.beginOffset = input_stream.getBeginOffset();
+		t.endOffset = input_stream.getEndOffset();
+	}
+	
+	int commentNestingDepth = 0;
+}
+
+SKIP :
+{	/* white space */
+	  " "
+	| "\t"
+	| "\n"
+	| "\r"
+}
+
+MORE :
+{
+	"/*" : IN_BRACKETED_COMMENT
+}
+
+<IN_BRACKETED_COMMENT> MORE :
+{
+	"/*" { commentNestingDepth = 1; } : IN_NESTED_BRACKETED_COMMENT
+}
+
+<IN_BRACKETED_COMMENT> SKIP :
+{
+	"*/" : DEFAULT
+}
+
+<IN_NESTED_BRACKETED_COMMENT> MORE :
+{
+	"/*" { commentNestingDepth++; }
+}
+
+<IN_NESTED_BRACKETED_COMMENT> MORE :
+{
+	"*/"
+	{ commentNestingDepth--; SwitchTo(commentNestingDepth == 0 ? IN_BRACKETED_COMMENT : IN_NESTED_BRACKETED_COMMENT); }
+}
+
+<IN_BRACKETED_COMMENT,IN_NESTED_BRACKETED_COMMENT> MORE :
+{
+	< ~[] >
+}
+
+SKIP :
+{	/* comments */
+	"--" : IN_COMMENT
+}
+
+<IN_COMMENT> SKIP :
+{	/* white space */
+	  " "
+	| "\t"
+}
+
+/*
+	Check if the comment characters -- are followed by GEMFIREXD-PROPERTIES
+	token. 
+
+	If yes, then this comment is providing user-supplied optimizer 
+	overrides. There should be keyname=value [,keyname=value] pairs
+	after -- GEMFIREXD-PROPERTIES otherwise throw an exception. These
+	optimier overrides should be used in correct context only, 
+	otherwise, the parser will throw an exception.
+
+	If this comment does not start with DERBY-PROPERTOIES, then it is 
+	just a regular comment. Skip the comment and move on to the next line.
+ */
+<IN_COMMENT> MORE [IGNORE_CASE]:
+{
+// GemStone changes BEGIN
+// GemStone changed "DERBYPROPERTIES" token in comments for
+// optimizer hints to "GEMFIREXDPROPERTIES"
+//"D" : LOOKFOR_DE
+"G" : LOOKFOR_GE
+|
+<("\n"|"\r"|"\r\n")?> : DEFAULT
+|
+//<NOT_D : (~["D"])> : IT_IS_NOT_DERBYPROPERTIES_COMMENT
+<NOT_G : (~["G"])> : IT_IS_NOT_DERBYPROPERTIES_COMMENT
+}
+
+//<LOOKFOR_DE> MORE [IGNORE_CASE]:
+<LOOKFOR_GE> MORE [IGNORE_CASE]:
+{
+//"E" : LOOKFOR_DER
+"E" : LOOKFOR_GEM
+|
+<("\n"|"\r"|"\r\n")?> : DEFAULT
+|
+//<NOT_DE : (~["E"])> : IT_IS_NOT_DERBYPROPERTIES_COMMENT
+<NOT_GE : (~["E"])> : IT_IS_NOT_DERBYPROPERTIES_COMMENT
+}
+
+<LOOKFOR_GEM> MORE [IGNORE_CASE]:
+{
+"M" : LOOKFOR_GEMF
+|
+<("\n"|"\r"|"\r\n")?> : DEFAULT
+|
+<NOT_GEM : (~["M"])> : IT_IS_NOT_DERBYPROPERTIES_COMMENT
+}
+
+<LOOKFOR_GEMF> MORE [IGNORE_CASE]:
+{
+"F" : LOOKFOR_GEMFI
+|
+<("\n"|"\r"|"\r\n")?> : DEFAULT
+|
+<NOT_GEMF : (~["F"])> : IT_IS_NOT_DERBYPROPERTIES_COMMENT
+}
+
+<LOOKFOR_GEMFI> MORE [IGNORE_CASE]:
+{
+"I" : LOOKFOR_GEMFIR
+|
+<("\n"|"\r"|"\r\n")?> : DEFAULT
+|
+<NOT_GEMFI : (~["I"])> : IT_IS_NOT_DERBYPROPERTIES_COMMENT
+}
+// Adding few more tokens to complete GEMFIREXD
+<LOOKFOR_GEMFIR> MORE [IGNORE_CASE]:
+{
+"R" : LOOKFOR_GEMFIRE
+|
+<("\n"|"\r"|"\r\n")?> : DEFAULT
+|
+<NOT_GEMFIR : (~["R"])> : IT_IS_NOT_DERBYPROPERTIES_COMMENT
+}
+
+<LOOKFOR_GEMFIRE> MORE [IGNORE_CASE]:
+{
+"E" : LOOKFOR_GEMFIREX
+|
+<("\n"|"\r"|"\r\n")?> : DEFAULT
+|
+<NOT_GEMFIRE : (~["E"])> : IT_IS_NOT_DERBYPROPERTIES_COMMENT
+}
+
+<LOOKFOR_GEMFIREX> MORE [IGNORE_CASE]:
+{
+"X" : LOOKFOR_GEMFIREXD
+|
+<("\n"|"\r"|"\r\n")?> : DEFAULT
+|
+<NOT_GEMFIREX : (~["X"])> : IT_IS_NOT_DERBYPROPERTIES_COMMENT
+}
+
+<LOOKFOR_GEMFIREXD> MORE [IGNORE_CASE]:
+{
+"D" : LOOKFOR_GEMFIREXDDASH
+|
+<("\n"|"\r"|"\r\n")?> : DEFAULT
+|
+<NOT_GEMFIREXD : (~["D"])> : IT_IS_NOT_DERBYPROPERTIES_COMMENT
+}
+
+<LOOKFOR_GEMFIREXDDASH> MORE [IGNORE_CASE]:
+// GemStone changes END
+{
+"-" : LOOKFOR_DERBYDASHP
+|
+<("\n"|"\r"|"\r\n")?> : DEFAULT
+|
+<NOT_DERBYDASH : (~["-"])> : IT_IS_NOT_DERBYPROPERTIES_COMMENT
+}
+
+<LOOKFOR_DERBYDASHP> MORE [IGNORE_CASE]:
+{
+"P" : LOOKFOR_DERBYDASHPR
+|
+<("\n"|"\r"|"\r\n")?> : DEFAULT
+|
+<NOT_DERBYDASHP : (~["P"])> : IT_IS_NOT_DERBYPROPERTIES_COMMENT
+}
+
+<LOOKFOR_DERBYDASHPR> MORE [IGNORE_CASE]:
+{
+"R" : LOOKFOR_DERBYDASHPRO
+|
+<("\n"|"\r"|"\r\n")?> : DEFAULT
+|
+<NOT_DERBYDASHPR : (~["R"])> : IT_IS_NOT_DERBYPROPERTIES_COMMENT
+}
+
+<LOOKFOR_DERBYDASHPRO> MORE [IGNORE_CASE]:
+{
+"O" : LOOKFOR_DERBYDASHPROP
+|
+<("\n"|"\r"|"\r\n")?> : DEFAULT
+|
+<NOT_DERBYDASHPRO : (~["O"])> : IT_IS_NOT_DERBYPROPERTIES_COMMENT
+}
+
+
+<LOOKFOR_DERBYDASHPROP> MORE [IGNORE_CASE]:
+{
+"P" : LOOKFOR_DERBYDASHPROPE
+|
+<("\n"|"\r"|"\r\n")?> : DEFAULT
+|
+<NOT_DERBYDASHPROP : (~["P"])> : IT_IS_NOT_DERBYPROPERTIES_COMMENT
+}
+
+<LOOKFOR_DERBYDASHPROPE> MORE [IGNORE_CASE]:
+{
+"E" : LOOKFOR_DERBYDASHPROPER
+|
+<("\n"|"\r"|"\r\n")?> : DEFAULT
+|
+<NOT_DERBYDASHPROPE : (~["E"])> : IT_IS_NOT_DERBYPROPERTIES_COMMENT
+}
+
+<LOOKFOR_DERBYDASHPROPER> MORE [IGNORE_CASE]:
+{
+"R" : LOOKFOR_DERBYDASHPROPERT
+|
+<("\n"|"\r"|"\r\n")?> : DEFAULT
+|
+<NOT_DERBYDASHPROPER : (~["R"])> : IT_IS_NOT_DERBYPROPERTIES_COMMENT
+}
+
+<LOOKFOR_DERBYDASHPROPERT> MORE [IGNORE_CASE]:
+{
+"T" : LOOKFOR_DERBYDASHPROPERTI
+|
+<("\n"|"\r"|"\r\n")?> : DEFAULT
+|
+<NOT_DERBYDASHPROPERT : (~["T"])> : IT_IS_NOT_DERBYPROPERTIES_COMMENT
+}
+
+<LOOKFOR_DERBYDASHPROPERTI> MORE [IGNORE_CASE]:
+{
+"I" : LOOKFOR_DERBYDASHPROPERTIE
+|
+<("\n"|"\r"|"\r\n")?> : DEFAULT
+|
+<NOT_DERBYDASHPROPERTI : (~["I"])> : IT_IS_NOT_DERBYPROPERTIES_COMMENT
+}
+
+<LOOKFOR_DERBYDASHPROPERTIE> MORE [IGNORE_CASE]:
+{
+"E" : LOOKFOR_GEMFIREXDDASHPROPERTIES
+|
+<("\n"|"\r"|"\r\n")?> : DEFAULT
+|
+<NOT_DERBYDASHPROPERTIE : (~["E"])> : IT_IS_NOT_DERBYPROPERTIES_COMMENT
+}
+
+<LOOKFOR_GEMFIREXDDASHPROPERTIES> TOKEN [IGNORE_CASE] :
+{	
+	<GEMFIREXDDASHPROPERTIES : "GEMFIREXDDASHPROPERTIES"> 
+}
+
+//once we find comment starting with -- GEMFIREXD-PROPERTIES, we want to switch 
+//from SKIP mode to the TOKEN mode in the parser so the rest of the characters 
+//on the comment line can be treated as part of one big token so we can get 
+//keyname=value pairs from that token. The reason for treating them as one big
+//token is that the existing code in parser allows newline characters between
+//individual token but with optimizer overrides, all the properties have to
+//be specified on the -- GEMFIREXD-PROPERTIES comment line. 
+<LOOKFOR_GEMFIREXDDASHPROPERTIES> TOKEN [IGNORE_CASE]:
+{
+"S" { matchedToken.kind = GEMFIREXDDASHPROPERTIES; } : PROPERTIES_LIST
+}
+
+//We found -- DERBY-PROPERTIE? where ? is a character other than S
+//and hence we should the rest of the characters on this line as 
+//a regular comment
+<LOOKFOR_GEMFIREXDDASHPROPERTIES> SKIP :
+{
+<("\n"|"\r"|"\r\n")?> : DEFAULT
+|
+<NOT_PROPERTIES : (~["S","s"])> : IT_IS_NOT_DERBYPROPERTIES_COMMENT
+}
+
+<IT_IS_NOT_DERBYPROPERTIES_COMMENT> SKIP :
+{
+	<SINGLE_LINE_SQLCOMMENT: (~["\n","\r"])* ("\n"|"\r"|"\r\n")?> : DEFAULT
+}
+
+//found -- GEMFIREXD-PROPERTIES. Treat rest of the characters on the line
+//as one big token and then fetch keyname=value pairs from that token.
+<PROPERTIES_LIST> TOKEN :
+{
+	<CHECK_PROPERTIES: (~["\n","\r"])* ("\n"|"\r"|"\r\n")?> : DEFAULT
+}
+
+/*
+	This list should contain only and all SQL92 keywords that are reserved.
+	Reserved keywords can be used as identifiers in the language only
+	as delimited identifiers.
+ */
+/* NOTE - If you add a keyword, then you must add it to reservedKeyword()
+ *	      or nonReservedKeyword() as well!
+ */
+TOKEN [IGNORE_CASE] :
+{	/* SQL92 reserved Keywords */
+	<ADD: "add">
+|    <VALUES: "values">
+|   <WHERE: "where">
+|	<ALL: "all">
+|	<ALLOCATE: "allocate">
+|	<ALTER: "alter">
+|	<AND: "and">
+|	<ANY: "any">
+|	<ARE: "are">
+|	<AS: "as">
+|	<ASC: "asc">
+|	<ASSERTION: "assertion">
+|	<AT: "at">
+|	<AUTHORIZATION: "authorization">
+|	<AVG: "avg">
+|	<BEGIN: "begin">
+|	<BETWEEN: "between">
+|	<BINARY: "binary">
+|	<BIT: "bit">
+|	<BOTH: "both">
+|	<BY: "by">
+|	<CASCADE: "cascade">
+|	<CASCADED: "cascaded">
+|	<CASE: "case">
+|	<CAST: "cast">
+|	<CHAR: "char">
+|	<CHARACTER: "character">
+|	<CHARACTER_LENGTH: "character_length">
+|	<CHECK: "check">
+|	<CLOSE: "close">
+|	<COALESCE: "coalesce">
+|	<COLLATE: "collate">
+|	<COLLATION: "collation">
+|	<COLUMN: "column">
+|	<COMMIT: "commit">
+|	<CONNECT: "connect">
+|	<CONNECTION: "connection">
+|	<CONSTRAINT: "constraint">
+|	<CONSTRAINTS: "constraints">
+|	<CONTINUE: "continue">
+|	<CONVERT: "convert">
+|	<CORRESPONDING: "corresponding">
+|	<COUNT: "count">
+|	<CREATE: "create">
+|	<CURRENT: "current">
+|	<CURRENT_DATE: "current_date">
+|	<CURRENT_TIME: "current_time">
+|	<CURRENT_TIMESTAMP: "current_timestamp">
+|	<CURRENT_USER: "current_user">
+|	<CURSOR: "cursor">
+|	<D: "d">
+|	<DEALLOCATE: "deallocate">
+|	<DEC: "dec">
+|	<DECIMAL: "decimal">
+|	<DECLARE: "declare">
+|	<_DEFAULT: "default">
+|	<DEFERRABLE: "deferrable">
+|	<DEFERRED: "deferred">
+|	<DELETE: "delete">
+|	<DESC: "desc">
+|	<DESCRIBE: "describe">
+|	<DIAGNOSTICS: "diagnostics">
+|	<DISCONNECT: "disconnect">
+|	<DISTINCT: "distinct">
+|	<DOUBLE: "double">
+|	<DROP: "drop">
+|	<ELSE: "else">
+|	<END: "end">
+|	<ENDEXEC: "end-exec">
+|	<ESCAPE: "escape">
+|	<EXCEPT: "except">
+|	<EXCEPTION: "exception">
+|	<EXEC: "exec">
+|	<EXECUTE: "execute">
+|	<EXISTS: "exists">
+|	<EXTERNAL: "external">
+|	<FALSE: "false">
+|	<FETCH: "fetch">
+|	<FIRST: "first">
+|	<FLOAT: "float">
+|	<FOR: "for">
+|	<FOREIGN: "foreign">
+|	<FOUND: "found">
+|	<FROM: "from">
+|	<FULL: "full">
+|	<FUNCTION: "function">
+|	<GET: "get">
+|	<GLOBAL: "global">
+|	<GO: "go">
+|	<GOTO: "goto">
+|	<GRANT: "grant">
+|	<GROUP: "group">
+|	<HAVING: "having">
+|	<HOUR: "hour">
+|	<IDENTITY: "identity">
+|	<IMMEDIATE: "immediate">
+|	<IN: "in">
+|	<INDICATOR: "indicator">
+|	<INITIALLY: "initially">
+|	<INNER: "inner">
+|	<INPUT: "input">
+|	<INSENSITIVE: "insensitive">
+|	<INSERT: "insert">
+|	<INT: "int">
+|	<INTEGER: "integer">
+|	<INTERSECT: "intersect">
+|	<INTO: "into">
+|	<IS: "is">
+|	<ISOLATION: "isolation">
+|	<JOIN: "join">
+|	<KEY: "key">
+|	<LAST: "last">
+|	<LEADING: "leading">
+|	<LEFT: "left">
+|	<LIKE: "like">
+|	<LOWER: "lower">
+|	<MATCH: "match">
+|	<MAX: "max">
+|	<MIN: "min">
+|	<MINUTE: "minute">
+|	<MODULE: "module">
+|	<NATIONAL: "national">
+|	<NATURAL: "natural">
+|	<NCHAR: "nchar">
+|	<NEXT: "next">
+|	<NO: "no">
+|	<NOT: "not">
+|	<NULL: "null">
+|	<NULLIF: "nullif">
+|	<NUMERIC: "numeric">
+|	<OF: "of">
+|	<ON: "on">
+|	<ONLY: "only">
+|	<OPEN: "open">
+|	<OPTION: "option">
+|	<OR: "or">
+|	<ORDER: "order">
+|	<OUTER: "outer">
+|	<OUTPUT: "output">
+|	<OVERLAPS: "overlaps">
+|	<PAD: "pad">
+|	<PARTIAL: "partial">
+|	<PREPARE: "prepare">
+|	<PRESERVE: "preserve">
+|	<PRIMARY: "primary">
+|	<PRIOR: "prior">
+|	<PRIVILEGES: "privileges">
+|	<PROCEDURE: "procedure">
+|	<PUBLIC: "public">
+|	<READ: "read">
+|	<REAL: "real">
+|	<REFERENCES: "references">
+|	<RELATIVE: "relative">
+|	<RESTRICT: "restrict">
+|	<REVOKE: "revoke">
+|	<RIGHT: "right">
+|	<ROLLBACK: "rollback">
+|	<ROWS: "rows">
+|	<SCHEMA: "schema">
+|	<SCROLL: "scroll">
+|	<SECOND: "second">
+|	<SELECT: "select">
+|	<SESSION_USER: "session_user">
+|	<SET: "set">
+|	<SMALLINT: "smallint">
+|	<SOME: "some">
+|	<SPACE: "space">
+|	<SQL: "sql">
+|	<SQLCODE: "sqlcode">
+|	<SQLERROR: "sqlerror">
+|	<SQLSTATE: "sqlstate">
+|	<SUBSTRING: "substring">
+|	<SUM: "sum">
+|	<SYSTEM_USER: "system_user">
+|	<T: "t">
+|	<TABLE: "table">
+|	<TEMPORARY: "temporary">
+|	<TIMEZONE_HOUR: "timezone_hour">
+|	<TIMEZONE_MINUTE: "timezone_minute">
+|	<TO: "to">
+|	<TRANSACTION: "transaction">
+|	<TRANSLATE: "translate">
+|	<TRANSLATION: "translation">
+|	<TRAILING: "trailing">
+|	<TRIM: "trim">
+|	<TRUE: "true">
+|	<TS: "ts">
+|	<UNION: "union">
+|	<UNIQUE: "unique">
+|	<UNKNOWN: "unknown">
+|	<UPDATE: "update">
+|	<UPPER: "upper">
+|	<USER: "user">
+|	<USING: "using">
+|	<VALUE: "value">
+//|	<VALUES: "values">
+|	<VARBINARY: "varbinary">
+|	<VARCHAR: "varchar">
+|	<VARYING: "varying">
+|	<VIEW: "view">
+|	<WHENEVER: "whenever">
+//|	<WHERE: "where">
+|	<WITH: "with">
+|	<WORK: "work">
+|	<WRITE: "write">
+|	<YEAR: "year">
+}
+
+/*
+	This list should contain only and all SQL92 keywords that are non-reserved.
+	Non-reserved keywords can be used as identifiers in the language.
+	To make that happen, the individual tokens have to be repeated in
+	the nonReservedKeyword() rule -- unless there's some other JavaCC shorthand?
+
+	NOTE: I've commented out most of these because we won't be using them
+	right away and the grammar is taking forever to process.
+ */
+/* NOTE - If you add a keyword, then you must add it to reservedKeyword()
+ *	      or nonReservedKeyword() as well!
+ */
+ 
+TOKEN [IGNORE_CASE] :
+{	/* SQL92 non-reserved Keywords */
+    <ABS: "abs">
+|    <ABSVAL: "absval">
+|	<ACTION: "action">
+|	<ALWAYS: "always">
+|	<BLOB: "blob">
+|	<C: "c">
+| <CALLED: "called">
+|	<CLOB: "clob">
+|	<COBOL: "cobol">
+|	<COMMITTED: "committed">
+|   <CONCAT: "concat">
+|	<CONTAINS: "contains">
+|	<DATA: "data">
+|	<DATE: "date">
+|	<DAY: "day">
+|	<DEFINER: "definer">
+|   <DYNAMIC: "dynamic">
+|	<FORTRAN: "fortran">
+|   <GENERATED: "generated">
+|	<IDENTITY_VAL_LOCAL: "identity_val_local">
+|	<INCREMENT: "increment">
+|	<INITIAL: "initial">
+|   <INOUT: "inout">
+|	<INTERVAL: "interval">
+|	<INVOKER: "invoker">
+|	<LANGUAGE: "language">
+|	<LARGE: "large">
+|	<LENGTH: "length">
+|	<LEVEL: "level">
+|	<LOCKS: "locks">
+|	<LOCKSIZE: "locksize">
+|	<LOGGED: "logged">
+|       <MOD: "mod">
+|	<MODIFIES: "modifies">
+|	<MODIFY: "modify">
+|	<MONTH: "month">
+|	<_MORE: "more">
+|	<MUMPS: "mumps">
+|	<NAME: "name">
+|	<NCLOB: "nclob">
+|	<NULLABLE: "nullable">
+|	<NULLS: "nulls">
+|	<NUMBER: "number">
+|	<OBJECT: "object">
+|   <OFFSET: "offset">
+|	<PASCAL: "pascal">
+|	<PLI: "pli">
+|	<PRECISION: "precision">
+|	<RELEASE: "release">
+|	<REPEATABLE: "repeatable">
+|	<RESTART: "restart">
+|	<RETURNS: "returns">
+|	<ROW: "row">
+|	<SAVEPOINT: "savepoint">
+|	<SCALE: "scale">
+|	<SECURITY: "security">
+|	<SERIALIZABLE: "serializable">
+|	<SQL_TSI_FRAC_SECOND: "sql_tsi_frac_second">
+|	<SQL_TSI_SECOND: "sql_tsi_second">
+|	<SQL_TSI_MINUTE: "sql_tsi_minute">
+|	<SQL_TSI_HOUR: "sql_tsi_hour">
+|	<SQL_TSI_DAY: "sql_tsi_day">
+|	<SQL_TSI_WEEK: "sql_tsi_week">
+|	<SQL_TSI_MONTH: "sql_tsi_month">
+|	<SQL_TSI_QUARTER: "sql_tsi_quarter">
+|	<SQL_TSI_YEAR: "sql_tsi_year">
+|	<START: "start">
+|	<STATEMENT: "statement">
+|	<SYNONYM: "synonym">
+|	<THEN: "then">
+|	<TIME: "time">
+|	<TIMESTAMP: "timestamp">
+|	<TIMESTAMPADD: "timestampadd">
+|	<TIMESTAMPDIFF: "timestampdiff">
+|	<TRUNCATE: "truncate">
+|	<TYPE: "type">
+|	<UNCOMMITTED: "uncommitted">
+|	<USAGE: "usage">
+|	<WHEN: "when">
+}
+
+/*
+	The next lists should contain non-SQL92 keywords, and should
+	specify whether their keywords are reserved or non-reserved.
+	If they are non-reserved, they need to be added to the identifier() rule.
+
+	NOTE: XML, XMLPARSE, XMLSERIALIZE, and XMLEXISTS are considered reserved
+	words to comply with the SQL/XML (2003) standard, section 5.1.  Similarly,
+	XMLQUERY is a reserved word per SQL/XML (2006).
+ */
+
+/* NOTE - If you add a keyword, then you must add it to reservedKeyword()
+ *	      or nonReservedKeyword() as well!
+ */
+TOKEN [IGNORE_CASE] :
+{	/* Additional JSQL reserved keywords -- non-SQL92 reserved Keywords */
+	<BOOLEAN: "boolean">
+|	<CALL: "call">
+|	<CURDATE: "curdate">
+|	<CURRENT_ROLE: "current_role">
+|	<CURTIME: "curtime">
+|   <DATABASE: "database">
+|	<GET_CURRENT_CONNECTION: "getCurrentConnection">
+|	<EXPLAIN: "explain">
+|	<LONGINT: "bigint">
+|	<LONG: "long">
+|	<LTRIM: "ltrim">
+|	<NONE: "none">
+|	<OVER: "over">
+|	<ROLE: "role">
+|	<ROW_NUMBER: "row_number">
+|	<RTRIM: "rtrim">
+|	<SUBSTR:	"substr">
+|	<XML:	"xml">
+|	<XMLEXISTS:	"xmlexists">
+|	<XMLPARSE:	"xmlparse">
+|	<XMLQUERY:	"xmlquery">
+|	<XMLSERIALIZE:	"xmlserialize">
+}
+
+/* NOTE - If you add a keyword, then you must add it to reservedKeyword()
+ *	      or nonReservedKeyword() as well!
+ *
+ * NOTE: CONTENT, DOCUMENT, STRIP, WHITESPACE and PASSING are considered NON-
+ * reserved words to comply with the SQL/XML (2003) standard, section 5.1.
+ * Similarly, EMPTY, RETURNING, and SEQUENCE are all considered NON-reserved
+ * words per SQL/XML (2006).  PRESERVE is also listed as non-reserved in the
+ * SQL/XML spec, but since that word is already reserved, we leave it alone.
+ */
+TOKEN [IGNORE_CASE] :
+{	/* Additional JSQL keywords -- non-SQL92 non-reserved Keywords */
+	<AFTER: "after">
+|	<BEFORE: "before">
+|	<CLASS: "class">
+|	<COMPRESS: "compress">
+|	<CONTENT: "content">
+|   <CS: "cs">
+|	<CURSORS: "cursors">
+|	<DB2SQL: "db2sql">
+|	<DERBY_JDBC_RESULT_SET: "derby_jdbc_result_set">
+|       <DIRTY: "dirty">
+|	<DOCUMENT: "document">
+|	<EACH: "each">
+|	<EMPTY: "empty">
+|	<EXCLUSIVE: "exclusive">
+|	<FN: "fn">
+|	<INDEX: "index">
+|	<JAVA: "java">
+|   <LCASE: "lcase">
+|   <LOCATE: "locate">
+|	<LOCK: "lock">
+|	<MESSAGE_LOCALE: "message_locale">
+|	<METHOD: "method">
+|	<MODE: "mode">
+|	<NEW: "new">
+|   <NEW_TABLE: "new_table">
+|	<NVARCHAR: "nvarchar"> 
+|	<OJ: "oj">
+|	<OFF: "off">
+|	<OLD: "old">
+|   <OLD_TABLE: "old_table">
+|   <OUT: "out">
+|	<PARAMETER: "parameter">
+|	<PASSING: "passing">
+|	<PROPERTIES: "properties">
+|	<READS: "reads">
+|	<REF: "ref">
+|	<REFERENCING: "referencing">
+|	<RENAME: "rename">
+|       <RESET: "reset">
+|	<RESULT: "result">
+|	<RETAIN: "retain">
+|	<RETURNING: "returning">
+|   <RR: "rr">
+|   <RS: "rs">
+|	<SEQUENCE: "sequence">
+|	<SEQUENTIAL: "sequential">
+|	<SETS: "sets">
+|	<SHARE: "share">
+|	<SQLID: "sqlid">
+|	<SPECIFIC: "specific">
+|   <SQRT: "sqrt">
+|       <STABILITY: "stability">
+|   <STRIP: "strip">
+|   <STYLE: "style">
+|	<TRIGGER: "trigger">
+|   <UCASE: "ucase">
+|   <UR: "ur">
+|   <WHITESPACE: "whitespace">
+// GemStone changes BEGIN
+|   <ALIAS: "alias">
+|   <ASYNCHRONOUS: "asynchronous">
+|   <BUCKETS: "buckets">
+|   <BYTES: "bytes">
+|   <COHORT: "cohort">
+|   <THRESHOLD: "threshold">
+|   <COLOCATE: "colocate">
+|   <DECODE: "decode">
+|   <DESTROY: "destroy">
+|   <DISKDIR: "diskdir">
+|   <ENTRY: "entry">
+|   <EVICTACTION: "evictaction">
+|   <EVICTION: "eviction">
+|   <EXPIRE: "expire">
+|   <GROUPS: "groups"> // for server groups
+|   <HASH: "hash"> // for CREATE INDEX GLOBAL HASH extension
+|   <IDLETIME: "idletime">
+|   <INITSIZE: "initsize">
+|   <INVALIDATE: "invalidate">
+|   <INFINITY: "infinity">
+|   <LIST: "list">
+|   <LOADER: "loader">
+|   <LOCAL: "local">
+|   <LRUCOUNT: "lrucount">
+|   <LRUHEAPPERCENT: "lruheappercent">
+|   <LRUMEMSIZE: "lrumemsize">
+|   <MAXLOGSIZE: "maxlogsize">
+|   <MAXPARTSIZE: "maxpartsize">
+|   <MAXSIZE: "maxsize">
+|   <NOWAIT: "nowait">
+|   <NVL: "nvl">
+|   <OVERFLOW: "overflow">
+|   <PARTITION: "partition">
+|   <PERSISTENT: "persistent">
+|   <PROCESSOR: "processor">
+|   <RANGE: "range">
+|   <RECOVERYDELAY: "recoverydelay">
+|   <REDUNDANCY: "redundancy">
+|   <REPLICATE: "replicate">
+|   <ROLLOPLOGS: "rolloplogs">
+|   <SERVER: "server"> // also for CREATE SCHEMA
+|   <SYNCHRONOUS: "synchronous">
+|   <TIMETOLIVE: "timetolive">
+|   <WBCL: "asyncEventListener">
+// GemStone changes END
+}
+
+TOKEN :
+{	/* Operators and punctuation */
+	<DOUBLE_QUOTE: "\"">
+|	<PERCENT: "%">
+|	<AMPERSAND: "&">
+|	<QUOTE: "'">
+|	<LEFT_BRACE: "{">
+|	<RIGHT_BRACE: "}">
+|	<LEFT_PAREN: "(">
+|	<RIGHT_PAREN: ")">
+|	<ASTERISK: "*">
+|	<PLUS_SIGN: "+">
+|	<COMMA: ",">
+|	<MINUS_SIGN: "-">
+|	<PERIOD: ".">
+|	<SOLIDUS: "/">
+|	<COLON: ":">
+|	<DOUBLE_COLON: "::">
+|	<SEMICOLON: ";">
+|	<LESS_THAN_OPERATOR: "<">
+|	<LESS_THAN_OR_EQUALS_OPERATOR: "<=">
+|	<EQUALS_OPERATOR: "=">
+|	<NOT_EQUALS_OPERATOR: "<>">
+|	<NOT_EQUALS_OPERATOR2: "!=">
+|	<GREATER_THAN_OPERATOR: ">">
+|	<GREATER_THAN_OR_EQUALS_OPERATOR: ">=">
+|	<QUESTION_MARK: "?">
+|	<UNDERSCORE: "_">
+|	<VERTICAL_BAR: "|">
+|	<LEFT_BRACKET: "[">
+|	<RIGHT_BRACKET: "]">
+|	<CONCATENATION_OPERATOR: "||">
+|	<FIELD_REFERENCE: "->">
+}
+
+TOKEN :
+{	/* Identifiers */
+	<IDENTIFIER: ( <LETTER> ) (<LETTER> | "_" | <DIGIT>)* >
+}
+
+TOKEN: {	<K: "K" >	 }
+TOKEN: {	<M: "M" >	 }
+TOKEN: {	<G: "G" >	 }
+
+TOKEN:
+{
+	<#LETTER: [
+				"a"-"z",
+				"A"-"Z",
+				"\u00aa",
+				"\u00b5",
+				"\u00ba",
+				"\u00c0" - "\u00d6",
+				"\u00d8" - "\u00f6",
+				"\u00f8" - "\u01f5",
+				"\u01fa" - "\u0217",
+				"\u0250" - "\u02a8",
+				"\u02b0" - "\u02b8",
+				"\u02bb" - "\u02c1",
+				"\u02d0" - "\u02d1",
+				"\u02e0" - "\u02e4",
+				"\u037a",
+				"\u0386",
+				"\u0388" - "\u038a",
+				"\u038c",
+				"\u038e" - "\u03a1",
+				"\u03a3" - "\u03ce",
+				"\u03d0" - "\u03d6",
+				"\u03da",
+				"\u03dc",
+				"\u03de",
+				"\u03e0",
+				"\u03e2" - "\u03f3",
+				"\u0401" - "\u040c",
+				"\u040e" - "\u044f",
+				"\u0451" - "\u045c",
+				"\u045e" - "\u0481",
+				"\u0490" - "\u04c4",
+				"\u04c7" - "\u04c8",
+				"\u04cb" - "\u04cc",
+				"\u04d0" - "\u04eb",
+				"\u04ee" - "\u04f5",
+				"\u04f8" - "\u04f9",
+				"\u0531" - "\u0556",
+				"\u0559",
+				"\u0561" - "\u0587",
+				"\u05d0" - "\u05ea",
+				"\u05f0" - "\u05f2",
+				"\u0621" - "\u063a",
+				"\u0640" - "\u064a",
+				"\u0671" - "\u06b7",
+				"\u06ba" - "\u06be",
+				"\u06c0" - "\u06ce",
+				"\u06d0" - "\u06d3",
+				"\u06d5",
+				"\u06e5" - "\u06e6",
+				"\u0905" - "\u0939",
+				"\u093d",
+				"\u0958" - "\u0961",
+				"\u0985" - "\u098c",
+				"\u098f" - "\u0990",
+				"\u0993" - "\u09a8",
+				"\u09aa" - "\u09b0",
+				"\u09b2",
+				"\u09b6" - "\u09b9",
+				"\u09dc" - "\u09dd",
+				"\u09df" - "\u09e1",
+				"\u09f0" - "\u09f1",
+				"\u0a05" - "\u0a0a",
+				"\u0a0f" - "\u0a10",
+				"\u0a13" - "\u0a28",
+				"\u0a2a" - "\u0a30",
+				"\u0a32" - "\u0a33",
+				"\u0a35" - "\u0a36",
+				"\u0a38" - "\u0a39",
+				"\u0a59" - "\u0a5c",
+				"\u0a5e",
+				"\u0a72" - "\u0a74",
+				"\u0a85" - "\u0a8b",
+				"\u0a8d",
+				"\u0a8f" - "\u0a91",
+				"\u0a93" - "\u0aa8",
+				"\u0aaa" - "\u0ab0",
+				"\u0ab2" - "\u0ab3",
+				"\u0ab5" - "\u0ab9",
+				"\u0abd",
+				"\u0ae0",
+				"\u0b05" - "\u0b0c",
+				"\u0b0f" - "\u0b10",
+				"\u0b13" - "\u0b28",
+				"\u0b2a" - "\u0b30",
+				"\u0b32" - "\u0b33",
+				"\u0b36" - "\u0b39",
+				"\u0b3d",
+				"\u0b5c" - "\u0b5d",
+				"\u0b5f" - "\u0b61",
+				"\u0b85" - "\u0b8a",
+				"\u0b8e" - "\u0b90",
+				"\u0b92" - "\u0b95",
+				"\u0b99" - "\u0b9a",
+				"\u0b9c",
+				"\u0b9e" - "\u0b9f",
+				"\u0ba3" - "\u0ba4",
+				"\u0ba8" - "\u0baa",
+				"\u0bae" - "\u0bb5",
+				"\u0bb7" - "\u0bb9",
+				"\u0c05" - "\u0c0c",
+				"\u0c0e" - "\u0c10",
+				"\u0c12" - "\u0c28",
+				"\u0c2a" - "\u0c33",
+				"\u0c35" - "\u0c39",
+				"\u0c60" - "\u0c61",
+				"\u0c85" - "\u0c8c",
+				"\u0c8e" - "\u0c90",
+				"\u0c92" - "\u0ca8",
+				"\u0caa" - "\u0cb3",
+				"\u0cb5" - "\u0cb9",
+				"\u0cde",
+				"\u0ce0" - "\u0ce1",
+				"\u0d05" - "\u0d0c",
+				"\u0d0e" - "\u0d10",
+				"\u0d12" - "\u0d28",
+				"\u0d2a" - "\u0d39",
+				"\u0d60" - "\u0d61",
+				"\u0e01" - "\u0e2e",
+				"\u0e30",
+				"\u0e32" - "\u0e33",
+				"\u0e40" - "\u0e46",
+				"\u0e81" - "\u0e82",
+				"\u0e84",
+				"\u0e87" - "\u0e88",
+				"\u0e8a",
+				"\u0e8d",
+				"\u0e94" - "\u0e97",
+				"\u0e99" - "\u0e9f",
+				"\u0ea1" - "\u0ea3",
+				"\u0ea5",
+				"\u0ea7",
+				"\u0eaa" - "\u0eab",
+				"\u0ead" - "\u0eae",
+				"\u0eb0",
+				"\u0eb2" - "\u0eb3",
+				"\u0ebd",
+				"\u0ec0" - "\u0ec4",
+				"\u0ec6",
+				"\u0edc" - "\u0edd",
+				"\u0f40" - "\u0f47",
+				"\u0f49" - "\u0f69",
+				"\u10a0" - "\u10c5",
+				"\u10d0" - "\u10f6",
+				"\u1100" - "\u1159",
+				"\u115f" - "\u11a2",
+				"\u11a8" - "\u11f9",
+				"\u1e00" - "\u1e9b",
+				"\u1ea0" - "\u1ef9",
+				"\u1f00" - "\u1f15",
+				"\u1f18" - "\u1f1d",
+				"\u1f20" - "\u1f45",
+				"\u1f48" - "\u1f4d",
+				"\u1f50" - "\u1f57",
+				"\u1f59",
+				"\u1f5b",
+				"\u1f5d",
+				"\u1f5f" - "\u1f7d",
+				"\u1f80" - "\u1fb4",
+				"\u1fb6" - "\u1fbc",
+				"\u1fbe",
+				"\u1fc2" - "\u1fc4",
+				"\u1fc6" - "\u1fcc",
+				"\u1fd0" - "\u1fd3",
+				"\u1fd6" - "\u1fdb",
+				"\u1fe0" - "\u1fec",
+				"\u1ff2" - "\u1ff4",
+				"\u1ff6" - "\u1ffc",
+				"\u207f",
+				"\u2102",
+				"\u2107",
+				"\u210a" - "\u2113",
+				"\u2115",
+				"\u2118" - "\u211d",
+				"\u2124",
+				"\u2126",
+				"\u2128",
+				"\u212a" - "\u2131",
+				"\u2133" - "\u2138",
+				"\u3005",
+				"\u3031" - "\u3035",
+				"\u3041" - "\u3094",
+				"\u309b" - "\u309e",
+				"\u30a1" - "\u30fa",
+				"\u30fc" - "\u30fe",
+				"\u3105" - "\u312c",
+				"\u3131" - "\u318e",
+				"\u4e00" - "\u9fa5",
+				"\uac00" - "\ud7a3",
+				"\uf900" - "\ufa2d",
+				"\ufb00" - "\ufb06",
+				"\ufb13" - "\ufb17",
+				"\ufb1f" - "\ufb28",
+				"\ufb2a" - "\ufb36",
+				"\ufb38" - "\ufb3c",
+				"\ufb3e",
+				"\ufb40" - "\ufb41",
+				"\ufb43" - "\ufb44",
+				"\ufb46" - "\ufbb1",
+				"\ufbd3" - "\ufd3d",
+				"\ufd50" - "\ufd8f",
+				"\ufd92" - "\ufdc7",
+				"\ufdf0" - "\ufdfb",
+				"\ufe70" - "\ufe72",
+				"\ufe74",
+				"\ufe76" - "\ufefc",
+				"\uff21" - "\uff3a",
+				"\uff41" - "\uff5a",
+				"\uff66" - "\uffbe",
+				"\uffc2" - "\uffc7",
+				"\uffca" - "\uffcf",
+				"\uffd2" - "\uffd7",
+				"\uffda" - "\uffdc"
+			]>
+}
+
+TOKEN :
+{
+	<#DIGIT: [
+				"0" - "9",
+				"\u0660" - "\u0669",
+				"\u06f0" - "\u06f9",
+				"\u0966" - "\u096f",
+				"\u09e6" - "\u09ef",
+				"\u0a66" - "\u0a6f",
+				"\u0ae6" - "\u0aef",
+				"\u0b66" - "\u0b6f",
+				"\u0be7" - "\u0bef",
+				"\u0c66" - "\u0c6f",
+				"\u0ce6" - "\u0cef",
+				"\u0d66" - "\u0d6f",
+				"\u0e50" - "\u0e59",
+				"\u0ed0" - "\u0ed9",
+				"\u0f20" - "\u0f29",
+				"\uff10" - "\uff19"
+			]>
+}
+
+TOKEN :
+{	/* Delimited Identifiers - NOTE: this does not allow zero-length identifiers */
+	<DELIMITED_IDENTIFIER: "\""
+		(
+			("\"\"") |
+			(~["\""])
+		) +
+		"\"">
+}
+
+TOKEN :
+{	/* Literals */
+	<EXACT_NUMERIC: ( <UINT> ( "." ( <UINT> )? )? | "." <UINT> )>
+|	<UINT: (["0" - "9"])+ >/* This is for an unsigned exact numeric */
+|	<LENGTH_MODIFIER: ( <UINT> ["K","M","G","k","m","g"] )>
+|	<STRING: "'"
+		(
+			"''" |
+			~["'"]
+		) *
+		"'">
+|	<HEX_STRING: ["X","x"] "'" (["0"-"9","a"-"f","A"-"F"])*"'"> /* RESOLVE: does not allow separators */
+|	<APPROXIMATE_NUMERIC: <EXACT_NUMERIC> ["e","E"] ( ("+" | "-") )? ( ["0" - "9"] )+ >
+/*****
+	The tokenizer can't handle the date/time literals because
+	they are constructed of two tokens with arbitrary whitespace between them.
+	INTERVAL_LITERAL will also have to be upgraded at some point.
+|	<DATE_LITERAL: "DATE" "'" <DATE_VALUE> "'" >
+|	<#DATE_VALUE: <UINT> "-" <UINT> "-" <UINT> >
+|	<TIME_LITERAL: "TIME" "'" <TIME_VALUE> ( <TIMEZONE_INTERVAL> ) ? "'" >
+|	<#TIME_VALUE: <UINT> ":" <UINT> ":" <SECONDS_VALUE> >
+|	<#TIMEZONE_INTERVAL: ("+" | "-") <UINT> ":" <UINT> >
+|	<TIMESTAMP_LITERAL: "TIMESTAMP" "'" <DATE_VALUE> " " <TIME_VALUE> ( <TIMEZONE_INTERVAL> ) ? "'" >
+*****/
+|	<INTERVAL_LITERAL: "INTERVAL" "'" (["+","-"])? <INTERVAL_STRING> <INTERVAL_QUALIFIER> >
+|	<#INTERVAL_STRING: "'" ( <YEAR_MONTH_LITERAL> | <DAY_TIME_LITERAL> ) "'" >
+|	<#INTERVAL_QUALIFIER: <SINGLE_DATETIME_FIELD> | ( <START_FIELD> <TO> <END_FIELD> ) >
+|	<#SINGLE_DATETIME_FIELD: <NON_SECOND_DATETIME_FIELD> ( <LEFT_PAREN> <UINT> <RIGHT_PAREN> ) ? >
+|	<#START_FIELD: <NON_SECOND_DATETIME_FIELD> ( <LEFT_PAREN> <UINT> <RIGHT_PAREN> ) ? >
+|	<#END_FIELD: <NON_SECOND_DATETIME_FIELD> >
+|	<#NON_SECOND_DATETIME_FIELD: <YEAR> | <MONTH> | <DAY> | <HOUR> | <MINUTE> >
+|	<#YEAR_MONTH_LITERAL: (<UINT> | ( <UINT> "-" ) )? <UINT> >
+|	<#DAY_TIME_LITERAL:  ( <DAY_TIME_INTERVAL> | <TIME_INTERVAL> ) >
+|	<#DAY_TIME_INTERVAL: <UINT> ( " " <UINT> ( ":" <UINT> ( ":" <SECONDS_VALUE> ) ? ) ? ) ? >
+|	<#SECONDS_VALUE: <UINT> ( "." ( <UINT> ) ? ) ? >
+|	<#TIME_INTERVAL: <UINT> ( ":" <UINT> ( ":" <SECONDS_VALUE> ) ? ) ?
+		|	 <UINT> ( ":" <SECONDS_VALUE> ) ?
+		|	<SECONDS_VALUE> >
+}
+TOKEN [IGNORE_CASE] :
+{
+// GemStone changes BEGIN 
+   <JSON: "json">
+// GemStone changes END
+}
+
+
+
+/*
+ * <A NAME="Statement">Statement</A>
+ */
+int
+Statement( String statementSQLText, Object[] paramDefaults) throws StandardException :
+{
+	int	statementNode;
+
+        initStatement(statementSQLText, paramDefaults);
+}
+{
+	statementNode = StatementPart(null) 
+	{
+		return statementNode;
+	}
+}
+
+
+/*
+ * <A NAME="StatementPart">StatementPart</A>
+ * 
+ * @param tokenHolder returns the token that starts
+ * the statement.  If null, ignored.
+ */
+int
+StatementPart(Token[] tokenHolder) throws StandardException :
+{
+	int	statementNode;
+	/*
+	** Grab the token preceding this production
+	*/
+	if (tokenHolder != null) 
+	{
+		tokenHolder[0] = getToken(1);
+	}
+}
+{
+   (
+        statementNode = preparableSQLDataStatement()
+        /*
+        statementNode = createStatements() |
+        statementNode = dropStatements() |
+        statementNode = spsAlterStatement() |
+        statementNode = globalTemporaryTableDeclaration() |
+        statementNode = preparableSQLDataStatement() |
+        statementNode = spsSetStatement() |
+		statementNode = truncateTableStatement() |
+		statementNode = grantStatement() |
+		statementNode = revokeStatement() |
+		statementNode = execStatement()
+        // statementNode = SQLTransactionStatement()
+        */
+    )
+    {
+        return statementNode;
+    }
+}
+
+int
+preparableSQLDataStatement() throws StandardException :
+{
+	int	dmlStatement;
+}
+{
+ (( dmlStatement = getOptimizedLiteral() ))
+ { return dmlStatement ; }
+}
+
+JAVACODE
+int getOptimizedLiteral() throws StandardException
+{
+  Token firsttok = getNextToken();
+
+  // handle <LOCAL>, <GLOBAL>, <COHORT> for queries inside procedure
+  if (firsttok.kind == LESS_THAN_OPERATOR) {
+    firsttok = getNextToken();
+    if (firsttok.kind == LOCAL || firsttok.kind == GLOBAL
+        || firsttok.kind == COHORT) {
+      firsttok = getNextToken();
+      if (firsttok.kind == GREATER_THAN_OPERATOR) {
+        firsttok = getNextToken();
+      }
+      else {
+        return -1;
+      }
+    }
+    else {
+      return -1;
+    }
+  }
+
+  //for "insert into ... values(1),(2),(3)."
+  boolean ignoreMultivalueInsert = false, insertTracingOn = false, valuesOn = false;
+  if(firsttok.kind == INSERT)
+  {
+     
+    getCompilerContext().pushDML(0);
+    insertTracingOn = true;
+  }  
+  else if (firsttok.kind != SELECT
+   && firsttok.kind != UPDATE
+   && firsttok.kind != DELETE)
+  {
+    return -1;
+  }else {
+     getCompilerContext().pushDML(0);
+  }
+
+  boolean ignoreLiteral = false, ignorePrecisionScale = false;
+  boolean ignoreExplicitCast = false, xmlFunc = false;
+  boolean oldIgnoreLiteral = false, oldIgnoreExplicitCast = false;
+  int parens = 0, parensXmlFunc = 0, parensCast = -1;
+  CompilerContext cc = getCompilerContext();
+  Token tok = firsttok;//null;
+  Token prevtok = null;
+  outer:
+  for(;;) {
+    prevtok = tok;
+    tok = getNextToken();
+    
+    ignoreSwitch:
+    switch(tok.kind)
+    {
+        //for multi insert ignore case.
+        case VALUES:
+            if(insertTracingOn) {
+              valuesOn = true;
+            }
+            break;
+        case LEFT_PAREN:
+            parens++;
+            if (xmlFunc && parensXmlFunc == 0) {
+              parensXmlFunc = parens;
+              oldIgnoreLiteral = ignoreLiteral;
+              ignoreLiteral = true;
+            }
+            if (ignoreMultivalueInsert) {
+                return -1;
+            }
+            break;
+        // end of multi insert ignore case.
+        case FOR:
+          tok = getNextToken();
+          switch(tok.kind) {
+            case UPDATE:
+               prevtok = tok;
+               tok = getNextToken();
+               if(tok.kind != FOR) break ignoreSwitch;
+            case READ:
+            case FETCH:
+               prevtok = tok;
+               tok = getNextToken();
+               if(tok.kind != ONLY) break ignoreSwitch;
+
+            default: break ignoreSwitch;
+          }
+          //fall through
+        case OFFSET:
+          ignoreLiteral = seeingOffsetClause();
+          break;
+        case FETCH:
+          ignoreLiteral = true;
+          break;
+        // Added VARCHAR and CHAR as CAST() expressions can have AS VARCHAR(...) and 
+        // we want to ignore the length of the CHAR/VARCHAR as that is not a valid constant token
+        // to differentiate queries
+        case NUMERIC:
+        case DEC:
+        case DECIMAL:
+        case VARCHAR:
+        case CHAR:
+          // We are inside a CAST, i.e.
+          // CAST ( FOO AS CHAR )
+          // CAST ( FOO AS CHAR(5))
+          // Therefore, handle right parens correctly if directly 
+          // following a typename and turn off explicit casting
+          prevtok = tok;
+          tok = getNextToken();
+          if(tok.kind == LEFT_PAREN) {
+            ignorePrecisionScale = true;
+          }
+          else if (tok.kind == RIGHT_PAREN) {
+            if(ignoreExplicitCast) {
+              ignoreExplicitCast = false;
+            }
+          }            
+          break;
+        case CAST:
+          prevtok = tok;
+          tok = getNextToken();
+          if(tok.kind == LEFT_PAREN) {
+            ignoreExplicitCast = true;
+            parens++;
+            parensCast = parens;
+          }
+          break;
+        case RIGHT_PAREN:
+          if(ignorePrecisionScale) {
+            ignorePrecisionScale = false;
+          } else if(ignoreExplicitCast && parensCast == parens) {
+              parensCast = -1;
+              ignoreExplicitCast = false;
+          } else {
+            if(insertTracingOn && valuesOn && !ignoreExplicitCast) {
+               prevtok = tok;
+               tok = getNextToken();
+               if(tok.kind == COMMA) {
+                 ignoreMultivalueInsert = true;
+               }
+            }
+            if (xmlFunc && parens == parensXmlFunc) {
+              parensXmlFunc = 0;
+              ignoreLiteral = oldIgnoreLiteral;
+              xmlFunc = false;
+            }
+            parens--;
+          }
+          
+          if(cc.popDML(parens)) {
+            ignoreLiteral = cc.canOptimizeLiteral();
+          }
+          break;
+        case GROUP:
+        case ORDER:
+              prevtok = tok;
+              tok = getNextToken();
+              switch(tok.kind) {
+                case BY:
+                  ignoreLiteral = true;
+                  break; //and ignore constants in Group By/Order By
+                default: break ignoreSwitch;
+              }
+           break;
+        case FROM:           
+           break;
+        case SELECT: 
+           cc.switchOptimizeLiteral(ignoreLiteral);
+           cc.pushDML(parens);          
+        case WHERE:
+        case JOIN:
+        case HAVING:
+           ignoreLiteral = false;
+           break;
+
+        case XMLEXISTS:
+        case XMLQUERY:
+        case XMLSERIALIZE:
+          // don't use literal optimization for these (#42889)
+          xmlFunc = true;
+          break;
+
+        case PASSING:
+          if (xmlFunc && parens == parensXmlFunc) {
+            parensXmlFunc = 0;
+            ignoreLiteral = oldIgnoreLiteral;
+            xmlFunc = false;
+          }
+          break;
+
+        case EOF: 
+           break outer;
+     }
+
+     if(ignoreLiteral || ignorePrecisionScale || ignoreExplicitCast)
+       continue;
+     
+     String sign = "";
+     final int beginOffet = tok.beginOffset;
+    
+     //literal determination switch.
+     literal:
+     switch(tok.kind)
+     {
+        case STRING: 
+
+          verifyImageLength(tok.image);
+        //there is a maximum limit on the length of the string
+          if (tok.image.length() > Limits.DB2_MAX_CHARACTER_LITERAL_LENGTH)
+            throw StandardException.newException(SQLState.LANG_DB2_STRING_CONSTANT_TOO_LONG, StringUtil.formatForPrint(tok.image));
+            
+          /* Trim off the leading and trailing ', and compress all '' to ' */
+          String string = compressQuotes(tok.image, SINGLEQUOTES);
+
+          
+          tok.image = string;
+          tok.endOffset = tok.endOffset+1;
+
+          Integer constantInteger = ReuseFactory.getInteger(constantNumber);
+          getCompilerContext().addConstantTokenToList(tok);
+          getCompilerContext().storeTypeCompilerForParam(getTypeCompilerForLiteralToken(tok.kind, tok.image));
+          constantNumber++;
+          break literal;
+
+        case PLUS_SIGN:
+        case MINUS_SIGN:
+          //selectively pick "-" or "+" SIGN as part of literal.
+          if(prevtok == null)
+          {//nothing found previously.
+            sign = tok.image;
+          }
+          else
+          {//check specific previous token for SIGN to be part of literal.
+           //currently we honor following previous tokens.
+           // a) arithmetic operators b) relational operators
+           // c) logical operators d) assignment e) explicit parenthesis
+           // f) comma delimiter g) between
+            switch(prevtok.kind)
+            {
+              case LEFT_PAREN:
+              case PLUS_SIGN:
+              case MINUS_SIGN:
+              case ASTERISK:
+              case SOLIDUS:
+              case CONCATENATION_OPERATOR:
+              case EQUALS_OPERATOR:
+              case NOT_EQUALS_OPERATOR:
+              case NOT_EQUALS_OPERATOR2:
+              case LESS_THAN_OPERATOR:
+              case GREATER_THAN_OPERATOR:
+              case LESS_THAN_OR_EQUALS_OPERATOR:
+              case GREATER_THAN_OR_EQUALS_OPERATOR:
+              case AND:
+              case OR:
+              case COMMA:
+              case BETWEEN:
+              case WHERE:
+              case SELECT:
+                sign = tok.image;
+                prevtok = tok;
+                tok = getNextToken();
+                break;
+            }
+          }
+          //no break, fall through and expect tok.kind to be number...
+          
+        case EXACT_NUMERIC:
+           //check again, if falling through SIGN, next token should be numeric.
+         if(tok.kind == EXACT_NUMERIC) {
+            String num = tok.image;
+            if (sign.equals("-"))
+            {
+               num = sign.concat(num);
+               tok.beginOffset = beginOffet;
+            }
+            
+            tok.image = num;
+            tok.endOffset = tok.endOffset + 1;
+
+            getCompilerContext().addConstantTokenToList(tok);
+            getCompilerContext().storeTypeCompilerForParam(getTypeCompilerForLiteralToken(tok.kind, tok.image));
+            constantNumber++;
+            break literal;
+         }
+          
+        case APPROXIMATE_NUMERIC:
+           //check again, if falling through SIGN, next token should be numeric.
+         if(tok.kind == APPROXIMATE_NUMERIC) {
+            String num = tok.image;
+            if (sign.equals("-"))
+            {
+               num = sign.concat(num);
+               tok.beginOffset = beginOffet;
+            }
+            
+            tok.image = num;
+            tok.endOffset = tok.endOffset + 1;
+    
+            getCompilerContext().addConstantTokenToList(tok);
+            getCompilerContext().storeTypeCompilerForParam(getTypeCompilerForLiteralToken(tok.kind, tok.image));
+            constantNumber++;
+            break literal;
+         }
+        case HEX_STRING:
+          break literal;
+
+        case EOF:
+          break outer;
+    }
+  }
+  
+  return firsttok.kind;
+}
+  
+int
+preparableSelectStatement(boolean checkParams) throws StandardException :
+{
+	ResultSetNode	  queryExpression = null;
+	Vector  updateColumns = new Vector();
+	int               forUpdateState = CursorNode.UNSPECIFIED;
+	int				  isolationLevel = ExecutionContext.UNSPECIFIED_ISOLATION_LEVEL;
+	OrderByList orderCols = null;
+    NumericConstantNode offset = null;
+    NumericConstantNode fetchFirst = null;
+//    beginTokenSkip = System.currentTimeMillis();
+   int retval = 0;
+}
+{
+
+(( retval = getOptimizedLiteral() ))
+{ return retval ; }
+
+}

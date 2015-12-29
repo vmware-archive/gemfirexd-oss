@@ -1,0 +1,1 @@
+Cannot issue commit in a nested connection when there is a pending operation in the parent connection

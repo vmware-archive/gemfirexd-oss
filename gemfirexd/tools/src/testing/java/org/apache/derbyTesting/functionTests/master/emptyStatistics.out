@@ -1,0 +1,114 @@
+gfxd> --
+--   Licensed to the Apache Software Foundation (ASF) under one or more
+--   contributor license agreements.  See the NOTICE file distributed with
+--   this work for additional information regarding copyright ownership.
+--   The ASF licenses this file to You under the Apache License, Version 2.0
+--   (the "License"); you may not use this file except in compliance with
+--   the License.  You may obtain a copy of the License at
+--
+--      http://www.apache.org/licenses/LICENSE-2.0
+--
+--   Unless required by applicable law or agreed to in writing, software
+--   distributed under the License is distributed on an "AS IS" BASIS,
+--   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+--   See the License for the specific language governing permissions and
+--   limitations under the License.
+--
+-- Changes for GemFireXD distributed data platform (some marked by "GemStone changes")
+--
+-- Portions Copyright (c) 2010-2015 Pivotal Software, Inc. All rights reserved.
+--
+-- Licensed under the Apache License, Version 2.0 (the "License"); you
+-- may not use this file except in compliance with the License. You
+-- may obtain a copy of the License at
+--
+-- http://www.apache.org/licenses/LICENSE-2.0
+--
+-- Unless required by applicable law or agreed to in writing, software
+-- distributed under the License is distributed on an "AS IS" BASIS,
+-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+-- implied. See the License for the specific language governing
+-- permissions and limitations under the License. See accompanying
+-- LICENSE file.
+--
+-- test to verify that RTS functionality is stubbed out
+call SYSCS_UTIL.SET_RUNTIMESTATISTICS(1);
+0 rows inserted/updated/deleted
+gfxd> create schema "check";
+0 rows inserted/updated/deleted
+gfxd> set schema 'check';
+0 rows inserted/updated/deleted
+gfxd> values 1, 2, 3;
+1          
+-----------
+1          
+2          
+3          
+gfxd> values SYSCS_UTIL.GET_RUNTIMESTATISTICS();
+1                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------
+NULL                                                                                                                            
+gfxd> -- GemStone added test for async insert below (#43403)
+create table test.firsttable (id int primary key, name varchar(12));
+0 rows inserted/updated/deleted
+gfxd> insert into test.firsttable values (10,'TEN'),(20,'TWENTY'),(30,'THIRTY');
+3 rows inserted/updated/deleted
+gfxd> set isolation read committed;
+0 rows inserted/updated/deleted
+gfxd> autocommit off;
+gfxd> -- first check rollback
+async aInsert 'insert into test.firsttable values (40,''Forty'')';
+gfxd> insert into test.firsttable values (50,'Fifty');
+1 row inserted/updated/deleted
+gfxd> wait for aInsert;
+1 row inserted/updated/deleted
+gfxd> select * from test.firsttable;
+ID         |NAME        
+------------------------
+30         |THIRTY      
+50         |Fifty       
+20         |TWENTY      
+40         |Forty       
+10         |TEN         
+gfxd> rollback;
+gfxd> select * from test.firsttable;
+ID         |NAME        
+------------------------
+30         |THIRTY      
+20         |TWENTY      
+10         |TEN         
+gfxd> -- now insert again and check commit
+async aInsert 'insert into test.firsttable values (40,''Forty'')';
+gfxd> insert into test.firsttable values (50,'Fifty');
+1 row inserted/updated/deleted
+gfxd> wait for aInsert;
+1 row inserted/updated/deleted
+gfxd> select * from test.firsttable;
+ID         |NAME        
+------------------------
+30         |THIRTY      
+50         |Fifty       
+20         |TWENTY      
+40         |Forty       
+10         |TEN         
+gfxd> commit;
+gfxd> select * from test.firsttable;
+ID         |NAME        
+------------------------
+30         |THIRTY      
+50         |Fifty       
+20         |TWENTY      
+40         |Forty       
+10         |TEN         
+gfxd> -- check with another connection
+connect peer 'mcast-port=0';
+Using CONNECTION1
+gfxd(CONNECTION1)> select * from test.firsttable;
+ID         |NAME        
+------------------------
+30         |THIRTY      
+50         |Fifty       
+20         |TWENTY      
+40         |Forty       
+10         |TEN         
+gfxd(CONNECTION1)> 

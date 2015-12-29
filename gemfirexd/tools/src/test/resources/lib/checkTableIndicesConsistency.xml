@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlResults PUBLIC "-//GemStone Systems, Inc.//GemFireXD Test Results 1.0//EN"
+          "sqlResults1_0.dtd">
+<sqlResults>
+	<resultSet id="rs1">
+	 <row>
+         <field name="ID">1</field>
+         <field name="SECONDID">2</field>
+         <field name="THIRD">3</field>
+         <field name="FOURTH">4</field>
+         <field name="FIFTH">10</field>
+   </row>
+	<row>
+		 <field name="ID">4</field>
+         <field name="SECONDID">5</field>
+         <field name="THIRD">6</field>
+         <field name="FOURTH">4</field>
+         <field name="FIFTH">11</field>
+   </row>
+  
+   <row>
+         <field name="ID">7</field>
+         <field name="SECONDID">8</field>
+         <field name="THIRD">9</field>
+         <field name="FOURTH">4</field>
+         <field name="FIFTH">12</field>
+						
+	</row>		
+	</resultSet>
+</sqlResults>

@@ -1,0 +1,1 @@
+com.pivotal.gemfirexd.internal.engine.sql.execute.GemFireInsertResultSet cannot be cast to com.pivotal.gemfirexd.internal.impl.sql.execute.InsertResultSet

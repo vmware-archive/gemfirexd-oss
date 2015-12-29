@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title>writeSchemaToDatabase</title>
+<link href="styles.css" type="text/css" rel="stylesheet">
+</head>
+<body>
+<h2> writeSchemaToDatabase</h2>
+<fieldset class="taskDescription">
+<legend><a class="anchor" name="description">Description</a></legend>
+<p>Java type: <a href="../api/org/apache/ddlutils/task/WriteSchemaToDatabaseCommand.html"><code>org.apache.ddlutils.task.WriteSchemaToDatabaseCommand</code></a></p>
+<p>Parses the schema XML files specified for the enclosing task, and creates the corresponding
+ schema in the database.</p>
+</fieldset>
+<fieldset class="taskParameters">
+<legend><a class="anchor" name="parameters">Parameters</a></legend>
+  	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-dodrops">dodrops</a> : boolean
+  	</p>
+	<p class="taskParameterDescription">
+	Specifies whether tables, external constraints, etc. can be dropped if necessary.
+ Note that this is only relevant when <code>alterDatabase</code> is <code>false</code>. <br/>
+        Per default database structures are dropped if necessary
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-failonerror">failonerror</a> : boolean
+  	</p>
+	<p class="taskParameterDescription">
+	Specifies whether the execution shall stop if an error has occurred during the task runs. <br/>
+        By default execution will be stopped when an error is encountered.
+  	</p>
+   <div class="taskParameterSeparator"></div> 	<p class="taskParameterDefinition">
+	  <a class="anchor" name="parameter-alterdatabase">alterdatabase</a> : boolean
+  	</p>
+	<p class="taskParameterDescription">
+	Specifies whether DdlUtils shall alter an existing database rather than clearing it and
+ creating it new. <br/>
+        Per default an existing database is altered
+  	</p>
+</fieldset>
+<fieldset class="taskNestedElements">
+<legend><a class="anchor" name="nestedElements">Nested elements</a></legend>
+    	<p class="taskNestedElementRef">&rArr;&nbsp;<a href="org.apache.ddlutils.task.TableSpecificParameter.html"><code>parameter</code></a></p>
+  </fieldset>
+<p>&copy;2005-2007 Apache Software Foundation</p>
+</body>
+</html>

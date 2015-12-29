@@ -1,0 +1,239 @@
+// functional tests
+hdfs/backwardCompatibility/concKnownKeysPersist.conf 
+  A=config configHosts=1  configVMsPerHost=1 configThreadsPerVM=1
+  B=peer   peerHosts  =10 peerVMsPerHost  =1 peerThreadsPerVM  =20
+  numKeys=10000 byteArraySize=5
+  batchSizeMB=5 batchTimeInterval=5000
+  version1=100,130
+hdfs/backwardCompatibility/concKnownKeysPersistEntryLRU.conf 
+  A=config configHosts=1  configVMsPerHost=1 configThreadsPerVM=1
+  B=peer   peerHosts  =10 peerVMsPerHost  =1 peerThreadsPerVM  =20
+  numKeys=10000 byteArraySize=1024
+  batchSizeMB=5 batchTimeInterval=5000
+  version1=100,130
+hdfs/backwardCompatibility/concKnownKeysPersistMemLRU.conf 
+  A=config configHosts=1  configVMsPerHost=1 configThreadsPerVM=1
+  B=peer   peerHosts  =10 peerVMsPerHost  =1 peerThreadsPerVM  =20
+  numKeys=10000 byteArraySize=10240
+  batchSizeMB=5 batchTimeInterval=5000
+  version1=100,130
+hdfs/backwardCompatibility/concKnownKeysPersistHeapLRU.conf 
+  A=config configHosts=1  configVMsPerHost=1 configThreadsPerVM=1
+  B=peer   peerHosts  =10 peerVMsPerHost  =1 peerThreadsPerVM  =20
+  numKeys=10000 byteArraySize=1024
+  batchSizeMB=5 batchTimeInterval=5000
+  version1=100,130
+
+hdfs/backwardCompatibility/serialParRegPersist.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=2 redundantCopies=0
+  version1=100,130
+hdfs/backwardCompatibility/serialParRegPersist.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=2 redundantCopies=1
+  version1=100,130
+hdfs/backwardCompatibility/serialParRegPersist.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=2 redundantCopies=2
+  version1=100,130
+hdfs/backwardCompatibility/serialParRegPersist.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=2 redundantCopies=3
+  version1=100,130
+
+hdfs/backwardCompatibility/concParRegPersist.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies=0
+  version1=100,130
+hdfs/backwardCompatibility/concParRegPersist.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies=1
+  version1=100,130
+hdfs/backwardCompatibility/concParRegPersist.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies=2
+  version1=100,130
+hdfs/backwardCompatibility/concParRegPersist.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies=3
+  version1=100,130
+
+// concKnownKeysPersist with LRU
+hdfs/backwardCompatibility/concKnownKeysPersist.conf 
+  A=config configHosts=1  configVMsPerHost=1 configThreadsPerVM=1
+  B=peer   peerHosts  =10 peerVMsPerHost  =1 peerThreadsPerVM  =20
+  numKeys=1000000 byteArraySize=5
+  batchSizeMB=128 batchTimeInterval=600000
+  version1=100,130
+hdfs/backwardCompatibility/concKnownKeysPersistEntryLRU.conf 
+  A=config configHosts=1  configVMsPerHost=1 configThreadsPerVM=1
+  B=peer   peerHosts  =10 peerVMsPerHost  =1 peerThreadsPerVM  =20
+  numKeys=1000000 byteArraySize=5
+  batchSizeMB=128 batchTimeInterval=600000
+  version1=100,130
+hdfs/backwardCompatibility/concKnownKeysPersistMemLRU.conf 
+  A=config configHosts=1  configVMsPerHost=1 configThreadsPerVM=1
+  B=peer   peerHosts  =10 peerVMsPerHost  =1 peerThreadsPerVM  =20
+  numKeys=1000000 byteArraySize=5
+  batchSizeMB=128 batchTimeInterval=600000
+  version1=100,130
+hdfs/backwardCompatibility/concKnownKeysPersistHeapLRU.conf 
+  A=config configHosts=1  configVMsPerHost=1 configThreadsPerVM=1
+  B=peer   peerHosts  =10 peerVMsPerHost  =1 peerThreadsPerVM  =20
+  numKeys=1000000 byteArraySize=5
+  batchSizeMB=128 batchTimeInterval=600000
+  version1=100,130
+
+// concParRegPersist with LRU (to destroy in-memory entries and rely on hadoop)
+hdfs/backwardCompatibility/concParRegPersistEntryLRU.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies=0,1
+  version1=100,130
+hdfs/backwardCompatibility/concParRegPersistMemLRU.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies=0,1
+  version1=100,130
+hdfs/backwardCompatibility/concParRegPersistHeapLRU.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies=0,1
+  version1=100,130
+
+// ----------------------------------------------------------
+// parReg HA (HDFS) persist tests (until we add local persistence, don't recycle more vms than we have redundant copies
+// ----------------------------------------------------------
+hdfs/backwardCompatibility/serialParRegHAPersist.conf 
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=2
+   B=dataStore dataStoreHosts=6 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+   locatorHosts = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   redundantCopies=1 numVMsToStop=1
+   version1=100,130
+
+hdfs/backwardCompatibility/serialParRegHAPersist.conf 
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=2
+   B=dataStore dataStoreHosts=6 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+   locatorHosts = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   redundantCopies=2 numVMsToStop=2
+   version1=100,130
+
+hdfs/backwardCompatibility/serialParRegHAPersist.conf 
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=2
+   B=dataStore dataStoreHosts=6 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+   locatorHosts = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   redundantCopies=3 numVMsToStop=3
+   version1=100,130
+
+hdfs/backwardCompatibility/concParRegHAPersist.conf 
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=6 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   locatorHosts = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   redundantCopies=1 numVMsToStop=1
+   version1=100,130
+
+hdfs/backwardCompatibility/concParRegHAPersist.conf 
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=6 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   locatorHosts = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   redundantCopies=2 numVMsToStop=2
+   version1=100,130
+
+hdfs/backwardCompatibility/concParRegHAPersist.conf 
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=6 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   locatorHosts = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   redundantCopies=3 numVMsToStop=3
+   version1=100,130
+
+// ----------------------------------------------------------
+// prColocation (HDFS) persist tests
+// ----------------------------------------------------------
+hdfs/backwardCompatibility/colocationWithOpsPersist.conf peerHosts=5 peerVMsPerHost=2 peerThreadsPerVM=20 numKeys=1000 byteArraySize=5 redundantCopies=unused
+   version1=100,130
+
+hdfs/backwardCompatibility/colocationWithOpsHAPersist.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=7 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   locatorHosts = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   numKeys=10000 byteArraySize=5000 redundantCopies=1 numVMsToStop=1
+   version1=100,130
+hdfs/backwardCompatibility/colocationWithOpsHAPersist.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=7 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   locatorHosts = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   numKeys=10000 byteArraySize=5000 redundantCopies=2 numVMsToStop=2
+   version1=100,130
+hdfs/backwardCompatibility/colocationWithOpsHAPersist.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=7 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   locatorHosts = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   numKeys=10000 byteArraySize=5000 redundantCopies=3 numVMsToStop=3
+   version1=100,130
+
+// Streaming
+hdfs/backwardCompatibility/concKnownKeysStreaming.conf 
+   A=config configHosts=1  configVMsPerHost=1 configThreadsPerVM=1
+   B=peer   peerHosts  =10 peerVMsPerHost  =1 peerThreadsPerVM  =20
+   numKeys=10000 byteArraySize=5
+   batchSizeMB=5 batchTimeInterval=5000
+   version1=100,130
+
+hdfs/backwardCompatibility/serialParRegStreaming.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=2 redundantCopies=0
+   version1=100,130
+hdfs/backwardCompatibility/serialParRegStreaming.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=2 redundantCopies=1
+   version1=100,130
+hdfs/backwardCompatibility/serialParRegStreaming.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=2 redundantCopies=2
+   version1=100,130
+hdfs/backwardCompatibility/serialParRegStreaming.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=2 redundantCopies=3
+   version1=100,130
+
+hdfs/backwardCompatibility/concParRegStreaming.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies=0
+   version1=100,130
+hdfs/backwardCompatibility/concParRegStreaming.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies=1
+   version1=100,130
+hdfs/backwardCompatibility/concParRegStreaming.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies=2
+   version1=100,130
+hdfs/backwardCompatibility/concParRegStreaming.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=10 redundantCopies=3
+   version1=100,130
+
+hdfs/backwardCompatibility/serialParRegHAStreaming.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=2
+   B=dataStore dataStoreHosts=6 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+   locatorHosts = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   redundantCopies=1 numVMsToStop=1
+   version1=100,130
+
+hdfs/backwardCompatibility/serialParRegHAStreaming.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=2
+   B=dataStore dataStoreHosts=6 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+   locatorHosts = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   redundantCopies=2 numVMsToStop=2
+   version1=100,130
+
+hdfs/backwardCompatibility/serialParRegHAStreaming.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=2
+   B=dataStore dataStoreHosts=6 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=2
+   locatorHosts = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   redundantCopies=3 numVMsToStop=3
+   version1=100,130
+
+hdfs/backwardCompatibility/concParRegHAStreaming.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=6 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   locatorHosts = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   redundantCopies=1 numVMsToStop=1
+   version1=100,130
+
+hdfs/backwardCompatibility/concParRegHAStreaming.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=6 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   locatorHosts = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   redundantCopies=2 numVMsToStop=2
+   version1=100,130
+
+hdfs/backwardCompatibility/concParRegHAStreaming.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=6 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   locatorHosts = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   redundantCopies=3 numVMsToStop=3
+   version1=100,130
+
+// MapReduce
+hdfs/backwardCompatibility/concKnownKeysMapReduce.conf 
+  peerHosts=10 peerVMsPerHost=1 peerThreadsPerVM=20 
+  numKeys=10000 byteArraySize=5
+  batchSizeMB=5 batchTimeInterval=5000
+  hdfsWriteOnly = true,false mapReduceClass = hdfs.mapreduce.KnownKeysMRv1
+  version1=100,130
+
+hdfs/backwardCompatibility/concKnownKeysMapReduce.conf 
+  peerHosts=10 peerVMsPerHost=1 peerThreadsPerVM=20 
+  numKeys=10000 byteArraySize=5
+  batchSizeMB=5 batchTimeInterval=5000
+  hdfsWriteOnly = true,false mapReduceClass = hdfs.mapreduce.KnownKeysMRv2
+  version1=100,130
+
+// Streaming
+hdfs/backwardCompatibility/concKnownKeysStreaming.conf 
+   A=config configHosts=1  configVMsPerHost=1 configThreadsPerVM=1
+   B=peer   peerHosts  =10 peerVMsPerHost  =1 peerThreadsPerVM  =20
+   numKeys=1000000 byteArraySize=5
+   batchSizeMB=128 batchTimeInterval=600000
+   version1=100,130
+

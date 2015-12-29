@@ -1,0 +1,8 @@
+cacheperf/poc/useCase16/useCase16.conf
+  dataHosts =  2 dataVMsPerHost = 1 dataThreadsPerVM = 1
+  feedHosts =  2 feedVMsPerHost = 2 feedThreadsPerVM = 10
+  maxKeys = 10000000 objectSize = 1024
+  heapMB = 45000
+  redundantCopies = 1
+  conserveSockets = false
+  enableHistogram = true

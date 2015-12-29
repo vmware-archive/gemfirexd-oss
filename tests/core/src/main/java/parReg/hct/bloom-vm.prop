@@ -1,0 +1,8 @@
+bridgeHosts=1
+bridgeVMsPerHost=1
+bridgeThreadsPerVM=1
+edgeHosts=1
+edgeVMsPerHost=1
+edgeThreadsPerVM=40
+
+hc.serverMemSize=1524m 

@@ -1,0 +1,179 @@
+// These tests require a minimum of 3 hosts.  
+// Use splitBrain/local.weightedMembers.conf to configure the hosts.
+
+// Region entry operations
+// dataPolicy = normal, replicate, persistentReplicate
+// scope = global, distributedAck
+splitBrain/p2pNetworkPartition1-entryOps.conf 
+   onlyOnPlatforms=Linux
+
+splitBrain/p2pNetworkPartition1-entryOpsPersist.conf
+   onlyOnPlatforms=Linux
+
+splitBrain/p2pNetworkPartition2-entryOps.conf 
+   onlyOnPlatforms=Linux
+
+splitBrain/p2pNetworkPartition3-entryOps.conf 
+   onlyOnPlatforms=Linux
+
+splitBrain/p2pNetworkPartition4-entryOps.conf 
+   onlyOnPlatforms=Linux
+
+// transactions operations
+// dataPolicy = normal, replicate
+// scope = distributedAck
+//disabled for #44146
+//splitBrain/p2pNetworkPartition1-tx.conf 
+//   onlyOnPlatforms=Linux
+
+//splitBrain/p2pNetworkPartition2-tx.conf 
+//   onlyOnPlatforms=Linux
+
+//splitBrain/p2pNetworkPartition3-tx.conf
+//   onlyOnPlatforms=Linux
+
+//splitBrain/p2pNetworkPartition4-tx.conf 
+//   onlyOnPlatforms=Linux
+
+// partitionedRegions
+// dataPolicy = partitioned
+// scope = default
+splitBrain/p2pNetworkPartition1-pr.conf redundantCopies = 1
+   onlyOnPlatforms=Linux
+
+splitBrain/p2pNetworkPartition2-pr.conf redundantCopies = 1
+   onlyOnPlatforms=Linux
+
+splitBrain/p2pNetworkPartition3-pr.conf redundantCopies = 1
+   onlyOnPlatforms=Linux
+
+splitBrain/p2pNetworkPartition4-pr.conf redundantCopies = 1
+   onlyOnPlatforms=Linux
+
+// WAN (p2p) tests 
+// dataPolicy = normal, replicate, persistentReplicate
+// global, distributedAck
+splitBrain/wan_p2pNetworkPartition1.conf 
+   onlyOnPlatforms=Linux
+
+splitBrain/wan_p2pNetworkPartition2.conf 
+   onlyOnPlatforms=Linux
+
+splitBrain/wan_p2pNetworkPartition3.conf 
+   onlyOnPlatforms=Linux
+
+splitBrain/wan_p2pNetworkPartition4.conf 
+   onlyOnPlatforms=Linux
+
+// PartitionRegion + TX
+//disable for #44146
+//splitBrain/p2pNetworkPartition1-prTx.conf redundantCopies = 1
+//   onlyOnPlatforms=Linux
+
+//splitBrain/p2pNetworkPartition2-prTx.conf redundantCopies = 1
+//   onlyOnPlatforms=Linux
+
+//splitBrain/p2pNetworkPartition3-prTx.conf redundantCopies = 1
+//   onlyOnPlatforms=Linux
+
+//splitBrain/p2pNetworkPartition4-prTx.conf redundantCopies = 1
+//   onlyOnPlatforms=Linux
+
+// persistent partitionedRegions
+// dataPolicy = persistentPartition
+// scope = default
+splitBrain/p2pNetworkPartition1-prPersist.conf redundantCopies = 2
+   onlyOnPlatforms=Linux
+
+splitBrain/p2pNetworkPartition2-prPersist.conf redundantCopies = 2
+   onlyOnPlatforms=Linux
+
+splitBrain/p2pNetworkPartition3-prPersist.conf redundantCopies = 2
+   onlyOnPlatforms=Linux
+
+splitBrain/p2pNetworkPartition4-prPersist.conf redundantCopies = 2
+   onlyOnPlatforms=Linux
+
+// from networkPartition3 hosts
+// Normal, replicate, persistent_replicate configured dynamically (ONEOF)
+/*commenting out for Cheetah release
+splitBrain/bridgeNetworkPartition1-entryOps.conf 
+   onlyOnPlatforms=Linux
+
+splitBrain/bridgeNetworkPartition2-entryOps.conf 
+   onlyOnPlatforms=Linux
+
+splitBrain/bridgeNetworkPartition3-entryOps.conf 
+   onlyOnPlatforms=Linux
+
+splitBrain/bridgeNetworkPartition4-entryOps.conf 
+   onlyOnPlatforms=Linux
+
+// replicate with clients registering cqs instead of registerInterest
+splitBrain/bridgeNetworkPartition1-cq.conf 
+   onlyOnPlatforms=Linux
+
+splitBrain/bridgeNetworkPartition2-cq.conf 
+   onlyOnPlatforms=Linux
+
+splitBrain/bridgeNetworkPartition3-cq.conf 
+   onlyOnPlatforms=Linux
+
+splitBrain/bridgeNetworkPartition4-cq.conf 
+   onlyOnPlatforms=Linux
+
+// PR in the bridgeServers
+splitBrain/bridgeNetworkPartition1-pr.conf redundantCopies=1
+   onlyOnPlatforms=Linux
+
+splitBrain/bridgeNetworkPartition2-pr.conf redundantCopies=1
+   onlyOnPlatforms=Linux
+
+splitBrain/bridgeNetworkPartition3-pr.conf redundantCopies=1
+   onlyOnPlatforms=Linux
+
+splitBrain/bridgeNetworkPartition4-pr.conf redundantCopies=1
+   onlyOnPlatforms=Linux
+
+// Normal, replicate, persistent_replicate configured dynamically (ONEOF)
+splitBrain/wan_bridgeNetworkPartition1.conf 
+   onlyOnPlatforms=Linux
+
+splitBrain/wan_bridgeNetworkPartition2.conf 
+   onlyOnPlatforms=Linux
+
+splitBrain/wan_bridgeNetworkPartition3.conf 
+   onlyOnPlatforms=Linux
+
+splitBrain/wan_bridgeNetworkPartition4.conf 
+   onlyOnPlatforms=Linux */
+
+// bridgeServers w/PartitionRegions and TX
+//disable for #44146
+//splitBrain/bridgeNetworkPartition1-prTx.conf redundantCopies=1
+//   onlyOnPlatforms=Linux
+
+//splitBrain/bridgeNetworkPartition2-prTx.conf redundantCopies=1
+//   onlyOnPlatforms=Linux
+
+//splitBrain/bridgeNetworkPartition3-prTx.conf redundantCopies=1
+//   onlyOnPlatforms=Linux
+
+//splitBrain/bridgeNetworkPartition4-prTx.conf redundantCopies=1
+//   onlyOnPlatforms=Linux
+
+// persistent PR in the bridgeServers
+// dataPolicy = persistentPartition
+/*commenting out for Cheetah release
+splitBrain/bridgeNetworkPartition1-prPersist.conf redundantCopies=2
+   onlyOnPlatforms=Linux
+
+splitBrain/bridgeNetworkPartition2-prPersist.conf redundantCopies=2
+   onlyOnPlatforms=Linux
+
+splitBrain/bridgeNetworkPartition3-prPersist.conf redundantCopies=2
+   onlyOnPlatforms=Linux
+
+splitBrain/bridgeNetworkPartition4-prPersist.conf redundantCopies=2
+   onlyOnPlatforms=Linux */
+

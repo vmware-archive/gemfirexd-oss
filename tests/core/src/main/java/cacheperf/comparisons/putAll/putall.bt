@@ -1,0 +1,16 @@
+cacheperf/comparisons/putAll/putallperf.conf
+      bridgeHosts =  4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  7 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+      putAllEdgeHosts = 2, 5 putAllThreadsPerVM=1
+      maxKeys = 1000000 objectType = objects.BatchObject dataSize = 1024
+      trimSeconds = 120 workSeconds = 360  mapSize = 100, 1000, 10000
+      scope = ack  dataPolicy=replicate
+
+cacheperf/comparisons/putAll/putallperfPR.conf    
+      bridgeHosts =  4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  7 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+      putAllEdgeHosts = 2, 5 putAllThreadsPerVM=1
+      maxKeys = 1000000 objectType = objects.BatchObject dataSize = 1024
+      trimSeconds = 120 workSeconds = 360  mapSize = 100, 1000, 10000
+      scope = default  dataPolicy=partition
+ 

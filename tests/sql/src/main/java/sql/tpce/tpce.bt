@@ -1,0 +1,67 @@
+sql/tpce/tpceTradeOrders.conf
+  api = GFXD
+  peerHosts=2 peerVMsPerHost=3 peerThreadsPerVM=10
+  customerserverHosts=2 customerserverVMsPerHost=4 customerserverThreadsPerVM=1
+  marketserverHosts=2 marketserverVMsPerHost=2 marketserverThreadsPerVM=1
+  peerHeapMB = 2048 customerserverHeapMB = 10000 marketserverHeapMB = 1600
+  queryPlanFrequency = 0
+  importfile=importdata1k10day
+
+
+sql/tpce/tpceTradeOrdersPersist.conf
+  api = GFXD
+  peerHosts=2 peerVMsPerHost=3 peerThreadsPerVM=10
+  customerserverHosts=2 customerserverVMsPerHost=4 customerserverThreadsPerVM=1
+  marketserverHosts=2 marketserverVMsPerHost=2 marketserverThreadsPerVM=1
+  peerHeapMB = 2048 customerserverHeapMB = 10000 marketserverHeapMB = 1600
+  queryPlanFrequency = 0
+  importfile=importdata1k
+  
+sql/tpce/tpceRunTxns.conf
+  api = GFXD
+  peerHosts=2 peerVMsPerHost=3 peerThreadsPerVM=10
+  customerserverHosts=2 customerserverVMsPerHost=4 customerserverThreadsPerVM=1
+  marketserverHosts=2 marketserverVMsPerHost=2 marketserverThreadsPerVM=1
+  peerHeapMB = 2048 customerserverHeapMB = 10000 marketserverHeapMB = 1600
+  queryPlanFrequency = 0
+  importfile=importdata1k
+  
+sql/tpce/tpceRunTxnsOffheap.conf
+  api = GFXD
+  peerHosts=2 peerVMsPerHost=3 peerThreadsPerVM=10
+  customerserverHosts=2 customerserverVMsPerHost=4 customerserverThreadsPerVM=1
+  marketserverHosts=2 marketserverVMsPerHost=2 marketserverThreadsPerVM=1
+  peerHeapMB = 2048 customerserverHeapMB = 10000 marketserverHeapMB = 1600
+  queryPlanFrequency = 0
+  importfile=importdata1k
+  workSeconds = 3600
+  
+sql/tpce/tpceRunTxnsHdfs.conf
+  api = GFXD
+  locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+  A=peer peerHosts=2 peerVMsPerHost=3 peerThreadsPerVM=10
+  B=customerserver customerserverHosts=1 customerserverVMsPerHost=4 customerserverThreadsPerVM=1
+  C=marketserver marketserverHosts=1 marketserverVMsPerHost=2 marketserverThreadsPerVM=1
+  peerHeapMB=2048 customerserverHeapMB=10000 marketserverHeapMB=1600
+  queryPlanFrequency=0
+  importfile=importdata1k
+  logQueries=false
+  trimSeconds=60
+  workSeconds=3600
+  txIsolation=read_committed
+
+sql/tpce/thinClient/tpceRunTxnsClient.conf
+  api = GFXD
+  locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+  A=customer customerserverHosts=1 customerserverVMsPerHost=4 customerserverThreadsPerVM=1
+  B=market marketserverHosts=1 marketserverVMsPerHost=2 marketserverThreadsPerVM=1
+  C=client clientHosts=2 clientVMsPerHost=3 clientThreadsPerVM=10
+  clientHeapMB=2048 customerserverHeapMB=10000 marketserverHeapMB=1600
+  queryPlanFrequency=0
+  importfile=importdata1k
+  logQueries=false
+  trimSeconds=60
+  workSeconds=3600
+  txIsolation=read_committed
+
+

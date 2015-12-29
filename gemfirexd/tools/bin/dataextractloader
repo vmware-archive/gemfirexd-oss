@@ -1,0 +1,127 @@
+#!/bin/bash
+
+# Resolve the path including symlinks (#43722)
+# Use the most generic approach using "ls -l" instead of readlink etc.
+# that are not available on all platforms.
+fp="$0"
+unalias ls 2>/dev/null
+unalias cut 2>/dev/null
+while [ -L "$fp" ]; do
+  fp="`ls -l "$fp" | cut -d'>' -f 2`"
+  # trim leading/trailing spaces
+  fp="`echo $fp`"
+done
+
+# Set gfxd to the product toplevel directory
+gfxd="`dirname "$fp"`"
+if [ -z "$gfxd" ]; then
+  gfxd=.
+fi
+OLDPWD="$PWD"
+cd "$gfxd"
+gfxd="`dirname "$PWD"`"
+cd "$OLDPWD"
+
+if [ "x$WINDIR" != "x" ]; then
+  echo "ERROR: The variable WINDIR is set indicating this script is running in a Windows OS, please use the .bat file version instead."
+  exit 1
+fi
+
+if [ ! -f "$gfxd/lib/gemfirexd-__VERSION__.jar" ]; then
+  echo "ERROR: Could not determine GemFire XD location."
+  exit 1
+fi
+
+# Set default HADOOP_HOME
+if [ -z "$HADOOP_HOME" ]; then
+  HADOOP_HOME=/usr/lib/gphd
+fi
+
+# add hadoop jars to classpath
+if [ -z "$HADOOP_CLASSPATH" ]; then
+  if [ -e "$HADOOP_HOME/hadoop-hdfs" ]; then
+    #Pivotal HD jar layout
+    HADOOP_COMMON=$HADOOP_HOME/hadoop
+    HADOOP_NATIVE=$HADOOP_COMMON/lib/native
+    HADOOP_MR=$HADOOP_HOME/hadoop-mapreduce
+    HADOOP_HDFS=$HADOOP_HOME/hadoop-hdfs
+    for j in $HADOOP_COMMON/hadoop-annotations-*.jar \
+        $HADOOP_COMMON/hadoop-auth-*.jar \
+        $HADOOP_COMMON/hadoop-common-*.jar \
+        $HADOOP_HDFS/hadoop-hdfs-*.jar \
+        $HADOOP_MR/hadoop-mapreduce-client-core-*.jar \
+        $HADOOP_COMMON/lib/guava-*.jar \
+        $HADOOP_COMMON/lib/commons-codec-*.jar \
+        $HADOOP_COMMON/lib/commons-configuration-*.jar \
+        $HADOOP_COMMON/lib/commons-io-*.jar \
+        $HADOOP_COMMON/lib/commons-lang-*.jar \
+        $HADOOP_COMMON/lib/jsr*.jar \
+        $HADOOP_COMMON/lib/protobuf-*.jar \
+        $HADOOP_COMMON/lib/slf4j-api-*.jar; do
+      if [ -f "$j" ]; then
+        HADOOP_CLASSPATH="$HADOOP_CLASSPATH:$j"
+      fi
+    done
+  else 
+    #Assume apache hadoop jar layout
+    HADOOP_SHARE=$HADOOP_HOME/share/hadoop
+    HADOOP_NATIVE=$HADOOP_HOME/lib/native
+    for j in $HADOOP_SHARE/common/lib/hadoop-annotations-*.jar \
+        $HADOOP_SHARE/common/lib/hadoop-auth-*.jar \
+        $HADOOP_SHARE/common/hadoop-common-*.jar \
+        $HADOOP_SHARE/hdfs/hadoop-hdfs-*.jar \
+        $HADOOP_SHARE/mapreduce/hadoop-mapreduce-client-core-*.jar \
+        $HADOOP_SHARE/common/lib/guava-*.jar \
+        $HADOOP_SHARE/common/lib/commons-codec-*.jar \
+        $HADOOP_SHARE/common/lib/commons-configuration-*.jar \
+        $HADOOP_SHARE/common/lib/commons-lang-*.jar \
+        $HADOOP_SHARE/common/lib/commons-io-*.jar \
+        $HADOOP_SHARE/common/lib/jsr*.jar \
+        $HADOOP_SHARE/common/lib/protobuf-*.jar \
+        $HADOOP_SHARE/common/lib/slf4j-api-*.jar; do
+      if [ -f "$j" ]; then
+        HADOOP_CLASSPATH="$HADOOP_CLASSPATH:$j"
+      fi
+    done
+  fi
+fi
+
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HADOOP_NATIVE
+
+# Set default location for PXF jar
+if [ -z "$PXF_JAR" ]; then
+  if [ -f "$HADOOP_HOME/pxf/pxf.jar" ]; then
+    PXF_JAR=$HADOOP_HOME/pxf/pxf.jar
+  fi
+fi
+
+GFXD_JARS="$gfxd/lib/gemfirexd-__VERSION__.jar:$gfxd/lib/gemfirexd-tools-__VERSION__.jar:$gfxd/lib/gemfirexd-client-__VERSION__.jar:$gfxd/lib/pulse-dependencies.jar"
+
+if [ -n "$CLASSPATH" ]; then
+  GFXD_JARS="$GFXD_JARS:$CLASSPATH"
+fi
+
+# add all jars in ext-lib if available, so admin can drop external jars in there
+for j in $gfxd/ext-lib/*.jar; do
+  if [ -f "$j" ]; then
+    GFXD_JARS="$GFXD_JARS:$j"
+  fi
+done
+
+export GEMFIREXD=$gfxd
+
+# This JVM option will exit the VM when an OutOfMemoryError is thrown.
+# This is supported in the HotSpot JVM only (for now).
+if [ ! -z "`${GFXD_JAVA:-java} -version 2>&1 | grep HotSpot`" ]; then
+  OUT_OF_MEMORY_OPTS="-XX:OnOutOfMemoryError='kill -9 %p'"
+fi
+
+# Configure commons-logging to redirect to JDK logging
+GFXD_OPTS="-Dorg.apache.commons.logging.Log=org.apache.commons.logging.impl.Jdk14Logger ${GFXD_OPTS}"
+
+if [ -z "${OUT_OF_MEMORY_OPTS}" ]; then
+  "${GFXD_JAVA:-java}" ${JAVA_ARGS} ${GFXD_OPTS} -classpath "${GFXD_JARS}:${HADOOP_CLASSPATH}:${PXF_JAR}" com.pivotal.gemfirexd.tools.dataextractor.GemFireXDDataExtractorLoader "$@" 
+
+else
+  "${GFXD_JAVA:-java}" ${JAVA_ARGS} "${OUT_OF_MEMORY_OPTS}" ${GFXD_OPTS} -classpath "${GFXD_JARS}:${HADOOP_CLASSPATH}:${PXF_JAR}" com.pivotal.gemfirexd.tools.dataextractor.GemFireXDDataExtractorLoader "$@"
+fi

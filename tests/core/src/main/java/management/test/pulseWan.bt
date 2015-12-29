@@ -1,0 +1,24 @@
+//////////////////////////////
+// How To Scale system      //
+//////////////////////////////
+
+// managed_1_Hosts is number of cache-servers in the system
+// managed_2_Hosts is number of peers in the system
+// locator_managing_Hosts is number of locator (also dedicated managers)
+// managing_1_Hosts is number of managers (also dedicated managers)
+// jmxIterations is number of times to iterate. One iteration roughly lasts 1 second
+// wanSites : number of wansites. Names are specified in param wanSiteName spearated by |
+// *** Currently tested only on two wan sites ***
+
+//Region Created : Tests creates following kind of regions in cacheserver, peers and clients
+// Replicated, Partition
+
+// 5 DLCOK services per managed vm
+
+management/test/jmx/pulseWan.conf 
+    wanSites = 2 wanSiteNames = "PNE|NY" 
+	locatorHostsPerSite = 1 locator_VMsPerHost = 1 locatorThreadsPerVM = 3	 
+    managed_1_Hosts = 1 managed_1_VMsPerHost = 1 managed_1_ThreadsPerVM = 2
+	managed_2_Hosts = 1 managed_2_VMsPerHost = 1 managed_2_ThreadsPerVM = 2
+	managing_1_Hosts = 2 managing_1_VMsPerHost = 1 managing_1_ThreadsPerVM = 2
+	jmxIterations = 600 duration = 36000

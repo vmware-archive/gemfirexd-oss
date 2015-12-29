@@ -1,0 +1,400 @@
+// VIEW tests (client/server variant/REPLICATE)
+csTx/backwardCompatibility/distSerialView.conf
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  4 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+
+// c/s distIntegrity (REPLICATE regions)
+// Kill Committing VM during commit
+csTx/backwardCompatibility/distIntegrity.conf commitStateTrigger=afterSendCommit commitPercentage=100
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  4 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 2
+   
+csTx/backwardCompatibility/distIntegrity.conf commitStateTrigger=afterSendRollback commitPercentage=0
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  4 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 2
+   
+csTx/backwardCompatibility/distIntegrityKillDelegate.conf commitStateTrigger=afterSendCommit commitPercentage=100
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  4 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 2
+   
+csTx/backwardCompatibility/distIntegrityKillDelegate.conf commitStateTrigger=afterSendRollback commitPercentage=0
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  4 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 2
+   
+csTx/backwardCompatibility/distIntegrityKillNonDelegateServer.conf commitStateTrigger=afterSendCommit commitPercentage=100
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  4 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 2
+   
+csTx/backwardCompatibility/distIntegrityKillNonDelegateServer.conf commitStateTrigger=afterSendRollback commitPercentage=0
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  4 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 2
+   
+// tx conflict tests
+csTx/backwardCompatibility/serialConflict.conf 
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   totalTaskTimeSec=1800
+
+csTx/backwardCompatibility/serialConflict.conf 
+   edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   totalTaskTimeSec=1800
+
+csTx/backwardCompatibility/proxySerialConflict.conf 
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   totalTaskTimeSec=1800
+
+csTx/backwardCompatibility/serialParRegConflict.conf 
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   redundantCopies = 0 totalTaskTimeSec=1800
+
+csTx/backwardCompatibility/serialParRegConflict.conf 
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   redundantCopies = 1 totalTaskTimeSec=1800
+
+csTx/backwardCompatibility/serialParRegConflict.conf 
+   edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   redundantCopies = 0 totalTaskTimeSec=1800
+
+csTx/backwardCompatibility/serialConflictTxOnly.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   totalTaskTimeSec=1800
+
+csTx/backwardCompatibility/serialConflictTxOnly.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   totalTaskTimeSec=1800
+
+csTx/backwardCompatibility/serialConflictTxOnly.conf
+   edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   totalTaskTimeSec=1800
+
+csTx/backwardCompatibility/concConflict.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+
+csTx/backwardCompatibility/concNoConflict.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+
+csTx/backwardCompatibility/serialConflictTxCheck.conf
+   edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=3
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   totalTaskTimeSec=300
+
+csTx/backwardCompatibility/serialConflictPrTxCheck.conf 
+   edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=3
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+
+csTx/backwardCompatibility/serialRepeatableRead.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   totalTaskTimeSec=1800
+
+csTx/backwardCompatibility/serialRepeatableRead.conf
+   edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=2
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   totalTaskTimeSec=1800
+
+// Collections Tests
+csTx/backwardCompatibility/collectionsTest.conf
+   edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+
+csTx/backwardCompatibility/prCollectionsTest.conf
+   edgeHosts=1 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+
+//-----------------------------------------------------------
+// parRegBridge tests
+// ----------------------------------------------------------
+// serialExecution
+// 1 EMPTY, 3 NORMAL (no EVICTION)
+csTx/backwardCompatibility/serialParRegBridge.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=0 numAccessors=1 numEmptyClients=1 numThinClients=0
+
+// All EMPTY Clients
+csTx/backwardCompatibility/serialParRegBridge.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=0 numAccessors=1 numEmptyClients=4 numThinClients=0
+
+// ALL NORMAL (no EVICTION) clients
+csTx/backwardCompatibility/serialParRegBridge.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=0 numAccessors=1 numEmptyClients=0 numThinClients=0
+
+// concurrentExecution
+// 2 EMPTY, 2 NORMAL (no EVICTION)
+csTx/backwardCompatibility/concParRegBridge.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=0 numAccessors=1 numEmptyClients=2 numThinClients=0
+   bridgeOrderingWorkaround=registerInterest,uniqueKeys
+
+// All EMPTY Clients
+csTx/backwardCompatibility/concParRegBridge.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=0 numAccessors=1 numEmptyClients=4 numThinClients=0
+   bridgeOrderingWorkaround=registerInterest,uniqueKeys
+
+// ALL NORMAL (no EVICTION) clients
+csTx/backwardCompatibility/concParRegBridge.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=0 numAccessors=1 numEmptyClients=0 numThinClients=0
+   bridgeOrderingWorkaround=registerInterest,uniqueKeys
+
+// HA testing - serial (stop 1 VM at a time)
+csTx/backwardCompatibility/serialParRegHABridge.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   redundantCopies=1,2,3 numVMsToStop=1
+   numAccessors=1 numEmptyClients=1 numThinClients=0
+
+// HA testing - concurrent (stop 1 VM at a time)
+csTx/backwardCompatibility/concParRegHABridge.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=1,2,3 numVMsToStop=1
+   numAccessors=1 numEmptyClients=1 numThinClients=0
+
+// ----------------------------------------------------------
+// HA testing - serial (stop 2 VMs at a time)
+csTx/backwardCompatibility/serialParRegHABridge.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   redundantCopies=2,3 numVMsToStop=2
+   numAccessors=1 numEmptyClients=1 numThinClients=0
+
+// HA testing - concurrent (stop 2 VMs at a time)
+csTx/backwardCompatibility/concParRegHABridge.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=2,3 numVMsToStop=2
+   numAccessors=1 numEmptyClients=1 numThinClients=0
+
+// ----------------------------------------------------------
+// HA testing - serial (stop 3 VMs at a time)
+csTx/backwardCompatibility/serialParRegHABridge.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   redundantCopies=3 numVMsToStop=3
+   numAccessors=1 numEmptyClients=1 numThinClients=0
+csTx/backwardCompatibility/concParRegHABridge.conf
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   bridgeHosts=6 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=3 numVMsToStop=3
+   numAccessors=1 numEmptyClients=1 numThinClients=0
+
+// known keys ha testing
+csTx/backwardCompatibility/concKnownKeysHABridge.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=3
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=180000 byteArraySize=1000 redundantCopies=1 numVMsToStop=1
+   edgeVmSize=600 serverVmSize=700
+csTx/backwardCompatibility/concKnownKeysHABridge.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=3
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=100000 byteArraySize=1000 redundantCopies=2 numVMsToStop=2
+   edgeVmSize=400 serverVmSize=550
+csTx/backwardCompatibility/concKnownKeysHABridge.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=3
+   bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   numKeys=75000 byteArraySize=1000 redundantCopies=3 numVMsToStop=3
+   edgeVmSize=350 serverVmSize=450
+
+// FunctionExecution (client/server w/tx)
+// commented out (see bug 46536)
+//csTx/backwardCompatibility/hctFuncExecWOCustomPartition.conf
+   //edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   //bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   //numKeys=1000 byteArraySize=500 redundancy=1
+   //redundantCopies=0,1,2,3
+
+//csTx/backwardCompatibility/hctFuncExecWithCustomPartitioning.conf
+   //edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   //bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   //numKeys=1000 byteArraySize=500 redundancy=2
+   //redundantCopies=0,1,2,3
+
+//csTx/backwardCompatibility/hctFuncExecWithColocation.conf
+   //edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   //bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   //numKeys=1000 byteArraySize=500 redundancy=3
+   //redundantCopies=0,1,2,3
+
+//csTx/backwardCompatibility/hctFuncExecWithColocationHA.conf
+   //edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   //bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   //numKeys=10000 byteArraySize=500 redundancy=1 numVMsToStop=1
+   //redundantCopies=1
+
+//csTx/backwardCompatibility/hctFuncExecWithColocationHA.conf
+   //edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   //bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   //numKeys=10000 byteArraySize=500 redundancy=2 numVMsToStop=2
+   //redundantCopies=2
+
+//csTx/backwardCompatibility/hctFuncExecWithColocationHA.conf
+   //edgeHosts=5 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   //bridgeHosts=7 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   //numKeys=10000 byteArraySize=500 redundancy=3 numVMsToStop=3
+   //redundantCopies=3
+
+// resumableTx tests with pre70 clients
+csTx/backwardCompatibility/concBridgeResumableTx.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=3 bridgeVMsPerHost=1 bridgeThreadsPerVM=5
+   redundantCopies=1
+
+csTx/backwardCompatibility/concKnownKeysBridgeResumable.conf
+   edgeHosts=2 edgeVMsPerHost=1 edgeThreadsPerVM=4
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=4
+   redundantCopies=1
+
+// client/server topology with a single PR (entries colocated via PartitionResolver)
+csTx/backwardCompatibility/serialPRBridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 0 totalTaskTimeSec=600
+
+csTx/backwardCompatibility/serialPRBridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 1 totalTaskTimeSec=600
+
+csTx/backwardCompatibility/serialPRBridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 2 totalTaskTimeSec=600
+
+csTx/backwardCompatibility/serialPRBridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 3 totalTaskTimeSec=600
+
+csTx/backwardCompatibility/serialPRHABridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 1 numVMsToStop = 1 totalTaskTimeSec=600
+
+csTx/backwardCompatibility/serialPRHABridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 2 numVMsToStop = 2 totalTaskTimeSec=600
+
+csTx/backwardCompatibility/serialPRHABridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 3 numVMsToStop = 3 totalTaskTimeSec=600
+
+// client/server topology with a multiple Colocated PRs (also with PartitionedResolver)
+csTx/backwardCompatibility/serialColoBridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 0 totalTaskTimeSec=600
+
+csTx/backwardCompatibility/serialColoBridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 1 totalTaskTimeSec=600
+
+csTx/backwardCompatibility/serialColoBridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 2 totalTaskTimeSec=600
+
+csTx/backwardCompatibility/serialColoBridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 3 totalTaskTimeSec=600
+
+csTx/backwardCompatibility/serialColoHABridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 1 numVMsToStop = 1 totalTaskTimeSec=600
+
+csTx/backwardCompatibility/serialColoHABridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 2 numVMsToStop = 2 totalTaskTimeSec=600
+
+csTx/backwardCompatibility/serialColoHABridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 3 numVMsToStop = 3 totalTaskTimeSec=600
+
+// client/server topology with replicated region
+csTx/backwardCompatibility/serialRRBridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   totalTaskTimeSec=600
+
+csTx/backwardCompatibility/serialRRHABridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   numVMsToStop = 2 totalTaskTimeSec=600
+
+// client/server topology with replicated region
+csTx/backwardCompatibility/concRRBridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   totalTaskTimeSec=600
+
+csTx/backwardCompatibility/concRRBridgePersistWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   totalTaskTimeSec=600
+
+csTx/backwardCompatibility/concRRHABridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   numVMsToStop = 2 totalTaskTimeSec=600
+
+// client/server topology with partitioned regions
+csTx/backwardCompatibility/concPRBridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 2 totalTaskTimeSec=600
+
+csTx/backwardCompatibility/concPRBridgePersistWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 2 totalTaskTimeSec=600
+
+csTx/backwardCompatibility/concPRHABridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 2 numVMsToStop = 2 totalTaskTimeSec=600
+
+csTx/backwardCompatibility/concColoBridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 2 totalTaskTimeSec=600
+
+csTx/backwardCompatibility/concColoBridgePersistWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 2 totalTaskTimeSec=600
+
+csTx/backwardCompatibility/concColoHABridgeWithFE.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 2 numVMsToStop = 2 totalTaskTimeSec=600
+
+// client/server topology with partitioned regions
+csTx/backwardCompatibility/tryResumeWithWaitBridge.conf
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   edgeHosts=3 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   redundantCopies = 2 totalTaskTimeSec=600

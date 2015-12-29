@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="com.pivotal.gemfirexd.integration.hibernate">
+
+    <class name="ColocatedTable" table="ZColocatedT">
+        <comment> partition by column(CID) colocate with (MainT)</comment>
+        <id name="id" column="CID">
+            <generator class="increment"/>
+        </id>
+        <property name="date" type="timestamp" column="CDATE"/>
+        <property name="title" column="CTITLE"/>
+    </class>
+</hibernate-mapping>

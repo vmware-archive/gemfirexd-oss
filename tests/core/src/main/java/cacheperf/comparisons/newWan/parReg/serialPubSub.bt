@@ -1,0 +1,27 @@
+cacheperf/comparisons/newWan/parReg/serialPubSubAccessor.conf
+  wanSites = 2
+  locatorHostsPerSite = 1 locatorVMsPerHost   = 1 locatorThreadsPerVM = 1
+  A = data dataHostsPerSite = 2 dataVMsPerHost = 1 dataThreadsPerVM = 1
+  B = accessor accessorHostsPerSite = 1 accessorVMsPerHost = 2 accessorThreadsPerVM = 24
+  objectSize = 1024 dataMem = 1g trimSeconds = 30 perffmwk.comparisonKey = vm2
+  
+cacheperf/comparisons/newWan/parReg/serialPubSubAccessor.conf
+  wanSites = 2
+  locatorHostsPerSite = 1 locatorVMsPerHost   = 1 locatorThreadsPerVM = 1
+  A = data dataHostsPerSite = 2 dataVMsPerHost = 2 dataThreadsPerVM = 1
+  B = accessor accessorHostsPerSite = 1 accessorVMsPerHost = 2 accessorThreadsPerVM = 24
+  objectSize = 1024 dataMem = 1g trimSeconds = 30 perffmwk.comparisonKey = vm4
+  
+cacheperf/comparisons/newWan/parReg/serialPubSubAccessor.conf
+  wanSites = 2
+  locatorHostsPerSite = 1 locatorVMsPerHost   = 1 locatorThreadsPerVM = 1
+  A = data dataHostsPerSite = 2 dataVMsPerHost = 4 dataThreadsPerVM = 1
+  B = accessor accessorHostsPerSite = 1 accessorVMsPerHost = 2 accessorThreadsPerVM = 24
+  objectSize = 1024 dataMem = 1g trimSeconds = 30 perffmwk.comparisonKey = vm8
+
+cacheperf/comparisons/newWan/parReg/serialPubSubAccessor.conf
+  wanSites = 2
+  locatorHostsPerSite = 1 locatorVMsPerHost   = 1 locatorThreadsPerVM = 1
+  A = data dataHostsPerSite = 3 dataVMsPerHost = 4 dataThreadsPerVM = 1
+  B = accessor accessorHostsPerSite = 1 accessorVMsPerHost = 2 accessorThreadsPerVM = 24
+  objectSize = 1024 dataMem = 1g trimSeconds = 30 perffmwk.comparisonKey = vm12  

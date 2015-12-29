@@ -1,0 +1,176 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{50203A44-6940-466A-B84C-A718A48AE01A}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GemFireXDDBI</RootNamespace>
+    <AssemblyName>GemFireXDDBI</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\GemFireXDDBI.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\GemFireXDDBI.XML</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Pivotal.Data.GemFireXD, Version=1.0.0.0, Culture=neutral, PublicKeyToken=126e6338d9f55e0c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Build\build-artifacts\win\product-gfxd\lib\adonet\Pivotal.Data.GemFireXD.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Configuration\AddConn.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Configuration\AddConn.Designer.cs">
+      <DependentUpon>AddConn.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Configuration\Configurator.cs" />
+    <Compile Include="Configuration\ConnProps.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Configuration\ConnProps.Designer.cs">
+      <DependentUpon>ConnProps.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Configuration\DbConnection.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Configuration\DbConnection.Designer.cs">
+      <DependentUpon>DbConnection.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DBI\SQLBase.cs" />
+    <Compile Include="DBI\SQLFactory.cs" />
+    <Compile Include="DBI\GemFireXD.cs" />
+    <Compile Include="DBI\GemFireXDDbi.cs" />
+    <Compile Include="DBI\SQLSvr.cs" />
+    <Compile Include="DBI\SQLSvrDbi.cs" />
+    <Compile Include="DBMigrate\MigrateCfg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DBMigrate\MigrateCfg.Designer.cs">
+      <DependentUpon>MigrateCfg.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DBMigrate\MigrateEventArgs.cs" />
+    <Compile Include="DBMigrate\Migrator.cs" />
+    <Compile Include="DBMigrate\Progressor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DBMigrate\Progressor.Designer.cs">
+      <DependentUpon>Progressor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DBObjects\DbConn.cs" />
+    <Compile Include="DBObjects\DbField.cs" />
+    <Compile Include="DBObjects\DbIndex.cs" />
+    <Compile Include="DBObjects\DbModule.cs" />
+    <Compile Include="DBObjects\DbTable.cs" />
+    <Compile Include="DBObjects\DbTypeMap.cs" />
+    <Compile Include="OpenDB.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="OpenDB.Designer.cs">
+      <DependentUpon>OpenDB.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GemFireXDDBI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GemFireXDDBI.Designer.cs">
+      <DependentUpon>GemFireXDDBI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Configuration\AddConn.resx">
+      <DependentUpon>AddConn.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Configuration\ConnProps.resx">
+      <DependentUpon>ConnProps.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Configuration\DbConnection.resx">
+      <DependentUpon>DbConnection.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DBMigrate\MigrateCfg.resx">
+      <DependentUpon>MigrateCfg.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DBMigrate\Progressor.resx">
+      <DependentUpon>Progressor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OpenDB.resx">
+      <DependentUpon>OpenDB.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GemFireXDDBI.resx">
+      <DependentUpon>GemFireXDDBI.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <None Include="App.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="Util\DbProvider.cs" />
+    <Compile Include="Util\Helper.cs" />
+    <Compile Include="Util\Logger.cs" />
+    <Compile Include="Util\QueryType.cs" />
+    <Compile Include="Util\Result.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

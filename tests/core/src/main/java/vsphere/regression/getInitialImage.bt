@@ -1,0 +1,64 @@
+getInitialImage/diskRecoveryWithPuts.conf
+threadGroupsName=creator
+
+getInitialImage/destroyIntegrity.conf
+  dataPolicy=replicate scope=distributedAck
+  workIterations=10000 batchSize=1000
+  threadGroupsName=creator
+
+getInitialImage/nonBlockingNetSearch.conf
+  hydra.numHosts=3
+  dataPolicy=replicate scope=distributedAck
+  workIterations=10000 batchSize=5000
+  threadGroupsName=creator
+
+getInitialImage/nonBlockingNetWrites.conf
+  hydra.numHosts=3
+  dataPolicy=replicate scope=distributedAck
+  workIterations=10000 batchSize=5000
+  threadGroupsName=monitor
+
+// verify union gii removed from product
+getInitialImage/giiUnionVMReg.conf hydra.numHosts = 5
+threadGroupsName=getInitImageThread1
+
+// Test getInitialImage using a preferred cache for a source
+//getInitialImage/giiPreferenceVMReg.conf hydra.numHosts = 5
+//threadGroupsName=default
+getInitialImage/concGiiPreferenceVMReg.conf hydra.numHosts = 5
+threadGroupsName=opThreads
+getInitialImage/concGiiPreferenceGlobalVMReg.conf hydra.numHosts = 5
+threadGroupsName=opThreads
+
+// Tests for getInitialImage with cache loaders, cache writers
+getInitialImage/giiCacheLoader.conf
+threadGroupsName=getInitImageThread
+getInitialImage/giiCacheWriter.conf
+threadGroupsName=getInitImageThread
+
+// Test for getInitialImage when source is a publisher
+/*getInitialImage/giiWhilePublishing.conf
+  hydra.numHosts=2 numGiiClients=30
+  dataPolicy=replicate scope=distributedAck
+  workIterations=20000
+
+getInitialImage/giiWhilePublishing.conf
+  hydra.numHosts=2 numGiiClients=1
+  dataPolicy=replicate scope=distributedAck
+  workIterations=250000 */
+
+getInitialImage/giiWhileMultiplePublishing.conf
+  dataPolicy=replicate
+  hydra.numHosts=3
+  numGiiClients=10
+  scope=distributedNoAck
+  trimIterations=0
+  workIterations=250000
+  threadGroupsName=giiClients
+
+getInitialImage/giiTwoPubs.conf
+  hydra.numHosts=3 numGiiClients=30
+  dataPolicy=replicate scope=distributedAck
+  workIterations=20000
+  threadGroupsName=giiClients
+

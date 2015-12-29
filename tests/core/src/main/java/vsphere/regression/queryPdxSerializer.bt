@@ -1,0 +1,56 @@
+/*pdx/query/serialQueryEntryPdxSerializer.conf
+pdx/query/serialQueryIndexEntryPdxSerializer.conf*/
+
+pdx/query/parReg/serialQueryEntryPdxSerializer.conf
+    threadGroupsName=default
+//pdx/query/parReg/serialQueryEntryParRegPdxSerializer.conf
+pdx/query/parReg/serialQueryIndexEntryPdxSerializer.conf
+    threadGroupsName=default
+//pdx/query/parReg/serialQueryIndexEntryParRegPdxSerializer.conf
+//pdx/query/parReg/serialQueryEntryParRegHAPdxSerializer.conf
+//pdx/query/parReg/serialQueryIndexEntryParRegHAPdxSerializer.conf
+//pdx/query/parReg/serialQueryEntryParRegPersistPdxSerializer.conf
+pdx/query/parReg/serialQueryEntryParRegHAPersistPdxSerializer.conf
+    threadGroupsName=default
+pdx/query/parReg/serialQueryIndexEntryParRegPersistPdxSerializer.conf
+    threadGroupsName=default
+pdx/query/parReg/serialQueryIndexEntryParRegHAPersistPdxSerializer.conf
+    threadGroupsName=default
+
+pdx/query/concQueryEntryPdxSerializer.conf
+    threadGroupsName=default
+pdx/query/concQueryIndexEntryPdxSerializer.conf
+    threadGroupsName=default
+pdx/query/concQueryEntryWithLimitPdxSerializer.conf queryLimit=10
+    threadGroupsName=default
+pdx/query/concQueryIndexEntryWithLimitPdxSerializer.conf queryLimit=10
+    threadGroupsName=default
+//pdx/query/parReg/concQueryEntryParRegPdxSerializer.conf
+//pdx/query/parReg/concQueryOnlyParRegPdxSerializer.conf
+//pdx/query/parReg/concQueryIndexEntryParRegPdxSerializer.conf
+//pdx/query/parReg/concQueryIndexParRegPdxSerializer.conf
+pdx/query/parReg/concQueryEntryPdxSerializer.conf
+    threadGroupsName=default
+pdx/query/parReg/concQueryIndexEntryPdxSerializer.conf
+    threadGroupsName=default
+pdx/query/parReg/concQueryOnlyParRegHAPdxSerializer.conf
+    threadGroupsName=default
+//pdx/query/parReg/concQueryIndexParRegHAPdxSerializer.conf
+//pdx/query/parReg/concQueryEntryParRegWithLimitPdxSerializer.conf queryLimit=10
+//pdx/query/parReg/concQueryIndexEntryParRegWithLimitPdxSerializer.conf queryLimit=10
+pdx/query/parReg/concQueryEntryParRegPersistPdxSerializer.conf
+    threadGroupsName=default
+//pdx/query/parReg/concQueryOnlyParRegPersistPdxSerializer.conf
+pdx/query/parReg/concQueryIndexEntryParRegPersistPdxSerializer.conf
+    threadGroupsName=default
+//pdx/query/parReg/concQueryIndexParRegPersistPdxSerializer.conf
+pdx/query/parReg/concQueryOnlyParRegHAPersistPdxSerializer.conf
+    threadGroupsName=default
+pdx/query/parReg/concQueryIndexParRegHAPersistPdxSerializer.conf
+    threadGroupsName=default
+pdx/query/parReg/concQueryEntryParRegWithLimitPersistPdxSerializer.conf queryLimit=10
+    threadGroupsName=default
+pdx/query/parReg/concQueryIndexEntryParRegWithLimitPersistPdxSerializer.conf queryLimit=10
+    threadGroupsName=default
+
+

@@ -1,0 +1,35 @@
+locatorHosts=1
+locatorVMsPerHost=1
+locatorThreadsPerVM=1
+
+A=client
+clientHosts=1
+clientVMsPerHost=1
+clientThreadsPerVM=1
+
+B=server
+serverHosts=1
+serverVMsPerHost=1
+serverThreadsPerVM=1
+
+api=GFXD
+
+tableType = partitioned
+redundantCopies = 2
+createIndexes = true
+
+txSize = 1
+logQueries = false
+logResultSetSize = false
+maxKeys = 10000
+resultSetSize = 15
+usePreparedStatements = true
+validateResults = true
+
+clientHeapMB = 1024
+serverHeapMB = 1024
+
+trimSeconds =  60
+workSeconds = 180
+
+perffmwk.comparisonKey = useCase6

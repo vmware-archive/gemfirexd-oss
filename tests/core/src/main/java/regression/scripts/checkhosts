@@ -1,0 +1,18 @@
+#!/bin/sh -f
+#
+# displays uptime for each host listed in ~/bin/regrhosts
+#
+if [ -e ~/bin/regrhosts ]; then
+  for i in `cat  ~/bin/regrhosts`
+  do
+  echo $i
+  ssh $i uptime 2>/dev/null
+  if [ $? -ne 0 ]; then
+     echo "     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+     echo "     WARNING!!!  non-zero exit code for host" $i " ACTION REQUIRED!"
+     echo "     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+  fi
+  done
+else
+     echo "Usage: checkhosts requires a list of hostnames in ~/bin/regrhosts"
+fi

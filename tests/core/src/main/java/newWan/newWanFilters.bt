@@ -1,0 +1,110 @@
+//serial
+newWan/serial/filters/p2pBeforeEnqueueEventFilterHA.conf
+    wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5
+
+newWan/serial/filters/p2pBeforeTransmitEventFilterHA.conf
+    wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5
+       
+newWan/serial/filters/p2pTransportFilterHA.conf
+    wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5
+   
+newWan/serial/filters/p2pEventTransportFilterHA.conf
+    wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5   
+
+parReg/newWan/serial/filters/p2pBeforeEnqueueEventFilterHA.conf
+    wanSites = 2,3,4 maxOps=1000 resultWaitSec=600
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5
+
+parReg/newWan/serial/filters/p2pBeforeTransmitEventFilterHA.conf
+    wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5
+       
+parReg/newWan/serial/filters/p2pTransportFilterHA.conf
+    wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5
+   
+parReg/newWan/serial/filters/p2pEventTransportFilterHA.conf
+    wanSites = 2,3,4 maxOps=1000 resultWaitSec=600
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5 
+    
+newWan/serial/filters/hctBeforeEnqueueEventFilterHA.conf
+    wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+    bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+    edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+newWan/serial/filters/hctBeforeTransmitEventFilterHA.conf
+    wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+    bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+    edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+       
+newWan/serial/filters/hctTransportFilterHA.conf
+    wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+    bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+    edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+   
+newWan/serial/filters/hctEventTransportFilterHA.conf
+    wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+    bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+    edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/serial/filters/hctBeforeEnqueueEventFilterHA.conf
+    wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+    bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+    edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/serial/filters/hctBeforeTransmitEventFilterHA.conf
+    wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+    bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+    edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+       
+parReg/newWan/serial/filters/hctTransportFilterHA.conf
+    wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+    bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+    edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+   
+parReg/newWan/serial/filters/hctEventTransportFilterHA.conf
+    wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+        bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+        edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+        
+//parallel
+parReg/newWan/parallel/filters/p2pBeforeEnqueueEventFilterHA.conf
+    wanSites = 2,3,4 maxOps=7000 resultWaitSec=600
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 3
+
+parReg/newWan/parallel/filters/p2pBeforeTransmitEventFilterHA.conf
+    wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5
+                   
+parReg/newWan/parallel/filters/p2pTransportFilterHA.conf
+    wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5
+    
+parReg/newWan/parallel/filters/p2pEventTransportFilterHA.conf
+    wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5 
+        
+parReg/newWan/parallel/filters/hctBeforeEnqueueEventFilterHA.conf
+    wanSites = 2,3,4 maxOps=7000 resultWaitSec=600
+        bridgeHostsPerSite = 3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+        edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 3
+
+parReg/newWan/parallel/filters/hctBeforeTransmitEventFilterHA.conf
+    wanSites = 2,3,4 maxOps=5000 resultWaitSec=600
+        bridgeHostsPerSite = 3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+        edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 3
+       
+parReg/newWan/parallel/filters/hctTransportFilterHA.conf
+    wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+        bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+        edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 3
+   
+parReg/newWan/parallel/filters/hctEventTransportFilterHA.conf
+    wanSites = 2,3,4 maxOps=10000 resultWaitSec=600
+        bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+        edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 3
+        

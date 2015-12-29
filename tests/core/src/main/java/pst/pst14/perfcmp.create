@@ -1,0 +1,5 @@
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE -Dmode=ratio -DcompReportFile=vm_4_distAck.ratio.txt perffmwk.PerfComparer vm_4_distAck_none/create*
+
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE -Dmode=ratio -DcompReportFile=vm_4_distNoAck.ratio.txt perffmwk.PerfComparer vm_4_distNoAck_none/create*
+
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE -Dmode=ratio -DcompReportFile=vm_4_global.ratio.txt perffmwk.PerfComparer vm_4_global_none/create*

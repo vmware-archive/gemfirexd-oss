@@ -1,0 +1,114 @@
+================================================================================
+STATISTICS SPECIFICATION GRAMMAR
+================================================================================
+
+USAGE:
+
+Prepare a statistics specification file following the syntax and grammar
+described later in this file.  For token values, see StatSpecTokens.java.
+
+Before running a hydra test using your file, test it by setting up your
+environment as you would for a test run (see hydra/MasterController.java).
+Then execute and examine the result to make sure you are getting the settings
+you expect.  For example:
+
+  java -cp $GEMFIRE/lib/gemfire.jar:$CLASSPATH   \
+       -DJTESTS=$JTESTS                          \
+       -Dgemfire.home=$GEMFIRE                   \
+        perffmwk.StatSpecParser <filename>
+
+================================================================================
+
+specfile :=
+        (stmt SEMI)*
+
+stmt :=
+        include
+        |
+        statSpec
+        |
+        expr
+
+================================================================================
+
+include =
+        INCLUDE fileName | INCLUDEIFPRESENT fileName
+
+fileName :=
+        // relative or fully qualified path to a spec file,
+        // such as $JTESTS/perffmwk/statistics.spec
+
+================================================================================
+
+statSpec :=
+        STATSPEC statSpecName instanceId (statSpecParams)?
+
+statSpecName :=
+        idstring
+
+instanceId :=
+        systemName typeName instanceName statisticName
+
+statSpecParams :=
+        (
+            filterParam
+            |
+            combineParam
+            |
+            opsParam
+            |
+            trimSpecNameParam
+        )*
+
+filterParam :=
+        FILTER_TYPE EQUALS ( FILTER_PERSECOND | FILTER_NONE )
+        // default is the default filter for the statistic
+
+combineParam :=
+        COMBINE_TYPE EQUALS (RAW | COMBINE | COMBINE_ACROSS_ARCHIVES)
+        // default is COMBINE
+
+opsParam :=
+        OP_TYPES EQUALS quantities
+        // values are MIN, MAX, MAX-MIN, MEAN, STDDEV optionally followed by
+	// QUESTION_MARK to indicate use in performance comparisons
+        // default is none, useful for defining specs used in exprs
+
+trimSpecNameParam :=
+        TRIM_SPEC_NAME EQUALS idstring
+
+quantities :=
+        quantity (COMMA quantity)*
+
+quantity := op | (QUESTION_MARK)?
+
+op := MIN | MAX | MAX-MIN | MEAN | STDDEV
+
+systemName :=
+        idpattern
+
+typeName :=
+        idstring
+
+instanceName :=
+        idpattern
+
+statisticName :=
+        idstring
+
+idstring :=
+        // any printable character string
+
+idpattern :=
+        // an idstring with optional * characters to indicate zero or
+	// more printable characters
+
+================================================================================
+
+expr :=
+        EXPR exprName EQUALS statSpecName DIV statSpecName
+
+exprName :=
+        idstring
+
+================================================================================

@@ -1,0 +1,80 @@
+// Note: due to bugs in released versions of 6.5, GemFire only supports converting
+// to 6.5.1.2 and later; we cannot convert to 6.5 
+// Note: Disk file conversion is not supported on Windows
+// Note: Conversion of 5.8 WAN queues is not supported due to bug 42881
+
+// Peer tests
+
+// convert 5.7 disk files to 6.5
+diskRecovery/serialConvert57.conf
+   A=oldVersionLocator oldVersionLocatorHosts=1 oldVersionLocatorVMsPerHost=1 oldVersionLocatorThreadsPerVM=1
+   B=oldVersion oldVersionHosts=5 oldVersionVMsPerHost=1 oldVersionThreadsPerVM=5
+   C=newVersionLocator newVersionLocatorHosts=1 newVersionLocatorVMsPerHost=1 newVersionLocatorThreadsPerVM=1
+   D=newVersion newVersionHosts=5 newVersionVMsPerHost=1 newVersionThreadsPerVM=5
+   convertWithNewVersionXml=true,false
+   valueClassName = util.ValueHolder, util.VHDataSerializable, util.VHDataSerializableInstantiator
+   registerSerializer = false
+   oldVersion=57 newVersion=651 newVersionHome=6514
+   onlyOnPlatforms=Linux,SunOS
+diskRecovery/serialConvert57.conf
+   A=oldVersionLocator oldVersionLocatorHosts=1 oldVersionLocatorVMsPerHost=1 oldVersionLocatorThreadsPerVM=1
+   B=oldVersion oldVersionHosts=5 oldVersionVMsPerHost=1 oldVersionThreadsPerVM=5
+   C=newVersionLocator newVersionLocatorHosts=1 newVersionLocatorVMsPerHost=1 newVersionLocatorThreadsPerVM=1
+   D=newVersion newVersionHosts=5 newVersionVMsPerHost=1 newVersionThreadsPerVM=5
+   convertWithNewVersionXml=true,false
+   valueClassName = util.ValueHolder registerSerializer = true
+   oldVersion=57 newVersion=651 newVersionHome=6514
+   onlyOnPlatforms=Linux,SunOS
+
+// convert pre-6.X (5.8 and later) disk files to 6.5
+diskRecovery/serialConvertPre65.conf
+   A=oldVersionLocator oldVersionLocatorHosts=1 oldVersionLocatorVMsPerHost=1 oldVersionLocatorThreadsPerVM=1
+   B=oldVersion oldVersionHosts=5 oldVersionVMsPerHost=1 oldVersionThreadsPerVM=5
+   C=newVersionLocator newVersionLocatorHosts=1 newVersionLocatorVMsPerHost=1 newVersionLocatorThreadsPerVM=1
+   D=newVersion newVersionHosts=5 newVersionVMsPerHost=1 newVersionThreadsPerVM=5
+   convertWithNewVersionXml=true,false
+   valueClassName = util.ValueHolder, util.VHDataSerializable, util.VHDataSerializableInstantiator
+   registerSerializer = false
+   oldVersion=601,612 newVersion=651 newVersionHome=6514
+   onlyOnPlatforms=Linux,SunOS
+diskRecovery/serialConvertPre65.conf
+   A=oldVersionLocator oldVersionLocatorHosts=1 oldVersionLocatorVMsPerHost=1 oldVersionLocatorThreadsPerVM=1
+   B=oldVersion oldVersionHosts=5 oldVersionVMsPerHost=1 oldVersionThreadsPerVM=5
+   C=newVersionLocator newVersionLocatorHosts=1 newVersionLocatorVMsPerHost=1 newVersionLocatorThreadsPerVM=1
+   D=newVersion newVersionHosts=5 newVersionVMsPerHost=1 newVersionThreadsPerVM=5
+   convertWithNewVersionXml=true,false
+   valueClassName = util.ValueHolder registerSerializer = true
+   oldVersion=601,612 newVersion=651 newVersionHome=6514
+   onlyOnPlatforms=Linux,SunOS
+
+diskRecovery/concConvertPre65.conf
+   A=oldVersionLocator oldVersionLocatorHosts=1 oldVersionLocatorVMsPerHost=1 oldVersionLocatorThreadsPerVM=1
+   B=oldVersion oldVersionHosts=5 oldVersionVMsPerHost=1 oldVersionThreadsPerVM=5
+   C=newVersionLocator newVersionLocatorHosts=1 newVersionLocatorVMsPerHost=1 newVersionLocatorThreadsPerVM=1
+   D=newVersion newVersionHosts=5 newVersionVMsPerHost=1 newVersionThreadsPerVM=5
+   convertWithNewVersionXml=true,false
+   oldVersion=601,612 newVersion=651 newVersionHome=6514
+   onlyOnPlatforms=Linux,SunOS
+
+diskRecovery/convertPre65_multiDiskStoreReplicate.conf
+   A=oldVersionLocator oldVersionLocatorHosts=1 oldVersionLocatorVMsPerHost=1 oldVersionLocatorThreadsPerVM=1
+   B=oldVersion oldVersionHosts=5 oldVersionVMsPerHost=1 oldVersionThreadsPerVM=5
+   C=newVersionLocator newVersionLocatorHosts=1 newVersionLocatorVMsPerHost=1 newVersionLocatorThreadsPerVM=1
+   D=newVersion newVersionHosts=5 newVersionVMsPerHost=1 newVersionThreadsPerVM=5
+   convertWithNewVersionXml=true,false 
+   numDiskStores=20
+   oldVersion=57,601,612 newVersion=651 newVersionHome=6514
+   onlyOnPlatforms=Linux,SunOS
+
+// old version 58 is not supported for WAN disk file conversion; see bug 42881
+diskRecovery/convertPre65WAN.conf
+   A=oldVersion
+   oldVersionWanSites=3
+   oldVersionLocatorHostsPerSite=1 oldVersionLocatorVMsPerHost=1 oldVersionLocatorThreadsPerVM=1
+   oldVersionHostsPerSite=1 oldVersionVMsPerHost=2 oldVersionThreadsPerVM=10
+   B=newVersion
+   newVersionWanSites=3
+   newVersionLocatorHostsPerSite=1 newVersionLocatorVMsPerHost=1 newVersionLocatorThreadsPerVM=1
+   newVersionHostsPerSite=1 newVersionVMsPerHost=2 newVersionThreadsPerVM=3
+   convertWithNewVersionXml=true
+   oldVersion=601,612 newVersion=651 newVersionHome=6514

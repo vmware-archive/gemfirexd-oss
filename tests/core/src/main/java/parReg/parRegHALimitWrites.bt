@@ -1,0 +1,116 @@
+// ==== ordering workaround is unique keys
+// HA testing - concurrent (stop 1 VM at a time)
+parReg/concParRegHALimitWrites.conf 
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   bridgeOrderingWorkaround = uniqueKeys
+   redundantCopies=1 numVMsToStop=1
+parReg/concParRegHALimitWrites.conf 
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   bridgeOrderingWorkaround = uniqueKeys
+   redundantCopies=2 numVMsToStop=1
+parReg/concParRegHALimitWrites.conf 
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   B=dataStore dataStoreHosts=5 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   bridgeOrderingWorkaround = uniqueKeys
+   redundantCopies=3 numVMsToStop=1
+
+// HA testing - concurrent (stop 2 VMs at a time)
+parReg/concParRegHALimitWrites.conf 
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   B=dataStore dataStoreHosts=5 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   bridgeOrderingWorkaround = uniqueKeys
+   redundantCopies=2 numVMsToStop=2
+parReg/concParRegHALimitWrites.conf 
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   B=dataStore dataStoreHosts=6 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   bridgeOrderingWorkaround = uniqueKeys
+   redundantCopies=3 numVMsToStop=2
+
+// HA testing - concurrent (stop 3 VMs at a time)
+parReg/concParRegHALimitWrites.conf 
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   B=dataStore dataStoreHosts=7 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   bridgeOrderingWorkaround = uniqueKeys
+   redundantCopies=3 numVMsToStop=3
+
+// tests limited to mean_kill to increase chance of bug 34361
+parReg/concParRegHA_meanKillLimitWrites.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   bridgeOrderingWorkaround = uniqueKeys
+   redundantCopies=2 numVMsToStop=1
+parReg/concParRegHA_meanKillLimitWrites.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   B=dataStore dataStoreHosts=5 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   bridgeOrderingWorkaround = uniqueKeys
+   redundantCopies=3 numVMsToStop=1
+
+// ==== ordering workaround is register interest
+// HA testing - concurrent (stop 1 VM at a time)
+parReg/concParRegHALimitWrites.conf 
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   bridgeOrderingWorkaround = registerInterest
+   redundantCopies=1 numVMsToStop=1
+parReg/concParRegHALimitWrites.conf 
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   bridgeOrderingWorkaround = registerInterest
+   redundantCopies=2 numVMsToStop=1
+parReg/concParRegHALimitWrites.conf 
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   B=dataStore dataStoreHosts=5 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   bridgeOrderingWorkaround = registerInterest
+   redundantCopies=3 numVMsToStop=1
+
+// HA testing - concurrent (stop 2 VMs at a time)
+parReg/concParRegHALimitWrites.conf 
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   B=dataStore dataStoreHosts=5 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   bridgeOrderingWorkaround = registerInterest
+   redundantCopies=2 numVMsToStop=2
+parReg/concParRegHALimitWrites.conf 
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   B=dataStore dataStoreHosts=6 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   bridgeOrderingWorkaround = registerInterest
+   redundantCopies=3 numVMsToStop=2
+
+// HA testing - concurrent (stop 3 VMs at a time)
+parReg/concParRegHALimitWrites.conf 
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   B=dataStore dataStoreHosts=7 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   bridgeOrderingWorkaround = registerInterest
+   redundantCopies=3 numVMsToStop=3
+
+// tests limited to mean_kill to increase chance of bug 34361
+parReg/concParRegHA_meanKillLimitWrites.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   bridgeOrderingWorkaround = registerInterest
+   redundantCopies=2 numVMsToStop=1
+parReg/concParRegHA_meanKillLimitWrites.conf
+   A=accessor accessorHosts=1 accessorVMsPerHost=1 accessorThreadsPerVM=10
+   B=dataStore dataStoreHosts=5 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=10
+   bridgeOrderingWorkaround = registerInterest
+   redundantCopies=3 numVMsToStop=1
+
+// known keys HA tests
+parReg/concKnownKeysHA.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=100000 byteArraySize=5000 redundantCopies=1 numVMsToStop=1
+parReg/concKnownKeysHA.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=5 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=100000 byteArraySize=5000 redundantCopies=2 numVMsToStop=2
+parReg/concKnownKeysHA.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=7 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=100000 byteArraySize=5000 redundantCopies=3 numVMsToStop=3
+parReg/concKnownKeysHALock.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=3 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=30000 byteArraySize=5000 redundantCopies=1 numVMsToStop=1
+

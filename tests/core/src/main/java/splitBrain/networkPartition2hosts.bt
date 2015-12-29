@@ -1,0 +1,139 @@
+// These tests require a minimum of 3 hosts.  
+// Use splitBrain/local.networkPartition.conf to configure the hosts.
+
+// Region entry operations
+// dataPolicy = normal, replicate, persistentReplicate
+// scope = global, distributedAck
+splitBrain/p2pNetworkPartition1-entryOps.conf 
+   onlyOnPlatforms=Linux
+
+splitBrain/p2pNetworkPartition1-entryOpsPersist.conf
+   onlyOnPlatforms=Linux
+
+splitBrain/p2pNetworkPartition2-entryOps.conf 
+   onlyOnPlatforms=Linux
+
+splitBrain/p2pNetworkPartition3-entryOps.conf 
+   onlyOnPlatforms=Linux
+
+splitBrain/p2pNetworkPartition4-entryOps.conf 
+   onlyOnPlatforms=Linux
+
+// transactions operations
+// dataPolicy = normal, replicate
+// scope = distributedAck
+//disabled for #44146
+//splitBrain/p2pNetworkPartition1-tx.conf 
+//   onlyOnPlatforms=Linux
+
+//splitBrain/p2pNetworkPartition2-tx.conf 
+//   onlyOnPlatforms=Linux
+
+//splitBrain/p2pNetworkPartition3-tx.conf
+//   onlyOnPlatforms=Linux
+
+//splitBrain/p2pNetworkPartition4-tx.conf 
+//   onlyOnPlatforms=Linux
+
+// partitionedRegions
+// dataPolicy = partitioned
+// scope = default
+splitBrain/p2pNetworkPartition1-pr.conf redundantCopies = 1
+   onlyOnPlatforms=Linux
+
+splitBrain/p2pNetworkPartition2-pr.conf redundantCopies = 1
+   onlyOnPlatforms=Linux
+
+splitBrain/p2pNetworkPartition3-pr.conf redundantCopies = 1
+   onlyOnPlatforms=Linux
+
+splitBrain/p2pNetworkPartition4-pr.conf redundantCopies = 1
+   onlyOnPlatforms=Linux
+
+// WAN (p2p) tests 
+// dataPolicy = normal, replicate, persistentReplicate
+// global, distributedAck
+splitBrain/wan_p2pNetworkPartition1.conf 
+   onlyOnPlatforms=Linux
+
+splitBrain/wan_p2pNetworkPartition2.conf 
+   onlyOnPlatforms=Linux
+
+splitBrain/wan_p2pNetworkPartition3.conf 
+   onlyOnPlatforms=Linux
+
+splitBrain/wan_p2pNetworkPartition4.conf 
+   onlyOnPlatforms=Linux
+
+// getInitialImage tests
+// scope = distributedAck
+splitBrain/gii/p2pNetworkPartition1-giiPref.conf 
+   onlyOnPlatforms=Linux
+
+splitBrain/gii/p2pNetworkPartition2-giiPref.conf 
+   onlyOnPlatforms=Linux
+
+splitBrain/gii/p2pNetworkPartition3-giiPref.conf 
+   onlyOnPlatforms=Linux
+
+splitBrain/gii/p2pNetworkPartition4-giiPref.conf 
+   onlyOnPlatforms=Linux
+
+// New members (on surviving side) during networkPartitioning
+splitBrain/p2pNewMembersDuringNetworkPartition1.conf
+   onlyOnPlatforms=Linux
+
+splitBrain/p2pNewMembersDuringNetworkPartition2.conf
+   onlyOnPlatforms=Linux
+
+splitBrain/p2pNewMembersDuringNetworkPartition3.conf
+   onlyOnPlatforms=Linux
+
+// todo@lhughes - this test is obsolete with new quorum partitioning
+// this config doesn't have a active locator on the surviving side 
+// when the network is dropped, so new members cannot join the DS
+//splitBrain/p2pNewMembersDuringNetworkPartition4.conf
+   //onlyOnPlatforms=Linux
+
+// New members (on surviving side) after networkPartitioned
+splitBrain/p2pNewMembersAfterNetworkPartition1.conf
+   onlyOnPlatforms=Linux
+
+splitBrain/p2pNewMembersAfterNetworkPartition2.conf
+   onlyOnPlatforms=Linux
+
+splitBrain/p2pNewMembersAfterNetworkPartition3.conf
+   onlyOnPlatforms=Linux
+
+splitBrain/p2pNewMembersAfterNetworkPartition4.conf
+   onlyOnPlatforms=Linux
+
+// PartitionRegion + TX
+//disabled for #44146
+//splitBrain/p2pNetworkPartition1-prTx.conf redundantCopies = 1
+//   onlyOnPlatforms=Linux
+
+//splitBrain/p2pNetworkPartition2-prTx.conf redundantCopies = 1
+//   onlyOnPlatforms=Linux
+
+//splitBrain/p2pNetworkPartition3-prTx.conf redundantCopies = 1
+//   onlyOnPlatforms=Linux
+
+//splitBrain/p2pNetworkPartition4-prTx.conf redundantCopies = 1
+//   onlyOnPlatforms=Linux
+
+// persistent partitionedRegions
+// dataPolicy = persistentPartition
+// scope = default
+splitBrain/p2pNetworkPartition1-prPersist.conf redundantCopies = 2
+   onlyOnPlatforms=Linux
+
+splitBrain/p2pNetworkPartition2-prPersist.conf redundantCopies = 2
+   onlyOnPlatforms=Linux
+
+splitBrain/p2pNetworkPartition3-prPersist.conf redundantCopies = 2
+   onlyOnPlatforms=Linux
+
+splitBrain/p2pNetworkPartition4-prPersist.conf redundantCopies = 2
+   onlyOnPlatforms=Linux
+

@@ -1,0 +1,104 @@
+<HTML>
+<BODY>
+
+<P>This package contains the building blocks for GemFire Distributed
+Unit Tests.  DUnit is based on JUnit, but has support for invoking
+methods in VMs running on remote machines.  A typical DUnit test class
+is a subclass of {@link dunit.DistributedTestCase} whose
+<code>setUp</code> method creates a new GemFire connection in each
+remote VM and whose <code>tearDown</code> method closes that
+connection.  (Note that there is also the {@link
+com.gemstone.gemfire.internal.cache.DistributedCacheTestCase} that
+contains convient methods for accessing distributed caches.)  There is
+special hydra machinery ({@link hydra.JUnitTestTask}) that will create
+a {@link junit.framework.TestSuite} from each test case class and run
+it, sending the output to various log files.</P>
+
+<P>A DUnit test uses the {@link dunit.VM#invoke(java.lang.Class,
+java.lang.String) invoke} methods to execute methods in a remote VM.
+(Note that methods whose names begin with "remote" are informally
+assumed to be executed in a remote VM.)  The usual JUnit assert
+methods are available.  When an exception occurs during a remote
+method invocation, an {@link dunit.RMIException} is thrown.  If
+caught, the test can examine the exception that was thrown.
+Additionally, the {@link dunit.VM#invokeAsync(java.lang.Class,
+java.lang.String) invokeAsync} methods can be used to execute multiple
+remote methods asynchronously.</P>
+
+<PRE>
+package dunit.tests;
+
+import com.gemstone.gemfire.distributed.*;
+import dunit.*;
+
+public class BasicTest extends DistributedTestCase {
+  public void testRegionPutGet() {
+    final Host host = Host.getHost(0);
+    VM vm0 = host.getVM(0);
+    VM vm1 = host.getVM(1);
+    final String name = this.getUniqueName();
+    final Object value = new Integer(42);
+ 
+    vm0.invoke(this.getClass(), "put", new Object[] {name,value});
+    vm1.invoke(this.getClass(), "get", new Object[] {name,value});
+  }
+  private static void put(String name, Object value) {
+    ...// get the region //...
+    region.put(name, value);
+  }
+  private static void get(String name, Object value) {
+    ...// get the region //...
+    assertEquals(value, region.get(name));
+  }
+}
+</PRE>
+
+<P>Because they rely on Hydra to manage VMs and GemFire systems, DUnit
+tests must be run in the context of a Hydra test.  If you want to run
+an individual tests, you can use a Hydra config file such as the one
+below.  Note that the config file should only contain a
+<TT>UNITTEST</TT> task and no <TT>STARTTASK</TT>s or
+<TT>ENDTASK</TT>s.  To ensure that multiple developers running
+Distributed Unit Tests do not interfere with each other, the
+<code>dunit.inc</code> file specifies that all VMs and GemFire systems
+run on localhost.</P>
+
+<PRE>
+// This config file is used to run Distributed Unit Tests
+INCLUDE $JTESTS/dunit/impl/dunit.inc;
+
+UNITTEST
+    testClass = com.gemstone.gemfire.internal.cache.GlobalRegionTest
+    testMethod = testPut
+    testMethod = testGet
+
+    # Runs all test* methods in OwnershipTest
+    testClass = com.gemstone.gemfire.internal.cache.OwnershipTest
+    ;
+</PRE>
+
+<P>You can then invoke Hydra with the below command line.  Note
+that your CLASSPATH environment variable must be set to include the
+test classes.</P>
+
+<PRE>
+$ java -DGEMFIRE=$PRODUCT -Dgemfire.home=$PRODUCT -DJTESTS=$JTESTS \
+  -DconfigFileName=myDunitTests.conf hydra.MasterController
+</PRE>
+
+<P>The test will start up several VMs and GemFire systems (as
+specified in <code>dunit.inc</code>) and will run the unit tests.  The
+progress of the tests, as well as information about failures and
+warnings, is written to a file named <code>dunit.txt</code> in the
+directory in which the test is run.  Additional information (including
+standard out and standard err) can be found in Hydra's master and
+client log files.</P>
+
+<P>Executing DUnit tests are also part of the standard GemFire build
+process.  A special Ant task ({@link dunit.impl.DUnitConfigAntTask})
+creates a Hydra configuration file (from an Ant file set containing
+the names test classes) which is used by the Distributed Unit Test
+smoke test.</P>
+
+</BODY>
+</HTML>

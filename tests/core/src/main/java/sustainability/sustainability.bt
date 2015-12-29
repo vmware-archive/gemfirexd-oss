@@ -1,0 +1,18 @@
+// test that use new (in 7.0) gemfire property groups (instead of GemFirePrms-roles)
+sustainability/reconnectMultiRegionRoleMissing.conf
+sustainability/reconnectMultiRolePlayingVms.conf
+sustainability/reconnectRandomRolePlayerShutDown.conf
+sustainability/reconnectRoleLoss.conf
+sustainability/reconnectRoleLossBackUP.conf
+sustainability/reconnectRoleLossMultiTimes.conf
+sustainability/reconnectSelfRolePlaying.conf
+
+// tests that use deprecated GemFirePrms-roles attribute (deprecated in 7.0)
+sustainability/reconnectMultiRegionRoleMissingDep.conf
+sustainability/reconnectMultiRolePlayingVmsDep.conf
+sustainability/reconnectRandomRolePlayerShutDownDep.conf
+sustainability/reconnectRoleLossDep.conf
+sustainability/reconnectRoleLossBackUPDep.conf
+sustainability/reconnectRoleLossMultiTimesDep.conf
+sustainability/reconnectSelfRolePlayingDep.conf
+

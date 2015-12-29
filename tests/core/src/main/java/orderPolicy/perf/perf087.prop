@@ -1,0 +1,10 @@
+wanSites          = 1
+peerHostsPerSite  = 1
+peerVMsPerHost    = 1
+peerThreadsPerVM  = 1
+
+dataSize = 1024
+
+trimSeconds = 60
+
+perffmwk.comparisonKey = perf087

@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests>
+    <!-- The following sql tests need to be run with a local.conf, as noted: -->    
+    <bt test="sql/hdfs/sqlSecureHdfs.bt" sysProps="" numberOfNodes="4" localconf="sql/hdfs/local.secureHdfs.conf" requirements="secureHDFS" group="secureHdfs" product="gemfireXD"/>
+    <bt test="sql/hdfs/sqlSecureHdfsWithKinit.bt" sysProps="" numberOfNodes="1" localconf="sql/hdfs/local.secureHdfsWithKinit.conf" requirements="secureHDFS" group="secureHdfs" product="gemfireXD"/>
+    <bt test="sql/hdfs/sqlSecureHdfsICM.bt" sysProps="" numberOfNodes="1" localconf="sql/hdfs/local.secureHdfsICM.conf" requirements="secureHDFS" group="secureHdfs" product="gemfireXD"/>
+    <bt test="hdfs/gfSecureHdfs.bt" sysProps="" numberOfNodes="4" localconf="hdfs/local.gfSecureHdfs.conf" requirements="secureHDFS" group="secureHdfs" product="gemfireXD"/>
+    <bt test="hdfs/gfSecureHdfsWithKinit.bt" sysProps="" numberOfNodes="1" localconf="hdfs/local.gfSecureHdfsWithKinit.conf" requirements="secureHDFS" group="secureHdfs" product="gemfireXD"/>
+    <bt test="hdfs/gfSecureHdfsICM.bt" sysProps="" numberOfNodes="1" localconf="hdfs/local.gfSecureHdfsICM.conf" requirements="secureHDFS" group="secureHdfs" product="gemfireXD"/>
+    <bt test="sql/mbeans/sqlMBeans.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="gemfirexd linuxRegression windowsRegression cheetahA" product="gemfireXD">
+        <platform type="windows" localconf="regression/local.sql.Windows.conf" sysProps=""/>
+        <platform type="linux" localconf="regression/local.sql.conf" sysProps=""/>
+    </bt>
+    <bt test="sql/mbeans/sqlMBeansHDFS.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="gemfirexd linuxRegression cheetahLinux" product="gemfireXD">
+        <platform type="windows" localconf="regression/local.sql.Windows.conf" sysProps=""/>
+        <platform type="linux" localconf="regression/local.sql.conf" sysProps=""/>
+    </bt>    
+    <bt test="sql/sql.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="gemfirexd linuxRegression windowsRegression cheetahA" product="gemfireXD">
+        <platform type="windows" localconf="regression/local.sql.Windows.conf" sysProps=""/>
+        <platform type="linux" localconf="regression/local.sql.conf" sysProps=""/>
+    </bt>
+    <bt test="sql/joins/sqlJoin.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="gemfirexd linuxRegression windowsRegression cheetahA" product="gemfireXD">
+        <platform type="windows" localconf="regression/local.sql.Windows.conf" sysProps=""/>
+        <platform type="linux" localconf="regression/local.sql.conf" sysProps=""/>
+    </bt>
+    <bt test="sql/joins/thinClient/sqlJoinThinClien.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="gemfirexd linuxRegression windowsRegression cheetahA" product="gemfireXD">
+        <platform type="windows" localconf="regression/local.sql.Windows.conf" sysProps=""/>
+        <platform type="linux" localconf="regression/local.sql.conf" sysProps=""/>
+    </bt>
+    <bt test="sql/sqlBridge/sqlBridge.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="gemfirexd linuxRegression windowsRegression cheetahA" product="gemfireXD">
+        <platform type="windows" localconf="regression/local.sql.Windows.conf" sysProps=""/>
+        <platform type="linux" localconf="regression/local.sql.conf" sysProps=""/>
+    </bt>
+    <bt test="sql/sqlBridge/sqlBridgeWithSingleHop.bt" sysProps="" numberOfNodes="1" localconf="regression/local.sql.singleHop.conf" requirements="" group="gemfirexd linuxRegression windowsRegression cheetahB" product="gemfireXD">
+        <platform type="windows" localconf="regression/local.sql.Windows.conf" sysProps=""/>
+        <platform type="linux" localconf="regression/local.sql.conf" sysProps=""/>
+    </bt>
+    <bt test="sql/sqlCallback/sqlCallback.bt" sysProps="" numberOfNodes="1" localconf="regression/local.traceDBSynchronizer.conf" requirements="" group="gemfirexd linuxRegression windowsRegression cheetahB" product="gemfireXD">
+        <platform type="windows" localconf="regression/local.sql.uniqueKeyOnly.Windows.conf" sysProps=""/>
+        <platform type="linux" localconf="regression/local.sql.uniqueKeyOnly.conf" sysProps=""/>
+    </bt>
+    <bt test="sql/sqlDisk/sqlDisk.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="gemfirexd linuxRegression windowsRegression cheetahB" product="gemfireXD">
+        <platform type="windows" localconf="regression/local.sql.Windows.conf" sysProps=""/>
+        <platform type="linux" localconf="regression/local.sql.conf" sysProps=""/>
+    </bt>
+    <bt test="sql/subquery/subquery.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="gemfirexd linuxRegression windowsRegression cheetahA" product="gemfireXD">
+        <platform type="windows" localconf="regression/local.sql.Windows.conf" sysProps=""/>
+        <platform type="linux" localconf="regression/local.sql.conf" sysProps=""/>
+    </bt>
+    <bt test="sql/security/sqlSecurity.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="gemfirexd linuxRegression windowsRegression cheetahB" product="gemfireXD">
+        <platform type="windows" localconf="regression/local.sql.Windows.conf" sysProps=""/>
+        <platform type="linux" localconf="regression/local.sql.conf" sysProps=""/>
+    </bt>
+    <bt test="sql/alterTable/alterTable.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="gemfirexd linuxRegression windowsRegression cheetahA" product="gemfireXD">
+        <platform type="windows" localconf="regression/local.sql.Windows.conf" sysProps=""/>
+        <platform type="linux" localconf="regression/local.sql.conf" sysProps=""/>
+    </bt>
+    <bt test="sql/trigger/trigger.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="gemfirexd linuxRegression windowsRegression cheetahA" product="gemfireXD">
+        <platform type="windows" localconf="regression/local.sql.Windows.conf" sysProps=""/>
+        <platform type="linux" localconf="regression/local.sql.conf" sysProps=""/>
+    </bt>
+    <bt test="sql/dbCache/dbCache.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="gemfirexd linuxRegression windowsRegression cheetahB" product="gemfireXD">
+        <platform type="windows" localconf="regression/local.sql.Windows.conf" sysProps=""/>
+        <platform type="linux" localconf="regression/local.sql.conf" sysProps=""/>
+    </bt>
+    <bt test="sql/sqlTx/sqlDistTx.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="gemfirexd linuxRegression windowsRegression cheetahA" product="gemfireXD">
+        <platform type="windows" localconf="regression/local.sql.Windows.conf" sysProps=""/>
+        <platform type="linux" localconf="regression/local.sql.conf" sysProps=""/>
+    </bt>
+    <bt test="sql/sqlTx/thinClient/thinClientTx.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="gemfirexd linuxRegression windowsRegression cheetahB" product="gemfireXD">
+        <platform type="windows" localconf="regression/local.sql.Windows.conf" sysProps=""/>
+        <platform type="linux" localconf="regression/local.sql.conf" sysProps=""/>
+    </bt>
+    <bt test="sql/sqlDAP/sqlDAP.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="gemfirexd linuxRegression windowsRegression cheetahA" product="gemfireXD">
+        <platform type="windows" localconf="regression/local.sql.Windows.conf" sysProps=""/>
+        <platform type="linux" localconf="regression/local.sql.conf" sysProps=""/>
+    </bt>
+    <bt test="sql/sqlEviction/sqlEviction.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="gemfirexd linuxRegression windowsRegression cheetahB" product="gemfireXD">
+        <platform type="windows" localconf="regression/local.sql.Windows.conf" sysProps=""/>
+        <platform type="linux" localconf="regression/local.sql.conf" sysProps=""/>
+    </bt>
+    <bt test="sql/sqlTx/sqlTxCallbacks/sqlTxCallbacks.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="gemfirexd linuxRegression windowsRegression cheetahA" product="gemfireXD">
+        <platform type="windows" localconf="regression/local.sql.Windows.conf" sysProps=""/>
+        <platform type="linux" localconf="regression/local.sql.conf" sysProps=""/>
+    </bt>
+    <bt test="sql/sqlTx/repeatableRead/sqlRRTx.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="gemfirexd linuxRegression windowsRegression cheetahA" product="gemfireXD">
+        <platform type="windows" localconf="regression/local.sql.Windows.conf" sysProps=""/>
+        <platform type="linux" localconf="regression/local.sql.conf" sysProps=""/>
+    </bt>   
+    <bt test="sql/sqlTx/thinClient/repeatableRead/thinClientRRTx.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="gemfirexd linuxRegression windowsRegression cheetahA" product="gemfireXD">
+        <platform type="windows" localconf="regression/local.sql.Windows.conf" sysProps=""/>
+        <platform type="linux" localconf="regression/local.sql.conf" sysProps=""/>
+    </bt>   
+    <bt test="sql/sqlTx/sqlTxPersistence/sqlTxPersist.bt"  sysProps="" numberOfNodes="1" localconf="" requirements="" group="gemfirexd linuxRegression windowsRegression cheetahA" product="gemfireXD">
+        <platform type="windows" localconf="regression/local.sql.Windows.conf" sysProps=""/>
+        <platform type="linux" localconf="regression/local.sql.conf" sysProps=""/>
+    </bt>
+    <bt test="sql/view/sqlView.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="gemfirexd linuxRegression windowsRegression cheetahA" product="gemfireXD">
+        <platform type="windows" localconf="regression/local.sql.Windows.conf" sysProps=""/>
+        <platform type="linux" localconf="regression/local.sql.conf" sysProps=""/>
+    </bt>   
+    <bt test="sql/ciIndex/caseInsensitiveIndex.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="gemfirexd linuxRegression windowsRegression cheetahB" product="gemfireXD">
+        <platform type="windows" localconf="regression/local.sql.Windows.conf" sysProps=""/>
+        <platform type="linux" localconf="regression/local.sql.conf" sysProps=""/>
+    </bt>   
+    
+    <!--
+    <bt test="sql/sqlDisk/sqlDiskWithPreAllocateOnlyCRF_DRF.bt" sysProps="" numberOfNodes="1" localconf="regression/local.sql.preAllocateOnlyCRF_DRF.conf" requirements="" group="gemfirexd linuxRegression windowsRegression cheetahA" product="gemfireXD">
+         <platform type="windows" localconf="regression/local.sql.Windows.conf" sysProps=""/>
+         <platform type="linux" localconf="regression/local.sql.conf" sysProps=""/>
+    </bt>
+    -->
+    
+    <bt test="sql/sqlDisk/sqlDiskWithNoPreAllocate.bt" sysProps="" numberOfNodes="1" localconf="regression/local.sql.preAllocate.conf" requirements="" group="gemfirexd linuxRegression windowsRegression cheetahB" product="gemfireXD">
+         <platform type="windows" localconf="regression/local.sql.Windows.conf" sysProps=""/>
+         <platform type="linux" localconf="regression/local.sql.conf" sysProps=""/>
+    </bt>
+
+    <bt test="sql/sqlDisk/sqlDiskNoIndexPersistence.bt" sysProps="" numberOfNodes="1" localconf="regression/local.noIndexPersistence.conf" requirements="" group="gemfirexd linuxRegression windowsRegression cheetahB" product="gemfireXD">
+        <platform type="windows" localconf="regression/local.sql.Windows.conf" sysProps=""/>
+        <platform type="linux" localconf="regression/local.sql.conf" sysProps=""/>
+    </bt>
+   
+    <bt test="sql/hdfs/sqlHdfs.bt" sysProps="" numberOfNodes="4" localconf="sql/hdfs/local.multiHostHdfs.conf" requirements="" group="gemfirexd linuxRegression cheetahLinux" product="gemfireXD"/>
+    <bt test="sql/hdfs/sqlHdfsRandom.bt" sysProps="" numberOfNodes="1" localconf="sql/hdfs/local.hdfsRandom.conf" requirements="" group="gemfirexd linuxRegression cheetahLinux" product="gemfireXD"/>
+    <bt test="sql/diskStoreBackwardCompatibility/sqlDiskStoreBackwardCompatibility.bt" sysProps="" numberOfNodes="1" localconf="regression/local.sql.conf" requirements="" group="gemfirexd linuxRegression cheetahLinux" product="gemfireXD"/>
+
+    <!--  Re-enable once gemfire hdfs apis are publically exposed + sqlHdfs tests will be moved to rollingUpgrade
+    <bt test="hdfs/backwardCompatibility/hdfsBackwardCompatibility.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="gemfirexd linuxRegression cheetahLinux" product="gemfireXD"/>
+    <bt test="sql/hdfs/backwardCompatibility/sqlHdfsBackwardCompatibility.bt" sysProps="" numberOfNodes="1" localconf="sql/hdfs/local.hdfs.conf" requirements="" group="gemfirexd linuxRegression cheetahLinux" product="gemfireXD"/>
+    <bt test="sql/hdfs/backwardCompatibility/sqlHdfsMapReduceBackwardCompatibility.bt" sysProps="" numberOfNodes="1" localconf="sql/hdfs/local.hdfs.conf" requirements="" group="gemfirexd linuxRegression cheetahLinux" product="gemfireXD"/>
+    -->
+    
+    <!-- sql wan tests. -->
+    <bt test="sql/wan/sqlWanOnePublisher.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="gemfirexd linuxRegression windowsRegression cheetahLinux" product="gemfireXD">
+        <platform type="windows" localconf="regression/local.sql.uniqueKeyOnly.Windows.conf" sysProps=""/>
+        <platform type="linux" localconf="regression/local.sql.uniqueKeyOnly.conf" sysProps=""/>
+    </bt>   
+    <bt test="sql/wan/sqlWanMultiPublishers.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="gemfirexd linuxRegression windowsRegression cheetahLinux" product="gemfireXD">
+        <platform type="windows" localconf="regression/local.sql.uniqueKeyOnly.Windows.conf" sysProps=""/>
+        <platform type="linux" localconf="regression/local.sql.uniqueKeyOnly.conf" sysProps=""/>
+    </bt>   
+    <bt test="sql/wan/thinClient/sqlWanSingleSitePublisherClient.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="gemfirexd linuxRegression windowsRegression cheetahLinux" product="gemfireXD">
+        <platform type="windows" localconf="regression/local.sql.uniqueKeyOnly.Windows.conf" sysProps=""/>
+        <platform type="linux" localconf="regression/local.sql.uniqueKeyOnly.conf" sysProps=""/>
+    </bt>   
+    <bt test="sql/wan/thinClient/sqlWanMultiSitePublisherClient.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="gemfirexd linuxRegression windowsRegression cheetahLinux" product="gemfireXD">
+        <platform type="windows" localconf="regression/local.sql.uniqueKeyOnly.Windows.conf" sysProps=""/>
+        <platform type="linux" localconf="regression/local.sql.uniqueKeyOnly.conf" sysProps=""/>
+    </bt>   
+    <bt test="sql/wan/thinClient/sqlWanSingleSitePublisherClientWithSingleHop.bt" sysProps="" numberOfNodes="1" localconf="regression/local.sql.singleHop.conf" requirements="" group="gemfirexd linuxRegression windowsRegression cheetahLinux" product="gemfireXD">
+        <platform type="windows" localconf="regression/local.sql.uniqueKeyOnly.Windows.conf" sysProps=""/>
+        <platform type="linux" localconf="regression/local.sql.uniqueKeyOnly.conf" sysProps=""/>
+    </bt>   
+    <bt test="sql/wan/thinClient/sqlWanMultiSitePublisherClientWithSingleHop.bt" sysProps="" numberOfNodes="1" localconf="regression/local.sql.singleHop.conf" requirements="" group="gemfirexd linuxRegression windowsRegression cheetahLinux" product="gemfireXD">
+        <platform type="windows" localconf="regression/local.sql.uniqueKeyOnly.Windows.conf" sysProps=""/>
+        <platform type="linux" localconf="regression/local.sql.uniqueKeyOnly.conf" sysProps=""/>
+    </bt>    
+    <bt test="sql/wan/sqlWanMultiHosts.bt" sysProps="" numberOfNodes="3" localconf="" requirements="" group="gemfirexd linuxRegression windowsRegression cheetahLinux" product="gemfireXD">
+        <platform type="windows" localconf="regression/local.sql.wanhost.uniqueKeyOnly.Windows.conf" sysProps=""/>
+        <platform type="linux" localconf="regression/local.sql.wanhost.uniqueKeyOnly.conf" sysProps=""/>
+    </bt>   
+    <bt test="sql/wan/thinClient/sqlWanMultiHostsThinClient.bt" sysProps="" numberOfNodes="3" localconf="regression/local.sql.singleHop.conf" requirements="" group="gemfirexd linuxRegression windowsRegression cheetahLinux" product="gemfireXD">
+        <platform type="windows" localconf="regression/local.sql.wanhost.uniqueKeyOnly.Windows.conf" sysProps=""/>
+        <platform type="linux" localconf="regression/local.sql.wanhost.uniqueKeyOnly.conf" sysProps=""/>
+    </bt>   
+    
+    <bt test="sql/networkPartition/sqlNetworkPartition3host.bt" sysProps="" numberOfNodes="3" localconf="sql/networkPartition/local.sqlNetworkPartition3hosts.conf" requirements="" group="gemfirexd linuxRegression cheetahLinux" product="gemfireXD"/>
+    <bt test="sql/networkPartition/sqlNetworkPartition3hostPartition.bt" sysProps="" numberOfNodes="3" localconf="sql/networkPartition/local.sqlNetworkPartition3hostsPR.conf" requirements="" group="gemfirexd linuxRegression cheetahLinux" product="gemfireXD"/>
+    <bt test="sql/networkPartition/sqlNetworkPartition3hostMix.bt" sysProps="" numberOfNodes="3" localconf="sql/networkPartition/local.sqlNetworkPartition3hostMix.conf" requirements="" group="gemfirexd linuxRegression cheetahLinux" product="gemfireXD"/>
+    <bt test="sql/networkPartition/sqlNetworkPartition3hostMixPartition.bt" sysProps="" numberOfNodes="3" localconf="sql/networkPartition/local.sqlNetworkPartition3hostMixPR.conf" requirements="" group="gemfirexd linuxRegression cheetahLinux" product="gemfireXD"/>
+    <bt test="sql/networkPartition/sqlNetworkPartition4host.bt" sysProps="" numberOfNodes="4" localconf="sql/networkPartition/local.sqlNetworkPartition4hosts.conf" requirements="" group="gemfirexd linuxRegression cheetahLinux" product="gemfireXD"/>
+    <bt test="sql/networkPartition/sqlNetworkPartition4hostPartition.bt" sysProps="" numberOfNodes="4" localconf="sql/networkPartition/local.sqlNetworkPartition4hostsPR.conf" requirements="" group="gemfirexd linuxRegression cheetahLinux" product="gemfireXD"/>
+    <bt test="sql/hadoopHA/hadoopHA.bt" sysProps="" numberOfNodes="1" localconf="sql/hdfs/local.hdfs.conf" requirements="" group="gemfirexd linuxRegression cheetahLinux" product="gemfireXD"/>
+    <bt test="sql/hadoopHA/hdfsNetworkPartition.bt" sysProps="" numberOfNodes="4" localconf="sql/hadoopHA/local.hdfsNetworkPartition.conf" requirements="" group="gemfirexd linuxRegression cheetahLinux" product="gemfireXD"/>
+    <bt test="sql/hadoopHA/dataNodeRedundancy.bt" sysProps="" numberOfNodes="4" localconf="sql/hadoopHA/local.dataNodeRedundancy.conf" requirements="" group="gemfirexd linuxRegression cheetahLinux" product="gemfireXD"/>
+    <bt test="sql/hadoopHA/networkPartitionPrimaryAEQ.bt" sysProps="" numberOfNodes="4" localconf="sql/hadoopHA/local.hdfsNetworkPartitionPrimaryAEQ.conf" requirements="" group="gemfirexd linuxRegression cheetahLinux" product="gemfireXD"/>
+    <bt test="sql/networkPartition/sqlHdfsAutoReconnect.bt" sysProps="" numberOfNodes="3" localconf="sql/networkPartition/local.sqlHdfsAutoReconnect.conf" requirements="" group="gemfirexd linuxRegression cheetahLinux" product="gemfireXD"/>
+    
+    <!-- Run this bt with following JVM parameters: -Dproduct=gemfireXD -Dbt.release.dir=/export/gcm/where/gemfireXD/releases -->
+    <bt test="sql/rollingUpgrade/sqlRollingUpgrade.bt" sysProps="-Dproduct=gemfireXD -Dbt.release.dir=/export/gcm/where/gemfireXD/releases" numberOfNodes="4" localconf="sql/rollingUpgrade/local.rollUpgradeMultiHosts.conf" requirements="" group="gemfirexd linuxRegression cheetahLinux" product="gemfireXD"/>
+    <bt test="sql/rollingUpgrade/sqlRollingUpgradeRegr.bt" sysProps="-Dproduct=gemfireXD" numberOfNodes="1" localconf="" requirements="" group="gemfirexd linuxRegression cheetahLinux" product="gemfireXD"/>
+    <bt test="sql/dataextractor/dataextractor.bt" sysProps="-Dproduct=gemfireXD" numberOfNodes="1" requirements="" group="gemfirexd linuxRegression cheetahLinux" product="gemfireXD"/>
+  
+    <bt test="hdfs/hdfs.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="linuxRegression cheetahLinux"/>
+    <bt test="deltagii/deltagii.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="linuxRegression windowsRegression cheetahB"/>
+    <bt test="memscale/memscale.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="linuxRegression windowsRegression linuxA solarisB windowsC cheetahB"/>
+    <bt test="capCon/capCon.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="linuxRegression windowsRegression linuxA solarisB windowsC cheetahB"/>
+    <bt test="regression/distFuncScale1.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="linuxRegression windowsRegression functionExecution linuxA solarisB windowsC cheetahA"/>
+    <bt test="regression/misc.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="linuxRegression windowsRegression linuxA solarisB windowsC cheetahB"/>
+    <bt test="admin/admin.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="linuxRegression windowsRegression linuxA solarisB windowsC"/>
+    <bt test="regression/diskReg.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="persistence linuxRegression windowsRegression linuxA solarisB windowsC cheetahA"/>
+    <bt test="dlock/dlock.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="linuxRegression windowsRegression linuxA solarisB windowsC cheetahA"/>
+    <bt test="getInitialImage/getInitialImage.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="linuxRegression windowsRegression linuxA solarisB windowsC cheetahB"/>
+    <bt test="license/regr.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="linuxRegression windowsRegression windowsA solarisC linuxB cheetahB"/>
+    <bt test="parReg/parReg.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="parReg linuxRegression windowsRegression windowsA solarisC linuxB cheetahB"/>
+    <bt test="parReg/parRegHA.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="parReg linuxRegression windowsRegression windowsA solarisC linuxB cheetahA"/>
+    <bt test="parReg/parRegBridge.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="parReg linuxRegression windowsRegression windowsA solarisC linuxB"/>
+    <bt test="parReg/parRegHABridge.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="parReg linuxRegression windowsRegression windowsA solarisC linuxB"/>
+    <bt test="parReg/query/parRegQuery.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="parReg linuxRegression windowsRegression windowsA solarisC linuxB cheetahA"/>
+    <bt test="tx/tx.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="transaction linuxRegression windowsRegression solarisA windowsB linuxC"/>
+    <bt test="tx/txRegr.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="transaction linuxRegression windowsRegression solarisA windowsB linuxC"/>
+    <bt test="jta/jta.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="transaction linuxRegression windowsRegression linuxA solarisB windowsC">
+        <platform type="windows" localconf="regression/local.jta.Windows.conf" sysProps=""/>
+    </bt>
+    <bt test="wan/wan.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="wan linuxRegression windowsRegression linuxA solarisB windowsC"/>
+    <bt test="asyncMsg/asyncMsg.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="linuxRegression windowsRegression linuxA solarisB windowsC cheetahA"/>
+    <bt test="regression/roles.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="linuxRegression windowsRegression linuxA solarisB windowsC cheetahA"/>
+    <bt test="conflation/conflation.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="linuxRegression windowsRegression linuxA solarisB windowsC"/>
+    <bt test="dynamicReg/dynamicRegion.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="linuxRegression windowsRegression linuxA solarisB windowsC"/>
+    <bt test="hct/subscription.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="linuxRegression windowsRegression windowsA solarisC linuxB"/>
+    <bt test="cq/cq.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="query linuxRegression windowsRegression linuxA solarisB windowsC"/>
+    <bt test="cq/cqPersist.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="query linuxRegression windowsRegression linuxA solarisB windowsC"/>
+    <bt test="cq/concCQ.bt" sysProps="-DmasterHeapMB=512" numberOfNodes="1" localconf="" requirements="" group="query linuxRegression windowsRegression linuxA solarisB windowsC"/>
+    <bt test="durableClients/durableClients.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="linuxRegression windowsRegression linuxA solarisB windowsC"/>
+    <bt test="splitBrain/splitBrain.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="splitbrain linuxRegression windowsRegression linuxA solarisB windowsC cheetahB"/>
+    <bt test="splitBrain/mlRio.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="linuxRegression windowsRegression linuxA solarisB windowsC"/>
+    <bt test="connPool/connPool.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="linuxRegression windowsRegression linuxA solarisB windowsC"/>
+    <bt test="parReg/parRegHALimitWrites.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="parReg linuxRegression windowsRegression windowsA solarisC linuxB cheetahB"/>
+    <bt test="parReg/parRegHABridgeLimitWrites.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="parReg linuxRegression windowsRegression windowsA solarisC linuxB"/>
+    <bt test="parReg/colocation/prColocation.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="parReg linuxRegression windowsRegression windowsA solarisC linuxB cheetahB"/>
+    <bt test="parReg/execute/functionService.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="parReg linuxRegression windowsRegression windowsA solarisC linuxB cheetahA"/>
+    <bt test="parReg/eviction/prEviction.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="parReg linuxRegression windowsRegression windowsA solarisC linuxB cheetahB"/>
+    <bt test="recovDelay/recovDelay.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="recovery linuxRegression windowsRegression linuxA solarisB windowsC cheetahB"/>
+    <bt test="rebalance/rebalanceRegr.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="linuxRegression windowsRegression linuxA solarisB windowsC cheetahA"/>
+    <bt test="rebalance/rebalance.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="linuxRegression windowsRegression linuxA solarisB windowsC cheetahA"/>
+    <bt test="diskRecovery/diskRecovery.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="persistence linuxRegression windowsRegression linuxA solarisB windowsC cheetahB"/>
+    <bt test="delta/serialDelta.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="delta linuxRegression windowsRegression windowsA solarisC linuxB"/>
+    <bt test="parReg/parRegPersist.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="parReg persistence linuxRegression windowsRegression windowsA solarisC linuxB cheetahA"/>
+    <bt test="parReg/parRegHAPersist.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="parReg persistence linuxRegression windowsRegression windowsA solarisC linuxB cheetahA"/>
+    <bt test="parReg/tx/prTx.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="parReg linuxRegression windowsRegression solarisA windowsB linuxC"/>
+    <bt test="parReg/tx/prTxRegr.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="parReg linuxRegression windowsRegression windowsA solarisC linuxB"/>
+    <bt test="rebalance/prTxRebalance.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="linuxRegression windowsRegression linuxA solarisB windowsC"/>
+    <bt test="parReg/parRegBridgePersist.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="parReg persistence linuxRegression windowsRegression windowsA solarisC linuxB"/>
+    <bt test="parReg/parRegHABridgePersist.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="parReg persistence linuxRegression windowsRegression windowsA solarisC linuxB"/>
+    <bt test="parReg/execute/persistence/functionServicePersist.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="parReg linuxRegression windowsRegression windowsA solarisC linuxB cheetahB"/>
+    <bt test="parReg/colocation/persistence/prColocationPersist.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="parReg persistence linuxRegression windowsRegression windowsA solarisC linuxB cheetahA"/>
+    <bt test="parReg/fixedPartitioning/fixedPartitioning.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="parReg linuxRegression windowsRegression windowsA solarisC linuxB cheetahA"/>
+    <bt test="pdx/parRegPdx.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="pdx linuxRegression windowsRegression solarisA windowsB linuxC"/>
+    <bt test="pdx/pdx.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="pdx linuxRegression windowsRegression solarisA windowsB linuxC"/>
+    <bt test="parReg/tx/csTxDev.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="transaction linuxRegression windowsRegression solarisA windowsB linuxC"/>
+    <bt test="csTx/csTxRegr.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="transaction linuxRegression windowsRegression solarisA windowsB linuxC"/>
+    <bt test="target/target.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="linuxRegression windowsRegression linuxA solarisB windowsC"/>
+    <bt test="resumeTx/resumeTx.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="transaction linuxRegression windowsRegression solarisA windowsB linuxC"/>
+    <bt test="orderPolicy/orderPolicy.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="linuxRegression windowsRegression linuxA solarisB windowsC"/>
+    <bt test="parReg/wbcl/parRegWBCL.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="parReg linuxRegression windowsRegression windowsA solarisC linuxB cheetahB"/>
+    <bt test="resman/resmanOffHeap.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="linuxRegression windowsRegression windowsA solarisC linuxB cheetahB"/>
+    
+    <!-- Fix for BUG 43337 -->
+    <bt test="hct/backwardCompatibility/hctBackwardCompatibility.bt" sysProps="" numberOfNodes="1" localconf="security/local.security.conf" requirements="" group="backwardCompatibility linuxRegression windowsRegression windowsA solarisC linuxB"/>
+
+    <bt test="versioning/versioning.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="versioning linuxRegression windowsRegression linuxA solarisB windowsC cheetahA"/>
+    <bt test="management/test/jmx.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="management linuxRegression windowsRegression linuxA solarisB windowsC cheetahA"/>
+    <bt test="management/test/federation.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="management linuxRegression windowsRegression linuxA solarisB windowsC cheetahB"/>
+    <bt test="newWan/newWanBackwardCompatibility.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="newWan linuxRegression windowsRegression linuxA solarisB windowsC"/>
+    <bt test="newWan/newWanBasic.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="newWan linuxRegression windowsRegression linuxA solarisB windowsC cheetahA"/>
+    <bt test="newWan/newWanConflation.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="newWan linuxRegression windowsRegression linuxA solarisB windowsC cheetahA"/>
+    <bt test="newWan/newWanEviction.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="newWan linuxRegression windowsRegression linuxA solarisB windowsC cheetahB"/>
+    <bt test="newWan/newWanFilters.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="newWan linuxRegression windowsRegression linuxA solarisB windowsC cheetahA"/>
+    <bt test="newWan/newWanSerialParReg.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="newWan linuxRegression windowsRegression linuxA solarisB windowsC cheetahB"/>
+    <bt test="newWan/newWanParallelParReg.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="newWan linuxRegression windowsRegression linuxA solarisB windowsC cheetahA"/>
+    <bt test="newWan/newWanParRegHA.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="newWan linuxRegression windowsRegression linuxA solarisB windowsC cheetahB"/>
+    <bt test="newWan/newWanRebalance.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="newWan linuxRegression windowsRegression linuxA solarisB windowsC cheetahA"/>
+    <bt test="newWan/newWanSenderOperations.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="newWan linuxRegression windowsRegression linuxA solarisB windowsC cheetahA"/>
+    <bt test="newWan/orderPolicy/newWanOrderPolicy.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="newWan linuxRegression windowsRegression linuxA solarisB windowsC cheetahB"/>
+    <bt test="newWan/pdx/newWanPdx.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="newWan linuxRegression windowsRegression linuxA solarisB windowsC"/>
+    <bt test="newWan/tx/newWanTx.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="newWan linuxRegression windowsRegression linuxA solarisB windowsC"/>
+    <bt test="snapshot/snapshot.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="linuxRegression windowsRegression linuxA solarisB windowsC"/>
+    <bt test="diskRecovery/rvvConvert.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="persistence linuxRegression windowsRegression linuxA solarisB windowsC"/>
+    <bt test="management/test/cli/cli.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="management linuxRegression windowsRegression linuxA solarisB windowsC cheetahB"/>
+    <bt test="csTx/backwardCompatibilityCsTx.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="backwardCompatibility linuxRegression windowsRegression solarisA windowsB linuxC"/>
+    <bt test="cacheServer/cacheServer.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="linuxRegression windowsRegression solarisA windowsB linuxC"/>
+    
+    <!--
+    // removed May 2012 for 7.0
+    // This bt tests rolling upgrade for minor GemFire version numbers so don't include for 7.0: pdx/compat/pdxCompat.bt
+    -->
+    <!-- bt test="pdx/compat/pdxCompat.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="pdx linuxRegression windowsRegression windowsA solarisC linuxB"/-->
+
+    <bt test="delta/delta.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="delta linuxRegression windowsRegression windowsA solarisC linuxB">
+        <platform type="linux" localconf="regression/local.delta.conf" sysProps=""/>
+        <platform type="solaris" localconf="regression/local.delta.conf" sysProps=""/>
+        <platform type="windows" localconf="regression/local.delta.Windows.conf" sysProps=""/>      
+    </bt>
+
+    <bt test="pdx/pdxAutoSerializer.bt" sysProps="" numberOfNodes="1" localconf="pdx/local.autoSerializer.conf" requirements="" group="pdx linuxRegression windowsRegression solarisA windowsB linuxC"/>
+    <bt test="pdx/parRegPdxAutoSerializer.bt" sysProps="" numberOfNodes="1" localconf="pdx/local.autoSerializer.conf" requirements="" group="pdx linuxRegression windowsRegression solarisA windowsB linuxC"/>
+    <bt test="pdx/pdxSerializer.bt" sysProps="" numberOfNodes="1" localconf="pdx/local.PdxSerializer.conf" requirements="" group="pdx linuxRegression windowsRegression solarisA windowsB linuxC"/>
+    <bt test="pdx/parRegPdxInstance.bt" sysProps="" numberOfNodes="1" localconf="pdx/local.PdxInstance.conf" requirements="" group="pdx linuxRegression windowsRegression solarisA windowsB linuxC"/>
+    <bt test="pdx/parRegPdxSerializer.bt" sysProps="" numberOfNodes="1" localconf="pdx/local.PdxSerializer.conf" requirements="" group="pdx linuxRegression windowsRegression solarisA windowsB linuxC"/>
+    <bt test="pdx/pdxInstance.bt" sysProps="" numberOfNodes="1" localconf="pdx/local.PdxInstance.conf" requirements="" group="pdx linuxRegression windowsRegression solarisA windowsB linuxC"/>
+    <bt test="regression/pureJava.bt" sysProps="" numberOfNodes="1" localconf="regression/local.pureJava.conf" requirements="" group="linuxRegression windowsRegression linuxA solarisB windowsC cheetahB"/>
+    <bt test="regression/transportMcastTcp.bt" sysProps="" numberOfNodes="1" localconf="regression/local.mcast.tcp.conf" requirements="" group="transport linuxRegression windowsRegression windowsA solarisC linuxB cheetahB"/>
+    <bt test="regression/transportMcastUdp.bt" sysProps="" numberOfNodes="1" localconf="regression/local.mcast.udp.conf" requirements="" group="transport linuxRegression windowsRegression windowsA solarisC linuxB cheetahB"/>
+    <bt test="regression/transportUdp.bt" sysProps="" numberOfNodes="1" localconf="regression/local.udp.conf" requirements="" group="transport linuxRegression windowsRegression windowsA solarisC linuxB cheetahA"/>
+    <bt test="delta/miscDelta.bt" sysProps="" numberOfNodes="1" localconf="regression/local.misc.delta.conf" requirements="" group="delta linuxRegression windowsRegression windowsA solarisC linuxB"/>
+    <bt test="security/security.bt" sysProps="" numberOfNodes="1" localconf="security/local.security.conf" requirements="" group="linuxRegression windowsRegression linuxA solarisB windowsC"/>
+    <bt test="newWan/security/newWanSecurity.bt" sysProps="" numberOfNodes="1" localconf="security/local.security.conf" requirements="" group="newWan linuxRegression windowsRegression linuxA solarisB windowsC"/>
+    <bt test="orderPolicy/orderPolicyRegr.bt" sysProps="" numberOfNodes="1" localconf="orderPolicy/local.orderPolicyRegr.conf" requirements="" group="linuxRegression windowsRegression windowsA solarisC linuxB"/>
+    <bt test="versioning/versioningRegr.bt" sysProps="" numberOfNodes="1" localconf="versioning/local.concurrencyChecksEnabled.conf" requirements="" group="versioning linuxRegression windowsRegression windowsA solarisC linuxB cheetahB"/>
+    <bt test="wan/wanBackwardCompatibility.bt" sysProps="" numberOfNodes="1" localconf="security/local.security.conf" requirements="" group="wan linuxRegression windowsRegression linuxA solarisB windowsC"/>
+
+    <!-- resman.bt needs to be run on all VMs except Hitachi, because it lacks appropriate GC modes: -->
+    <bt test="resman/resman.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="linuxRegression windowsRegression windowsA solarisC linuxB cheetahB"/>
+
+    <!-- *** When running with Java1.7, run resman.bt as is with the SUN 1.7 JDK and again with G1 GC
+    <bt test="resman/resman.bt" sysProps="" numberOfNodes="1" localconf="resman/local.g1gc.conf" requirements="" group="linuxRegression windowsRegression windowsA solarisC linuxB"/>-->
+
+    <!-- Adding local.security.conf for BUG 43337 -->
+    <bt test="splitBrain/splitBrainRegr.bt" sysProps="" numberOfNodes="1" localconf="regression/local.split.conf" requirements="" group="splitbrain linuxRegression windowsRegression linuxA solarisB windowsC cheetahA">
+        <platform type="windows" localconf="security/local.security.conf" sysProps=""/>
+        <platform type="linux" localconf="security/local.security.conf" sysProps=""/>
+        <platform type="solaris" localconf="security/local.security.conf" sysProps=""/>
+    </bt>
+    <bt test="regression/ipv6.bt" sysProps="" numberOfNodes="1" localconf="regression/local.ipv6.conf" requirements="" group="ipv6 linuxRegression windowsRegression windowsA solarisC linuxB cheetahA">
+        <platform type="windows" localconf="security/local.security.conf" sysProps=""/>
+        <platform type="linux" localconf="security/local.security.conf" sysProps=""/>
+        <platform type="solaris" localconf="security/local.security.conf" sysProps=""/>
+    </bt>
+    <bt test="regression/ipv6Udp.bt" sysProps="" numberOfNodes="1" localconf="regression/local.ipv6.udp.conf" requirements="" group="ipv6 linuxRegression windowsRegression windowsA solarisC linuxB cheetahB">
+        <platform type="windows" localconf="security/local.security.conf" sysProps=""/>
+        <platform type="linux" localconf="security/local.security.conf" sysProps=""/>
+        <platform type="solaris" localconf="security/local.security.conf" sysProps=""/>
+    </bt>
+
+    <!-- 4 hosts bts -->
+    <bt test="license/regr2hosts.bt" sysProps="" numberOfNodes="4" localconf="regression/licenseLocal.4hosts.conf" requirements="" group="licencing linuxRegression windowsRegression windowsA solarisC linuxB">
+        <platform type="windows" localconf="regression/local.windows.multihost.conf" sysProps=""/>
+    </bt>
+    <bt test="license/bridgeLicense.bt" sysProps="" numberOfNodes="4" localconf="regression/licenseLocal.4hosts.conf" requirements="" group="licencing linuxRegression windowsRegression windowsA solarisC linuxB">
+        <platform type="windows" localconf="regression/local.windows.multihost.conf" sysProps=""/>
+    </bt>
+    <bt test="license/license.bt" sysProps="" numberOfNodes="4" localconf="regression/licenseLocal.4hosts.conf" requirements="" group="licencing linuxRegression windowsRegression windowsA solarisC linuxB">
+        <platform type="windows" localconf="regression/local.windows.multihost.conf" sysProps=""/>
+    </bt>
+
+    <!-- 2 hosts bts -->
+    <bt test="hct/hct.bt" sysProps="" numberOfNodes="2" localconf="regression/local.2hosts.conf" requirements="" group="linuxRegression windowsRegression windowsA solarisC linuxB">
+        <platform type="windows" localconf="regression/local.windows.multihost.conf" sysProps=""/>
+    </bt>
+    <bt test="hct/ha/ha.bt" sysProps="" numberOfNodes="2" localconf="regression/local.2hosts.conf" requirements="" group="linuxRegression windowsRegression windowsA solarisC linuxB">
+        <platform type="windows" localconf="regression/local.windows.multihost.conf" sysProps=""/>
+    </bt>
+    <bt test="regression/distFuncScale2.bt" sysProps="" numberOfNodes="2" localconf="regression/local.2hosts.conf" requirements="" group="linuxRegression windowsRegression linuxA solarisB windowsC">
+        <platform type="windows" localconf="regression/local.windows.multihost.conf" sysProps=""/>
+    </bt>
+    <bt test="parReg/parReg2hosts.bt" sysProps="" numberOfNodes="2" localconf="regression/local.2hosts.conf" requirements="" group="parReg linuxRegression windowsRegression windowsA solarisC linuxB">
+        <platform type="windows" localconf="regression/local.windows.multihost.conf" sysProps=""/>
+    </bt>
+    <bt test="newWan/discovery/newWanDiscovery.bt" sysProps="" numberOfNodes="2" localconf="regression/local.2hosts.conf" requirements="" group="newWan linuxRegression windowsRegression linuxA solarisB windowsC cheetahB">
+        <platform type="windows" localconf="regression/local.windows.multihost.conf" sysProps=""/>
+    </bt>
+
+    <!-- 5 hosts bts -->
+    <bt test="parReg/parRegUniqueHosts.bt" sysProps="" numberOfNodes="5" localconf="parReg/local.uniqueHosts.conf" requirements="" group="parReg linuxRegression windowsA solarisC linuxB cheetahB">
+        <platform type="windows" localconf="regression/local.windows.multihost.conf" sysProps=""/>
+    </bt>
+    <bt test="recovDelay/recovDelayUniqueHosts.bt" sysProps="" numberOfNodes="5" localconf="recovDelay/local.recovDelayUniqueHosts.conf" requirements="" group="recovery linuxRegression linuxA solarisB windowsC cheetahA">
+        <platform type="windows" localconf="regression/local.windows.multihost.conf" sysProps=""/>
+    </bt>
+    <bt test="cacheperf/poc/mssb/mssb.bt" sysProps="" numberOfNodes="5" localconf="cacheperf/poc/mssb/mssb.local.conf" requirements="" group="linuxRegression linuxA solarisB windowsC">
+        <platform type="windows" localconf="regression/local.windows.multihost.conf" sysProps=""/>
+    </bt>
+    <bt test="sql/json/json.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" group="gemfirexd linuxRegression windowsRegression cheetahA" product="gemfireXD">
+        <platform type="windows" localconf="regression/local.sql.json.Windows.conf" sysProps=""/>
+        <platform type="linux" localconf="regression/local.sql.json.conf" sysProps=""/>
+    </bt>
+    <!-- The following 3 hosts tests (with appropriate local.confs) are to be run on Linux only (as the netDown scripts are specific to Linux): -->
+    <bt test="durableClients/networkDown.bt" sysProps="" numberOfNodes="3" localconf="regression/local.durable.conf" requirements="" group="netDownPartiotion linuxRegression"/>
+    <bt test="splitBrain/netDown.bt" sysProps="" numberOfNodes="3" localconf="splitBrain/local.netDown.conf" requirements="" group="netDownPartiotion linuxRegression cheetahLinux"/>
+    <bt test="splitBrain/networkPartition2hosts.bt" sysProps="" numberOfNodes="3" localconf="splitBrain/local.networkPartition.conf" requirements="" group="netDownPartiotion linuxRegression cheetahLinux"/>
+    <bt test="splitBrain/networkPartition3hosts.bt" sysProps="" numberOfNodes="3" localconf="splitBrain/local.networkPartition.conf" requirements="" group="netDownPartiotion linuxRegression"/>
+    <bt test="splitBrain/networkPartitionWithWeightedMembers.bt" sysProps="" numberOfNodes="3" localconf="splitBrain/local.weightedMembers.conf" requirements="" group="netDownPartiotion linuxRegression cheetahLinux"/>
+    <bt test="rebalance/splitBrain/netDown.bt" sysProps="" numberOfNodes="3" localconf="splitBrain/local.netDown.conf" requirements="" group="netDownPartiotion linuxRegression cheetahLinux"/>
+    <bt test="newWan/serial/splitBrain/newWanNetworkPartition3hosts.bt" sysProps="" numberOfNodes="3" localconf="splitBrain/local.networkPartition.conf" requirements="" group="netDownPartiotion linuxRegression cheetahLinux"/>
+
+    <!-- *** The following 64-bit tests are to be run on Linux only, following all instructions in the specified local conf files, which must be edited before use:  -->
+    <bt test="scale64/scale64.bt" sysProps="" numberOfNodes="6" localconf="regression/local.6hosts64bit.conf" requirements="" use64BitJdk="true" group="scale64 linuxRegression linuxA linuxB linuxC cheetahLinux"/>
+    <bt test="scale64/scalewan64.bt" sysProps="" numberOfNodes="6" localconf="regression/local.6hosts64bitwan.conf" requirements="" use64BitJdk="true" group="scale64 linuxRegression linuxA linuxB linuxC cheetahLinux"/>
+    <bt test="scale64/diskRecovery/diskRecovery64.bt" sysProps="" numberOfNodes="1" localconf="" requirements="" use64BitJdk="true" group="scale64 linuxRegression linuxA linuxB linuxC cheetahLinux"/>
+    <bt test="scale64/resman/resman64.bt" sysProps="" numberOfNodes="1" localconf="scale64/resman/local.resman64.conf" requirements="" use64BitJdk="true" group="scale64 linuxRegression linuxA linuxB linuxC cheetahLinux"/>
+
+</tests>
+

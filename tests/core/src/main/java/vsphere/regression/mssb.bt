@@ -1,0 +1,8 @@
+cacheperf/poc/mssb/mssb01.conf
+threadGroupsName=edge
+cacheperf/poc/mssb/mssb02.conf
+threadGroupsName=bridge
+cacheperf/poc/mssb/mssb03.conf
+threadGroupsName=edge
+cacheperf/poc/mssb/mssb04.conf useMeanKill = true,false
+threadGroupsName=edge

@@ -1,0 +1,84 @@
+parReg/eviction/prEntryEvictionLocalDestroy.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=1 numOfAccessors=1 redundantCopies=0,1,2,3
+parReg/eviction/prEntryEvictionOverflowToDisk.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=1 numOfAccessors=1 redundantCopies=0,1,2,3 
+
+parReg/eviction/prHeapEvictionLocalDestroy.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=1 numOfAccessors=1 redundantCopies=0,1,2,3
+parReg/eviction/prHeapEvictionOverflowToDisk.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=1 numOfAccessors=1 redundantCopies=0,1,2,3     
+
+parReg/eviction/prMemEvictionLocalDestroy.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=1 numOfAccessors=1 redundantCopies=0,1,2,3
+parReg/eviction/prMemEvictionOveflowToDisk.conf peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=1 numOfAccessors=1 redundantCopies=0,1,2,3     
+
+parReg/eviction/concKnownKeys_withEviction.conf peerHosts=5 peerVMsPerHost=2 peerThreadsPerVM=20 numKeys=10000 byteArraySize=5 
+      
+parReg/eviction/concKnownKeysHA_withEntryEviction.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=50000 byteArraySize=5000 redundantCopies=3 numVMsToStop=2
+
+parReg/eviction/concKnownKeysHA_withMemLRUEviction.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=50000 byteArraySize=15000 redundantCopies=3 numVMsToStop=2
+   
+parReg/eviction/concKnownKeysHA_withHeapLRUEviction.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=50000 byteArraySize=15000 redundantCopies=3 numVMsToStop=2 
+   
+parReg/eviction/parRegEventExpiration.conf hydra.numHosts=4
+
+parReg/eviction/multiPRHeapEviction.conf peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=2
+
+parReg/eviction/heapEvictionWithRRAndPR.conf peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=2 redundantCopies=3
+
+parReg/eviction/prEvictionWithQuery.conf peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=2 redundantCopies=0
+
+parReg/eviction/verifyHeapEvictionBehavior.conf peerHosts=1 peerVMsPerHost=4 peerThreadsPerVM=2 redundantCopies=3
+
+// eviction with pr persistence
+parReg/eviction/persistence/prEntryEvictionLocalDestroyPersist.conf 
+   peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=1 
+   numOfAccessors=1 redundantCopies=unused
+parReg/eviction/persistence/prEntryEvictionOverflowToDiskPersist.conf 
+   peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=1 
+   numOfAccessors=1 redundantCopies=unused
+parReg/eviction/persistence/prHeapEvictionLocalDestroyPersist.conf 
+   peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=1 
+   numOfAccessors=1 redundantCopies=unused
+parReg/eviction/persistence/prHeapEvictionOverflowToDiskPersist.conf 
+   peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=1 
+   numOfAccessors=1 redundantCopies=unused
+parReg/eviction/persistence/prMemEvictionLocalDestroyPersist.conf 
+   peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=1 
+   numOfAccessors=1 redundantCopies=unused
+parReg/eviction/persistence/prMemEvictionOverflowToDiskPersist.conf 
+   peerHosts=5 peerVMsPerHost=1 peerThreadsPerVM=1 
+   numOfAccessors=1 redundantCopies=unused
+parReg/eviction/persistence/concKnownKeys_withEvictionPersist.conf 
+   peerHosts=5 peerVMsPerHost=2 peerThreadsPerVM=20 
+   numKeys=10000 byteArraySize=5 
+parReg/eviction/persistence/concKnownKeysHA_withEntryEvictionPersist.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=50000 byteArraySize=5000 redundantCopies=3 numVMsToStop=2
+parReg/eviction/persistence/concKnownKeysHA_withMemLRUEvictionPersist.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=50000 byteArraySize=15000 redundantCopies=3 numVMsToStop=2
+parReg/eviction/persistence/concKnownKeysHA_withHeapLRUEvictionPersist.conf
+   A=accessor accessorHosts=5 accessorVMsPerHost=1 accessorThreadsPerVM=5
+   B=dataStore dataStoreHosts=4 dataStoreVMsPerHost=1 dataStoreThreadsPerVM=5
+   numKeys=50000 byteArraySize=15000 redundantCopies=3 numVMsToStop=2 
+parReg/eviction/persistence/parRegEventExpirationPersist.conf hydra.numHosts=4
+parReg/eviction/persistence/multiPRHeapEvictionPersist.conf 
+   peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=2
+parReg/eviction/persistence/heapEvictionWithRRAndPRPersist.conf 
+   peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=2 redundantCopies=3
+parReg/eviction/persistence/prEvictionWithQueryPersist.conf 
+   peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=2 redundantCopies=0
+parReg/eviction/persistence/verifyHeapEvictionBehaviorPersist.conf 
+   peerHosts=1 peerVMsPerHost=4 peerThreadsPerVM=2 redundantCopies=3
+   
+//NRI Customer scenarios
+parReg/eviction/verifyUniformHeapEviction.conf peerHosts=1 peerVMsPerHost=1 peerThreadsPerVM=1
+parReg/eviction/verifyIncrementalHeapEviction.conf peerHosts=1 peerVMsPerHost=1 peerThreadsPerVM=1
+parReg/eviction/multiPRHeapEvictionBehavior.conf peerHosts=1 peerVMsPerHost=1 peerThreadsPerVM=1   

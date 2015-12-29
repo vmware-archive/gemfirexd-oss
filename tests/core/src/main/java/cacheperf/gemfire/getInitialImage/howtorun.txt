@@ -1,0 +1,14 @@
+Run one of the batterytest files:
+
+	-- getInitialImage.bt
+	-- getInitialImagePutsImpact.bt
+	-- getInitialImageGetsImpact.bt
+
+or configure your own test using any of the test configuration variables
+illustrated in the .prop files and/or a local.conf.
+
+To check whether the initial image is successful, the tests check the entry count.
+For tests that also do gets, you can validate the correctness of the data with a
+local.conf that includes:
+
+    cacheperf.CachePerfPrms-validateObjects = true;

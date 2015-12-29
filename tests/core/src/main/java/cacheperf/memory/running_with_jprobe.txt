@@ -1,0 +1,27 @@
+Running Memory Usage Tests with JProbe
+------------------------------------------------------------
+
+JProbe doesn't play nicely with the java 1.5 instrumentation agent that we're
+using to calculate sizes. To run these tests with jprobe in order to analyze
+where the memory is being used you need to override the VM args for the test to
+not specify -javaagent:sizeagent.jar. You also need to  force the ObjectSizer
+class to use SizeOfUtil0 instead of the SizeOfUtil50. Here's a sample for
+local.conf that will do this:
+
+local.conf
+------------------------------------------------------------
+hydra.ClientPrms-jprobeNames = probe;
+
+hydra.HostPrms-jprobeHomes=/export/java/users/java_share/jprobe5.2.3;
+
+hydra.JProbePrms-triggers =
+  cacheperf.memory.CacheSizeClient.putData():entry:start_use_case
+  cacheperf.memory.CacheSizeClient.putData():exit:finish_use_case
+  ;
+
+hydra.VmPrms-extraVMArgs = "-Xms256m -Xmx256m -Dgemfire.ObjectSizer.SIZE_OF_CLASS=cacheperf.memory.SizeOfUtil0"; 
+------------------------------------------------------------
+
+When you're running with these settings, the results of the test will be
+incorrect because the SizeOfUtil0 class just reports 1 for the size of every
+object. If you're using jprobe just look at the jprobe results.

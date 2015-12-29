@@ -1,0 +1,7 @@
+hydra.numHosts = 2
+vmQuantities = 1
+vmThreads = 1
+trimIterations = 2000000
+workIterations = 8000000
+batchSize = 1000000
+objectType = objects.ArrayOfByte

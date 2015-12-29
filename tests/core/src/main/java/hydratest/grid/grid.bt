@@ -1,0 +1,9 @@
+hydratest/grid/locatorPool.conf
+hydratest/grid/pool.conf
+hydratest/grid/serverPool.conf
+hydratest/grid/serverGroups.conf
+hydratest/grid/xml.conf
+hydratest/grid/xmlfcn.conf
+hydratest/grid/xmlresourcemgr.conf
+hydratest/grid/xmlwan.conf
+hydratest/grid/multixml.conf

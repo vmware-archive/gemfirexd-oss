@@ -1,0 +1,1 @@
+Run hadoopHA.bt with the conf file in <checkout/tests/sql/hdfs/local.hdfs.conf

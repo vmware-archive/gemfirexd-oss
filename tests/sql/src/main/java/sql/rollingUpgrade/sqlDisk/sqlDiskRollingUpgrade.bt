@@ -1,0 +1,20 @@
+sql/rollingUpgrade/sqlDisk/randomPartitionReplPersistTablesHA.conf
+    A=store storeHosts=1 storeVMsPerHost=2,5 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=3 accessorThreadsPerVM=6
+    locatorHosts = 2 locatorVMsPerHost =1 locatorThreadsPerVM = 1 
+    dropIndex = true
+    redundantCopies=1
+    
+sql/rollingUpgrade/sqlDisk/randomPartitionReplOfflinePersistTablesHA.conf
+    A=store storeHosts=1 storeVMsPerHost=2,3 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=3 accessorThreadsPerVM=6
+    locatorHosts = 2 locatorVMsPerHost =1 locatorThreadsPerVM = 1 
+    dropIndex = true
+    redundantCopies=1
+    
+sql/rollingUpgrade/sqlDisk/randomPartitionReplPersistTablesIndexRecoveryHA.conf
+    A=store storeHosts=1 storeVMsPerHost= 7 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=16
+    locatorHosts = 2 locatorVMsPerHost =1 locatorThreadsPerVM = 1 
+    dropIndex = true
+    redundantCopies=2    

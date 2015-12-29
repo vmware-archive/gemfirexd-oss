@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE cache PUBLIC "-//GemStone Systems, Inc.//GemFire Declarative Caching 5.1//EN" "http://www.gemstone.com/dtd/cache5_1.dtd">
+<cache>
+  <vm-root-region name="GemFireCache">
+    <region-attributes scope="distributed-ack" >
+      <subscription-attributes interest-policy="all"/>
+    </region-attributes>
+  </vm-root-region>
+</cache>

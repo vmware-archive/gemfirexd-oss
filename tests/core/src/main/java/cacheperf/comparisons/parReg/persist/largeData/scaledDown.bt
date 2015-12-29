@@ -1,0 +1,17 @@
+// ============================================================
+// This is a variant of the tests in largeDataRecovery.bt. This
+// can be run on a single host and can be used for a quick measure
+// of performance changes. These tests do not have overflow (like
+// the tests in largeDataRecovery.bt) so all data fits in memory.
+
+cacheperf/comparisons/parReg/persist/largeData/peerDataRebalRecoverWithValues_scaledDown.conf
+  A=peer peerHosts = 1 peerVMsPerHost = 3 peerThreadsPerVM = 1
+  B=extra extraHosts = 1 extraVMsPerHost = 1 extraThreadsPerVM = 1
+  C=controller controllerHosts = 1 controllerVMsPerHost = 1 controllerThreadsPerVM = 1
+  maxKeys = 1550000
+  objectSize = 1024
+  redundantCopies = 0 // because we have persistence
+  perffmwk.comparisonKey = recovery
+  heapMB=2000
+  useShutDownAllMembers = true
+

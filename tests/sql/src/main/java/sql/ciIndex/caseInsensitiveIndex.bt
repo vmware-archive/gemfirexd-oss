@@ -1,0 +1,26 @@
+sql/ciIndex/singleColumnCiIndex.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=1 serverVMsPerHost=5 serverThreadsPerVM=1
+    clientHosts = 1 clientVMsPerHost=3 clientThreadsPerVM=3
+    
+sql/ciIndex/multiColumnCiIndex.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=1 serverVMsPerHost=5 serverThreadsPerVM=1
+    clientHosts = 1 clientVMsPerHost=3 clientThreadsPerVM=3
+    
+sql/ciIndex/singleAndMultiColumnCiIndex.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=1 serverVMsPerHost=5 serverThreadsPerVM=1
+    clientHosts = 1 clientVMsPerHost=3 clientThreadsPerVM=3  
+ 
+sql/ciIndex/singleColumnCiIndexPeer.conf
+    A=store storeHosts=1 storeVMsPerHost=5 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=3 accessorThreadsPerVM=3  
+    
+sql/ciIndex/singleAndMultiColumnCiIndexPeer.conf
+    A=store storeHosts=1 storeVMsPerHost=5 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=3 accessorThreadsPerVM=3 
+    
+sql/ciIndex/multiColumnCiIndexPeer.conf
+    A=store storeHosts=1 storeVMsPerHost=5 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=3 accessorThreadsPerVM=3     

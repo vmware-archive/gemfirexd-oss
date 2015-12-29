@@ -1,0 +1,75 @@
+//join tests
+/*sql/joins/concJoinTablesUniq.conf
+    A=peer peerHosts=1 peerVMsPerHost=6 peerThreadsPerVM=3
+    
+sql/joins/concJoinCustSecPortfolioUniqHashPartitionOneRepl.conf
+    A=peer peerHosts=1 peerVMsPerHost=6 peerThreadsPerVM=3 */   
+    
+sql/joins/concJoinCustSecPortfolioUniqHashPartitionTwoRepl.conf
+    A=peer peerHosts=1 peerVMsPerHost=6 peerThreadsPerVM=3 
+    threadGroupsName=ddlThread
+    
+sql/joins/concJoinCustSecPortfolioUniqRangePartitionOneRepl.conf
+    A=peer peerHosts=1 peerVMsPerHost=6 peerThreadsPerVM=3 
+    threadGroupsName=ddlThread
+/*sql/joins/concJoinCustSecPortfSoUniqHashPartitionOneRepl.conf
+    A=peer peerHosts=1 peerVMsPerHost=6 peerThreadsPerVM=3 */
+    
+//no uniq indexed join tests    
+sql/joins/concJoinIndexCustSecPortfolioNonUniqRangePartitionOneRepl.conf
+    A=peer peerHosts=1 peerVMsPerHost=6 peerThreadsPerVM=3    
+    dropIndex = true, false 
+    threadGroupsName=ddlThread
+//accessor store config for join tests
+sql/joins/concJoinTablesUniqWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=1,7 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=3 accessorThreadsPerVM=6
+    threadGroupsName=ddlThread
+   
+/*sql/joins/testJoinServerGroupsUniqWithAccessors.conf
+    A=store storeHosts=6 storeVMsPerHost=2 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=3 accessorThreadsPerVM=6
+    SGvms1=1 SGvms2=2 SGvms3=2 SGvms4=2 SGvms5=3 SGvms6=2
+    SGList1="random" SGList2="random" SGList3="random"
+    SGList4="random" SGList5="random" SGList6="random"
+    securities=trade.securities:0:default,trade.securities:replicate:random
+    customers=trade.customers:0:default,trade.customers:6:default,trade.customers:replicate:random
+    networth=trade.networth:random:random
+    portfolio=trade.portfolio:random:random
+    sellorders=trade.sellorders:random:random
+    buyorders=trade.buyorders:random:random
+    txhistory=trade.txhistory:random:random
+    schemaSG=random*/
+       
+sql/joins/testJoinServerGroupsUniqWithAccessors.conf
+    A=store storeHosts=6 storeVMsPerHost=2 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=3 accessorThreadsPerVM=6
+    SGvms1=1 SGvms2=2 SGvms3=2 SGvms4=2 SGvms5=3 SGvms6=2
+    SGList1="random" SGList2="random" SGList3="random"
+    SGList4="random" SGList5="random" SGList6="random"
+    securities=trade.securities:random:random
+    customers=trade.customers:random:random
+    networth=trade.networth:random:random
+    portfolio=trade.portfolio:random:random
+    sellorders=trade.sellorders:random:random
+    buyorders=trade.buyorders:random:random
+    txhistory=trade.txhistory:random:random
+    schemaSG=random
+    threadGroupsName=ddlThread
+
+//no uniq indexed join tests    
+sql/joins/concJoinIndexReplicateTables.conf
+    A=peer peerHosts=1 peerVMsPerHost=6 peerThreadsPerVM=3    
+    dropIndex = false 
+    threadGroupsName=ddlThread
+
+/*sql/joins/concJoinReplicateTablesUniqWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=4 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=3 accessorThreadsPerVM=6
+    dropIndex = true*/
+    
+sql/joins/multiTablesJoinUniqWithAccessors.conf
+    A=store storeHosts=1 storeVMsPerHost=1,7 storeThreadsPerVM=1
+    B=accessor accessorHosts=1 accessorVMsPerHost=3 accessorThreadsPerVM=6
+    threadGroupsName=ddlThread
+    

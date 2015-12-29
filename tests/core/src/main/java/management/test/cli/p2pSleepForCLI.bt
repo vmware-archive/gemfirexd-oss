@@ -1,0 +1,8 @@
+//Sleep the Test to run the CLI
+management/test/cli/p2pSleepForCLI.conf
+  locatorHosts = 1  locatorVMsPerHost = 1  locatorThreadsPerVM = 1
+  peerHosts    = 4  peerVMsPerHost    = 1  peerThreadsPerVM    = 1  A = peer
+  adminHosts   = 1  adminVMsPerHost   = 1  adminThreadsPerVM   = 1  B = admin
+  redundantCopies = 1
+  sleepForMs      = 28800000  //8 hours
+  //sleepForMs      = 3600000   //1 hour

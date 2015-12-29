@@ -1,0 +1,9 @@
+//Execute Commands Tests (aka: Visual Tests)
+management/test/cli/rest/p2pExecCommandsRest.conf
+  locatorHosts = 1  locatorVMsPerHost = 1  locatorThreadsPerVM = 1
+  peerHosts    = 4  peerVMsPerHost    = 1  peerThreadsPerVM    = 1  A = peer
+  adminHosts   = 1  adminVMsPerHost   = 1  adminThreadsPerVM   = 1  B = admin
+  cliHosts     = 1  cliVMsPerHost     = 1  cliThreadsPerVM     = 1  C = cli
+  redundantCopies = 1
+  numMembersJoinDSOnly = 0
+  numMembersCreateCacheOnly = 0

@@ -1,0 +1,8 @@
+// This battery test contains all the query performance tests
+// with different region operations happening in parallel in presence of different indexes.
+// Please refer the entire test matrix at below link:
+// https://wiki.gemstone.com/display/Query/Test+matrix+for+performance+tests+for+querying+and+region+operations+with+indexes
+smoketest/query/query029.conf numBuckets=10
+smoketest/query/query030.conf numBuckets=10
+smoketest/query/query031.conf numBuckets=10
+smoketest/query/query032.conf numBuckets=10

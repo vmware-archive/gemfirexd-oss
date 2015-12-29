@@ -1,0 +1,40 @@
+sql/concMultiTablesUniqIndexWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=10
+   accessorVMsPerHost=3
+   dropIndex=true
+   locatorHosts=1
+   locatorThreadsPerVM=1
+   locatorVMsPerHost=2
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=1
+sql/randomPartitionReplicateTablesNonUniqWithAccessors.conf
+   A=store
+   B=accessor
+   accessorHosts=3
+   accessorThreadsPerVM=4
+   accessorVMsPerHost=9
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=6
+sql/sqlDisk/randomPartitionReplPersistTablesIndexRecoveryHA.conf
+   A=store
+   B=accessor
+   accessorHosts=2
+   accessorThreadsPerVM=16
+   accessorVMsPerHost=3
+   dropIndex=true
+   redundantCopies=2
+   storeHosts=1
+   storeThreadsPerVM=1
+   storeVMsPerHost=7
+sql/joins/concJoinIndexReplicateTables.conf
+   A=peer
+   dropIndex=false
+   peerHosts=3
+   peerThreadsPerVM=3
+   peerVMsPerHost=3
+

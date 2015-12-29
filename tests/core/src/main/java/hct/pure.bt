@@ -1,0 +1,34 @@
+
+// HOW TO RUN
+
+// Tests can be run in pure java mode using a system property for VMs.
+// Add this to the local.conf file in the directory where battery test is run:
+//
+//    hydra.VmPrms-extraVMArgs  = "-Dgemfire.pureJavaMode=true" fcn "hct.HctPrms.serverVmArgs(${hc.nServers}, \"${hc.serverMemSize}\", true)" ncf
+//                             ,
+//                                "-Dgemfire.pureJavaMode=true" ;
+//
+// Alternatively, use the PureJava snapshot in:
+//     /gcm/where/gemfire/3X/snaps.PureJava/snapshots
+//
+// Some tests use 5 gemfire systems, which may be spread across multiple
+// machines by adding this to the local.conf:
+//
+//    hydra.HostPrms-hostNames = hotrod hotrod stealth stealth spiroc;   (for example)
+//
+
+hct/hierarchy.conf  
+      hc.serverMemSize = 350m
+hct/hierarchy.conf
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+      hc.serverMemSize = 350m
+hct/failover1.conf
+      bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+        hc.serverMemSize = 512m
+hct/randomLB.conf
+      bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+        hc.serverMemSize = 512m
+hct/bloom-vm.conf  edgeThreadsPerVM = 10

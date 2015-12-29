@@ -1,0 +1,221 @@
+SET CURRENT SCHEMA=SEC_OWNER;
+
+INSERT
+INTO SECM_MATCHING_KEY_INFO
+  (
+    BACKOFFICE_CODE,
+    KEY_ID,
+    MATCHING_PRIORITY,
+    ONBOARD_DATE,
+	END_DATE,
+    LAST_UPDATE_BY,
+    LAST_UPDATE_DATE
+  )
+  VALUES
+  (
+    'IPAY', -- For iPay
+    'cbac7809-5208-4ffb-a4cc-ba844df34ada', -- The matching key, CLIENT_ACCOUNT
+    1,  -- First priority
+    CURRENT TIMESTAMP,
+	TIMESTAMP('2020-03-19', '00:00:00'),
+    'SEC_SYS',
+	CURRENT TIMESTAMP
+  );
+  
+INSERT
+INTO SECM_MATCHING_KEY_INFO
+  (
+    BACKOFFICE_CODE,
+	KEY_ID,
+    MATCHING_PRIORITY,
+    ONBOARD_DATE,
+	END_DATE,
+    LAST_UPDATE_BY,
+    LAST_UPDATE_DATE
+  )
+  VALUES
+  (
+    'IPAY', -- For iPay
+    'd77e132a-ae10-4e27-ba74-e5f113942604', -- The matching key, CLIENT_REF_NO
+    1,  -- First priority
+    CURRENT TIMESTAMP,
+	TIMESTAMP('2020-03-19', '00:00:00'),
+    'SEC_SYS',
+	CURRENT TIMESTAMP
+  );
+  
+  INSERT
+INTO SECM_MATCHING_KEY_INFO
+  (
+    BACKOFFICE_CODE,
+	KEY_ID,
+    MATCHING_PRIORITY,
+    ONBOARD_DATE,
+	END_DATE,
+    LAST_UPDATE_BY,
+    LAST_UPDATE_DATE
+  )
+  VALUES
+  (
+    'IPAY', -- For iPay
+    'bd319855-aef2-45c4-80d1-8e6835ffcd0e', -- The matching key, AMOUNT
+    1,  -- First priority
+    CURRENT TIMESTAMP,
+	TIMESTAMP('2020-03-19', '00:00:00'),
+    'SEC_SYS',
+	CURRENT TIMESTAMP
+  );
+  
+  INSERT
+INTO SECM_MATCHING_KEY_INFO
+  (
+    BACKOFFICE_CODE,
+	KEY_ID,
+    MATCHING_PRIORITY,
+    ONBOARD_DATE,
+	END_DATE,
+    LAST_UPDATE_BY,
+    LAST_UPDATE_DATE
+  )
+  VALUES
+  (
+    'IPAY', -- For iPay
+    '47fb9942-4484-4c68-ad41-3e637f440cc8', -- The matching key, CURRENCY
+    1,  -- First priority
+    CURRENT TIMESTAMP,
+	TIMESTAMP('2020-03-19', '00:00:00'),
+    'SEC_SYS',
+	CURRENT TIMESTAMP
+  );
+  
+  INSERT
+INTO SECM_MATCHING_KEY_INFO
+  (
+    BACKOFFICE_CODE,
+	KEY_ID,
+    MATCHING_PRIORITY,
+    ONBOARD_DATE,
+	END_DATE,
+    LAST_UPDATE_BY,
+    LAST_UPDATE_DATE
+  )
+  VALUES
+  (
+    'IPAY', -- For iPay
+    '802f9706-cab8-42d2-b16f-6f2d875d349d', -- The matching key, VALUE_DATE
+    1,
+    CURRENT TIMESTAMP,
+	TIMESTAMP('2020-03-19', '00:00:00'),
+    'SEC_SYS',
+	CURRENT TIMESTAMP
+  );
+  
+ INSERT
+INTO SECM_MATCHING_KEY_INFO
+  (
+    BACKOFFICE_CODE,
+    KEY_ID,
+    MATCHING_PRIORITY,
+    ONBOARD_DATE,
+	END_DATE,
+    LAST_UPDATE_BY,
+    LAST_UPDATE_DATE
+  )
+  VALUES
+  (
+    'IPAY', -- For iPay
+    'f4bfe3a8-3c89-4404-abde-f2c540b83a28', -- The matching key, COMPANY_ID
+    2,  -- 2nd priority
+    CURRENT TIMESTAMP,
+	TIMESTAMP('2020-03-19', '00:00:00'),
+    'SEC_SYS',
+	CURRENT TIMESTAMP
+  );
+  
+  INSERT
+INTO SECM_MATCHING_KEY_INFO
+  (
+    BACKOFFICE_CODE,
+	KEY_ID,
+    MATCHING_PRIORITY,
+    ONBOARD_DATE,
+	END_DATE,
+    LAST_UPDATE_BY,
+    LAST_UPDATE_DATE
+  )
+  VALUES
+  (
+    'IPAY', -- For iPay
+    'd77e132a-ae10-4e27-ba74-e5f113942604', -- The matching key, CLIENT_REF_NO
+    2,  -- First priority
+    CURRENT TIMESTAMP,
+	TIMESTAMP('2020-03-19', '00:00:00'),
+    'SEC_SYS',
+	CURRENT TIMESTAMP
+  );
+  
+  INSERT
+INTO SECM_MATCHING_KEY_INFO
+  (
+    BACKOFFICE_CODE,
+	KEY_ID,
+    MATCHING_PRIORITY,
+    ONBOARD_DATE,
+	END_DATE,
+    LAST_UPDATE_BY,
+    LAST_UPDATE_DATE
+  )
+  VALUES
+  (
+    'IPAY', -- For iPay
+    'bd319855-aef2-45c4-80d1-8e6835ffcd0e', -- The matching key, AMOUNT
+    2,  -- First priority
+    CURRENT TIMESTAMP,
+	TIMESTAMP('2020-03-19', '00:00:00'),
+    'SEC_SYS',
+	CURRENT TIMESTAMP
+  );
+  
+  INSERT
+INTO SECM_MATCHING_KEY_INFO
+  (
+    BACKOFFICE_CODE,
+	KEY_ID,
+    MATCHING_PRIORITY,
+    ONBOARD_DATE,
+	END_DATE,
+    LAST_UPDATE_BY,
+    LAST_UPDATE_DATE
+  )
+  VALUES
+  (
+    'IPAY', -- For iPay
+    '47fb9942-4484-4c68-ad41-3e637f440cc8', -- The matching key, CURRENCY
+    2,  -- First priority
+    CURRENT TIMESTAMP,
+	TIMESTAMP('2020-03-19', '00:00:00'),
+    'SEC_SYS',
+	CURRENT TIMESTAMP
+  );
+  
+  INSERT
+INTO SECM_MATCHING_KEY_INFO
+  (
+    BACKOFFICE_CODE,
+	KEY_ID,
+    MATCHING_PRIORITY,
+    ONBOARD_DATE,
+	END_DATE,
+    LAST_UPDATE_BY,
+    LAST_UPDATE_DATE
+  )
+  VALUES
+  (
+    'IPAY', -- For iPay
+    '802f9706-cab8-42d2-b16f-6f2d875d349d', -- The matching key, VALUE_DATE
+    2,
+    CURRENT TIMESTAMP,
+	TIMESTAMP('2020-03-19', '00:00:00'),
+    'SEC_SYS',
+	CURRENT TIMESTAMP
+  );

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE cache PUBLIC "-//GemStone Systems, Inc.//GemFire Declarative Caching 5.1//EN" "http://www.gemstone.com/dtd/cache6_5.dtd">
+<cache>
+  <disk-store name="queryDiskStore" auto-compact="true" max-oplog-size="1" queue-size="10000" time-interval="15">
+   <disk-dirs>
+   <disk-dir>queryDiskStore3</disk-dir>
+   </disk-dirs>
+  </disk-store> 
+  <region name="QueryRegion0">
+    <region-attributes data-policy="persistent-replicate" statistics-enabled="true" index-update-type="synchronous" disk-store-name="queryDiskStore">
+   </region-attributes> 
+    <index name="statusCompactRangeIndex">
+      <functional from-clause="/QueryRegion0 p" expression="p.status" />
+    </index>
+    <index name="idCompactRangeIndex">
+      <functional from-clause="/QueryRegion0 p" expression="p.ID" />
+    </index>
+    <index name="idCompactRangeEntryIndex">
+      <functional from-clause="/QueryRegion0.entrySet p" expression="p.value.ID" />
+    </index>
+    <index name="statusCompactRangeEntryIndex">
+      <functional from-clause="/QueryRegion0.entrySet p" expression="p.value.status" />
+    </index>
+    <index name="idRangeIndex">
+      <functional from-clause="/QueryRegion0 p, p.positions" expression="p.ID" />
+    </index>
+    <index name="statusRangeIndex">
+      <functional from-clause="/QueryRegion0 p, p.positions" expression="p.status" />
+    </index>
+    <index name="idRangeEntryIndex">
+      <functional from-clause="/QueryRegion0.entrySet p, p.value.positions" expression="p.value.ID" />
+    </index>
+    <index name="statusRangeEntryIndex">
+      <functional from-clause="/QueryRegion0.entrySet p, p.value.positions" expression="p.value.status" />
+    </index>
+  </region>
+</cache>

@@ -1,0 +1,30 @@
+# DerbyNetUseprocess.exclude 
+# identifies tests that fail when run in a suite with useprocess=false with DerbyNet
+# 
+# jdbcapi/HoldabilityTest.junit - causes subsequent tests to fail because of missing
+#     File permissions
+# derbynet/DerbyNetAutoStart.java - exits suite...
+# derbynet/getCurrentProperties.java - fails with different sessions
+# derbynet/dblook_test_net.java - fails, test misses properties
+# derbynet/dblook_test_net_territory.java - fails, test misses properties
+# derbynet/runtimeinfo.java - fails with already existing threads (maybe intermittent)
+# derbynet/sysinfo.java - fails because not access to java.class.path
+# derbynet/sysinfo_withproperties.java - fails because not access to java.class.path
+# lang/optimizerOverrides.sql - fails...
+# lang/big.sql - checks depend on dir structure
+# lang/wisconsin.java - checks depend on dir structure
+# jdbcapi/maxfieldsize.java - fails...??? (but not when run by itself)
+#
+jdbcapi/maxfieldsize.java
+jdbcapi/HoldabilityTest.junit
+derbynet/DerbyNetAutoStart.java
+derbynet/getCurrentProperties.java
+derbynet/dblook_test_net.java
+derbynet/dblook_test_net_territory.java
+derbynet/runtimeinfo.java
+derbynet/sysinfo.java
+derbynet/sysinfo_withproperties.java
+lang/optimizerOverrides.sql
+lang/big.sql
+lang/wisconsin.java
+stress/stress.multi

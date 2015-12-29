@@ -1,0 +1,43 @@
+//------------------------------------------------------------------------------
+//
+//      GemFire 3.0 Performance and Scalability Requirement #3
+//                    Performance Comparison
+//                           GemFire
+//                             for
+//                    objects.ArrayOfByte (1K)
+//
+//------------------------------------------------------------------------------
+//     GemFire (vmRegions) global scope with and without replication
+//------------------------------------------------------------------------------
+
+include $JTESTS/cacheperf/comparisons/hits/hits_gna_gemfire.bt
+include $JTESTS/cacheperf/comparisons/hits/hits_gva_gemfire.bt
+
+include $JTESTS/cacheperf/comparisons/misses/misses_gna_gemfire.bt
+
+include $JTESTS/cacheperf/comparisons/puts/puts_gna_gemfire.bt
+include $JTESTS/cacheperf/comparisons/puts/puts_gva_gemfire.bt
+
+//------------------------------------------------------------------------------
+//  GemFire (vmRegions) scope distributedNoAck with and without replication
+//------------------------------------------------------------------------------
+
+include $JTESTS/cacheperf/comparisons/hits/hits_nna_gemfire.bt
+include $JTESTS/cacheperf/comparisons/hits/hits_nva_gemfire.bt
+
+include $JTESTS/cacheperf/comparisons/misses/misses_nna_gemfire.bt
+
+include $JTESTS/cacheperf/comparisons/puts/puts_nna_gemfire.bt
+include $JTESTS/cacheperf/comparisons/puts/puts_nva_gemfire.bt
+
+//------------------------------------------------------------------------------
+//    GemFire (vmRegions) scope distributedAck with and without replication
+//------------------------------------------------------------------------------
+
+include $JTESTS/cacheperf/comparisons/hits/hits_ana_gemfire.bt
+include $JTESTS/cacheperf/comparisons/hits/hits_ava_gemfire.bt
+
+include $JTESTS/cacheperf/comparisons/misses/misses_ana_gemfire.bt
+
+include $JTESTS/cacheperf/comparisons/puts/puts_ana_gemfire.bt
+include $JTESTS/cacheperf/comparisons/puts/puts_ava_gemfire.bt

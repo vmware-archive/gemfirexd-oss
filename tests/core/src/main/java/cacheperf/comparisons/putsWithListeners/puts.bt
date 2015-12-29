@@ -1,0 +1,4 @@
+cacheperf/comparisons/putsWithListeners/putsWithListeners.conf
+  scope=noAck,ack,global dataPolicy=replicate
+  hydra.numHosts=2,3,5 vmQuantities=1,2 vmThreads=40
+  objectType=objects.NestedOrderVector

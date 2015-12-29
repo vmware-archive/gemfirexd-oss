@@ -1,0 +1,176 @@
+================================================================================
+                            GEMFIRE TESTS DIRECTORY
+                               TABLE OF CONTENTS
+================================================================================
+
+All top-level directories in the test tree are described here, including the
+principal owner(s).  Tests owned by all of QA give "qa" as the owner, developers
+as "dev", and business development as "bizdev".
+
+All tests are hydra-based unless otherwise noted.
+
+Some directories listed here have not yet been ported forward from 2.0.2, and
+are noted as such.
+
+================================================================================
+
+batterytest/
+	[lises]
+	Test framework for running batteries (suites) of tests
+
+bench/
+	[bobw/bizdev] [TBD port from 202]
+	Benchmark tests
+
+bin/
+	[dev]
+	Scripts for running and monitoring unit tests
+
+bsh/
+	[lises]
+	Download of the BeanShell interpreter used by the hydra test framework
+	to evaluate fcn values
+
+cacheLoader/
+	[marilynd]
+	Tests using cache loaders
+
+cacheLoader/hc
+	[marilynd] [TBD port from 202]
+	Tests using cache loaders with the hierarchical cache
+
+cacheLoader/smoke
+	[marilynd]
+	Tests using a single cache loader
+
+cacheperf/
+	[lises]
+	Performance, scalability, and comparison tests for the distributed
+	cache, based on the distcache test framework (see below)
+
+cacheperf/gemfire
+	[lises]
+	Performance and scalability tests for the GemFire distributed cache
+
+cacheperf/hashmap
+	[lises]
+	Performance and scalability tests for a HashMap local cache
+
+cacheperf/rmi
+	[lises]
+	Performance and scalability tests for an RMI-based distributed cache
+
+capCon/
+	[lynn]
+	Tests for capacity controllers
+
+capConPerf/
+	[lynn] [TBD port from 202]
+	Performance tests for capacity controllers
+
+cbot/
+	[davidw] [TBD port from 202]
+	Demo for the Chicago Board of Trade
+
+com/
+	[dev]
+	Unit tests for GemFire, based on junit and dunit
+
+distcache/
+	[lises]
+	Layered test framework providing a generic interface to distributed
+	caches of different types, e.g., GemFire, RMI, HashMap
+
+dunit/
+	[davidw]
+	The dunit distributed unit test framework, layered on junit and hydra
+
+event/
+	[lynn]
+	Tests for cache listeners
+
+examples/
+	[marilynd/jpearson]
+	Tests for the examples that ship with the GemFire product.
+
+gui/
+	[pmatern]
+	GUI unit tests
+
+hct/
+	[belindaf]
+	Tests for the hierarchical cache
+
+hydra/
+	[lises]
+	Hydra test framework
+
+hydra/blackboard
+	[lises]
+	Hydra support for shared blackboards
+
+hydra/log
+	[lises]
+	Hydra support for logging
+
+hydra/samples
+	[lises]
+	Tests illustrating use of hydra
+
+hydraconfig/
+	[lises]
+	Include files commonly used in hydra configuration files
+
+hydratest/
+	[lises]
+	Unit tests for the hydra test framework
+
+jfcunit/
+	[davidw]
+	Download of the "jfcunit" GUI unit test framework (for Swing)
+
+jfcunitext/
+	[lynn]
+	Extensions to "jfcunit"
+
+junit/
+	[davidw]
+	Download of the "junit" Java unit test framework
+
+koch/
+	[lises]
+	Tests for the Koch customer evaluation use case
+
+mirror/
+	[lynn]
+	Tests for cache mirroring
+
+objects/
+	[lises/qa]
+	Convenience classes used by tests to create configurable objects
+
+perffmwk/
+	[lises]
+	Performance framework, including a statistics-gathering API, and
+	report generation and comparison tools
+
+perffmwk/samples/
+	[lises]
+	Tests illustrating use of the performance framework
+
+poc/
+	[bobw/bizdev] [TBD port from 202]
+	Customer deliverables for POC (proof of concept) projects
+
+regions/
+	[belindaf]
+	Tests for region operations
+
+smoketest/
+	[lises/qa]
+	The smoketest test framework layered on junit, hydra, and batterytest,
+	plus some batterytest input files used to run smoketests
+
+util/
+	[qa]
+	Convenience classes of various sorts used by tests and scripts

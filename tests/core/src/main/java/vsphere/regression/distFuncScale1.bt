@@ -1,0 +1,23 @@
+koch/koch.conf
+threadGroupsName=updater
+/*regions/validate/bridge.conf
+threadGroupsName=default
+expiration/entryExpirActionVMReg.conf hydra.numHosts=6
+threadGroupsName=controlTTLInvalThread
+expiration/regionExpirActionVMReg.conf hydra.numHosts=6
+threadGroupsName=controlTTLInvalThread*/
+useCase13Scenarios/killPrimarySteady.conf
+threadGroupsName=killer
+useCase13Scenarios/killSecondarySteady.conf
+threadGroupsName=killer
+
+useCase13Scenarios/killPrimary.conf
+threadGroupsName=killer
+useCase13Scenarios/killSecondary.conf
+threadGroupsName=killer
+
+useCase13Scenarios/killPrimaryDuringGii.conf
+threadGroupsName=primary
+useCase13Scenarios/killSecondaryDuringGii.conf
+threadGroupsName=secondary
+

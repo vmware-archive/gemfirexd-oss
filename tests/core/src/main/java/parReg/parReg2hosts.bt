@@ -1,0 +1,171 @@
+//------------------------------------------------------------------------------
+// notifyAll, notifyBySubscription/InterestList
+// requires 2 hosts (see $JTESTS/regression/local.2hosts.conf)
+//------------------------------------------------------------------------------
+
+parReg/subscription/serialBridgeNotify.conf
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+parReg/subscription/serialBridgeNotifyAllKeys.conf
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+parReg/subscription/concBridgeNotify.conf
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+parReg/subscription/concBridgeNotifyAllKeys.conf
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+parReg/subscription/bridgeNotifyFailover.conf
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  2 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+parReg/subscription/concBridgeNotifyFailover.conf
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  2 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+parReg/subscription/concBridgeNotifyXml.conf
+      bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  3 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+
+//------------------------------------------------------------------------------
+// interest policy
+//------------------------------------------------------------------------------
+
+parReg/subscription/staticInterestPolicyList.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+parReg/subscription/staticInterestPolicyAllKeys.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+parReg/subscription/staticInterestPolicyRegex.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+parReg/subscription/staticInterestPolicySingle.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+parReg/subscription/staticInterestPolicyPartialList.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+parReg/subscription/dynamicInterestPolicyList.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+parReg/subscription/dynamicInterestPolicyAllKeys.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+parReg/subscription/dynamicInterestPolicyRegex.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+parReg/subscription/dynamicInterestPolicySingle.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+parReg/subscription/dynamicInterestPolicyPartialList.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+parReg/subscription/serialInterestPolicy.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 2
+parReg/subscription/concInterestPolicy.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 3
+                                                    useOwnKeys = true
+parReg/subscription/staticInterestPolicyListLateOps.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+parReg/subscription/staticInterestPolicyAllKeysLateOps.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+parReg/subscription/staticInterestPolicyRegexLateOps.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+parReg/subscription/staticInterestPolicySingleLateOps.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+parReg/subscription/staticInterestPolicyPartialListLateOps.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                  numOpThreads = 5
+parReg/subscription/concInterestPolicyLateOps.conf
+      bridgeHosts =  6 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   = 10 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+                                                    useOwnKeys = true
+
+// ParReg/hct hierarchy.conf based tests
+parReg/hct/hierarchy.conf
+      bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+parReg/hct/objects1.conf
+      bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+        hc.serverMemSize = 350m
+parReg/hct/objects2.conf
+      bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+        hc.serverMemSize = 350m
+parReg/hct/objects3.conf
+      bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+        hc.serverMemSize = 550m
+parReg/hct/bigbytearray.conf
+      bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+        hc.serverMemSize = 550m
+
+parReg/hct/failover1.conf
+      bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+        hc.serverMemSize = 512m
+parReg/hct/failover1.conf
+      bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+        hc.serverMemSize = 512m
+parReg/hct/randomLB.conf
+      bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+        hc.serverMemSize = 512m
+parReg/hct/randomLB.conf
+      bridgeHosts =  2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  2 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+        hc.serverMemSize = 512m
+
+// Comparisons to Bloomberg tests, but with Java clients
+parReg/hct/bloom-vm.conf  bridgeHosts = 2 edgeThreadsPerVM = 40 
+parReg/hct/bloom-vm.conf  bridgeHosts = 2 edgeThreadsPerVM = 10 
+
+// UniversalMembershipAdapterEvents
+parReg/hct/univServerMembership.conf
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+        hc.serverMemSize = 300m
+parReg/hct/univClientMembership.conf
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  3 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+        hc.serverMemSize = 300m
+                                                                                
+// bridgeMembership
+parReg/hct/clientMembership.conf
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  3 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+        hc.serverMemSize = 300m
+parReg/hct/serverMembership.conf
+      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+      edgeHosts   =  1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+        hc.serverMemSize = 300m
+// this test is commented out -- still needs work on validation
+//hct/bridgeMembership.conf
+//      bridgeHosts =  3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+//      edgeHosts   =  2 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+//        hc.serverMemSize = 300m
+
+

@@ -1,0 +1,9 @@
+//Test vMotion during failover scenario
+
+parReg/bridge/serialParRegHABridge.conf 
+   edgeHosts=4 edgeVMsPerHost=1 edgeThreadsPerVM=1
+   bridgeHosts=5 bridgeVMsPerHost=1 bridgeThreadsPerVM=1
+   redundantCopies=1,3 numVMsToStop=1
+   numAccessors=1 numEmptyClients=1 numThinClients=1
+   threadGroupsName=dataStoreThreads
+

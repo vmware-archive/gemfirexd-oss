@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+
+<!-- Configures a GemFire cache region whose contents is backed up to
+     disk.  The data files will be written to the current working
+     directory. -->
+
+<!DOCTYPE cache PUBLIC
+  "-//GemStone Systems, Inc.//GemFire Declarative Caching 6.5//EN"
+  "http://www.gemstone.com/dtd/cache6_5.dtd">
+<cache>
+  <disk-store name="DEFAULT" auto-compact="true" max-oplog-size="20" queue-size="10000000" time-interval="15000">
+        <!-- Write buffer data to disk every 10 million bytes or 15 seconds,
+             whichever comes first -->
+      <disk-dirs>
+        <disk-dir>backupDirectory1</disk-dir>
+      </disk-dirs>
+  </disk-store>
+
+  <region name="root" refid="REPLICATE_PERSISTENT">
+    <region-attributes disk-synchronous="false">
+      <eviction-attributes>
+        <!-- Overflow to disk when 100 megabytes of data reside in the
+             region -->
+	<lru-memory-size maximum="100" action="overflow-to-disk"/>
+      </eviction-attributes>
+    </region-attributes>
+
+    <region name="partitioned_region" refid="PARTITION_PERSISTENT">
+      <region-attributes>
+        <partition-attributes redundant-copies="0" total-num-buckets="10"/>
+      </region-attributes>
+    </region>
+  </region>
+</cache>

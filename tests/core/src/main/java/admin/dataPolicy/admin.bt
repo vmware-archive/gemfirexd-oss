@@ -1,0 +1,19 @@
+// new tests (not ready for JMX)
+admin/dataPolicy/recycleConn.conf 
+
+// run tests with admin API
+admin/dataPolicy/adminCache.conf 
+
+// concRegion.conf - default is 3 hosts, each with 1 vm
+admin/dataPolicy/concRegion.conf hydra.numHosts=3 vmQuantities=1 
+admin/dataPolicy/concRegion.conf hydra.numHosts=3 vmQuantities=2
+admin/dataPolicy/concRegion.conf hydra.numHosts=3 vmQuantities=4
+
+admin/dataPolicy/concRegion.conf hydra.numHosts=4 vmQuantities=1
+admin/dataPolicy/concRegion.conf hydra.numHosts=4 vmQuantities=2
+admin/dataPolicy/concRegion.conf hydra.numHosts=4 vmQuantities=4
+
+// run tests with JMX
+admin/dataPolicy/jmxAdminCache.conf 
+admin/dataPolicy/jmxConcRegion.conf hydra.numHosts=4 vmQuantities=4
+

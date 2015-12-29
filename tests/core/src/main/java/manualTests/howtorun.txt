@@ -1,0 +1,188 @@
+---------------------------------------------
+Instructions for manual pull-the-plug testing
+---------------------------------------------
+These tests should be run once per release with the following platforms as the disconnected host, <host1>:
+- RedHat Linux
+- Suse Linux
+- Solaris
+- Windows
+
+The entire suite is run multiple times for each targeted platform with the variations below included as part of that test suite:
+- reconnect cable after 2 minutes
+- sslEnabled 
+- pulling the plug after BridgeServers have been initialized (but as edgeClients are initializing) vs. while operations are executing.
+
+There is some randomization of these variations:  see http://pune.gemstone.com/engr/QA/autoregr/60Regression/pullThePlug.xls for the results/variations executed for 6.x releases.
+
+--------------
+Initial setup 
+--------------
+Note:  All examples below use biscuit as the target host (to be disconnected from the network) and bobo as the surviving side.  MasterController and any configured edgeClient vms are running on stut.
+
+1.  Select at least three different hosts to run on and reserve for exclusive use.  Copy $JTESTS/manualTests/local.pullPlug.conf to local.conf in the local directory.  Update the local.conf to reflect the selected hosts:
+hydra.HostPrms-hostNames = host1 host2 host3;
+- host1 for the losing side of the networkPartition (the host that will be unplugged from the network), 
+- host2 for the surviving side, and 
+- host3 for MasterController (and any configured edgeClients).  Tests are started on this host
+ 
+2.  Create the manualTests directory (for system logs) on each host and update resourceDirBases in the local.conf:
+hydra.HostPrms-resourceDirBases=
+ /export/biscuit1/users/lhughes/manualTests/
+ /export/bobo1/users/lhughes/manualTests/
+ /export/stut1/users/lhughes/<your run directory>/
+;
+
+3.  Configure the userDirs in the local.conf so that the client and bgexec logs will be on the individual machines (so client logging continues and to make it possible to get stack dumps on the disconnected host, if necessary).
+hydra.HostPrms-userDirs=
+ /export/biscuit1/users/lhughes/manualTests/userDirs/
+ /export/bobo1/users/lhughes/manualTests/userDirs/
+ /export/merry2/users/lhughes/<your actual run directory>
+;
+
+4.  The JRE must be available locally on the disconnected host.  Copy the appropriate JRE to the losing side host and update javaHomes in the local.conf.
+hydra.HostPrms-javaHomes=
+ /export/biscuit1/users/lhughes/jdk/x86.linux
+ /export/gcm/where/jdk/1.6.0_17/x86.linux
+ /export/gcm/where/jdk/1.6.0_17/x86.linux;
+
+5.  The build (product and test classes) must be available locally on the losing side host.  Copy the appropriate build to the losing side host and update gemfireHomes and testDirs in the local.conf:
+hydra.HostPrms-gemfireHomes=
+ /export/biscuit1/users/lhughes/prRebalancing/product
+ /export/stut1/users/lhughes/prRebalancing/product
+ /export/stut1/users/lhughes/prRebalancing/product;
+
+hydra.HostPrms-testDirs=
+ /export/biscuit1/users/lhughes/prRebalancing/tests/classes
+ /export/stut1/users/lhughes/prRebalancing/tests/classes
+ /export/stut1/users/lhughes/prRebalancing/tests/classes;
+
+6.  Uncomment the INCLUDE for hydraconfig/enable-ssl.inc for variant #3
+// INCLUDE $JTESTS/hydraconfig/enable-ssl.inc;
+
+7.  JavaGroups Debug flags are included in the local.conf, uncomment if needed:
+// Possible debugging flags, uncomment when needed
+//hydra.VmPrms-extraVMArgs += "-DJGroups.DEBUG=true";
+
+--------------
+Test execution
+--------------
+
+1.  It's best to work through manualTests/pullPlug.conf running one test at a time, only uncommenting one test each time for execution.  This is why the pullPlug.conf is checked in with all the tests commented out.
+    Uncommnent the first test ... 
+
+2.  Start the test on 'host3' (MasterController and edgeClient host) using the updated local.conf and runbt (BatteryTest script)
+
+3.  Keep an eye on the taskmaster log to see when the cable should be pulled.
+    $ tail -f task*.log &
+
+    Starting with 7.0 (and BUG 46659), I've also started running 'top' on the losingSide machine ... it will sometimes be pegged at 100%,
+    but this drops immediately after the cable is pulled (I added a spot in my analysis for each run to log the %idle after the cable is pulled).
+    
+    Look for the execution of dropConnection (which is a no-op with this local.conf)
+    > Result for vm_7_thr_11_locator1_biscuit_8050: TASK[0] splitBrain.SBUtil.dropConnection: void
+
+    Pull the ethernet cable from 'host1'.  Type 'date' and note the approximate time the cable was pulled.
+
+4.  Monitor the task master output from above.  Task assignments (taskmaster log) should continue to be scheduled and processed by the surviving side (client2) vms until totalTaskTimeSec causes the test to complete.
+
+[ Variant 2: if reconnecting the cable, wait for 2 minutes, then reconnect ]
+
+5.  Once the test completes, reconnect the ethernet cable (if not done above).
+    Look for this line in the taskmaster output to know when the test has completed.
+    "============ END TEST ============"
+
+7.  Once network connectivity is restored to 'host1', MasterController should wrap up by executing movedirs.sh to copy the system logs back to the main test directory on 'host3'.  However, it's possible that host1 didn't get reconnected in time, so you may want to execute ./movedirs.sh from the main test directory once host1 responds to 'ping' again.
+
+8.  If you want to have all client logs in the main test directory, copy the userDirs back to the main test directory.  (This is generally not necessary).
+cp -pr /export/biscuit1/users/lhughes/manualTests/userDirs/*742/*.* .
+cp -pr /export/bobo1/users/lhughes/manualTests/userDirs/*742/*.* .
+cp -pr /export/stut1/users/lhughes/manualTests/userDirs/*742/*.* .
+
+9.  Check each host for leftover processes after each test and kill anything left behind (including the 'tail -f taskmaster*.log' from Step 3).
+
+10.  Edit batt.bt to run the next test and start back at Test execution #2.
+
+--------
+Analysis
+--------
+
+1.  The admin on the losing side may or may not report memberCrashed events (so this log can be ignored unless problems arise).
+
+2.  The losing side (client1) vms should see a ForcedDisconnect within 30 seconds of the cable disconnect.  For client/server tests, these will be the bridgeServers on the losing side (disconnected host).
+
+    *** client1 vm log ***
+    [info 2009/04/28 11:14:59.689 PDT <CloserThread> tid=0x7d] Invoked splitBrain.SBListener: afterRegionDestroy in client1
+     whereIWasRegistered: 8000
+     event.isReinitializing(): false
+     event.getDistributedMember(): 10.80.10.70(8000):53040/46733
+     event.getCallbackArgument(): null
+     event.getRegion(): /TestRegion (PartitionedRegion)
+     event.isDistributed(): false
+     event.isExpiration(): false
+     event.isOriginRemote(): false
+     Operation: FORCED_DISCONNECT
+     Operation.isPutAll(): false
+     Operation.isDistributed(): false
+     Operation.isExpiration(): false
+
+[info 2009/04/28 11:15:00.344 PDT <vm_3_thr_4_client1_biscuit_8000> tid=0x70] checkForForcedDisconnect processed Exception com.gemstone.gemfire.distributed.DistributedSystemDisconnectedException: This connection to a distributed system has been disconnected., caused by com.gemstone.gemfire.ForcedDisconnectException: Exiting due to possible network partition event due to loss of member 10.80.250.45(10673):56415
+
+3.  The surviving side admin should get alerts (using 15 seconds waiting for replies), except in the WAN tests (since the WAN communication is asynchronous):
+[info 2009/04/28 11:14:32.376 PDT <Pooled Message Processor 3> tid=0x4c] Invoked splitBrain.SBAlertListener in client with vmID 2, pid 10631
+     alert.getConnectionName(): gemfire4_bobo_10673
+     alert.getDate(): Tue Apr 28 11:14:32 PDT 2009
+     alert.getLevel(): WARNING
+     alert.getMessage(): 15 sec have elapsed while waiting for replies: <FetchKeysMessage$FetchKeysResponse 137670 waiting for 1 replies from [10.80.10.70(8008):53042/56230]> on 10.80.250.45(10673):56415/46733 whose current membership list is: [[10.80.250.45(10673):56415/46733, 10.80.250.45(10638):56418/46742, 10.80.10.70(8008):53042/56230, 10.80.10.70(8000):53040/46733]]
+
+     alert.getSourceId(): vm_6_thr_9_client2_bobo_10673 tid=0x75
+     alert.getSystemMember(): gemfire4_bobo_10673
+
+4.  The surviving side admin should also see memberCrashed events for both client vms on the losing side:
+    [info 2009/04/28 11:15:04.431 PDT <DM-MemberEventInvoker> tid=0x1f] Invoked splitBrain.SBSystemMembershipListener: memberCrashed in admin2
+     event.getDistributedMember(): 10.80.10.70(8000):53040/46733
+     event.getMemberId(): 10.80.10.70(8000):53040/4
+
+[info 2009/04/28 11:15:04.504 PDT <DM-MemberEventInvoker> tid=0x1f] Invoked splitBrain.SBSystemMembershipListener: memberCrashed in admin2
+     event.getDistributedMember(): 10.80.10.70(8008):53042/56230
+     event.getMemberId(): 10.80.10.70(8008):53042/56230
+
+5.  The surviving side (client2) vms should continue operations without interruption, completing their tasks ~10 minutes later.  For client/server tests, we want to verify that the edge clients continued working (by failing over to the remaining bridgeServer).  Check the edgeClient logs on host3 to ensure that they continued to process doEntryOperations tasks from Master.
+
+*** client2 #1 ***
+[info 2009/04/28 11:19:04.818 PDT <vm_5_thr_7_client2_bobo_10638> tid=0xa2] Task result: TASK[1] splitBrain.NetworkPartitionTest.HydraTask_doEntryOperations: void
+[info 2009/04/28 11:19:06.396 PDT <vm_5_thr_8_client2_bobo_10638> tid=0xa3] Task result: TASK[1] splitBrain.NetworkPartitionTest.HydraTask_doEntryOperations: void
+
+*** client2 #2 ***
+[info 2009/04/28 11:19:05.616 PDT <vm_6_thr_9_client2_bobo_10673> tid=0xa7] Task result: TASK[1] splitBrain.NetworkPartitionTest.HydraTask_doEntryOperations: void
+[info 2009/04/28 11:19:05.176 PDT <vm_6_thr_10_client2_bobo_10673> tid=0xa6] Task result: TASK[1] splitBrain.NetworkPartitionTest.HydraTask_doEntryOperations: void
+
+I normally record each test as shown below (using actual pids for the client, locator and admin VMs).
+Note that I have started running 'top' on the losingSide host ... and I log the cpuIdle after the cable is pulled.
+(The machine may be pegged prior to this, but you should see the cpuIdle increase quickly after the cable is pulled).
+
+                    losingSide | survivingSide
+                    (biscuit)  | (bobo)
+                    ===========================
+     FD @ <time>    client1-1  | client2-1  Ops completed @ <time>
+     FD @ <time>    client1-2  | client2-2  Ops completed @ <time>
+     cpuIdle%<xx>   losingSide |
+                    ---------------------------
+                    locator1-? | locator2-?
+                    locator1-? | locator2-?
+                    ---------------------------
+                    admin1     | admin2     alerts ? <x>
+                                            memberCrashed <x,x>
+
+            X @ <record time that cable was pulled>
+
+Record results (P/F status) in the pullThePlug.xls spreadsheet on the portal.
+
+---------------------
+Special circumstances
+---------------------
+- If problems are encountered and stack dumps required on the losing side (while disconnected), you will need to ask IS to set up access as a local user on 'host1'.  Once this is set up, you can re-run the test ... wait for two minutes after disconnecting the cable and then use $kill -QUIT <pid> for each of the losing side vms (while logged on to host1) to get the stack dumps (see bgexec*.log).
+This will not work without the 'local' user as all commands (including ls, kill, etc) use the network to verify the user before allowing execution.
+
+On Solaris, you will also need to change the pathnames for the jdk, product and test class directories to not use /export.  Once the host is disconnected from the network, Solaris cannot resolve the /export locally.
+
+- In tests with disk persistence, you may want to remove the disk dirs before running movedirs.sh.  (If you see its taking a long time for movedirs to complete, you can always delete the *disk* files from resourceDirBases.)

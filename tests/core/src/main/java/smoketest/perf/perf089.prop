@@ -1,0 +1,13 @@
+A = data
+dataHosts        = 1
+dataVMsPerHost   = 3
+dataThreadsPerVM = 1
+
+B = query
+queryHosts        = 1
+queryVMsPerHost   = 1
+queryThreadsPerVM = 1
+
+regionName = AssetAccounts
+
+perffmwk.comparisonKey = perf089

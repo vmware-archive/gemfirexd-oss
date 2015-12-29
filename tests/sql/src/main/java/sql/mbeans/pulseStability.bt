@@ -1,0 +1,4 @@
+sql/mbeans/sqlPulseStability.conf
+  A=peer peerHosts=4 peerVMsPerHost=1 peerThreadsPerVM=2
+  B=manager managerHosts=1 managerVMsPerHost=1 managerThreadsPerVM=1
+  redundantCopies=1

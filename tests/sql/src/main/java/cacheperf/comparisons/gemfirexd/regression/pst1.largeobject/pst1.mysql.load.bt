@@ -1,0 +1,11 @@
+cacheperf/comparisons/gemfirexd/largeobject/thinClient/load.conf
+  api=MYSQL
+  clientHosts=1 clientVMsPerHost=1 clientThreadsPerVM=10
+  serverHosts=1 serverVMsPerHost=1 serverThreadsPerVM=1
+  numLargeObjectsPerServer=20000000
+  heapMB = 256
+  redundantCopies=0
+  txIsolation = readCommitted
+  enableHistogram=true
+  queryPlanFrequency = 0
+  perffmwk.comparisonKey = load

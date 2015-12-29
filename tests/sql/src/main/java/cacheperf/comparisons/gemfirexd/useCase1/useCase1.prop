@@ -1,0 +1,13 @@
+api=GFXD
+
+txIsolation = none
+
+clientHeapMB = 256
+serverHeapGB = 32
+
+trimSeconds =  60
+workSeconds = 180
+
+logQueries = false
+
+perffmwk.comparisonKey = useCase1

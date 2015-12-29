@@ -1,0 +1,16 @@
+locatorHosts        = 1
+locatorVMsPerHost   = 1
+locatorThreadsPerVM = 1
+A = putter
+putterHosts        = 1
+putterVMsPerHost   = 1
+putterThreadsPerVM = 1
+dataPolicy=normal
+scope=local
+statisticsEnabled=true
+numberOfEntries=50000
+sampleInterval=50000
+autoCompact=false
+synchronous=true
+
+perffmwk.comparisonKey = mem008

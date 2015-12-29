@@ -1,0 +1,6 @@
+// All of the tests for the CacheOverflow example
+
+examples/dist/cacheOverflow/backupAsync.conf
+examples/dist/cacheOverflow/backupSync.conf
+examples/dist/cacheOverflow/overflowAsync.conf
+examples/dist/cacheOverflow/overflowSync.conf

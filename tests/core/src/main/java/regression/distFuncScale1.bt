@@ -1,0 +1,11 @@
+// Distributed functional & stress tests, single host
+// Tests to run once
+// est. runtime: 23 hours
+
+koch/koch.conf
+/*commenting out for Cheetah release
+regions/validate/bridge.conf */
+include $JTESTS/event/event.bt
+include $JTESTS/mirror/mirror.bt
+include $JTESTS/expiration/expiration.bt
+include $JTESTS/useCase13Scenarios/useCase13.bt

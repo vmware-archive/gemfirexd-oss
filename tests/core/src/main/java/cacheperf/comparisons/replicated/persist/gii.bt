@@ -1,0 +1,16 @@
+// ============================================================
+// measure performance of vm doing gii from persistent replicate regions
+
+// run with no overflow
+cacheperf/comparisons/replicated/persist/peerDataGii.conf
+  A=peer peerHosts =  1 peerVMsPerHost = 1 peerThreadsPerVM = 3
+  B=extra extraHosts =  1 extraVMsPerHost = 1 extraThreadsPerVM = 1
+  maxKeys = 1600000 objectSize = 1024 heapMB = 3000
+  perffmwk.comparisonKey = put_02x01x01
+
+// run with overflow
+cacheperf/comparisons/replicated/persist/peerDataGiiOverflow.conf
+  A=peer peerHosts =  1 peerVMsPerHost = 1 peerThreadsPerVM = 3
+  B=extra extraHosts =  1 extraVMsPerHost = 1 extraThreadsPerVM = 1
+  maxKeys = 1600000 objectSize = 1024 heapMB = 3000
+  perffmwk.comparisonKey = put_02x01x01

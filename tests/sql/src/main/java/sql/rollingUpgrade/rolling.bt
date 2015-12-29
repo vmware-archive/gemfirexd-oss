@@ -1,0 +1,109 @@
+sql/rollingUpgrade/clientGFXDUniqMixedVersion.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=2 serverVMsPerHost=5 serverThreadsPerVM=1
+    clientHosts = 2 clientVMsPerHost =3 clientThreadsPerVM = 10
+    redundantCopies=1
+    dropIndex = true
+    securities=trade.securities:random
+    customers=trade.customers:random
+    networth=trade.networth:random
+    portfolio=trade.portfolio:random
+    sellorders=trade.sellorders:random
+    buyorders=trade.buyorders:random
+    txhistory=trade.txhistory:random
+    version=1099
+
+sql/rollingUpgrade/alterTableWithClientMixedVersionHA.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=2 serverVMsPerHost= 5 serverThreadsPerVM=1
+    clientHosts = 2 clientVMsPerHost =3 clientThreadsPerVM = 10
+    redundantCopies=1
+    dropIndex = true
+    securities=trade.securities:random
+    customers=trade.customers:random
+    networth=trade.networth:random
+    portfolio=trade.portfolio:random
+    sellorders=trade.sellorders:random
+    buyorders=trade.buyorders:random
+    txhistory=trade.txhistory:random
+    version=1099
+    
+sql/rollingUpgrade/alterTableNonUniqWithClientMixedVersionHA.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    serverHosts=2 serverVMsPerHost= 5 serverThreadsPerVM=1
+    clientHosts = 2 clientVMsPerHost =3 clientThreadsPerVM = 20
+    redundantCopies=1
+    dropIndex = true
+    securities=trade.securities:random
+    customers=trade.customers:random
+    networth=trade.networth:random
+    portfolio=trade.portfolio:random
+    sellorders=trade.sellorders:random
+    buyorders=trade.buyorders:random
+    txhistory=trade.txhistory:random
+    version=1099
+   
+sql/rollingUpgrade/defaultIdUniqAccessorsMixedVersionHA.conf
+    locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+    A=store storeHosts=2 storeVMsPerHost=5 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=10
+    dropIndex=true
+    testUniqueKeys = true
+    redundantCopies=1
+    version=1099
+    
+sql/rollingUpgrade/generateIdAlwaysUniqAccessorsMixedVersionHA.conf
+    locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+    A=store storeHosts=2 storeVMsPerHost=6 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=10
+    dropIndex=true
+    testUniqueKeys = true
+    redundantCopies=1
+    version=1099
+
+sql/rollingUpgrade/multiTablesProceduresUniqAuthWithAccessorsMixedVersion.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    A=store storeHosts=2 storeVMsPerHost=4 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=5
+    usePublicAsGrantees = false
+    version=1099
+    
+sql/rollingUpgrade/authWithAccessorsMixedVersion.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    A=store storeHosts=2 storeVMsPerHost=4 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=5
+    usePublicAsGrantees = false
+    version=1099
+
+sql/rollingUpgrade/dbSynchronizerWithAccessorsMixedVersionHA.conf
+    locatorHosts = 1 locatorVMsPerHost =1 locatorThreadsPerVM = 1
+    A=store storeHosts=12 storeVMsPerHost=1 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=10
+    SGvms1=1 SGvms2=1 SGvms3=1 SGvms4=1
+    SGvms5=1 SGvms6=1 SGvms7=1 SGvms8=1
+    SGvms9=2 SGvms10=2
+    SGList1="SG1" SGList2="SG1,SG2" SGList3="SG2,SG3"
+    SGList4="SG2,SG4" SGList5="SG3,SG1" SGList6="SG3"
+    SGList7="SG4,SG3" SGList8="SG4,SG1" SGList9="random"
+    SGList10="random"
+    dropIndex = true
+    testUniqueKeys=true
+    withReplicatedTables=true
+    securities=trade.securities:random:default
+    customers=trade.customers:random:default
+    networth=trade.networth:random:default
+    portfolio=trade.portfolio:random:default
+    sellorders=trade.sellorders:random:default
+    buyorders=trade.buyorders:random:default
+    txhistory=trade.txhistory:random:default
+    version=1099
+
+sql/rollingUpgrade/persistTablesMixedVersionHA.conf
+    locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
+    A=store storeHosts=2 storeVMsPerHost=5 storeThreadsPerVM=1
+    B=accessor accessorHosts=2 accessorVMsPerHost=3 accessorThreadsPerVM=10
+    dropIndex=true
+    testUniqueKeys = true
+    redundantCopies=1
+    version=1099
+

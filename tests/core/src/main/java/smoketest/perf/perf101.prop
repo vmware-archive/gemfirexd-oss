@@ -1,0 +1,26 @@
+locatorHosts = 1
+locatorVMsPerHost = 1
+locatorThreadsPerVM = 1
+
+bridgeHosts = 1
+bridgeVMsPerHost = 2
+bridgeThreadsPerVM = 1
+
+edgeHosts = 1
+edgeVMsPerHost = 2
+edgeThreadsPerVM = 1
+
+conserveSockets = true
+maxThreads = 0
+
+dataPolicy = partitioned
+
+maxKeys = 100
+objectSize = 3
+
+securityScheme = noop
+sslScheme = none
+
+opType = get
+
+perffmwk.comparisonKey = perf101

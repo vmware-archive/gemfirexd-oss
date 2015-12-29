@@ -1,0 +1,571 @@
+// ------------------------------------------------------------------------------
+// SERIAL SENDER TESTS
+//-------------------------------------------------------------------------------
+newWan/p2pKill.conf
+    wanSites = 2 maxOps=15000 resultWaitSec=600 
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5
+
+newWan/p2pKillPersist.conf
+    wanSites = 2 maxOps=15000 resultWaitSec=600
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5
+    
+newWan/queuePersistRegionPersistP2P.conf 
+	wanSites = 2 resultWaitSec=600
+	locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+		
+parReg/newWan/serial/p2p.conf 
+	wanSites = 2 maxOps=50000 resultWaitSec=600
+	locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+
+parReg/newWan/serial/colocation/p2pKillParRegColocation.conf
+	wanSites = 2 maxOps=15000 resultWaitSec=600 redundantCopies = 2
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+
+parReg/newWan/serial/colocation/p2pParRegColocationPersist.conf
+	wanSites = 2 maxOps=50000 resultWaitSec=600
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+	
+parReg/newWan/serial/colocation/lazyReceiverP2pPersist.conf
+	wanSites = 2 maxOps=50000 resultWaitSec=600
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+	
+parReg/newWan/serial/queuePersistP2P.conf 
+	wanSites = 2 resultWaitSec=600
+	locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5	
+	
+parReg/newWan/serial/colocation/queuePersistRegionPersistP2P.conf
+	wanSites = 2 resultWaitSec=600
+	locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+	
+newWan/discovery/wanLocatorsPeerHAP2P.conf
+	wanSites = 2 maxOps=100 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+
+newWan/discovery/wanAdminLocatorsPeerHAP2P.conf
+	wanSites = 2 maxOps=100 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1	
+		
+// rebalance tests
+parReg/newWan/serial/concKnownKeysWANp2p.conf wanSites = 2
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   peerHostsPerSite=4 peerVMsPerHost=1 peerThreadsPerVM=5
+   numKeys = 50000 
+   
+// Sender start/stop/resume operations
+newWan/senderOperationsP2p.conf
+	wanSites = 2 maxOps=5000 resultWaitSec=600
+	locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+
+parReg/newWan/serial/colocation/senderOperationsP2pKillParRegColocationPersist.conf	
+    wanSites = 2 maxOps=5000 resultWaitSec=600
+    locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+    peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+
+// queue eviction tests
+newWan/serial/eviction/queueEvictionP2pPersist.conf
+	wanSites = 2 maxOps=50000 resultWaitSec=3600
+	locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+
+// version tests
+newWan/multiVersionP2P.conf
+		   
+// filters
+newWan/serial/filters/p2pBeforeEnqueueEventFilterHA.conf
+    wanSites = 2 maxOps=10000 resultWaitSec=600
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5
+
+newWan/serial/filters/p2pBeforeTransmitEventFilterHA.conf
+    wanSites = 2 maxOps=10000 resultWaitSec=600
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5
+   
+parReg/newWan/serial/filters/p2pEventTransportFilterHA.conf
+    wanSites = 2 maxOps=1000 resultWaitSec=600
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5 
+    		   
+// tx test
+parReg/newWan/serial/tx/p2pKill.conf
+    wanSites = 2 maxOps=10000 resultWaitSec=600
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5    
+    
+// pdx
+newWan/pdx/p2pKillPdx.conf
+    wanSites = 2 maxOps=1000 resultWaitSec=600
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5
+
+parReg/newWan/serial/pdx/p2pPdx.conf
+    wanSites = 2 maxOps=50000 resultWaitSec=600
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 2
+
+// accessor test
+newWan/accessorP2PHA.conf 
+    wanSites = 2 maxOps=300 resultWaitSec=600 
+
+newWan/hctKill.conf
+      wanSites = 2	maxOps=15000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+newWan/hct_durable.conf
+	wanSites = 2 maxOps=1000 resultWaitSec=600
+	edgeVMsPerHost=3 edgeThreadsPerVM=5 bridgeVMsPerHost = 4
+	
+// partitioned region serial hct wan tests
+parReg/newWan/serial/hctKill.conf
+      wanSites = 2 maxOps=15000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/serial/hctRing.conf
+      wanSites = 2 maxOps=50000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/serial/persistence/lazyReceiverHctPersist.conf
+      wanSites = 2 maxOps=50000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/serial/colocation/hctKillParRegColocation.conf
+      wanSites = 2 maxOps=300 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+newWan/queuePersistHct.conf
+      wanSites = 2 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 3
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/serial/persistence/queuePersistRegionPersistHct.conf
+	wanSites = 2 resultWaitSec=600
+	bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 3
+	edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+	
+//rebalance tests     	
+parReg/newWan/serial/concKnownKeysWANbridge.conf wanSites=2
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   bridgeHostsPerSite = 4 bridgeVMsPerHost=1 bridgeThreadsPerVM = 2
+   edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   numKeys = 30000 edgeVmSize=300 serverVmSize=350
+
+parReg/newWan/serial/persistence/concKnownKeysWANbridge.conf wanSites = 2
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   bridgeHostsPerSite = 4 bridgeVMsPerHost=1 bridgeThreadsPerVM = 2
+   edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   numKeys = 20000 edgeVmSize=300 serverVmSize=350
+   
+// discovery tests
+parReg/newWan/serial/discovery/wanLocatorsAllHct.conf
+	wanSites = 2 maxOps=300 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1	
+
+parReg/newWan/serial/discovery/wanAdminLocatorsPeerHAHct.conf
+	wanSites = 2 maxOps=300 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1	
+
+//cq tests (work load based)
+cq/newWan/serial/cqParRegHct.conf
+       wanSites = 2 bridgeVMsPerHost=4 edgeVMsPerHost=2 edgeThreadsPerVM=5
+       
+// queue eviction tests
+newWan/serial/eviction/queueEvictionHct.conf
+	wanSites = 2 maxOps=50000 resultWaitSec=3600
+	bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+	edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+	       
+// conflation tests (times based tests)
+newWan/serial/conflation/wanconflation.conf
+  wanSites = 4
+  locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  bridgeHostsPerSite = 1 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+  edgeHostsPerSite   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+  maxKeys = 20   dataSize = 10 serverMem = 256m clientMem = 256m
+  enableSubscriptionConflation = false batchConflation = true
+
+newWan/serial/conflation/wanmonotonic.conf
+  wanSites = 4
+  locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  bridgeHostsPerSite = 1 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+  edgeHostsPerSite   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+  maxKeys = 20   dataSize = 10 serverMem = 256m clientMem = 256m
+  enableSubscriptionConflation = false batchConflation = true
+  
+parReg/newWan/serial/conflation/wanconflation.conf
+  wanSites = 4
+  locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  bridgeHostsPerSite = 1 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+  edgeHostsPerSite   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+  maxKeys = 20   dataSize = 10 serverMem = 256m clientMem = 256m
+  enableSubscriptionConflation = false batchConflation = true
+
+// tx tests
+parReg/newWan/serial/tx/hctKill.conf
+      wanSites = 2 maxOps=10000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+        	       
+// pdx
+newWan/pdx/hctKillPdx.conf
+	wanSites = 2 maxOps=1000 resultWaitSec=600
+	bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+	edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/serial/pdx/hctKillPdx.conf
+	wanSites = 2 maxOps=1000 resultWaitSec=600	
+	bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+	edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+		
+//filter tests
+newWan/serial/filters/hctBeforeEnqueueEventFilterHA.conf
+    wanSites = 2 maxOps=10000 resultWaitSec=600
+	bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+	edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+newWan/serial/filters/hctBeforeTransmitEventFilterHA.conf
+    wanSites = 2 maxOps=10000 resultWaitSec=600
+	bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+	edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+       
+parReg/newWan/serial/filters/hctTransportFilterHA.conf
+    wanSites = 2 maxOps=10000 resultWaitSec=600
+	bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+	edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+   
+parReg/newWan/serial/filters/hctEventTransportFilterHA.conf
+    wanSites = 2 maxOps=10000 resultWaitSec=600
+	bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+	edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+// concurrent dispature threads test
+newWan/orderPolicy/p2pOrderByThreadHA.conf 
+   wanSites = 3 peerMem=768m byteArraySize=100
+   peerHostsPerSite=1 peerVMsPerHost=3 peerThreadsPerVM=2 
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   
+newWan/orderPolicy/p2pOrderByKeyHA.conf 
+   wanSites = 3 peerMem=768m byteArraySize=100
+   peerHostsPerSite=1 peerVMsPerHost=3 peerThreadsPerVM=2 
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1   
+
+// versioning and conflict resolver
+versioning/newWan/serialSenderHct.conf
+    wanSites = 4 maxOps=20000 resultWaitSec=1200
+    locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 2
+    bridgeHostsPerSite = 3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+    edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+    serverMem = 256m clientMem = 256m enableFailover=true
+
+versioning/newWan/parRegSerialSenderResolverHct.conf
+    wanSites = 4 maxOps=1000 resultWaitSec=1200
+    locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 2
+    bridgeHostsPerSite = 3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+    edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+    serverMem = 256m clientMem = 256m
+    redundantCopies=1 enableFailover=true
+    
+//wbcl   
+parReg/wbcl/newWan/concParRegSerialWBCLHA.conf
+   A=wbcl wbclHosts=2 wbclVMsPerHost=1 wbclThreadsPerVM=10
+   B=dataStore dataStoreHosts=2 dataStoreVMsPerHost=2 dataStoreThreadsPerVM=10 
+   redundantCopies=1 numVMsToStop=1   
+   
+// security tests
+parReg/newWan/serial/security/wan_p2p.conf
+	validWanSites=3 invalidWanSites=3 
+	locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1 
+	bridgeHostsPerSite=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 
+	edgeHostsPerSite=1 edgeVMsPerHost=1 edgeThreadsPerVM=1 peerMem = 256m
+
+parReg/newWan/serial/security/wan_authorization.conf
+	writerWanSites=3 readerWanSites=3 
+	locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1 
+	bridgeHostsPerSite=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 
+	edgeHostsPerSite=1 edgeVMsPerHost=1 edgeThreadsPerVM=1 peerMem = 256m   
+
+// mlrio - splitbrain tests
+newWan/serial/splitBrain/mlRioSequentialKeys.conf
+       wanSites=2
+       locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1 
+       bridgeHostsPerSite = 2 bridgeVMsPerHost=1 bridgeThreadsPerVM = 1 
+       edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=1
+       numRootRegions = 3  numDynamicRegions = 3 
+
+parReg/newWan/serial/splitBrain/mlRio.conf
+       wanSites=2
+       locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite = 2 bridgeVMsPerHost=1 bridgeThreadsPerVM = 1
+       edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=4
+       numRootRegions = 3  numDynamicRegions = 0 
+   
+// ------------------------------------------------------------------------------
+// PARALLEL SENDER TESTS
+//-------------------------------------------------------------------------------
+parReg/newWan/parallel/p2pKill.conf
+   wanSites = 2 maxOps=15000 resultWaitSec=600 redundantCopies = 2
+   peerHostsPerSite = 5 peerVMsPerHost = 1  peerThreadsPerVM = 5 
+
+parReg/newWan/parallel/p2pRing.conf 
+	wanSites = 2 maxOps=50000 resultWaitSec=600
+	locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+	
+parReg/newWan/parallel/queuePersistP2P.conf 
+    wanSites = 2 resultWaitSec=600
+    locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+    peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5    
+    peerMem = 512m redundantCopies = 1
+        	
+parReg/newWan/parallel/colocation/p2pParRegColocationPersist.conf
+	wanSites = 2 maxOps=50000 resultWaitSec=600	
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+	
+parReg/newWan/parallel/colocation/lazyReceiverP2p.conf
+	wanSites = 2 maxOps=50000 resultWaitSec=600
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5	
+
+parReg/newWan/parallel/colocation/p2pRingPersist.conf 
+	wanSites = 2 maxOps=50000 resultWaitSec=600
+	locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+	
+//rebalance tests
+parReg/newWan/parallel/concKnownKeysWANp2p.conf wanSites = 2
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+   numKeys = 20000 
+
+parReg/newWan/parallel/persistence/concKnownKeysWANp2pWithCacheServer.conf wanSites = 2
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+   numKeys = 20000
+
+parReg/newWan/parallel/colocation/concKnownKeysWANp2pPersist.conf wanSites = 2
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+   numKeys = 10000  
+	
+//sender operations	
+parReg/newWan/parallel/colocation/senderOperationsP2pParRegColocationPersist.conf
+    wanSites = 2 maxOps=5000 resultWaitSec=600 redundantCopies = 2
+    locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+    peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5 	
+
+parReg/newWan/parallel/colocation/senderOperationsP2pKillParRegColocationPersist.conf
+    wanSites = 2 maxOps=5000 resultWaitSec=600 redundantCopies = 2
+    locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+    peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5 				
+			
+// eviction tests
+parReg/newWan/parallel/colocation/queueEvictionP2p.conf 
+	wanSites = 2 maxOps=70000 resultWaitSec=3600 
+	locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+
+parReg/newWan/parallel/colocation/queueEvictionP2pPersist.conf 
+	wanSites = 2 maxOps=70000 resultWaitSec=3600 
+	locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+	peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5
+
+// discovery tests
+parReg/newWan/parallel/discovery/wanLocatorsPeerHAP2P.conf
+	wanSites = 2 maxOps=300 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+
+parReg/newWan/parallel/discovery/wanAdminLocatorsPeerHAP2P.conf
+	wanSites = 2 maxOps=300 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1	
+		
+// version test
+parReg/newWan/parallel/multiVersionP2P.conf
+		
+//tx test
+parReg/newWan/parallel/tx/p2pKill.conf
+   wanSites = 2 maxOps=15000 resultWaitSec=600 redundantCopies = 2
+   peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5
+   		
+// filter tests
+parReg/newWan/parallel/filters/p2pBeforeEnqueueEventFilterHA.conf
+    wanSites = 2 maxOps=10000 resultWaitSec=600
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5
+
+parReg/newWan/parallel/filters/p2pEventTransportFilterHA.conf
+    wanSites = 2 maxOps=10000 resultWaitSec=600
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5 	
+   		
+// pdx tests
+parReg/newWan/parallel/pdx/p2pKillPdx.conf
+    wanSites = 2 maxOps=1000 resultWaitSec=600
+    peerHostsPerSite = 4 peerVMsPerHost = 1  peerThreadsPerVM = 5
+       		
+// partitioned region parallel hct wan tests
+parReg/newWan/parallel/hctKill.conf
+      wanSites = 2 maxOps=15000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 4 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/parallel/hct_durable.conf
+      wanSites = 2 maxOps=1000 resultWaitSec=600
+      edgeVMsPerHost=3 edgeThreadsPerVM=2 bridgeVMsPerHost = 4
+
+parReg/newWan/parallel/queuePersistHct.conf
+      wanSites = 2 resultWaitSec=600
+      locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1 
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 3
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5    
+      serverMem = 512m clientMem = 256m redundantCopies = 1
+        
+parReg/newWan/parallel/persistence/lazyReceiverHctPersist.conf
+      wanSites = 2 maxOps=50000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/parallel/colocation/hctRingParRegColocation.conf
+      wanSites = 2 maxOps=50000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/parallel/colocation/hctParRegColocationPersist.conf
+      wanSites = 2 maxOps=50000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+
+parReg/newWan/parallel/persistence/queuePersistRegionPersistHct.conf
+	wanSites = 2 maxOps=50000 resultWaitSec=600
+	bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 3
+	edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+	
+// cq tests (work load based)
+cq/newWan/parallel/cqParRegHct.conf
+       wanSites = 2 bridgeVMsPerHost=4 edgeVMsPerHost=2 edgeThreadsPerVM=5
+       	
+// rebalance tests
+parReg/newWan/parallel/concKnownKeysWANbridge.conf wanSites = 2
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   bridgeHostsPerSite = 4 bridgeVMsPerHost=1 bridgeThreadsPerVM = 2
+   edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   numKeys = 20000 edgeVmSize=300 serverVmSize=350
+   
+parReg/newWan/parallel/colocation/concKnownKeysWANbridgePersist.conf wanSites = 2
+   locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+   bridgeHostsPerSite = 4 bridgeVMsPerHost=1 bridgeThreadsPerVM = 2
+   edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=5
+   numKeys = 10000 edgeVmSize=300 serverVmSize=350
+
+//sender operations
+parReg/newWan/parallel/colocation/senderOperationsHctParRegColocationPersist.conf
+    wanSites = 2 maxOps=5000 resultWaitSec=600 redundantCopies = 2
+    locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+    peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5 	
+
+parReg/newWan/parallel/colocation/senderOperationsHctKillParRegColocationPersist.conf
+    wanSites = 2 maxOps=5000 resultWaitSec=600 redundantCopies = 2
+    locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+    peerHostsPerSite = 4 peerVMsPerHost = 1 peerThreadsPerVM = 5 	
+   
+// eviction tests
+ parReg/newWan/parallel/queueEvictionHct.conf
+	wanSites = 2 maxOps=50000 resultWaitSec=3600
+	bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+	edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+	
+parReg/newWan/parallel/colocation/queueEvictionHctPersist.conf
+	wanSites = 2 maxOps=50000 resultWaitSec=3600
+	bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+	edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+   
+// discovery tests
+parReg/newWan/parallel/discovery/wanLocatorsAllHct.conf
+	wanSites = 2 maxOps=200 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1	
+
+parReg/newWan/parallel/discovery/wanAdminLocatorsPeerHAHct.conf
+	wanSites = 2 maxOps=200 resultWaitSec=600
+	locatorHostsPerSite = 4 locatorVMsPerHost = 1 locatorThreadsPerVM = 1	   
+
+//conflation test
+parReg/newWan/parallel/conflation/wanconflation.conf
+  wanSites = 4
+  locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  bridgeHostsPerSite = 1 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+  edgeHostsPerSite   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+  maxKeys = 20   dataSize = 10 serverMem = 256m clientMem = 256m
+  enableSubscriptionConflation = false batchConflation = true
+
+parReg/newWan/parallel/conflation/wanmonotonicPersist.conf
+  wanSites = 4
+  locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+  bridgeHostsPerSite = 1 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+  edgeHostsPerSite   = 1 edgeVMsPerHost   = 2 edgeThreadsPerVM   = 1
+  maxKeys = 20   dataSize = 10 serverMem = 256m clientMem = 256m
+  enableSubscriptionConflation = false batchConflation = true
+	
+// tx tests
+parReg/newWan/parallel/tx/hctKill.conf
+      wanSites = 2	maxOps=15000 resultWaitSec=600
+      bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+      edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+      	
+// filter tests
+parReg/newWan/parallel/filters/hctBeforeTransmitEventFilterHA.conf
+    wanSites = 2 maxOps=10000 resultWaitSec=600
+	bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+	edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+       
+parReg/newWan/parallel/filters/hctTransportFilterHA.conf
+    wanSites = 2 maxOps=10000 resultWaitSec=600
+	bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+	edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+   
+// pdx tests
+parReg/newWan/parallel/pdx/hctKillPdx.conf
+	wanSites = 2 maxOps=1000 resultWaitSec=600
+	bridgeHostsPerSite = 4 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+	edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+		      	
+// security tests
+parReg/newWan/parallel/security/wan_authorization.conf
+	writerWanSites=3 readerWanSites=3 
+	locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1 
+	bridgeHostsPerSite=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 
+	edgeHostsPerSite=1 edgeVMsPerHost=1 edgeThreadsPerVM=1 peerMem = 256m
+
+parReg/newWan/parallel/security/wan_hct.conf
+	validWanSites=3 invalidWanSites=3 
+	locatorHostsPerSite=1 locatorVMsPerHost=1 locatorThreadsPerVM=1 
+	bridgeHostsPerSite=1 bridgeVMsPerHost=1 bridgeThreadsPerVM=1 
+	edgeHostsPerSite=1 edgeVMsPerHost=2 edgeThreadsPerVM=1 peerMem = 256m
+
+// mlrio - splitbrain tests
+parReg/newWan/parallel/splitBrain/mlRio.conf
+       wanSites=2
+       locatorHostsPerSite = 2 locatorVMsPerHost = 1 locatorThreadsPerVM = 1
+       bridgeHostsPerSite = 2 bridgeVMsPerHost=1 bridgeThreadsPerVM = 1
+       edgeHostsPerSite = 2 edgeVMsPerHost=1 edgeThreadsPerVM=4
+       numRootRegions = 1  numDynamicRegions = 0 
+
+// versioning and conflict resolver    
+versioning/newWan/parRegParallelSenderHct.conf
+    wanSites = 4 maxOps=20000 resultWaitSec=1200
+    locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 2
+    bridgeHostsPerSite = 3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+    edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+    serverMem = 256m clientMem = 256m 
+    redundantCopies=1 enableFailover=true
+
+versioning/newWan/parRegParallelSenderResolverHct.conf
+    wanSites = 4 maxOps=1000 resultWaitSec=1200
+    locatorHostsPerSite = 1 locatorVMsPerHost = 1 locatorThreadsPerVM = 2
+    bridgeHostsPerSite = 3 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 2
+    edgeHostsPerSite = 2 edgeVMsPerHost = 1 edgeThreadsPerVM = 5
+    serverMem = 256m clientMem = 256m
+    redundantCopies=1 enableFailover=true
+
+//wbcl
+parReg/wbcl/newWan/concParRegParallelWBCLHA.conf    
+   A=dataStore dataStoreHosts=2 dataStoreVMsPerHost=3 dataStoreThreadsPerVM=10 
+   redundantCopies=1 numVMsToStop=1

@@ -1,0 +1,43 @@
+// Case 1: 20 bridge servers (each holds 1 G)
+//         500 byte data objects 
+//         partitioned region total: 20G
+cacheperf/comparisons/dataScalability/dataScalability.conf
+   bridgeHosts        = 20 edgeHosts        = 10
+   bridgeVMsPerHost   =  1 edgeVMsPerHost   =  5
+   bridgeThreadsPerVM =  1 edgeThreadsPerVM = 10
+
+   dataSize = 500
+   maxKeys = 42949673
+   bridgeVMSizeMB = 1500
+   redundantCopies = 0
+   workSeconds = 600
+ 
+// Case 2: 20 bridge servers (each holds 1 G)
+//         2M byte data objects 
+//         partitioned region total: 20G
+cacheperf/comparisons/dataScalability/dataScalability.conf
+   bridgeHosts        = 20 edgeHosts        = 10
+   bridgeVMsPerHost   =  1 edgeVMsPerHost   =  5
+   bridgeThreadsPerVM =  1 edgeThreadsPerVM = 10
+
+   dataSize = 2097152
+   maxKeys = 10240
+   bridgeVMSizeMB = 1500
+   redundantCopies = 0
+   workSeconds = 600
+
+// Scaled Down Case: this is a scaled down version for congo-0 release
+// since the first 2 cases can't yet run
+//         20 bridge servers (each holds 1 G)
+//         1K byte data objects 
+//         partitioned region total: 10G plus 1 redundant copy = 20G
+cacheperf/comparisons/dataScalability/dataScalability.conf
+   bridgeHosts        = 20 edgeHosts        =  2
+   bridgeVMsPerHost   =  1 edgeVMsPerHost   =  1
+   bridgeThreadsPerVM =  1 edgeThreadsPerVM =  5
+
+   dataSize = 1024
+   maxKeys = 10240
+   bridgeVMSizeMB = 1500
+   redundantCopies = 1
+   workSeconds = 600

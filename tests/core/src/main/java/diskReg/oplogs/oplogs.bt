@@ -1,0 +1,12 @@
+
+diskReg/oplogs/concOverFlowRegion.conf autoCompact = true maxOplogSize = 2
+diskReg/oplogs/concPersistRegion.conf autoCompact = true maxOplogSize = 2 synch = false
+diskReg/oplogs/concPersistRegion.conf autoCompact = true maxOplogSize = 2 synch = true
+diskReg/oplogs/concOverFlowAndPersistRegion.conf autoCompact = true maxOplogSize = 2
+
+// For Serial Executions
+
+diskReg/oplogs/serialOverFlowRegion.conf autoCompact = true maxOplogSize = 2
+diskReg/oplogs/serialOverFlowAndPersistRegion.conf autoCompact = true maxOplogSize = 2
+diskReg/oplogs/serialPersistRegion.conf autoCompact = true maxOplogSize = 2 synch =  true
+diskReg/oplogs/serialPersistRegion.conf autoCompact = true maxOplogSize = 2 synch =  false

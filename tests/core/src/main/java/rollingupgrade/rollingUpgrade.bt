@@ -1,0 +1,29 @@
+rollingupgrade/rollingUpgradePartitionVerifyEachStep.conf
+   A=controller controllerHosts=1 controllerThreadsPerVM=1 controllerVMsPerHost=1
+   B=locator locatorHosts=2 locatorThreadsPerVM=1 locatorVMsPerHost=1
+   C=bridge bridgeHosts=4 bridgeThreadsPerVM=2 bridgeVMsPerHost=1
+   D=edge edgeHosts=4 edgeThreadsPerVM=2 edgeVMsPerHost=1
+
+rollingupgrade/rollingUpgradePartition.conf
+   A=controller controllerHosts=1 controllerThreadsPerVM=1 controllerVMsPerHost=1
+   B=locator locatorHosts=2 locatorThreadsPerVM=1 locatorVMsPerHost=1
+   C=bridge bridgeHosts=2 bridgeThreadsPerVM=2 bridgeVMsPerHost=1
+   D=edge edgeHosts=2 edgeThreadsPerVM=2 edgeVMsPerHost=1
+
+rollingupgrade/rollingUpgradeReplicate.conf
+   A=controller controllerHosts=1 controllerThreadsPerVM=1 controllerVMsPerHost=1
+   B=locator locatorHosts=2 locatorThreadsPerVM=1 locatorVMsPerHost=1
+   C=bridge bridgeHosts=2 bridgeThreadsPerVM=2 bridgeVMsPerHost=1
+   D=edge edgeHosts=2 edgeThreadsPerVM=2 edgeVMsPerHost=1
+
+rollingupgrade/rollingUpgradePersistentPartition.conf
+   A=controller controllerHosts=1 controllerThreadsPerVM=1 controllerVMsPerHost=1
+   B=locator locatorHosts=2 locatorThreadsPerVM=1 locatorVMsPerHost=1
+   C=bridge bridgeHosts=2 bridgeThreadsPerVM=2 bridgeVMsPerHost=1
+   D=edge edgeHosts=2 edgeThreadsPerVM=2 edgeVMsPerHost=1
+   
+rollingupgrade/rollingUpgradePersistentReplicate.conf
+   A=controller controllerHosts=1 controllerThreadsPerVM=1 controllerVMsPerHost=1
+   B=locator locatorHosts=2 locatorThreadsPerVM=1 locatorVMsPerHost=1
+   C=bridge bridgeHosts=2 bridgeThreadsPerVM=2 bridgeVMsPerHost=1
+   D=edge edgeHosts=2 edgeThreadsPerVM=2 edgeVMsPerHost=1

@@ -1,0 +1,21 @@
+redundantCopies=2
+numDataStoreMembersToHostRegion=4
+numMembersJoinDSOnly=1 
+numMembersCreateCacheOnly=1
+nbrOfManagers=0 
+limitManagersToMembers=all
+
+
+# properties set to product defaults; only locators are eligible to become managers, no members start managers
+locator1-jmxManager=true 
+locator2-jmxManager=true 
+remainder-jmxManager=false
+
+locator1-jmxManagerStart=false 
+locator2-jmxManagerStart=false
+accessor1-jmxManagerStart=false 
+accessor2-jmxManagerStart=false
+dataStore1-jmxManagerStart=false 
+dataStore2-jmxManagerStart=false 
+remainder-jmxManagerStart=false
+

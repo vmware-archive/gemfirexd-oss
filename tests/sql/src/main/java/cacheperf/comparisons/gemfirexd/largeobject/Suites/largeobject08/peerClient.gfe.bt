@@ -1,0 +1,16 @@
+cacheperf/comparisons/gemfirexd/largeobject/peerClient/createTest.conf
+  api = GFE
+  clientHosts=2 clientVMsPerHost=1 clientThreadsPerVM=1
+  serverHosts=2 serverVMsPerHost=1 serverThreadsPerVM=1
+  numLargeObjectsPerServer = 500000 heapMB = 2048
+  redundantCopies = 0
+  enableHistogram = true
+  perffmwk.comparisonKey = pr0_create
+cacheperf/comparisons/gemfirexd/largeobject/peerClient/createTest.conf
+  api = GFE
+  clientHosts=2 clientVMsPerHost=1 clientThreadsPerVM=1
+  serverHosts=2 serverVMsPerHost=1 serverThreadsPerVM=1
+  numLargeObjectsPerServer = 250000 heapMB = 2048
+  redundantCopies = 1
+  enableHistogram = true
+  perffmwk.comparisonKey = pr1_create

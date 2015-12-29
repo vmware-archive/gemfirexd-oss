@@ -1,0 +1,4 @@
+diskReg/oplogs/concOverflowMultDiskReg.conf
+diskReg/oplogs/concPersistMultDiskReg.conf
+diskReg/oplogs/concPersistOverflowMultDiskReg.conf
+diskReg/oplogs/concMultDiskReg.conf

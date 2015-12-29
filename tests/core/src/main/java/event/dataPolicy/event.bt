@@ -1,0 +1,20 @@
+event/dataPolicy/concEntryEvent.conf
+event/dataPolicy/concRegionEvent.conf
+event/dataPolicy/serialEntryEvent.conf
+event/dataPolicy/serialRegionEvent.conf
+event/dataPolicy/serialCMEvent.conf
+event/dataPolicy/concCMEvent.conf
+
+event/dataPolicy/proxyConcEntryEvent.conf
+//event/dataPolicy/proxyConcRegionEvent.conf
+event/dataPolicy/proxySerialEntryEvent.conf
+event/dataPolicy/proxySerialRegionEvent.conf
+
+event/dataPolicy/concEntryEventStopStart.conf
+event/dataPolicy/concRegionEventStopStart.conf
+
+// run with global scope
+event/dataPolicy/concEntryEventGlobal.conf
+event/dataPolicy/concRegionEventGlobal.conf
+event/dataPolicy/concEntryEventGlobalStopStart.conf
+event/dataPolicy/concRegionEventGlobalStopStart.conf

@@ -1,0 +1,190 @@
+
+////// remoteQuery.bt //////
+//scenario 1
+ 
+/*query/remote/dataVerificationQueryTest.conf 
+bridgeHosts =  1 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 1
+edgeHosts   =  1 edgeVMsPerHost   = 4 edgeThreadsPerVM   = 1*/
+
+query/remote/dataVerificationQueryWithParamsTest.conf 
+bridgeHosts =  1 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 1
+edgeHosts   =  1 edgeVMsPerHost   = 4 edgeThreadsPerVM   = 1
+threadGroupsName=edgeInit
+//scenario 2
+
+query/remote/entryOperationsDynamicQueryTest.conf 
+bridgeHosts =  1 bridgeVMsPerHost = 2 bridgeThreadsPerVM = 1
+edgeHosts   =  1 edgeVMsPerHost   = 4 edgeThreadsPerVM   = 1
+threadGroupsName=edgeInit
+//scenario 3 
+
+query/remote/distributedDataValidationQueryTest.conf
+A = bridge  bridgeHosts =  2 	bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+B = edge    edgeHosts   =  3 	edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+C = feed    feedHosts   =  1 	feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+threadGroupsName=edge
+// scenario 4 and 5 
+
+query/remote/multiServerClientScalabilityQueryTest.conf
+A = bridge  bridgeHosts =  5    bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+B = edge    edgeHosts   =  100  edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+C = feed    feedHosts   =  1    feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+onlyOnPlatforms=Linux, SunOS
+threadGroupsName=edge
+// reduced number of client for windows
+/*query/remote/multiServerClientScalabilityQueryTest.conf
+A = bridge  bridgeHosts =  5    bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+B = edge    edgeHosts   =  50   edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+C = feed    feedHosts   =  1    feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+onlyOnPlatforms=Windows*/
+
+//scenario 6 , cacheScalabilty
+
+query/remote/cacheScalabiltyQueryTest.conf
+A = bridge  bridgeHosts =  2 	bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+B = edge    edgeHosts   =  3 	edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+C = feed    feedHosts   =  1 	feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+threadGroupsName=edge
+
+//scenario 6 , payloadScalabilty
+
+query/remote/payloadScalabilityQueryTest.conf
+A = bridge  bridgeHosts =  2 	bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+B = edge    edgeHosts   =  3 	edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+C = feed    feedHosts   =  1 	feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+threadGroupsName=edge
+//scenario 7 eviction and overflow
+
+query/remote/serverEvictionQueryTest.conf
+A = bridge  bridgeHosts =  2 	bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+B = edge    edgeHosts   =  3 	edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+C = feed    feedHosts   =  1 	feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+threadGroupsName=edge
+
+query/remote/serverOverflowToDiskQueryTest.conf
+A = bridge  bridgeHosts =  2 	bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+B = edge    edgeHosts   =  3 	edgeVMsPerHost   = 1  edgeThreadsPerVM   = 1
+C = feed    feedHosts   =  1 	feedVMsPerHost   = 1  feedThreadsPerVM   = 1
+threadGroupsName=edge
+//scenario 8  //failover
+
+/*query/remote/remoteQueryFailoverTest.conf
+bridgeHosts =  1 bridgeVMsPerHost = 3 bridgeThreadsPerVM = 1
+edgeHosts   =  1 edgeVMsPerHost   = 3 edgeThreadsPerVM   = 1
+
+query/remote/remoteQueryFailoverTest.conf
+bridgeHosts =  1 bridgeVMsPerHost = 4 bridgeThreadsPerVM = 1
+edgeHosts   =  1 edgeVMsPerHost   = 8 edgeThreadsPerVM   = 1*/
+
+query/remote/remoteQueryWithParamsFailoverTest.conf
+bridgeHosts =  1 bridgeVMsPerHost = 4 bridgeThreadsPerVM = 1
+edgeHosts   =  1 edgeVMsPerHost   = 8 edgeThreadsPerVM   = 1
+threadGroupsName=edgeInit
+//scenario 9   // client events failover
+/*query/remote/clientEventsFailoverQueryTest.conf
+bridgeHosts =  1 bridgeVMsPerHost = 6 	bridgeThreadsPerVM = 1
+edgeHosts   =  1 edgeVMsPerHost   = 12 	edgeThreadsPerVM   = 1*/
+
+query/remote/clientEventsFailoverQueryUsingParamsTest.conf
+bridgeHosts =  1 bridgeVMsPerHost = 6 	bridgeThreadsPerVM = 1
+edgeHosts   =  1 edgeVMsPerHost   = 12 	edgeThreadsPerVM   = 1
+threadGroupsName=edgeInit
+
+////// flashCache.bt //////
+
+//examples/dist/Flashcache.conf
+examples/dist/FlashcacheMain.conf onlyOnPlatforms=SunOS,Linux
+threadGroupsName=default
+
+////// mapregion.bt //////
+
+// Map API tests
+// serial tests
+mapregion/mapregion.conf serialExecution = true scope = global dataPolicy = replicate
+threadGroupsName=regionOperators
+mapregion/mapregion.conf serialExecution = true scope = ack dataPolicy = replicate
+threadGroupsName=regionOperators
+/*mapregion/mapregion.conf serialExecution = true scope = noAck dataPolicy = normal
+mapregion/mapregion.conf serialExecution = true scope = local dataPolicy = normal
+
+// concurrent tests
+mapregion/mapregion.conf serialExecution = false scope = global dataPolicy = replicate
+mapregion/mapregion.conf serialExecution = false scope = ack dataPolicy = replicate*/
+mapregion/mapregion.conf serialExecution = false scope = noAck dataPolicy = normal
+threadGroupsName=regionOperators
+mapregion/mapregion.conf serialExecution = false scope = local dataPolicy = normal
+threadGroupsName=regionOperators
+
+// ConcurrentMap (with map operations) API tests (not supported for DataPolicy.NORMAL)
+// serial tests
+mapregion/cmRegion.conf serialExecution = true scope = global dataPolicy = replicate
+threadGroupsName=regionOperators
+/*mapregion/cmRegion.conf serialExecution = true scope = ack dataPolicy = replicate
+
+// concurrent tests (DataPolicy.normal not supported)
+mapregion/cmRegion.conf serialExecution = false scope = global dataPolicy = replicate*/
+mapregion/cmRegion.conf serialExecution = false scope = ack dataPolicy = replicate
+threadGroupsName=regionOperators
+
+// partitionedRegions
+mapregion/parRegCMRegion.conf serialExecution = true scope = default dataPolicy = partitioned
+threadGroupsName=regionOperators
+mapregion/parRegCMRegion.conf serialExecution = false scope = default dataPolicy = partitioned
+threadGroupsName=regionOperators
+
+////// dist.bt //////
+
+// distributed cacheLoader tests
+
+//cacheLoader/smoke/distNoExp.conf numHosts=2
+cacheLoader/smoke/distNoExp.conf numHosts=3
+threadGroupsName=cacheLoaderAndUpdater
+//cacheLoader/smoke/distNoExp.conf numHosts=4
+
+/*cacheLoader/smoke/distInvalIdle.conf numHosts=2
+cacheLoader/smoke/distInvalTtl.conf numHosts=2*/
+cacheLoader/smoke/distDestIdle.conf numHosts=2
+threadGroupsName=cacheLoaderAndUpdater
+cacheLoader/smoke/distDestTtl.conf numHosts=2
+threadGroupsName=cacheLoaderAndUpdater
+
+cacheLoader/smoke/distInvalIdle.conf numHosts=3
+threadGroupsName=cacheLoaderAndUpdater
+cacheLoader/smoke/distInvalTtl.conf numHosts=3
+threadGroupsName=cacheLoaderAndUpdater
+
+////// query.bt //////
+
+/*query/serialQueryEntry.conf
+query/serialQueryIndexEntry.conf*/
+query/serialCountQueryEntry.conf
+threadGroupsName=default
+query/serialCountQueryIndexEntry.conf
+threadGroupsName=default
+/*query/concQueryEntry.conf
+query/concQueryIndexEntry.conf*/
+
+//Apply a limit clause to each query
+query/concQueryEntryWithLimit.conf queryLimit=10
+threadGroupsName=default
+query/concQueryIndexEntryWithLimit.conf queryLimit=10
+threadGroupsName=default
+
+////// ssl.bt //////
+
+// Test bridge loader with ssl.
+ssl/sslHierarchy.conf
+  bridgeHosts = 2 bridgeVMsPerHost = 1 bridgeThreadsPerVM = 1
+  edgeHosts   = 1 edgeVMsPerHost   = 1 edgeThreadsPerVM   = 1
+  threadGroupsName=edgeInit
+
+// Test events/serialEntryEvent with ssl.
+//ssl/sslSerialEntryEvent.conf 
+   
+   
+////// moreSSL.bt //////
+// Test events/serialEntryEvent with ssl.
+ssl/sslSerialEntryEvent.conf conserveSockets=false
+threadGroupsName=default
+   
+

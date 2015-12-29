@@ -1,0 +1,25 @@
+#!/bin/sh
+
+#-------------------------------------------------------------------------------
+# RATIO
+#-------------------------------------------------------------------------------
+
+echo "Doing ratio comparison of peerClient and thinClient for GFXD..."
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m \
+  -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE \
+  -DomitFailedTests=true -DaddTestKey=true -DcompareByKey=true \
+  -Dmode=ratio -DcompReportFile=peerClient.v.thinClient.gfxd.ratio.txt \
+  perffmwk.PerfComparer \
+  peerClient.gfxd thinClient.gfxd
+
+#-------------------------------------------------------------------------------
+# RAW
+#-------------------------------------------------------------------------------
+
+echo "Doing raw comparison of peerClient and thinClient for GFXD..."
+java -cp $GEMFIRE/lib/gemfire.jar:$JTESTS -Xmx750m \
+  -DJTESTS=$JTESTS -Dgemfire.home=$GEMFIRE \
+  -DomitFailedTests=true -DaddTestKey=true -DcompareByKey=true \
+  -Dmode=raw -DcompReportFile=peerClient.v.thinClient.gfxd.raw.txt \
+  perffmwk.PerfComparer \
+  peerClient.gfxd thinClient.gfxd

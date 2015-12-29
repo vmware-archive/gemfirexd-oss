@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE client-cache PUBLIC
+  "-//GemStone Systems, Inc.//GemFire Declarative Caching 7.0//EN"
+  "http://www.gemstone.com/dtd/cache7_0.dtd">
+  
+<client-cache copy-on-read="true">
+  <pool name="client" subscription-enabled="true">
+    <server host="localhost" port="44444"/>
+  </pool>
+
+  <region-attributes id="clientAttributes" pool-name="client" refid="CACHING_PROXY"/>
+
+  <region name="wanActiveActive" refid="clientAttributes">
+    <region-attributes enable-gateway="true" concurrency-checks-enabled="true"/>
+  </region>
+</client-cache>

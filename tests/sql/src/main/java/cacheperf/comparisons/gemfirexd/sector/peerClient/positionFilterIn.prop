@@ -1,0 +1,30 @@
+api = GFXD
+
+locatorHosts = 1
+locatorVMsPerHost = 1
+locatorThreadsPerVM = 1
+
+A = client
+clientHosts = 1
+clientVMsPerHost = 1
+clientThreadsPerVM = 1
+
+B = server
+serverHosts = 1
+serverVMsPerHost = 1
+serverThreadsPerVM = 1
+
+numPositionsPerInClause = 1
+
+heapMB = 1024
+redundantCopies = 1
+bucketsPerServer = 10
+txIsolation = readCommitted
+
+enableHistogram = false
+queryPlanFrequency = 60
+logQueries = false
+logResultSetSize = false
+validateResults = true
+
+perffmwk.comparisonKey = positionFilterIn

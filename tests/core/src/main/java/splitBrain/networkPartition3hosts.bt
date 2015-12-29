@@ -1,0 +1,100 @@
+// These tests require a minimum of 3 hosts.  
+// Use splitBrain/local.networkPartition.conf to configure the hosts.
+
+// Normal, replicate, persistent_replicate configured dynamically (ONEOF)
+splitBrain/bridgeNetworkPartition1-entryOps.conf 
+   onlyOnPlatforms=Linux
+
+splitBrain/bridgeNetworkPartition2-entryOps.conf 
+   onlyOnPlatforms=Linux
+
+splitBrain/bridgeNetworkPartition3-entryOps.conf 
+   onlyOnPlatforms=Linux
+
+splitBrain/bridgeNetworkPartition4-entryOps.conf 
+   onlyOnPlatforms=Linux
+
+// replicate with clients registering cqs instead of registerInterest
+splitBrain/bridgeNetworkPartition1-cq.conf 
+   onlyOnPlatforms=Linux
+
+splitBrain/bridgeNetworkPartition2-cq.conf 
+   onlyOnPlatforms=Linux
+
+splitBrain/bridgeNetworkPartition3-cq.conf 
+   onlyOnPlatforms=Linux
+
+splitBrain/bridgeNetworkPartition4-cq.conf 
+   onlyOnPlatforms=Linux
+
+// PR in the bridgeServers
+splitBrain/bridgeNetworkPartition1-pr.conf redundantCopies=1
+   onlyOnPlatforms=Linux
+
+splitBrain/bridgeNetworkPartition2-pr.conf redundantCopies=1
+   onlyOnPlatforms=Linux
+
+splitBrain/bridgeNetworkPartition3-pr.conf redundantCopies=1
+   onlyOnPlatforms=Linux
+
+splitBrain/bridgeNetworkPartition4-pr.conf redundantCopies=1
+   onlyOnPlatforms=Linux
+
+// Normal, replicate, persistent_replicate configured dynamically (ONEOF)
+splitBrain/wan_bridgeNetworkPartition1.conf 
+   onlyOnPlatforms=Linux
+
+splitBrain/wan_bridgeNetworkPartition2.conf 
+   onlyOnPlatforms=Linux
+
+splitBrain/wan_bridgeNetworkPartition3.conf 
+   onlyOnPlatforms=Linux
+
+splitBrain/wan_bridgeNetworkPartition4.conf 
+   onlyOnPlatforms=Linux
+
+// networkDown variant of mlRioSequentialKeys ***
+splitBrain/mlRioNetDown.conf numRootRegions = 3 numDynamicRegions = 3
+   onlyOnPlatforms=Linux
+
+// bridgeServers w/PartitionRegions and TX in servers and edgeClients
+//disabled for #44146
+//splitBrain/bridgeNetworkPartition1-prTx.conf redundantCopies=1
+//   onlyOnPlatforms=Linux
+
+//splitBrain/bridgeNetworkPartition2-prTx.conf redundantCopies=1
+//   onlyOnPlatforms=Linux
+
+//splitBrain/bridgeNetworkPartition3-prTx.conf redundantCopies=1
+//   onlyOnPlatforms=Linux
+
+//splitBrain/bridgeNetworkPartition4-prTx.conf redundantCopies=1
+//   onlyOnPlatforms=Linux
+
+// persistent PR in the bridgeServers
+// dataPolicy = persistentPartition
+splitBrain/bridgeNetworkPartition1-prPersist.conf redundantCopies=2
+   onlyOnPlatforms=Linux
+
+splitBrain/bridgeNetworkPartition2-prPersist.conf redundantCopies=2
+   onlyOnPlatforms=Linux
+
+splitBrain/bridgeNetworkPartition3-prPersist.conf redundantCopies=2
+   onlyOnPlatforms=Linux
+
+splitBrain/bridgeNetworkPartition4-prPersist.conf redundantCopies=2
+   onlyOnPlatforms=Linux
+
+// Normal, replicate, persistent_replicate configured dynamically (ONEOF)
+//disable for #44146
+//splitBrain/bridgeNetworkPartition1-tx.conf 
+//   onlyOnPlatforms=Linux
+
+//splitBrain/bridgeNetworkPartition2-tx.conf 
+//   onlyOnPlatforms=Linux
+
+//splitBrain/bridgeNetworkPartition3-tx.conf 
+//   onlyOnPlatforms=Linux
+
+//splitBrain/bridgeNetworkPartition4-tx.conf 
+//   onlyOnPlatforms=Linux

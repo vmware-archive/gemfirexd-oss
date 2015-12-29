@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!DOCTYPE cache PUBLIC
+    "-//GemStone Systems, Inc.//GemFire Declarative Caching 6.6//EN"
+    "http://www.gemstone.com/dtd/cache6_6.dtd">
+    
+<cache>
+    <region name="exampleRegion">
+        <region-attributes>
+            <entry-idle-time>
+                <expiration-attributes timeout="10" action="destroy" />
+            </entry-idle-time>
+            <cache-listener>
+                <class-name>cacheworker.SimpleCacheListener</class-name>
+            </cache-listener>
+        </region-attributes>
+    </region>
+</cache>

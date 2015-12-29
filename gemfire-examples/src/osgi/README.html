@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<BODY bgcolor="#ffffff"><HTML>
+ <HEAD>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+  <META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+  <LINK REL="STYLESHEET" HREF="DocIndex.css" CHARSET="ISO-8859-1" TYPE="text/css">
+
+<H1 align="center">
+vFabric<FONT size=6><b><sup><font size=-0>&#8482;</font></sup></b></FONT></font> GemFire<FONT size=6><b><sup><font size=-0>&#174;</font></sup></b></FONT></font></H1>
+     </b></FONT>
+  <H1 align="center">cacheWorker and cacheWorkerFragment</H1>
+<H2 align="center">OSGi Deployment Example</H2>
+<hr color="#cc0000" size="2" align="left">
+<BODY TEXT="#000000" LINK="#0000B0" VLINK="#666699" BGCOLOR="#FFFFFF">
+
+<P>This example demonstrates how to deploy an application which uses
+a GemFire Cache into an <a href="http://www.osgi.org/Main/HomePage">OSGi
+Service Platform Release 4</a> environment such as
+<a href="http://www.eclipse.org/virgo/">Virgo Server 2.1.1</a>. The example
+consists of <code>examples/osgi/cacheWorker</code> and
+<code>examples/osgi/cacheWorkerFragment</code>.</P>
+
+<P>Requirements:
+<ul>
+<li>SpringSource Bundlor.</li>
+<li>Apache Ant.</li>
+<li>Virgo Server 2.1.1 or other OSGi environment.</li>
+</ul></P>
+
+<P>Assuming GEMFIRE_HOME is the location of your GemFire installation, the
+following JARs contain manifest headers defining them as OSGi bundles so they
+can be deployed for use within most OSGi environments:
+<UL>
+<li><b>GEMFIRE_HOME/lib/gemfire.jar</b></li>
+<li><b>GEMFIRE_HOME/lib/antlr.jar</b> - (required for GemFire QueryService; this bundle
+exports version 2.7.4 and imports some querying internals from GemFire)</li>
+</UL>
+Additional bundles for other libraries, including
+<code>com.springsource.javax.transaction-1.1.0.jar</code>, can be found at the
+<a href="http://ebr.springsource.com/repository/app/">SpringSource Enterprise
+Bundle Repository</a>.
+
+<P>At a minimum, this example will require that you deploy four JARs as OSGi
+bundles: <code>GEMFIRE_HOME/lib/gemfire.jar</code>,
+<code>GEMFIRE_HOME/lib/antlr.jar</code>, <code>cacheworker-1.0.0.jar</code>,
+and <code>cacheworker.fragment-1.0.0.jar</code>. In addition, some OSGi
+implementations, such as
+<a href="http://felix.apache.org/site/index.html">Apache Felix</a>, may
+require that you also deploy
+<code>com.springsource.javax.transaction-1.1.0.jar</code>.</P>
+
+<P>This example consists of two projects, each of which builds a JAR
+containing the necessary manifest headers to define an OSGi bundle. These
+projects are described below:</P>
+
+<P><b>cacheWorker</b></P>
+
+<P>This is the source and Ant build for generating the cacheWorker example
+application and the bundle JAR for deploying it in OSGi. The cacheWorker
+application creates and uses a GemFire Cache. Deploying it requires that the
+GemFire and cacheWorkerFragment bundles have also been deployed into the OSGi
+environment. See the <a href="./cacheWorker/README.html">
+cacheWorker/README.html</a> for more information.</P>
+
+<P><b>cacheWorkerFragment</b></P>
+
+<P>This is an Ant build for generating an OSGi fragment bundle which attaches
+to the GemFire bundle. This project uses SpringSource Bundlor to create the
+cacheWorkerFragment bundle which imports packages from the cacheWorker bundle.
+By attaching to the GemFire bundle as a fragment, this allows GemFire to load
+application classes and resources from the cacheWorker bundle. See the
+<a href="./cacheWorkerFragment/README.html">cacheWorkerFragment/README.html
+</a> for more information.</P>
+
+<hr color="#cc0000" size="2" align="left">
+
+</BODY>
+</HTML>
+

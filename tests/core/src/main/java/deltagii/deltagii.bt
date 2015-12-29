@@ -1,0 +1,64 @@
+// delta gii (no operations occur while requester is offline)
+deltagii/deltaGiiScenario1.conf
+   A=provider  providerHosts =1 providerVMsPerHost =1 providerThreadsPerVM =1
+   B=requester requesterHosts=1 requesterVMsPerHost=1 requesterThreadsPerVM=3
+
+deltagii/deltaGiiScenario1Persist.conf
+   A=provider  providerHosts =1 providerVMsPerHost =1 providerThreadsPerVM =1
+   B=requester requesterHosts=1 requesterVMsPerHost=1 requesterThreadsPerVM=3
+
+// delta gii (provider initiates creates, updates and invalidate (no destroys) while requester is offline)
+deltagii/deltaGiiScenario2.conf
+   A=provider  providerHosts =1 providerVMsPerHost =1 providerThreadsPerVM =1
+   B=requester requesterHosts=1 requesterVMsPerHost=1 requesterThreadsPerVM=3
+
+deltagii/deltaGiiScenario2Persist.conf
+   A=provider  providerHosts =1 providerVMsPerHost =1 providerThreadsPerVM =1
+   B=requester requesterHosts=1 requesterVMsPerHost=1 requesterThreadsPerVM=3
+
+// full gii (provider does a tombstone-gc while requester is offline)
+deltagii/deltaGiiScenario3.conf
+   A=provider  providerHosts =1 providerVMsPerHost =1 providerThreadsPerVM =1
+   B=requester requesterHosts=1 requesterVMsPerHost=1 requesterThreadsPerVM=3
+
+deltagii/deltaGiiScenario3Persist.conf
+   A=provider  providerHosts =1 providerVMsPerHost =1 providerThreadsPerVM =1
+   B=requester requesterHosts=1 requesterVMsPerHost=1 requesterThreadsPerVM=3
+
+// delta gii (provider executes destroys (but no tombstone gc) while requester is offline)
+deltagii/deltaGiiScenario4.conf
+   A=provider  providerHosts =1 providerVMsPerHost =1 providerThreadsPerVM =1
+   B=requester requesterHosts=1 requesterVMsPerHost=1 requesterThreadsPerVM=3
+
+deltagii/deltaGiiScenario4Persist.conf
+   A=provider  providerHosts =1 providerVMsPerHost =1 providerThreadsPerVM =1
+   B=requester requesterHosts=1 requesterVMsPerHost=1 requesterThreadsPerVM=3
+
+// full gii (provider executes region.clear() while requester is offline)
+deltagii/deltaGiiScenario5.conf
+   A=provider  providerHosts =1 providerVMsPerHost =1 providerThreadsPerVM =1
+   B=requester requesterHosts=1 requesterVMsPerHost=1 requesterThreadsPerVM=3
+
+// full gii (for new members joining while initial requester vms are doing a delta gii)
+deltagii/deltaGiiScenario6.conf
+   A=provider  providerHosts =1 providerVMsPerHost =1 providerThreadsPerVM =1
+   B=requester requesterHosts=1 requesterVMsPerHost=1 requesterThreadsPerVM=3
+   C=newMember newMemberHosts=1 newMemberVMsPerHost=1 newMemberThreadsPerVM=3
+
+deltagii/deltaGiiScenario6Persist.conf
+   A=provider  providerHosts =1 providerVMsPerHost =1 providerThreadsPerVM =1
+   B=requester requesterHosts=1 requesterVMsPerHost=1 requesterThreadsPerVM=3
+   C=newMember newMemberHosts=1 newMemberVMsPerHost=1 newMemberThreadsPerVM=3
+
+// ??? try with multiple provider/requester vms ???
+// ??? if so, will need a provider 'leader' bb counter (I think)
+
+deltagii/killProviderDuringGii.conf
+   A=provider  providerHosts =1 providerVMsPerHost =2 providerThreadsPerVM =1
+   B=requester requesterHosts=1 requesterVMsPerHost=1 requesterThreadsPerVM=3
+   giiStateTrigger=afterReceivedRequestImage
+
+deltagii/killRequesterDuringGii.conf
+   A=provider  providerHosts =1 providerVMsPerHost =1 providerThreadsPerVM =1
+   B=requester requesterHosts=1 requesterVMsPerHost=1 requesterThreadsPerVM=3
+   giiStateTrigger=beforeRequestRVV, afterRequestRVV, afterCalculatedUnfinishedOps, beforeSavedReceivedRVV, afterSavedReceivedRVV, afterSentRequestImage, afterReceivedImageReply, duringApplyDelta, beforeCleanExpiredTombstones, afterSavedRvvEnd

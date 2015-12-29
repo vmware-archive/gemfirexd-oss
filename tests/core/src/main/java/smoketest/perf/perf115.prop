@@ -1,0 +1,16 @@
+locatorHosts = 1
+locatorVMsPerHost = 1
+locatorThreadsPerVM = 1
+
+bridgeHosts        = 2
+bridgeVMsPerHost   = 1
+bridgeThreadsPerVM = 1
+
+edgeHosts          = 2
+edgeVMsPerHost     = 1
+edgeThreadsPerVM   = 2
+
+dataSize = 1024
+mapSize = 100
+
+perffmwk.comparisonKey = perf115

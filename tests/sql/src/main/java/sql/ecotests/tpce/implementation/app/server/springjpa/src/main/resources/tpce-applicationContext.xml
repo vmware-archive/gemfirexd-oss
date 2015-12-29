@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:p="http://www.springframework.org/schema/p" xmlns:aop="http://www.springframework.org/schema/aop"
+		xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+		xsi:schemaLocation="
+			http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <tx:annotation-driven />
+    <context:annotation-config/>
+    		
+	<!-- Drives transactions using local JPA APIs -->
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
+	</bean>
+		
+	<!-- Creates a EntityManagerFactory for use with the Hibernate JPA provider -->
+	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="jpaVendorAdapter">
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" />
+		</property>
+	</bean>
+
+	<!-- Creates a datasource to GemFireXD -->
+	<!-- Can DBCP datasource work with GemFireXD, need add dependencies on Apache DBCP -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <!-- bean id="dataSource"  class="org.springframework.jdbc.datasource.DriverManagerDataSource" -->  
+    	<property name="driverClassName"        value="com.pivotal.gemfirexd.jdbc.ClientDriver" />     
+    	<property name="url"        value="jdbc:gemfirexd://vmc-ssrc-rh98:7710" />     
+    	<property name="username" value="tpcegfxd" />     
+    	<property name="password" value="tpcegfxd" /> 
+    	<!-- property name="driverClassName"        value="org.apache.derby.jdbc.ClientDriver" />     
+    	<property name="url"        value="jdbc:derby://10.150.30.39:1527/testdb;create=true" / -->       	
+    </bean>	
+	    
+    <bean name="springCustomerPosition" class="com.pivotal.gemfirexd.app.tpce.springjpa.SpringCustomerPosition" />
+    <bean name="springBrokerVolume" class="com.pivotal.gemfirexd.app.tpce.springjpa.SpringBrokerVolume" />
+    <bean name="springTradeOrder" class="com.pivotal.gemfirexd.app.tpce.springjpa.SpringTradeOrder" />
+    <bean name="springTradeResult" class="com.pivotal.gemfirexd.app.tpce.springjpa.SpringTradeResult" />
+    <bean name="springDataMaintenance" class="com.pivotal.gemfirexd.app.tpce.springjpa.SpringDataMaintenance" />
+</beans>

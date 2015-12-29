@@ -1,0 +1,98 @@
+Testing Sysinfo
+com.pivotal.gemfirexd.internal.drda.NetworkServerControl sysinfo 
+----- GemFireXD Network Server Information --------
+gemfirexd.drda.securityMechanism=USER_ONLY_SECURITY
+gemfirexd.drda.maxThreads=0
+gemfirexd.drda.sslMode=off
+gemfirexd.drda.keepAlive=true
+gemfirexd.drda.minThreads=0
+gemfirexd.drda.portNumber=1527
+gemfirexd.drda.logConnections=false
+gemfirexd.drda.timeSlice=0
+gemfirexd.drda.startNetworkServer=false
+gemfirexd.drda.host=xxxFILTERED_HOSTNAMExxx
+gemfirexd.drda.traceAll=false
+----- Derby Information --------
+-----
+----- Locale Information -----------------
+Current Locale :  [English/United States [en_US]]
+Found support for locale: [cs]
+Found support for locale: [de_DE]
+Found support for locale: [es]
+Found support for locale: [fr]
+Found support for locale: [hu]
+Found support for locale: [it]
+Found support for locale: [ja_JP]
+Found support for locale: [ko_KR]
+Found support for locale: [pl]
+Found support for locale: [pt_BR]
+Found support for locale: [ru]
+Found support for locale: [zh_CN]
+Found support for locale: [zh_TW]
+-----
+End test
+Testing Sysinfo (method)
+----- GemFireXD Network Server Information --------
+gemfirexd.drda.securityMechanism=USER_ONLY_SECURITY
+gemfirexd.drda.maxThreads=0
+gemfirexd.drda.sslMode=off
+gemfirexd.drda.keepAlive=true
+gemfirexd.drda.minThreads=0
+gemfirexd.drda.portNumber=1527
+gemfirexd.drda.logConnections=false
+gemfirexd.drda.timeSlice=0
+gemfirexd.drda.startNetworkServer=false
+gemfirexd.drda.host=xxxFILTERED_HOSTNAMExxx
+gemfirexd.drda.traceAll=false
+----- Derby Information --------
+-----
+----- Locale Information -----------------
+Current Locale :  [English/United States [en_US]]
+Found support for locale: [cs]
+Found support for locale: [de_DE]
+Found support for locale: [es]
+Found support for locale: [fr]
+Found support for locale: [hu]
+Found support for locale: [it]
+Found support for locale: [ja_JP]
+Found support for locale: [ko_KR]
+Found support for locale: [pl]
+Found support for locale: [pt_BR]
+Found support for locale: [ru]
+Found support for locale: [zh_CN]
+Found support for locale: [zh_TW]
+-----
+End test (method)
+Testing Sysinfo (locale)
+-----Duser.language=err -Duser.country=DE com.pivotal.gemfirexd.internal.drda.NetworkServerControl sysinfo 
+----- GemFireXD Network Server Information --------
+gemfirexd.drda.securityMechanism=USER_ONLY_SECURITY
+gemfirexd.drda.maxThreads=0
+gemfirexd.drda.sslMode=off
+gemfirexd.drda.keepAlive=true
+gemfirexd.drda.minThreads=0
+gemfirexd.drda.portNumber=1527
+gemfirexd.drda.logConnections=false
+gemfirexd.drda.timeSlice=0
+gemfirexd.drda.startNetworkServer=false
+gemfirexd.drda.host=xxxFILTERED_HOSTNAMExxx
+gemfirexd.drda.traceAll=false
+----- Derby Information --------
+-----
+----- Locale Information -----------------
+Current Locale :  [English/United States [en_US]]
+Found support for locale: [cs]
+Found support for locale: [de_DE]
+Found support for locale: [es]
+Found support for locale: [fr]
+Found support for locale: [hu]
+Found support for locale: [it]
+Found support for locale: [ja_JP]
+Found support for locale: [ko_KR]
+Found support for locale: [pl]
+Found support for locale: [pt_BR]
+Found support for locale: [ru]
+Found support for locale: [zh_CN]
+Found support for locale: [zh_TW]
+-----
+End test (locale)

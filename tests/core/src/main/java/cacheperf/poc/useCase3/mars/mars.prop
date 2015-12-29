@@ -1,0 +1,29 @@
+A = trade
+tradeHosts        = 2
+tradeVMsPerHost   = 1
+tradeThreadsPerVM = 1
+
+B = indicative
+indicativeHosts        = 2
+indicativeVMsPerHost   = 1
+indicativeThreadsPerVM = 1
+
+C = market
+marketHosts        = 2
+marketVMsPerHost   = 1
+marketThreadsPerVM = 1
+
+D = position
+positionHosts        = 2
+positionVMsPerHost   = 1
+positionThreadsPerVM = 1
+
+E = risk
+riskHosts        = 2
+riskVMsPerHost   = 4
+riskThreadsPerVM = 1
+
+F = client
+clientHosts        = 5
+clientVMsPerHost   = 5
+clientThreadsPerVM = 1

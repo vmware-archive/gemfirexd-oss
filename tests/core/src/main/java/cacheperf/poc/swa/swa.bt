@@ -1,0 +1,10 @@
+// small scale (can run without local.conf)
+cacheperf/poc/swa/swa.conf
+  locatorHosts = 1
+  bridgeHosts = 2
+  edgeHosts = 2 edgeThreadsPerVM = 2
+  heapMB = 540
+  maxKeys = 100000
+
+// full scale (needs multiple hosts and edited sample.local.conf
+cacheperf/poc/swa/swa.conf

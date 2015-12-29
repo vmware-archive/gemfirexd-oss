@@ -1,0 +1,18 @@
+//------------------------------------------------------------------------------
+// transactions
+//------------------------------------------------------------------------------
+cacheperf/poc/useCase14/tx.conf
+
+  A = feed   feedHosts   =   2  feedVMsPerHost   = 4  feedThreadsPerVM   = 1
+  B = bridge bridgeHosts =  58  bridgeVMsPerHost = 1  bridgeThreadsPerVM = 1
+  C = edge   edgeHosts   =   8  edgeVMsPerHost   = 4  edgeThreadsPerVM   = 1
+
+  maxKeys = 1000000 dataSize = 50000
+  pushPercentage = 100
+
+  interestPercentage = 100 interestKeyAllocation = disjointAsPossible
+
+  scope = distributedNoAck
+
+  txKeys = 80
+  workSeconds = 180
