@@ -120,7 +120,7 @@ def writeTestProperties(def parent, def name) {
       'log-level': 'config' ])
 }
 
-def generateManifest(def symname, def imports, def exports, def otherAttrs, def pdir, def bdir) {
+def getManifest(def symname, def imports, def exports, def otherAttrs) {
   def attrs = [
     "Manifest-Version"        : "1.0",
     "Title"                   : PRODUCT_NAME,
@@ -134,7 +134,10 @@ def generateManifest(def symname, def imports, def exports, def otherAttrs, def 
     "Export-Package"          : exports
   ]
   attrs.putAll(otherAttrs)
+  return attrs
+}
 
+def generateCommonManifest(def pdir, def bdir) {
   def ddir = "${bdir}/resources/main/META-INF/"
   def fdir = new File(ddir)
   fdir.exists() || fdir.mkdirs()
@@ -144,8 +147,6 @@ def generateManifest(def symname, def imports, def exports, def otherAttrs, def 
     include 'LICENSE*'
     include 'NOTICE*'
   }
-
-  return attrs
 }
 
 def replaceRegex(def fileDir, def fileName, def regex, def replacement) {

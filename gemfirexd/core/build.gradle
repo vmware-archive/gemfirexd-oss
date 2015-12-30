@@ -46,7 +46,7 @@ compileJavacc.doLast {
       'GetImage\\(\\)', 'GetImage(jjmatchedKind)')
 }
 
-task generatePropertiesFiles {
+task generatePropertiesFiles(dependsOn: 'processResources') {
   def infoDir = file("${buildDir}/resources/main/com/pivotal/gemfirexd/internal/info")
   outputs.files "${infoDir}/DBMS.properties", "${infoDir}/net.properties"
   inputs.dir compileJava.destinationDir
@@ -66,18 +66,19 @@ def msgDir = "${projectDir}/src/main/resources/${locDir}"
 def msgEnDir = "${buildDir}/resources/main/${locDir}"
 
 task buildMessages {
-  dependsOn project(subprojectBase + 'gemfirexd:prebuild').jar
+  dependsOn subprojectBase + 'gemfirexd:prebuild:jar', 'processResources', subprojectBase + 'gemfirexd:client:processResources'
 
   def msgXml = "${msgDir}/messages.xml"
   def msgEn = "${msgEnDir}/messages_en.properties"
 
   def msgEnDirF = file(msgEnDir)
-  msgEnDirF.exists() || msgEnDirF.mkdirs()
 
   inputs.file msgXml
   outputs.file msgEn
 
   doLast {
+    msgEnDirF.exists() || msgEnDirF.mkdirs()
+
     ant.taskdef(name: 'buildMessages',
         classname: 'org.apache.derbyBuild.MessageBuilder',
         classpath: project(subprojectBase + 'gemfirexd:prebuild').sourceSets.main.output.classesDir)

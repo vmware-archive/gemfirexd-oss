@@ -2,7 +2,7 @@ dependencies {
   compile project(subprojectBase + 'gemfirexd:shared')
 }
 
-task generatePropertiesFiles {
+task generatePropertiesFiles(dependsOn: 'processResources') {
   def infoDir = file("${buildDir}/resources/main/com/pivotal/gemfirexd/internal/info")
   outputs.files "${infoDir}/dnc.properties", "${infoDir}/thrift.properties"
   inputs.dir compileJava.destinationDir
@@ -47,7 +47,11 @@ jar {
   }
 
   manifest {
-    attributes = generateManifest('gemfirexdclient', '*',
-        'com.pivotal.gemfirexd.jdbc', [], projectDir, buildDir)
+    attributes = getManifest('gemfirexdclient', '*',
+        'com.pivotal.gemfirexd.jdbc', [])
+  }
+
+  doFirst {
+    generateCommonManifest(projectDir, buildDir)
   }
 }
