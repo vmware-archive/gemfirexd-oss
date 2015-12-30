@@ -22,10 +22,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import com.gemstone.gemfire.DataSerializer;
 import com.gemstone.gemfire.GemFireCheckedException;
@@ -44,6 +41,7 @@ import com.gemstone.gemfire.internal.InternalDataSerializer;
 import com.gemstone.gnu.trove.TLongHashSet;
 import com.gemstone.gnu.trove.TLongObjectHashMap;
 import com.gemstone.gnu.trove.TLongProcedure;
+import com.pivotal.gemfirexd.Attribute;
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
 import com.pivotal.gemfirexd.internal.engine.GfxdDataSerializable;
 import com.pivotal.gemfirexd.internal.engine.GfxdSerializable;
@@ -289,6 +287,8 @@ public final class GfxdDDLMessage extends GfxdMessage implements
         // set the context object from additional args, if any
         oldContext = lcc.getContextObject();
         lcc.setContextObject(ddl.getAdditionalArgs());
+        lcc.setDefaultPersistent(ddl.defaultPersistent());
+        lcc.setQueryRouting(false);
         // also the DDL ID
         tran.setDDLId(ddlId);
         wrapper.enableOpLogger();
@@ -488,6 +488,7 @@ public final class GfxdDDLMessage extends GfxdMessage implements
     private static final byte ENABLE_TIMESTATS = 0x02;
 
     private static final byte PERSIST_ON_HDFS = 0x04;
+
     /** for deserialization */
     public DDLArgs() {
     }
@@ -504,8 +505,9 @@ public final class GfxdDDLMessage extends GfxdMessage implements
           this.flags = GemFireXDUtils.set(this.flags, ENABLE_TIMESTATS);
         }
       }
-      if (persistOnHDFS)
+      if (persistOnHDFS) {
         this.flags = GemFireXDUtils.set(this.flags, PERSIST_ON_HDFS);
+      }
     }
 
     @Override
@@ -552,6 +554,7 @@ public final class GfxdDDLMessage extends GfxdMessage implements
     public boolean timeStatsEnabled() {
       return GemFireXDUtils.isSet(this.flags, ENABLE_TIMESTATS);
     }
+
     public boolean persistOnHDFS() {
       return GemFireXDUtils.isSet(this.flags, PERSIST_ON_HDFS);
     }
@@ -647,6 +650,4 @@ public final class GfxdDDLMessage extends GfxdMessage implements
       // nothing to be done for this
     }
   }
-
-  
 }

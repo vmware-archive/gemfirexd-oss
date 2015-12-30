@@ -34,6 +34,7 @@ import com.pivotal.gemfirexd.tools.internal.JarTools;
 import com.pivotal.gemfirexd.tools.internal.MiscTools;
 import com.pivotal.gemfirexd.tools.internal.GfxdServerLauncher;
 import scala.tools.jline.console.ConsoleReader;
+import scala.tools.jline.console.history.FileHistory;
 
 /**
  * Extends GemFireUtilLauncher to map the GemFireXD utilities to their
@@ -191,7 +192,18 @@ public class GfxdUtilLauncher extends GemFireUtilLauncher {
         // use jline to go into the character reading mode
         if (!"scala.tools.jline.UnsupportedTerminal".equals(System
             .getProperty("jline.terminal"))) {
-          return new ConsoleReader();
+          final ConsoleReader reader = new ConsoleReader();
+          Runtime.getRuntime().addShutdownHook(new Thread() {
+            public  void run() {
+              try {
+                reader.getTerminal().restore();
+                ((FileHistory)reader.getHistory()).flush();
+              } catch (Exception e) {
+                // restoration failed!
+              }
+            }
+          });
+          return reader;
         }
       } catch (IOException ioe) {
       }
@@ -259,7 +271,8 @@ public class GfxdUtilLauncher extends GemFireUtilLauncher {
     final String indent = "   ";
     final Map<String, CommandEntry> types = getTypes();
 
-    final String[] selfHelp = types.remove(SCRIPT_NAME).usage.split("\\r?\\n");
+    final String[] selfHelp = types.remove(scriptName()).usage.split("\\r?\\n");
+    types.remove(SCRIPT_NAME); // Remove gfxd usage either way.
     for (String helpLine : selfHelp) {
       splitLine(helpLine, width, 0, result);
     }
@@ -301,7 +314,7 @@ public class GfxdUtilLauncher extends GemFireUtilLauncher {
     }
     result.append(indent);
     result.append(LocalizedResource.getMessage("UTIL_GFXD_Tools_Usage",
-        SCRIPT_NAME, sb.toString()));
+        scriptName(), sb.toString()));
     result.append(lineSep);
 
     printUsage(result.toString(), SanityManager.DEFAULT_MAX_OUT_LINES, reader);

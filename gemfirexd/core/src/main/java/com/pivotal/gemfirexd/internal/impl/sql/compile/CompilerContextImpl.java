@@ -180,6 +180,9 @@ public final class CompilerContextImpl extends ContextImpl
                    constantTokenList = new ArrayList<com.pivotal.gemfirexd.internal.engine.sql.compile.Token>();
                    
                 }
+                if (dynamicTokenList != null) {
+                  dynamicTokenList = new ArrayList<com.pivotal.gemfirexd.internal.impl.sql.compile.Token>();
+                }
                 this.originalParamTypeCompilers = new ArrayList<TypeCompiler>(5);
                 preparedStatement = null;
                 generalizedQuery = null;
@@ -196,6 +199,8 @@ public final class CompilerContextImpl extends ContextImpl
                 queryHDFS = false;
                 originalExecFlags = 0;
                 convertCharConstToVarchar = false;
+                this.ddlForSnappyUse = false;
+                this.snappyForcedDDLRouting = false;
 	}
 
 	@Override
@@ -784,6 +789,7 @@ public final class CompilerContextImpl extends ContextImpl
 
                 constantTokenList = new ArrayList<com.pivotal.gemfirexd.internal.engine.sql.compile.Token>();
                 this.originalParamTypeCompilers = new ArrayList<TypeCompiler>();
+		dynamicTokenList = new ArrayList<com.pivotal.gemfirexd.internal.impl.sql.compile.Token>();
 		initRequiredPriv();
 	}
 
@@ -1106,7 +1112,8 @@ public final class CompilerContextImpl extends ContextImpl
         private ArrayList<com.pivotal.gemfirexd.internal.engine.sql.compile.Token>
             constantTokenList;
 
-        
+	private ArrayList<com.pivotal.gemfirexd.internal.impl.sql.compile.Token>
+			dynamicTokenList;
 
 	private boolean createQueryInfo = true;
 	
@@ -1138,6 +1145,8 @@ public final class CompilerContextImpl extends ContextImpl
     private boolean queryHDFS = false;
     private boolean hasQueryHDFS = false;
     private boolean convertCharConstToVarchar = false;
+	private boolean ddlForSnappyUse = false;
+	private boolean snappyForcedDDLRouting = false;
     
     private short originalExecFlags = 0;
     // NOTE: when adding new flags here always take care to reset them in
@@ -1500,10 +1509,30 @@ public final class CompilerContextImpl extends ContextImpl
   }
 
   @Override
-  public void setConvertCharConstToVarchar(boolean flag) {
-    this.convertCharConstToVarchar = flag;
-  }
-  
+  public void setConvertCharConstToVarchar(boolean flag) { this.convertCharConstToVarchar = flag; }
+
+  @Override
+  public boolean isMarkedAsDDLForSnappyUse() { return this.ddlForSnappyUse; }
+
+  @Override
+  public void markAsDDLForSnappyUse(boolean flag) { this.ddlForSnappyUse = flag; }
+
+  @Override
+  public boolean isForcedDDLrouting() { return this.snappyForcedDDLRouting; }
+
+  @Override
+  public void setForcedDDLrouting(boolean flag) { this.snappyForcedDDLRouting = flag; }
+
+	@Override
+	public void addDynamicTokenToList(com.pivotal.gemfirexd.internal.impl.sql.compile.Token token) {
+		this.dynamicTokenList.add(token);
+	}
+
+	@Override
+	public ArrayList<com.pivotal.gemfirexd.internal.impl.sql.compile.Token> getDynamicTokenList() {
+		return this.dynamicTokenList;
+	}
+
 // GemStone changes END
 
 } // end of class CompilerContextImpl

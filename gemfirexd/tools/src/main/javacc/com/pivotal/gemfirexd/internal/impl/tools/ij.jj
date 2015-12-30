@@ -660,11 +660,13 @@ class ij {
 			int[] displayColumns = new int[] {
 				rs.findColumn("TABLE_SCHEM"),
 				rs.findColumn("TABLE_NAME"),
+				rs.findColumn("TABLE_TYPE"),
 				rs.findColumn("REMARKS"),
 			};
 			int[] columnWidths = new int[] {
 				20,
 				30,
+				10,
 				20,
 			};
 
@@ -2077,13 +2079,13 @@ throws SQLException
 {
 // GemStone changes BEGIN
 	<CONNECT> <CLIENT>
-	( result = dynamicConnection("jdbc:gemfirexd://", true, false) )
+	( result = dynamicConnection("jdbc:snappydata://", true, false) )
 	{
 		return result;
 	}
 |
 	<CONNECT> <PEER>
-	( result = dynamicConnection("jdbc:gemfirexd:;", false, true) )
+	( result = dynamicConnection("jdbc:snappydata:;", false, true) )
 	{
 		return result;
 	}
@@ -2487,7 +2489,8 @@ throws SQLException
 		[ <IN> schema=identifier() ]
 	{
 		if(t!=null) {
-		    types = new String[] { "TABLE", "SYSTEM TABLE" };
+// GemStone changes: Addition of "COLUMN TABLE" below
+		    types = new String[] { "TABLE", "SYSTEM TABLE", "COLUMN TABLE" };
 		}
 		else if(v!=null)
 			types = new String[] { "VIEW" };

@@ -214,6 +214,7 @@ public class Main {
 		    System.setProperty("jline.WindowsTerminal.input.encoding",
 		        encode);
 		  }
+
 		  final String historyFileName = System.getProperty(
 		      "gfxd.history", ".gfxd.history");
 		  // setup the input stream
@@ -231,6 +232,16 @@ public class Main {
 		    }
 		    reader.setHistory(hist);
 		  }
+			Runtime.getRuntime().addShutdownHook(new Thread() {
+				public void run() {
+					try {
+						reader.getTerminal().restore();
+						((FileHistory)reader.getHistory()).flush();
+					} catch (Exception e) {
+						// restoration failed!
+					}
+				}
+			});
 		  // simple string completion for builtin ij commands
 		  reader.addCompleter(new StringsCompleter(new String[]{
 		      "PROTOCOL", "protocol", "DRIVER", "driver",

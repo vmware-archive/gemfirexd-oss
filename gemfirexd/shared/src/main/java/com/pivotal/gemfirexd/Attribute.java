@@ -40,10 +40,19 @@ public interface Attribute {
   String SQLF_PROTOCOL = "jdbc:sqlfire:";
 
   /**
+   * [SnappyData] The default SnappyData protocol for data store or peer client.
+   */
+  String SNAPPY_PROTOCOL = "jdbc:snappydata:";
+
+  /**
    * The dummy name used for GemFireXD database.
    */
   String GFXD_DBNAME = "gemfirexd";
 
+  /**
+   * The dummy name used for GemFireXD booted with snappy url.
+   */
+  String SNAPPY_DBNAME = "snappydata";
   /**
    * [SQLFire] The dummy name used for old SQLFire database.
    */
@@ -57,6 +66,9 @@ public interface Attribute {
   String SQLJ_NESTED_GEMFIREXD = "jdbc:default:gemfirexd:connection";
 
   String SQLJ_NESTED_SQLFIRE = "jdbc:default:sqlfire:connection";
+
+  // @TODO why is SQLJ there? Just making it like above for now
+  String SQLJ_NESTED_SNAPPYDATA = "jdbc:default:snappydata:connection";
 
   /**
    * The attribute that is used to request a shutdown.
@@ -359,10 +371,18 @@ public interface Attribute {
    */
   String DNC_PROTOCOL = "jdbc:gemfirexd://";
 
+  String SNAPPY_DNC_PROTOCOL = "jdbc:snappydata://";
+
   /**
    * The protocol for Derby DRDA Client.
    */
   String DRDA_PROTOCOL = "jdbc:gemfirexd:drda://";
+
+  /**
+   * The protocol for Derby DRDA Client.
+   */
+  String SNAPPY_DRDA_PROTOCOL = "jdbc:snappydata:drda://";
+
 
   /**
    * The protocol for GemFireXD Thrift Client.
@@ -432,6 +452,17 @@ public interface Attribute {
    * Connection property to set cache size for NCJ
    */
   String NCJ_CACHE_SIZE = "ncj-cache-size";
+
+  /**
+   * Connection property to enable/disable query routing for Spark.
+   */
+  String ROUTE_QUERY = "route-query";
+
+  /**
+   * Embedded connection property to create tables as persistent by default
+   * for the connection.
+   */
+  String DEFAULT_PERSISTENT = "default-persistent";
 
   /**
    * Property to enable bulk foreign keys checks for put all.

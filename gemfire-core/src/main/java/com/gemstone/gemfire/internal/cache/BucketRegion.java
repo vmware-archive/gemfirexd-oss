@@ -19,14 +19,12 @@ package com.gemstone.gemfire.internal.cache;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import com.gemstone.gemfire.CancelException;
 import com.gemstone.gemfire.CopyHelper;
@@ -70,6 +68,7 @@ import com.gemstone.gemfire.internal.cache.partitioned.PutMessage;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheClientNotifier;
 import com.gemstone.gemfire.internal.cache.tier.sockets.ClientTombstoneMessage;
 import com.gemstone.gemfire.internal.cache.tier.sockets.ClientUpdateMessage;
+import com.gemstone.gemfire.internal.cache.tier.sockets.VersionedObjectList;
 import com.gemstone.gemfire.internal.cache.versions.VersionSource;
 import com.gemstone.gemfire.internal.cache.versions.VersionStamp;
 import com.gemstone.gemfire.internal.cache.versions.VersionTag;
@@ -82,6 +81,9 @@ import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.internal.offheap.StoredObject;
 import com.gemstone.gemfire.internal.offheap.annotations.Unretained;
 import com.gemstone.gemfire.internal.shared.Version;
+import com.gemstone.gemfire.internal.snappy.CallbackFactoryProvider;
+import com.gemstone.gemfire.internal.snappy.StoreCallbacks;
+import com.gemstone.gemfire.internal.util.concurrent.StoppableReentrantLock;
 
 /**
  * The storage used for a Partitioned Region.
@@ -260,6 +262,10 @@ public class BucketRegion extends DistributedRegion implements Bucket {
   // gemfire.BucktRegion.alwaysFireLocalListeners=true
 
   private volatile AtomicLong5 eventSeqNum = null;
+
+  private volatile UUID batchUUID = null;
+
+  public ReentrantReadWriteLock putAllLock = new ReentrantReadWriteLock();
 
   public final AtomicLong5 getEventSeqNum() {
     return eventSeqNum;
@@ -613,6 +619,33 @@ public class BucketRegion extends DistributedRegion implements Bucket {
     } // while
   }
 
+  // this is in secondary bucket
+  @Override
+  boolean basicUpdate(final EntryEventImpl event,
+      final boolean ifNew,
+      final boolean ifOld,
+      final long lastModified,
+      final boolean overwriteDestroyed,
+      final boolean cacheWrite)
+      throws TimeoutException,
+      CacheWriterException {
+    // check validity of key against keyConstraint
+    if (this.keyConstraint != null) {
+      if (!this.keyConstraint.isInstance(event.getKey()))
+        throw new ClassCastException(LocalizedStrings.LocalRegion_KEY_0_DOES_NOT_SATISFY_KEYCONSTRAINT_1.
+            toLocalizedString(new Object[]{event.getKey().getClass().getName(), this.keyConstraint.getName()}));
+    }
+
+    validateValue(event.basicGetNewValue());
+
+    if (getPartitionedRegion().needsBatching()) {
+      setBatchUUID(event);
+    }
+
+    return getDataView(event).putEntry(event, ifNew, ifOld, null, false,
+        cacheWrite, lastModified, overwriteDestroyed);
+  }
+
   // Entry (Put/Create) rules
   // If this is a primary for the bucket
   //  1) apply op locally, aka update or create entry
@@ -632,8 +665,16 @@ public class BucketRegion extends DistributedRegion implements Bucket {
                      boolean overwriteDestroyed)
  throws TimeoutException,
       CacheWriterException {
+
     final boolean locked = beginLocalWrite(event);
-    
+    if (getPartitionedRegion().needsBatching()) {
+      if (getCache().getLoggerI18n().fineEnabled()) {
+        getCache()
+            .getLoggerI18n()
+            .fine(" Insert into bucket id " + this.getId() + " key " + event.getKey());
+      }
+      setBatchUUID(event);
+    }
     try {
       if (this.partitionedRegion.isLocalParallelWanEnabled()) {
         handleWANEvent(event);
@@ -670,7 +711,136 @@ public class BucketRegion extends DistributedRegion implements Bucket {
     } finally {
       if (locked) {
         endLocalWrite(event);
+        //create and insert cached batch
+        if (getPartitionedRegion().needsBatching()
+            && this.size() >= GemFireCacheImpl.getColumnBatchSize()) {
+          putAllLock.writeLock().lock();
+          try {
+            createAndInsertCachedBatch();
+          } finally {
+            putAllLock.writeLock().unlock();
+          }
+        }
       }
+    }
+  }
+
+  public synchronized boolean createAndInsertCachedBatch() {
+    // we may have to use region.size so that no state
+    // has to be maintained
+    // one more check for size to make sure that concurrent call doesn't succeed.
+    // anyway batchUUID will be null in that case.
+    if (this.batchUUID != null &&
+        this.getBucketAdvisor().isPrimary() && this.size() >= GemFireCacheImpl.getColumnBatchSize()) {
+      // need to flush the region
+      if (getCache().getLoggerI18n().fineEnabled()) {
+        getCache()
+            .getLoggerI18n()
+            .fine("createAndInsertCachedBatch: Creating the cached batch for bucket " + this.getId()
+                + ", and batchID " + this.batchUUID);
+      }
+      Set keysToDestroy = createCachedBatchAndPutInColumnTable();
+      destroyAllEntries(keysToDestroy);
+      // create new batchUUID
+      this.batchUUID = null;
+    }
+    return true;
+  }
+
+  //TODO: Suranjan. it will change for tx operations, setting of batchID will be from commitPhase1
+  public void setBatchUUID(EntryEventImpl event) {
+    // we may have to use region.size so that no state
+    // has to be maintained
+    //TODO: Suranjan Will using region.size in synchronized be slower? or should maintain atomic variable per bucket?
+    // PUTALL
+    if (getBucketAdvisor().isPrimary()) {
+      if (event.getPutAllOperation() != null) { //isPutAll op
+        generateAndSetBatchIDIfNULL();
+      } else if (this.size() >= GemFireCacheImpl.getColumnBatchSize()) {// loose check on size..not very strict
+        generateAndSetBatchIDIfNULL();
+        if (getCache().getLoggerI18n().fineEnabled()) {
+          getCache()
+              .getLoggerI18n()
+              .fine("Creating the new batchUUID for PRIMARY bucket " + this.getId()
+                  + "(NON PUTALL operation) as " + this.batchUUID);
+        }
+      } else {
+        generateAndSetBatchIDIfNULL();
+      }
+      event.setBatchUUID(this.batchUUID);
+    } else {
+      if (getCache().getLoggerI18n().fineEnabled()) {
+        getCache()
+            .getLoggerI18n()
+            .fine("Setting the batchUUID for SECONDARY bucket " + this.getId() + "(PUT/PUTALL operation)," +
+                " continuing the same batchUUID as " + event.getBatchUUID());
+
+      }
+      this.batchUUID = event.getBatchUUID();
+    }
+  }
+
+  private synchronized void generateAndSetBatchIDIfNULL() {
+    if (this.batchUUID == null || this.batchUUID.equals(new UUID(0, 0))) {
+      this.batchUUID = UUID.randomUUID();
+      if (getCache().getLoggerI18n().fineEnabled()) {
+        getCache()
+            .getLoggerI18n()
+            .fine("Setting the batchUUID for PRIMARY bucket "  + this.getId() +  " (PUT/PUTALL operation)," +
+                " created the batchUUID as " + this.batchUUID);
+      }
+    } else {
+      if (getCache().getLoggerI18n().fineEnabled()) {
+        getCache()
+            .getLoggerI18n()
+            .fine("Setting the batchUUID for PRIMARY bucket "  + this.getId() +  "(PUT/PUTALL operation)," +
+                " continuing the same batchUUID as " + this.batchUUID);
+
+      }
+    }
+  }
+
+  private Set createCachedBatchAndPutInColumnTable() {
+    StoreCallbacks callback = CallbackFactoryProvider.getStoreCallbacks();
+    Set keysToDestroy = callback.createCachedBatch(this, this.batchUUID, this.getId());
+    return keysToDestroy;
+  }
+
+  // TODO: Suranjan Not optimized way to destroy all entries, as changes at level of RVV required.
+  // TODO: Suranjan Need to do something like putAll.
+  // TODO: Suranjan Effect of transaction?
+
+  // This destroy is under a lock which makes sure that there is no put into the region
+  // No need to take the lock on key
+  private void destroyAllEntries(Set keysToDestroy) {
+
+    for(Object key : keysToDestroy) {
+      if (getCache().getLoggerI18n().fineEnabled()) {
+        getCache()
+            .getLoggerI18n()
+            .fine("Destroying the entries after creating CachedBatch " + key +
+                " batchid " + this.batchUUID + " total size " + this.size() +
+                " keysToDestroy size " + keysToDestroy.size());
+      }
+      EntryEventImpl event = EntryEventImpl.create(
+          getPartitionedRegion(), Operation.DESTROY, null, null,
+          null, false, this.getMyId());
+
+      event.setKey(key);
+      event.setBucketId(this.getId());
+      event.setBatchUUID(this.batchUUID); // to make sure that lock is not nexessary
+
+
+      if (getTXState() != null) {
+        getTXState().destroyExistingEntry(event, true, null);
+      } else {
+        this.getPartitionedRegion().basicDestroy(event,true,null);
+      }
+    }
+    if (getCache().getLoggerI18n().fineEnabled()) {
+      getCache()
+          .getLoggerI18n()
+          .fine("Destroyed all for batchID " + this.batchUUID + " total size " + this.size());
     }
   }
 
@@ -796,7 +966,7 @@ public class BucketRegion extends DistributedRegion implements Bucket {
    * held
    */
   @Override
-  protected long basicPutPart2(EntryEventImpl event, RegionEntry entry, boolean isInitialized, 
+  protected long basicPutPart2(EntryEventImpl event, RegionEntry entry, boolean isInitialized,
       long lastModified, boolean clearConflict)  {
     // Assumed this is called with entry synchrony
     // Typically UpdateOperation is called with the
@@ -1321,7 +1491,6 @@ public class BucketRegion extends DistributedRegion implements Bucket {
 //        + " for " + event;
     
     Assert.assertTrue(event.getOperation().isDistributed());
-    
     final boolean locked = beginLocalWrite(event);
     try {
       // increment the tailKey for the destroy event

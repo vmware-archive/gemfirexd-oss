@@ -241,7 +241,13 @@ public static final int		SYSTABLES_COLUMN_COUNT = 20;
 
 			    case TableDescriptor.SYNONYM_TYPE:
 					tabSType = "A";
-					break;		
+					break;
+
+					// GemStone changes BEGIN
+					case TableDescriptor.COLUMN_TABLE_TYPE:
+					tabSType = "C";
+					break;
+					// GemStone changes END
 
 			    default:
 					if (SanityManager.DEBUG)
@@ -421,6 +427,11 @@ public static final int		SYSTABLES_COLUMN_COUNT = 20;
 			case 'A' :
 				tableTypeEnum = TableDescriptor.SYNONYM_TYPE;
 				break;
+			// GemStone changes BEGIN
+			case 'C' :
+				tableTypeEnum = TableDescriptor.COLUMN_TABLE_TYPE;
+				break;
+			// GemStone changes END
 			default:
 				if (SanityManager.DEBUG)
 				SanityManager.THROWASSERT("Fourth column value invalid");

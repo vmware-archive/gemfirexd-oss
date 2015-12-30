@@ -65,14 +65,14 @@ public class ClientDRDADriver implements java.sql.Driver {
     private transient int traceFileSuffixIndex_ = 0;
 
     // support for older jdbc:sqlfire:// URL scheme has now been dropped
-    protected final static String URL_PREFIX = "jdbc:gemfirexd:";
+    protected final static String URL_PREFIX_REGEX = "(jdbc:gemfirexd:|jdbc:snappydata:)";
     protected final static String URL_SUFFIX_REGEX =
-        "//(([^:]+:[0-9]+)|([^\\[]+\\[[0-9]+\\]))(/(gemfirexd;)?;?(.*)?)?";
+        "//(([^:]+:[0-9]+)|([^\\[]+\\[[0-9]+\\]))(/(gemfirexd;|snappydata;)?;?(.*)?)?";
 
     private final static String DRDA_SUBPROTOCOL = "drda:";
     private final static Pattern DRDA_PROTOCOL_PATTERN = Pattern.compile(
-        URL_PREFIX + DRDA_SUBPROTOCOL + "//.*", Pattern.CASE_INSENSITIVE);
-    private final static Pattern DRDA_URL_PATTERN = Pattern.compile(URL_PREFIX
+        URL_PREFIX_REGEX + DRDA_SUBPROTOCOL + "//.*", Pattern.CASE_INSENSITIVE);
+    private final static Pattern DRDA_URL_PATTERN = Pattern.compile(URL_PREFIX_REGEX
         + DRDA_SUBPROTOCOL + URL_SUFFIX_REGEX, Pattern.CASE_INSENSITIVE);
 
     private static ClientJDBCObjectFactory factoryObject = null;
@@ -564,7 +564,7 @@ public class ClientDRDADriver implements java.sql.Driver {
 
     protected java.util.Properties getURLProperties(Matcher m,
         java.util.Properties properties) throws SqlException {
-      String propsGroup = m.group(7);
+      String propsGroup = m.group(8);
       if (propsGroup != null && propsGroup.length() > 0) {
         return ClientDataSource.tokenizeAttributes(propsGroup, properties);
       }

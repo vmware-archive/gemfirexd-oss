@@ -256,7 +256,12 @@ public class utilMain implements java.security.PrivilegedAction {
 			}
 			*/
 
-   			out.println(langUtil.getTextMessage("IJ_IjVers30C199", GemFireXDVersion.getGemFireXDVersion()));
+		  if (getPrompt(true, "").contains("snappy")) {
+		    // TODO Use snappy version instead of that of GemFireXD, once we have it.
+		    out.println(langUtil.getTextMessage("IJ_IjVers30C199_Noname", GemFireXDVersion.getGemFireXDVersion()));
+		  } else {
+		    out.println(langUtil.getTextMessage("IJ_IjVers30C199", GemFireXDVersion.getGemFireXDVersion()));
+		  }
         // GemStone changes END
 			for (int i=connEnv.length-1;i>=0;i--) { // print out any initial warnings...
 				Connection c = connEnv[i].getConnection();
@@ -504,12 +509,6 @@ public class utilMain implements java.security.PrivilegedAction {
 		}
 		if (reader == null) {
 		  out.println();
-		} else {
-			try {
-				reader.getTerminal().restore();
-			} catch (Exception e) {
-				// restoration failed!
-			}
 		}
 // GemStone changes END
         return scriptErrorCount;
@@ -1015,6 +1014,13 @@ public class utilMain implements java.security.PrivilegedAction {
                     .getMessage("GFXD_ConnectHelpText_Peer", ""), LocalizedResource
                     .getMessage("GFXD_ConnectHelpText_Hosts", "")));
 	    return true;
+	  } else if (command != null) {
+	    String cmd = command.trim().length() > 3 ? command.trim().substring(0, 4) : command;
+	    if(cmd.equalsIgnoreCase("run ")) {
+	      out.println(LocalizedResource.getMessage("IJ_ExceRunnComm",
+		  command + "\n" + LocalizedResource.getMessage("IJ_RunUsage")));
+	      return true;
+	    }
 	  }
 	  return false;
 	}

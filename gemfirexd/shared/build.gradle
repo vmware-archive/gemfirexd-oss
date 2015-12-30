@@ -12,7 +12,7 @@ task createVersionPropertiesFile {
 
   doLast {
     def props = [
-      "Product-Name"      : PRODUCT_NAME_FULL,
+      "Product-Name"      : PRODUCT_NAME,
       "Product-Version"   : version,
       "Build-Id"          : System.env.USER + ' ' + buildNumber,
       "Build-Date"        : buildDate,

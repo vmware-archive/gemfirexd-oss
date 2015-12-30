@@ -381,7 +381,7 @@ public class AlterTableNode extends DDLStatementNode
 											 getRelativeName(),
 											 baseTable.getUUID(),
 											 baseTable.getHeapConglomerateId(),
-											 TableDescriptor.BASE_TABLE_TYPE,
+											 TableDescriptor.BASE_TABLE_TYPE, // TODO check if column table?
 											 colInfos,
 											 conActions,
 											 lockGranularity,
