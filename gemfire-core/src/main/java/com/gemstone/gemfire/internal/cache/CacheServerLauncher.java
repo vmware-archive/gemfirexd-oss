@@ -477,8 +477,9 @@ public class CacheServerLauncher  {
     // TODO: check which library/GemFire code causes awt to be touched
     vmArgs.add("-Djava.awt.headless=true");
 
-    // configure commons-logging to use JDK logging 
-    vmArgs.add("-Dorg.apache.commons.logging.Log=org.apache.commons.logging.impl.Jdk14Logger");
+    // configure commons-logging to use Log4J logging
+    vmArgs.add("-Dorg.apache.commons.logging.Log=" +
+        "org.apache.commons.logging.impl.Log4JLogger");
 
     if (!hasSecRndArg && NativeCalls.getInstance().getOSType().isPOSIX()) {
       vmArgs.add("-Djava.security.egd=file:/dev/./urandom");
