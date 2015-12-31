@@ -76,6 +76,10 @@ public final class FinalizeHolder {
     this.finalizerQueue.remove(obj);
   }
 
+  synchronized final void clearFinalizeQueue() {
+    this.finalizerQueue.clear();
+  }
+
   public final void addToPendingQueue(FinalizeObject obj) {
     final TLinkedList pendingQ = this.pendingQueue;
     if (emptyReferenceQueue(this.referenceQueue, pendingQ, obj,
@@ -93,7 +97,7 @@ public final class FinalizeHolder {
     return list.size() > 0 ? list.removeFirst() : null;
   }
 
-  private synchronized final int emptyReferenceQueue(
+  private synchronized int emptyReferenceQueue(
       final ReferenceQueue<Object> refQ, final TLinkedList pendingQ,
       final FinalizeObject newObj, int maxPoll) {
     assert Thread.holdsLock(this);
