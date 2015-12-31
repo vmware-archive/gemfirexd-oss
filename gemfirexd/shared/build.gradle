@@ -5,7 +5,7 @@ dependencies {
 }
 
 // Creates the version properties file and writes it to the resources dir
-task createVersionPropertiesFile {
+task createVersionPropertiesFile(dependsOn: 'processResources') {
   def propertiesDir = file("${buildDir}/resources/main/com/pivotal/gemfirexd/internal")
   outputs.file "${propertiesDir}/GemFireXDVersion.properties"
   inputs.dir compileJava.destinationDir
