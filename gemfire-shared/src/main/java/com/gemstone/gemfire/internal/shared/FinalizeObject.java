@@ -46,15 +46,17 @@ public abstract class FinalizeObject extends WeakReference<Object> implements
   private static volatile FinalizeHolder serverHolder = new FinalizeHolder();
   private static volatile FinalizeHolder clientHolder = new FinalizeHolder();
 
-  public static final FinalizeHolder getServerHolder() {
+  public static FinalizeHolder getServerHolder() {
     return serverHolder;
   }
 
-  public static final FinalizeHolder getClientHolder() {
+  public static FinalizeHolder getClientHolder() {
     return clientHolder;
   }
 
   public static synchronized void clearFinalizationQueues() {
+    serverHolder.clearFinalizeQueue();
+    clientHolder.clearFinalizeQueue();
     serverHolder = new FinalizeHolder();
     clientHolder = new FinalizeHolder();
   }
@@ -77,8 +79,10 @@ public abstract class FinalizeObject extends WeakReference<Object> implements
 
   @Override
   public final void clear() {
-    super.clear();
-    getHolder().removeFromFinalizerQueue(this);
+    if (super.get() != null) {
+      super.clear();
+      getHolder().removeFromFinalizerQueue(this);
+    }
   }
 
   final void clearSuper() {
@@ -149,8 +153,7 @@ public abstract class FinalizeObject extends WeakReference<Object> implements
    * indicate batching of finalization where possible e.g. for remote messaging
    * which can be expensive one at a time.
    */
-  public static interface BatchFinalize {
-
+  public interface BatchFinalize {
     BatchFinalize merge(BatchFinalize other);
   }
 }
