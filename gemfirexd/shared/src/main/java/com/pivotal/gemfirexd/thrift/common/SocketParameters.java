@@ -32,10 +32,12 @@ public class SocketParameters extends
     TSSLTransportFactory.TSSLTransportParameters {
 
   private static final java.util.HashMap<String, Param> paramsMap =
-      new java.util.HashMap<String, Param>();
+      new java.util.HashMap<>();
 
   private static final java.util.HashMap<String, Param> sslParamsMap =
-      new java.util.HashMap<String, Param>();
+      new java.util.HashMap<>();
+
+  private static final String[] EMPTY_CIPHERS = new String[0];
 
   public static java.util.Collection<Param> getAllParamsNoSSL() {
     return paramsMap.values();
@@ -60,7 +62,7 @@ public class SocketParameters extends
    * value and set into SocketParameters object so provides a uniform way to
    * read in socket properties and initialize SocketParameters.
    */
-  public static enum Param {
+  public enum Param {
     INPUT_BUFFER_SIZE(SystemProperties.SOCKET_INPUT_BUFFER_SIZE_NAME, false) {
       @Override
       public void setParameter(SocketParameters params, String value) {
@@ -173,7 +175,7 @@ public class SocketParameters extends
 
     private final String propertyName;
 
-    private Param(String propertyName, boolean ssl) {
+    Param(String propertyName, boolean ssl) {
       this.propertyName = propertyName;
       if (ssl) {
         sslParamsMap.put(propertyName, this);
@@ -204,7 +206,7 @@ public class SocketParameters extends
    * Default empty parameters.
    */
   public SocketParameters() {
-    super(null, null, false);
+    super(null, EMPTY_CIPHERS, false);
     this.protocol = null;
   }
 
