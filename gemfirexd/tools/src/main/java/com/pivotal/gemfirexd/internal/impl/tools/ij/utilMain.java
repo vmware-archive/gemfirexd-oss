@@ -67,6 +67,7 @@ import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
+import java.util.regex.Pattern;
 
 /**
 	This class is utilities specific to the two ij Main's.
@@ -90,6 +91,7 @@ public class utilMain implements java.security.PrivilegedAction {
 	private LocalizedOutput out = null;
 	private Properties connAttributeDefaults;
 	private Hashtable ignoreErrors;
+	private static final Pattern pattern = Pattern.compile("gemfirexd|gfxd", Pattern.CASE_INSENSITIVE);
 	/**
 	 * True if to display the error code when
 	 * displaying a SQLException.
@@ -255,18 +257,12 @@ public class utilMain implements java.security.PrivilegedAction {
 				version = "?";
 			}
 			*/
-
-		  if (getPrompt(true, "").contains("snappy")) {
-		    // TODO Use snappy version instead of that of GemFireXD, once we have it.
-		    out.println(langUtil.getTextMessage("IJ_IjVers30C199_Noname", GemFireXDVersion.getGemFireXDVersion()));
-		  } else {
-		    out.println(langUtil.getTextMessage("IJ_IjVers30C199", GemFireXDVersion.getGemFireXDVersion()));
-		  }
-        // GemStone changes END
-			for (int i=connEnv.length-1;i>=0;i--) { // print out any initial warnings...
+			out.println(convertGfxdMessageToSnappy(langUtil.getTextMessage("IJ_IjVers30C199", GemFireXDVersion.getGemFireXDVersion())));
+			// GemStone changes END
+			for (int i = connEnv.length - 1; i >= 0; i--) { // print out any initial warnings...
 				Connection c = connEnv[i].getConnection();
-				if (c!=null) {
-					JDBCDisplayUtil.ShowWarnings(out,c);
+				if (c != null) {
+					JDBCDisplayUtil.ShowWarnings(out, c);
 				}
 			}
 			firstRun = false;
@@ -294,7 +290,7 @@ public class utilMain implements java.security.PrivilegedAction {
 		runScriptGuts();
 		cleanupGo(in);
 	}
-	
+
 	/**
 	 * Support to run a script. Performs minimal setup
 	 * to set the passed in connection into the existing
@@ -862,7 +858,7 @@ public class utilMain implements java.security.PrivilegedAction {
 			throw new ijFatalException(fatalException);
 		}
 		if (syntaxErrorOccurred)
-			out.println(langUtil.getTextMessage("IJ_SuggestHelp"));
+			out.println(convertGfxdMessageToSnappy(langUtil.getTextMessage("IJ_SuggestHelp")));
 	}
 
 	/**
@@ -994,9 +990,9 @@ public class utilMain implements java.security.PrivilegedAction {
 	      else if (remaining.length() >= peerConnect.length()
 	          && remaining.substring(0, peerConnect.length())
 	             .equalsIgnoreCase(peerConnect)) {
-	        out.println(LocalizedResource.getMessage(
+	        out.println(convertGfxdMessageToSnappy(LocalizedResource.getMessage(
 	            "GFXD_ConnectHelpText_Peer",
-	            LocalizedResource.getMessage("GFXD_Usage")));
+	            LocalizedResource.getMessage("GFXD_Usage"))));
 	        return true;
 	      }
 	      else if (remaining.length() >= hostsConnect.length()
@@ -1023,6 +1019,14 @@ public class utilMain implements java.security.PrivilegedAction {
 	    }
 	  }
 	  return false;
+	}
+
+	public static String convertGfxdMessageToSnappy(String message) {
+		if (getPrompt(true, "").contains("snappy")) {
+			return pattern.matcher(message).replaceAll("SnappyData");
+		} else {
+			return message;
+		}
 	}
 
 // GemStone changes END
