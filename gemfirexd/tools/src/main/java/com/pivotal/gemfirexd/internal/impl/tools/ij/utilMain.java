@@ -257,18 +257,12 @@ public class utilMain implements java.security.PrivilegedAction {
 				version = "?";
 			}
 			*/
-
-		  if (getPrompt(true, "").contains("snappy")) {
-		    // TODO Use snappy version instead of that of GemFireXD, once we have it.
-		    out.println(langUtil.getTextMessage("IJ_IjVers30C199_Noname", GemFireXDVersion.getGemFireXDVersion()));
-		  } else {
-		    out.println(langUtil.getTextMessage("IJ_IjVers30C199", GemFireXDVersion.getGemFireXDVersion()));
-		  }
-        // GemStone changes END
-			for (int i=connEnv.length-1;i>=0;i--) { // print out any initial warnings...
+			out.println(convertGfxdMessageToSnappy(langUtil.getTextMessage("IJ_IjVers30C199", GemFireXDVersion.getGemFireXDVersion())));
+			// GemStone changes END
+			for (int i = connEnv.length - 1; i >= 0; i--) { // print out any initial warnings...
 				Connection c = connEnv[i].getConnection();
-				if (c!=null) {
-					JDBCDisplayUtil.ShowWarnings(out,c);
+				if (c != null) {
+					JDBCDisplayUtil.ShowWarnings(out, c);
 				}
 			}
 			firstRun = false;

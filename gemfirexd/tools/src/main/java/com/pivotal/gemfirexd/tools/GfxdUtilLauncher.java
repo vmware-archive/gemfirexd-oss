@@ -74,7 +74,8 @@ public class GfxdUtilLauncher extends GemFireUtilLauncher {
     m.put("locator", new CommandEntry(GfxdDistributionLocator.class,
         LocalizedResource.getMessage("UTIL_Locator_Usage"), false));
     m.put("agent", new CommandEntry(GfxdAgentLauncher.class, LocalizedStrings
-            .GemFireUtilLauncher_Agent_Usage.toLocalizedString(), false));
+            .GemFireUtilLauncher_Agent_Usage.toString(new Object[] { LocalizedResource
+            .getMessage("FS_PRODUCT")  }), false));
     m.put(SCRIPT_NAME, new CommandEntry(ij.class, LocalizedResource
         .getMessage("UTIL_GFXD_Usage"), false));
     //m.put("gemfire", SystemAdmin.class);
