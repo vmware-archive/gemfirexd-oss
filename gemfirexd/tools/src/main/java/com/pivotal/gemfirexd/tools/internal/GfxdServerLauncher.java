@@ -156,7 +156,7 @@ public class GfxdServerLauncher extends CacheServerLauncher {
     final String name = LocalizedResource.getMessage("FS_NAME");
     final String usageOutput = LocalizedResource.getMessage("SERVER_HELP",
         script, name, LocalizedResource.getMessage("FS_ADDRESS_ARG"),
-        LocalizedResource.getMessage("FS_EXTRA_HELP"));
+        LocalizedResource.getMessage("FS_EXTRA_HELP" ,  LocalizedResource.getMessage("FS_PRODUCT")));
     printUsage(usageOutput, SanityManager.DEFAULT_MAX_OUT_LINES);
   }
 
