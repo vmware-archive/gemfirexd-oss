@@ -23,5 +23,7 @@ import java.util.UUID;
 import com.gemstone.gemfire.internal.cache.BucketRegion;
 
 public interface StoreCallbacks {
+  String INTERNAL_SCHEMA_NAME = "INTERNAL";
+  String SHADOW_TABLE_SUFFIX = "_SHADOW_";
   Set createCachedBatch(BucketRegion region, UUID batchID, int bucketID);
 }
