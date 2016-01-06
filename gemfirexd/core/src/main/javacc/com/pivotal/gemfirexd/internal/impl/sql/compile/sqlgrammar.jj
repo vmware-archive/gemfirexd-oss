@@ -3954,6 +3954,8 @@ StatementNode
 spsSetStatement() throws StandardException :
 {
 	StatementNode statementNode;
+	CompilerContext cc = getCompilerContext();
+  cc.markAsDDLForSnappyUse(true);
 }
 {
         LOOKAHEAD ( { getToken(1).kind == SET && getToken(2).kind != CURRENT } )
