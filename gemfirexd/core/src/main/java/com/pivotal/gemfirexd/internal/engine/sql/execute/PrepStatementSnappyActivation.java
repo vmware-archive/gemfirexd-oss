@@ -46,6 +46,7 @@ public class PrepStatementSnappyActivation extends GemFireSelectDistributionActi
     super(eps, _lcc, qi);
     sql = eps.getSource();
     this.returnRows = returnRows;
+    this.connectionID = lcc.getConnectionId();
   }
 
   @Override
@@ -78,7 +79,7 @@ public class PrepStatementSnappyActivation extends GemFireSelectDistributionActi
         querySql = this.sql;
       }
       SnappyActivation.executeOnLeadNode((SnappySelectResultSet)rs, rc,
-          querySql, enableStreaming);
+          querySql, enableStreaming , this.getConnectionID());
     } else {
       throw StandardException.newException(
           SQLState.LANG_UNEXPECTED_USER_EXCEPTION,

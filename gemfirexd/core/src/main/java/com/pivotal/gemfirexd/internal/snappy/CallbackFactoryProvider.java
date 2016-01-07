@@ -50,6 +50,12 @@ public abstract class CallbackFactoryProvider {
     public SparkSQLExecute getSQLExecute(String sql, LeadNodeExecutionContext ctx, Version v) {
        return null;
     }
+
+    @Override
+    public void clearSnappyContextForConnection(Long connectionId) {
+
+    }
+
   };
 
   public static ClusterCallbacks getClusterCallbacks() {
