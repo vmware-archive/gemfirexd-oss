@@ -24,6 +24,6 @@ import com.gemstone.gemfire.internal.cache.BucketRegion;
 
 public interface StoreCallbacks {
   String INTERNAL_SCHEMA_NAME = "INTERNAL";
-  String SHADOW_TABLE_SUFFIX = "_SHADOW_";
+  String SHADOW_TABLE_SUFFIX = "_COLUMN_STORE_";
   Set createCachedBatch(BucketRegion region, UUID batchID, int bucketID);
 }
