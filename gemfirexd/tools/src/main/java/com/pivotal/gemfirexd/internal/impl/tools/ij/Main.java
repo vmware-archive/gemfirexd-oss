@@ -136,7 +136,7 @@ public class Main {
 		if (inputResourceName != null) {
 			in = langUtil.getNewInput(util.getResourceAsStream(inputResourceName));
 			if (in == null) {
-				out.println(langUtil.getTextMessage("IJ_IjErroResoNo",inputResourceName));
+				out.println(utilMain.convertGfxdMessageToSnappy(langUtil.getTextMessage("IJ_IjErroResoNo",inputResourceName)));
 				return;
 			}
 		} else if (file == null) {
@@ -154,7 +154,7 @@ public class Main {
                             in = langUtil.getNewInput(util.getResourceAsStream(file));
                         }
                         if (in == null) {
-                        out.println(langUtil.getTextMessage("IJ_IjErroFileNo",file));
+                        out.println(utilMain.convertGfxdMessageToSnappy(langUtil.getTextMessage("IJ_IjErroFileNo",file)));
             		  return;
                         }
                     }
@@ -177,7 +177,7 @@ public class Main {
 			out = langUtil.getNewOutput(fos);
 
 			if (out == null)
-			   oldOut.println(langUtil.getTextMessage("IJ_IjErroUnabTo",outFile));
+			   oldOut.println(utilMain.convertGfxdMessageToSnappy(langUtil.getTextMessage("IJ_IjErroUnabTo", outFile)));
 	
 		}
 
@@ -191,7 +191,7 @@ public class Main {
 				JDBCDisplayUtil.setMaxDisplayWidth(maxWidth);
 			}
 			catch (NumberFormatException nfe) {
-				out.println(langUtil.getTextMessage("IJ_IjErroMaxiVa", maxDisplayWidth));
+				out.println(utilMain.convertGfxdMessageToSnappy(langUtil.getTextMessage("IJ_IjErroMaxiVa", maxDisplayWidth)));
 			}
 		}
 

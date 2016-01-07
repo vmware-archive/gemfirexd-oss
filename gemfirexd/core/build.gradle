@@ -13,7 +13,7 @@ dependencies {
   provided "com.pivotal:pxf-api:${pxfVersion}"
   provided "org.osgi:org.osgi.core:${osgiVersion}"
   provided "org.apache.ant:ant:${antVersion}"
-  compile 'javax.servlet:javax.servlet-api:3.1.0'
+  provided 'javax.servlet:javax.servlet-api:3.0.1'
 
   provided "org.apache.hadoop:hadoop-annotations:${hadoopVersion}"
   provided "org.apache.hadoop:hadoop-auth:${hadoopVersion}"
