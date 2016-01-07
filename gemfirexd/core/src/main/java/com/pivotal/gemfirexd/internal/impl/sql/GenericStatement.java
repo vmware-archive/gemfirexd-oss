@@ -41,17 +41,27 @@
 package com.pivotal.gemfirexd.internal.impl.sql;
 
 
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Pattern;
+
 import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gnu.trove.THashMap;
 import com.gemstone.gnu.trove.THashSet;
-import com.pivotal.gemfirexd.internal.catalog.ExternalCatalog;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserver;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
 import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.ddl.resolver.GfxdPartitionResolver;
-import com.pivotal.gemfirexd.internal.engine.distributed.metadata.*;
+import com.pivotal.gemfirexd.internal.engine.distributed.metadata.DMLQueryInfo;
+import com.pivotal.gemfirexd.internal.engine.distributed.metadata.InsertQueryInfo;
+import com.pivotal.gemfirexd.internal.engine.distributed.metadata.QueryInfo;
+import com.pivotal.gemfirexd.internal.engine.distributed.metadata.QueryInfoContext;
+import com.pivotal.gemfirexd.internal.engine.distributed.metadata.SubQueryInfo;
 import com.pivotal.gemfirexd.internal.engine.distributed.utils.GemFireXDUtils;
 import com.pivotal.gemfirexd.internal.engine.management.GfxdManagementService;
 import com.pivotal.gemfirexd.internal.engine.management.GfxdResourceEvent;
@@ -86,18 +96,9 @@ import com.pivotal.gemfirexd.internal.impl.sql.compile.CursorNode;
 import com.pivotal.gemfirexd.internal.impl.sql.compile.ExecSPSNode;
 import com.pivotal.gemfirexd.internal.impl.sql.compile.InsertNode;
 import com.pivotal.gemfirexd.internal.impl.sql.compile.StatementNode;
-import com.pivotal.gemfirexd.internal.impl.sql.compile.Token;
 import com.pivotal.gemfirexd.internal.impl.sql.conn.GenericLanguageConnectionContext;
 import com.pivotal.gemfirexd.internal.shared.common.ResolverUtils;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.regex.Pattern;
 
 //GemStone changes BEGIN
 
@@ -136,6 +137,7 @@ public class GenericStatement
         //private ProcedureProxy procProxy;
         private final GfxdHeapThresholdListener thresholdListener;
         private THashMap ncjMetaData = null;
+	private static final String STREAMING_DDL_PREFIX = "STREAMING";
 // GemStone changes END
 	/**
 	 * Constructor for a Statement given the text of the statement in a String
@@ -541,11 +543,13 @@ public class GenericStatement
 				catch (StandardException ex) {
 				    //SanityManager.DEBUG_PRINT("DEBUG", "Parse: exception routeQuery=" + routeQuery + " ,sql=" + this.getSource() + " ,flag=" + cc.isDDL4routing());
 				    //System.out.println("Parse: exception routeQuery=" + routeQuery + " ,sql=" + this.getSource() + " ,ex=" + ex.getMessage() +  " ,stack=" + ExceptionUtils.getFullStackTrace(ex));
-				    if (routeQuery)
-				    {
-				        return getPreparedStatementForSnappy(false, statementContext, lcc, cc.isMarkedAsDDLForSnappyUse());
-				    }
-				    throw ex;
+          if (routeQuery) {
+            if (getSource().substring(0, STREAMING_DDL_PREFIX.length()).equalsIgnoreCase(STREAMING_DDL_PREFIX)) {
+              cc.markAsDDLForSnappyUse(true);
+            }
+            return getPreparedStatementForSnappy(false, statementContext, lcc, cc.isMarkedAsDDLForSnappyUse());
+          }
+          throw ex;
 				}
 				// DDL Route, even if no exception
 				if (routeQuery && cc.isForcedDDLrouting())
