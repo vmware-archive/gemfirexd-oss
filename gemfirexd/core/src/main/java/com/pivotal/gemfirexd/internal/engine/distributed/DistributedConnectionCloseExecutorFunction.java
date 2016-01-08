@@ -22,6 +22,7 @@ import com.gemstone.gemfire.cache.execute.Function;
 import com.gemstone.gemfire.cache.execute.FunctionContext;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserver;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
+import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.snappy.CallbackFactoryProvider;
 
 /**
@@ -74,8 +75,8 @@ public final class DistributedConnectionCloseExecutorFunction implements
     }
 
     //TODO - Check only if the product is Snappy then call the remove connection ref messages
-    CallbackFactoryProvider.getClusterCallbacks().
-        clearSnappyContextForConnection(connId);
+    if (Misc.getMemStore().isSnappyStore())
+      CallbackFactoryProvider.getClusterCallbacks().clearSnappyContextForConnection(connId);
   }
 
   public String getId() {
