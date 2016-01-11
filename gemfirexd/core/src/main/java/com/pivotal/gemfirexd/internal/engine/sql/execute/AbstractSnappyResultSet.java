@@ -54,7 +54,7 @@ public abstract class AbstractSnappyResultSet implements ResultSet {
   }
 
   @Override
-  public void checkCancellationFlag() throws StandardException {
+  public final void checkCancellationFlag() throws StandardException {
     final Activation act = this.activation;
     if (act != null && act.isQueryCancelled()) {
       act.checkCancellationFlag();
