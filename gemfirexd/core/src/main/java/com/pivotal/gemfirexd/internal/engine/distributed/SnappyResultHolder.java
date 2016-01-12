@@ -34,6 +34,8 @@ import com.pivotal.gemfirexd.internal.iapi.sql.execute.ExecRow;
 import com.pivotal.gemfirexd.internal.iapi.types.*;
 import com.pivotal.gemfirexd.internal.impl.sql.execute.ValueRow;
 import com.pivotal.gemfirexd.internal.shared.common.StoredFormatIds;
+import com.pivotal.gemfirexd.internal.shared.common.sanity.SanityManager;
+import com.pivotal.gemfirexd.internal.snappy.CallbackFactoryProvider;
 import com.pivotal.gemfirexd.internal.snappy.SparkSQLExecute;
 
 /**
@@ -134,7 +136,6 @@ public final class SnappyResultHolder extends GfxdDataSerializable {
     // determine eight col groups and partial col
     int numCols = colTypes.length;
     if (numEightColGrps < 0) {
-      // Initialize some data
       numEightColGrps = numCols / 8 + (numCols % 8 == 0 ? 0 : 1);
       numPartialCols = numCols % 8;
       if (numPartialCols == 0) {
@@ -165,7 +166,8 @@ public final class SnappyResultHolder extends GfxdDataSerializable {
       if (templateDVDRow == null) {
         makeTemplateDVDArr();
       }
-      DVDIOUtil.readDVDArray(templateDVDRow, this.dis, numEightColGrps, numPartialCols);
+      CallbackFactoryProvider.getClusterCallbacks().readDVDArray(templateDVDRow,
+          this.dis, numEightColGrps, numPartialCols);
       return this.execRow;
     }
     this.dis = null;
