@@ -688,7 +688,6 @@ public final class FetchEntriesMessage extends PartitionMessage
      * @throws ForceReattemptException if the peer is no longer available
      */
     public Set<RegionEntry> waitForEntriesSet() throws ForceReattemptException {
-      Set<RegionEntry> entries = new HashSet<RegionEntry>();
       try {
         waitForRepliesUninterruptibly();
       }
