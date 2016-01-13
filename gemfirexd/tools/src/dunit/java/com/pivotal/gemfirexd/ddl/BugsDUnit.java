@@ -26,6 +26,8 @@ import com.gemstone.gemfire.internal.SocketCreator;
 import com.gemstone.gemfire.internal.cache.DiskStoreImpl;
 import com.gemstone.gemfire.internal.cache.ForceReattemptException;
 import com.gemstone.gemfire.internal.cache.InitialImageOperation;
+import com.gemstone.gemfire.internal.cache.PartitionedRegion;
+import com.gemstone.gemfire.internal.cache.PartitionedRegionHelper;
 import com.gemstone.gemfire.internal.cache.PrimaryBucketException;
 import com.gemstone.gemfire.internal.cache.execute.BucketMovedException;
 import com.gemstone.gnu.trove.THashSet;
@@ -38,6 +40,7 @@ import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserver;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverAdapter;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
+import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.access.index.OpenMemIndex;
 import com.pivotal.gemfirexd.internal.engine.distributed.GfxdConnectionWrapper;
 import com.pivotal.gemfirexd.internal.engine.distributed.message.BitSetSet;
@@ -48,6 +51,8 @@ import com.pivotal.gemfirexd.internal.iapi.reference.Property;
 import com.pivotal.gemfirexd.internal.iapi.services.sanity.SanityManager;
 import com.pivotal.gemfirexd.internal.iapi.sql.conn.LanguageConnectionContext;
 import com.pivotal.gemfirexd.internal.iapi.sql.depend.DependencyManager;
+import com.pivotal.gemfirexd.internal.iapi.types.RowLocation;
+import com.pivotal.gemfirexd.internal.iapi.types.UserType;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedStatement;
 import com.pivotal.gemfirexd.internal.impl.jdbc.authentication.AuthenticationServiceBase;
 import com.pivotal.gemfirexd.internal.impl.sql.GenericPreparedStatement;
@@ -179,6 +184,42 @@ public class BugsDUnit extends DistributedSQLTestBase {
     // asserting that the diff should be less than 20 seconds.
     assertTrue(diff < 20000);
   }
+
+//  public void testRemoteFetchOFBucketEntries() throws Exception {
+//    Properties props = new Properties();
+//    props.setProperty("log-level", "config");
+//    startVMs(1, 3, 0, null, props);
+//
+//    Connection conn = TestUtil.getConnection(props);
+//    Statement stmt = conn.createStatement();
+//    stmt.execute("CREATE TABLE app.t1 (c1 int not null, c2 int not null)");
+//
+//    PreparedStatement pstmt = conn.prepareStatement("insert into " +
+//        "app.t1 values (?,?)");
+//    for (int i = 1; i < 200; i++) {
+//      pstmt.setInt(1, i);
+//      pstmt.setInt(2, i);
+//      assertEquals(1, pstmt.executeUpdate());
+//    }
+//
+//    // bucketIds of all rows should be equal
+//    PartitionedRegion pr = (PartitionedRegion)Misc.getRegionForTable(
+//        "APP.T1", true);
+//    Iterator<?> iter = pr.getAppropriateLocalEntriesIterator(null, true, false,
+//        true, null, true);
+//
+//
+//    int numEntries = 19;
+//    while (iter.hasNext()) {
+//      RowLocation rl = (RowLocation)iter.next();
+//      assertEquals(expectedBucketId, rl.getBucketID());
+//      numEntries--;
+//    }
+//    assertEquals(0, numEntries);
+//
+//    ResultSet rs = stmt.executeQuery("select * from trade.companies");
+//    JDBC.assertEmpty(rs);
+//  }
 
   /**
    * This test should fail as is due to non-colocated columns but does not. Keeping test as is till
