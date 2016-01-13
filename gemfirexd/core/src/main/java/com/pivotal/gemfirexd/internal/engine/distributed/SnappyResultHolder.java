@@ -34,7 +34,6 @@ import com.pivotal.gemfirexd.internal.iapi.sql.execute.ExecRow;
 import com.pivotal.gemfirexd.internal.iapi.types.*;
 import com.pivotal.gemfirexd.internal.impl.sql.execute.ValueRow;
 import com.pivotal.gemfirexd.internal.shared.common.StoredFormatIds;
-import com.pivotal.gemfirexd.internal.shared.common.sanity.SanityManager;
 import com.pivotal.gemfirexd.internal.snappy.CallbackFactoryProvider;
 import com.pivotal.gemfirexd.internal.snappy.SparkSQLExecute;
 
