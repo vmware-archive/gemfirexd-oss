@@ -57,6 +57,12 @@ public abstract class CallbackFactoryProvider {
     public void readDVDArray(DataValueDescriptor[] dvds, ByteArrayDataInput in,
         int numEightColGroups, int numPartialCols) {
     }
+
+    @Override
+    public void clearSnappyContextForConnection(Long connectionId) {
+
+    }
+
   };
 
   public static ClusterCallbacks getClusterCallbacks() {

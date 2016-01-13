@@ -44,4 +44,6 @@ public interface ClusterCallbacks {
    */
   void readDVDArray(DataValueDescriptor[] dvds, ByteArrayDataInput in,
       int numEightColGroups, int numPartialCols);
+
+  void clearSnappyContextForConnection(Long connectionId);
 }
