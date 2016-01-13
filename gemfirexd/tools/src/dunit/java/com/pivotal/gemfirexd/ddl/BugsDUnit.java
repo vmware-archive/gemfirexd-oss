@@ -185,42 +185,6 @@ public class BugsDUnit extends DistributedSQLTestBase {
     assertTrue(diff < 20000);
   }
 
-//  public void testRemoteFetchOFBucketEntries() throws Exception {
-//    Properties props = new Properties();
-//    props.setProperty("log-level", "config");
-//    startVMs(1, 3, 0, null, props);
-//
-//    Connection conn = TestUtil.getConnection(props);
-//    Statement stmt = conn.createStatement();
-//    stmt.execute("CREATE TABLE app.t1 (c1 int not null, c2 int not null)");
-//
-//    PreparedStatement pstmt = conn.prepareStatement("insert into " +
-//        "app.t1 values (?,?)");
-//    for (int i = 1; i < 200; i++) {
-//      pstmt.setInt(1, i);
-//      pstmt.setInt(2, i);
-//      assertEquals(1, pstmt.executeUpdate());
-//    }
-//
-//    // bucketIds of all rows should be equal
-//    PartitionedRegion pr = (PartitionedRegion)Misc.getRegionForTable(
-//        "APP.T1", true);
-//    Iterator<?> iter = pr.getAppropriateLocalEntriesIterator(null, true, false,
-//        true, null, true);
-//
-//
-//    int numEntries = 19;
-//    while (iter.hasNext()) {
-//      RowLocation rl = (RowLocation)iter.next();
-//      assertEquals(expectedBucketId, rl.getBucketID());
-//      numEntries--;
-//    }
-//    assertEquals(0, numEntries);
-//
-//    ResultSet rs = stmt.executeQuery("select * from trade.companies");
-//    JDBC.assertEmpty(rs);
-//  }
-
   /**
    * This test should fail as is due to non-colocated columns but does not. Keeping test as is till
    * #51134 is open against this.
