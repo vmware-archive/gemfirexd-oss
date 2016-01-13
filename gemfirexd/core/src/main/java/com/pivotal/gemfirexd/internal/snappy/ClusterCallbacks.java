@@ -36,4 +36,6 @@ public interface ClusterCallbacks {
     public void stopExecutor();
 
     public SparkSQLExecute getSQLExecute(String sql, LeadNodeExecutionContext ctx, Version v);
+
+    public void clearSnappyContextForConnection(Long connectionId);
 }
