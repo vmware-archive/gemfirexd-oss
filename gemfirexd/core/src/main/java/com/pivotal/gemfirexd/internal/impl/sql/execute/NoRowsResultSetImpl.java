@@ -779,10 +779,9 @@ public abstract class NoRowsResultSetImpl implements ResultSet
   }
   
   @Override
-  public void checkCancellationFlag() throws StandardException {
-    final Activation act = this.activation;
-    if (act != null && act.isQueryCancelled()) {
-      act.checkCancellationFlag();
+  public final void checkCancellationFlag() throws StandardException {
+    if (activation.isQueryCancelled()) {
+      activation.checkCancellationFlag();
     }
   }
 // GemStone changes END
