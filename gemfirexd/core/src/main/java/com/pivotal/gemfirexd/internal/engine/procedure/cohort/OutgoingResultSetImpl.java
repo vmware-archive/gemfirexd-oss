@@ -41,7 +41,8 @@ import com.pivotal.gemfirexd.internal.impl.sql.GenericResultDescription;
 import com.pivotal.gemfirexd.internal.impl.sql.execute.ResultSetStatisticsVisitor;
 import com.pivotal.gemfirexd.procedure.OutgoingResultSet;
 
- public class OutgoingResultSetImpl implements OutgoingResultSet, ResultSet {
+public final class OutgoingResultSetImpl implements OutgoingResultSet,
+    ResultSet {
   private ArrayList<List<Object>> rowsList;
   private ProcedureSender sender;
   private final int resultSetNumber;
@@ -512,8 +513,9 @@ import com.pivotal.gemfirexd.procedure.OutgoingResultSet;
 
   @Override
   public void checkCancellationFlag() throws StandardException {
-    if (this.activation != null) {
-      this.activation.checkCancellationFlag();
+    final Activation act = this.activation;
+    if (act != null && act.isQueryCancelled()) {
+      act.checkCancellationFlag();
     }
   }
 }
