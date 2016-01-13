@@ -709,17 +709,6 @@ public final class FetchEntriesMessage extends PartitionMessage
         throw new ForceReattemptException(LocalizedStrings.FetchEntriesMessage_NO_REPLIES_RECEIVED.toLocalizedString());
       }
       return entries;
-//      Iterator it = this.returnValue.entrySet().iterator();
-//      while (it.hasNext()) {
-//        Map.Entry entry = (Map.Entry)it.next();
-//        Object value = entry.getValue();
-//        Object key = entry.getKey();
-//        VersionTag versionTag = returnVersions.get(key);
-//        entries.add(NonLocalRegionEntry.newEntry(key, value,
-//            pr, versionTag));
-//
-//      }
-//      return entries;
     }
   }
  }
