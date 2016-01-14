@@ -7283,15 +7283,15 @@ public class PartitionedRegion extends LocalRegion implements
           "PRLocalScanIterator::remove: unexpected call");
     }
 
-    public int getBucketId() {
+    public final int getBucketId() {
       return this.currentBucketId;
     }
 
-    public BucketRegion getBucket() {
+    public final BucketRegion getBucket() {
       return this.currentBucketRegion;
     }
 
-    public BucketRegion getHostedBucketRegion() {
+    public final BucketRegion getHostedBucketRegion() {
       return this.currentBucketRegion;
     }
 

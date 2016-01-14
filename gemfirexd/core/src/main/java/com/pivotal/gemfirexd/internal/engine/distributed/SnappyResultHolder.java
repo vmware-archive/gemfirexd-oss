@@ -34,12 +34,13 @@ import com.pivotal.gemfirexd.internal.iapi.sql.execute.ExecRow;
 import com.pivotal.gemfirexd.internal.iapi.types.*;
 import com.pivotal.gemfirexd.internal.impl.sql.execute.ValueRow;
 import com.pivotal.gemfirexd.internal.shared.common.StoredFormatIds;
+import com.pivotal.gemfirexd.internal.snappy.CallbackFactoryProvider;
 import com.pivotal.gemfirexd.internal.snappy.SparkSQLExecute;
 
 /**
  * Holds the results obtained from lead node execution.
  */
-public class SnappyResultHolder extends GfxdDataSerializable {
+public final class SnappyResultHolder extends GfxdDataSerializable {
 
   private transient SparkSQLExecute exec;
 
@@ -82,40 +83,43 @@ public class SnappyResultHolder extends GfxdDataSerializable {
   }
 
   @Override
-  public void fromData(DataInput in) throws IOException,
-    ClassNotFoundException {
-
+  public void fromData(DataInput in) throws IOException {
     final int numBytes = InternalDataSerializer.readArrayLength(in);
-    final byte[] rawData = DataSerializer.readByteArray(in, numBytes);
-    Version v = InternalDataSerializer.getVersionForDataStreamOrNull(in);
-    if (numBytes != 0) {
-      this.dis = new ByteArrayDataInput();
-      this.dis.initialize(rawData, v);
-      byte metaInfo = this.dis.readByte();
-      if (metaInfo == 0x01) {
-        tableNames = DataSerializer.readStringArray(this.dis);
-        colNames = DataSerializer.readStringArray(this.dis);
-        nullability = DataSerializer.readBooleanArray(this.dis);
-        int totCols = colNames.length;
-        this.precisions = new int[totCols];
-        this.scales = new int[totCols];
-        dtds = new DataTypeDescriptor[totCols];
-        this.colTypes = new int[totCols];
-        for(int i = 0; i<totCols; i++) {
-          int columnType = (int)InternalDataSerializer.readSignedVL(this.dis);
-          this.colTypes[i] = columnType;
-          if ( columnType == StoredFormatIds.SQL_DECIMAL_ID ) {
-            // read the precision and the scale
-            precisions[i] = (int)InternalDataSerializer.readSignedVL(this.dis);
-            scales[i] = (int)InternalDataSerializer.readSignedVL(this.dis);
-          }
-          else {
-            precisions[i] = -1;
-            scales[i] = -1;
-          }
+    if (numBytes > 0) {
+      final byte[] rawData = DataSerializer.readByteArray(in, numBytes);
+      Version v = InternalDataSerializer.getVersionForDataStreamOrNull(in);
+      fromSerializedData(rawData, numBytes, v);
+    }
+  }
+
+  public final void fromSerializedData(final byte[] rawData,
+      final int numBytes, final Version v) throws IOException {
+    final ByteArrayDataInput dis = new ByteArrayDataInput();
+    dis.initialize(rawData, 0, numBytes, v);
+    byte metaInfo = dis.readByte();
+    if (metaInfo == 0x01) {
+      tableNames = DataSerializer.readStringArray(dis);
+      colNames = DataSerializer.readStringArray(dis);
+      nullability = DataSerializer.readBooleanArray(dis);
+      int totCols = colNames.length;
+      this.precisions = new int[totCols];
+      this.scales = new int[totCols];
+      dtds = new DataTypeDescriptor[totCols];
+      this.colTypes = new int[totCols];
+      for (int i = 0; i < totCols; i++) {
+        int columnType = (int)InternalDataSerializer.readSignedVL(dis);
+        this.colTypes[i] = columnType;
+        if (columnType == StoredFormatIds.SQL_DECIMAL_ID) {
+          // read the precision and the scale
+          precisions[i] = (int)InternalDataSerializer.readSignedVL(dis);
+          scales[i] = (int)InternalDataSerializer.readSignedVL(dis);
+        } else {
+          precisions[i] = -1;
+          scales[i] = -1;
         }
       }
     }
+    this.dis = dis;
   }
 
   private void makeTemplateDVDArr() {
@@ -131,7 +135,6 @@ public class SnappyResultHolder extends GfxdDataSerializable {
     // determine eight col groups and partial col
     int numCols = colTypes.length;
     if (numEightColGrps < 0) {
-      // Initialize some data
       numEightColGrps = numCols / 8 + (numCols % 8 == 0 ? 0 : 1);
       numPartialCols = numCols % 8;
       if (numPartialCols == 0) {
@@ -162,7 +165,8 @@ public class SnappyResultHolder extends GfxdDataSerializable {
       if (templateDVDRow == null) {
         makeTemplateDVDArr();
       }
-      DVDIOUtil.readDVDArray(templateDVDRow, this.dis, numEightColGrps, numPartialCols);
+      CallbackFactoryProvider.getClusterCallbacks().readDVDArray(templateDVDRow,
+          this.dis, numEightColGrps, numPartialCols);
       return this.execRow;
     }
     this.dis = null;

@@ -17,8 +17,10 @@
 
 package com.pivotal.gemfirexd.internal.snappy;
 
+import com.gemstone.gemfire.internal.ByteArrayDataInput;
 import com.gemstone.gemfire.internal.shared.Version;
 import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
+import com.pivotal.gemfirexd.internal.iapi.types.DataValueDescriptor;
 
 import java.util.HashSet;
 
@@ -50,6 +52,17 @@ public abstract class CallbackFactoryProvider {
     public SparkSQLExecute getSQLExecute(String sql, LeadNodeExecutionContext ctx, Version v) {
        return null;
     }
+
+    @Override
+    public void readDVDArray(DataValueDescriptor[] dvds, ByteArrayDataInput in,
+        int numEightColGroups, int numPartialCols) {
+    }
+
+    @Override
+    public void clearSnappyContextForConnection(Long connectionId) {
+
+    }
+
   };
 
   public static ClusterCallbacks getClusterCallbacks() {

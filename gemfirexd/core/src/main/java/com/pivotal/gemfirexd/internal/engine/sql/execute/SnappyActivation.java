@@ -34,7 +34,6 @@ import com.pivotal.gemfirexd.internal.iapi.sql.ResultDescription;
 import com.pivotal.gemfirexd.internal.iapi.sql.ResultSet;
 import com.pivotal.gemfirexd.internal.iapi.sql.conn.LanguageConnectionContext;
 import com.pivotal.gemfirexd.internal.iapi.sql.execute.ExecPreparedStatement;
-import com.pivotal.gemfirexd.internal.iapi.sql.execute.ExecRow;
 import com.pivotal.gemfirexd.internal.iapi.sql.execute.NoPutResultSet;
 import com.pivotal.gemfirexd.internal.iapi.sql.execute.TemporaryRowHolder;
 import com.pivotal.gemfirexd.internal.impl.sql.GenericResultDescription;
@@ -59,6 +58,7 @@ public class SnappyActivation extends BaseActivation {
     super(lcc);
     sql = eps.getSource();
     this.returnRows = returnRows;
+    this.connectionID = lcc.getConnectionId();
   }
 
   @Override
@@ -119,7 +119,7 @@ public class SnappyActivation extends BaseActivation {
     boolean enableStreaming = this.lcc.streamingEnabled();
     GfxdResultCollector<Object> rc = null;
     rc = getResultCollector( enableStreaming, rs);
-    executeOnLeadNode(rs, rc, sql, enableStreaming);
+    executeOnLeadNode(rs, rc, sql, enableStreaming, this.getConnectionID());
   }
 
   protected GfxdResultCollector<Object> getResultCollector(
@@ -223,11 +223,12 @@ public class SnappyActivation extends BaseActivation {
     this.resultDescription = resultDescription;
   }
 
-  public static void executeOnLeadNode(SnappySelectResultSet rs, GfxdResultCollector<Object> rc, String sql, boolean enableStreaming)
+  public static void executeOnLeadNode(SnappySelectResultSet rs, GfxdResultCollector<Object> rc, String sql,
+      boolean enableStreaming , long connId)
           throws StandardException {
     // TODO: KN probably username, statement id and connId to be sent in
     // execution and of course tx id when transaction will be supported.
-    LeadNodeExecutionContext ctx = new LeadNodeExecutionContext();
+    LeadNodeExecutionContext ctx = new LeadNodeExecutionContext(connId);
     LeadNodeExecutorMsg msg = new LeadNodeExecutorMsg(sql, ctx, rc);
     try {
       msg.executeFunction(enableStreaming, false, rs, true);

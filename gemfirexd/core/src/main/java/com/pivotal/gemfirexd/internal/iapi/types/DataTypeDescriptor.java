@@ -1467,8 +1467,17 @@ public final class DataTypeDescriptor implements Formatable
 		// "XML values are not comparable."
 		// An XML value cannot be compared to any type--
 		// not even to other XML values.
+// GemStone changes BEGIN
+                // allow all string comparisons, long or not
+                if ((!compareWithTypeID.isStringTypeId() && compareWithTypeID
+                    .isLongConcatableTypeId()) || (!typeId.isStringTypeId() &&
+                    typeId.isLongConcatableTypeId()))
+                  return false;
+                /* (original code)
 		if (compareWithTypeID.isLongConcatableTypeId() || typeId.isLongConcatableTypeId())
 			return false;
+                */
+// GemStone changes END
 
 		// Ref types cannot be compared
 		if (typeId.isRefTypeId() || compareWithTypeID.isRefTypeId())
@@ -1505,7 +1514,7 @@ public final class DataTypeDescriptor implements Formatable
     				return true;
     		//If both the types are string types, then we need to make sure
     		//they have the same collation set on them
-    		if (compareWithTypeID.isStringTypeId() && typeId.isStringTypeId()) {
+		if (compareWithTypeID.isStringTypeId()) {
     			return compareCollationInfo(compareWithDTD);    			
     		} else
     			return false;//can't be compared			
