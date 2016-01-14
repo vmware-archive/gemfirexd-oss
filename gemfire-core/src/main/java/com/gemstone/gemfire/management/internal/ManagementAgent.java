@@ -77,7 +77,7 @@ public class ManagementAgent  {
   private JMXConnectorServer cs;
   private final DistributionConfig config;
   private final LogWriterI18n logger;
-
+  private final String PRODUCT ="SnappyData";
   /**
    * This system property is set to true when the embedded HTTP server is started so that the embedded pulse webapp
    * can use a local MBeanServer instead of a remote JMX connection.
@@ -147,15 +147,18 @@ public class ManagementAgent  {
 
       String productHome = StringUtils.EMPTY_STRING;
       String productName = StringUtils.EMPTY_STRING;
-
-      if (cache.isGFXDSystem()) {
-        productHome = System.getenv("GEMFIREXD");
-        productName = "GEMFIREXD";        
+      productHome = System.getenv("SNAPPY_HOME");
+      if (!StringUtils.isBlank(productHome) ){
+        productName = PRODUCT;
       } else {
-        productHome = System.getenv("GEMFIRE");
-        productName = "GEMFIRE";
+        if (cache.isGFXDSystem()) {
+          productHome = System.getenv("GEMFIREXD");
+          productName = "GEMFIREXD";
+        } else {
+          productHome = System.getenv("GEMFIRE");
+          productName = "GEMFIRE";
+        }
       }
-
 
       // Check for empty variable. if empty, then log message and exit HTTP server startup
       if (StringUtils.isBlank(productHome)) {
@@ -265,13 +268,17 @@ public class ManagementAgent  {
   private String getPulseWarLocation(final String productHome, final String productName) {
     assert !StringUtils.isBlank(productHome) : ManagementStrings.ASSERT_PRODUCT_ENV_VAR_MSG.toLocalizedString(productName);
 
+    if (productName.equals(PRODUCT)) {
+      String jarLoc = new File(getClass().getProtectionDomain().getCodeSource().getLocation().getPath()).getParent();
+      if (new File(jarLoc + "/pulse.war").isFile()) {
+        return jarLoc + "/" + "pulse.war";
+      }
+    }
     if (new File(productHome + "/tools/Pulse/pulse.war").isFile()) {
       return productHome + "/tools/Pulse/pulse.war";
-    }
-    else if (new File(productHome + "/lib/pulse.war").isFile()) {
+    } else if (new File(productHome + "/lib/pulse.war").isFile()) {
       return productHome + "/lib/pulse.war";
-    }
-    else {
+    } else {
       return null;
     }
   }
