@@ -253,8 +253,7 @@ public abstract class DDLStatementNode extends StatementNode
 
 		if (sd == null) {
 			/* Disable creating schemas starting with SYS */
-			if (schemaName.startsWith("SYS")
-					&& (!getObjectName().getTableName().endsWith(StoreCallbacks.SHADOW_TABLE_SUFFIX)))
+			if (schemaName.startsWith("SYS"))
 				throw StandardException.newException(
 					SQLState.LANG_NO_USER_DDL_IN_SYSTEM_SCHEMA,
 					statementToString(),

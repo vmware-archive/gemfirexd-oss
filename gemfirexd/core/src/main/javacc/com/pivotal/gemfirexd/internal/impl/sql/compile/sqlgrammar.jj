@@ -175,7 +175,6 @@ import com.pivotal.gemfirexd.internal.iapi.util.ReuseFactory;
 import com.pivotal.gemfirexd.internal.iapi.services.io.FormatableBitSet;
 import com.pivotal.gemfirexd.internal.iapi.util.StringUtil;
 import com.pivotal.gemfirexd.internal.engine.store.GemFireStore;
-import com.gemstone.gemfire.internal.snappy.StoreCallbacks;
 
 import java.sql.Types;
 import java.util.List;
@@ -11406,7 +11405,7 @@ schemaDefinition() throws StandardException :
 			if (authName != null)
 				checkVersion( DataDictionary.DD_VERSION_DERBY_10_2, "AUTHORIZATION");
 
-			if (schemaName.startsWith("SYS") && !schemaName.equals(StoreCallbacks.INTERNAL_SCHEMA_NAME))
+			if (schemaName.startsWith("SYS"))
 				throw StandardException.newException(SQLState.INVALID_SCHEMA_SYS, schemaName);
  
 			return (StatementNode) nodeFactory.getNode(
