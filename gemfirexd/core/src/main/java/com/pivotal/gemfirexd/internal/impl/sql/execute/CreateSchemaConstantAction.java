@@ -181,10 +181,7 @@ class CreateSchemaConstantAction extends DDLConstantAction
 		// Special case INTERNAL schema
 		if ((sd != null) && (sd.getUUID() != null))
 		{
-			if (!schemaName.equalsIgnoreCase(StoreCallbacks.INTERNAL_SCHEMA_NAME))
 				throw StandardException.newException(SQLState.LANG_OBJECT_ALREADY_EXISTS, "Schema" , schemaName);
-
-			return;
 		}
 
 		UUID tmpSchemaId = dd.getUUIDFactory().createUUID();

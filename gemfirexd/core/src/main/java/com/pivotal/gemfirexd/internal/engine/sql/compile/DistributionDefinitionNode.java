@@ -703,7 +703,8 @@ public class DistributionDefinitionNode extends TableElementNode {
       }
       // check in the target table
 
-      if (!(tableName.toUpperCase().endsWith(StoreCallbacks.SHADOW_TABLE_SUFFIX) || srcTableName.toUpperCase().endsWith(StoreCallbacks.SHADOW_TABLE_SUFFIX))) {
+      if (!(tableName.toUpperCase().endsWith(StoreCallbacks.SHADOW_TABLE_SUFFIX)
+          || srcTableName.toUpperCase().endsWith(StoreCallbacks.SHADOW_TABLE_SUFFIX))) {
         int[] colpositions = targetDistributionDesc.getColumnPositionsSorted();
         int size = columnNames.length;
         if (colpositions.length != size) {
