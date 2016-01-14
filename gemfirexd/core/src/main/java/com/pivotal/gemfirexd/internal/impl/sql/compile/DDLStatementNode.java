@@ -45,6 +45,7 @@ package	com.pivotal.gemfirexd.internal.impl.sql.compile;
 
 
 
+import com.gemstone.gemfire.internal.snappy.StoreCallbacks;
 import com.pivotal.gemfirexd.internal.catalog.UUID;
 import com.pivotal.gemfirexd.internal.engine.ddl.GfxdAlterTableNode;
 import com.pivotal.gemfirexd.internal.iapi.error.StandardException;
@@ -252,7 +253,8 @@ public abstract class DDLStatementNode extends StatementNode
 
 		if (sd == null) {
 			/* Disable creating schemas starting with SYS */
-			if (schemaName.startsWith("SYS"))
+			if (schemaName.startsWith("SYS")
+					&& (!getObjectName().getTableName().endsWith(StoreCallbacks.SHADOW_TABLE_SUFFIX)))
 				throw StandardException.newException(
 					SQLState.LANG_NO_USER_DDL_IN_SYSTEM_SCHEMA,
 					statementToString(),
