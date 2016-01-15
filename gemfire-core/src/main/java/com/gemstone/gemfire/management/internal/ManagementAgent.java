@@ -207,7 +207,7 @@ public class ManagementAgent  {
           }
           System.setProperty(PULSE_EMBEDDED_PROP, "true");
           
-          if(productName.equals("GEMFIREXD")){
+          if(productName.equals("GEMFIREXD") || productName.equals("SnappyData")){
             System.setProperty(PULSE_EMBEDDED_GFXD_PROP, "true");
           }
          
