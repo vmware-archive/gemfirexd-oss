@@ -128,6 +128,16 @@ public final class LeadNodeExecutorMsg extends MemberExecutorMessage<Object> {
                 "LeadNodeExecutorMsg.execute: Sent Last result ");
       }
     } catch (Exception ex) {
+
+      Throwable cause = ex ;
+      while(cause != null) {
+        if (cause.getClass().getName().contains("ErrorLimitExceededException")) {
+          throw StandardException.newException(
+              SQLState.LANG_UNEXPECTED_USER_EXCEPTION, cause, cause.getMessage());
+        }
+        cause = cause.getCause();
+      }
+
       // Catch all exceptions and convert so can be caugh at XD side
       if (ex.getClass().getName().contains("AnalysisException")) {
         throw StandardException.newException(
