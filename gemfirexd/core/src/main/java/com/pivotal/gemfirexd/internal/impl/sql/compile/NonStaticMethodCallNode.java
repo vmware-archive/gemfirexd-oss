@@ -170,7 +170,7 @@ public class NonStaticMethodCallNode extends MethodCallNode
         // Don't allow LOB types to be used as a method receiver
         String type = receiver.getJSQLType().getSQLType().getTypeId().getSQLTypeName();
         if ( type.equals("BLOB") || type.equals("CLOB") || type.equals("NCLOB") ) {
-            throw StandardException.newException(SQLState.LOB_AS_METHOD_ARGUMENT_OR_RECEIVER);
+            //throw StandardException.newException(SQLState.LOB_AS_METHOD_ARGUMENT_OR_RECEIVER);
         }
 
 		javaClassName = receiver.getJavaTypeName();
