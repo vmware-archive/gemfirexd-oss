@@ -405,6 +405,7 @@ gradle.taskGraph.whenReady({ graph ->
 })
 
 task generateSources {
+  dependsOn subprojectBase + 'gemfire-jgroups:jgMagic'
   dependsOn subprojectBase + 'gemfire-core:createVersionPropertiesFile'
   dependsOn subprojectBase + 'gemfirexd:generateSources'
 }
