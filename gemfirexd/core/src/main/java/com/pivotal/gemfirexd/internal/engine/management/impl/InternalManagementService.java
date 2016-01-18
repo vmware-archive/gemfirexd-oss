@@ -40,6 +40,8 @@ import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedM
 import com.gemstone.gemfire.i18n.LogWriterI18n;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
+import com.gemstone.gemfire.internal.snappy.CallbackFactoryProvider;
+import com.gemstone.gemfire.internal.snappy.StoreCallbacks;
 import com.gemstone.gemfire.management.ManagementException;
 import com.gemstone.gemfire.management.internal.BaseManagementService;
 import com.gemstone.gemfire.management.internal.FederationComponent;
@@ -367,7 +369,8 @@ public class InternalManagementService {
     Set<String> serverGroupsToUse = Collections.EMPTY_SET;
     LocalRegion region = container.getRegion();
 
-    if (region == null) {
+    // Do not display tables without region names or created in internal schema.
+    if (region == null || hasInternalTableSchema(container)) {
       return;
     }
     RegionMBeanBridge<?, ?>   regionMBeanBridge = RegionMBeanBridge.getInstance(region);
@@ -408,7 +411,20 @@ public class InternalManagementService {
     this.tableMBeanDataUpdater.addUpdatable(tableMBeanBridge.getFullName(), tableMBeanBridge); // start updates after creation
   }  
 
-  List<String> getTableDefinition (String parentSchema, String tableName){   
+  private boolean hasInternalTableSchema(GemFireContainer container) {
+    for (String schema : CallbackFactoryProvider.getStoreCallbacks().getInternalTableSchema()) {
+      if (schema.equalsIgnoreCase(container.getSchemaName())) {
+        return true;
+      }
+    }
+    // This constant is defined at snappy-store side, so won't be included in above response from StoreCallback.
+    if (StoreCallbacks.INTERNAL_SCHEMA_NAME.equalsIgnoreCase(container.getSchemaName())) {
+      return true;
+    }
+    return false;
+  }
+
+  List<String> getTableDefinition (String parentSchema, String tableName){
     List<String> columnList = new ArrayList<String>(); 
 
     final EmbedConnection conn = this.connectionWrapperHolder.getConnection();
