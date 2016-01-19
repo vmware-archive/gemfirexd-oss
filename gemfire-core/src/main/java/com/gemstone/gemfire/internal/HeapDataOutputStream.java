@@ -1252,7 +1252,7 @@ public class HeapDataOutputStream extends OutputStream implements
         }
         this.buffer.putShort(utfSizeIdx, (short)utfLen);
       } else {
-        utfLen -= 2;
+        utfLen -= 4;
         this.buffer.putInt(utfSizeIdx, utfLen);
       }
     }
