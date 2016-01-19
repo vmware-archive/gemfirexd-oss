@@ -716,7 +716,7 @@ public class BucketRegion extends DistributedRegion implements Bucket {
             && this.size() >= GemFireCacheImpl.getColumnBatchSize()) {
           putAllLock.writeLock().lock();
           try {
-            createAndInsertCachedBatch();
+            createAndInsertCachedBatch(false);
           } finally {
             putAllLock.writeLock().unlock();
           }
@@ -725,13 +725,13 @@ public class BucketRegion extends DistributedRegion implements Bucket {
     }
   }
 
-  public synchronized boolean createAndInsertCachedBatch() {
+  public synchronized boolean createAndInsertCachedBatch(boolean forceFlush) {
     // we may have to use region.size so that no state
     // has to be maintained
     // one more check for size to make sure that concurrent call doesn't succeed.
     // anyway batchUUID will be null in that case.
-    if (this.batchUUID != null &&
-        this.getBucketAdvisor().isPrimary() && this.size() >= GemFireCacheImpl.getColumnBatchSize()) {
+    if (this.batchUUID != null && this.getBucketAdvisor().isPrimary() &&
+        (forceFlush || getRegionSize() >= GemFireCacheImpl.getColumnBatchSize())) {
       // need to flush the region
       if (getCache().getLoggerI18n().fineEnabled()) {
         getCache()
