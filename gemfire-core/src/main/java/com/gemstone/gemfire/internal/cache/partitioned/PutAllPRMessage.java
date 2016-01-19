@@ -651,7 +651,7 @@ public final class PutAllPRMessage extends PartitionMessageWithDirectReply {
               && bucketRegion.size() >= GemFireCacheImpl.getColumnBatchSize()) {
             bucketRegion.putAllLock.writeLock().lock();
             try {
-              bucketRegion.createAndInsertCachedBatch();
+              bucketRegion.createAndInsertCachedBatch(false);
             }
             finally {
               bucketRegion.putAllLock.writeLock().unlock();
