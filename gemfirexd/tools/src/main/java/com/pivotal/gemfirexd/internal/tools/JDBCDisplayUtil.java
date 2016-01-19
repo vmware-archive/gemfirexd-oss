@@ -82,6 +82,7 @@ public class JDBCDisplayUtil {
 	static final private int MINWIDTH = 4;
 	static private int maxWidth = 128;
     static public boolean showSelectCount = false;
+	static public boolean showSelectRows = true; //GemStone Addition
 
     static {
         // initialize the locale support functions to default value of JVM 
@@ -764,6 +765,10 @@ public class JDBCDisplayUtil {
 								   int[] displayColumns, int[] displayColumnWidths )
 		throws SQLException
 	{
+		if (showSelectRows == false) {
+			return 0;
+		}
+
 		StringBuilder buf = new StringBuilder();
 		buf.ensureCapacity(rowLen);
 

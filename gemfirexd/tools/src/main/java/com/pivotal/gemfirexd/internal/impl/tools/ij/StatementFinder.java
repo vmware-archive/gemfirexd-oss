@@ -47,6 +47,8 @@ import scala.tools.jline.console.ConsoleReader;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
 	StatementGrabber looks through an input stream for
@@ -77,6 +79,8 @@ public class StatementFinder {
 	private ConsoleReader consoleReader;
 	
 	private String basePath;
+
+	private Map<String, String> params;
 
 	public ConsoleReader getConsoleReader() {
 	  return this.consoleReader;
@@ -134,10 +138,12 @@ public class StatementFinder {
 						no such prompts will be written.
 	 * @param basePath TODO
 	 */
-	public StatementFinder(LocalizedInput s, LocalizedOutput promptDest, String basePath) {
+	public StatementFinder(LocalizedInput s, LocalizedOutput promptDest,
+			String basePath, Map<String, String> params) {
 // GemStone changes BEGIN
 		this.consoleReader = (ConsoleReader)s.getConsoleReader();
 		this.basePath = basePath;
+		this.params = params;
 // GemStone changes END
 		source = s;
 		if(promptDest != null && s.isStandardInput()) {
@@ -363,7 +369,17 @@ public class StatementFinder {
 	      text.replace(idx, idx+MiscTools.PATH_TOKEN.length(), this.basePath);
 	    }
 	  }
-	  
+
+		if (params != null) {
+			for(Map.Entry<String, String> parameter : params.entrySet()) {
+				final String param = ":"+parameter.getKey();
+				int idx = text.indexOf(param);
+				if (idx >= 0) {
+					text.replace(idx, idx + param.length(), parameter.getValue());
+				}
+			}
+		}
+
 	  return text;
 	}
 
