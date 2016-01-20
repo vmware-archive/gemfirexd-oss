@@ -1208,7 +1208,7 @@ public class HeapDataOutputStream extends OutputStream implements
   public final void writeFullUTF(String str, boolean encodeLength,
       boolean useShortLen) throws UTFDataFormatException {
     int strlen = str.length();
-    if (encodeLength && strlen > 65535) {
+    if (encodeLength && useShortLen && strlen > 65535) {
       throw new UTFDataFormatException();
     }
     // make room for worst case space 3 bytes for each char and 2 for len

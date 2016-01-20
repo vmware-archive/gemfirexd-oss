@@ -42,8 +42,8 @@ public interface ClusterCallbacks {
   /**
    * Deserialize the SnappyResultHolder object per batch.
    */
-  void readDVDArray(DataValueDescriptor[] dvds, ByteArrayDataInput in,
-      int numEightColGroups, int numPartialCols);
+  void readDVDArray(DataValueDescriptor[] dvds, int[] types,
+      ByteArrayDataInput in, int numEightColGroups, int numPartialCols);
 
   void clearSnappyContextForConnection(Long connectionId);
 }

@@ -165,8 +165,8 @@ public final class SnappyResultHolder extends GfxdDataSerializable {
       if (templateDVDRow == null) {
         makeTemplateDVDArr();
       }
-      CallbackFactoryProvider.getClusterCallbacks().readDVDArray(templateDVDRow,
-          this.dis, numEightColGrps, numPartialCols);
+      CallbackFactoryProvider.getClusterCallbacks().readDVDArray(
+          templateDVDRow, colTypes, this.dis, numEightColGrps, numPartialCols);
       return this.execRow;
     }
     this.dis = null;

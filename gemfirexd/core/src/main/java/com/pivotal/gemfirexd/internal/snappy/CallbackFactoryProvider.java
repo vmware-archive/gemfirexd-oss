@@ -54,8 +54,8 @@ public abstract class CallbackFactoryProvider {
     }
 
     @Override
-    public void readDVDArray(DataValueDescriptor[] dvds, ByteArrayDataInput in,
-        int numEightColGroups, int numPartialCols) {
+    public void readDVDArray(DataValueDescriptor[] dvds, int[] types,
+        ByteArrayDataInput in, int numEightColGroups, int numPartialCols) {
     }
 
     @Override
