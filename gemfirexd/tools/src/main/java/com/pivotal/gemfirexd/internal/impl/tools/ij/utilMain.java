@@ -50,7 +50,9 @@ import com.pivotal.gemfirexd.internal.shared.common.sanity.SanityManager;
 import com.pivotal.gemfirexd.internal.tools.JDBCDisplayUtil;
 import scala.tools.jline.console.ConsoleReader;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 import java.util.Hashtable;
 import java.util.Properties;
@@ -118,6 +120,8 @@ public class utilMain implements java.security.PrivilegedAction {
 	// GemStone changes BEGIN
 	private final String basePath;
 
+	private final Map<String, String> params;
+
 	private static String basePrompt = "gfxd";
 
 	public static void setBasePrompt(String prompt) {
@@ -134,7 +138,7 @@ public class utilMain implements java.security.PrivilegedAction {
 	utilMain(int numConnections, LocalizedOutput out)
 		throws ijFatalException
 	{
-		this(numConnections, out, (Hashtable)null, null);
+		this(numConnections, out, (Hashtable)null, null, null);
 	}
 
 	/**
@@ -150,7 +154,7 @@ public class utilMain implements java.security.PrivilegedAction {
 	 *							tests.
 	 * @param basePath TODO
 	 */
-	public utilMain(int numConnections, LocalizedOutput out, Hashtable ignoreErrors, String basePath)
+	public utilMain(int numConnections, LocalizedOutput out, Hashtable ignoreErrors, String basePath, Map<String, String> params)
 		throws ijFatalException
 	{
 		/* init the parser; give it no input to start with.
@@ -163,6 +167,7 @@ public class utilMain implements java.security.PrivilegedAction {
 		this.out = out;
 		this.ignoreErrors = ignoreErrors;
 		this.basePath = basePath;
+		this.params = params;
 		
 		showErrorCode = 
 			Boolean.valueOf(
@@ -178,7 +183,7 @@ public class utilMain implements java.security.PrivilegedAction {
 
 		for (int ictr = 0; ictr < numConnections; ictr++)
 		{
-		    commandGrabber[ictr] = new StatementFinder(langUtil.getNewInput(System.in), out, basePath);
+		    commandGrabber[ictr] = new StatementFinder(langUtil.getNewInput(System.in), out, basePath, params);
 			connEnv[ictr] = new ConnectionEnv(ictr, (numConnections > 1), (numConnections == 1));
 		}
 
@@ -271,8 +276,12 @@ public class utilMain implements java.security.PrivilegedAction {
       		//accordingly. 
     		boolean showNoCountForSelect = Boolean.valueOf(util.getSystemProperty("gfxd.showNoCountForSelect")).booleanValue(); // GemStone change ij ==> gfxd
       		JDBCDisplayUtil.showSelectCount = !showNoCountForSelect;
+			// GemStone changes BEGIN
+			boolean showNoRowsForSelect = Boolean.valueOf(util.getSystemProperty("gfxd.showNoRowsForSelect")).booleanValue();
+			JDBCDisplayUtil.showSelectRows = !showNoRowsForSelect;
+			// GemStone changes END
 
-      		//check if the property is set to not show initial connections and accordingly set the
+			//check if the property is set to not show initial connections and accordingly set the
       		//static variable.
     		boolean showNoConnectionsAtStart = Boolean.valueOf(util.getSystemProperty("gfxd.showNoConnectionsAtStart")).booleanValue(); // GemStone change ij ==> gfxd
 
@@ -311,6 +320,9 @@ public class utilMain implements java.security.PrivilegedAction {
 	         else {
 	           JDBCDisplayUtil.showSelectCount = false;
 	         }
+
+						boolean showNoRowsForSelect = Boolean.valueOf(util.getSystemProperty("gfxd.showNoRowsForSelect")).booleanValue(); // GemStone change ij ==> gfxd
+						JDBCDisplayUtil.showSelectRows = !showNoRowsForSelect;
 
 		// GemStone changes END
 		connEnv[0].addSession(conn, (String) null);
@@ -893,7 +905,7 @@ public class utilMain implements java.security.PrivilegedAction {
 		// if the file was opened, move to use it for input.
 		oldGrabbers.push(commandGrabber[currCE]);
 	    commandGrabber[currCE] = 
-                new StatementFinder(langUtil.getNewInput(new BufferedInputStream(newFile, BUFFEREDFILESIZE)), null, basePath);
+                new StatementFinder(langUtil.getNewInput(new BufferedInputStream(newFile, BUFFEREDFILESIZE)), null, basePath, params);
 		fileInput = true;
 	}
 
@@ -902,7 +914,7 @@ public class utilMain implements java.security.PrivilegedAction {
 		if (is==null) throw ijException.resourceNotFound();
 		oldGrabbers.push(commandGrabber[currCE]);
 	    commandGrabber[currCE] = 
-                new StatementFinder(langUtil.getNewEncodedInput(new BufferedInputStream(is, BUFFEREDFILESIZE), "UTF8"), null, basePath);
+                new StatementFinder(langUtil.getNewEncodedInput(new BufferedInputStream(is, BUFFEREDFILESIZE), "UTF8"), null, basePath, params);
 		fileInput = true;
 	}
 

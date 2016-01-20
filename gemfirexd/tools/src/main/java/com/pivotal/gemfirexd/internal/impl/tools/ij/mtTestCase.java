@@ -264,7 +264,7 @@ public class mtTestCase
 		LocalizedInput [] in = { is };
 	
 		out.println("--------------"+file+"-----------------");
-		utilInstance = new utilMain(1, out, ignoreErrors, null);
+		utilInstance = new utilMain(1, out, ignoreErrors, null, null);
 		utilInstance.initFromEnvironment();
 		utilInstance.setMtUse(true);
 		utilInstance.go(in, out, (java.util.Properties) null);

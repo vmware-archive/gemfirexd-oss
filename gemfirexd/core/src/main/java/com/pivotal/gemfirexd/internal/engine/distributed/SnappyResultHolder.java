@@ -245,6 +245,7 @@ public final class SnappyResultHolder extends GfxdDataSerializable {
         break;
 
       case StoredFormatIds.SQL_CLOB_ID:
+      case StoredFormatIds.SQL_VARCHAR_ID:
         dvd = new SQLClob();
         jdbcTypeId = Types.CLOB;
         dtd = DataTypeDescriptor.getBuiltInDataTypeDescriptor(jdbcTypeId, nullable);
