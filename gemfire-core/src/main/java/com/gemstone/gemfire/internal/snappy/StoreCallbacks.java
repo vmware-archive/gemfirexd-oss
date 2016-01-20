@@ -24,8 +24,7 @@ import java.util.UUID;
 import com.gemstone.gemfire.internal.cache.BucketRegion;
 
 public interface StoreCallbacks {
-  String INTERNAL_SCHEMA_NAME = "SNAPPYSYS_INTERNAL";
   String SHADOW_TABLE_SUFFIX = "_COLUMN_STORE_";
   Set createCachedBatch(BucketRegion region, UUID batchID, int bucketID);
-  List<String> getInternalTableSchema();
+  List<String> getInternalTableSchemas();
 }

@@ -35,7 +35,7 @@ public abstract class CallbackFactoryProvider {
     }
 
     @Override
-    public List<String> getInternalTableSchema() {
+    public List<String> getInternalTableSchemas() {
       return Collections.emptyList();
     }
   };

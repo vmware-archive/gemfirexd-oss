@@ -16,8 +16,6 @@
  */
 package com.pivotal.gemfirexd.internal.engine.management.impl;
 
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,7 +35,6 @@ import javax.management.ObjectName;
 import com.gemstone.gemfire.LogWriter;
 import com.gemstone.gemfire.distributed.DistributedSystemDisconnectedException;
 import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
-import com.gemstone.gemfire.i18n.LogWriterI18n;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.internal.snappy.CallbackFactoryProvider;
@@ -76,7 +73,6 @@ import com.pivotal.gemfirexd.internal.iapi.store.access.TransactionController;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedConnection;
 import com.pivotal.gemfirexd.internal.impl.sql.GenericStatement;
 import com.pivotal.gemfirexd.internal.impl.sql.StatementStats;
-import com.pivotal.gemfirexd.internal.impl.sql.conn.GenericLanguageConnectionContext;
 
 /**
  *
@@ -412,14 +408,10 @@ public class InternalManagementService {
   }  
 
   private boolean hasInternalTableSchema(GemFireContainer container) {
-    for (String schema : CallbackFactoryProvider.getStoreCallbacks().getInternalTableSchema()) {
+    for (String schema : CallbackFactoryProvider.getStoreCallbacks().getInternalTableSchemas()) {
       if (schema.equalsIgnoreCase(container.getSchemaName())) {
         return true;
       }
-    }
-    // This constant is defined at snappy-store side, so won't be included in above response from StoreCallback.
-    if (StoreCallbacks.INTERNAL_SCHEMA_NAME.equalsIgnoreCase(container.getSchemaName())) {
-      return true;
     }
     return false;
   }
