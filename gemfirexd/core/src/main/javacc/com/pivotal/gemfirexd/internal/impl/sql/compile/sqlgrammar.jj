@@ -16925,6 +16925,10 @@ truncateTableStatement() throws StandardException :
 {
 	<TRUNCATE> <TABLE> tableName = qualifiedName(Limits.MAX_IDENTIFIER_LENGTH) 
 	{
+  // GemStone changes BEGIN
+  CompilerContext cc = getCompilerContext();
+  cc.markAsDDLForSnappyUse(true);
+  cc.setForcedDDLrouting(true);
 		return (StatementNode) nodeFactory.getNode(
 							C_NodeTypes.ALTER_TABLE_NODE,
 							tableName,
