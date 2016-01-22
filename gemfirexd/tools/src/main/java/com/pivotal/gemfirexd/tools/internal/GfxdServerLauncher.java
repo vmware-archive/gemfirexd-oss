@@ -48,6 +48,7 @@ import com.gemstone.gemfire.internal.ByteArrayDataInput;
 import com.gemstone.gemfire.internal.HeapDataOutputStream;
 import com.gemstone.gemfire.internal.SocketCreator;
 import com.gemstone.gemfire.internal.cache.CacheServerLauncher;
+import com.gemstone.gemfire.internal.cache.CacheServerLauncher.Status;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.control.HeapMemoryMonitor;
 import com.gemstone.gemfire.internal.cache.lru.HeapEvictor;
@@ -1167,7 +1168,7 @@ public class GfxdServerLauncher extends CacheServerLauncher {
         message);
   }
 
-  /** @see CacheServerLauncher.stopAdditionalServices() */
+  /** @see CacheServerLauncher#stopAdditionalServices() */
   @Override
   protected void stopAdditionalServices() throws Exception {
     getFabricServiceInstance().stopAllNetworkServers();

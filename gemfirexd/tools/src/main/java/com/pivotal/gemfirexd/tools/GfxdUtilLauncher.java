@@ -26,6 +26,7 @@ import java.util.TreeSet;
 import com.gemstone.gemfire.InternalGemFireError;
 import com.gemstone.gemfire.internal.GemFireTerminateError;
 import com.gemstone.gemfire.internal.GemFireUtilLauncher;
+import com.gemstone.gemfire.internal.GemFireUtilLauncher.CommandEntry;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.pivotal.gemfirexd.internal.iapi.tools.i18n.LocalizedResource;
 import com.pivotal.gemfirexd.internal.shared.common.sanity.SanityManager;

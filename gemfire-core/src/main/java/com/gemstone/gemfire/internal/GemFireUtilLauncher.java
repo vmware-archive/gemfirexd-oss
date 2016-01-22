@@ -78,7 +78,7 @@ public class GemFireUtilLauncher {
    **/
   protected GemFireUtilLauncher() {}
 
-  protected class CommandEntry {
+  public static class CommandEntry {
     public final Class<?> clazz;
     public final String usage;
     public final boolean preserveArgv1;
