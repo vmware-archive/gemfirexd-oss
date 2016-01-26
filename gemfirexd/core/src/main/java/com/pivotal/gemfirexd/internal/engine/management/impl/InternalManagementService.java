@@ -490,19 +490,21 @@ public class InternalManagementService {
     if (serverGroupsToUse.isEmpty()) {
       serverGroupsToUse = DEFAULT_SERVERGROUP_SET;
     }
-    
+
     try {
       for (String serverGroup : serverGroupsToUse) {
         ObjectName tableMBeanName = ManagementUtils.getTableMBeanName(
-        serverGroup, memberNameOrId, tableName);        
-        TableMXBean mbean = (TableMXBean) InternalManagementService.getAnyInstance().getMBeanInstance(tableMBeanName,TableMXBean.class);        
-        TableMBean tableMbean = (TableMBean) mbean;        
-        tableMbean.setDefinition(getTableDefinition(container.getSchemaName(), container.getTableName()));        
+            serverGroup, memberNameOrId, tableName);
+        TableMXBean mbean = (TableMXBean)InternalManagementService.getAnyInstance()
+            .getMBeanInstance(tableMBeanName, TableMXBean.class);
+        if (mbean != null) {
+          TableMBean tableMbean = (TableMBean)mbean;
+          tableMbean.setDefinition(getTableDefinition(container.getSchemaName(),
+              container.getTableName()));
+        }
       }
-
     } catch (Exception ex) {
-      logger
-      .warning("handleTableAlter exception == " + ex.getMessage() + 
+      logger.warning("handleTableAlter exception == " + ex.getMessage() +
           " Full Exception = " + ex);
     }
   }

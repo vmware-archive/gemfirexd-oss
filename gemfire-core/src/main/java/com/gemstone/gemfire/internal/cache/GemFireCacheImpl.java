@@ -555,7 +555,11 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
   // Indicates whether foreign key checks for events received on WAN gateways should be skipped when applying them 
   private boolean skipFKChecksForGatewayEvents = false;
 
-  private static int COLUMN_BATCH_SIZE = 10000; // default value
+  /** Default size for CachedBatches. */
+  private static int COLUMN_BATCH_SIZE = 10000;
+
+  /** Minimum size for CachedBatches. */
+  private static int COLUMN_MIN_BATCH_SIZE = 150;
 
   /** {@link PropertyResolver} to resolve ${} type property strings */
   protected static PropertyResolver resolver;
@@ -5935,7 +5939,11 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
   public static int getColumnBatchSize() {
     return COLUMN_BATCH_SIZE;
   }
-  
+
+  public static int getColumnMinBatchSize() {
+    return COLUMN_MIN_BATCH_SIZE;
+  }
+
   public final boolean isHadoopGfxdLonerMode() {
     return this.system.isHadoopGfxdLonerMode();
   }
