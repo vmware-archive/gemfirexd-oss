@@ -50,8 +50,8 @@ allprojects {
     PRODUCT_MINOR = '0'
     PRODUCT_MAINT = 'SNAPSHOT.1'
     PRODUCT_VERSION = "${PRODUCT_MAJOR}.${PRODUCT_MINOR}-${PRODUCT_MAINT}"
-    PRODUCT_VENDOR = 'Pivotal Software, Inc.'
-    COPYRIGHT = "Copyright 1997-2015, ${PRODUCT_VENDOR} All rights reserved."
+    PRODUCT_VENDOR = 'SnappyData, Inc.'
+    COPYRIGHT = "Copyright 2016, ${PRODUCT_VENDOR} All rights reserved."
 
     if (rootProject.name == 'snappy-store') {
       subprojectBase = ':'
@@ -89,7 +89,7 @@ allprojects {
     }
   }
 
-  group = 'org.pivotal.gemfirexd'
+  group = 'io.snappydata.store'
   version = PRODUCT_VERSION
 
   apply plugin: 'java'

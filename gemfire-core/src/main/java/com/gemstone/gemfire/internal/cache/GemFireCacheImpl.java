@@ -559,7 +559,7 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
   private static int COLUMN_BATCH_SIZE = 10000;
 
   /** Minimum size for CachedBatches. */
-  private static int COLUMN_MIN_BATCH_SIZE = 150;
+  private static int COLUMN_MIN_BATCH_SIZE = 200;
 
   /** {@link PropertyResolver} to resolve ${} type property strings */
   protected static PropertyResolver resolver;
