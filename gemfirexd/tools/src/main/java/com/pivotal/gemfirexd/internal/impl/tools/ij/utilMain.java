@@ -122,6 +122,8 @@ public class utilMain implements java.security.PrivilegedAction {
 
 	private final Map<String, String> params;
 
+	private final int numTimesToRun;
+
 	private static String basePrompt = "gfxd";
 
 	public static void setBasePrompt(String prompt) {
@@ -138,7 +140,7 @@ public class utilMain implements java.security.PrivilegedAction {
 	utilMain(int numConnections, LocalizedOutput out)
 		throws ijFatalException
 	{
-		this(numConnections, out, (Hashtable)null, null, null);
+		this(numConnections, out, (Hashtable)null, null, null, 1);
 	}
 
 	/**
@@ -152,9 +154,11 @@ public class utilMain implements java.security.PrivilegedAction {
 	 *							ignore.  Otherwise, an ijFatalException is
 	 *							thrown.  ignoreErrors is used for stress
 	 *							tests.
-	 * @param basePath TODO
+	 * @param basePath base path set with -path command.
+	 * @param numTimesToRun number of times a command is to be repeated.
 	 */
-	public utilMain(int numConnections, LocalizedOutput out, Hashtable ignoreErrors, String basePath, Map<String, String> params)
+	public utilMain(int numConnections, LocalizedOutput out, Hashtable ignoreErrors, String basePath,
+			Map<String, String> params, int numTimesToRun)
 		throws ijFatalException
 	{
 		/* init the parser; give it no input to start with.
@@ -168,6 +172,7 @@ public class utilMain implements java.security.PrivilegedAction {
 		this.ignoreErrors = ignoreErrors;
 		this.basePath = basePath;
 		this.params = params;
+		this.numTimesToRun = numTimesToRun;
 		
 		showErrorCode = 
 			Boolean.valueOf(
@@ -731,6 +736,18 @@ public class utilMain implements java.security.PrivilegedAction {
         
 	    RedirectedLocalizedOutput redirected = null;
 	    try {
+				int repeatCommand = numTimesToRun;
+				boolean reportRunNum = false;
+				final String c = command.trim().toLowerCase();
+				if (c.startsWith("set") || c.startsWith("elapsed")) {
+					repeatCommand = 1;
+				} else if (repeatCommand > 1) {
+					reportRunNum = true;
+				}
+
+				int runNumber = 0;
+			do { // repeatCommand
+
 			boolean	elapsedTimeOn = ijParser.getElapsedTimeState();
 			long	beginTime = 0;
 			long	endTime;
@@ -752,15 +769,24 @@ public class utilMain implements java.security.PrivilegedAction {
 			/* Print the elapsed time if appropriate */
 			if (elapsedTimeOn) {
 // GemStone changes BEGIN
-				out.println(langUtil.getTextMessage("IJ_ElapTime0Mil_4",
+				if (reportRunNum) {
+					out.println("Run - " + runNumber + " " + langUtil.getTextMessage("IJ_ElapTime0Mil_4",
 				    langUtil.getNumberAsString(endTime)));
+				}	else {
+						out.println(langUtil.getTextMessage("IJ_ElapTime0Mil_4",
+								langUtil.getNumberAsString(endTime)));
+				}
 				/* (original code)
 				endTime = System.currentTimeMillis();
 				out.println(langUtil.getTextMessage("IJ_ElapTime0Mil_4", 
 				langUtil.getNumberAsString(endTime - beginTime)));
 				*/
 // GemStone changes END
+			} else if (reportRunNum) {
+				out.println("Run - " + runNumber + " completed ");
 			}
+
+			} while ( ++runNumber < repeatCommand);
             return true;
 
 	    } catch (SQLException e) {

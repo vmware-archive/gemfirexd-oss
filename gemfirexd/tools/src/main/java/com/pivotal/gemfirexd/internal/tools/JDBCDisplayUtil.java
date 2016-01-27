@@ -940,6 +940,9 @@ public class JDBCDisplayUtil {
 
 	static	private	void	indentedPrintLine( PrintWriter out, int indentLevel, StringBuilder text )
 	{
+		if (!JDBCDisplayUtil.showSelectRows) {
+			return;
+		}
 		indent( out, indentLevel );
 		out.println( text );
 	}
