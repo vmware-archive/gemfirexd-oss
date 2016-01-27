@@ -235,8 +235,6 @@ import com.gemstone.gemfire.pdx.internal.PdxInstanceFactoryImpl;
 import com.gemstone.gemfire.pdx.internal.PdxInstanceImpl;
 import com.gemstone.gemfire.pdx.internal.TypeRegistry;
 import com.gemstone.gnu.trove.THashSet;
-import com.sun.jna.Native;
-import com.sun.jna.Platform;
 
 // @todo somebody Come up with more reasonable values for {@link #DEFAULT_LOCK_TIMEOUT}, etc.
 /**
@@ -5464,7 +5462,7 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
      * (or raw key bytes) recovered from disk or received from a remote node.
      * This is mostly useful for raw pre-serialized objects like byte[]s that
      * GemFireXD uses that cannot otherwise handle this in their fromData calls.
-     * 
+     *
      * Return value is required to be serialized byte[] for serialized objects
      * and raw byte[] for non-serialized ones.
      */
@@ -5932,8 +5930,9 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
     return skipFKChecksForGatewayEvents;
   }
 
-  public static void setColumnBatchSize(int size) {
+  public static void setColumnBatchSizes(int size, int minSize) {
     COLUMN_BATCH_SIZE = size;
+    COLUMN_MIN_BATCH_SIZE = minSize;
   }
 
   public static int getColumnBatchSize() {
