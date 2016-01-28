@@ -13,11 +13,9 @@ idea {
 }
 
 dependencies {
-  // have to use jgroups output since we need the jg-magic-map.txt file from it
-  provided project(subprojectBase + 'gemfire-jgroups').sourceSets.main.output
-
-  compile project(subprojectBase + 'gemfire-core')
-  compile project(subprojectBase + 'gemfire-examples')
+  provided project(subprojectBase + 'gemfire-jgroups')
+  provided project(subprojectBase + 'gemfire-core')
+  provided project(subprojectBase + 'gemfire-examples')
 
   compile "junit:junit:${junitVersion}"
   compile "org.apache.ant:ant:${antVersion}"

@@ -1,3 +1,5 @@
+apply plugin: 'com.github.johnrengelman.shadow'
+
 sourceSets.main.java {
   // requires WebLogic jars
   exclude 'sql/ecotests/wls/**'
@@ -11,10 +13,10 @@ idea {
 }
 
 dependencies {
-  compile project(subprojectBase + 'gemfire-core')
+  provided project(subprojectBase + 'gemfire-core')
   compile project(subprojectBase + 'tests-core')
-  compile project(subprojectBase + 'gemfirexd:client')
-  compile project(subprojectBase + 'gemfirexd:tools')
+  provided project(subprojectBase + 'gemfirexd:client')
+  provided project(subprojectBase + 'gemfirexd:tools')
   // have to use output since we exclude the dependent classes from jar :(
   provided project(subprojectBase + 'gemfirexd:core').sourceSets.main.output
   provided project(subprojectBase + 'gemfirexd:core')
@@ -43,3 +45,21 @@ dependencies {
   compile 'com.mchange:c3p0:0.9.5.1'
   compile "org.apache.derby:derbytools:${derbyVersion}"
 }
+
+shadowJar {
+  zip64 = true
+
+  mergeServiceFiles()
+
+  manifest {
+    attributes(
+      "Manifest-Version"  : "1.0",
+      "Created-By"        : System.getProperty("user.name"),
+      "Title"             : rootProject.name,
+      "Version"           : version,
+      "Vendor"            : "Pivotal Software, Inc."
+    )
+  }
+}
+
+jar.dependsOn shadowJar

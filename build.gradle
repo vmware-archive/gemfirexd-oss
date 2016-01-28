@@ -1,5 +1,15 @@
 apply plugin: 'wrapper'
 
+buildscript {
+  repositories {
+    maven { url "https://plugins.gradle.org/m2" }
+    jcenter()
+  }
+  dependencies {
+    classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.2'
+  }
+}
+
 allprojects {
   // We want to see all test results.  This is equivalent to setting --continue
   // on the command line.
@@ -422,6 +432,7 @@ def includeJar(def jarFile) {
 task product(dependsOn: [ subprojectBase + 'gemfirexd:client:jar',
     subprojectBase + 'gemfirexd:core:jar',
     subprojectBase + 'gemfirexd:tools:jar',
+    subprojectBase + 'tests-sql:jar',
     subprojectBase + 'gemfirexd:shared:javadoc',
     subprojectBase + 'gemfirexd:core:javadoc' ]) << {
 
