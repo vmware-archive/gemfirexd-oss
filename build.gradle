@@ -58,7 +58,7 @@ allprojects {
 
     PRODUCT_MAJOR = '2'
     PRODUCT_MINOR = '0'
-    PRODUCT_MAINT = 'SNAPSHOT.1'
+    PRODUCT_MAINT = 'SNAPSHOT'
     PRODUCT_VERSION = "${PRODUCT_MAJOR}.${PRODUCT_MINOR}-${PRODUCT_MAINT}"
     PRODUCT_VENDOR = 'SnappyData, Inc.'
     COPYRIGHT = "Copyright 2016, ${PRODUCT_VENDOR} All rights reserved."
@@ -408,25 +408,18 @@ subprojects {
   apply plugin: 'maven'
   apply plugin: 'signing'
 
-  task packageSources(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-  }
-  task packageDocs(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc
-  }
-  artifacts {
-    archives packageDocs, packageSources
-  }
-
-  def ossrhUsername = ''
-  def ossrhPassword = ''
-  if (binding.variables.containsKey('ossrhUsername')) {
-    ossrhUsername = binding.variables.get('ossrhUsername')
-  }
-  if (binding.variables.containsKey('ossrhPassword')) {
-    ossrhPassword = binding.variables.get('ossrhPassword')
+  if (rootProject.name == 'snappy-store') {
+    task packageSources(type: Jar, dependsOn: classes) {
+      classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+    task packageDocs(type: Jar, dependsOn: javadoc) {
+      classifier = 'javadoc'
+        from javadoc
+    }
+    artifacts {
+      archives packageDocs, packageSources
+    }
   }
 
   signing {
@@ -438,21 +431,12 @@ subprojects {
       mavenDeployer {
         beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-        def mavenUrl = ""
-        if (project.version.contains('-SNAPSHOT')) {
-          mavenUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
-        } else {
-          mavenUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-        }
-
-        repository(url: mavenUrl) {
+        repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
           authentication(userName: ossrhUsername, password: ossrhPassword)
         }
-/*
         snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
           authentication(userName: ossrhUsername, password: ossrhPassword)
         }
-*/
 
         pom.project {
           name PRODUCT_NAME
