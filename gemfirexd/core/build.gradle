@@ -181,6 +181,7 @@ javadoc {
 }
 javadoc.dependsOn.clear()
 
+archivesBaseName = 'gemfirexd'
 jar {
   dependsOn doSplit
   baseName = 'gemfirexd'

@@ -53,3 +53,5 @@ dependencies {
   provided "org.springframework:spring-core:${springVersion}"
   provided 'org.springframework.shell:spring-shell:1.0.0.RELEASE'
 }
+
+archivesBaseName = 'gemfire-hydra-tests'

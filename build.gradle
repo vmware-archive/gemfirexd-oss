@@ -200,7 +200,7 @@ subprojects {
 
     testOutput {
       extendsFrom testCompile
-      description  'a dependency that exposes test artifacts'
+      description 'a dependency that exposes test artifacts'
     }
   }
 
@@ -400,6 +400,109 @@ subprojects {
   test.dependsOn subprojectBase + 'cleanStoreJUnit'
   check.dependsOn integrationTest
   check.dependsOn distributedTest
+}
+
+// maven publish tasks
+subprojects {
+
+  apply plugin: 'maven'
+  apply plugin: 'signing'
+
+  task packageSources(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+  }
+  task packageDocs(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc
+  }
+  artifacts {
+    archives packageDocs, packageSources
+  }
+
+  def ossrhUsername = ''
+  def ossrhPassword = ''
+  if (binding.variables.containsKey('ossrhUsername')) {
+    ossrhUsername = binding.variables.get('ossrhUsername')
+  }
+  if (binding.variables.containsKey('ossrhPassword')) {
+    ossrhPassword = binding.variables.get('ossrhPassword')
+  }
+
+  signing {
+    sign configurations.archives
+  }
+
+  uploadArchives {
+    repositories {
+      mavenDeployer {
+        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+        def mavenUrl = ""
+        if (project.version.contains('-SNAPSHOT')) {
+          mavenUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
+        } else {
+          mavenUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+        }
+
+        repository(url: mavenUrl) {
+          authentication(userName: ossrhUsername, password: ossrhPassword)
+        }
+/*
+        snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+          authentication(userName: ossrhUsername, password: ossrhPassword)
+        }
+*/
+
+        pom.project {
+          name PRODUCT_NAME
+          packaging 'jar'
+          // optionally artifactId can be defined here
+          description 'SnappyData store based off Pivotal GemFireXD'
+          url 'http://www.snappydata.io'
+
+          scm {
+            connection 'scm:git:https://github.com/SnappyDataInc/snappy-store.git'
+            developerConnection 'scm:git:https://github.com/SnappyDataInc/snappy-store.git'
+            url 'https://github.com/SnappyDataInc/snappy-store'
+          }
+
+          licenses {
+            license {
+              name 'The Apache License, Version 2.0'
+              url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+            }
+          }
+
+          developers {
+            developer {
+              id 'ashetkar'
+              name 'Amogh Shetkar'
+              email 'ashetkar@snappydata.io'
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+task publishLocal {
+  dependsOn subprojects.collectMany { p ->
+    if (p.name != 'native' && p.name != 'prebuild' &&
+        p.name != 'tests-core' && p.name != 'tests-sql') {
+      p.getTasksByName('install', false).collect { it.path }
+    } else []
+  }
+}
+
+task publishMaven {
+  dependsOn subprojects.collectMany { p ->
+    if (p.name != 'native' && p.name != 'prebuild' && p.name != 'gemfirexd' &&
+        p.name != 'tests-core' && p.name != 'tests-sql') {
+      p.getTasksByName('uploadArchives', false).collect { it.path }
+    } else []
+  }
 }
 
 test.dependsOn subprojects.collect { p -> p.getTasksByName('test', false).collect { it.path } }

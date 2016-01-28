@@ -64,6 +64,7 @@ task generatePropertiesFiles(dependsOn: 'processResources') {
 }
 compileJava.dependsOn generatePropertiesFiles
 
+archivesBaseName = 'gemfirexd-tools'
 jar {
   baseName = 'gemfirexd-tools'
 

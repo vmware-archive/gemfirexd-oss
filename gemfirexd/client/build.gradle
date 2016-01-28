@@ -33,6 +33,7 @@ compileJava {
   dependsOn generatePropertiesFiles
 }
 
+archivesBaseName = 'gemfirexd-client'
 jar {
   baseName = 'gemfirexd-client'
 

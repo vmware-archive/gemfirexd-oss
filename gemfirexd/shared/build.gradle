@@ -36,3 +36,5 @@ javadoc {
   include 'com/pivotal/gemfirexd/*.java'
 }
 javadoc.dependsOn.clear()
+
+archivesBaseName = 'gemfirexd-shared'
