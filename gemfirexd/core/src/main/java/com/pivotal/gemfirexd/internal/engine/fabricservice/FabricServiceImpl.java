@@ -71,6 +71,7 @@ import com.pivotal.gemfirexd.internal.engine.store.GemFireStore;
 import com.pivotal.gemfirexd.internal.engine.store.ServerGroupUtils;
 import com.pivotal.gemfirexd.internal.iapi.jdbc.AuthenticationService;
 import com.pivotal.gemfirexd.internal.iapi.jdbc.DRDAServerStarter;
+import com.pivotal.gemfirexd.internal.iapi.reference.Property;
 import com.pivotal.gemfirexd.internal.iapi.services.i18n.MessageService;
 import com.pivotal.gemfirexd.internal.iapi.services.monitor.Monitor;
 import com.pivotal.gemfirexd.internal.iapi.services.property.PropertyUtil;
@@ -657,6 +658,10 @@ public abstract class FabricServiceImpl implements FabricService {
   private NetworkInterface startNetworkServerImpl(String bindAddress, int port,
       Properties networkProperties, boolean thriftServer, String serverType)
       throws SQLException {
+
+    System.setProperty(Property.START_DRDA, "true");
+    System.setProperty(com.pivotal.gemfirexd.Property.DRDA_PROP_PORTNUMBER, String.valueOf(port));
+    System.setProperty(com.pivotal.gemfirexd.Property.DRDA_PROP_HOSTNAME, bindAddress);
 
     if (serverstatus != State.RUNNING
         && GemFireStore.getBootedInstance() == null) {
