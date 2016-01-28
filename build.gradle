@@ -405,64 +405,65 @@ subprojects {
 // maven publish tasks
 subprojects {
 
-  apply plugin: 'maven'
   apply plugin: 'signing'
 
-  if (rootProject.name == 'snappy-store') {
-    task packageSources(type: Jar, dependsOn: classes) {
-      classifier = 'sources'
-        from sourceSets.main.allSource
+  if (rootProject.hasProperty('enablePublish')) {
+    if (rootProject.name == 'snappy-store') {
+      task packageSources(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+          from sourceSets.main.allSource
+      }
+      task packageDocs(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+          from javadoc
+      }
+      artifacts {
+        archives packageDocs, packageSources
+      }
     }
-    task packageDocs(type: Jar, dependsOn: javadoc) {
-      classifier = 'javadoc'
-        from javadoc
+
+    signing {
+      sign configurations.archives
     }
-    artifacts {
-      archives packageDocs, packageSources
-    }
-  }
 
-  signing {
-    sign configurations.archives
-  }
+    uploadArchives {
+      repositories {
+        mavenDeployer {
+          beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-  uploadArchives {
-    repositories {
-      mavenDeployer {
-        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-        repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-          authentication(userName: ossrhUsername, password: ossrhPassword)
-        }
-        snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-          authentication(userName: ossrhUsername, password: ossrhPassword)
-        }
-
-        pom.project {
-          name PRODUCT_NAME
-          packaging 'jar'
-          // optionally artifactId can be defined here
-          description 'SnappyData store based off Pivotal GemFireXD'
-          url 'http://www.snappydata.io'
-
-          scm {
-            connection 'scm:git:https://github.com/SnappyDataInc/snappy-store.git'
-            developerConnection 'scm:git:https://github.com/SnappyDataInc/snappy-store.git'
-            url 'https://github.com/SnappyDataInc/snappy-store'
+          repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+            authentication(userName: ossrhUsername, password: ossrhPassword)
+          }
+          snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+            authentication(userName: ossrhUsername, password: ossrhPassword)
           }
 
-          licenses {
-            license {
-              name 'The Apache License, Version 2.0'
-              url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+          pom.project {
+            name PRODUCT_NAME
+            packaging 'jar'
+            // optionally artifactId can be defined here
+            description 'SnappyData store based off Pivotal GemFireXD'
+            url 'http://www.snappydata.io'
+
+            scm {
+              connection 'scm:git:https://github.com/SnappyDataInc/snappy-store.git'
+              developerConnection 'scm:git:https://github.com/SnappyDataInc/snappy-store.git'
+              url 'https://github.com/SnappyDataInc/snappy-store'
             }
-          }
 
-          developers {
-            developer {
-              id 'ashetkar'
-              name 'Amogh Shetkar'
-              email 'ashetkar@snappydata.io'
+            licenses {
+              license {
+                name 'The Apache License, Version 2.0'
+                url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+              }
+            }
+
+            developers {
+              developer {
+                id 'ashetkar'
+                name 'Amogh Shetkar'
+                email 'ashetkar@snappydata.io'
+              }
             }
           }
         }
