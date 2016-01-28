@@ -89,7 +89,7 @@ allprojects {
     }
   }
 
-  group = 'io.snappydata.store'
+  group = 'io.snappydata'
   version = PRODUCT_VERSION
 
   apply plugin: 'java'
