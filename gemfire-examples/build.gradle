@@ -1,6 +1,4 @@
 dependencies {
-  // have to use output since we exclude the dependent classes from jar :(
-  provided project(subprojectBase + 'gemfire-core').sourceSets.main.output
   provided project(subprojectBase + 'gemfire-core')
 
   compile "org.osgi:org.osgi.core:${osgiVersion}"

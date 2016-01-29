@@ -65,7 +65,7 @@ dependencies {
 
   jcaCompile sourceSets.main.output
 
-  provided project(path: subprojectBase + 'gemfire-junit', configuration: 'testOutput')
+  provided project(subprojectBase + 'gemfire-junit')
 }
 
 // Creates the version properties file and writes it to the classes dir

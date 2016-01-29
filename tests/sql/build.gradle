@@ -17,8 +17,6 @@ dependencies {
   compile project(subprojectBase + 'tests-core')
   provided project(subprojectBase + 'gemfirexd:client')
   provided project(subprojectBase + 'gemfirexd:tools')
-  // have to use output since we exclude the dependent classes from jar :(
-  provided project(subprojectBase + 'gemfirexd:core').sourceSets.main.output
   provided project(subprojectBase + 'gemfirexd:core')
 
   provided "org.apache.hadoop:hadoop-annotations:${hadoopVersion}"

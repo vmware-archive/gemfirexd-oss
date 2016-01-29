@@ -248,8 +248,8 @@ subprojects {
 
   task jarTest (type: Jar, dependsOn: testClasses) {
     description 'Assembles a jar archive of test classes.'
-    from sourceSets.test.output
-    classifier 'test'
+    from sourceSets.test.output.classesDir
+    classifier 'tests'
   }
 
   artifacts {
@@ -408,22 +408,22 @@ subprojects {
   apply plugin: 'signing'
 
   if (rootProject.hasProperty('enablePublish')) {
+    artifacts {
+      archives packageDocs, packageSources
+    }
     if (rootProject.name == 'snappy-store') {
       task packageSources(type: Jar, dependsOn: classes) {
         classifier = 'sources'
-          from sourceSets.main.allSource
+        from sourceSets.main.allSource
       }
       task packageDocs(type: Jar, dependsOn: javadoc) {
         classifier = 'javadoc'
-          from javadoc
+        from javadoc
       }
-      artifacts {
-        archives packageDocs, packageSources
-      }
-    }
 
-    signing {
-      sign configurations.archives
+      signing {
+        sign configurations.archives
+      }
     }
 
     uploadArchives {
@@ -460,33 +460,15 @@ subprojects {
 
             developers {
               developer {
-                id 'ashetkar'
-                name 'Amogh Shetkar'
-                email 'ashetkar@snappydata.io'
+                id 'smenon'
+                name 'Sudhir Menon'
+                email 'smenon@snappydata.io'
               }
             }
           }
         }
       }
     }
-  }
-}
-
-task publishLocal {
-  dependsOn subprojects.collectMany { p ->
-    if (p.name != 'native' && p.name != 'prebuild' &&
-        p.name != 'tests-core' && p.name != 'tests-sql') {
-      p.getTasksByName('install', false).collect { it.path }
-    } else []
-  }
-}
-
-task publishMaven {
-  dependsOn subprojects.collectMany { p ->
-    if (p.name != 'native' && p.name != 'prebuild' && p.name != 'gemfirexd' &&
-        p.name != 'tests-core' && p.name != 'tests-sql') {
-      p.getTasksByName('uploadArchives', false).collect { it.path }
-    } else []
   }
 }
 
