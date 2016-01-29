@@ -112,6 +112,12 @@ public abstract class FabricServiceImpl implements FabricService {
 
   protected String userName;
   protected String password;
+  // bind address for DRDA network server
+  private String clientBindAddress = null;
+  // port for DRDA server
+  private int drdaPort = -1;
+  // properties for DRDA network server
+  private Properties drdaProperties = null;
 
   protected HashSet<NetworkInterface> allnetservers =
     new HashSet<NetworkInterface>();
@@ -360,6 +366,12 @@ public abstract class FabricServiceImpl implements FabricService {
       } catch (Exception ex) {
         throw Util.javaException(ex);
       }
+      // was the network server stopped due to reconnect?
+      // relying on the fact that networkserverstatus will be in 
+      // STOPPED state (if it was started, otherwise should in UNINITIALIZED) 
+      // when reconnect happens
+    } else if(networkserverstatus == State.STOPPED && this.isReconnecting()) {
+      this.startNetworkServer(clientBindAddress, drdaPort, drdaProperties);
     }
   }
 
@@ -659,10 +671,6 @@ public abstract class FabricServiceImpl implements FabricService {
       Properties networkProperties, boolean thriftServer, String serverType)
       throws SQLException {
 
-    System.setProperty(Property.START_DRDA, "true");
-    System.setProperty(com.pivotal.gemfirexd.Property.DRDA_PROP_PORTNUMBER, String.valueOf(port));
-    System.setProperty(com.pivotal.gemfirexd.Property.DRDA_PROP_HOSTNAME, bindAddress);
-
     if (serverstatus != State.RUNNING
         && GemFireStore.getBootedInstance() == null) {
       throw new IllegalStateException("server not started, cannot start "
@@ -713,7 +721,7 @@ public abstract class FabricServiceImpl implements FabricService {
         port = NETSERVER_DEFAULT_PORT;
       }
     }
-
+    
     final InetAddress listenAddress = getListenAddress(bindAddress);
 
     assert listenAddress != null;
@@ -726,6 +734,11 @@ public abstract class FabricServiceImpl implements FabricService {
     SanityManager.DEBUG_PRINT(GfxdConstants.TRACE_FABRIC_SERVICE_BOOT,
         "Starting " + serverType + " on: " + listenAddress
           + '[' + port + ']');
+
+    this.drdaPort = port;
+    this.clientBindAddress = bindAddress;
+    this.drdaProperties = new Properties();
+    this.drdaProperties.putAll(networkProperties);
 
     final NetworkInterfaceImpl netImpl = thriftServer
         ? new ThriftNetworkInterface(listenAddress, port)
