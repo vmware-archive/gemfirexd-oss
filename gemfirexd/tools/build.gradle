@@ -4,7 +4,7 @@ plugins {
 
 if (rootProject.hasProperty('enablePublish')) {
   artifacts {
-    archives packageDocs, packageSources, jarTest
+    archives packageTests
   }
 }
 

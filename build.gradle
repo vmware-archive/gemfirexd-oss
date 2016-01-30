@@ -246,16 +246,6 @@ subprojects {
     }
   }
 
-  task jarTest (type: Jar, dependsOn: testClasses) {
-    description 'Assembles a jar archive of test classes.'
-    from sourceSets.test.output.classesDir
-    classifier 'tests'
-  }
-
-  artifacts {
-    testOutput jarTest
-  }
-
   sourceSets {
     main.compileClasspath += configurations.provided
     main.runtimeClasspath -= configurations.provided
@@ -405,25 +395,27 @@ subprojects {
 // maven publish tasks
 subprojects {
 
-  apply plugin: 'signing'
-
+  if (rootProject.name == 'snappy-store') {
+    task packageSources(type: Jar, dependsOn: classes) {
+      classifier = 'sources'
+      from sourceSets.main.allSource
+    }
+    task packageDocs(type: Jar, dependsOn: javadoc) {
+      classifier = 'javadoc'
+      from javadoc
+    }
+    task packageTests(type: Jar, dependsOn: testClasses) {
+      description 'Assembles a jar archive of test classes.'
+      from sourceSets.test.output.classesDir
+      classifier = 'tests'
+    }
+    artifacts {
+      testOutput packageTests
+    }
+  }
   if (rootProject.hasProperty('enablePublish')) {
     artifacts {
       archives packageDocs, packageSources
-    }
-    if (rootProject.name == 'snappy-store') {
-      task packageSources(type: Jar, dependsOn: classes) {
-        classifier = 'sources'
-        from sourceSets.main.allSource
-      }
-      task packageDocs(type: Jar, dependsOn: javadoc) {
-        classifier = 'javadoc'
-        from javadoc
-      }
-
-      signing {
-        sign configurations.archives
-      }
     }
 
     uploadArchives {
