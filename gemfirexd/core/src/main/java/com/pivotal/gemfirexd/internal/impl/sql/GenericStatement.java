@@ -720,7 +720,7 @@ public class GenericStatement
                                           qinfo = qt.computeQueryInfo(qic);
 																					// Only rerouting selects to lead node. Inserts will be handled separately.
 																					// The below should be connection specific.
-																					if (routeQuery && qinfo.isSelect() && !isPreparedStatement()) {
+																					if (routeQuery && qinfo != null && qinfo.isSelect() && !isPreparedStatement()) {
 																						if (SnappyActivation.isColumnTable((DMLQueryInfo)qinfo, false)) {
 																							return getPreparedStatementForSnappy(true, statementContext, lcc, false);
 																						}

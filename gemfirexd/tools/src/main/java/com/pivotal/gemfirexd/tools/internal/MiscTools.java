@@ -250,6 +250,9 @@ public class MiscTools extends ToolsBase {
                 "The parameter names must atleast differ in the first character");
           }
         }
+        if (param.length != 2) {
+          Assert.fail("Parameter value not found. Passed in => [" + opt.getValue() + "]");
+        }
         params.put(param[0], param[1]);
       }
       else if (NUMTIMESTORUN.equals(opt.getOpt())) {
