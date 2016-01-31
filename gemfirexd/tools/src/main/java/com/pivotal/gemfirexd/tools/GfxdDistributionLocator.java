@@ -100,6 +100,11 @@ public class GfxdDistributionLocator extends GfxdServerLauncher {
   }
 
   @Override
+  protected boolean setDefaultHeapSize() {
+    return false;
+  }
+
+  @Override
   protected void processStartOption(String key, String value,
       Map<String, Object> m, List<String> vmArgs, Map<String, String> envArgs,
       Properties props) throws Exception {
