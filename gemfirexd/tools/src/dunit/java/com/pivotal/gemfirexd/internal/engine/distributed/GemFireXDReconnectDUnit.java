@@ -54,7 +54,7 @@ public class GemFireXDReconnectDUnit extends DistributedSQLTestBase {
   public GemFireXDReconnectDUnit(String name) {
     super(name);
   }
-  
+
   /**
    * testReconnectServer is based on a test by the same name in GemFireXDHADUnit.
    * It starts two servers and a client.  A schema is created and one of the
@@ -158,12 +158,12 @@ public class GemFireXDReconnectDUnit extends DistributedSQLTestBase {
   }
 
   /*
-   * Tests whether 
+   * Tests whether
    *   1. reconnect works after auth is enabled
-   *   2. reconnect starts DRDA server properly and accepts connection if
+   *   2. reconnect starts network server properly and accepts connection if
    *      it was enabled earlier
    */
-  public void testReconnect_auth_and_drdaServer() throws Exception {
+  public void testReconnect_auth_and_netServer() throws Exception {
     int locPort1 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
     int locPort2 = AvailablePort.getRandomAvailablePort(AvailablePort.SOCKET);
 
@@ -199,25 +199,27 @@ public class GemFireXDReconnectDUnit extends DistributedSQLTestBase {
     Properties props2 = new Properties();
     props2.setProperty("user", "sd");
     props2.setProperty("password", "pwd");
-    
+
     Connection conn = TestUtil.getNetConnection(inetPort, null, props2);
     Statement st = conn.createStatement();
     st.execute("create table t1(col1 int, col2 int)");
 
     addExpectedException(new int[] { }, new int[] { 3 },
-        new Object[] { ShutdownException.class, CacheClosedException.class, ForcedDisconnectException.class });
+        new Object[] { ShutdownException.class, CacheClosedException.class,
+            ForcedDisconnectException.class });
 
     forceDisconnectAServerVM(this.serverVMs.get(2), true);
-    
+
     // make sure that a connection can be established after reconnect
-    // without explicitly starting the DRDA network server
+    // without explicitly starting the network server
 //    startNetworkServer(3, null, props, inetPort);
     conn = TestUtil.getNetConnection(inetPort, null, props2);
     st = conn.createStatement();
     st.execute("select * from t1");
 
     removeExpectedException(new int[] { }, new int[] { 3 },
-        new Object[] { ShutdownException.class, CacheClosedException.class, ForcedDisconnectException.class });
+        new Object[] { ShutdownException.class, CacheClosedException.class,
+            ForcedDisconnectException.class });
   }
 
   public boolean forceDisconnectAServerVM(VM vm, final boolean waitForReconnect) {
