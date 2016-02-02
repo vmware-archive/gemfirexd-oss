@@ -57,6 +57,7 @@ public class SnappyActivation extends BaseActivation {
   public SnappyActivation(LanguageConnectionContext lcc, ExecPreparedStatement eps, boolean returnRows) {
     super(lcc);
     sql = eps.getSource();
+    this.preStmt = eps;
     this.returnRows = returnRows;
     this.connectionID = lcc.getConnectionId();
   }
