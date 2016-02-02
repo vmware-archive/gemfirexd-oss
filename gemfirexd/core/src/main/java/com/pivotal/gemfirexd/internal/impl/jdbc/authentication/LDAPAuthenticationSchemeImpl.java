@@ -448,7 +448,7 @@ implements CredentialInitializer
 		String ldapGroupSearchBase = authenticationService
 		    .getProperty(Property.AUTH_LDAP_GROUP_SEARCH_BASE);
 		if (ldapGroupSearchBase != null) {
-		  this.searchGroupBase = ldapSearchBase;
+		  this.searchGroupBase = ldapGroupSearchBase;
 		} else {
 		  this.searchGroupBase = this.searchBaseDN;
 		}
