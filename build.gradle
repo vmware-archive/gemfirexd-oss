@@ -84,7 +84,7 @@ allprojects {
   }
 
   buildRoot = buildRoot.trim()
-  def osDir = osName.getFamilyName().toLowerCase()
+  def osDir = osName.getFamilyName().replace(" ", "").toLowerCase()
   if (!buildRoot.isEmpty()) {
     buildDir = new File(buildRoot, osDir + '/' +  project.path.replace(':', '/'))
   } else {
