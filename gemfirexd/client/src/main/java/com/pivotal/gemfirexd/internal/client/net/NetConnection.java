@@ -91,6 +91,7 @@ public class NetConnection extends com.pivotal.gemfirexd.internal.client.am.Conn
     // Use this to get internationalized strings...
     protected static MessageUtil msgutil = SqlException.getMessageUtil();
 
+    private boolean snappyStoreConnection = false;
     protected NetAgent netAgent_;
     //contains a reference to the PooledConnection from which this created 
     //It then passes this reference to the PreparedStatement created from it
@@ -3762,6 +3763,14 @@ public class NetConnection extends com.pivotal.gemfirexd.internal.client.am.Conn
 
   public void setServerVersion(Version serverVersion) {
     this.serverVersion = serverVersion;
+  }
+
+  public boolean isSnappyStoreConnection() {
+    return this.snappyStoreConnection;
+  }
+
+  public boolean setSnappyStoreConnection(boolean snappyStoreConnection) {
+    return this.snappyStoreConnection = snappyStoreConnection;
   }
 
   public void updateRegionInfoForCommit(int prid, int bid) {

@@ -78,6 +78,7 @@ public class ClientDRDADriver implements java.sql.Driver {
     private static ClientJDBCObjectFactory factoryObject = null;
 
     static protected SQLException exceptionsOnLoadDriver__ = null;
+    boolean isSnappyConnection = false;
     // Keep track of the registered driver so that we can de-register it
     // if we're a stored proc.
     static protected ClientDRDADriver registeredDriver__ = null;
@@ -209,6 +210,10 @@ public class ClientDRDADriver implements java.sql.Driver {
                     port[0],
                     database,
                     augmentedProperties);
+
+          if (url.toLowerCase().contains("snappy")) {
+            conn.setSnappyStoreConnection(true);
+          }
         } catch(SqlException se) {
             throw se.getSQLException(null /* GemStoneAddition */);
         }
@@ -578,7 +583,7 @@ public class ClientDRDADriver implements java.sql.Driver {
     }
 
     protected Matcher matchProtocol(String url) {
-      return DRDA_PROTOCOL_PATTERN.matcher(url);
+     return  DRDA_PROTOCOL_PATTERN.matcher(url);
     }
 
     protected java.sql.Connection createThriftConnection(String server, int port,
