@@ -12,6 +12,10 @@ idea {
   }
 }
 
+ext {
+  createdBy = System.getProperty("user.name")
+}
+
 dependencies {
   provided project(subprojectBase + 'gemfire-core')
   compile project(subprojectBase + 'tests-core')
@@ -44,6 +48,10 @@ dependencies {
   compile "org.apache.derby:derbytools:${derbyVersion}"
 }
 
+// apply default manifest
+if (rootProject.hasProperty('enablePublish')) {
+  createdBy = "SnappyData Build Team"
+}
 shadowJar {
   zip64 = true
 
@@ -52,7 +60,7 @@ shadowJar {
   manifest {
     attributes(
       "Manifest-Version"  : "1.0",
-      "Created-By"        : System.getProperty("user.name"),
+      "Created-By"        : createdBy,
       "Title"             : rootProject.name,
       "Version"           : version,
       "Vendor"            : "Pivotal Software, Inc."
