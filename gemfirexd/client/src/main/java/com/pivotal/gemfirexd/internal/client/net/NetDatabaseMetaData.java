@@ -73,7 +73,7 @@ public class NetDatabaseMetaData extends com.pivotal.gemfirexd.internal.client.a
 
     public String getURL_() throws SqlException {
         String urlProtocol;
-      if (((NetConnection)connection_).isSnappyStoreConnection())
+      if (((NetConnection)connection_).isSnappyDRDAProtocol())
         urlProtocol = Configuration.jdbcSnappyNETProtocol;
       else
         urlProtocol = Configuration.jdbcDerbyNETProtocol;
