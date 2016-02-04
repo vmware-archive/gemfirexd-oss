@@ -72,6 +72,7 @@ import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
 import com.gemstone.gemfire.internal.shared.StringPrintWriter;
 import com.gemstone.gemfire.internal.shared.Version;
 import com.pivotal.gemfirexd.Attribute;
+import com.pivotal.gemfirexd.internal.jdbc.ClientDataSource;
 import com.pivotal.gemfirexd.internal.shared.common.BoundedLinkedQueue;
 import com.pivotal.gemfirexd.internal.shared.common.QueueObjectCreator;
 import com.pivotal.gemfirexd.internal.shared.common.ResolverUtils;
@@ -91,6 +92,7 @@ public class NetConnection extends com.pivotal.gemfirexd.internal.client.am.Conn
     // Use this to get internationalized strings...
     protected static MessageUtil msgutil = SqlException.getMessageUtil();
 
+    private boolean snappyDRDAProtocol = false;
     protected NetAgent netAgent_;
     //contains a reference to the PooledConnection from which this created 
     //It then passes this reference to the PreparedStatement created from it
@@ -270,6 +272,13 @@ public class NetConnection extends com.pivotal.gemfirexd.internal.client.am.Conn
         securityMechanism_ = ClientBaseDataSource.getSecurityMechanism(properties);
         isODBCDriver = ClientBaseDataSource.getIsODBCDriver(properties);
         flowConnect(password, securityMechanism_, true /* GemStone change */);
+
+
+       String drdaProtocol = properties.getProperty(ClientDRDADriver.DRDA_CONNECTION_PROTOCOL);
+      if (drdaProtocol != null && drdaProtocol.toLowerCase().contains(ClientDRDADriver.SNAPPY_PROTOCOL) ) {
+        snappyDRDAProtocol = true;
+      }
+
         if(!isConnectionNull())
         	completeConnect();
         
@@ -3764,6 +3773,10 @@ public class NetConnection extends com.pivotal.gemfirexd.internal.client.am.Conn
     this.serverVersion = serverVersion;
   }
 
+  public boolean isSnappyDRDAProtocol() {
+    return this.snappyDRDAProtocol;
+  }
+
   public void updateRegionInfoForCommit(int prid, int bid) {
     if (SanityManager.TraceClientHA | SanityManager.TraceSingleHop) {
       SanityManager.DEBUG_PRINT(SanityManager.TRACE_CLIENT_HA,
@@ -3788,7 +3801,7 @@ public class NetConnection extends com.pivotal.gemfirexd.internal.client.am.Conn
               + "suppossed to be called for a top level connection");
     }
   }
-  
+
   // prid --> set of bucket ids
   HashMap<Integer, HashSet<Integer>> bucketRegionIds;
 
