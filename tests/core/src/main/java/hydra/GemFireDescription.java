@@ -1381,8 +1381,9 @@ implements Serializable {
         classPath.add( mhd.getExtraTestDir() );
       }
       if ( mhd.getGemFireHome() != null ) {
-        classPath.add(mhd.getGemFireHome() + mhd.getFileSep() + "lib"
-                                          + mhd.getFileSep() + "gemfire.jar");
+        classPath.add(mhd.getGemFireHome() + mhd.getFileSep() + "libs"
+                + mhd.getFileSep() + "gemfirexd-2.0-SNAPSHOT.jar");
+        classPath.add(mhd.getGemFireHome() + mhd.getFileSep() + "libs");
       }
       // set classpath at last
       Vector expandedClassPath = EnvHelper.expandEnvVars(classPath, mhd);

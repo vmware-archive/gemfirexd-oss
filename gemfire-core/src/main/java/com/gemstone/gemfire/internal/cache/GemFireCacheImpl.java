@@ -5171,6 +5171,8 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
   }
 
   public static void setGFXDSystem(final boolean v) {
+    System.out.println("SS setGFXDSystem v " + v);
+    Thread.currentThread().dumpStack();
     // check the stack to see if this is really from a GemFireXD system
     gfxdSystem = v ? SystemProperties.isUsingGemFireXDEntryPoint() : false;
   }
@@ -5179,6 +5181,8 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
    * Only for tests.
    */
   public static void setGFXDSystemForTests() {
+    System.out.println("SS setGFXDSystemForTests ");
+    Thread.currentThread().dumpStack();
     gfxdSystem = true;
   }
 

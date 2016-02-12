@@ -225,8 +225,8 @@ implements Serializable {
 
       // classPath -- product jars
       if ( hd.getGemFireHome() != null ) {
-        classPath.add(hd.getGemFireHome() + hd.getFileSep() + "lib"
-                                          + hd.getFileSep() + "gemfire.jar");
+        classPath.add(hd.getGemFireHome() + hd.getFileSep() + "libs"
+                                          + hd.getFileSep() + "gemfirexd-2.0-SNAPSHOT.jar");
       }
 
       // classPath -- set at last
@@ -235,10 +235,10 @@ implements Serializable {
       // libPath
       Vector libPath = new Vector();
       if ( hd.getGemFireHome() != null ) {
-        libPath.add(hd.getGemFireHome() + hd.getFileSep() + "lib");
+        libPath.add(hd.getGemFireHome() + hd.getFileSep() + "libs");
         libPath.add(hd.getGemFireHome() + hd.getFileSep() + ".."
                                         + hd.getFileSep() + "hidden"
-                                        + hd.getFileSep() + "lib");
+                                        + hd.getFileSep() + "libs");
       }
       Vector extraLibPath = tab.vecAtWild( VmPrms.extraLibPaths, i, null );
 

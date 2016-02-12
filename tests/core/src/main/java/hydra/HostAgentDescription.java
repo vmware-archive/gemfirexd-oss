@@ -138,8 +138,8 @@ implements Serializable {
         classPath.add( hd.getExtraTestDir() );
       }
       if ( hd.getGemFireHome() != null ) {
-        classPath.add(hd.getGemFireHome() + hd.getFileSep() + "lib"
-                                          + hd.getFileSep() + "gemfire.jar");
+        classPath.add(hd.getGemFireHome() + hd.getFileSep() + "libs"
+                                          + hd.getFileSep() + "gemfirexd-2.0-SNAPSHOT.jar");
       }
       //Needed to run DUnit on multiple hosts
       classPath.add(hd.getTestDir() + hd.getFileSep() + "junit.jar");
@@ -148,10 +148,10 @@ implements Serializable {
       // libPath
       Vector libPath = new Vector();
       if ( hd.getGemFireHome() != null ) {
-        libPath.add(hd.getGemFireHome() + hd.getFileSep() + "lib");
+        libPath.add(hd.getGemFireHome() + hd.getFileSep() + "libs");
         libPath.add(hd.getGemFireHome() + hd.getFileSep() + ".."
                                         + hd.getFileSep() + "hidden"
-                                        + hd.getFileSep() + "lib");
+                                        + hd.getFileSep() + "libs");
       }
       had.setLibPath(EnvHelper.asPath(libPath, hd));
       had.setArchiveStats(archive);

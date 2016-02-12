@@ -136,7 +136,7 @@ public class Java {
       throw new HydraRuntimeException(s);
     }
     Vector bootpath = new Vector();
-    bootpath.add(gemfire + sep + "lib" + sep + "gemfire.jar");
+    bootpath.add(gemfire + sep + "libs" + sep + "gemfirexd-2.0-SNAPSHOT.jar");
     bootpath.add(System.getProperty("JTESTS"));
 
     bootpath = EnvHelper.expandEnvVars(bootpath, hd);
