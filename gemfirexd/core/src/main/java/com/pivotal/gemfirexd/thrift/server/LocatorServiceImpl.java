@@ -175,7 +175,7 @@ public class LocatorServiceImpl implements LocatorService.Iface {
   /**
    * Get two results: a HostAddress containing the preferred server w.r.t.
    * load-balancing to connect to from a thrift client (like in
-   * {@link #getPreferredServer(List)}), and all the thrift servers available in
+   * {@link #getPreferredServer}), and all the thrift servers available in
    * the distributed system as HostAddresses. A list of servers to be excluded
    * from consideration can be passed as a comma-separated string (e.g. to
    * ignore the failed server during failover).
