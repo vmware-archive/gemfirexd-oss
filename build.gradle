@@ -185,10 +185,6 @@ task cleanStoreJUnit << {
 }
 
 subprojects {
-  // apply compiler options
-  sourceCompatibility = 1.7
-  targetCompatibility = 1.7
-
   compileJava.options.encoding = 'UTF-8'
   javadoc.options.charSet = 'UTF-8'
 
