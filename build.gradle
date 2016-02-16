@@ -620,6 +620,6 @@ task product(dependsOn: [ subprojectBase + 'gemfirexd:client:jar',
       include '**/*.conf'
       include '**/*.inc'
     }
-    into rootDir.getAbsolutePath() + "/snappy-store/tests/core/build-artifacts/${osDir}/classes/main"
+    into rootDir.getAbsolutePath() + '/snappy-store/tests/core/build-artifacts/' + osDir + '/classes/main'
   }
 }
