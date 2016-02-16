@@ -21,9 +21,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
+
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
+import io.snappydata.test.dunit.SerializableRunnable;
 
 @SuppressWarnings("serial")
 public class PersistentReplicateTableDUnit extends DistributedSQLTestBase {
@@ -40,10 +41,10 @@ public class PersistentReplicateTableDUnit extends DistributedSQLTestBase {
   }
 
   public void createDiskStore(boolean useClient, int vmNum) throws Exception {
-    CacheSerializableRunnable csr = getDiskStoreCreator(DISKSTORE);
+    SerializableRunnable csr = getDiskStoreCreator(DISKSTORE);
     if (useClient) {
       if (vmNum == 1) {
-        csr.run2();
+        csr.run();
       }
       else {
         clientExecute(vmNum, csr);

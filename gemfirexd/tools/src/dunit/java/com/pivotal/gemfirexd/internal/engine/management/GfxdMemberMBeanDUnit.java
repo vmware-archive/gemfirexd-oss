@@ -39,7 +39,7 @@ import com.pivotal.gemfirexd.internal.engine.management.impl.ManagementUtils;
 import com.pivotal.gemfirexd.internal.engine.management.impl.GfxdManagementTestBase;
 import com.pivotal.gemfirexd.internal.engine.stats.ConnectionStats;
 
-import dunit.VM;
+import io.snappydata.test.dunit.VM;
 
 
 /**

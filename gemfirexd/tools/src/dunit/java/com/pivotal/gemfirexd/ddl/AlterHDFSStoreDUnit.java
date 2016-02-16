@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import com.gemstone.gemfire.cache.CacheException;
 import com.gemstone.gemfire.cache.hdfs.internal.HDFSStoreImpl;
 import com.gemstone.gemfire.cache.hdfs.internal.hoplog.DDLHoplogOrganizer;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.internal.util.BlobHelper;
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
@@ -36,8 +35,8 @@ import com.pivotal.gemfirexd.internal.engine.jdbc.GemFireXDRuntimeException;
 import com.pivotal.gemfirexd.internal.iapi.sql.conn.LanguageConnectionContext;
 import com.pivotal.gemfirexd.internal.impl.sql.compile.StatementNode;
 
-import dunit.SerializableRunnable;
-import dunit.VM;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.dunit.VM;
 
 /**
  * 
@@ -512,10 +511,10 @@ public class AlterHDFSStoreDUnit extends DistributedSQLTestBase {
       };
     }
     protected void setupObservers(VM dataStore) {
-        CacheSerializableRunnable setObserver = new CacheSerializableRunnable(
+        SerializableRunnable setObserver = new SerializableRunnable(
           "Set GemFireXDObserver on DataStore Node") {
         @Override
-        public void run2() throws CacheException {
+        public void run() throws CacheException {
           try {
             GemFireXDQueryObserverHolder
                 .setInstance(new GemFireXDQueryObserverAdapter() {
@@ -538,10 +537,10 @@ public class AlterHDFSStoreDUnit extends DistributedSQLTestBase {
     }
     
     protected void clearObservers(VM dataStore) {
-          CacheSerializableRunnable clearObserver = new CacheSerializableRunnable(
+          SerializableRunnable clearObserver = new SerializableRunnable(
           "Clear GemFireXDObserver on DataStore Node") {
         @Override
-        public void run2() throws CacheException {
+        public void run() throws CacheException {
           try {
             GemFireXDQueryObserverHolder.clearInstance();
           } catch (Exception e) {

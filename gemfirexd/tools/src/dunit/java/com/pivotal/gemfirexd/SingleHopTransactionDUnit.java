@@ -33,7 +33,7 @@ import com.gemstone.gemfire.internal.cache.TXManagerImpl;
 import com.pivotal.gemfirexd.dbsync.DBSynchronizerTestBase;
 import com.pivotal.gemfirexd.ddl.IndexPersistenceDUnit;
 
-import dunit.VM;
+import io.snappydata.test.dunit.VM;
 
 /**
  * @author kneeraj

@@ -29,13 +29,11 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.gemstone.gemfire.LogWriter;
 import com.gemstone.gemfire.cache.CacheClosedException;
 import com.gemstone.gemfire.cache.CacheException;
 import com.gemstone.gemfire.cache.DataPolicy;
 import com.gemstone.gemfire.cache.EntryExistsException;
 import com.gemstone.gemfire.cache.Scope;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.distributed.DistributedMember;
 import com.gemstone.gemfire.distributed.DistributedSystemDisconnectedException;
 import com.gemstone.gemfire.internal.cache.ForceReattemptException;
@@ -47,29 +45,15 @@ import com.pivotal.gemfirexd.ToursDBUtil;
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
 import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.distributed.utils.GemFireXDUtils;
-import com.pivotal.gemfirexd.internal.engine.store.entry.VMBucketRowLocationThinLRURegionEntryHeap;
-import com.pivotal.gemfirexd.internal.engine.store.entry.VMBucketRowLocationThinRegionEntryHeap;
-import com.pivotal.gemfirexd.internal.engine.store.entry.VMLocalRowLocationThinDiskLRURegionEntryHeap;
-import com.pivotal.gemfirexd.internal.engine.store.entry.VMLocalRowLocationThinDiskRegionEntryHeap;
-import com.pivotal.gemfirexd.internal.engine.store.entry.VMLocalRowLocationThinLRURegionEntryHeap;
-import com.pivotal.gemfirexd.internal.engine.store.entry.VMLocalRowLocationThinRegionEntryHeap;
-import com.pivotal.gemfirexd.internal.engine.store.entry.VersionedBucketRowLocationThinDiskLRURegionEntryHeap;
-import com.pivotal.gemfirexd.internal.engine.store.entry.VersionedBucketRowLocationThinDiskRegionEntryHeap;
-import com.pivotal.gemfirexd.internal.engine.store.entry.VersionedBucketRowLocationThinLRURegionEntryHeap;
-import com.pivotal.gemfirexd.internal.engine.store.entry.VersionedBucketRowLocationThinRegionEntryHeap;
-import com.pivotal.gemfirexd.internal.engine.store.entry.VersionedLocalRowLocationThinDiskLRURegionEntryHeap;
-import com.pivotal.gemfirexd.internal.engine.store.entry.VersionedLocalRowLocationThinDiskRegionEntryHeap;
-import com.pivotal.gemfirexd.internal.engine.store.entry.VersionedLocalRowLocationThinLRURegionEntryHeap;
-import com.pivotal.gemfirexd.internal.engine.store.entry.VersionedLocalRowLocationThinRegionEntryHeap;
+import com.pivotal.gemfirexd.internal.engine.store.entry.*;
 import com.pivotal.gemfirexd.internal.iapi.util.StringUtil;
 import com.pivotal.gemfirexd.jdbc.GfxdCallbacksTest;
-
-import dunit.AsyncInvocation;
-import dunit.SerializableCallable;
-import dunit.VM;
-import hydra.Log;
+import io.snappydata.test.dunit.AsyncInvocation;
+import io.snappydata.test.dunit.SerializableCallable;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.dunit.VM;
+import io.snappydata.test.util.TestException;
 import junit.framework.AssertionFailedError;
-import util.TestException;
 
 @SuppressWarnings("serial")
 public class CreateTablePart2DUnit extends DistributedSQLTestBase {
@@ -568,7 +552,6 @@ public class CreateTablePart2DUnit extends DistributedSQLTestBase {
 
       rs = s.executeQuery("select * from trade.customers where since=1");
       while (rs.next()) {
-        LogWriter logger = Log.getLogWriter();
         logger.info("XXXX col1 : " + rs.getInt(1) + " #2 : "
             + rs.getString(2).trim() + " #3 : " + rs.getInt(3) + " #4 "
             + rs.getString(4) + " #5 : " + rs.getInt(5));
@@ -882,10 +865,10 @@ public class CreateTablePart2DUnit extends DistributedSQLTestBase {
         loadDataScripts[index] = new File(qsDir, loadScriptName).toString();
       }
     }
-    final CacheSerializableRunnable fireQuery = new CacheSerializableRunnable(
+    final SerializableRunnable fireQuery = new SerializableRunnable(
         "fire query to check proper data in region") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         final Connection conn = TestUtil.jdbcConn;
         try {
           final ResultSet rs = conn.createStatement().executeQuery(
@@ -901,16 +884,16 @@ public class CreateTablePart2DUnit extends DistributedSQLTestBase {
         }
       }
     };
-    final CacheSerializableRunnable loadData = new CacheSerializableRunnable(
+    final SerializableRunnable loadData = new SerializableRunnable(
         "load initial data using scripts") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         final Connection conn = TestUtil.jdbcConn;
         try {
           GemFireXDUtils.executeSQLScripts(conn, loadDataScripts, false, Misc
               .getCacheLogWriter(), null, null, false);
           // now fire a select to check that everything is in order
-          fireQuery.run2();
+          fireQuery.run();
         } catch (Throwable t) {
           throw new CacheException(t) {
           };
@@ -1059,10 +1042,10 @@ public class CreateTablePart2DUnit extends DistributedSQLTestBase {
         }
       }
     };
-    final CacheSerializableRunnable loadData = new CacheSerializableRunnable(
+    final SerializableRunnable loadData = new SerializableRunnable(
         "load initial data using scripts") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         final Connection conn = TestUtil.jdbcConn;
         try {
           GemFireXDUtils.executeSQLScripts(conn, loadDataScripts, false, Misc

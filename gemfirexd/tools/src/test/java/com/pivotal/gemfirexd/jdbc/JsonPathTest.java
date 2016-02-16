@@ -446,7 +446,7 @@ public class JsonPathTest extends JdbcTestBase{
     
     int rowid = 0;
     String line;
-    String JTESTS = System.getProperty("JTESTS");
+    String JTESTS = getResourcesDir();
     String jsonStringsDir = JTESTS + File.separator + "com" + File.separator + "gemstone"  + File.separator + 
                                "gemfire" + File.separator + "pdx"  + File.separator + "jsonStrings";
     File file = new File(jsonStringsDir+File.separator+"json_mongodb.txt");

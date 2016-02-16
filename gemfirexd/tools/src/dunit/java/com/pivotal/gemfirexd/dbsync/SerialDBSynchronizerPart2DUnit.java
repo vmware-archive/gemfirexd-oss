@@ -52,10 +52,10 @@ import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedConnection;
 import com.pivotal.gemfirexd.jdbc.GfxdCallbacksTest;
 import com.pivotal.gemfirexd.tools.GfxdSystemAdmin;
 
-import dunit.AsyncInvocation;
-import dunit.SerializableCallable;
-import dunit.SerializableRunnable;
-import dunit.VM;
+import io.snappydata.test.dunit.AsyncInvocation;
+import io.snappydata.test.dunit.SerializableCallable;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.dunit.VM;
 
 @SuppressWarnings("serial")
 public class SerialDBSynchronizerPart2DUnit extends DBSynchronizerTestBase {

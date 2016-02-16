@@ -16,7 +16,7 @@
  */
 package com.pivotal.gemfirexd.query;
 
-import dunit.SerializableRunnable;
+import io.snappydata.test.dunit.SerializableRunnable;
 
 @SuppressWarnings("serial")
 /*

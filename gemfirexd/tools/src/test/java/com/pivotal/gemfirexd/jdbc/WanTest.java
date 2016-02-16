@@ -46,8 +46,7 @@ import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.ddl.wan.GfxdGatewayEventListener;
 import com.pivotal.gemfirexd.internal.engine.ddl.wan.WanProcedures;
 import com.pivotal.gemfirexd.internal.engine.jdbc.GemFireXDRuntimeException;
-import dunit.DistributedTestCase;
-import hydra.HydraRuntimeException;
+import io.snappydata.test.dunit.DistributedTestBase;
 import junit.framework.Assert;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
@@ -100,7 +99,7 @@ public class WanTest extends JdbcTestBase {
    */
   protected void waitForAsyncQueueToDrain(final String asyncQueueBackingRegion) {    
     final Region<?,?> region = Misc.getRegion(asyncQueueBackingRegion, true, false);
-    DistributedTestCase.waitForCriterion(new DistributedTestCase.WaitCriterion() {
+    DistributedTestBase.waitForCriterion(new DistributedTestBase.WaitCriterion() {
       public boolean done() {
         return region.isEmpty();
       }
@@ -649,12 +648,6 @@ public class WanTest extends JdbcTestBase {
       if (useGfxdNetclient) {
         conn = TestUtil.startNetserverAndGetLocalNetConnection();
       }
-      try {
-        hydra.Log.getLogWriter();
-      }
-      catch (HydraRuntimeException hre) {
-        hydra.Log.createLogWriter("DBSynchronizer", "fine");
-      }
 
       JdbcTestBase.addAsyncEventListenerWithConn("SG1", currentTest,
           "com.pivotal.gemfirexd.callbacks.DBSynchronizer", new Integer(10), null,
@@ -727,7 +720,7 @@ public class WanTest extends JdbcTestBase {
       // wait for queue to drain
       final AsyncEventQueueImpl asyncQueue = (AsyncEventQueueImpl)Misc
           .getGemFireCache().getAsyncEventQueue(currentTest.toUpperCase());
-      final DistributedTestCase.WaitCriterion wc = new DistributedTestCase.WaitCriterion() {
+      final DistributedTestBase.WaitCriterion wc = new DistributedTestBase.WaitCriterion() {
         @Override
         public boolean done() {
           return asyncQueue.getSender().getQueue().size() == 0;
@@ -739,7 +732,7 @@ public class WanTest extends JdbcTestBase {
               + " to drain";
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 30000, 500, true);
+      DistributedTestBase.waitForCriterion(wc, 30000, 500, true);
       JdbcTestBase.stopAsyncEventListener(currentTest);
       validateResults(derbyStmt, stmt, "select * from testtable", false);
     }
@@ -786,12 +779,6 @@ public class WanTest extends JdbcTestBase {
       Properties info = new Properties();
       info.setProperty("server-groups", "SG1");
       Connection conn = getConnection(info);
-      try {
-        hydra.Log.getLogWriter();
-      }
-      catch (HydraRuntimeException hre) {
-        hydra.Log.createLogWriter("DBSynchronizer", "fine");
-      }
 
       JdbcTestBase.addAsyncEventListener("SG1", currentTest,
           "com.pivotal.gemfirexd.callbacks.DBSynchronizer", new Integer(10), null,
@@ -866,7 +853,7 @@ public class WanTest extends JdbcTestBase {
       // wait for queue to drain
       final AsyncEventQueueImpl asyncQueue = (AsyncEventQueueImpl)Misc
           .getGemFireCache().getAsyncEventQueue(currentTest.toUpperCase());
-      final DistributedTestCase.WaitCriterion wc = new DistributedTestCase.WaitCriterion() {
+      final DistributedTestBase.WaitCriterion wc = new DistributedTestBase.WaitCriterion() {
         @Override
         public boolean done() {
           return asyncQueue.getSender().getQueue().size() == 0;
@@ -878,7 +865,7 @@ public class WanTest extends JdbcTestBase {
               + " to drain";
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 30000, 500, true);
+      DistributedTestBase.waitForCriterion(wc, 30000, 500, true);
       JdbcTestBase.stopAsyncEventListener(currentTest);
       validateResults(derbyStmt, stmt, "select * from testtable", false);
     }
@@ -1123,12 +1110,6 @@ public class WanTest extends JdbcTestBase {
       info.setProperty("server-groups", "SG1");
       info.setProperty(com.pivotal.gemfirexd.Attribute.SKIP_LISTENERS, "true");
       Connection conn = getConnection(info);
-      try {
-        hydra.Log.getLogWriter();
-      }
-      catch (HydraRuntimeException hre) {
-        hydra.Log.createLogWriter("DBSynchronizer", "fine");
-      }
 
       JdbcTestBase.addAsyncEventListener("SG1", currentTest,
           "com.pivotal.gemfirexd.callbacks.DBSynchronizer", new Integer(10), null,
@@ -2047,11 +2028,6 @@ public class WanTest extends JdbcTestBase {
   
   public void testAttachDetachAsyncEventListener() throws Exception {
     getConnectionWithServerGroup();
-    try {
-      hydra.Log.getLogWriter();
-    } catch (HydraRuntimeException hre) {
-      hydra.Log.createLogWriter("DBSynchronizer", "fine");
-    }
 
     Statement derbyStmt = null;
     Statement stmt = null;
@@ -2083,7 +2059,7 @@ public class WanTest extends JdbcTestBase {
       final AsyncEventQueueImpl asyncQueue = (AsyncEventQueueImpl)Misc
           .getGemFireCache().getAsyncEventQueue("MYLISTENER");
 
-      final DistributedTestCase.WaitCriterion wc = new DistributedTestCase.WaitCriterion() {
+      final DistributedTestBase.WaitCriterion wc = new DistributedTestBase.WaitCriterion() {
         @Override
         public boolean done() {
           int sz = asyncQueue.getSender().getQueue().size();
@@ -2101,7 +2077,7 @@ public class WanTest extends JdbcTestBase {
           return "waiting for queue for 'MYLISTENER' to drain";
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 30000, 500, true);
+      DistributedTestBase.waitForCriterion(wc, 30000, 500, true);
       // Compare results with derby
       validateResults(derbyStmt, stmt, "select * from testtable", false);
 
@@ -2122,7 +2098,7 @@ public class WanTest extends JdbcTestBase {
       final AsyncEventQueueImpl anotherAsyncQueue = (AsyncEventQueueImpl)Misc
           .getGemFireCache().getAsyncEventQueue("ANOTHERLISTENER");
 
-      final DistributedTestCase.WaitCriterion anotherWC = new DistributedTestCase.WaitCriterion() {
+      final DistributedTestBase.WaitCriterion anotherWC = new DistributedTestBase.WaitCriterion() {
         @Override
         public boolean done() {
           int sz = anotherAsyncQueue.getSender().getQueue().size();
@@ -2140,7 +2116,7 @@ public class WanTest extends JdbcTestBase {
           return "waiting for queue for 'ANOTHERLISTENER' to drain";
         }
       };
-      DistributedTestCase.waitForCriterion(anotherWC, 30000, 500, true);
+      DistributedTestBase.waitForCriterion(anotherWC, 30000, 500, true);
 
       // Compare results with derby
       validateResults(derbyStmt, stmt, "select * from testtable", false);
@@ -2172,7 +2148,7 @@ public class WanTest extends JdbcTestBase {
       final AsyncEventQueueImpl thirdAsyncQueue = (AsyncEventQueueImpl)Misc
           .getGemFireCache().getAsyncEventQueue("MYLISTENER");
 
-      final DistributedTestCase.WaitCriterion thirdWC = new DistributedTestCase.WaitCriterion() {
+      final DistributedTestBase.WaitCriterion thirdWC = new DistributedTestBase.WaitCriterion() {
         @Override
         public boolean done() {
           int sz = thirdAsyncQueue.getSender().getQueue().size();
@@ -2190,7 +2166,7 @@ public class WanTest extends JdbcTestBase {
           return "waiting for queue for 'MYLISTENER' to drain";
         }
       };
-      DistributedTestCase.waitForCriterion(thirdWC, 30000, 500, true);
+      DistributedTestBase.waitForCriterion(thirdWC, 30000, 500, true);
       // Compare results with derby
       validateResults(derbyStmt, stmt, "select * from testtable", false);
 
@@ -2215,11 +2191,6 @@ public class WanTest extends JdbcTestBase {
   public void testStartStopAsyncEventListener() throws Exception {
     getConnectionWithServerGroup();
 
-    try {
-      hydra.Log.getLogWriter();
-    } catch (HydraRuntimeException hre) {
-      hydra.Log.createLogWriter("DBSynchronizer", "fine");
-    }
     Statement derbyStmt = null;
     Statement stmt = null;
     try {
@@ -2252,7 +2223,7 @@ public class WanTest extends JdbcTestBase {
       // wait for queue to drain
       final AsyncEventQueueImpl asyncQueue = (AsyncEventQueueImpl)Misc
           .getGemFireCache().getAsyncEventQueue("MYLISTENER");
-      final DistributedTestCase.WaitCriterion wc = new DistributedTestCase.WaitCriterion() {
+      final DistributedTestBase.WaitCriterion wc = new DistributedTestBase.WaitCriterion() {
         @Override
         public boolean done() {
           int sz = asyncQueue.getSender().getQueue().size();
@@ -2270,7 +2241,7 @@ public class WanTest extends JdbcTestBase {
           return "waiting for queue for 'MYLISTENER' to drain";
         }
       };
-      DistributedTestCase.waitForCriterion(wc, 30000, 500, true);
+      DistributedTestBase.waitForCriterion(wc, 30000, 500, true);
 
       // Compare results with derby
       validateResults(derbyStmt, stmt, "select * from testtable", false);
@@ -2283,7 +2254,7 @@ public class WanTest extends JdbcTestBase {
       stmt.execute("INSERT INTO TESTTABLE VALUES(3, 'name3')");
       stmt.execute("INSERT INTO TESTTABLE VALUES(4, 'name4')");
 
-      DistributedTestCase.waitForCriterion(wc, 30000, 500, true);
+      DistributedTestBase.waitForCriterion(wc, 30000, 500, true);
       validateResults(derbyStmt, stmt, "select * from testtable", false);
 
       // Stop and restart again
@@ -2294,7 +2265,7 @@ public class WanTest extends JdbcTestBase {
       stmt.execute("INSERT INTO TESTTABLE VALUES(5, 'name5')");
       stmt.execute("INSERT INTO TESTTABLE VALUES(6, 'name6')");
 
-      DistributedTestCase.waitForCriterion(wc, 30000, 500, true);
+      DistributedTestBase.waitForCriterion(wc, 30000, 500, true);
       validateResults(derbyStmt, stmt, "select * from testtable", false);
 
       // Stop the listener

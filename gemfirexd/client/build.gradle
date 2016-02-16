@@ -1,5 +1,5 @@
 dependencies {
-  compile project(subprojectBase + 'gemfirexd:shared')
+  compile project(subprojectBase + 'gemfirexd-shared')
 }
 
 task generatePropertiesFiles(dependsOn: 'processResources') {
@@ -29,7 +29,7 @@ task generatePropertiesFiles(dependsOn: 'processResources') {
 }
 
 compileJava {
-  dependsOn project(subprojectBase + 'gemfirexd:core').jar
+  dependsOn project(subprojectBase + 'gemfirexd-core').jar
   dependsOn generatePropertiesFiles
 }
 

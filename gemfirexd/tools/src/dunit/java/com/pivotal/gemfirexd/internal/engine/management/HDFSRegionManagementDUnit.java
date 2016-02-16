@@ -32,8 +32,8 @@ import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
 import com.pivotal.gemfirexd.internal.engine.Misc;
 
-import dunit.SerializableCallable;
-import dunit.VM;
+import io.snappydata.test.dunit.SerializableCallable;
+import io.snappydata.test.dunit.VM;
 
 /**
  * 

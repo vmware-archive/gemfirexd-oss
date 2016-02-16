@@ -34,7 +34,6 @@ import com.gemstone.gemfire.cache.PartitionedRegionStorageException;
 import com.gemstone.gemfire.cache.control.RebalanceOperation;
 import com.gemstone.gemfire.cache.control.ResourceManager;
 import com.gemstone.gemfire.cache.execute.FunctionException;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.distributed.DistributedSystemDisconnectedException;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.internal.AvailablePort;
@@ -55,11 +54,10 @@ import com.pivotal.gemfirexd.internal.iapi.error.ShutdownException;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedConnection;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedPreparedStatement;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedStatement;
-
-import dunit.AsyncInvocation;
-import dunit.Host;
-import dunit.SerializableRunnable;
-import dunit.VM;
+import io.snappydata.test.dunit.AsyncInvocation;
+import io.snappydata.test.dunit.Host;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.dunit.VM;
 
 @SuppressWarnings({ "serial" })
 public class GemFireXDHADUnit extends DistributedSQLTestBase {
@@ -70,7 +68,7 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
 
   public static void joinAsyncInvocation(AsyncInvocation async, long ms) {
     if (async.isAlive()) {
-      join(async, ms, getLogWriter());
+      join(async, ms, globalLogger);
     }
   }
 
@@ -888,14 +886,14 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
       boolean doClose = false;
       if (conn == null) {
         if (clientPort != null && clientPort.intValue() > 0) {
-          getLogWriter().info("creating new client connection for current VM");
+          globalLogger.info("creating new client connection for current VM");
           conn = TestUtil.getNetConnection(clientPort.intValue(), null, null);
-          getLogWriter().info("created new client connection for current VM");
+          globalLogger.info("created new client connection for current VM");
         }
         else {
-          getLogWriter().info("creating new server connection for current VM");
+          globalLogger.info("creating new server connection for current VM");
           conn = TestUtil.getConnection();
-          getLogWriter().info("created new server connection for current VM");
+          globalLogger.info("created new server connection for current VM");
         }
         // TODO: TX: only valid for non-transactional ops for now
         conn.setTransactionIsolation(Connection.TRANSACTION_NONE);
@@ -904,7 +902,7 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
       }
       assertEquals(Connection.TRANSACTION_NONE, conn.getTransactionIsolation());
       assertFalse(conn.getAutoCommit());
-      getLogWriter().info("Executing DML: " + dmlStmt);
+      globalLogger.info("Executing DML: " + dmlStmt);
       // choose randomly between a prepared statement or normal one
       final boolean usePrepStatement = AvailablePort.rand.nextBoolean();
       int cnt = -1;
@@ -927,7 +925,7 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
       }
       // verify that change has actually taken place correctly
       if (verifyStmt != null) {
-        getLogWriter().info("Verifying with DML: " + verifyStmt);
+        globalLogger.info("Verifying with DML: " + verifyStmt);
         ProcessResultSet<Object> verifyResult = new ProcessResultSet<Object>() {
           @Override
           public Object process(final ResultSet rs) throws SQLException {
@@ -966,9 +964,9 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
       // cleanup stuff
       stmt.close();
       if (doClose) {
-        getLogWriter().info("closing the new connection");
+        globalLogger.info("closing the new connection");
         conn.close();
-        getLogWriter().info("closed the new connection");
+        globalLogger.info("closed the new connection");
       }
     } catch (SQLException e) {
       fail("unexpected exception occured in fireOps: ", e);
@@ -1081,10 +1079,10 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
   }
 
   public static void selectQueryAndExecute(VM vm, List<AsyncInvocation> ainvoke) {
-    final SerializableRunnable createSelects = new CacheSerializableRunnable(
+    final SerializableRunnable createSelects = new SerializableRunnable(
         "createSelects") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         doSelects(1000);
         //assertEquals(20, doSelects(1000));
       }
@@ -1104,14 +1102,14 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
   }
 
   private static void sop(String s) {
-    getLogWriter().info(s);
+    globalLogger.info(s);
   }
 
   public static void disconnectVMs(List<VM> vms, List<AsyncInvocation> ainvoke) {
-    SerializableRunnable disconnect = new CacheSerializableRunnable(
+    SerializableRunnable disconnect = new SerializableRunnable(
         "disconnect") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           TestUtil.shutDown();
         } catch (SQLException e) {
@@ -1132,7 +1130,7 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
 
   @SuppressWarnings("deprecation")
   public static void assertEquals(int expected, int actual) {
-    getLogWriter().info("comparing " + expected + " with actual " + actual);
+    globalLogger.info("comparing " + expected + " with actual " + actual);
     junit.framework.Assert.assertEquals(expected, actual);
   }
 }

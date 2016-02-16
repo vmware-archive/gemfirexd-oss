@@ -176,6 +176,7 @@ public abstract class InternalDriver implements ModuleControl {
 		!url.startsWith(Attribute.THRIFT_PROTOCOL) &&
 		!url.startsWith(Attribute.DRDA_PROTOCOL) &&
 		!url.startsWith(Attribute.SNAPPY_DRDA_PROTOCOL) &&
+		!url.startsWith(Attribute.SNAPPY_THRIFT_PROTOCOL) &&
                 // SQLF:BC
                 !url.startsWith(Attribute.SQLF_DNC_PROTOCOL) &&
 		(url.startsWith(Attribute.PROTOCOL)

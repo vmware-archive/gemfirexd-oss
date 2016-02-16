@@ -383,11 +383,15 @@ public interface Attribute {
    */
   String SNAPPY_DRDA_PROTOCOL = "jdbc:snappydata:drda://";
 
-
   /**
    * The protocol for GemFireXD Thrift Client.
    */
   String THRIFT_PROTOCOL = "jdbc:gemfirexd:thrift://";
+
+  /**
+   * The protocol for Derby DRDA Client.
+   */
+  String SNAPPY_THRIFT_PROTOCOL = "jdbc:snappydata:thrift://";
 
   /**
    * [SQLFire] The protocol for Derby Network Client for old SQLFire product.

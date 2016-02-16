@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 import com.gemstone.gemfire.DeltaTestImpl;
+import com.gemstone.gemfire.DeltaTestImpl.TestObject1;
 import com.gemstone.gemfire.cache.AttributesFactory;
 import com.gemstone.gemfire.cache.AttributesMutator;
 import com.gemstone.gemfire.cache.Cache;
@@ -49,7 +50,6 @@ import com.gemstone.gemfire.i18n.LogWriterI18n;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.BridgeServerImpl;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
-import com.gemstone.gemfire.internal.cache.PartitionedRegionLocalMaxMemoryDUnitTest.TestObject1;
 
 import dunit.DistributedTestCase;
 import dunit.Host;

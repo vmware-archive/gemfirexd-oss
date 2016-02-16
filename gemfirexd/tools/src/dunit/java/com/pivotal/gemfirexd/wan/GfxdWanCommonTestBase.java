@@ -19,31 +19,24 @@ package com.pivotal.gemfirexd.wan;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Types;
 import java.util.Set;
 
 import com.gemstone.gemfire.cache.CacheClosedException;
 import com.gemstone.gemfire.cache.CacheException;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.wan.GatewaySender;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.internal.cache.ForceReattemptException;
-import com.gemstone.gemfire.internal.cache.TXId;
 import com.gemstone.gemfire.internal.cache.partitioned.PRLocallyDestroyedException;
 import com.gemstone.gemfire.internal.cache.wan.AbstractGatewaySenderEventProcessor;
 import com.gemstone.gemfire.internal.cache.wan.parallel.ParallelGatewaySenderImpl;
 import com.pivotal.gemfirexd.TestUtil;
-import com.pivotal.gemfirexd.dataawareprocedure.ProcedureTest2DUnit;
 import com.pivotal.gemfirexd.internal.engine.Misc;
-import com.pivotal.gemfirexd.internal.engine.access.GemFireTransaction;
 import com.pivotal.gemfirexd.internal.engine.jdbc.GemFireXDRuntimeException;
-import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedConnection;
 import com.pivotal.gemfirexd.procedure.ProcedureExecutionContext;
+import io.snappydata.test.dunit.SerializableRunnable;
 
-import dunit.DistributedTestCase;
 
 public abstract class GfxdWanCommonTestBase extends GfxdWanTestBase {
   public GfxdWanCommonTestBase(String name) {
@@ -730,10 +723,10 @@ public abstract class GfxdWanCommonTestBase extends GfxdWanTestBase {
   }
   
   private Runnable txUpdate() {
-    CacheSerializableRunnable senderConf = new CacheSerializableRunnable(
+    SerializableRunnable senderConf = new SerializableRunnable(
         "Sender Configurator") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           Connection conn = TestUtil.jdbcConn;
           conn.setAutoCommit(false);
@@ -754,10 +747,10 @@ public abstract class GfxdWanCommonTestBase extends GfxdWanTestBase {
   }
   
   private Runnable txDelete() {
-    CacheSerializableRunnable senderConf = new CacheSerializableRunnable(
+    SerializableRunnable senderConf = new SerializableRunnable(
         "Sender Configurator") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           Connection conn = TestUtil.jdbcConn;
           conn.setAutoCommit(false);
@@ -1050,10 +1043,10 @@ public abstract class GfxdWanCommonTestBase extends GfxdWanTestBase {
   }
   
   public static Runnable wanInsertDAP(final String table) throws SQLException {
-    CacheSerializableRunnable wanInsert = new CacheSerializableRunnable(
+    SerializableRunnable wanInsert = new SerializableRunnable(
         "DAP Caller") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           Connection conn = TestUtil.jdbcConn;
           Statement st = conn.createStatement();
@@ -1084,10 +1077,10 @@ public abstract class GfxdWanCommonTestBase extends GfxdWanTestBase {
   }
   
   public static Runnable callDAP(final String procedure, final String table){
-    CacheSerializableRunnable senderConf = new CacheSerializableRunnable(
+    SerializableRunnable senderConf = new SerializableRunnable(
         "DAP Caller") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           Connection conn = TestUtil.jdbcConn;
           Statement st = conn.createStatement();
@@ -1105,10 +1098,10 @@ public abstract class GfxdWanCommonTestBase extends GfxdWanTestBase {
   }
   
   public static Runnable batchInsert() {
-    CacheSerializableRunnable senderConf = new CacheSerializableRunnable(
+    SerializableRunnable senderConf = new SerializableRunnable(
         "Sender Configurator") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           Connection conn = TestUtil.jdbcConn;
           Statement st = conn.createStatement();
@@ -1124,10 +1117,10 @@ public abstract class GfxdWanCommonTestBase extends GfxdWanTestBase {
   }
   
   public static Runnable batchUpdate() {
-    CacheSerializableRunnable senderConf = new CacheSerializableRunnable(
+    SerializableRunnable senderConf = new SerializableRunnable(
         "Sender Configurator") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           Connection conn = TestUtil.jdbcConn;
           Statement st = conn.createStatement();
@@ -1143,10 +1136,10 @@ public abstract class GfxdWanCommonTestBase extends GfxdWanTestBase {
   }
   
   public static Runnable batchDelete() {
-    CacheSerializableRunnable senderConf = new CacheSerializableRunnable(
+    SerializableRunnable senderConf = new SerializableRunnable(
         "Sender Configurator") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           Connection conn = TestUtil.jdbcConn;
           Statement st = conn.createStatement();
@@ -1162,10 +1155,10 @@ public abstract class GfxdWanCommonTestBase extends GfxdWanTestBase {
   }
   
   public static Runnable batchInsertForBULK() {
-    CacheSerializableRunnable senderConf = new CacheSerializableRunnable(
+    SerializableRunnable senderConf = new SerializableRunnable(
         "Sender Configurator") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           Connection conn = TestUtil.jdbcConn;
           Statement st = conn.createStatement();
@@ -1181,10 +1174,10 @@ public abstract class GfxdWanCommonTestBase extends GfxdWanTestBase {
   }
   
   public static Runnable txInsert() {
-    CacheSerializableRunnable senderConf = new CacheSerializableRunnable(
+    SerializableRunnable senderConf = new SerializableRunnable(
         "Sender Configurator") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         boolean origAutocommit = false;
         Connection conn = null;
         try {
@@ -1215,10 +1208,10 @@ public abstract class GfxdWanCommonTestBase extends GfxdWanTestBase {
   }
   
   public static Runnable prepInsert() {
-    CacheSerializableRunnable senderConf = new CacheSerializableRunnable(
+    SerializableRunnable senderConf = new SerializableRunnable(
         "Sender Configurator") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           Connection conn = TestUtil.jdbcConn;
           conn.setAutoCommit(false);
@@ -1245,12 +1238,12 @@ public abstract class GfxdWanCommonTestBase extends GfxdWanTestBase {
     return senderConf;
   }
 
-  private static CacheSerializableRunnable getExecutorToWaitForQueuesToDrain(
+  private static SerializableRunnable getExecutorToWaitForQueuesToDrain(
       final String senderId, final int regionSize) {
-    CacheSerializableRunnable waitForQueueToDrain = new CacheSerializableRunnable(
+    SerializableRunnable waitForQueueToDrain = new SerializableRunnable(
         "waitForQueueToDrain") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
 
         Set<GatewaySender> senders = Misc.getGemFireCache()
             .getAllGatewaySenders();
@@ -1293,7 +1286,7 @@ public abstract class GfxdWanCommonTestBase extends GfxdWanTestBase {
                 + " but actual entries: " + region.keySet().size();
           }
         };
-        DistributedTestCase.waitForCriterion(wc, 60000, 500, true);
+        waitForCriterion(wc, 60000, 500, true);
       }
     };
     return waitForQueueToDrain;

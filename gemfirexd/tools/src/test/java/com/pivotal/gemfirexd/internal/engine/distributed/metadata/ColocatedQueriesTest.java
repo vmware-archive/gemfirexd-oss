@@ -60,7 +60,6 @@ import com.pivotal.gemfirexd.internal.impl.sql.compile.*;
 import com.pivotal.gemfirexd.internal.impl.sql.execute.JoinResultSet;
 import com.pivotal.gemfirexd.internal.shared.common.sanity.SanityManager;
 import com.pivotal.gemfirexd.jdbc.JdbcTestBase;
-import hydra.HydraRuntimeException;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 import org.junit.Assert;
@@ -3091,11 +3090,6 @@ public class ColocatedQueriesTest extends JdbcTestBase {
 
   
   public void testBug42659() throws Exception {
-    try {
-      hydra.Log.getLogWriter();
-    } catch (HydraRuntimeException hre) {
-      hydra.Log.createLogWriter("ColocatedQueriesTest", "fine");
-    }
     Statement derbyStmt = null;
     try {
     SelectQueryInfo.setTestFlagIgnoreSingleVMCriteria(true);
@@ -4047,11 +4041,6 @@ public class ColocatedQueriesTest extends JdbcTestBase {
     System.clearProperty(GfxdConstants.GFXD_DISABLE_STATEMENT_MATCHING);
     String derbyDbUrl= null;
     Connection derbyConn = null;;  
-    try {
-      hydra.Log.getLogWriter();
-    } catch (HydraRuntimeException hre) {
-      hydra.Log.createLogWriter("ColocatedQueriesTest", "fine");
-    }
     Statement derbyStmt = null;
     Statement s = null;
     try {

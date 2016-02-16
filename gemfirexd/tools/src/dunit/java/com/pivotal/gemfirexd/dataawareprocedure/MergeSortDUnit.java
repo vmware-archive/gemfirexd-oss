@@ -112,9 +112,8 @@ public class MergeSortDUnit extends DistributedSQLTestBase {
     String processorClass = MergeSortProcessor2.class.getName();
     String callstring = "CALL MergeSort() "
       + "WITH RESULT PROCESSOR " + processorClass + " ON TABLE EMP.PARTITIONTESTTABLE1";
-    getLogWriter().fine("KN: call string is: " + callstring);
-    System.out.println("KN: call string sysout is: " + callstring);
-    cs = prepareCall(callstring); 
+    getLogWriter().trace("Call string is: " + callstring);
+    cs = prepareCall(callstring);
 
     cs.execute();
     rs = cs.getResultSet();

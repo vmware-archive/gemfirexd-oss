@@ -3491,7 +3491,7 @@ public class NetConnection extends com.pivotal.gemfirexd.internal.client.am.Conn
 
   /**
    * The maximum number of DistributedSystems that will be tracked in
-   * {@link #allFailoverQueryAddrs_} beyond which it will be clean up the older
+   * {@link #allDSQueryAddrs_} beyond which it will be clean up the older
    * ones.
    */
   private static final int MAX_CACHED_DISTRIBUTED_SYSTEMS = 2;

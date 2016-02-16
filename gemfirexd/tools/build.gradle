@@ -9,7 +9,7 @@ if (rootProject.hasProperty('enablePublish')) {
 }
 
 dependencies {
-  provided project(subprojectBase + 'gemfirexd:core')
+  provided project(subprojectBase + 'gemfirexd-core')
   compile project(subprojectBase + 'gemfirexd-hibernate')
 
   // ddlutils dependencies
@@ -20,9 +20,14 @@ dependencies {
   compile "org.scala-lang:jline:${scalaVersion}"
   provided "org.apache.ant:ant:${antVersion}"
 
-  // need hydra support classes for unit tests too
-  testCompile project(subprojectBase + 'tests-core')
-  testCompile project(subprojectBase + 'gemfirexd:client')
+  // use dunit support from snappydata
+  if (subprojectBase == ':') {
+    testCompile 'io.snappydata:dunit:1.0.0'
+  } else {
+    testCompile project(':dunit')
+  }
+
+  testCompile project(subprojectBase + 'gemfirexd-client')
   testCompile project(subprojectBase + 'gemfire-junit')
 
   provided "org.apache.hadoop:hadoop-annotations:${hadoopVersion}"
@@ -46,7 +51,7 @@ dependencies {
     exclude(group: 'org.apache.directory.shared', module: 'shared-ldap-schema')
   }
 
-  testRuntime project(subprojectBase + 'gemfirexd:core')
+  testRuntime project(subprojectBase + 'gemfirexd-core')
 }
 
 // move javacc output directory to a place where IDEA can easily register

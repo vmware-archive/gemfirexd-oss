@@ -36,7 +36,7 @@ import com.pivotal.gemfirexd.internal.engine.management.impl.InternalManagementS
 import com.pivotal.gemfirexd.internal.engine.management.impl.ManagementUtils;
 import com.pivotal.gemfirexd.internal.engine.management.impl.GfxdManagementTestBase;
 
-import dunit.VM;
+import io.snappydata.test.dunit.VM;
 
 /**
  * @author ajayp

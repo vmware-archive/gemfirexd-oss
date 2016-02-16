@@ -26,7 +26,6 @@ import java.sql.Statement;
 import java.util.HashSet;
 
 import com.gemstone.gemfire.cache.CacheException;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserver;
@@ -35,7 +34,7 @@ import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
 import com.pivotal.gemfirexd.internal.shared.common.sanity.SanityManager;
 
-import dunit.SerializableRunnable;
+import io.snappydata.test.dunit.SerializableRunnable;
 
 /**
  * Non Collocated Join Functional Test.
@@ -313,19 +312,19 @@ public class NCJoinPredicatesDUnit extends DistributedSQLTestBase {
     }
   };
 
-  SerializableRunnable ncjPullResultSetOpenCoreObserverSet = new CacheSerializableRunnable(
+  SerializableRunnable ncjPullResultSetOpenCoreObserverSet = new SerializableRunnable(
       "Set ncjPullResultSetOpenCoreObserver") {
     @Override
-    public void run2() throws CacheException {
+    public void run() throws CacheException {
       GemFireXDQueryObserverHolder
           .setInstance(ncjPullResultSetOpenCoreObserver);
     }
   };
 
-  SerializableRunnable ncjPullResultSetOpenCoreObserverReset = new CacheSerializableRunnable(
+  SerializableRunnable ncjPullResultSetOpenCoreObserverReset = new SerializableRunnable(
       "Reset ncjPullResultSetOpenCoreObserver") {
     @Override
-    public void run2() throws CacheException {
+    public void run() throws CacheException {
       GemFireXDQueryObserverHolder
           .setInstance(new GemFireXDQueryObserverAdapter() {
           });

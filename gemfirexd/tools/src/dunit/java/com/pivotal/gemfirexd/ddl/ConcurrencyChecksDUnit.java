@@ -31,7 +31,6 @@ import java.util.concurrent.CountDownLatch;
 
 import com.gemstone.gemfire.cache.Cache;
 import com.gemstone.gemfire.cache.CacheException;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.internal.SocketCreator;
 import com.gemstone.gemfire.internal.cache.DistributedRegion;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
@@ -43,9 +42,9 @@ import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.internal.engine.Misc;
 
-import dunit.Host;
-import dunit.SerializableRunnable;
-import dunit.VM;
+import io.snappydata.test.dunit.Host;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.dunit.VM;
 
 @SuppressWarnings("serial")
 public class ConcurrencyChecksDUnit extends DistributedSQLTestBase {
@@ -312,9 +311,9 @@ public class ConcurrencyChecksDUnit extends DistributedSQLTestBase {
     
     getLogWriter().info("Installing latch on second server");
     
-    vm.invoke(new CacheSerializableRunnable("") {
+    vm.invoke(new SerializableRunnable("") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         DistributedRegion.testLatch = new CountDownLatch(1);
         DistributedRegion.testRegionName = "T1_BUGTEST";
       }
@@ -350,9 +349,9 @@ public class ConcurrencyChecksDUnit extends DistributedSQLTestBase {
     getLogWriter().info("Releasing the test latch");
 
     // Release the latch so that the GII finishes.
-    this.getServerVM(2).invoke(new CacheSerializableRunnable("") {
+    this.getServerVM(2).invoke(new SerializableRunnable("") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         DistributedRegion.testLatch.countDown();
         DistributedRegion.testLatch = null;
         DistributedRegion.testLatchWaiting = false;

@@ -16,11 +16,9 @@
  */
 package com.pivotal.gemfirexd.internal.engine;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.URI;
@@ -37,10 +35,6 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.gemstone.junit.UnitTest;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
-
 import com.gemstone.gemfire.distributed.internal.AbstractDistributionConfig;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
@@ -49,15 +43,8 @@ import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.SocketCreator;
 import com.gemstone.gemfire.internal.cache.CacheServerLauncher;
 import com.gemstone.gemfire.internal.shared.NativeCalls;
-import com.pivotal.gemfirexd.Attribute;
-import com.pivotal.gemfirexd.DistributedSQLTestBase;
-import com.pivotal.gemfirexd.FabricLocator;
-import com.pivotal.gemfirexd.FabricServer;
-import com.pivotal.gemfirexd.FabricService;
-import com.pivotal.gemfirexd.FabricServiceManager;
-import com.pivotal.gemfirexd.NetworkInterface;
-import com.pivotal.gemfirexd.TestUtil;
-import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
+import com.gemstone.junit.UnitTest;
+import com.pivotal.gemfirexd.*;
 import com.pivotal.gemfirexd.internal.engine.jdbc.GemFireXDRuntimeException;
 import com.pivotal.gemfirexd.internal.iapi.reference.Property;
 import com.pivotal.gemfirexd.internal.iapi.services.monitor.Monitor;
@@ -66,8 +53,9 @@ import com.pivotal.gemfirexd.internal.shared.common.sanity.SanityManager;
 import com.pivotal.gemfirexd.jdbc.ClientDriver;
 import com.pivotal.gemfirexd.tools.GfxdUtilLauncher;
 import com.pivotal.gemfirexd.tools.internal.GfxdServerLauncher;
-
-import dunit.DistributedTestCase;
+import io.snappydata.test.dunit.DistributedTestBase;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
 
 public class FabricServerTest extends TestUtil implements UnitTest {
 
@@ -942,7 +930,7 @@ public class FabricServerTest extends TestUtil implements UnitTest {
   public void testConnectionWithAuthentication() throws SQLException,
       InterruptedException {
     final FabricServer fabapi = FabricServiceManager.getFabricServerInstance();
-    final String currentHost = DistributedTestCase.getIPLiteral();
+    final String currentHost = DistributedTestBase.getIPLiteral();
 
     final Properties shutdownProp = new Properties();
     shutdownProp.setProperty("user", "sysUser1");
@@ -1058,11 +1046,12 @@ public class FabricServerTest extends TestUtil implements UnitTest {
           fabapi.stop(shutdownProp);
         }
         catch(Exception ignore) {
-          getLogger().warning("Exception occurred while shutting down with credential " ,ignore);
+          getLogger().warn(
+              "Exception occurred while shutting down with credential ", ignore);
         }
       }
   }
-  
+
   public void testGatewayReceiverHNSCommandLineOptions() throws Exception {
     final DirFile file = new DirFile("utilLauncher");
     file.deleteAll();
@@ -1261,69 +1250,6 @@ public class FabricServerTest extends TestUtil implements UnitTest {
       Thread.sleep(loopWait);
     }
     assertEquals(expectedStatus, status);
-  }
-
-  public static String getProcessOutput(final Process p,
-      final int expectedExitValue, final int maxWaitMillis,
-      final int[] exitValue) throws IOException, InterruptedException {
-    final BufferedReader reader = new BufferedReader(new InputStreamReader(
-        p.getInputStream()));
-    final StringBuilder res = new StringBuilder();
-    final int loopWaitMillis = 100;
-    int maxTries = maxWaitMillis / loopWaitMillis;
-    boolean doExit = false;
-    final char[] cbuf = new char[1024];
-    while (maxTries-- > 0) {
-      if (doExit || reader.ready()) {
-        int readChars;
-        if (reader.ready() && (readChars = reader.read(cbuf)) > 0) {
-          res.append(cbuf, 0, readChars);
-          if (doExit) {
-            // check for any remaining data
-            while ((readChars = reader.read(cbuf)) > 0) {
-              res.append(cbuf, 0, readChars);
-            }
-            break;
-          }
-        }
-        else {
-          if (doExit) {
-            break;
-          }
-          try {
-            if (exitValue != null) {
-              exitValue[0] = p.exitValue();
-            }
-            else {
-              assertEquals(expectedExitValue, p.exitValue());
-            }
-            doExit = true;
-            // try one more time for any remaining data
-            continue;
-          } catch (IllegalThreadStateException itse) {
-            // continue in the loop
-            Thread.sleep(loopWaitMillis);
-          }
-        }
-      }
-      else {
-        try {
-          if (exitValue != null) {
-            exitValue[0] = p.exitValue();
-          }
-          else {
-            assertEquals(expectedExitValue, p.exitValue());
-          }
-          doExit = true;
-          // try one more time for any remaining data
-          continue;
-        } catch (IllegalThreadStateException itse) {
-          // continue in the loop
-          Thread.sleep(loopWaitMillis);
-        }
-      }
-    }
-    return res.toString();
   }
 
   private int waitForProcess(final Process p, final int maxWaitMillis)

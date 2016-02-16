@@ -26,11 +26,11 @@ import security.AuthzCredentialGenerator;
 import security.CredentialGenerator;
 
 import com.gemstone.gemfire.DeltaTestImpl;
+import com.gemstone.gemfire.DeltaTestImpl.TestObject1;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.client.NoAvailableServersException;
 import com.gemstone.gemfire.cache.client.ServerConnectivityException;
 import com.gemstone.gemfire.cache.operations.OperationContext.OperationCode;
-import com.gemstone.gemfire.internal.cache.PartitionedRegionLocalMaxMemoryDUnitTest.TestObject1;
 
 import dunit.Host;
 

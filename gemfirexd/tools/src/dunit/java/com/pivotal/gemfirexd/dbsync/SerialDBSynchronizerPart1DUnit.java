@@ -55,9 +55,9 @@ import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
 import com.pivotal.gemfirexd.internal.engine.jdbc.GemFireXDRuntimeException;
 import com.pivotal.gemfirexd.tools.GfxdSystemAdmin;
 
-import dunit.RMIException;
-import dunit.SerializableRunnable;
-import dunit.VM;
+import io.snappydata.test.dunit.RMIException;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.dunit.VM;
 
 @SuppressWarnings("serial")
 public class SerialDBSynchronizerPart1DUnit extends DBSynchronizerTestBase {
