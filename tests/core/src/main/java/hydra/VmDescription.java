@@ -226,7 +226,8 @@ implements Serializable {
       // classPath -- product jars
       if ( hd.getGemFireHome() != null ) {
         classPath.add(hd.getGemFireHome() + hd.getFileSep() + "libs"
-                                          + hd.getFileSep() + "gemfirexd-2.0-SNAPSHOT.jar");
+                                          + hd.getFileSep() + "gemfirexd-" +
+                ProductVersionHelper.getInfo().getProperty(ProductVersionHelper.SNAPPYRELEASEVERSION) + ".jar");
       }
 
       // classPath -- set at last

@@ -121,7 +121,8 @@ implements Serializable {
     String gfh = vmd.getHostDescription().getGemFireHome();
     if (gfh != null) {
       classpath.add(gfh + hd.getFileSep() + "libs"
-                        + hd.getFileSep() + "gemfirexd-2.0-SNAPSHOT.jar");
+                        + hd.getFileSep() + "gemfirexd-" +
+              ProductVersionHelper.getInfo().getProperty(ProductVersionHelper.SNAPPYRELEASEVERSION) + ".jar");
     }
 
     return EnvHelper.asPath(classpath, hd);

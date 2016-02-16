@@ -607,4 +607,19 @@ task product(dependsOn: [ subprojectBase + 'gemfirexd:client:jar',
     into "${productDir}/docs"
     rename 'gfxd-index.html', 'index.html'
   }
+
+  copy {
+    def osDir = osName.getFamilyName().replace(" ", "").toLowerCase()
+    from (rootDir.getAbsolutePath() + '/snappy-store/tests/core/src/main/java') {
+      include '**/*.bt'
+      include '**/*.conf'
+      include '**/*.inc'
+    }
+    from (rootDir.getAbsolutePath() + '/snappy-store/tests/sql/src/main/java') {
+      include '**/*.bt'
+      include '**/*.conf'
+      include '**/*.inc'
+    }
+    into rootDir.getAbsolutePath() + "/snappy-store/tests/core/build-artifacts/${osDir}/classes/main"
+  }
 }

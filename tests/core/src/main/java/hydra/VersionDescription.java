@@ -194,7 +194,8 @@ implements Serializable {
 
     // product jars for this version
     classpath.add(gfh + hd.getFileSep() + "libs"
-                      + hd.getFileSep() + "gemfirexd-2.0-SNAPSHOT.jar");
+                      + hd.getFileSep() + "gemfirexd-" +
+            ProductVersionHelper.getInfo().getProperty(ProductVersionHelper.SNAPPYRELEASEVERSION) + ".jar");
 
     return EnvHelper.asPath(classpath, hd);
   }
@@ -317,7 +318,7 @@ implements Serializable {
           }
         }
         vd.setVersions(tmp);
-        vd.setVersion(null); //override version
+        vd .setVersion(null); //override version
       }
     }
     // postprocess
