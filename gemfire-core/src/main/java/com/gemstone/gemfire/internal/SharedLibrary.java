@@ -185,9 +185,7 @@ public class SharedLibrary {
         }
         String libDir = gemfireJar.substring(0, index+1);
         libraryPath = new File(libDir, System.mapLibraryName(library));
-        System.out.println("SS libraryPath " + libraryPath +  ", library " + library);
         if (libraryPath.exists()) {
-          System.out.println("SS loading libraryPath ");
           System.load(libraryPath.getPath());
           if (debug) {
             String msg = "Successfully loaded libraryPath " + libraryPath;
@@ -195,7 +193,6 @@ public class SharedLibrary {
           }
           return true;
         }
-        System.out.println("SS loading library ");
 
         System.loadLibrary(library);
 

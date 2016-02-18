@@ -120,7 +120,7 @@ implements Serializable {
     // product jars
     String gfh = vmd.getHostDescription().getGemFireHome();
     if (gfh != null) {
-      classpath.add(gfh + hd.getFileSep() + "libs"
+      classpath.add(gfh + hd.getFileSep() + "lib"
                         + hd.getFileSep() + "gemfirexd-" +
               ProductVersionHelper.getInfo().getProperty(ProductVersionHelper.SNAPPYRELEASEVERSION) + ".jar");
     }

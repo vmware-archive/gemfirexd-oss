@@ -138,7 +138,7 @@ implements Serializable {
         classPath.add( hd.getExtraTestDir() );
       }
       if ( hd.getGemFireHome() != null ) {
-        classPath.add(hd.getGemFireHome() + hd.getFileSep() + "libs"
+        classPath.add(hd.getGemFireHome() + hd.getFileSep() + "lib"
                                           + hd.getFileSep() + "gemfirexd-" +
                 ProductVersionHelper.getInfo().getProperty(ProductVersionHelper.SNAPPYRELEASEVERSION) + ".jar");
       }
@@ -149,10 +149,10 @@ implements Serializable {
       // libPath
       Vector libPath = new Vector();
       if ( hd.getGemFireHome() != null ) {
-        libPath.add(hd.getGemFireHome() + hd.getFileSep() + "libs");
+        libPath.add(hd.getGemFireHome() + hd.getFileSep() + "lib");
         libPath.add(hd.getGemFireHome() + hd.getFileSep() + ".."
                                         + hd.getFileSep() + "hidden"
-                                        + hd.getFileSep() + "libs");
+                                        + hd.getFileSep() + "lib");
       }
       had.setLibPath(EnvHelper.asPath(libPath, hd));
       had.setArchiveStats(archive);

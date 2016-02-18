@@ -193,7 +193,7 @@ implements Serializable {
     }
 
     // product jars for this version
-    classpath.add(gfh + hd.getFileSep() + "libs"
+    classpath.add(gfh + hd.getFileSep() + "lib"
                       + hd.getFileSep() + "gemfirexd-" +
             ProductVersionHelper.getInfo().getProperty(ProductVersionHelper.SNAPPYRELEASEVERSION) + ".jar");
 
