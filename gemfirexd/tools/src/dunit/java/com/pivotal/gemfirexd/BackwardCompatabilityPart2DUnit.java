@@ -67,7 +67,7 @@ public class BackwardCompatabilityPart2DUnit extends
       
       getLogWriter().info("Testing with SQLFire-" + version);
       
-      String currentDir = getSysDirName(getGemFireDescription());
+      String currentDir = getSysDirName();
       String locatorDir = currentDir + "/locatorDir";
       String serverOneDir = currentDir + "/serverOneDir";
       String serverTwoDir = currentDir + "/serverTwoDir";
@@ -250,7 +250,7 @@ public class BackwardCompatabilityPart2DUnit extends
         PRODUCT_GEMFIREXD
     };
 
-    String currentDir = getSysDirName(getGemFireDescription());
+    String currentDir = getSysDirName();
     String locatorDir = currentDir + "/locatorDir";
     String serverOneDir = currentDir + "/serverOneDir";
     String serverTwoDir = currentDir + "/serverTwoDir";

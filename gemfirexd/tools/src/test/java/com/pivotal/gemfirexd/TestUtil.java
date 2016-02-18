@@ -32,7 +32,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import com.gemstone.gemfire.LogWriter;
+import com.gemstone.gemfire.GemFireTestCase;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.RegionAttributes;
 import com.gemstone.gemfire.cache.hdfs.internal.HDFSStoreImpl;
@@ -41,9 +41,7 @@ import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.distributed.internal.DistributionManager;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.internal.AvailablePort;
-import com.gemstone.gemfire.internal.LogWriterImpl;
 import com.gemstone.gemfire.internal.NanoTimer;
-import com.gemstone.gemfire.internal.PureLogWriter;
 import com.gemstone.gemfire.internal.SocketCreator;
 import com.gemstone.gemfire.internal.cache.CacheServerLauncher;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
@@ -96,6 +94,8 @@ import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedConnection;
 import com.pivotal.gemfirexd.internal.impl.store.access.sort.Scan;
 import junit.framework.TestCase;
 import org.apache.derbyTesting.junit.TestConfiguration;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -149,7 +149,8 @@ public class TestUtil extends TestCase {
 
   public static Connection jdbcConn = null;
 
-  private static LogWriter logger = null;
+  public static final Logger globalLogger = LogManager.getLogger(TestUtil.class);
+  public final Logger logger = LogManager.getLogger(getClass());
 
   private static Map<String, Integer> expectedExceptions =
     new HashMap<String, Integer>();
@@ -432,13 +433,14 @@ public class TestUtil extends TestCase {
   }
 
   public static String getResourcesDir() {
-    String testDir = System.getProperty("gemfiretest.sourceDir");
-    if (testDir != null && testDir.length() > 0) {
-      return testDir;
-    } else {
-      // for IDEA runs
-      return "../src/test/resources";
-    }
+    return GemFireTestCase.getResourcesDir();
+  }
+
+  public static String getProcessOutput(final Process p,
+      final int expectedExitValue, final int maxWaitMillis,
+      final int[] exitValue) throws IOException, InterruptedException {
+    return GemFireTestCase.getProcessOutput(p, expectedExitValue,
+        maxWaitMillis, exitValue);
   }
 
   public static Properties doCommonSetup(Properties props) {
@@ -571,11 +573,11 @@ public class TestUtil extends TestCase {
       conn.setAutoCommit(false);
       conn.setTransactionIsolation(Connection.TRANSACTION_NONE);
 //    }
-    LogWriter logger = TestUtil.getLogger();
+    Logger logger = getLogger();
     if (logger != null) {
       logger.info("TestUtil.getConnection::Autocommit is " + conn.getAutoCommit());
     }
-    
+
     // Read the flag for deleting persistent files only during boot up
     if (jdbcConn == null || jdbcConn.isClosed()) {
       jdbcConn = conn;
@@ -1365,20 +1367,11 @@ public class TestUtil extends TestCase {
   }
 
   /**
-   * Get a {@link LogWriter} object that can be used for both dunit and junit
+   * Get a {@link Logger} object that can be used for both dunit and junit
    * tests.
    */
-  public static LogWriter getLogger() {
-    if (logger == null) {
-      try {
-        // try to load hydra logger by reflection
-        Class<?> c = Class.forName("hydra.Log");
-        logger = (LogWriter)c.getMethod("getLogWriter").invoke(null);
-      } catch (Exception ex) {
-        logger = new PureLogWriter(LogWriterImpl.CONFIG_LEVEL);
-      }
-    }
-    return logger;
+  public static Logger getLogger() {
+    return globalLogger;
   }
 
   public static void fail(String message) {
@@ -1996,7 +1989,7 @@ public class TestUtil extends TestCase {
 
   public static boolean stopNetServer() {
     if (netServer != null) {
-      com.gemstone.gemfire.LogWriter logger = null;
+      Logger logger = null;
       try {
         logger = getLogger();
         netServer.stop();

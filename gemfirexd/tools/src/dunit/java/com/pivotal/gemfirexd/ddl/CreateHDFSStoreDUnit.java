@@ -53,8 +53,8 @@ import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.ddl.DDLConflatable;
 
-import dunit.SerializableCallable;
-import dunit.SerializableRunnable;
+import io.snappydata.test.dunit.SerializableCallable;
+import io.snappydata.test.dunit.SerializableRunnable;
 
 /**
  * 

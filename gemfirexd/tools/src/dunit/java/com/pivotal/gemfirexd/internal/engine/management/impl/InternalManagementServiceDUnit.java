@@ -31,10 +31,9 @@ import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.management.impl.TableMBeanDataUpdater.MemoryAnalyticsHolder;
 import com.pivotal.gemfirexd.internal.engine.store.GemFireStore;
 
-import dunit.Host;
-import dunit.SerializableRunnable;
-import dunit.VM;
-import dunit.DistributedTestCase.WaitCriterion;
+import io.snappydata.test.dunit.Host;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.dunit.VM;
 
 @SuppressWarnings("serial")
 public class InternalManagementServiceDUnit extends GfxdManagementTestBase {
@@ -252,7 +251,7 @@ public class InternalManagementServiceDUnit extends GfxdManagementTestBase {
 
     Set<ObjectName> unregisteredMBeans = ims.unregisterMBeanByPattern(employeesPattern);
     assertTrue("No MBeans unregstered", !unregisteredMBeans.isEmpty());
-    getLogWriter().info("Unregstered MBeans "+unregisteredMBeans);
+    globalLogger.info("Unregstered MBeans "+unregisteredMBeans);
   }
 
   static interface EmployeeMXBean {

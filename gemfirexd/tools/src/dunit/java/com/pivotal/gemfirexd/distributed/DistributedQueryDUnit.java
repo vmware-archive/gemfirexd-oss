@@ -37,24 +37,10 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
-import org.apache.derby.drda.NetworkServerControl;
-import org.apache.derbyTesting.junit.JDBC;
-
 import com.gemstone.gemfire.DataSerializable;
 import com.gemstone.gemfire.Instantiator;
-import com.gemstone.gemfire.cache.AttributesFactory;
-import com.gemstone.gemfire.cache.Cache;
-import com.gemstone.gemfire.cache.CacheClosedException;
-import com.gemstone.gemfire.cache.CacheException;
-import com.gemstone.gemfire.cache.CacheFactory;
-import com.gemstone.gemfire.cache.DataPolicy;
-import com.gemstone.gemfire.cache.LockTimeoutException;
-import com.gemstone.gemfire.cache.PartitionAttributes;
-import com.gemstone.gemfire.cache.PartitionAttributesFactory;
-import com.gemstone.gemfire.cache.Region;
-import com.gemstone.gemfire.cache.RegionDestroyedException;
+import com.gemstone.gemfire.cache.*;
 import com.gemstone.gemfire.cache.execute.Function;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.InternalDataSerializer;
@@ -68,11 +54,11 @@ import com.pivotal.gemfirexd.TestUtil.ScanType;
 import com.pivotal.gemfirexd.TestUtil.ScanTypeQueryObserver;
 import com.pivotal.gemfirexd.dbsync.DBSynchronizerTestBase;
 import com.pivotal.gemfirexd.execute.CallbackStatement;
-import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserver;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverAdapter;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
+import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.access.MemConglomerate;
 import com.pivotal.gemfirexd.internal.engine.access.MemScanController;
 import com.pivotal.gemfirexd.internal.engine.distributed.GfxdConnectionWrapper;
@@ -87,12 +73,12 @@ import com.pivotal.gemfirexd.internal.iapi.types.SQLDate;
 import com.pivotal.gemfirexd.internal.iapi.types.SQLTime;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedResultSet;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedStatement;
-
-import dunit.Host;
-import dunit.SerializableRunnable;
-import dunit.VM;
-
-import util.TestException;
+import io.snappydata.test.dunit.Host;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.dunit.VM;
+import io.snappydata.test.util.TestException;
+import org.apache.derby.drda.NetworkServerControl;
+import org.apache.derbyTesting.junit.JDBC;
 
 /**
  * Tests the basic functionality of distribution of the query across the PR
@@ -220,10 +206,10 @@ public class DistributedQueryDUnit extends DistributedSQLTestBase {
     serverSQLExecute(1, "update trade.customers set tid = 10 where cid = 1");
 
     // Check for iteration of multiple ResultSets simultaneously
-    CacheSerializableRunnable multiIter = new CacheSerializableRunnable(
+    SerializableRunnable multiIter = new SerializableRunnable(
         "iterate multiple open ResultSets") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           final Connection conn = TestUtil.jdbcConn;
           final PreparedStatement pstmt1 = conn
@@ -355,10 +341,10 @@ public class DistributedQueryDUnit extends DistributedSQLTestBase {
     clientSQLExecute(1, "insert into trade.customers values(1,'name_1','addr_1',1)");
    //Attach a sql observer on server 1
     
-    CacheSerializableRunnable dbShutter = new CacheSerializableRunnable(
+    SerializableRunnable dbShutter = new SerializableRunnable(
         "attach observer on server1") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         GemFireXDQueryObserver sqo = new GemFireXDQueryObserverAdapter() {
           @Override
           public void beforeIndexUpdatesAtRegionLevel(LocalRegion owner,
@@ -662,9 +648,9 @@ public class DistributedQueryDUnit extends DistributedSQLTestBase {
 
     // attach the observer that will bring down the VM during ResultHolder
     // iteration on one of the VMs
-    serverExecute(3, new CacheSerializableRunnable("attach observer") {
+    serverExecute(3, new SerializableRunnable("attach observer") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         GemFireXDQueryObserverHolder
             .setInstance(new ResultHolderIterationObserver());
       }
@@ -710,9 +696,9 @@ public class DistributedQueryDUnit extends DistributedSQLTestBase {
     // Attach the observer to the second server that will bring down the VM
     // during ResultHolder iteration on one of the VMs. This time streaming
     // is disabled so we don't expect an exception rather transparent retries.
-    serverExecute(2, new CacheSerializableRunnable("attach observer") {
+    serverExecute(2, new SerializableRunnable("attach observer") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         GemFireXDQueryObserverHolder
             .setInstance(new ResultHolderIterationObserver());
       }
@@ -1922,7 +1908,7 @@ public class DistributedQueryDUnit extends DistributedSQLTestBase {
             public void run() {
               try {
                 TestUtil.shutDown();
-                getLogWriter().info("completed shutdown");
+                globalLogger.info("completed shutdown");
               } catch (SQLException ex) {
                 throw new TestException("failed in shutdown", ex);
               }

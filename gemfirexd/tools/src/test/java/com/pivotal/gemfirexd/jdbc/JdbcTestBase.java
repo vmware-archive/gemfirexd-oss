@@ -23,10 +23,7 @@ import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.sql.CallableStatement;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.MessageFormat;
 import java.util.Map;
 import java.util.TreeMap;
@@ -49,10 +46,8 @@ import com.pivotal.gemfirexd.internal.engine.jdbc.GemFireXDRuntimeException;
 import com.pivotal.gemfirexd.internal.iapi.sql.conn.LanguageConnectionContext;
 import com.pivotal.gemfirexd.internal.impl.sql.compile.DropTableNode;
 import com.pivotal.gemfirexd.internal.impl.sql.compile.StatementNode;
-import hydra.HydraRuntimeException;
-import memscale.OffHeapHelper;
+import io.snappydata.test.memscale.OffHeapHelper;
 import org.apache.derbyTesting.junit.JDBC;
-import org.w3c.dom.Element;
 
 public class JdbcTestBase extends TestUtil implements UnitTest {
 
@@ -144,20 +139,12 @@ public class JdbcTestBase extends TestUtil implements UnitTest {
   }
   
   protected void doEndOffHeapValidations() throws Exception {
-    
-    try {
-      hydra.Log.getLogWriter();
-    }
-    catch (HydraRuntimeException hre) {
-      hydra.Log.createLogWriter(""+this.getName(), "fine");
-    }
     OffHeapHelper.waitForWanQueuesToDrain();
     OffHeapHelper.verifyOffHeapMemoryConsistency(true);
     OffHeapHelper.closeAllRegions();
     OffHeapHelper.verifyOffHeapMemoryConsistency(true);
   }
-  
-  
+
   @Override
   protected void tearDown() throws Exception {
     try {
@@ -184,7 +171,7 @@ public class JdbcTestBase extends TestUtil implements UnitTest {
   /**
    * get the value from a data cell as an int.
    *
-   * @param datavalue
+   * @param dataValue
    *          the data cell, internally known to be an instance of
    *          datavaluedescriptor[]
    * @param index

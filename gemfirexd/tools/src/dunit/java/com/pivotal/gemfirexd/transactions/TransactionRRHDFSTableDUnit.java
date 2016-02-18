@@ -28,7 +28,7 @@ import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.internal.engine.Misc;
 
-import dunit.VM;
+import io.snappydata.test.dunit.VM;
 
 public class TransactionRRHDFSTableDUnit extends DistributedSQLTestBase {
 

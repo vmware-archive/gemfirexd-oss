@@ -77,7 +77,7 @@ public class ClientDriver extends ClientDRDADriver {
 
   @Override
   protected boolean useThriftProtocol(Matcher m) {
-    String drdaGroup = m.group(1);
+    String drdaGroup = m.group(2);
     return drdaGroup == null || drdaGroup.length() == 0
         ? ClientSharedUtils.USE_THRIFT_AS_DEFAULT
         : "thrift:".equalsIgnoreCase(drdaGroup);

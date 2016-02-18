@@ -21,24 +21,12 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
-import org.junit.Assert;
-
-import util.TestException;
-
 import com.gemstone.gemfire.cache.CacheException;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.SocketCreator;
@@ -53,11 +41,12 @@ import com.pivotal.gemfirexd.internal.engine.sql.execute.GemFireResultSet;
 import com.pivotal.gemfirexd.internal.iapi.sql.conn.LanguageConnectionContext;
 import com.pivotal.gemfirexd.internal.impl.sql.GenericPreparedStatement;
 import com.pivotal.gemfirexd.internal.shared.common.sanity.SanityManager;
-
-import dunit.Host;
-import dunit.SerializableCallable;
-import dunit.SerializableRunnable;
-import dunit.VM;
+import io.snappydata.test.dunit.Host;
+import io.snappydata.test.dunit.SerializableCallable;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.dunit.VM;
+import io.snappydata.test.util.TestException;
+import org.junit.Assert;
 
 /**
  * Checks for backward compatibility amongst various GemFireXD minor versions.
@@ -224,7 +213,7 @@ public class BackwardCompatabilityDUnit extends BackwardCompatabilityTestBase {
 
   public void DISABLED_testIncrementalProductVersionUpgrade() throws Exception {
     // Create a locator working dir.
-    String rollingVersionLocatorPath = getSysDirName(getGemFireDescription())
+    String rollingVersionLocatorPath = getSysDirName()
         + "/rollingVersionLocatorPath";
     getLogWriter().info(
         "Creating locator dir for base version: " + rollingVersionLocatorPath);
@@ -476,7 +465,7 @@ public class BackwardCompatabilityDUnit extends BackwardCompatabilityTestBase {
       
       getLogWriter().info("Testing disk store upgrade from " + prevProduct + "-" + version + " to current GemFireXD build version");
       
-      String currentDir = getSysDirName(getGemFireDescription());
+      String currentDir = getSysDirName();
       String locatorDir = currentDir + "/locatorDir";
       String serverOneDir = currentDir + "/serverOneDir";
       String serverTwoDir = currentDir + "/serverTwoDir";
@@ -598,7 +587,7 @@ public class BackwardCompatabilityDUnit extends BackwardCompatabilityTestBase {
       
       getLogWriter().info("Testing disk store upgrade from SQLFire-" + version + " to current GemFireXD build version");
       
-      String currentDir = getSysDirName(getGemFireDescription());
+      String currentDir = getSysDirName();
       String locatorDir = currentDir + "/locatorDir";
       String serverOneDir = currentDir + "/serverOneDir";
       String serverTwoDir = currentDir + "/serverTwoDir";
@@ -718,7 +707,7 @@ public class BackwardCompatabilityDUnit extends BackwardCompatabilityTestBase {
       
       getLogWriter().info("Testing with SQLFire-" + version);
       
-      String currentDir = getSysDirName(getGemFireDescription());
+      String currentDir = getSysDirName();
       String locatorDir = currentDir + "/locatorDir";
       String serverOneDir = currentDir + "/serverOneDir";
       String serverTwoDir = currentDir + "/serverTwoDir";
@@ -883,7 +872,7 @@ public class BackwardCompatabilityDUnit extends BackwardCompatabilityTestBase {
   public void DISABLED_testMixedVersionsWithAuthentication() throws Exception{
 
     // Create a locator working dir.
-    String baseLocatorPath = getSysDirName(getGemFireDescription()) + "/baseVersionLocator";
+    String baseLocatorPath = getSysDirName() + "/baseVersionLocator";
     getLogWriter().info("Creating locator dir for base version: "+ baseLocatorPath);
     File baseVersionLocatorDir = new File(baseLocatorPath) ;
     assertTrue(baseVersionLocatorDir.mkdir());
@@ -1060,24 +1049,23 @@ public class BackwardCompatabilityDUnit extends BackwardCompatabilityTestBase {
     }
   }
 
-  private int startLocator(VM locatorVM, Properties props) throws IOException{
-    
+  private int startLocator(VM locatorVM, Properties props) throws IOException {
+
     final int locatorPort = AvailablePort
         .getRandomAvailablePort(AvailablePort.SOCKET);
     final Properties pr = props;
     final File locatorLogFile = new File("locator-" + locatorPort + ".log");
     locatorVM.invoke(new SerializableCallable() {
       public Object call() throws IOException {
-        try{
-          
-        Properties p = getDistributedSystemProperties();
-        p.setProperty("jmx-manager", "false");
-        p.putAll(pr);
-        //Locator.startLocatorAndDS(locatorPort, locatorLogFile, p);
-        FabricLocator locator = FabricServiceManager.getFabricLocatorInstance();
-        locator.start("localhost", locatorPort, p);
-        }
-        catch(SQLException e){
+        try {
+          Properties p = new Properties();
+          p.setProperty("jmx-manager", "false");
+          p.putAll(pr);
+          p = getAllDistributedSystemProperties(p);
+          //Locator.startLocatorAndDS(locatorPort, locatorLogFile, p);
+          FabricLocator locator = FabricServiceManager.getFabricLocatorInstance();
+          locator.start("localhost", locatorPort, p);
+        } catch (SQLException e) {
           e.printStackTrace();
         }
         return null;
@@ -1085,22 +1073,22 @@ public class BackwardCompatabilityDUnit extends BackwardCompatabilityTestBase {
     });
     return locatorPort;
   }
-  private void stopLocator(VM locatorVM, Properties props) throws Exception{
+
+  private void stopLocator(VM locatorVM, Properties props) throws Exception {
     final Properties p = props;
     locatorVM.invoke(new SerializableCallable() {
       public Object call() throws IOException {
-        try{
-        FabricService locator = FabricServiceManager.currentFabricServiceInstance();
-        locator.stop(p);
-        }
-        catch(SQLException e){
+        try {
+          FabricService locator = FabricServiceManager.currentFabricServiceInstance();
+          locator.stop(p);
+        } catch (SQLException e) {
           e.printStackTrace();
         }
         return null;
       }
     });
-    
   }
+
   /**
    * This is based on the _old_testDataDictionaryAndDataRecovery.  
    * This tests disk store upgrade from earlier versions against the current build.
@@ -1108,7 +1096,7 @@ public class BackwardCompatabilityDUnit extends BackwardCompatabilityTestBase {
    * @throws Exception
    */
   public void DISABLED_MERGE_testUpgradeDiskStoreSingleServer() throws Exception {
-    final String workingDir = getSysDirName(getGemFireDescription());
+    final String workingDir = getSysDirName();
     boolean thisVMStarted = false;
     
     // loop through all version lists
@@ -1194,7 +1182,7 @@ public class BackwardCompatabilityDUnit extends BackwardCompatabilityTestBase {
     }
   }
   public void _old_testDataDictionaryAndDataRecovery() throws Exception {
-    final String workingDir = getSysDirName(getGemFireDescription());
+    final String workingDir = getSysDirName();
     boolean thisVMStarted = false;
     // loop through all version lists
     for (int listIdx = 0; listIdx < compatibleVersionLists.length; listIdx++) {
@@ -1308,7 +1296,7 @@ public class BackwardCompatabilityDUnit extends BackwardCompatabilityTestBase {
   }
 
   public void DISABLED_MERGE_testClientCompatibility() throws Exception {
-    final String workingDir = getSysDirName(getGemFireDescription());
+    final String workingDir = getSysDirName();
     boolean thisVMStarted = false;
     // loop through all version lists
     for (int listIdx = 0; listIdx < compatibleVersionLists.length; listIdx++) {
@@ -1760,9 +1748,6 @@ public class BackwardCompatabilityDUnit extends BackwardCompatabilityTestBase {
         int clientPort = Integer.parseInt(args[1]);
         int numInserts = Integer.parseInt(args[2]);
 
-        // create the hydra LogWriter for verifyData and other logging
-        hydra.Log.createLogWriter("ClientRun", "info");
-
         // verify that this is really running the expected version
         File gemfirexdclientJar = new File(args[3]).getCanonicalFile();
         Class<?> clazz = Class.forName("com.pivotal.gemfirexd.jdbc.ClientDriver");
@@ -1878,7 +1863,7 @@ public class BackwardCompatabilityDUnit extends BackwardCompatabilityTestBase {
       Set<Integer> resultIds = new HashSet<Integer>();
       final String table = (String)tableObj[0];
       final int offset = (Integer)tableObj[2];
-      getLogWriter().info("checking data for table " + table);
+      globalLogger.info("checking data for table " + table);
       ResultSet rs = conn.createStatement().executeQuery(
           "select * from " + table);
       while (rs.next()) {
@@ -2223,10 +2208,10 @@ public class BackwardCompatabilityDUnit extends BackwardCompatabilityTestBase {
       }
     };
 
-    SerializableRunnable getAllSetOld = new CacheSerializableRunnable(
+    SerializableRunnable getAllSetOld = new SerializableRunnable(
         "Set GetAll Observer for Old") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         remoteCallbackInvoked[0] = false;
         remoteCallbackInvoked[1] = false;
         remoteCallbackInvoked[2] = false;
@@ -2236,10 +2221,10 @@ public class BackwardCompatabilityDUnit extends BackwardCompatabilityTestBase {
       }
     };
 
-    SerializableRunnable getAllSetNew = new CacheSerializableRunnable(
+    SerializableRunnable getAllSetNew = new SerializableRunnable(
         "Set GetAll Observer for New") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         remoteCallbackInvoked[0] = false;
         remoteCallbackInvoked[1] = false;
         remoteCallbackInvoked[2] = false;
@@ -2249,20 +2234,20 @@ public class BackwardCompatabilityDUnit extends BackwardCompatabilityTestBase {
       }
     };
 
-    SerializableRunnable getAllObsReset = new CacheSerializableRunnable(
+    SerializableRunnable getAllObsReset = new SerializableRunnable(
         "Reset GetAll Observer") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         GemFireXDQueryObserverHolder
             .setInstance(new GemFireXDQueryObserverAdapter() {
             });
       }
     };
 
-    SerializableRunnable getAllObsVerify_oldVersion = new CacheSerializableRunnable(
+    SerializableRunnable getAllObsVerify_oldVersion = new SerializableRunnable(
         "Verify GetAll Observer For older Version") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         assertTrue(remoteCallbackInvoked[0]);
         assertTrue(remoteCallbackInvoked[1]);
         assertFalse(remoteCallbackInvoked[2]);
@@ -2271,10 +2256,10 @@ public class BackwardCompatabilityDUnit extends BackwardCompatabilityTestBase {
       }
     };
 
-    SerializableRunnable getAllObsVerify_newVersion = new CacheSerializableRunnable(
+    SerializableRunnable getAllObsVerify_newVersion = new SerializableRunnable(
         "Verify GetAll Observer For new Version") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         assertTrue(remoteCallbackInvoked[0]);
         assertTrue(remoteCallbackInvoked[1]);
         assertTrue(remoteCallbackInvoked[2]);
@@ -2283,10 +2268,10 @@ public class BackwardCompatabilityDUnit extends BackwardCompatabilityTestBase {
       }
     };
 
-    SerializableRunnable clearStmtCache = new CacheSerializableRunnable(
+    SerializableRunnable clearStmtCache = new SerializableRunnable(
         "Clear Stmt Cache") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           TestUtil.clearStatementCache();
           remoteCallbackInvoked[3] = true;
@@ -2296,10 +2281,10 @@ public class BackwardCompatabilityDUnit extends BackwardCompatabilityTestBase {
       }
     };
 
-    SerializableRunnable verifyStmtCache = new CacheSerializableRunnable(
+    SerializableRunnable verifyStmtCache = new SerializableRunnable(
         "Verify Stmt Cache") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         assertTrue(remoteCallbackInvoked[3]);
       }
     };
@@ -2320,7 +2305,7 @@ public class BackwardCompatabilityDUnit extends BackwardCompatabilityTestBase {
     Properties props = new Properties();
     props.setProperty(DistributionConfig.LOCATORS_NAME, locators);
     props.setProperty("persist-dd", persistDD);
-    props.setProperty("log-level", getDUnitLogLevel());
+    props.setProperty("log-level", getLogLevel());
 
     // 1st Locator
     ProcessStart versionedLocator1 = startVersionedLocator(
@@ -2335,7 +2320,7 @@ public class BackwardCompatabilityDUnit extends BackwardCompatabilityTestBase {
     final Properties connClientProps = new Properties();
     connClientProps.setProperty("single-hop-enabled", "false");
     connClientProps.setProperty("single-hop-max-connections", "5");
-    if (getDUnitLogLevel().startsWith("fine")) {
+    if (getLogLevel().startsWith("fine")) {
       connClientProps.setProperty("gemfirexd.debug.true", "TraceSingleHop");
     }
 

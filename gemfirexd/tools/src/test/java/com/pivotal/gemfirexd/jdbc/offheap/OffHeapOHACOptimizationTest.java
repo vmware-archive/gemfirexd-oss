@@ -16,8 +16,6 @@
  */
 package com.pivotal.gemfirexd.jdbc.offheap;
 
-import hydra.Log;
-
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DriverManager;

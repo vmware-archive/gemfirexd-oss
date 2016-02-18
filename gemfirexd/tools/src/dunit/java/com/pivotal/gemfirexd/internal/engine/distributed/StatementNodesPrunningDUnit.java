@@ -31,7 +31,7 @@ import com.pivotal.gemfirexd.internal.iapi.types.SQLInteger;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedStatement;
 import com.pivotal.gemfirexd.internal.shared.common.ResolverUtils;
 
-import dunit.VM;
+import io.snappydata.test.dunit.VM;
 
 /**
  * Tests the pruning behaviour of distributed queries based on partition

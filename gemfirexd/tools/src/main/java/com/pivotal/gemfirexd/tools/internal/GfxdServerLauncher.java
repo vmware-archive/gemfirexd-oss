@@ -49,6 +49,7 @@ import com.gemstone.gemfire.internal.cache.control.HeapMemoryMonitor;
 import com.gemstone.gemfire.internal.cache.lru.HeapEvictor;
 import com.gemstone.gemfire.internal.cache.persistence.PersistentMemberID;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
+import com.gemstone.gemfire.internal.lang.StringUtils;
 import com.gemstone.gemfire.internal.shared.NativeCalls;
 import com.gemstone.gnu.trove.THashSet;
 import com.pivotal.gemfirexd.FabricServer;
@@ -749,7 +750,10 @@ public class GfxdServerLauncher extends CacheServerLauncher {
 
   @Override
   protected String getBaseName(final String name) {
-    return "gfxdserver";
+    if (!StringUtils.isBlank(System.getenv("SNAPPY_HOME")))
+      return "snappyserver";
+    else
+      return "gfxdserver";
   }
 
   /**

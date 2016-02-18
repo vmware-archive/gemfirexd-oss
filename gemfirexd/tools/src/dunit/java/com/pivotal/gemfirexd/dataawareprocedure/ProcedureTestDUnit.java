@@ -16,14 +16,7 @@
  */
 package com.pivotal.gemfirexd.dataawareprocedure;
 
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ParameterMetaData;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -35,17 +28,15 @@ import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.execute.FunctionStats;
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
-import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverAdapter;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
+import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.procedure.DistributedProcedureCallFunction;
 import com.pivotal.gemfirexd.internal.engine.procedure.ProcedureChunkMessage;
 import com.pivotal.gemfirexd.procedure.OutgoingResultSet;
 import com.pivotal.gemfirexd.procedure.ProcedureExecutionContext;
-
-import dunit.Host;
-import dunit.SerializableRunnable;
-import dunit.VM;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.dunit.VM;
 
 @SuppressWarnings("serial")
 public class ProcedureTestDUnit extends DistributedSQLTestBase {
@@ -57,7 +48,7 @@ public class ProcedureTestDUnit extends DistributedSQLTestBase {
   public static void serverGroupProc(int number, ResultSet[] rs1,
       ResultSet[] rs2, ResultSet[] rs3, ResultSet[] rs4) throws SQLException {
     Connection c = DriverManager.getConnection("jdbc:default:connection");
-    getLogWriter().info("executing serverGroupProc on id: " +
+    globalLogger.info("executing serverGroupProc on id: " +
         InternalDistributedSystem.getConnectedInstance().getProperties());
     ResultSet r = c.createStatement().executeQuery("values dsid()");
     assertTrue(r.next());
@@ -89,7 +80,7 @@ public class ProcedureTestDUnit extends DistributedSQLTestBase {
     } catch (InterruptedException e) {
       fail("why an uninterrpted exception in serverGroupProcWith5SecWait sleep");
     }
-    getLogWriter().info("executing serverGroupProcWith5SecWait on id: " +
+    globalLogger.info("executing serverGroupProcWith5SecWait on id: " +
         InternalDistributedSystem.getConnectedInstance().getProperties());
     ResultSet r = c.createStatement().executeQuery("values dsid()");
     assertTrue(r.next());
@@ -115,7 +106,7 @@ public class ProcedureTestDUnit extends DistributedSQLTestBase {
 
   public static void testLocal(int number, ResultSet[] rs1, ProcedureExecutionContext pec) throws SQLException {
     Connection c = pec.getConnection();
-    getLogWriter().info("executing testLocal on id: " +
+    globalLogger.info("executing testLocal on id: " +
         InternalDistributedSystem.getConnectedInstance().getProperties());
     if (number > 0) {
       rs1[0] = c.createStatement().executeQuery("<LOCAL> SELECT ID, NAME from APP.EMP where ID='1'");

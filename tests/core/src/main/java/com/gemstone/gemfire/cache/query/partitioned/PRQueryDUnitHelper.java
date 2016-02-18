@@ -31,6 +31,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
+import com.gemstone.gemfire.cache.query.functional.QueryREUpdateInProgressJUnitTest;
 import parReg.query.NewPortfolio;
 import util.TestException;
 
@@ -1875,16 +1876,10 @@ public class PRQueryDUnitHelper extends PartitionedRegionDUnitTestCase
     }
     return portfolio;
   }
-  
+
   public Portfolio[] createPortfoliosAndPositions(int count) {
-    Position.cnt = 0; // reset Portfolio counter
-    Portfolio[] portfolios = new Portfolio[count];
-    for (int i = 0; i < count; i++) {
-      portfolios[i] = new Portfolio(i);
-    }
-    return portfolios;
+    return QueryREUpdateInProgressJUnitTest.createPortfoliosAndPositions(count);
   }
-    
 
   /**
    * This function <br>

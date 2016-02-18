@@ -116,7 +116,7 @@ public class OffHeapDUnit extends DistributedSQLTestBase {
   }
 
   public void testConcurrentUpdates() throws Exception {
-    this.reduceLogLevelForTest(getDUnitLogLevel());
+    this.reduceLogLevelForTest(getLogLevel());
     final AtomicInteger ai = new AtomicInteger(0);
     // Start one client and three servers
     startClientVMs(1, 0, null);

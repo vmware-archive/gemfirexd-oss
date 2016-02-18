@@ -55,6 +55,11 @@ allprojects {
 
     GEMFIRE_PRODUCT = 'Pivotal GemFire'
     GEMFIRE_VERSION = '7.5.Beta'
+    DERBY_NAME = 'Apache Derby'
+    DERBY_MAJOR = '10'
+    DERBY_MINOR = '4'
+    DERBY_MAINT = '2000000'
+    DERBY_DRDA_MAINT = '1'
 
     PRODUCT_MAJOR = '2'
     PRODUCT_MINOR = '0'
@@ -81,6 +86,25 @@ allprojects {
     buildDate = new Date().format('yyyy-MM-dd HH:mm:ss Z')
     buildNumber = new Date().format('MMddyy')
     jdkVersion = System.getProperty('java.version')
+
+    derbyProps = [ 'gemfirexd.version.major': DERBY_MAJOR,
+        'gemfirexd.version.minor': DERBY_MINOR,
+        'gemfirexd.version.maint': DERBY_MAINT,
+        'gemfirexd.version.drdamaint': DERBY_DRDA_MAINT,
+        'gemfirexd.build.number': '1',
+        'gemfirexd.product.external.name': DERBY_NAME,
+        'gemfirexd.product.external.version': "${DERBY_MAJOR}.${DERBY_MINOR}.${DERBY_MAINT}",
+        'gemfirexd.version.beta': 'true',
+        'gemfirexd.product.vendor': PRODUCT_VENDOR,
+        'gemfirexd.product.file': 'gemfirexd.jar' ]
+
+    locDir = 'com/pivotal/gemfirexd/internal/loc'
+    clientMsgOutDir = "${project(subprojectBase + 'gemfirexd-core').buildDir}/client/${locDir}"
+    if (!project.hasProperty("sanity")) {
+      isSane = 'true'
+    } else {
+      isSane = sanity
+    }
   }
 
   buildRoot = buildRoot.trim()
@@ -186,11 +210,20 @@ task cleanStoreJUnit << {
 
 subprojects {
   // apply compiler options
-  sourceCompatibility = 1.7
-  targetCompatibility = 1.7
-
   compileJava.options.encoding = 'UTF-8'
-  javadoc.options.charSet = 'UTF-8'
+
+  javadoc {
+    options {
+      charSet = 'UTF-8'
+      windowTitle = 'GemFire XD Java API Documentation'
+      docTitle = "<h1>GemFire XD ${project.version} Java API</h1>"
+      header = "<i>GemFire XD ${project.version}</i>"
+      bottom = '<i>Copyright &copy; 2010-2015 Pivotal Software, Inc. All rights reserved.</i>'
+      use = true
+      links = [ 'http://docs.oracle.com/javase/7/docs/api/' ]
+      verbose = true
+    }
+  }
 
   configurations {
     provided {
@@ -262,8 +295,8 @@ subprojects {
     compile "org.slf4j:slf4j-log4j12:${slf4jVersion}"
 
     testCompile "junit:junit:${junitVersion}"
-    testCompile 'org.hamcrest:hamcrest-core:1.1'
-    testCompile 'org.hamcrest:hamcrest-library:1.1'
+    testCompile 'org.hamcrest:hamcrest-core:1.3'
+    testCompile 'org.hamcrest:hamcrest-library:1.3'
     testCompile 'org.jmock:jmock:2.5.1'
     testCompile 'org.jmock:jmock-legacy:2.5.1'
     testCompile 'edu.umd.cs.mtc:multithreadedtc:1.01'
@@ -479,7 +512,14 @@ gradle.taskGraph.whenReady({ graph ->
 task generateSources {
   dependsOn subprojectBase + 'gemfire-jgroups:jgMagic'
   dependsOn subprojectBase + 'gemfire-core:createVersionPropertiesFile'
-  dependsOn subprojectBase + 'gemfirexd:generateSources'
+  dependsOn subprojectBase + 'gemfirexd-core:compileJavacc'
+  dependsOn subprojectBase + 'gemfirexd-core:generatePropertiesFiles'
+  dependsOn subprojectBase + 'gemfire-core:createVersionPropertiesFile'
+  dependsOn subprojectBase + 'gemfirexd-shared:createVersionPropertiesFile'
+  dependsOn subprojectBase + 'gemfirexd-core:doSplit'
+  dependsOn subprojectBase + 'gemfirexd-client:generatePropertiesFiles'
+  dependsOn subprojectBase + 'gemfirexd-tools:compileJavacc'
+  dependsOn subprojectBase + 'gemfirexd-tools:generatePropertiesFiles'
 }
 
 def includeJar(def jarFile) {
@@ -491,21 +531,21 @@ def includeJar(def jarFile) {
 }
 
 // pack the entire GemFireXD product tree
-task product(dependsOn: [ subprojectBase + 'gemfirexd:client:jar',
-    subprojectBase + 'gemfirexd:core:jar',
-    subprojectBase + 'gemfirexd:tools:jar',
-    subprojectBase + 'tests-sql:jar',
-    subprojectBase + 'gemfirexd:shared:javadoc',
-    subprojectBase + 'gemfirexd:core:javadoc' ]) << {
+task product(dependsOn: [ subprojectBase + 'gemfirexd-client:jar',
+    subprojectBase + 'gemfirexd-core:jar',
+    subprojectBase + 'gemfirexd-tools:jar',
+    subprojectBase + 'gemfirexd-tests:jar',
+    subprojectBase + 'gemfirexd-shared:javadoc',
+    subprojectBase + 'gemfirexd-core:javadoc' ]) << {
 
   def productDir = file("${rootProject.buildDir}/store")
   delete productDir
 
-  def sharedProject = project(subprojectBase + 'gemfirexd:shared')
-  def clientProject = project(subprojectBase + 'gemfirexd:client')
+  def sharedProject = project(subprojectBase + 'gemfirexd-shared')
+  def clientProject = project(subprojectBase + 'gemfirexd-client')
   def gemcoreProject = project(subprojectBase + 'gemfire-core')
-  def coreProject = project(subprojectBase + 'gemfirexd:core')
-  def toolsProject = project(subprojectBase + 'gemfirexd:tools')
+  def coreProject = project(subprojectBase + 'gemfirexd-core')
+  def toolsProject = project(subprojectBase + 'gemfirexd-tools')
 
   def gcmDir = System.getProperty('GCMDIR', '/gcm')
 
@@ -561,7 +601,7 @@ task product(dependsOn: [ subprojectBase + 'gemfirexd:client:jar',
 
   // examples, javadocs, vsd
   copy {
-    from(project(subprojectBase + 'gemfirexd').projectDir.getAbsolutePath() + '/examples') {
+    from(project(subprojectBase + 'gemfirexd-core').projectDir.getAbsolutePath() + '/../examples') {
       exclude 'src/main/java/mapreduce/README.txt'
       exclude 'src/main/java/mapreduce/pom.xml'
     }
@@ -572,7 +612,7 @@ task product(dependsOn: [ subprojectBase + 'gemfirexd:client:jar',
     into "${productDir}/examples"
   }
   copy {
-    from(project(subprojectBase + 'gemfirexd').projectDir.getAbsolutePath() + '/examples') {
+    from(project(subprojectBase + 'gemfirexd-core').projectDir.getAbsolutePath() + '/../examples') {
       include 'src/main/java/mapreduce/README.txt'
       include 'src/main/java/mapreduce/pom.xml'
     }
@@ -582,7 +622,7 @@ task product(dependsOn: [ subprojectBase + 'gemfirexd:client:jar',
     }
   }
   copy {
-    from project(subprojectBase + 'gemfirexd').projectDir.getAbsolutePath() + '/quickstart'
+    from project(subprojectBase + 'gemfirexd-core').projectDir.getAbsolutePath() + '/../quickstart'
     into "${productDir}/quickstart"
   }
   copy {

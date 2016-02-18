@@ -84,7 +84,6 @@ import com.pivotal.gemfirexd.procedure.ProcedureExecutionContext;
 import com.pivotal.gemfirexd.tools.internal.JarTools;
 import com.pivotal.gemfirexd.tools.utils.ExecutionPlanUtils;
 import com.sun.jna.Platform;
-import hydra.HydraRuntimeException;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 import org.apache.derbyTesting.junit.JDBC;
@@ -4254,13 +4253,6 @@ public class BugsTest extends JdbcTestBase {
       derbyStmt
           .execute("create table testtable (id int primary key, type_int int) ");
 
-      try {
-        hydra.Log.getLogWriter();
-      }
-      catch (HydraRuntimeException hre) {
-        hydra.Log.createLogWriter("DBSynchronizer", "fine");
-      }
-
       JdbcTestBase.addAsyncEventListener("SG1", currentTest,
           "com.pivotal.gemfirexd.callbacks.DBSynchronizer",  new Integer(
               10), null, null, null, null, Boolean.FALSE, Boolean.FALSE, null, 
@@ -4368,13 +4360,6 @@ public class BugsTest extends JdbcTestBase {
       derbyStmt = derbyConn.createStatement();
       derbyStmt
           .execute("create table testtable (id int primary key, type_int int) ");
-
-      try {
-        hydra.Log.getLogWriter();
-      }
-      catch (HydraRuntimeException hre) {
-        hydra.Log.createLogWriter("DBSynchronizer", "fine");
-      }
 
       JdbcTestBase.addAsyncEventListener("SG1", currentTest,
           "com.pivotal.gemfirexd.callbacks.DBSynchronizer",  new Integer(
@@ -5996,11 +5981,6 @@ public class BugsTest extends JdbcTestBase {
     Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
     final String derbyDbUrl = tempDerbyUrl;
     Connection derbyConn = DriverManager.getConnection(derbyDbUrl);
-    try {
-      hydra.Log.getLogWriter();
-    } catch (HydraRuntimeException hre) {
-      hydra.Log.createLogWriter("DBSynchronizer", "fine");
-    }
     Statement derbyStmt = derbyConn.createStatement();
 
     String query = "select cid,  avg(qty*bid)  as amount from buyorders  where status =?"
@@ -6220,11 +6200,6 @@ public class BugsTest extends JdbcTestBase {
       Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
       final String derbyDbUrl = tempDerbyUrl;
       Connection derbyConn = DriverManager.getConnection(derbyDbUrl);
-      try {
-        hydra.Log.getLogWriter();
-      } catch (HydraRuntimeException hre) {
-        hydra.Log.createLogWriter("DBSynchronizer", "fine");
-      }
       derbyStmt = derbyConn.createStatement();
       derbyStmt.execute(table);
    //   derbyStmt.execute(index1);
@@ -8703,7 +8678,7 @@ public class BugsTest extends JdbcTestBase {
   }
   
   public void createTables51718(Connection conn, Statement st) throws Exception {
-    String extra_jtests = System.getProperty("EXTRA_JTESTS");
+    String extra_jtests = getResourcesDir();
     GemFireXDUtils.executeSQLScripts(conn, new String[] {
         extra_jtests + "/lib/rtrddl.sql",
         extra_jtests + "/lib/sales_credits_ddl.sql",
@@ -8713,7 +8688,7 @@ public class BugsTest extends JdbcTestBase {
   }
   
   public void importData51718(Statement st) throws Exception {
-    String extra_jtests = System.getProperty("EXTRA_JTESTS");
+    String extra_jtests = getResourcesDir();
     String importFile1 = extra_jtests + "/lib/rtr.dat";
     String importFile2 = extra_jtests + "/lib/SALES_CREDITS20000.dat";
     

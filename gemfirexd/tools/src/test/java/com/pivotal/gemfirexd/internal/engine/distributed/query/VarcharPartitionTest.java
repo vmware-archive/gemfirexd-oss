@@ -43,7 +43,6 @@ public class VarcharPartitionTest extends JdbcTestBase{
   
   public VarcharPartitionTest(String name) {
     super(name);
-    hydra.Log.createLogWriter("VarcharPartitionTest", "fine");
   }
 
   public static void main(String[] args) {

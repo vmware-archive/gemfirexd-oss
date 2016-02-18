@@ -42,7 +42,7 @@ import com.pivotal.gemfirexd.internal.engine.ddl.wan.GfxdGatewayEventListener;
 import com.pivotal.gemfirexd.jdbc.GfxdJarInstallationTest;
 import com.pivotal.gemfirexd.tools.internal.JarTools;
 
-import dunit.VM;
+import io.snappydata.test.dunit.VM;
 
 @SuppressWarnings("serial")
 public class GfxdJarInstallationDUnit extends DistributedSQLTestBase {

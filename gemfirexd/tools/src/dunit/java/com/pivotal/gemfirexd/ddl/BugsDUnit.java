@@ -17,9 +17,19 @@
 
 package com.pivotal.gemfirexd.ddl;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.math.BigDecimal;
+import java.net.InetAddress;
+import java.sql.*;
+import java.util.*;
+import javax.sql.rowset.serial.SerialBlob;
+import javax.sql.rowset.serial.SerialClob;
+
 import com.gemstone.gemfire.cache.CacheClosedException;
 import com.gemstone.gemfire.cache.RegionDestroyedException;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.SocketCreator;
@@ -54,27 +64,14 @@ import com.pivotal.gemfirexd.internal.impl.sql.GenericPreparedStatement;
 import com.pivotal.gemfirexd.jdbc.BugsTest;
 import com.pivotal.gemfirexd.tools.internal.JarTools;
 import com.pivotal.gemfirexd.tools.internal.MiscTools;
-import dunit.RMIException;
-import dunit.SerializableCallable;
-import dunit.SerializableRunnable;
-import dunit.VM;
-import hydra.GemFireDescription;
-import hydra.HydraRuntimeException;
+import io.snappydata.test.dunit.RMIException;
+import io.snappydata.test.dunit.SerializableCallable;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.dunit.VM;
 import org.apache.derby.drda.NetworkServerControl;
 import org.apache.derbyTesting.junit.JDBC;
 import org.apache.tools.ant.DirectoryScanner;
 import udtexamples.UDTPrice;
-
-import javax.sql.rowset.serial.SerialBlob;
-import javax.sql.rowset.serial.SerialClob;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.math.BigDecimal;
-import java.net.InetAddress;
-import java.sql.*;
-import java.util.*;
 
 /**
  * Note: Moved these concurrency check related tests to ConcurrencyChecksDUnit
@@ -133,9 +130,9 @@ public class BugsDUnit extends DistributedSQLTestBase {
     }
     
     public void throwException() {
-      getLogWriter().info("GIIExceptionThrower.throwExceptionDuringGII called", new Exception());
+      globalLogger.info("GIIExceptionThrower.throwExceptionDuringGII called", new Exception());
       if (cnt == after) {
-        getLogWriter().info("GIIExceptionThrower.throwExceptionDuringGII actually throwing exception");
+        globalLogger.info("GIIExceptionThrower.throwExceptionDuringGII actually throwing exception");
         throw new RuntimeException();
       }
       cnt++;
@@ -143,7 +140,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
   }
 
   public static void setGiiExceptionSimulator(int after) {
-    getLogWriter().info("setting Gii exception thrower");
+    globalLogger.info("setting Gii exception thrower");
     if (after > 0) {
       InitialImageOperation.giiExceptionSimulate = new GIIExceptionThrower(
           after);
@@ -1270,7 +1267,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
 
   private static void callStoredProc(CallableStatement stmt, String id,
       boolean resultExpected, boolean dupsExpected) throws Exception {
-    getLogWriter().info(
+    globalLogger.info(
         "callStoredProc called with id: " + ", resultExpected: "
             + resultExpected + ", dupsExpected: " + dupsExpected);
     int count = 0;
@@ -1282,13 +1279,13 @@ public class BugsDUnit extends DistributedSQLTestBase {
     }
     if (resultExpected) {
       assertTrue(count > 0);
-      getLogWriter().info(
+      globalLogger.info(
           "callStoredProc called with id: "
               + ", resultExpected assertion through with count: " + count);
     }
     if (dupsExpected) {
       assertEquals(2, count);
-      getLogWriter().info(
+      globalLogger.info(
           "callStoredProc called with id: "
               + ", dupsExpected assertion through with count: " + count);
     }
@@ -1486,11 +1483,6 @@ public class BugsDUnit extends DistributedSQLTestBase {
       Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
       final String derbyDbUrl = tempDerbyUrl;
       Connection derbyConn = DriverManager.getConnection(derbyDbUrl);
-      try {
-        hydra.Log.getLogWriter();
-      } catch (HydraRuntimeException hre) {
-        hydra.Log.createLogWriter("DBSynchronizer", getDUnitLogLevel());
-      }
       derbyStmt = derbyConn.createStatement();
       derbyStmt.execute(table);
       derbyStmt.execute(index);
@@ -1644,11 +1636,6 @@ public class BugsDUnit extends DistributedSQLTestBase {
       Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
       final String derbyDbUrl = tempDerbyUrl;
       Connection derbyConn = DriverManager.getConnection(derbyDbUrl);
-      try {
-        hydra.Log.getLogWriter();
-      } catch (HydraRuntimeException hre) {
-        hydra.Log.createLogWriter("DBSynchronizer", getDUnitLogLevel());
-      }
       derbyStmt = derbyConn.createStatement();
       derbyStmt.execute(table);
       derbyStmt.execute(index);
@@ -1847,11 +1834,6 @@ public class BugsDUnit extends DistributedSQLTestBase {
       Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
       final String derbyDbUrl = tempDerbyUrl;
       Connection derbyConn = DriverManager.getConnection(derbyDbUrl);
-      try {
-        hydra.Log.getLogWriter();
-      } catch (HydraRuntimeException hre) {
-        hydra.Log.createLogWriter("DBSynchronizer", getDUnitLogLevel());
-      }
       derbyStmt1 = derbyConn.createStatement();
       derbyStmt1.execute(table);
       derbyStmt1.execute(index);
@@ -1989,10 +1971,10 @@ public class BugsDUnit extends DistributedSQLTestBase {
             derbyStmt.setInt(2, sid);
 
             TestUtil.validateResults(derbyStmt, stmt, query, false);
-            CacheSerializableRunnable csr = new CacheSerializableRunnable("set observer") {
+            SerializableRunnable csr = new SerializableRunnable("set observer") {
               
               @Override
-              public void run2() {
+              public void run() {
                 GemFireXDQueryObserver old = GemFireXDQueryObserverHolder
                     .setInstance(new GemFireXDQueryObserverAdapter() {
                       @Override
@@ -3046,8 +3028,8 @@ public class BugsDUnit extends DistributedSQLTestBase {
           //wait for gii
           Thread.sleep(5000);
           dataStore1 = serverVMs.get(0);
-          dataStore1.invoke(new CacheSerializableRunnable("cache closer") {
-            public void run2() {
+          dataStore1.invoke(new SerializableRunnable("cache closer") {
+            public void run() {
               GemFireXDQueryObserver observer = new GemFireXDQueryObserverAdapter() {
                 @Override
                 public void beforeQueryExecutionByStatementQueryExecutor(
@@ -3066,8 +3048,8 @@ public class BugsDUnit extends DistributedSQLTestBase {
           s.executeUpdate("delete from securities where sec_id = 20");
         } finally {
           if(dataStore1 != null) {
-            dataStore1.invoke(new CacheSerializableRunnable("reset") {
-              public void run2() {
+            dataStore1.invoke(new SerializableRunnable("reset") {
+              public void run() {
                 GemFireXDQueryObserverHolder.clearInstance();   
                 try {
                   TestUtil.getConnection();
@@ -3293,9 +3275,9 @@ public class BugsDUnit extends DistributedSQLTestBase {
     st.execute("insert into t1 values (1, 1, 1), (2, 2, 2)");
     
     // to forcefully re-prepare the update statement
-    CacheSerializableRunnable csr = new CacheSerializableRunnable("_48263_") {
+    SerializableRunnable csr = new SerializableRunnable("_48263_") {
       @Override
-      public void run2() {
+      public void run() {
         GemFireXDQueryObserver old = GemFireXDQueryObserverHolder
             .setInstance(new GemFireXDQueryObserverAdapter() {
               @Override
@@ -3979,16 +3961,15 @@ public class BugsDUnit extends DistributedSQLTestBase {
     invokeInEveryVM(new SerializableRunnable() {
       @Override
       public void run() {
-        final GemFireDescription gfd = getGemFireDescription();
-        final String sysDirName = getSysDirName(gfd);
+        String currentDir = new File(".").getAbsolutePath();
         DirectoryScanner scanner = new DirectoryScanner();
         scanner.setIncludes(new String[] { "*"
             + GfxdConstants.GFXD_DEFAULT_DISKSTORE_NAME + "*.*" });
-        scanner.setBasedir(sysDirName);
+        scanner.setBasedir(currentDir);
         scanner.setCaseSensitive(false);
         scanner.scan();
         for (String file : scanner.getIncludedFiles()) {
-          new File(sysDirName, file).delete();
+          new File(currentDir, file).delete();
         }
       }
     });

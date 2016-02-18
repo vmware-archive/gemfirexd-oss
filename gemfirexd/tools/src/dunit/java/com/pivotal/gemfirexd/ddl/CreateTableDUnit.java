@@ -16,13 +16,9 @@
  */
 package com.pivotal.gemfirexd.ddl;
 
-import hydra.Log;
-
-import java.io.File;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.net.InetAddress;
-import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -30,108 +26,52 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.derby.drda.NetworkServerControl;
-
-import util.TestException;
-import junit.framework.AssertionFailedError;
-
-import com.gemstone.gemfire.LogWriter;
-import com.gemstone.gemfire.cache.Cache;
-import com.gemstone.gemfire.cache.CacheClosedException;
-import com.gemstone.gemfire.cache.CacheException;
-import com.gemstone.gemfire.cache.CacheLoader;
-import com.gemstone.gemfire.cache.DataPolicy;
-import com.gemstone.gemfire.cache.EntryExistsException;
-import com.gemstone.gemfire.cache.EvictionAction;
-import com.gemstone.gemfire.cache.EvictionAttributes;
-import com.gemstone.gemfire.cache.ExpirationAction;
-import com.gemstone.gemfire.cache.ExpirationAttributes;
-import com.gemstone.gemfire.cache.PartitionAttributes;
-import com.gemstone.gemfire.cache.PartitionAttributesFactory;
-import com.gemstone.gemfire.cache.Region;
-import com.gemstone.gemfire.cache.RegionAttributes;
-import com.gemstone.gemfire.cache.RegionDestroyedException;
-import com.gemstone.gemfire.cache.Scope;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
-import com.gemstone.gemfire.distributed.DistributedMember;
-import com.gemstone.gemfire.distributed.DistributedSystemDisconnectedException;
-import com.gemstone.gemfire.distributed.internal.DistributionConfig;
+import com.gemstone.gemfire.cache.*;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.BucketRegion;
-import com.gemstone.gemfire.internal.cache.ForceReattemptException;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.execute.InternalRegionFunctionContext;
-import com.gemstone.gemfire.internal.cache.versions.VersionStamp;
 import com.gemstone.gemfire.internal.cache.xmlcache.RegionAttributesCreation;
-import com.gemstone.gemfire.internal.offheap.StoredObject;
-import com.pivotal.gemfirexd.Attribute;
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.FabricLocator;
 import com.pivotal.gemfirexd.FabricServer;
 import com.pivotal.gemfirexd.FabricServiceManager;
 import com.pivotal.gemfirexd.TestUtil;
-import com.pivotal.gemfirexd.ToursDBUtil;
 import com.pivotal.gemfirexd.callbacks.RowLoader;
 import com.pivotal.gemfirexd.dbsync.DBSynchronizerTestBase;
 import com.pivotal.gemfirexd.execute.CallbackStatement;
-import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserver;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverAdapter;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
-import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
+import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.ddl.GfxdCacheLoader;
 import com.pivotal.gemfirexd.internal.engine.ddl.resolver.GfxdListPartitionResolver;
 import com.pivotal.gemfirexd.internal.engine.ddl.resolver.GfxdPartitionByExpressionResolver;
 import com.pivotal.gemfirexd.internal.engine.ddl.resolver.GfxdPartitionResolver;
 import com.pivotal.gemfirexd.internal.engine.ddl.resolver.GfxdRangePartitionResolver;
-import com.pivotal.gemfirexd.internal.engine.distributed.utils.GemFireXDUtils;
 import com.pivotal.gemfirexd.internal.engine.jdbc.GemFireXDRuntimeException;
 import com.pivotal.gemfirexd.internal.engine.store.GemFireContainer;
-import com.pivotal.gemfirexd.internal.engine.store.RegionKey;
 import com.pivotal.gemfirexd.internal.engine.store.GfxdObjectSizer;
-import com.pivotal.gemfirexd.internal.engine.store.entry.VMBucketRowLocationThinDiskRegionEntryHeap;
-import com.pivotal.gemfirexd.internal.engine.store.entry.VMBucketRowLocationThinLRURegionEntryHeap;
-import com.pivotal.gemfirexd.internal.engine.store.entry.VMBucketRowLocationThinRegionEntryHeap;
-import com.pivotal.gemfirexd.internal.engine.store.entry.VMLocalRowLocationThinDiskLRURegionEntryHeap;
-import com.pivotal.gemfirexd.internal.engine.store.entry.VMLocalRowLocationThinDiskRegionEntryHeap;
-import com.pivotal.gemfirexd.internal.engine.store.entry.VMLocalRowLocationThinLRURegionEntryHeap;
-import com.pivotal.gemfirexd.internal.engine.store.entry.VMLocalRowLocationThinRegionEntryHeap;
-import com.pivotal.gemfirexd.internal.engine.store.entry.VersionedBucketRowLocationThinDiskLRURegionEntryHeap;
-import com.pivotal.gemfirexd.internal.engine.store.entry.VersionedBucketRowLocationThinDiskRegionEntryHeap;
-import com.pivotal.gemfirexd.internal.engine.store.entry.VersionedBucketRowLocationThinLRURegionEntryHeap;
-import com.pivotal.gemfirexd.internal.engine.store.entry.VersionedBucketRowLocationThinRegionEntryHeap;
-import com.pivotal.gemfirexd.internal.engine.store.entry.VersionedLocalRowLocationThinDiskLRURegionEntryHeap;
-import com.pivotal.gemfirexd.internal.engine.store.entry.VersionedLocalRowLocationThinDiskRegionEntryHeap;
-import com.pivotal.gemfirexd.internal.engine.store.entry.VersionedLocalRowLocationThinLRURegionEntryHeap;
-import com.pivotal.gemfirexd.internal.engine.store.entry.VersionedLocalRowLocationThinRegionEntryHeap;
+import com.pivotal.gemfirexd.internal.engine.store.RegionKey;
+import com.pivotal.gemfirexd.internal.engine.store.entry.*;
 import com.pivotal.gemfirexd.internal.iapi.services.sanity.SanityManager;
 import com.pivotal.gemfirexd.internal.iapi.sql.conn.LanguageConnectionContext;
 import com.pivotal.gemfirexd.internal.iapi.types.DataValueDescriptor;
 import com.pivotal.gemfirexd.internal.iapi.types.RowLocation;
-import com.pivotal.gemfirexd.internal.iapi.util.StringUtil;
 import com.pivotal.gemfirexd.internal.shared.common.ResolverUtils;
 import com.pivotal.gemfirexd.jdbc.CreateTableTest;
 import com.pivotal.gemfirexd.jdbc.GfxdCallbacksTest;
-
-import dunit.AsyncInvocation;
-import dunit.Host;
-import dunit.RMIException;
-import dunit.SerializableCallable;
-import dunit.SerializableRunnable;
-import dunit.VM;
+import io.snappydata.test.dunit.AsyncInvocation;
+import io.snappydata.test.dunit.Host;
+import io.snappydata.test.dunit.RMIException;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.dunit.VM;
+import io.snappydata.test.util.TestException;
+import org.apache.derby.drda.NetworkServerControl;
 
 /**
  * Tests for "CREATE TABLE" and GemFire extensions
@@ -1060,10 +1000,10 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
       final String table, final String xmlElement) throws CacheException {
     final String schemaName = schema.toUpperCase(Locale.ENGLISH);
     final String tableName = table.toUpperCase(Locale.ENGLISH);
-    CacheSerializableRunnable checkSYS = new CacheSerializableRunnable(
+    SerializableRunnable checkSYS = new SerializableRunnable(
         "Clear cache and check tables") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         // Test the fields from SYSTABLES on client with index lookup
         try {
           TestUtil.sqlExecuteVerifyText("SELECT sc.SCHEMANAME, tab.TABLENAME, "
@@ -1880,10 +1820,10 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
 
     // add an observer to a server to wait till new VM is started
     VM server1 = this.serverVMs.get(1);
-    final CacheSerializableRunnable addObserver = new CacheSerializableRunnable(
+    final SerializableRunnable addObserver = new SerializableRunnable(
         "add observer") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         GemFireXDQueryObserverHolder
             .putInstance(new GemFireXDQueryObserverAdapter() {
               @Override
@@ -1903,9 +1843,9 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
 
     // execute a DDL and bring up a new server concurrently
     this.threadEx = null;
-    Thread t = new Thread(new CacheSerializableRunnable("start VM and signal") {
+    Thread t = new Thread(new SerializableRunnable("start VM and signal") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           // wait for sometime to allow DDL execution to begin
           Thread.sleep(5000);
@@ -1943,10 +1883,10 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
     final String tblCreate = "create table trade.customers (cid int not null, "
         + "cust_name varchar(100), since int, addr varchar(100), tid int, "
         + "primary key (cid))";
-    final CacheSerializableRunnable createRun = new CacheSerializableRunnable(
+    final SerializableRunnable createRun = new SerializableRunnable(
         "create schema and tables") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         final Connection conn = TestUtil.jdbcConn;
         try {
           final Statement stmt = conn.createStatement();
@@ -1976,10 +1916,10 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
     joinAsyncInvocation(tasks);
 
     // next run inserts on all VMs concurrently
-    final CacheSerializableRunnable insertRun = new CacheSerializableRunnable(
+    final SerializableRunnable insertRun = new SerializableRunnable(
         "insert data") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         final Connection conn = TestUtil.jdbcConn;
         try {
           final PreparedStatement pstmt = conn.prepareStatement("insert into "
@@ -2009,10 +1949,10 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
     joinAsyncInvocation(tasks);
 
     // finally check if inserts have been done successfully
-    final CacheSerializableRunnable queryRun = new CacheSerializableRunnable(
+    final SerializableRunnable queryRun = new SerializableRunnable(
         "query data") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         final Connection conn = TestUtil.jdbcConn;
         try {
           final ResultSet rs = conn.createStatement().executeQuery(
@@ -2692,7 +2632,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
       if (bRegion == null) {
         continue;
       }
-      getLogWriter().info(
+      globalLogger.info(
           "checkBucketValuesInList: Iterating over bucket region: "
               + bRegion.getFullPath());
       Object expectedValue = null;
@@ -2700,13 +2640,13 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
       for (Object knkey : bRegion.keySet()) {
         keylog += knkey.toString() + ",";
       }
-      getLogWriter().info(
+      globalLogger.info(
           "keys in this bucket region = " + bRegion.getName() + " are: "
               + keylog);
       for (Object bEntry : bRegion.entrySet()) {
         final Object bucketValue = ((RegionKey)((Map.Entry<?, ?>)bEntry)
             .getKey()).getKeyColumn(0).getObject();
-        getLogWriter().info(
+        globalLogger.info(
             "checkBucketValuesInList: Checking for bucket entry: "
                 + bucketValue);
 
@@ -2716,7 +2656,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
           Object foundNode = null;
 
           public boolean visit(Object node) {
-            getLogWriter().info(
+            globalLogger.info(
                 "KNS: visit being called for bvfuzzy: " + bvFuzzy
                     + ", in range: " + node.toString());
             boolean found;
@@ -2729,7 +2669,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
             if (found) {
               this.foundNode = node;
             }
-            getLogWriter().info("KNS: returning found = " + found);
+            globalLogger.info("KNS: returning found = " + found);
             return found;
           }
 
@@ -2747,7 +2687,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
                 forEach(valueList, expectedListVisitor));
             ResolverUtils.GfxdRange expectedRange = (ResolverUtils.GfxdRange)expectedListVisitor.getState();
             expectedValue = expectedRange.clone();
-            getLogWriter().info(
+            globalLogger.info(
                 "invalidate called while checking for entry: " + bucketValue);
             expectedRange.invalidate();
           }
@@ -2780,7 +2720,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
           assertNotNull(
               "checkBucketValuesInList: expected to find a list/range for "
                   + "first bucket value [" + bucketValue + ']', expectedValue);
-          getLogWriter().info(
+          globalLogger.info(
               "checkBucketValuesInList: found first bucket value ["
                   + bucketValue + "] in list/range: " + expectedValue);
         }
@@ -2795,7 +2735,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
                 + "] not in the expected list of values: " + expectedValue,
                 forEach((List<?>)expectedValue, expectedListVisitor));
           }
-          getLogWriter().info(
+          globalLogger.info(
               "checkBucketValuesInList: found bucket value [" + bucketValue
                   + "] in list/range: " + expectedValue);
         }

@@ -24,14 +24,11 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.SortedSet;
-import junit.framework.Assert;
-import junit.framework.AssertionFailedError;
 
 import com.gemstone.gemfire.cache.CacheException;
 import com.gemstone.gemfire.cache.DataPolicy;
 import com.gemstone.gemfire.cache.PartitionAttributes;
 import com.gemstone.gemfire.cache.PartitionAttributesFactory;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.distributed.DistributedMember;
 import com.gemstone.gemfire.internal.SocketCreator;
 import com.gemstone.gemfire.internal.cache.xmlcache.RegionAttributesCreation;
@@ -42,9 +39,13 @@ import com.pivotal.gemfirexd.internal.engine.distributed.utils.GemFireXDUtils;
 import com.pivotal.gemfirexd.internal.engine.jdbc.GemFireXDRuntimeException;
 import com.pivotal.gemfirexd.internal.engine.sql.catalog.DistributionDescriptor;
 import com.pivotal.gemfirexd.internal.shared.common.SharedUtils;
-
-import dunit.SerializableCallable;
-import dunit.VM;
+import io.snappydata.test.dunit.RMIException;
+import io.snappydata.test.dunit.SerializableCallable;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.dunit.VM;
+import junit.framework.Assert;
+import junit.framework.AssertionFailedError;
+import org.apache.log4j.Logger;
 
 @SuppressWarnings("serial")
 public class GfxdDiagsDUnit extends DistributedSQLTestBase {
@@ -190,12 +191,12 @@ public class GfxdDiagsDUnit extends DistributedSQLTestBase {
             + "/lib/checkDiags.xml", "empty", false, false);
   }
 
-  public static CacheSerializableRunnable checkSingleServerResultForServerGroups()
+  public static SerializableRunnable checkSingleServerResultForServerGroups()
       throws Exception {
-    CacheSerializableRunnable checkSingleMemberResultForServerGroups =
-        new CacheSerializableRunnable("checkSingleMemberResultForServerGroups") {
+    SerializableRunnable checkSingleMemberResultForServerGroups =
+        new SerializableRunnable("checkSingleMemberResultForServerGroups") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
 
         try {
           Statement stmt = TestUtil.getStatement();
@@ -256,30 +257,31 @@ public class GfxdDiagsDUnit extends DistributedSQLTestBase {
           assertEquals(currLocators, rs.getObject("LOCATOR"));
 
           // just log other fields since no fixed value is known
-          getLogWriter().info("Got ID as " + rs.getString("ID"));
-          getLogWriter().info("Got ID as " + rs.getObject("ID"));
-          getLogWriter().info("Got IPADDRESS as " + rs.getString("IPADDRESS"));
-          getLogWriter().info("Got IPADDRESS as " + rs.getObject("IPADDRESS"));
-          getLogWriter().info("Got HOST as " + rs.getString("HOST"));
-          getLogWriter().info("Got HOST as " + rs.getObject("HOST"));
-          getLogWriter().info("Got PID as " + rs.getObject("PID"));
-          getLogWriter().info("Got PID as " + rs.getInt("PID"));
-          getLogWriter().info("Got PORT as " + rs.getObject("PORT"));
-          getLogWriter().info("Got PORT as " + rs.getInt("PORT"));
-          getLogWriter()
+          final Logger logger = globalLogger;
+          logger.info("Got ID as " + rs.getString("ID"));
+          logger.info("Got ID as " + rs.getObject("ID"));
+          logger.info("Got IPADDRESS as " + rs.getString("IPADDRESS"));
+          logger.info("Got IPADDRESS as " + rs.getObject("IPADDRESS"));
+          logger.info("Got HOST as " + rs.getString("HOST"));
+          logger.info("Got HOST as " + rs.getObject("HOST"));
+          logger.info("Got PID as " + rs.getObject("PID"));
+          logger.info("Got PID as " + rs.getInt("PID"));
+          logger.info("Got PORT as " + rs.getObject("PORT"));
+          logger.info("Got PORT as " + rs.getInt("PORT"));
+          logger
               .info("Got NETSERVERS as " + rs.getObject("NETSERVERS"));
-          getLogWriter()
+          logger
               .info("Got NETSERVERS as " + rs.getString("NETSERVERS"));
-          getLogWriter().info(
+          logger.info(
               "Got SYSTEMPROPS as " + rs.getObject("SYSTEMPROPS"));
-          getLogWriter().info(
+          logger.info(
               "Got SYSTEMPROPS as " + rs.getString("SYSTEMPROPS"));
-          getLogWriter().info(
+          logger.info(
               "Got GEMFIREPROPS as " + rs.getObject("GEMFIREPROPS"));
-          getLogWriter().info(
+          logger.info(
               "Got GEMFIREPROPS as " + rs.getString("GEMFIREPROPS"));
-          getLogWriter().info("Got BOOTPROPS as " + rs.getObject("BOOTPROPS"));
-          getLogWriter().info("Got BOOTPROPS as " + rs.getString("BOOTPROPS"));
+          logger.info("Got BOOTPROPS as " + rs.getObject("BOOTPROPS"));
+          logger.info("Got BOOTPROPS as " + rs.getString("BOOTPROPS"));
 
           // expect exception with unknown columns
           try {
@@ -405,7 +407,7 @@ public class GfxdDiagsDUnit extends DistributedSQLTestBase {
                   + "SYS.MEMBERS", TestUtil.getResourcesDir()
                   + "/lib/checkDiags.xml", "multiple_members_sgs", true, false);
           return true;
-        } catch (dunit.RMIException rmiex) {
+        } catch (RMIException rmiex) {
           if (rmiex.getCause() instanceof AssertionFailedError) {
             return false;
           }
@@ -938,7 +940,7 @@ public class GfxdDiagsDUnit extends DistributedSQLTestBase {
     startVMs(1, 3);
 
     Properties cp = new Properties();
-    cp.setProperty("log-level", getDUnitLogLevel());
+    cp.setProperty("log-level", getLogLevel());
     Connection conn = TestUtil.getConnection(cp);
 
     Statement st = conn.createStatement();
@@ -1204,7 +1206,7 @@ public class GfxdDiagsDUnit extends DistributedSQLTestBase {
 
   private static String getLocatorStr() {
     // extract port separately
-    return getDUnitLocatorAddress() + '[' + getDUnitLocatorPort() + ']';
+    return getDUnitLocatorString();
   }
 
   private void checkMembersResultForServerGroups(boolean project,

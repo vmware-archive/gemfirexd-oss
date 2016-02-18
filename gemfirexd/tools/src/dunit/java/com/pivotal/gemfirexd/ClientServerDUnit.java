@@ -19,15 +19,7 @@ package com.pivotal.gemfirexd;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.net.InetAddress;
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.SQLNonTransientConnectionException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -38,45 +30,28 @@ import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.derby.drda.NetworkServerControl;
-import org.apache.derbyTesting.junit.JDBC;
-
-import util.TestException;
-
-import com.gemstone.gemfire.cache.CacheClosedException;
-import com.gemstone.gemfire.cache.CacheException;
-import com.gemstone.gemfire.cache.CacheFactory;
-import com.gemstone.gemfire.cache.DataPolicy;
-import com.gemstone.gemfire.cache.PartitionAttributes;
-import com.gemstone.gemfire.cache.PartitionAttributesFactory;
-import com.gemstone.gemfire.cache.PartitionedRegionStorageException;
-import com.gemstone.gemfire.cache.Scope;
+import com.gemstone.gemfire.cache.*;
 import com.gemstone.gemfire.cache.execute.Function;
 import com.gemstone.gemfire.cache.execute.FunctionContext;
 import com.gemstone.gemfire.cache.execute.FunctionException;
 import com.gemstone.gemfire.cache.execute.FunctionService;
 import com.gemstone.gemfire.cache.execute.ResultCollector;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.distributed.DistributedMember;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
-import com.gemstone.gemfire.distributed.internal.membership.
-    InternalDistributedMember;
+import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.SocketCreator;
 import com.gemstone.gemfire.internal.cache.xmlcache.RegionAttributesCreation;
 import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
-
-import com.pivotal.gemfirexd.DistributedSQLTestBase;
-import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.execute.CallbackStatement;
 import com.pivotal.gemfirexd.internal.client.am.DisconnectException;
-import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserver;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverAdapter;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
+import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.ddl.resolver.GfxdPartitionByExpressionResolver;
 import com.pivotal.gemfirexd.internal.engine.distributed.GfxdListResultCollector;
 import com.pivotal.gemfirexd.internal.engine.jdbc.GemFireXDRuntimeException;
@@ -90,12 +65,14 @@ import com.pivotal.gemfirexd.internal.iapi.sql.dictionary.SchemaDescriptor;
 import com.pivotal.gemfirexd.internal.iapi.util.StringUtil;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedStatement;
 import com.pivotal.gemfirexd.internal.impl.jdbc.authentication.AuthenticationServiceBase;
-
-import dunit.RMIException;
-import dunit.SerializableCallable;
-import dunit.SerializableRunnable;
-import dunit.VM;
-import dunit.Host;
+import io.snappydata.test.dunit.Host;
+import io.snappydata.test.dunit.RMIException;
+import io.snappydata.test.dunit.SerializableCallable;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.dunit.VM;
+import io.snappydata.test.util.TestException;
+import org.apache.derby.drda.NetworkServerControl;
+import org.apache.derbyTesting.junit.JDBC;
 
 /**
  * Test that client and server are being correctly configured with different
@@ -177,9 +154,9 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
   }
 
   private void checkVMsDown(VM... vms) {
-    CacheSerializableRunnable noGFE = new CacheSerializableRunnable("GFE down") {
+    SerializableRunnable noGFE = new SerializableRunnable("GFE down") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           CacheFactory.getAnyInstance();
           fail("expected the cache to be closed");
@@ -855,9 +832,9 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
       }
     });
     // attach an observer that will always throw an index not found exception
-    serverExecute(2, new CacheSerializableRunnable("attach observer") {
+    serverExecute(2, new SerializableRunnable("attach observer") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         GemFireXDQueryObserverHolder.setInstance(errorGen);
       }
     });
@@ -893,9 +870,9 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
           ex.getLocalizedMessage().contains(expectedMessage));
     }
     // remove the observer
-    serverExecute(2, new CacheSerializableRunnable("remove observer") {
+    serverExecute(2, new SerializableRunnable("remove observer") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         GemFireXDQueryObserverHolder.clearInstance();
       }
     });
@@ -1026,9 +1003,9 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
     });
 
     // now check behaviour in exception during execution using an observer
-    serverExecute(1, new CacheSerializableRunnable("attach error generator") {
+    serverExecute(1, new SerializableRunnable("attach error generator") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         GemFireXDQueryObserverHolder.setInstance(errorGen);
       }
     });
@@ -1124,7 +1101,7 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
               pstmt.clearBatch();
             } catch (SQLException sqle) {
               // just log a warning here
-              getLogWriter().warning(sqle);
+              getLogWriter().warn(sqle);
             }
           }
         } catch (Throwable t) {
@@ -1325,9 +1302,9 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
     });
 
     // remove the observer
-    serverVM.invoke(new CacheSerializableRunnable("remove observer") {
+    serverVM.invoke(new SerializableRunnable("remove observer") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         GemFireXDQueryObserverHolder.clearInstance();
         batchExecutions.clear();
         hasQueryObservers = false;
@@ -2727,7 +2704,7 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
 
   /**
    * Test for checking routing using server groups
-   * {@link ServerGroupUtils#onServerGroups(java.util.Set)}.
+   * {@link ServerGroupUtils#onServerGroups}.
    */
   public void testServerGroupsRouting() throws Exception {
     // start some servers in different server groups and a client
@@ -2739,10 +2716,10 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
     joinVMs(true, async1, async2, async3);
 
     // register the function on all the VMs
-    CacheSerializableRunnable registerFn = new CacheSerializableRunnable(
+    SerializableRunnable registerFn = new SerializableRunnable(
         "register function") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         FunctionService.registerFunction(new TestFunction());
       }
     };
@@ -3384,10 +3361,10 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
 
   private void executeOnServerForUser(int serverNum, final String userName,
       final String sql) throws Exception {
-    serverExecute(serverNum, new CacheSerializableRunnable("executing " + sql
+    serverExecute(serverNum, new SerializableRunnable("executing " + sql
         + " with userName " + userName) {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           executeForUser(userName, sql);
         } catch (SQLException ex) {
@@ -3399,7 +3376,7 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
   }
 
   public static void procTest(Integer arg) {
-    getLogWriter().info("Invoked procTest with arg: " + arg);
+    globalLogger.info("Invoked procTest with arg: " + arg);
   }
 
   private Properties doSecuritySetup(final Properties props,

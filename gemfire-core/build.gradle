@@ -61,11 +61,7 @@ dependencies {
   compile project(subprojectBase + 'gemfire-json')
   compile project(subprojectBase + 'gemfire-shared')
 
-  testCompile 'org.apache.bcel:bcel:5.2'
-
   jcaCompile sourceSets.main.output
-
-  provided project(subprojectBase + 'gemfire-junit')
 }
 
 // Creates the version properties file and writes it to the classes dir
