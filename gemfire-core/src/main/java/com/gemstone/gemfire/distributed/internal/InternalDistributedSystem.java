@@ -832,7 +832,7 @@ public final class InternalDistributedSystem
   {
     LogWriterImpl logger = null;
     File logFile = config.getLogFile();
-    String logFileName = null;
+    String logFilePath = null;
     PrintStream out = null;
     String firstMsg = null;
     boolean firstMsgWarning = false;
@@ -862,7 +862,7 @@ public final class InternalDistributedSystem
         }
         }
       }
-      logFileName = logFile.getName();
+      logFilePath = logFile.getPath();
       if (!useSLF4JBridge) {
         FileOutputStream fos = null;
         try {
@@ -898,10 +898,10 @@ public final class InternalDistributedSystem
 
     if (useSLF4JBridge) {
       if (isSecurityLog) {
-        logger = new GFToSlf4jBridge(config.getName(), logFileName,
+        logger = new GFToSlf4jBridge(config.getName(), logFilePath,
             config.getSecurityLogLevel());
       } else {
-        logger = new GFToSlf4jBridge(config.getName(), logFileName,
+        logger = new GFToSlf4jBridge(config.getName(), logFilePath,
             config.getLogLevel());
       }
       if (logger.infoEnabled()
