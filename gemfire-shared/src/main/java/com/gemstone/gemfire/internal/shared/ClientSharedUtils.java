@@ -17,6 +17,8 @@
 
 package com.gemstone.gemfire.internal.shared;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -1094,7 +1096,7 @@ public abstract class ClientSharedUtils {
     if (logFile != null) {
       props.setProperty("log4j.appender.file.file", logFile);
     }
-    // lastly override with any user provided properties file
+    // override with any user provided properties file
     in = ClientSharedUtils.class.getResourceAsStream("/log4j.properties");
     if (in != null) {
       Properties setProps = new Properties();
@@ -1104,6 +1106,21 @@ public abstract class ClientSharedUtils {
         in.close();
       }
       props.putAll(setProps);
+    }
+    // lastly override with user provided properties file in "conf/"
+    String snappyDir = NativeCalls.getInstance().getEnvironment("SNAPPY_HOME");
+    if (snappyDir != null) {
+      File confFile = new File(snappyDir + "/conf", "log4j.properties");
+      if (confFile.canRead()) {
+        Properties setProps = new Properties();
+        in = new FileInputStream(confFile);
+        try {
+          setProps.load(in);
+        } finally {
+          in.close();
+        }
+        props.putAll(setProps);
+      }
     }
     LogManager.resetConfiguration();
     PropertyConfigurator.configure(props);
