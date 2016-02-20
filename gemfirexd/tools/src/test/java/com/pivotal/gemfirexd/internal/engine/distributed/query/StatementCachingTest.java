@@ -29,15 +29,12 @@ import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
-
-import com.gemstone.gemfire.internal.AvailablePort;
-import com.pivotal.gemfirexd.internal.engine.Misc;
+import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserver;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverAdapter;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
+import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.sql.GeneralizedStatement;
 import com.pivotal.gemfirexd.internal.engine.sql.compile.SQLMatcherConstants;
 import com.pivotal.gemfirexd.internal.engine.sql.execute.ConstantValueSetImpl;
@@ -45,6 +42,8 @@ import com.pivotal.gemfirexd.internal.iapi.sql.conn.LanguageConnectionContext;
 import com.pivotal.gemfirexd.internal.impl.sql.compile.StatementNode;
 import com.pivotal.gemfirexd.jdbc.JdbcTestBase;
 import com.pivotal.gemfirexd.security.SecurityTestUtils;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
 
 public class StatementCachingTest extends JdbcTestBase {
   
@@ -851,7 +850,7 @@ public class StatementCachingTest extends JdbcTestBase {
       }
 
       // 30-39
-      Random rand = AvailablePort.rand;
+      Random rand = PartitionedRegion.rand;
       for (int i = 30; i < 40; i++) {
         parThds[i] = getSelectExecutionThread(baseQueries
             + rand.nextInt(totalRows), sync);
@@ -1088,7 +1087,7 @@ public class StatementCachingTest extends JdbcTestBase {
       }
 
       // 30-39
-      Random rand = AvailablePort.rand;
+      Random rand = PartitionedRegion.rand;
       for (int i = 30; i < 40; i++) {
         parThds[i] = getExecutionThread(baseQueries[3].replace("?", Integer
             .toString(rand.nextInt(totalRows))), true/*isSelect*/, true, sync,

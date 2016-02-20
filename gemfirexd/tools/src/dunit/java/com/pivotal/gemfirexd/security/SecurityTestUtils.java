@@ -33,7 +33,7 @@ import java.util.Set;
 import com.gemstone.gemfire.cache.GemFireCache;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
-import com.gemstone.gemfire.internal.AvailablePort;
+import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.pivotal.gemfirexd.Attribute;
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
@@ -157,7 +157,9 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
         }
         
         Properties props = new Properties();
-        props.setProperty(AvailablePort.rand.nextBoolean() ? com.pivotal.gemfirexd.Attribute.USERNAME_ATTR : com.pivotal.gemfirexd.Attribute.USERNAME_ALT_ATTR, sysUser);
+        props.setProperty(PartitionedRegion.rand.nextBoolean()
+            ? com.pivotal.gemfirexd.Attribute.USERNAME_ATTR
+            : com.pivotal.gemfirexd.Attribute.USERNAME_ALT_ATTR, sysUser);
         props.setProperty(com.pivotal.gemfirexd.Attribute.PASSWORD_ATTR, sysPwd);
         return props;
       }
@@ -182,14 +184,16 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
 
         String usr = null;
         if (randomizeUsers) {
-          usr = clusterUsers[AvailablePort.rand.nextInt(clusterUsers.length)];
+          usr = clusterUsers[PartitionedRegion.rand.nextInt(clusterUsers.length)];
         }
         else {
           usr = clusterUsers[disUsrIdx++];
         }
 
         assert usr != null;
-        props.setProperty(AvailablePort.rand.nextBoolean() ? com.pivotal.gemfirexd.Attribute.USERNAME_ALT_ATTR : com.pivotal.gemfirexd.Attribute.USERNAME_ATTR, usr);
+        props.setProperty(PartitionedRegion.rand.nextBoolean()
+            ? com.pivotal.gemfirexd.Attribute.USERNAME_ALT_ATTR
+            : com.pivotal.gemfirexd.Attribute.USERNAME_ATTR, usr);
         props.setProperty(com.pivotal.gemfirexd.Attribute.PASSWORD_ATTR, pwdPrefix + usr);
         return props;
 
@@ -335,7 +339,7 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
 
         String usr = null;
         if (randomizeUsers) {
-          usr = clusterUsers[AvailablePort.rand.nextInt(clusterUsers.length)];
+          usr = clusterUsers[PartitionedRegion.rand.nextInt(clusterUsers.length)];
         }
         else {
           usr = clusterUsers[disUsrIdx++];

@@ -1673,7 +1673,7 @@ public interface DataDictionary
          * to determine whether explicit unlock should be done or not, else it
          * may inadvertently release a read lock acquired earlier.
          */
-        public void unlockAfterReading(TransactionController tc)
+        public boolean unlockAfterReading(TransactionController tc)
             throws StandardException;
 // GemStone changes END
 	/**

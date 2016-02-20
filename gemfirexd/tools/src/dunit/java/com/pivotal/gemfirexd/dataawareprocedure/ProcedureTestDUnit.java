@@ -24,7 +24,7 @@ import java.util.Set;
 
 import com.gemstone.gemfire.cache.CacheFactory;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
-import com.gemstone.gemfire.internal.AvailablePort;
+import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.execute.FunctionStats;
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
@@ -904,7 +904,7 @@ public class ProcedureTestDUnit extends DistributedSQLTestBase {
     int number = 2;
 
     // select a random message between 1 and 4 to delay for disordered receive
-    final int delaySeq = AvailablePort.rand.nextInt(4) + 1;
+    final int delaySeq = PartitionedRegion.rand.nextInt(4) + 1;
     serverExecute(1, new SerializableRunnable() {      
       @Override
       public void run() {

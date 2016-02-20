@@ -36,7 +36,7 @@ public class OffHeapWanTest extends WanTest {
   @Override
   protected void setUp() throws Exception {
     System.setProperty(GfxdManagementService.DISABLE_MANAGEMENT_PROPERTY,"true");
-    System.setProperty("gemfire."+DistributionConfig.OFF_HEAP_MEMORY_SIZE_NAME, "50m");
+    System.setProperty("gemfire."+DistributionConfig.OFF_HEAP_MEMORY_SIZE_NAME, "500m");
     System.setProperty("gemfirexd.TEST_FLAG_OFFHEAP_ENABLE","true");
     super.setUp();
     LocalRegion.ISSUE_CALLBACKS_TO_CACHE_OBSERVER = true;

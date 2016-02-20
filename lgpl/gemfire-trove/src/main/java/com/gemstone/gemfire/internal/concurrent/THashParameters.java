@@ -17,9 +17,7 @@
  */
 package com.gemstone.gemfire.internal.concurrent;
 
-import com.gemstone.gnu.trove.HashFunctions;
 import com.gemstone.gnu.trove.HashingStats;
-import com.gemstone.gnu.trove.TLongHashingStrategy;
 import com.gemstone.gnu.trove.TObjectHashingStrategy;
 
 /**
@@ -29,7 +27,7 @@ import com.gemstone.gnu.trove.TObjectHashingStrategy;
  * @since gfxd 1.0
  */
 @SuppressWarnings("serial")
-class THashParameters implements TObjectHashingStrategy, TLongHashingStrategy {
+class THashParameters implements TObjectHashingStrategy {
 
   /**
    * Determines how full the internal table can become before rehashing is
@@ -40,9 +38,6 @@ class THashParameters implements TObjectHashingStrategy, TLongHashingStrategy {
   /** the strategy used to hash objects, if any, in this collection. */
   final transient TObjectHashingStrategy hashingStrategy;
 
-  /** the strategy used to hash longs, if any, in this collection. */
-  final transient TLongHashingStrategy longHashingStrategy;
-
   /**
    * optional statistics object to track number of hash collisions and time
    * spent probing based on hash collisions
@@ -50,10 +45,9 @@ class THashParameters implements TObjectHashingStrategy, TLongHashingStrategy {
   final transient HashingStats stats;
 
   THashParameters(float loadFactor, TObjectHashingStrategy strategy,
-      TLongHashingStrategy longStrategy, HashingStats stats) {
+      HashingStats stats) {
     this.loadFactor = loadFactor;
     this.hashingStrategy = strategy != null ? strategy : this;
-    this.longHashingStrategy = longStrategy != null ? longStrategy : this;
     this.stats = stats;
   }
 
@@ -63,14 +57,6 @@ class THashParameters implements TObjectHashingStrategy, TLongHashingStrategy {
   @Override
   public final int computeHashCode(Object o) {
     return o != null ? o.hashCode() : 0;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public final int computeHashCode(long val) {
-    return HashFunctions.hash(val);
   }
 
   /**

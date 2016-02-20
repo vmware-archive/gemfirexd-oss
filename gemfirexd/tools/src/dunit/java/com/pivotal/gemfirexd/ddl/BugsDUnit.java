@@ -36,6 +36,7 @@ import com.gemstone.gemfire.internal.SocketCreator;
 import com.gemstone.gemfire.internal.cache.DiskStoreImpl;
 import com.gemstone.gemfire.internal.cache.ForceReattemptException;
 import com.gemstone.gemfire.internal.cache.InitialImageOperation;
+import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.PrimaryBucketException;
 import com.gemstone.gemfire.internal.cache.execute.BucketMovedException;
 import com.gemstone.gnu.trove.THashSet;
@@ -3596,7 +3597,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
             + "exchange, companytype, uid, uuid, companyname, companyInfo, " +
             "note, histprice, asset, logo, tid, pvt) values " +
             "(?,?,?,?,?,?,?,?,?,?,?,?,?)");
-    Random rnd = AvailablePort.rand;
+    Random rnd = PartitionedRegion.rand;
     char[] clobChars = new char[10000];
     byte[] blobBytes = new byte[20000];
     char[] chooseChars = ("abcdefghijklmnopqrstuvwxyz"
@@ -4041,7 +4042,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
 
     Properties props = new Properties();
     props.setProperty("conserve-sockets",
-        AvailablePort.rand.nextBoolean() ? "true" : "false");
+        PartitionedRegion.rand.nextBoolean() ? "true" : "false");
     startVMs(1, 1, 0, null, props);
 
     serverSQLExecute(1, "CREATE TABLE t.t_1("

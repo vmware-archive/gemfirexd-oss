@@ -18,9 +18,11 @@ package com.pivotal.gemfirexd;
 
 import java.io.*;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.UnknownHostException;
 import java.security.AccessController;
 import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -47,12 +49,14 @@ import com.gemstone.gemfire.internal.cache.CacheServerLauncher;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.internal.cache.PartitionAttributesImpl;
+import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.UserSpecifiedRegionAttributes;
 import com.gemstone.gemfire.internal.cache.locks.ExclusiveSharedSynchronizer;
 import com.gemstone.gemfire.internal.cache.xmlcache.CacheCreation;
 import com.gemstone.gemfire.internal.cache.xmlcache.CacheXmlGenerator;
 import com.gemstone.gemfire.internal.cache.xmlcache.RegionAttributesCreation;
 import com.gemstone.gemfire.internal.cache.xmlcache.RegionCreation;
+import com.gemstone.gemfire.internal.shared.NativeCalls;
 import com.gemstone.gemfire.internal.shared.OSType;
 import com.gemstone.gemfire.internal.shared.StringPrintWriter;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserver;
@@ -199,6 +203,15 @@ public class TestUtil extends TestCase {
 
   private static boolean oldDMVerbose = false;
 
+  static {
+    // change current working directory to this base directory
+    File baseDirFile = new File(getBaseDir());
+    //noinspection ResultOfMethodCallIgnored
+    baseDirFile.mkdirs();
+    NativeCalls.getInstance().setCurrentWorkingDirectory(
+        baseDirFile.getAbsolutePath());
+  }
+
   public static final void reduceLogLevel(String logLevel) {
     if (logLevel != null) {
       oldDMVerbose = DistributionManager.VERBOSE;
@@ -238,6 +251,7 @@ public class TestUtil extends TestCase {
     // delete persistent DataDictionary files
     deleteDir(new File("datadictionary"));
     deleteDir(new File("globalIndex"));
+    //noinspection ResultOfMethodCallIgnored
     TestConfiguration.odbcIni.delete();
     deletePersistentFiles = false;
     skipDefaultPartitioned = false;
@@ -443,7 +457,11 @@ public class TestUtil extends TestCase {
         maxWaitMillis, exitValue);
   }
 
-  public static Properties doCommonSetup(Properties props) {
+  public static String getBaseDir() {
+    return "vm_" + NativeCalls.getInstance().getProcessId();
+  }
+
+  public static Properties doMinimalSetup(Properties props) {
     if (props == null) {
       props = new Properties();
     }
@@ -456,30 +474,36 @@ public class TestUtil extends TestCase {
       if (skipSPSPrecompile != null
           && "false".equalsIgnoreCase(skipSPSPrecompile.toString())) {
         FabricDatabase.SKIP_SPS_PRECOMPILE = false;
-      }
-      else {
+      } else {
         FabricDatabase.SKIP_SPS_PRECOMPILE = true;
       }
     }
+
     if (currentTestClass != null && currentTest != null) {
       String testName = getTestName();
-      if (setPropertyIfAbsent(props, DistributionConfig.LOG_FILE_NAME, testName
-          + ".log")) {
+      if (setPropertyIfAbsent(props, DistributionConfig.LOG_FILE_NAME,
+          testName + ".log")) {
         // if no log-file property then also set the system property for
         // GemFireXD log-file that will also get used for JDBC clients
-        setPropertyIfAbsent(null, GfxdConstants.GFXD_LOG_FILE, testName
-            + ".log");
+        setPropertyIfAbsent(null, GfxdConstants.GFXD_LOG_FILE,
+            testName + ".log");
       }
       setPropertyIfAbsent(props,
-          DistributionConfig.STATISTIC_ARCHIVE_FILE_NAME, testName + ".gfs");
+          DistributionConfig.STATISTIC_ARCHIVE_FILE_NAME,
+          testName + ".gfs");
       // also set the client driver properties
-      setPropertyIfAbsent(null, GfxdConstants.GFXD_CLIENT_LOG_FILE, testName
-          + "-client.log");
+      setPropertyIfAbsent(null, GfxdConstants.GFXD_CLIENT_LOG_FILE,
+          testName + "-client.log");
     }
 
     // set mcast port to zero if not set
     setPropertyIfAbsent(props, "mcast-port", "0");
+    return props;
+  }
 
+  public static Properties doCommonSetup(Properties props) {
+
+    props = doMinimalSetup(props);
     // set default partitioned policy if not set
     if (!skipDefaultPartitioned) {
       setPropertyIfAbsent(props, Attribute.TABLE_DEFAULT_PARTITIONED, "true");
@@ -516,7 +540,7 @@ public class TestUtil extends TestCase {
           String.valueOf(TEST_DEFAULT_INITIAL_CAPACITY));
     }
 
-    final Random rand = AvailablePort.rand;
+    final Random rand = PartitionedRegion.rand;
     if (currentUserName != null) {
       if (!props.containsKey(Attribute.USERNAME_ALT_ATTR)) {
         setPropertyIfAbsent(props, Attribute.USERNAME_ATTR, currentUserName);
@@ -759,6 +783,17 @@ public class TestUtil extends TestCase {
     }
   }
 
+  public static void loadDerbyDriver() throws Exception {
+    Driver autoDriver = (Driver)Class.forName(
+        "org.apache.derby.jdbc.AutoloadedDriver40").newInstance();
+    Class<?> autoDriverBaseClass = Class.forName(
+        "org.apache.derby.jdbc.AutoloadedDriver");
+    Method m = autoDriverBaseClass.getDeclaredMethod("registerMe",
+        autoDriverBaseClass);
+    m.setAccessible(true);
+    m.invoke(null, autoDriver);
+  }
+
   public static void shutDown() throws SQLException {
     shutDown(null);
   }
@@ -786,9 +821,9 @@ public class TestUtil extends TestCase {
         final Object prop = propNames.nextElement();
         final String key = prop.toString();
         if (key.startsWith(DistributionConfig.GEMFIRE_PREFIX)
-            || (key.startsWith(GfxdConstants.GFXD_PREFIX) && !key
-                .startsWith("gemfirexd.debug"))
-            || key.startsWith(GfxdConstants.GFXD_CLIENT_PREFIX)) {
+            || key.startsWith(GfxdConstants.GFXD_PREFIX)
+            || key.startsWith(GfxdConstants.GFXD_CLIENT_PREFIX)
+            || key.startsWith("javax.net.ssl.")) {
           keysToRemove.add(key);
         }
       }
@@ -849,6 +884,9 @@ public class TestUtil extends TestCase {
       if (service != null) {
         service.stop(shutdownProperties);
         getLogger().info("Fabric Server shutdown status " + service.status());
+      } else if (GemFireStore.getBootingInstance() != null) {
+        DriverManager.getConnection(getProtocol() + ";shutdown=true",
+            shutdownProperties);
       }
 
     } catch (SQLException se) {

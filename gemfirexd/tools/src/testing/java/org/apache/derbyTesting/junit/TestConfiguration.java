@@ -1151,9 +1151,6 @@ public class TestConfiguration {
            /*
              return url.concat(name);
             */
-           // concat role=server (remove this once this is the default)
-           // [sumedh] now using host-data=true which is true by default
-           //url = url.concat(";role=server");
            // concat mcast port 0 to run in local mode as standalone VM
            url = url.concat(";mcast-port=0");
            return url;

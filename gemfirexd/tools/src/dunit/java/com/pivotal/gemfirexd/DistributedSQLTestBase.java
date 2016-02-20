@@ -424,8 +424,8 @@ public class DistributedSQLTestBase extends DistributedTestBase {
   protected void configureDefaultOffHeap(boolean on) {
     this.configureDefaultOffHeap = on;
     if(this.configureDefaultOffHeap) {
-      System.setProperty("gemfire.OFF_HEAP_TOTAL_SIZE", "1G");
-      System.setProperty("gemfire."+DistributionConfig.OFF_HEAP_MEMORY_SIZE_NAME, "1G");
+      System.setProperty("gemfire.OFF_HEAP_TOTAL_SIZE", "500m");
+      System.setProperty("gemfire."+DistributionConfig.OFF_HEAP_MEMORY_SIZE_NAME, "500m");
     }
   }
 
@@ -494,7 +494,7 @@ public class DistributedSQLTestBase extends DistributedTestBase {
       if(this.configureDefaultOffHeap) {
         if( !(extraProps.containsKey("gemfire.off-heap-memory-size")
             || System.getProperty("gemfire.off-heap-memory-size") != null) ) {
-          extraProps.setProperty("gemfire.off-heap-memory-size", "50M");
+          extraProps.setProperty("gemfire.off-heap-memory-size", "500m");
         }
       }
       for (Map.Entry<Object, Object> entry : extraProps.entrySet()) {
@@ -504,7 +504,7 @@ public class DistributedSQLTestBase extends DistributedTestBase {
     }else {
       if(this.configureDefaultOffHeap) {
         if( !( System.getProperty("gemfire.off-heap-memory-size") != null) ) {
-          setGFXDProperty(props, "gemfire.off-heap-memory-size", "50M");
+          setGFXDProperty(props, "gemfire.off-heap-memory-size", "500m");
           
         }
       }
@@ -2280,8 +2280,8 @@ public class DistributedSQLTestBase extends DistributedTestBase {
   }
 
   static void deleteStrayDataDictionaryDir(boolean force) {
-    String parent = System
-        .getProperty(com.pivotal.gemfirexd.Attribute.SYS_PERSISTENT_DIR);
+    String parent = System.getProperty(GfxdConstants.GFXD_PREFIX +
+        com.pivotal.gemfirexd.Attribute.SYS_PERSISTENT_DIR);
     File dir = null;
     if (parent == null || parent.equals("")) {
       if (!force) {

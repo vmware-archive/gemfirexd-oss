@@ -3903,8 +3903,8 @@ public class GfxdSerialWanDUnit extends GfxdWanTestBase {
 
       @Override
       public void run() throws CacheException {
-        System.setProperty("gemfire.OFF_HEAP_TOTAL_SIZE", "100M");
-        System.setProperty("gemfire."+DistributionConfig.OFF_HEAP_MEMORY_SIZE_NAME, "50M"); 
+        System.setProperty("gemfire.OFF_HEAP_TOTAL_SIZE", "500m");
+        System.setProperty("gemfire."+DistributionConfig.OFF_HEAP_MEMORY_SIZE_NAME, "500m");
         
       }
       

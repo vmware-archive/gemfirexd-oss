@@ -46,6 +46,7 @@ import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.InternalDataSerializer;
 import com.gemstone.gemfire.internal.cache.EntryEventImpl;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
+import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.RegionEntry;
 import com.pivotal.gemfirexd.Attribute;
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
@@ -977,7 +978,7 @@ public class DistributedQueryDUnit extends DistributedSQLTestBase {
           StringBuilder ins = new StringBuilder(sql);
           for (int i = 0; i < 100; i++) {
             ins.append(i).append(",");
-            ins.append(i + AvailablePort.rand.nextInt(1000)).append(",");
+            ins.append(i + PartitionedRegion.rand.nextInt(1000)).append(",");
             ins.append(1).append(", '");
             ins.append(TestUtil.numstr(i)).append("' )");
             if (i % 2 == 0) {

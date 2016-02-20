@@ -44,6 +44,10 @@ allprojects {
     osgiVersion = '6.0.0'
     jettyVersion = '8.1.14.v20131031'
     hadoopVersion = '2.4.1'
+    protobufVersion = '2.6.1'
+    jerseyVersion = '1.9'
+    hadoopJettyVersion = '6.1.26'
+    jsr305Version = '1.3.9'
     hbaseVersion = '0.94.27'
     derbyVersion = '10.10.2.0'
     //hbaseVersion = '0.94.4-gemfire-r45047'
@@ -98,6 +102,7 @@ allprojects {
         'gemfirexd.product.vendor': PRODUCT_VENDOR,
         'gemfirexd.product.file': 'gemfirexd.jar' ]
 
+    productDir = file("${rootProject.buildDir}/store")
     locDir = 'com/pivotal/gemfirexd/internal/loc'
     clientMsgOutDir = "${project(subprojectBase + 'gemfirexd-core').buildDir}/client/${locDir}"
     if (!project.hasProperty("sanity")) {
@@ -195,6 +200,11 @@ def replaceRegex(def fileDir, def fileName, def regex, def replacement) {
   file("${tmpDir}/${fileName}").renameTo(file(filePath))
 }
 
+def getProcessId() {
+  def name = java.lang.mangement.ManagementFactory.getRuntimeMXBean().getName()
+  return name[0..name.indexOf("@") - 1]
+}
+
 def getStackTrace(def t) {
   java.io.StringWriter sw = new java.io.StringWriter()
   java.io.PrintWriter pw = new java.io.PrintWriter(sw)
@@ -202,10 +212,21 @@ def getStackTrace(def t) {
   return sw.toString()
 }
 
-task cleanStoreJUnit << {
-  def workingDir = "${testResultsBase}/junit"
-  delete workingDir
-  file(workingDir).mkdirs()
+task cleanTestOutput << {
+  def testDir = "${testResultsBase}/junit"
+  delete testDir
+  file(testDir).mkdirs()
+}
+task cleanDUnitOutput << {
+  def testDir = "${testResultsBase}/dunit"
+  delete testDir
+  file(testDir).mkdirs()
+  // writeTestProperties(testDir, '.')
+}
+task cleanIntegrationOutput << {
+  def testDir = "${testResultsBase}/integration"
+  delete testDir
+  file(testDir).mkdirs()
 }
 
 subprojects {
@@ -305,7 +326,8 @@ subprojects {
   }
 
   test {
-    //maxParallelForks = (2 * Runtime.getRuntime().availableProcessors())
+    dependsOn "${subprojectBase}product"
+    maxParallelForks = (3 * Runtime.getRuntime().availableProcessors())
 
     include '**/*Test.class'
     exclude '**/*DUnitTest.class'
@@ -317,9 +339,6 @@ subprojects {
     }
 
     workingDir = "${testResultsBase}/junit"
-    delete workingDir
-    file(workingDir).mkdirs()
-    writeTestProperties(workingDir, '.')
 
     binResultsDir = file("${workingDir}/binary/${project.name}")
     reports.html.destination = file("${workingDir}/html/${project.name}")
@@ -329,7 +348,24 @@ subprojects {
     // state
     //forkEvery 1
   }
+  task distributedTest(type:Test) {
+    dependsOn "${subprojectBase}product"
+    maxParallelForks = Runtime.getRuntime().availableProcessors()
+
+    include '**/*DUnitTest.class'
+    include '**/*DUnit.class'
+
+    workingDir = "${testResultsBase}/dunit"
+
+    binResultsDir = file("${workingDir}/binary/${project.name}")
+    reports.html.destination = file("${workingDir}/html/${project.name}")
+    reports.junitXml.destination = file(workingDir)
+
+    //I'm hoping this might deal with SOME OOMEs I've seen
+    forkEvery 30
+  }
   task integrationTest(type:Test) {
+    dependsOn "${subprojectBase}product"
     maxParallelForks = (2 * Runtime.getRuntime().availableProcessors())
 
     include '**/*Test.class'
@@ -342,9 +378,6 @@ subprojects {
     }    
 
     workingDir = "${testResultsBase}/integration"
-    delete workingDir
-    file(workingDir).mkdirs()
-    writeTestProperties(workingDir, '.')
 
     binResultsDir = file("${workingDir}/binary/${project.name}")
     reports.html.destination = file("${workingDir}/html/${project.name}")
@@ -352,36 +385,16 @@ subprojects {
 
     forkEvery 1
   }
-  task distributedTest(type:Test) {
-    maxParallelForks = Runtime.getRuntime().availableProcessors()
-
-    include '**/*DUnitTest.class'
-    include '**/*DUnit.class'
-
-    workingDir = "${testResultsBase}/dunit"
-    delete workingDir
-    file(workingDir).mkdirs()
-    writeTestProperties(workingDir, '.')
-
-    binResultsDir = file("${workingDir}/binary/${project.name}")
-    reports.html.destination = file("${workingDir}/html/${project.name}")
-    reports.junitXml.destination = file(workingDir)
-
-    //I'm hoping this might deal with SOME OOMEs I've seen
-    forkEvery 30
-  }
 
   // apply common test configuration
   gradle.taskGraph.whenReady( { graph ->
     tasks.withType(Test).each { test ->
-      check.dependsOn test
       test.configure {
         onlyIf { ! Boolean.getBoolean('skip.tests') }
 
-        minHeapSize '128m'
-        maxHeapSize '1g'
-        jvmArgs = ['-XX:+HeapDumpOnOutOfMemoryError', '-XX:MaxPermSize=256M', '-ea']
-        maxParallelForks = 1
+        minHeapSize '768m'
+        maxHeapSize '768m'
+        jvmArgs = ['-XX:+HeapDumpOnOutOfMemoryError', '-XX:MaxPermSize=128M', '-ea']
 
         testLogging.exceptionFormat = 'full'
 
@@ -389,7 +402,10 @@ subprojects {
           'gemfire.disallowMcastDefaults'  : 'true',
           'java.net.preferIPv4Stack'       : 'true',
           'jline.terminal'                 : 'scala.tools.jline.UnsupportedTerminal',
-          'gemfiretest.sourceDir'          : "${projectDir}/src/test/resources"
+          'gemfiretest.sourceDir'          : "${projectDir}/src/test/resources",
+          'GEMFIREXD'                      : productDir.getAbsolutePath()
+
+        environment 'GEMFIREXD': productDir.getAbsolutePath()
 
         if (rootProject.name == 'snappy-store') {
           def eol = System.getProperty('line.separator')
@@ -402,7 +418,11 @@ subprojects {
           }
           onOutput { desc, event ->
             def output = new File(workingDir, "output.txt")
-            output  << event.message
+            def msg = event.message
+            if (event.destination.toString() == 'StdErr') {
+              msg = msg.replace("\n", "\n[error]  ")
+            }
+            output << msg
           }
           afterTest { desc, result ->
             def now = new Date().format('yyyy-MM-dd HH:mm:ss.SSS Z')
@@ -420,9 +440,12 @@ subprojects {
     }
   })
 
-  test.dependsOn subprojectBase + 'cleanStoreJUnit'
-  check.dependsOn integrationTest
+  test.dependsOn subprojectBase + 'cleanTestOutput'
+  distributedTest.dependsOn subprojectBase + 'cleanDUnitOutput'
+  integrationTest.dependsOn subprojectBase + 'cleanIntegrationOutput'
+  check.dependsOn test
   check.dependsOn distributedTest
+  check.dependsOn integrationTest
 }
 
 // maven publish tasks
@@ -525,9 +548,10 @@ task generateSources {
 def includeJar(def jarFile) {
   def jarName = jarFile.getName()
   return jarName.contains('jetty') || jarName.contains('spring') ||
-    jarName.contains('hbase') || jarName.contains('pxf') ||
-    jarName.contains('osgi') || jarName.contains('ant-') ||
-    jarName.contains('jline')
+    jarName.contains('hadoop') || jarName.contains('protobuf') ||
+    jarName.contains('jersey') || jarName.contains('jetty') ||
+    jarName.contains('hbase') || jarName.contains('jsr305') ||
+    jarName.contains('pxf') || jarName.contains('jline')
 }
 
 // pack the entire GemFireXD product tree
@@ -538,7 +562,6 @@ task product(dependsOn: [ subprojectBase + 'gemfirexd-client:jar',
     subprojectBase + 'gemfirexd-shared:javadoc',
     subprojectBase + 'gemfirexd-core:javadoc' ]) << {
 
-  def productDir = file("${rootProject.buildDir}/store")
   delete productDir
 
   def sharedProject = project(subprojectBase + 'gemfirexd-shared')

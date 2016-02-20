@@ -458,9 +458,11 @@ public final class GfxdDataDictionary extends DataDictionaryImpl {
    * after reading is done.
    */
   @Override
-  public final void unlockAfterReading(TransactionController tc) {
+  public final boolean unlockAfterReading(TransactionController tc) {
     if (!SKIP_LOCKS.get()) {
-      GemFireXDUtils.unlockObject(ddLockObject, null, false, false, tc);
+      return GemFireXDUtils.unlockObject(ddLockObject, null, false, false, tc);
+    } else {
+      return false;
     }
   }
 

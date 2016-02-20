@@ -88,7 +88,7 @@ public class CreateTablePart2DUnit extends DistributedSQLTestBase {
     Properties extra =null;
     if(enableOffheapForTable) {
       extra = new Properties();
-      extra.put("gemfire.off-heap-memory-size","50M");
+      extra.put("gemfire.off-heap-memory-size","500m");
     }
     startClientVMs(2, 0, null, extra);
     startServerVMs(3, 0, "SG1", extra);
@@ -208,7 +208,7 @@ public class CreateTablePart2DUnit extends DistributedSQLTestBase {
     Properties extra =null;
     if(enableOffHeap) {
       extra = new Properties();
-      extra.put("gemfire.off-heap-memory-size","50M");
+      extra.put("gemfire.off-heap-memory-size","500m");
     }
     
     String createTableDDL = "create table trade.buyorders(oid int not null "
@@ -453,7 +453,7 @@ public class CreateTablePart2DUnit extends DistributedSQLTestBase {
     Properties extra =null;
     if(enableOffHeap) {
       extra = new Properties();
-      extra.put("gemfire.off-heap-memory-size","50M");
+      extra.put("gemfire.off-heap-memory-size","500m");
     }
     startVMs(1, 3,-1,null, extra);
 
@@ -484,7 +484,7 @@ public class CreateTablePart2DUnit extends DistributedSQLTestBase {
 
   public void testBug49357() throws Exception {
     Properties props = new Properties();
-    props.put("gemfire.off-heap-memory-size","128M");
+    props.put("gemfire.off-heap-memory-size","500m");
     startServerVMs(1, 0, null, props);
     serverSQLExecute(1, "CREATE TABLE usertable (YCSB_KEY VARCHAR(100) PRIMARY KEY) partition by (YCSB_KEY) redundancy 1 offheap PERSISTENT");
     startClientVMs(1, 0, null, null);
@@ -503,7 +503,7 @@ public class CreateTablePart2DUnit extends DistributedSQLTestBase {
     Properties extra =null;
     if(enableOffHeap) {
       extra = new Properties();
-      extra.put("gemfire.off-heap-memory-size","50M");
+      extra.put("gemfire.off-heap-memory-size","500m");
     }
     startVMs(1, 1, -1, null, extra);
     startServerVMs(1, 0, "SG1", extra);
@@ -603,7 +603,7 @@ public class CreateTablePart2DUnit extends DistributedSQLTestBase {
     Properties extra =null;
     if(enableOffHeap) {
       extra = new Properties();
-      extra.put("gemfire.off-heap-memory-size","50M");
+      extra.put("gemfire.off-heap-memory-size","500m");
     }
     startVMs(1, 1, -1, null, extra);
     clientSQLExecute(1, "create table trade.securities (sec_id int not null, " +
@@ -675,7 +675,7 @@ public class CreateTablePart2DUnit extends DistributedSQLTestBase {
     Properties extra =null;
     if(enableOffHeap) {
       extra = new Properties();
-      extra.put("gemfire.off-heap-memory-size","50M");
+      extra.put("gemfire.off-heap-memory-size","500m");
     }
     startVMs(1, 1, -1, null, extra);
     clientSQLExecute(1, "create table securities (sec_id int not null, "
@@ -721,7 +721,7 @@ public class CreateTablePart2DUnit extends DistributedSQLTestBase {
     Properties extra =null;
     if(enableOffHeap) {
       extra = new Properties();
-      extra.put("gemfire.off-heap-memory-size","50M");
+      extra.put("gemfire.off-heap-memory-size","500m");
     }
     startVMs(1, 1, -1, null, extra);
     clientSQLExecute(1, "create schema trade");
@@ -1124,7 +1124,7 @@ public class CreateTablePart2DUnit extends DistributedSQLTestBase {
     Properties extra =null;
     if(enableOffHeap) {
       extra = new Properties();
-      extra.put("gemfire.off-heap-memory-size","50M");
+      extra.put("gemfire.off-heap-memory-size","500m");
     }
     startVMs(1, 2, -1, null, extra);
 

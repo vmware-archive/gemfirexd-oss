@@ -45,7 +45,7 @@ public class GfxdOffHeapLRUDUnit extends DistributedSQLTestBase {
   //However, if the test is run individually, it works fine.
   public void _testPRLRUOffHeapPercDestroy() throws Exception {
     Properties extra = new Properties();
-    extra.put("gemfire.off-heap-memory-size","128M");
+    extra.put("gemfire.off-heap-memory-size","500m");
     startVMs(1, 1, 0, null, extra);
     
     clientSQLExecute(1, "create table trade.bigcustomers (cid int not null, cust_addr clob) offheap " +
@@ -87,7 +87,7 @@ public class GfxdOffHeapLRUDUnit extends DistributedSQLTestBase {
     }
     
     Properties extra = new Properties();
-    extra.put("gemfire.off-heap-memory-size", "128M");
+    extra.put("gemfire.off-heap-memory-size", "500m");
     startVMs(1, 1, 0, null, extra);
     
     clientSQLExecute(
@@ -124,7 +124,7 @@ public class GfxdOffHeapLRUDUnit extends DistributedSQLTestBase {
   
   public void testPRLRUOffHeapPercOverflow() throws Exception {
     Properties extra = new Properties();
-    extra.put("gemfire.off-heap-memory-size", "128M");
+    extra.put("gemfire.off-heap-memory-size", "500m");
     startVMs(1, 1, 0, null, extra);
 
     clientSQLExecute(
@@ -162,7 +162,7 @@ public class GfxdOffHeapLRUDUnit extends DistributedSQLTestBase {
   
   public void testReplicatedRegionLRUOffHeapPercOverflow() throws Exception {
     Properties extra = new Properties();
-    extra.put("gemfire.off-heap-memory-size", "128M");
+    extra.put("gemfire.off-heap-memory-size", "500m");
     startVMs(1, 1, 0, null, extra);
     
     clientSQLExecute(1, " create diskstore teststore 'temp' ");

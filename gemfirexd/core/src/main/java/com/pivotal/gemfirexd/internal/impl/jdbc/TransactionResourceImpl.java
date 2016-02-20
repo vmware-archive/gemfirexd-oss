@@ -591,12 +591,7 @@ public final class TransactionResourceImpl
 				code has cleaned up sufficiently. Not passing them through would mean
 				that all cleanupOnError methods would require knowledge of Utils.
 			 */
-			if (thrownException.getCause() != null &&
-			    (thrownException.getCause() instanceof SQLException ||
-			        thrownException.getCause() instanceof StandardException)) {
-			  thrownException = thrownException.getCause();
-			}
-			if (thrownException instanceof SQLException) {			  
+			if (thrownException instanceof SQLException) {
 			  if(this.lcc != null) {
 			    ((GemFireTransaction)this.lcc.getTransactionExecute()).release();
 			  }
@@ -749,6 +744,11 @@ public final class TransactionResourceImpl
 		// inside a GemFireXDRuntimeException, if any
 		if (thrownException instanceof GemFireXDRuntimeException
 		    && thrownException.getCause() != null) {
+		  thrownException = thrownException.getCause();
+		}
+		if (thrownException.getCause() != null &&
+		    (thrownException.getCause() instanceof SQLException ||
+		     thrownException.getCause() instanceof StandardException)) {
 		  thrownException = thrownException.getCause();
 		}
 		DerbyIOException dioe;

@@ -544,7 +544,7 @@ public class GfxdJarInstallationTest extends JdbcTestBase {
       stmt.execute("drop type Price restrict");
       fail("expect exception in type removal due to dependent table");
     } catch (SQLException sqle) {
-      if (!"X0Y29".equals(sqle.getSQLState())) {
+      if (!"X0Y30".equals(sqle.getSQLState())) {
         throw sqle;
       }
     }
@@ -748,7 +748,7 @@ public class GfxdJarInstallationTest extends JdbcTestBase {
       stmt.execute("drop type Price restrict");
       fail("expect exception in type removal due to dependent table");
     } catch (SQLException sqle) {
-      if (!"X0Y29".equals(sqle.getSQLState())) {
+      if (!"X0Y30".equals(sqle.getSQLState())) {
         throw sqle;
       }
     }

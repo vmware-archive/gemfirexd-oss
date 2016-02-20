@@ -43,6 +43,7 @@ import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.SocketCreator;
+import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.xmlcache.RegionAttributesCreation;
 import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
 import com.pivotal.gemfirexd.execute.CallbackStatement;
@@ -529,14 +530,14 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
         if (!stmt.getSQLText().startsWith("call SYSIBM.SQLCAMESSAGE")
             && !stmt.getSQLText().startsWith("SET ")) {
           // try on a random batch element
-          if (AvailablePort.rand.nextBoolean()) {
+          if (PartitionedRegion.rand.nextBoolean()) {
             throw PublicAPI.wrapStandardException(StandardException
                 .newException("X0Z02", new Throwable(
                     "simulating a conflict exception")));
           }
           else {
             this.batchElement = Integer
-                .valueOf(AvailablePort.rand.nextInt(numOps - 5) + 1);
+                .valueOf(PartitionedRegion.rand.nextInt(numOps - 5) + 1);
           }
         }
       }
@@ -3130,7 +3131,7 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
     final Properties stopProps = doSecuritySetup(new Properties(), false);
 
     final Properties userProps = new Properties();
-    userProps.setProperty(AvailablePort.rand.nextBoolean()
+    userProps.setProperty(PartitionedRegion.rand.nextBoolean()
         ? com.pivotal.gemfirexd.Attribute.USERNAME_ATTR
         : com.pivotal.gemfirexd.Attribute.USERNAME_ALT_ATTR, "sysUser1");
     userProps.setProperty(com.pivotal.gemfirexd.Attribute.PASSWORD_ATTR,
@@ -3351,9 +3352,9 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
   public static void executeForUser(String userName, String sql)
       throws SQLException {
     final Properties userProps = new Properties();
-    userProps.setProperty(
-        AvailablePort.rand.nextBoolean() ? com.pivotal.gemfirexd.Attribute.USERNAME_ATTR
-            : com.pivotal.gemfirexd.Attribute.USERNAME_ALT_ATTR, userName);
+    userProps.setProperty(PartitionedRegion.rand.nextBoolean()
+        ? com.pivotal.gemfirexd.Attribute.USERNAME_ATTR
+        : com.pivotal.gemfirexd.Attribute.USERNAME_ALT_ATTR, userName);
     userProps.setProperty(com.pivotal.gemfirexd.Attribute.PASSWORD_ATTR, userName);
     final Connection userConn = TestUtil.getConnection(userProps);
     userConn.createStatement().execute(sql);
@@ -3397,9 +3398,9 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
       props.setProperty(com.pivotal.gemfirexd.Attribute.AUTH_PROVIDER,
           com.pivotal.gemfirexd.Constants.AUTHENTICATION_PROVIDER_BUILTIN);
     }
-    props.setProperty(
-        AvailablePort.rand.nextBoolean() ? com.pivotal.gemfirexd.Attribute.USERNAME_ATTR
-            : com.pivotal.gemfirexd.Attribute.USERNAME_ALT_ATTR, "sysUser1");
+    props.setProperty(PartitionedRegion.rand.nextBoolean()
+        ? com.pivotal.gemfirexd.Attribute.USERNAME_ATTR
+        : com.pivotal.gemfirexd.Attribute.USERNAME_ALT_ATTR, "sysUser1");
     props.setProperty(com.pivotal.gemfirexd.Attribute.PASSWORD_ATTR, "pwd_sysUser1");
 
     return props;

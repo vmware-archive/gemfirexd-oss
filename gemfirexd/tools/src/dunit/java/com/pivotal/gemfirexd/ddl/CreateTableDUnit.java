@@ -244,7 +244,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
     Properties extra =null;
     if(enableOffHeap) {
       extra = new Properties();
-      extra.put("gemfire.off-heap-memory-size","50M");
+      extra.put("gemfire.off-heap-memory-size","500m");
     }
     // Start one client and four servers
     AsyncVM async1 = invokeStartServerVM(1, 0, "sg1", extra);
@@ -592,7 +592,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
     Properties extra =null;
     if(enableOffHeap) {
       extra = new Properties();
-      extra.put("gemfire.off-heap-memory-size","50M");
+      extra.put("gemfire.off-heap-memory-size","500m");
     }
     // Start one client and one server
     startClientVMs(2, 0, null,extra);
@@ -653,7 +653,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
     Properties extra =null;
     if(enableOffHeap) {
       extra = new Properties();
-      extra.put("gemfire.off-heap-memory-size","50M");
+      extra.put("gemfire.off-heap-memory-size","500m");
     }
     // Start one client and one server
     startVMs(1, 1, -1,null,extra);
@@ -718,7 +718,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
     Properties extra =null;
     if(enableOffHeap) {
       extra = new Properties();
-      extra.put("gemfire.off-heap-memory-size","50M");
+      extra.put("gemfire.off-heap-memory-size","500m");
     }
     startServerVMs(1, 0, "sg1", extra);
     startClientVMs(1, 0, null, extra);
@@ -755,7 +755,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
     Properties extra =null;
     if(enableOffHeap) {
       extra = new Properties();
-      extra.put("gemfire.off-heap-memory-size","50M");
+      extra.put("gemfire.off-heap-memory-size","500m");
     }
     // Start one client and two servers
     startServerVMs(2, 0, "SG1", extra);
@@ -868,7 +868,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
     Properties extra =null;
     if(enableOffHeap) {
       extra = new Properties();
-      extra.put("gemfire.off-heap-memory-size","50M");
+      extra.put("gemfire.off-heap-memory-size","500m");
     }
     // Start one client and three servers
     startServerVMs(2, 0, "SG1", extra);
@@ -1054,7 +1054,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
     Properties extra =null;
     if(enableOffHeap) {
       extra = new Properties();
-      extra.put("gemfire.off-heap-memory-size","50M");
+      extra.put("gemfire.off-heap-memory-size","500m");
     }
     // Start one client and three servers
     startServerVMs(2, 0, "SG1", extra);
@@ -1153,7 +1153,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
     Properties extra =null;
     if(enableOffHeap) {
       extra = new Properties();
-      extra.put("gemfire.off-heap-memory-size","50M");
+      extra.put("gemfire.off-heap-memory-size","500m");
     }
     // Start one client and three servers
     startServerVMs(2, 0, "SG1", extra);
@@ -1251,7 +1251,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
     Properties extra =null;
     if(enableOffHeap) {
       extra = new Properties();
-      extra.put("gemfire.off-heap-memory-size","50M");
+      extra.put("gemfire.off-heap-memory-size","500m");
     }
     // Start one client and four servers
     startVMs(1, 4, -1, null, extra);
@@ -1664,7 +1664,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
     Properties extra =null;
     if(enableOffHeap) {
       extra = new Properties();
-      extra.put("gemfire.off-heap-memory-size","50M");
+      extra.put("gemfire.off-heap-memory-size","500m");
     }
     startVMs(2, 3, -1, null, extra);
 
@@ -2017,7 +2017,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
     Properties extra =null;
     if(enableOffHeap) {
       extra = new Properties();
-      extra.put("gemfire.off-heap-memory-size","50M");
+      extra.put("gemfire.off-heap-memory-size","500m");
     }
     try {
       startServerVMs(2, -1, "SG1", extra);
@@ -2136,7 +2136,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
     Properties extra =null;
     if(enableOffHeap) {
       extra = new Properties();
-      extra.put("gemfire.off-heap-memory-size","50M");
+      extra.put("gemfire.off-heap-memory-size","500m");
     }
     // start a client and couple of servers
     startVMs(1, 2, -1, null, extra);

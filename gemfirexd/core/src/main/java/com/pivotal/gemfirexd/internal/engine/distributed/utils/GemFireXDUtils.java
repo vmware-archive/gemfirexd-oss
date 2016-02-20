@@ -1295,7 +1295,7 @@ public final class GemFireXDUtils {
     }
   }
 
-  public static void unlockObject(GfxdLockable lockable, Object lockObject,
+  public static boolean unlockObject(GfxdLockable lockable, Object lockObject,
       boolean forUpdate, boolean localOnly, TransactionController tc) {
     if (tc == null || !Misc.initialDDLReplayInProgress()) {
       final GemFireTransaction tran = (GemFireTransaction)tc;
@@ -1309,7 +1309,8 @@ public final class GemFireXDUtils {
                   + " lock on object " + lockable + " [TX " + tran + ']');
         }
         if (tran != null) {
-          tran.getLockSpace().releaseLock(lockable, forUpdate, localOnly);
+          return tran.getLockSpace().releaseLock(lockable,
+              forUpdate, localOnly);
         }
         else {
           final GfxdLockService lockService = Misc.getMemStore()
@@ -1317,9 +1318,11 @@ public final class GemFireXDUtils {
           final Object lockOwner = lockService.newCurrentOwner();
           GfxdLockSet.unlock(lockService, lockable, lockOwner, forUpdate,
               localOnly);
+          return true;
         }
       }
     }
+    return false;
   }
 
   public static void freeLockResources(Object lockObject,

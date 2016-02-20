@@ -36,7 +36,6 @@ import com.gemstone.gemfire.cache.control.ResourceManager;
 import com.gemstone.gemfire.cache.execute.FunctionException;
 import com.gemstone.gemfire.distributed.DistributedSystemDisconnectedException;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
-import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.EntryEventImpl;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.internal.cache.PRHARedundancyProvider;
@@ -904,7 +903,7 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
       assertFalse(conn.getAutoCommit());
       globalLogger.info("Executing DML: " + dmlStmt);
       // choose randomly between a prepared statement or normal one
-      final boolean usePrepStatement = AvailablePort.rand.nextBoolean();
+      final boolean usePrepStatement = PartitionedRegion.rand.nextBoolean();
       int cnt = -1;
       PreparedStatement ps;
       final Statement stmt = conn.createStatement();
@@ -994,7 +993,7 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
       Integer startCnt, java.sql.Connection conn) {
     StringBuilder insertStmt = new StringBuilder("insert into Account values");
     // one or two inserts at a time to test both put and putAll
-    final int numInserts = AvailablePort.rand.nextInt(2) + 1;
+    final int numInserts = PartitionedRegion.rand.nextInt(2) + 1;
     for (int i = startCnt; i < startCnt + numInserts; ++i) {
       if (i > startCnt) {
         insertStmt.append(',');

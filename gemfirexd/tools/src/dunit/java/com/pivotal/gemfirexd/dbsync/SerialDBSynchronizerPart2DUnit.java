@@ -32,14 +32,10 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.derby.drda.NetworkServerControl;
-import org.apache.derby.iapi.error.ShutdownException;
-import org.apache.derbyTesting.junit.JDBC;
-
 import com.gemstone.gemfire.cache.CacheException;
 import com.gemstone.gemfire.cache.wan.GatewaySender;
-import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
+import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.wan.AbstractGatewaySender;
 import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.callbacks.AsyncEventHelper;
@@ -51,11 +47,13 @@ import com.pivotal.gemfirexd.internal.engine.jdbc.GemFireXDRuntimeException;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedConnection;
 import com.pivotal.gemfirexd.jdbc.GfxdCallbacksTest;
 import com.pivotal.gemfirexd.tools.GfxdSystemAdmin;
-
 import io.snappydata.test.dunit.AsyncInvocation;
 import io.snappydata.test.dunit.SerializableCallable;
 import io.snappydata.test.dunit.SerializableRunnable;
 import io.snappydata.test.dunit.VM;
+import org.apache.derby.drda.NetworkServerControl;
+import org.apache.derby.iapi.error.ShutdownException;
+import org.apache.derbyTesting.junit.JDBC;
 
 @SuppressWarnings("serial")
 public class SerialDBSynchronizerPart2DUnit extends DBSynchronizerTestBase {
@@ -65,7 +63,7 @@ public class SerialDBSynchronizerPart2DUnit extends DBSynchronizerTestBase {
   }
 
   public void testOracle_UseCase1_2() throws Throwable {
-    final int isolationLevel = AvailablePort.rand.nextBoolean()
+    final int isolationLevel = PartitionedRegion.rand.nextBoolean()
         ? Connection.TRANSACTION_READ_COMMITTED
         : Connection.TRANSACTION_NONE;
     startVMs(1, 2, 0, "CHANNELDATAGRP", null);

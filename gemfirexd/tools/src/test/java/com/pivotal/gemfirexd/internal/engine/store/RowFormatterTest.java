@@ -1799,7 +1799,9 @@ public class RowFormatterTest extends JdbcTestBase {
     cp.setProperty("host-data", "true");
     //cp.setProperty("log-level", "fine");
 
-    cp.put(AvailablePort.rand.nextBoolean() ? com.pivotal.gemfirexd.Attribute.USERNAME_ATTR : com.pivotal.gemfirexd.Attribute.USERNAME_ALT_ATTR, "Soubhik");
+    cp.put(PartitionedRegion.rand.nextBoolean()
+        ? com.pivotal.gemfirexd.Attribute.USERNAME_ATTR
+        : com.pivotal.gemfirexd.Attribute.USERNAME_ALT_ATTR, "Soubhik");
     cp.put(com.pivotal.gemfirexd.Attribute.PASSWORD_ATTR, "Soubhik");
     cp.setProperty("mcast-port", String.valueOf(AvailablePort
         .getRandomAvailablePort(AvailablePort.JGROUPS)));
