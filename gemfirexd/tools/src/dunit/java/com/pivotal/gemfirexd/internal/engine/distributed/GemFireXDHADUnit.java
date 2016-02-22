@@ -67,7 +67,7 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
 
   public static void joinAsyncInvocation(AsyncInvocation async, long ms) {
     if (async.isAlive()) {
-      join(async, ms, globalLogger);
+      join(async, ms, getGlobalLogger());
     }
   }
 
@@ -885,14 +885,14 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
       boolean doClose = false;
       if (conn == null) {
         if (clientPort != null && clientPort.intValue() > 0) {
-          globalLogger.info("creating new client connection for current VM");
+          getGlobalLogger().info("creating new client connection for current VM");
           conn = TestUtil.getNetConnection(clientPort.intValue(), null, null);
-          globalLogger.info("created new client connection for current VM");
+          getGlobalLogger().info("created new client connection for current VM");
         }
         else {
-          globalLogger.info("creating new server connection for current VM");
+          getGlobalLogger().info("creating new server connection for current VM");
           conn = TestUtil.getConnection();
-          globalLogger.info("created new server connection for current VM");
+          getGlobalLogger().info("created new server connection for current VM");
         }
         // TODO: TX: only valid for non-transactional ops for now
         conn.setTransactionIsolation(Connection.TRANSACTION_NONE);
@@ -901,7 +901,7 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
       }
       assertEquals(Connection.TRANSACTION_NONE, conn.getTransactionIsolation());
       assertFalse(conn.getAutoCommit());
-      globalLogger.info("Executing DML: " + dmlStmt);
+      getGlobalLogger().info("Executing DML: " + dmlStmt);
       // choose randomly between a prepared statement or normal one
       final boolean usePrepStatement = PartitionedRegion.rand.nextBoolean();
       int cnt = -1;
@@ -924,7 +924,7 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
       }
       // verify that change has actually taken place correctly
       if (verifyStmt != null) {
-        globalLogger.info("Verifying with DML: " + verifyStmt);
+        getGlobalLogger().info("Verifying with DML: " + verifyStmt);
         ProcessResultSet<Object> verifyResult = new ProcessResultSet<Object>() {
           @Override
           public Object process(final ResultSet rs) throws SQLException {
@@ -963,9 +963,9 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
       // cleanup stuff
       stmt.close();
       if (doClose) {
-        globalLogger.info("closing the new connection");
+        getGlobalLogger().info("closing the new connection");
         conn.close();
-        globalLogger.info("closed the new connection");
+        getGlobalLogger().info("closed the new connection");
       }
     } catch (SQLException e) {
       fail("unexpected exception occured in fireOps: ", e);
@@ -1101,7 +1101,7 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
   }
 
   private static void sop(String s) {
-    globalLogger.info(s);
+    getGlobalLogger().info(s);
   }
 
   public static void disconnectVMs(List<VM> vms, List<AsyncInvocation> ainvoke) {
@@ -1129,7 +1129,7 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
 
   @SuppressWarnings("deprecation")
   public static void assertEquals(int expected, int actual) {
-    globalLogger.info("comparing " + expected + " with actual " + actual);
+    getGlobalLogger().info("comparing " + expected + " with actual " + actual);
     junit.framework.Assert.assertEquals(expected, actual);
   }
 }

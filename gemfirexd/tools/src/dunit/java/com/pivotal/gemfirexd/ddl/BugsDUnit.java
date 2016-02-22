@@ -131,9 +131,9 @@ public class BugsDUnit extends DistributedSQLTestBase {
     }
     
     public void throwException() {
-      globalLogger.info("GIIExceptionThrower.throwExceptionDuringGII called", new Exception());
+      getGlobalLogger().info("GIIExceptionThrower.throwExceptionDuringGII called", new Exception());
       if (cnt == after) {
-        globalLogger.info("GIIExceptionThrower.throwExceptionDuringGII actually throwing exception");
+        getGlobalLogger().info("GIIExceptionThrower.throwExceptionDuringGII actually throwing exception");
         throw new RuntimeException();
       }
       cnt++;
@@ -141,7 +141,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
   }
 
   public static void setGiiExceptionSimulator(int after) {
-    globalLogger.info("setting Gii exception thrower");
+    getGlobalLogger().info("setting Gii exception thrower");
     if (after > 0) {
       InitialImageOperation.giiExceptionSimulate = new GIIExceptionThrower(
           after);
@@ -1268,7 +1268,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
 
   private static void callStoredProc(CallableStatement stmt, String id,
       boolean resultExpected, boolean dupsExpected) throws Exception {
-    globalLogger.info(
+    getGlobalLogger().info(
         "callStoredProc called with id: " + ", resultExpected: "
             + resultExpected + ", dupsExpected: " + dupsExpected);
     int count = 0;
@@ -1280,13 +1280,13 @@ public class BugsDUnit extends DistributedSQLTestBase {
     }
     if (resultExpected) {
       assertTrue(count > 0);
-      globalLogger.info(
+      getGlobalLogger().info(
           "callStoredProc called with id: "
               + ", resultExpected assertion through with count: " + count);
     }
     if (dupsExpected) {
       assertEquals(2, count);
-      globalLogger.info(
+      getGlobalLogger().info(
           "callStoredProc called with id: "
               + ", dupsExpected assertion through with count: " + count);
     }

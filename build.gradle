@@ -310,7 +310,7 @@ subprojects {
   javadoc.classpath += configurations.provided
 
   dependencies {
-    provided 'com.google.code.findbugs:annotations:3.0.0'
+    compile 'com.google.code.findbugs:annotations:3.0.0'
     compile "log4j:log4j:${log4jVersion}"
     compile "org.slf4j:slf4j-api:${slf4jVersion}"
     compile "org.slf4j:slf4j-log4j12:${slf4jVersion}"
@@ -327,7 +327,7 @@ subprojects {
 
   test {
     dependsOn "${subprojectBase}product"
-    maxParallelForks = (3 * Runtime.getRuntime().availableProcessors())
+    maxParallelForks = (2 * Runtime.getRuntime().availableProcessors())
 
     include '**/*Test.class'
     exclude '**/*DUnitTest.class'
@@ -343,14 +343,11 @@ subprojects {
     binResultsDir = file("${workingDir}/binary/${project.name}")
     reports.html.destination = file("${workingDir}/html/${project.name}")
     reports.junitXml.destination = file(workingDir)
-
-    // run each test in its own vm to avoid interference issues if a test doesn't clean up
-    // state
-    //forkEvery 1
   }
   task distributedTest(type:Test) {
     dependsOn "${subprojectBase}product"
     maxParallelForks = Runtime.getRuntime().availableProcessors()
+    //maxParallelForks = 1
 
     include '**/*DUnitTest.class'
     include '**/*DUnit.class'
@@ -362,7 +359,7 @@ subprojects {
     reports.junitXml.destination = file(workingDir)
 
     //I'm hoping this might deal with SOME OOMEs I've seen
-    forkEvery 30
+    //forkEvery 30
   }
   task integrationTest(type:Test) {
     dependsOn "${subprojectBase}product"
@@ -382,8 +379,6 @@ subprojects {
     binResultsDir = file("${workingDir}/binary/${project.name}")
     reports.html.destination = file("${workingDir}/html/${project.name}")
     reports.junitXml.destination = file(workingDir)
-
-    forkEvery 1
   }
 
   // apply common test configuration
@@ -520,8 +515,13 @@ subprojects {
   }
 }
 
-test.dependsOn subprojects.collect { p -> p.getTasksByName('test', false).collect { it.path } }
-check.dependsOn subprojects.collect { p -> p.getTasksByName('check', false).collect { it.path } }
+//test.dependsOn subprojects.collect { p -> p.getTasksByName('test', false).collect { it.path } }
+test.dependsOn subprojects.test
+check.dependsOn subprojects.check
+
+task distributedTest {
+  dependsOn subprojects.distributedTest
+}
 
 task combineReports(type: TestReport) {
   description 'Combines the test reports.'

@@ -1909,7 +1909,7 @@ public class DistributedQueryDUnit extends DistributedSQLTestBase {
             public void run() {
               try {
                 TestUtil.shutDown();
-                globalLogger.info("completed shutdown");
+                getGlobalLogger().info("completed shutdown");
               } catch (SQLException ex) {
                 throw new TestException("failed in shutdown", ex);
               }

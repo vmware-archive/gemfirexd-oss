@@ -251,7 +251,7 @@ public class InternalManagementServiceDUnit extends GfxdManagementTestBase {
 
     Set<ObjectName> unregisteredMBeans = ims.unregisterMBeanByPattern(employeesPattern);
     assertTrue("No MBeans unregstered", !unregisteredMBeans.isEmpty());
-    globalLogger.info("Unregstered MBeans "+unregisteredMBeans);
+    getGlobalLogger().info("Unregstered MBeans "+unregisteredMBeans);
   }
 
   static interface EmployeeMXBean {

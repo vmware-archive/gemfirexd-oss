@@ -209,6 +209,11 @@ jar {
         from "${projectDir}/lib"
         into "${buildDir}/libs"
       }
+      def gemfireCoreProject = project("${subprojectBase}gemfire-core")
+      copy {
+        from "${projectDir}/lib"
+        into "${gemfireCoreProject.buildDir}/libs"
+      }
     }
   }
 }

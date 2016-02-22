@@ -3925,7 +3925,7 @@ public class GfxdSerialWanDUnit extends GfxdWanTestBase {
             // else generated one can clash with overridden one from other DS
             if (forRegionKey && k < rcvrKeys.size()) {
               long newID = ((Long)rcvrKeys.get(k++)).longValue();
-              globalLogger.info(
+              getGlobalLogger().info(
                   "For actual uniqueID=" + actualUniqueID
                       + " overriding with ID=" + newID + ", k=" + k);
               return newID;

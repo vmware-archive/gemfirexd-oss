@@ -433,22 +433,22 @@ public class BackwardCompatabilityDUnit extends BackwardCompatabilityTestBase {
       throws Exception {
 
     String[] products = { 
-        PRODUCT_SQLFIRE, 
-        PRODUCT_GEMFIREXD,
+        //PRODUCT_SQLFIRE,
+        //PRODUCT_GEMFIREXD,
         //PRODUCT_GEMFIREXD,
         PRODUCT_GEMFIREXD
     };
     String[] versions = { 
-        "1.1.2",
-        "1.0",
+        //"1.1.2",
+        //"1.0",
         //"1.3",
         "1.3.1"
     };
     final boolean isWindows = NativeCalls.getInstance().getOSType().isWindows();
     String[] versionDirs = {
-        "sqlfire/releases/SQLFire1.1.2-all",
+        //"sqlfire/releases/SQLFire1.1.2-all",
         // GFXD 1.0.X was not released for Windows
-        isWindows ? null : "gemfireXD/releases/GemFireXD1.0.0-all",
+        //isWindows ? null : "gemfireXD/releases/GemFireXD1.0.0-all",
         //isWindows ? "gemfireXD/releases/GemFireXD1.3.0-all/Windows_NT"
         //    : "gemfireXD/releases/GemFireXD1.3.0-all/Linux",
         isWindows ? "gemfireXD/releases/GemFireXD1.3.1-all/Windows_NT"
@@ -576,7 +576,7 @@ public class BackwardCompatabilityDUnit extends BackwardCompatabilityTestBase {
     }
   }
 
-  public void testBug50794()
+  public void DISABLED_testBug50794()
       throws Exception {
     String[] versions = {"1.1.2"};
     String[] versionDirs = {"sqlfire/releases/SQLFire1.1.2-all"};
@@ -1863,7 +1863,7 @@ public class BackwardCompatabilityDUnit extends BackwardCompatabilityTestBase {
       Set<Integer> resultIds = new HashSet<Integer>();
       final String table = (String)tableObj[0];
       final int offset = (Integer)tableObj[2];
-      globalLogger.info("checking data for table " + table);
+      getGlobalLogger().info("checking data for table " + table);
       ResultSet rs = conn.createStatement().executeQuery(
           "select * from " + table);
       while (rs.next()) {

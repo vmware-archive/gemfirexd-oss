@@ -89,7 +89,7 @@ public class NodesPruningHelper {
       Activation activation) throws StandardException {
 
     Set<DistributedMember> expected = getExpectedNodes(query,
-        sqi, routingInfo, test.logger);
+        sqi, routingInfo, test.getLogWriter());
     Set<DistributedMember> actual = new HashSet<DistributedMember>();
     Set<Object> actualRoutingKeys = new HashSet<Object>();
     actualRoutingKeys.add(ResolverUtils.TOK_ALL_NODES);

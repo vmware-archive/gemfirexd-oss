@@ -2632,7 +2632,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
       if (bRegion == null) {
         continue;
       }
-      globalLogger.info(
+      getGlobalLogger().info(
           "checkBucketValuesInList: Iterating over bucket region: "
               + bRegion.getFullPath());
       Object expectedValue = null;
@@ -2640,13 +2640,13 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
       for (Object knkey : bRegion.keySet()) {
         keylog += knkey.toString() + ",";
       }
-      globalLogger.info(
+      getGlobalLogger().info(
           "keys in this bucket region = " + bRegion.getName() + " are: "
               + keylog);
       for (Object bEntry : bRegion.entrySet()) {
         final Object bucketValue = ((RegionKey)((Map.Entry<?, ?>)bEntry)
             .getKey()).getKeyColumn(0).getObject();
-        globalLogger.info(
+        getGlobalLogger().info(
             "checkBucketValuesInList: Checking for bucket entry: "
                 + bucketValue);
 
@@ -2656,7 +2656,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
           Object foundNode = null;
 
           public boolean visit(Object node) {
-            globalLogger.info(
+            getGlobalLogger().info(
                 "KNS: visit being called for bvfuzzy: " + bvFuzzy
                     + ", in range: " + node.toString());
             boolean found;
@@ -2669,7 +2669,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
             if (found) {
               this.foundNode = node;
             }
-            globalLogger.info("KNS: returning found = " + found);
+            getGlobalLogger().info("KNS: returning found = " + found);
             return found;
           }
 
@@ -2687,7 +2687,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
                 forEach(valueList, expectedListVisitor));
             ResolverUtils.GfxdRange expectedRange = (ResolverUtils.GfxdRange)expectedListVisitor.getState();
             expectedValue = expectedRange.clone();
-            globalLogger.info(
+            getGlobalLogger().info(
                 "invalidate called while checking for entry: " + bucketValue);
             expectedRange.invalidate();
           }
@@ -2720,7 +2720,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
           assertNotNull(
               "checkBucketValuesInList: expected to find a list/range for "
                   + "first bucket value [" + bucketValue + ']', expectedValue);
-          globalLogger.info(
+          getGlobalLogger().info(
               "checkBucketValuesInList: found first bucket value ["
                   + bucketValue + "] in list/range: " + expectedValue);
         }
@@ -2735,7 +2735,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
                 + "] not in the expected list of values: " + expectedValue,
                 forEach((List<?>)expectedValue, expectedListVisitor));
           }
-          globalLogger.info(
+          getGlobalLogger().info(
               "checkBucketValuesInList: found bucket value [" + bucketValue
                   + "] in list/range: " + expectedValue);
         }

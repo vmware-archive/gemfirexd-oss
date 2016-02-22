@@ -533,19 +533,20 @@ public class HeapThresholdDUnit extends DistributedSQLTestBase {
 
   private static Thread executeQueryInVM(final VM vm, final HeapThresholdHelper.QueryExecutor executor) throws SQLException, InterruptedException {
         //install the observer in remote VM 
-        globalLogger.info("Installing observer for " + executor.query() +
+        getGlobalLogger().info("Installing observer for " + executor.query() +
             " on VM " + vm.getPid() + " Host " + vm.getHost());
         vm.invoke(new SerializableRunnable("set observer") {
           @Override
           public void run() {
-            globalLogger.info("Setting the observer for variant " + executor.variant().name() + " query " + executor.query());
+            getGlobalLogger().info("Setting the observer for variant " +
+                executor.variant().name() + " query " + executor.query());
             GemFireXDQueryObserverHolder.putInstance(executor.observer());
           }
           
         });
         
         //now, normally execute the query in local vm. 
-        globalLogger.info("Executing Query ..." + executor.query());
+        getGlobalLogger().info("Executing Query ..." + executor.query());
         Thread t = HeapThresholdHelper.executeQueryInThread(executor);
         
         return t;
@@ -572,7 +573,7 @@ public class HeapThresholdDUnit extends DistributedSQLTestBase {
     Iterator<?> iter = map.entrySet().iterator();
     while (iter.hasNext()) {
       Map.Entry<?, ?> entry = (Map.Entry<?, ?>)iter.next();
-      globalLogger.info("dumpSharedMap: Key=" + entry.getKey() + " value="
+      getGlobalLogger().info("dumpSharedMap: Key=" + entry.getKey() + " value="
           + entry.getValue());
     }
   }

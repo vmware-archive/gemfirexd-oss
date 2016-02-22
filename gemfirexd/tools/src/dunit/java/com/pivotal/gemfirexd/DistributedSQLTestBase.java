@@ -280,6 +280,22 @@ public class DistributedSQLTestBase extends DistributedTestBase {
   }
 
   public void beforeClass() throws Exception {
+    // Start a locator once for whole suite
+    final int locatorPort = getDUnitLocatorPort();
+    DistributedTestBase.invokeInLocator(new SerializableRunnable() {
+      @Override
+      public void run() {
+        FabricLocator loc = FabricServiceManager.getFabricLocatorInstance();
+        if (loc.status() != FabricService.State.RUNNING) {
+          try {
+            loc.start("localhost", locatorPort, null);
+          } catch (SQLException e) {
+            throw new TestException("Failed to start locator", e);
+          }
+        }
+        assert (loc.status() == FabricService.State.RUNNING);
+      }
+    });
   }
 
   public void afterClass() throws Exception {
@@ -287,10 +303,6 @@ public class DistributedSQLTestBase extends DistributedTestBase {
 
   protected static String getDUnitLocatorString() {
     return "localhost[" + getDUnitLocatorPort() + ']';
-  }
-
-  protected final Logger getLogWriter() {
-    return logger;
   }
 
   protected void baseSetUp() throws Exception {
@@ -306,8 +318,7 @@ public class DistributedSQLTestBase extends DistributedTestBase {
           new Object[] { currentTestName, currentClassName });
     }
 
-    // Setup the tests to use the hydra locator
-
+    // Setup the tests to use the common locator started in beforeClass
     this.locatorString = getDUnitLocatorString();
 
     TestUtil.setRandomUserName();
@@ -417,7 +428,7 @@ public class DistributedSQLTestBase extends DistributedTestBase {
    * exception.
    */
   public static void fail(String message, Throwable ex) {
-    globalLogger.error(message, ex);
+    getGlobalLogger().error(message, ex);
     DistributedTestBase.fail(message, ex);
   }
 
@@ -1834,7 +1845,7 @@ public class DistributedSQLTestBase extends DistributedTestBase {
           return Boolean.TRUE;
         }
       } catch (Exception ex) {
-        globalLogger.error("unexpected exception in cleanup", ex);
+        getGlobalLogger().error("unexpected exception in cleanup", ex);
       }
       return Boolean.FALSE;
     }
@@ -1993,7 +2004,7 @@ public class DistributedSQLTestBase extends DistributedTestBase {
           }
         }
       } catch (Exception ex) {
-        globalLogger.error("unexpected exception in cleanup", ex);
+        getGlobalLogger().error("unexpected exception in cleanup", ex);
       }
     }
   }
@@ -2020,7 +2031,7 @@ public class DistributedSQLTestBase extends DistributedTestBase {
           }
         }
       } catch (Exception ex) {
-        globalLogger.error("unexpected exception in cleanup", ex);
+        getGlobalLogger().error("unexpected exception in cleanup", ex);
       }
     }
   }
@@ -2059,7 +2070,7 @@ public class DistributedSQLTestBase extends DistributedTestBase {
           }
         }
       } catch (Exception ex) {
-        globalLogger.error("unexpected exception in cleanup", ex);
+        getGlobalLogger().error("unexpected exception in cleanup", ex);
       }
     }
   }
@@ -2174,7 +2185,7 @@ public class DistributedSQLTestBase extends DistributedTestBase {
       stmt.execute(sql);
     } catch (SQLException sqle) {
       // ignore
-      globalLogger.warn("unexpected exception", sqle);
+      getGlobalLogger().warn("unexpected exception", sqle);
     }
   }
 
@@ -2306,7 +2317,7 @@ public class DistributedSQLTestBase extends DistributedTestBase {
   public static void deleteGlobalIndexCachinDir() {
     File dir = new File(getSysDiskDir(), "globalIndex");
     boolean result = TestUtil.deleteDir(dir);
-    globalLogger.info(
+    getGlobalLogger().info(
         "For Test: " + currentClassName + ":" + currentTestName
             + " found and deleted globalIndex cache at: " + dir.toString()
             + " : " + result);
@@ -2322,7 +2333,7 @@ public class DistributedSQLTestBase extends DistributedTestBase {
     File dir = new File(getSysDiskDir(), "datadictionary");
     if (!create) {
       boolean result = TestUtil.deleteDir(dir);
-      globalLogger.info(
+      getGlobalLogger().info(
           "For Test: " + currentClassName + ":" + currentTestName
               + " found and deleted datadictionarydir at: " + dir.toString()
               + " : " + result);
@@ -2333,7 +2344,7 @@ public class DistributedSQLTestBase extends DistributedTestBase {
       throw new DiskAccessException("Could not create directory for "
           + " datadictionary: " + dir.getAbsolutePath(), (Region<?, ?>)null);
     }
-    globalLogger.info(
+    getGlobalLogger().info(
         "For Test: " + currentClassName + ":" + currentTestName
             + " created datadictionarydir at: " + dir.toString());
   }
@@ -2383,7 +2394,7 @@ public class DistributedSQLTestBase extends DistributedTestBase {
         for (String file : testSpecificDirs) {
           File dir = new File(getSysDiskDir(), file);
           boolean result = TestUtil.deleteDir(dir);
-          globalLogger.info(
+          getGlobalLogger().info(
               "For Test: " + currentClassName + ":" + currentTestName
                   + " found and deleted test specific directory at: "
                   + dir.toString() + " : " + result);
@@ -2638,7 +2649,7 @@ public class DistributedSQLTestBase extends DistributedTestBase {
 
   public static Boolean getQueryStatus() {
     try {
-      globalLogger.info(
+      getGlobalLogger().info(
           "Getting query status for this VM: " + isQueryExecutedOnNode);
       return Boolean.valueOf(isQueryExecutedOnNode);
     } finally {

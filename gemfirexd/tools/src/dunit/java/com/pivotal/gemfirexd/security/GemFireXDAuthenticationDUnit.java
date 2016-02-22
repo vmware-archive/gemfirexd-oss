@@ -1767,7 +1767,7 @@ public class GemFireXDAuthenticationDUnit extends DistributedSQLTestBase {
       }
 
       // create dist-sys level users
-      logger.info("about to create distributed sys users ");
+      getLogWriter().info("about to create distributed sys users ");
 
       CallableStatement cusr = systemconn
           .prepareCall("call SYSCS_UTIL.SYSCS_SET_DATABASE_PROPERTY(?,?)");
@@ -1775,7 +1775,7 @@ public class GemFireXDAuthenticationDUnit extends DistributedSQLTestBase {
         cusr.setString(1, "derby.user." + u);
         cusr.setString(2, "PWD_" + u);
         cusr.execute();
-        logger.info("created database user " + u);
+        getLogWriter().info("created database user " + u);
       }
       systemconn.close();
 

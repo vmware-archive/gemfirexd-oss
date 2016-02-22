@@ -47,6 +47,9 @@ public class BackwardCompatabilityPart3DUnit extends
     return "config";
   }
 
+  public void testDummy() {
+  }
+
   /*
    * The reason this test fires DDLs by connecting to different servers
    * in each run of previous and current servers is to try create conditions
@@ -382,7 +385,7 @@ public class BackwardCompatabilityPart3DUnit extends
     }
   }
 
-  public void testBug48761() throws Exception {
+  public void DISABLED_testBug48761() throws Exception {
     // Create a locator working dir.
     String locatorPath = getSysDirName() + "/locator48761";
     getLogWriter()

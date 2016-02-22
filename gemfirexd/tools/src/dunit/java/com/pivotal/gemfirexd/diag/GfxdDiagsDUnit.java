@@ -257,7 +257,7 @@ public class GfxdDiagsDUnit extends DistributedSQLTestBase {
           assertEquals(currLocators, rs.getObject("LOCATOR"));
 
           // just log other fields since no fixed value is known
-          final Logger logger = globalLogger;
+          final Logger logger = getGlobalLogger();
           logger.info("Got ID as " + rs.getString("ID"));
           logger.info("Got ID as " + rs.getObject("ID"));
           logger.info("Got IPADDRESS as " + rs.getString("IPADDRESS"));

@@ -197,7 +197,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
       for (TreeNode data : dataArr) {
 
         cn = data;
-        globalLogger.info("checking " + cn);
+        getGlobalLogger().info("checking " + cn);
 
         text = data.getId();
         assertTrue(text != null);
@@ -1470,7 +1470,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
         Pattern.MULTILINE);
 
     final String[] originatorDone = planMatcher.split(input);
-    globalLogger.info(java.util.Arrays.toString(originatorDone));
+    getGlobalLogger().info(java.util.Arrays.toString(originatorDone));
     assertEquals(2, originatorDone.length);
     return originatorDone[1];
   }
@@ -1492,7 +1492,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
         Pattern.MULTILINE);
 
     final String[] distributionDone = planMatcher.split(input);
-    globalLogger.info(java.util.Arrays.toString(distributionDone));
+    getGlobalLogger().info(java.util.Arrays.toString(distributionDone));
     assertEquals(2, distributionDone.length);
     return distributionDone[1];
   }
@@ -1507,7 +1507,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
         Pattern.MULTILINE);
 
     final String[] sequentialDone = planMatcher.split(input);
-    globalLogger.info(java.util.Arrays.toString(sequentialDone));
+    getGlobalLogger().info(java.util.Arrays.toString(sequentialDone));
     assertEquals(2, sequentialDone.length);
     return sequentialDone[1];
   }
@@ -1522,7 +1522,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
         Pattern.MULTILINE);
 
     final String[] roundRobinDone = planMatcher.split(input);
-    globalLogger.info(java.util.Arrays.toString(roundRobinDone));
+    getGlobalLogger().info(java.util.Arrays.toString(roundRobinDone));
     assertEquals(2, roundRobinDone.length);
     return roundRobinDone[1];
   }
@@ -1538,7 +1538,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
         Pattern.MULTILINE);
 
     final String[] orderedDone = planMatcher.split(input);
-    globalLogger.info(java.util.Arrays.toString(orderedDone));
+    getGlobalLogger().info(java.util.Arrays.toString(orderedDone));
     assertEquals(2, orderedDone.length);
     return orderedDone[1];
   }
@@ -1553,7 +1553,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
         Pattern.MULTILINE);
 
     final String[] getallDone = planMatcher.split(input);
-    globalLogger.info("regiongetall:" + java.util.Arrays.toString(getallDone));
+    getGlobalLogger().info("regiongetall:" + java.util.Arrays.toString(getallDone));
     assertEquals("microseconds", getallDone[1].trim());
     return getallDone[1];
   }
@@ -1570,7 +1570,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
         Pattern.MULTILINE);
 
     final String[] getallDone = planMatcher.split(input);
-    globalLogger.info(
+    getGlobalLogger().info(
         "localindexgetall:" + java.util.Arrays.toString(getallDone));
     assertEquals(2, getallDone.length);
     return getallDone[1];
@@ -1581,7 +1581,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
     Pattern planMatcher = Pattern.compile("Slowest Member Plan:",
         Pattern.MULTILINE);
     String[] introLineDone = planMatcher.split(input);
-    globalLogger.info(java.util.Arrays.toString(introLineDone));
+    getGlobalLogger().info(java.util.Arrays.toString(introLineDone));
     assertEquals(2, introLineDone.length);
     return introLineDone[1];
   }
@@ -1591,7 +1591,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
     Pattern planMatcher = Pattern.compile("Fastest Member Plan:",
         Pattern.MULTILINE);
     String[] introLineDone = planMatcher.split(input);
-    globalLogger.info(java.util.Arrays.toString(introLineDone));
+    getGlobalLogger().info(java.util.Arrays.toString(introLineDone));
     assertEquals(2, introLineDone.length);
     return introLineDone[1];
   }
@@ -1603,7 +1603,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
     Pattern planMatcher = Pattern.compile(patternString.toString(),
         Pattern.MULTILINE);
     String[] localPlanDone = planMatcher.split(input);
-    globalLogger.info(java.util.Arrays.toString(localPlanDone));
+    getGlobalLogger().info(java.util.Arrays.toString(localPlanDone));
     assertEquals(2, localPlanDone.length);
     return localPlanDone[1];
   }
@@ -1618,7 +1618,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
     Pattern planMatcher = Pattern.compile(patternString.toString(),
         Pattern.MULTILINE);
     String[] planMemberDone = planMatcher.split(input);
-    globalLogger.info(java.util.Arrays.toString(planMemberDone));
+    getGlobalLogger().info(java.util.Arrays.toString(planMemberDone));
     assertEquals(2, planMemberDone.length);
     return planMemberDone[1];
   }
@@ -1638,7 +1638,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
         Pattern.MULTILINE);
 
     String[] queryRecRespSendDone = planMatcher.split(input);
-    globalLogger.info(java.util.Arrays.toString(queryRecRespSendDone));
+    getGlobalLogger().info(java.util.Arrays.toString(queryRecRespSendDone));
     assert queryRecRespSendDone.length == 2;
     return queryRecRespSendDone[1];
   }
@@ -1653,7 +1653,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
     Pattern planMatcher = Pattern.compile(patternString.toString(),
         Pattern.MULTILINE);
     String[] queryReceiveDone = planMatcher.split(input);
-    globalLogger.info(java.util.Arrays.toString(queryReceiveDone));
+    getGlobalLogger().info(java.util.Arrays.toString(queryReceiveDone));
     assert queryReceiveDone.length == 2;
     return queryReceiveDone[1];
   }
@@ -1668,7 +1668,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
     Pattern planMatcher = Pattern.compile(patternString.toString(),
         Pattern.MULTILINE);
     String[] querySendDone = planMatcher.split(input);
-    globalLogger.info(java.util.Arrays.toString(querySendDone));
+    getGlobalLogger().info(java.util.Arrays.toString(querySendDone));
     assert querySendDone.length == 2;
     return querySendDone[1];
   }
@@ -1683,7 +1683,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
     Pattern planMatcher = Pattern.compile(patternString.toString(),
         Pattern.MULTILINE);
     String[] resultSendDone = planMatcher.split(input);
-    globalLogger.info(java.util.Arrays.toString(resultSendDone));
+    getGlobalLogger().info(java.util.Arrays.toString(resultSendDone));
     assertEquals(2, resultSendDone.length);
     return resultSendDone[1];
   }
@@ -1700,7 +1700,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
         Pattern.MULTILINE);
 
     String[] resultHolderDone = planMatcher.split(input);
-    globalLogger.info(java.util.Arrays.toString(resultHolderDone));
+    getGlobalLogger().info(java.util.Arrays.toString(resultHolderDone));
     assertEquals(2, resultHolderDone.length);
     return resultHolderDone[1];
   }
@@ -1716,7 +1716,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
     Pattern planMatcher = Pattern.compile(patternString.toString(),
         Pattern.MULTILINE);
     String[] resultHolderDone = planMatcher.split(input, 2);
-    globalLogger.info(java.util.Arrays.toString(resultHolderDone));
+    getGlobalLogger().info(java.util.Arrays.toString(resultHolderDone));
     assertEquals(2, resultHolderDone.length);
     return resultHolderDone[1];
   }
@@ -1731,7 +1731,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
     Pattern planMatcher = Pattern.compile(patternString.toString(),
         Pattern.MULTILINE);
     String[] sortDone = planMatcher.split(input);
-    globalLogger.info(java.util.Arrays.toString(sortDone));
+    getGlobalLogger().info(java.util.Arrays.toString(sortDone));
     assertEquals(2, sortDone.length);
     return sortDone[1];
   }
@@ -1747,7 +1747,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
     Pattern planMatcher = Pattern.compile(patternString.toString(),
         Pattern.MULTILINE);
     String[] rowIDScanDone = planMatcher.split(input);
-    globalLogger.info(java.util.Arrays.toString(rowIDScanDone));
+    getGlobalLogger().info(java.util.Arrays.toString(rowIDScanDone));
     assertEquals(2, rowIDScanDone.length);
     return rowIDScanDone[1];
   }
@@ -1816,7 +1816,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
     Pattern planMatcher = Pattern.compile(patternString.toString(),
         Pattern.MULTILINE);
     String[] indexScanDone = planMatcher.split(input);
-    globalLogger.info(java.util.Arrays.toString(indexScanDone));
+    getGlobalLogger().info(java.util.Arrays.toString(indexScanDone));
     assertEquals(2, indexScanDone.length);
     return indexScanDone[1];
   }

@@ -174,7 +174,7 @@ public class DBSynchronizerTestBase extends DistributedSQLTestBase{
 
   public static NetworkServerControl startNetworkServer(final int netPort)
       throws Exception {
-    globalLogger.info(
+    getGlobalLogger().info(
         "Starting a Derby Network Server on "
             + InetAddress.getLocalHost().getHostName() + ":" + netPort);
     NetworkServerControl server = new NetworkServerControl(

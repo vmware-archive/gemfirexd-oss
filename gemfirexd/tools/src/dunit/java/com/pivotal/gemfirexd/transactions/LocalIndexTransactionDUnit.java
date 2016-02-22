@@ -1140,11 +1140,11 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
      private final String qualifiedIndexName;
      private volatile int numInvocations;
      
-     IndexInvocationObserver(String schema, String baseTable, String indexName ) {       
+     IndexInvocationObserver(String schema, String baseTable, String indexName ) {
        qualifiedIndexName = schema.toUpperCase()+"."+indexName.toUpperCase() + ":base-table:"+
-      schema.toUpperCase()+"."+baseTable.toUpperCase();
-       globalLogger.info("Qualified index name to compare="+qualifiedIndexName);
-     }
+     schema.toUpperCase()+"."+baseTable.toUpperCase();
+     getGlobalLogger().info("Qualified index name to compare="+qualifiedIndexName);
+    }
     
     @Override
     public double overrideDerbyOptimizerIndexUsageCostForHash1IndexScan(

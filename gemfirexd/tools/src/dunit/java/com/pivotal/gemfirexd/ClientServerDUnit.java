@@ -3377,7 +3377,7 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
   }
 
   public static void procTest(Integer arg) {
-    globalLogger.info("Invoked procTest with arg: " + arg);
+    getGlobalLogger().info("Invoked procTest with arg: " + arg);
   }
 
   private Properties doSecuritySetup(final Properties props,

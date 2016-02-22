@@ -113,10 +113,6 @@ public abstract class BackwardCompatabilityTestBase extends
     vm2WorkingDir = (String)Host.getHost(0).getVM(1).invoke(getVMWorkingDir);
     vm3WorkingDir = (String)Host.getHost(0).getVM(2).invoke(getVMWorkingDir);
     vm4WorkingDir = (String)Host.getHost(0).getVM(3).invoke(getVMWorkingDir);
-
-    // Begin with clean directories
-    cleanUp(new String[] { vm1WorkingDir, vm2WorkingDir, vm3WorkingDir,
-        vm4WorkingDir });
   }
 
   @Override
@@ -138,8 +134,6 @@ public abstract class BackwardCompatabilityTestBase extends
         vm2WorkingDir + "/dir1", vm3WorkingDir + "/dir1",
         vm4WorkingDir + "/dir1" };
     cleanUpCustomStoreFiles(customStoreDirs);
-    cleanUp(new String[] { vm1WorkingDir, vm2WorkingDir, vm3WorkingDir,
-        vm4WorkingDir });
   }
 
   public BackwardCompatabilityTestBase(String name) {

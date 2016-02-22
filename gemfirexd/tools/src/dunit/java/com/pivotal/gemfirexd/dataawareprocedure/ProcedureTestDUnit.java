@@ -48,7 +48,7 @@ public class ProcedureTestDUnit extends DistributedSQLTestBase {
   public static void serverGroupProc(int number, ResultSet[] rs1,
       ResultSet[] rs2, ResultSet[] rs3, ResultSet[] rs4) throws SQLException {
     Connection c = DriverManager.getConnection("jdbc:default:connection");
-    globalLogger.info("executing serverGroupProc on id: " +
+    getGlobalLogger().info("executing serverGroupProc on id: " +
         InternalDistributedSystem.getConnectedInstance().getProperties());
     ResultSet r = c.createStatement().executeQuery("values dsid()");
     assertTrue(r.next());
@@ -80,7 +80,7 @@ public class ProcedureTestDUnit extends DistributedSQLTestBase {
     } catch (InterruptedException e) {
       fail("why an uninterrpted exception in serverGroupProcWith5SecWait sleep");
     }
-    globalLogger.info("executing serverGroupProcWith5SecWait on id: " +
+    getGlobalLogger().info("executing serverGroupProcWith5SecWait on id: " +
         InternalDistributedSystem.getConnectedInstance().getProperties());
     ResultSet r = c.createStatement().executeQuery("values dsid()");
     assertTrue(r.next());
@@ -106,7 +106,7 @@ public class ProcedureTestDUnit extends DistributedSQLTestBase {
 
   public static void testLocal(int number, ResultSet[] rs1, ProcedureExecutionContext pec) throws SQLException {
     Connection c = pec.getConnection();
-    globalLogger.info("executing testLocal on id: " +
+    getGlobalLogger().info("executing testLocal on id: " +
         InternalDistributedSystem.getConnectedInstance().getProperties());
     if (number > 0) {
       rs1[0] = c.createStatement().executeQuery("<LOCAL> SELECT ID, NAME from APP.EMP where ID='1'");

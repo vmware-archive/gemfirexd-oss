@@ -96,6 +96,7 @@ import com.pivotal.gemfirexd.internal.iapi.types.DataValueFactory;
 import com.pivotal.gemfirexd.internal.iapi.util.StringUtil;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedConnection;
 import com.pivotal.gemfirexd.internal.impl.store.access.sort.Scan;
+import io.snappydata.test.dunit.standalone.DUnitLauncher;
 import junit.framework.TestCase;
 import org.apache.derbyTesting.junit.TestConfiguration;
 import org.apache.log4j.LogManager;
@@ -175,6 +176,8 @@ public class TestUtil extends TestCase {
 
   public static String currentUserPassword = null;
 
+  private static final Set<String> initSysProperties;
+
   public static boolean isTransactional = false;
 
   public volatile static boolean deletePersistentFiles = false;
@@ -204,12 +207,16 @@ public class TestUtil extends TestCase {
   private static boolean oldDMVerbose = false;
 
   static {
-    // change current working directory to this base directory
-    File baseDirFile = new File(getBaseDir());
-    //noinspection ResultOfMethodCallIgnored
-    baseDirFile.mkdirs();
-    NativeCalls.getInstance().setCurrentWorkingDirectory(
-        baseDirFile.getAbsolutePath());
+    // skip for ChildVM's in dunits
+    if (System.getProperty(DUnitLauncher.VM_NUM_PARAM) == null) {
+      // change current working directory to this base directory
+      File baseDirFile = new File(getBaseDir());
+      //noinspection ResultOfMethodCallIgnored
+      baseDirFile.mkdirs();
+      NativeCalls.getInstance().setCurrentWorkingDirectory(
+          baseDirFile.getAbsolutePath());
+    }
+    initSysProperties = System.getProperties().stringPropertyNames();
   }
 
   public static final void reduceLogLevel(String logLevel) {
@@ -820,10 +827,12 @@ public class TestUtil extends TestCase {
       while (propNames.hasMoreElements()) {
         final Object prop = propNames.nextElement();
         final String key = prop.toString();
-        if (key.startsWith(DistributionConfig.GEMFIRE_PREFIX)
+        if (!key.startsWith("gemfire.DUnitLauncher")
+            && !initSysProperties.contains(key)
+            && (key.startsWith(DistributionConfig.GEMFIRE_PREFIX)
             || key.startsWith(GfxdConstants.GFXD_PREFIX)
             || key.startsWith(GfxdConstants.GFXD_CLIENT_PREFIX)
-            || key.startsWith("javax.net.ssl.")) {
+            || key.startsWith("javax.net.ssl."))) {
           keysToRemove.add(key);
         }
       }

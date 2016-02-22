@@ -364,7 +364,7 @@ public class InsertUpdateForeignKeyDUnit extends DistributedSQLTestBase {
     assertEquals("Should update one row", 1, numUpdate);
     rs = s.executeQuery("select * from trade.customers where since=1");
     while (rs.next()) {
-      logger.info("XXXX col1 : " + rs.getInt(1) + " #2 : "
+      getLogWriter().info("XXXX col1 : " + rs.getInt(1) + " #2 : "
           + rs.getString(2).trim() + " #3 : " + rs.getInt(3) + " #4 "
           + rs.getString(4) + " #5 : " + rs.getInt(5));
       throw new TestException("Should not return any rows");

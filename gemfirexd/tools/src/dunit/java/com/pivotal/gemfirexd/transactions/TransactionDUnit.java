@@ -3254,7 +3254,7 @@ public class TransactionDUnit extends DistributedSQLTestBase {
 
   public static void verifyNumEntries(int expectedNum, int bucketid,
       String regionName) {
-    globalLogger.info("executing verifyNumEntries");
+    getGlobalLogger().info("executing verifyNumEntries");
     Region<?, ?> r = Misc.getRegion(regionName, true, false);
     PartitionedRegion pr = (PartitionedRegion)r;
     PartitionedRegionDataStore ds = pr.getDataStore();
@@ -3264,7 +3264,7 @@ public class TransactionDUnit extends DistributedSQLTestBase {
         continue;
       }
       int entryCnt = b.entryCount();
-      globalLogger.info(
+      getGlobalLogger().info(
           "executing verifyNumEntries for bucket region: " + b
               + " entry count is: " + entryCnt);
       assertEquals(expectedNum, entryCnt);
