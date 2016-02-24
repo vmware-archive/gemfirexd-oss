@@ -3,11 +3,11 @@
 usage="Usage: sample-runbt.sh <result-directory-path> <snappy-data-directory-path> <list-of-bts>"
 resultDir=
 if [ $# -lt 3 ]; then
-  echo "Usage: sample-runbt.sh <result-directory-path> <snappy-store-directory-path> <list-of-bts>" 1>&2
+  echo "Usage: sample-runbt.sh <result-directory-path> <snappy-data-directory-path> <list-of-bts>" 1>&2
   echo " result-directory-path          Location to put the test results " 1>&2
   echo " snappy-store-directory-path    checkout path of snappy-store " 1>&2
   echo " list-of-bts                    name of bts to run " 1>&2
-  echo " (e.g. sh sample-runbt.sh /home/rajesh/gemxdRegression /home/rajesh/project/snappydata sql/sql.bt sql/sqlDisk/sql/sqlDisk.bt )" 1>&2
+  echo " (e.g. sh sample-runbt.sh /home/rajesh/gemxdRegression /home/rajesh/project/snappydata sql/sql.bt sql/sqlDisk/sqlDisk.bt )" 1>&2
   exit 1
 else
   resultDir=$1
@@ -28,7 +28,7 @@ export PATH=$JAVA_HOME:$PATH:$SNAPPYDATADIR/snappy-store/tests/sql/build-artifac
 export GEMFIRE=$SNAPPYDATADIR/build-artifacts/scala-2.10/store
 export OUTPUT_DIR=$resultDir
 if [ "x$JAVA_HOME" = "x" ]; then
-  TEST_JVM=/usr/bin/java
+  TEST_JVM=/usr
 else
   TEST_JVM=$JAVA_HOME
 fi
