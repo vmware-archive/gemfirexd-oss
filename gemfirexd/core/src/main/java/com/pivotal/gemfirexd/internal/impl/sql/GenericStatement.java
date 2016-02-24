@@ -137,7 +137,8 @@ public class GenericStatement
         //private ProcedureProxy procProxy;
         private final GfxdHeapThresholdListener thresholdListener;
         private THashMap ncjMetaData = null;
-	private static final String STREAMING_DDL_PREFIX = "STREAMING";
+	      private static final String STREAMING_DDL_PREFIX = "STREAMING";
+	      private static final String INSERT_INTO_TABLE_PATTERN = ".*INSERT\\s+INTO\\s+TABLE.*";
 // GemStone changes END
 	/**
 	 * Constructor for a Statement given the text of the statement in a String
@@ -548,6 +549,9 @@ public class GenericStatement
 		&& getSource().substring(0, STREAMING_DDL_PREFIX.length()).equalsIgnoreCase(STREAMING_DDL_PREFIX)) {
               cc.markAsDDLForSnappyUse(true);
             }
+						if(Pattern.matches(INSERT_INTO_TABLE_PATTERN, getSource().toUpperCase())){
+							cc.markAsDDLForSnappyUse(true);
+						}
             return getPreparedStatementForSnappy(false, statementContext, lcc, cc.isMarkedAsDDLForSnappyUse());
           }
           throw ex;
