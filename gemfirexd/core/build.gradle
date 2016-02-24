@@ -2,6 +2,8 @@ plugins {
   id "ca.coglinc.javacc" version "2.3.1"
 }
 
+apply plugin: 'com.github.johnrengelman.shadow'
+
 dependencies {
   compile project(subprojectBase + 'gemfire-core')
   compile project(subprojectBase + 'gemfirexd-shared')
@@ -188,20 +190,13 @@ javadoc {
 }
 javadoc.dependsOn.clear()
 
-archivesBaseName = 'gemfirexd'
-jar {
+shadowJar {
+  zip64 = true
   dependsOn doSplit
   baseName = 'gemfirexd'
+  classifier = ''
 
-  from {
-    configurations.runtime.collect {
-      it.isDirectory() ? it : zipTree(it).matching {
-        exclude {
-          it.path.contains('META-INF')
-        }
-      }
-    }
-  }
+  mergeServiceFiles()
   doLast {
     // copy the native JNI library
     if (osName.isLinux()) {

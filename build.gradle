@@ -6,7 +6,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.2'
+    classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
   }
 }
 
@@ -101,15 +101,6 @@ allprojects {
         'gemfirexd.version.beta': 'true',
         'gemfirexd.product.vendor': PRODUCT_VENDOR,
         'gemfirexd.product.file': 'gemfirexd.jar' ]
-
-    productDir = file("${rootProject.buildDir}/store")
-    locDir = 'com/pivotal/gemfirexd/internal/loc'
-    clientMsgOutDir = "${project(subprojectBase + 'gemfirexd-core').buildDir}/client/${locDir}"
-    if (!project.hasProperty("sanity")) {
-      isSane = 'true'
-    } else {
-      isSane = sanity
-    }
   }
 
   buildRoot = buildRoot.trim()
@@ -121,6 +112,15 @@ allprojects {
   }
 
   ext {
+    productDir = file("${rootProject.buildDir}/store")
+    locDir = 'com/pivotal/gemfirexd/internal/loc'
+    clientMsgOutDir = "${project(subprojectBase + 'gemfirexd-core').buildDir}/client/${locDir}"
+    if (!project.hasProperty("sanity")) {
+      isSane = 'true'
+    } else {
+      isSane = sanity
+    }
+
     if (rootProject.name == 'snappy-store') {
       testResultsBase = "${rootProject.buildDir}/tests"
     } else {
@@ -556,7 +556,7 @@ def includeJar(def jarFile) {
 
 // pack the entire GemFireXD product tree
 task product(dependsOn: [ subprojectBase + 'gemfirexd-client:jar',
-    subprojectBase + 'gemfirexd-core:jar',
+    subprojectBase + 'gemfirexd-core:shadowJar',
     subprojectBase + 'gemfirexd-tools:jar',
     subprojectBase + 'gemfirexd-tests:jar',
     subprojectBase + 'gemfirexd-shared:javadoc',
@@ -583,7 +583,7 @@ task product(dependsOn: [ subprojectBase + 'gemfirexd-client:jar',
       include clientProject.jar.archiveName
     }
     from(coreProject.jar.destinationDir) {
-      include coreProject.jar.archiveName
+      include coreProject.shadowJar.archiveName
     }
     from(toolsProject.jar.destinationDir) {
       include toolsProject.jar.archiveName
