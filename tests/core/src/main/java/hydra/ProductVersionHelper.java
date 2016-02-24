@@ -57,7 +57,7 @@ public class ProductVersionHelper {
         }
         productVersion += p2.getProperty(PRODUCT_NAME) + " "
                         + p2.getProperty(PRODUCT_VERSION);
-        snappyReleaseVersion = p1.getProperty(PRODUCT_VERSION);
+        snappyReleaseVersion = p2.getProperty(PRODUCT_VERSION);
       }
     } catch (ClassNotFoundException e) {
     }

@@ -104,7 +104,7 @@ while [ $# -gt 0 ]; do
     testOutputDir=${outputDir}${regressionExtraPath}
     mkdir -p ${testOutputDir}
   
-    cd ${SOURCES}
+    cd ${testOutputDir}
   
     # Relative path
     BT_FILE=${TESTSPATH}/$1
@@ -125,9 +125,8 @@ while [ $# -gt 0 ]; do
       -DresultDir=${testOutputDir} \
       -DprovideBugReportTemplate=true -DprovideRegressionSummary=true -DnukeHungTest=true \
       ${options} -DtestFileName=${BT_FILE} \
-      batterytest.BatteryTest > ${testOutputDir}/../execute-battery.log 2>&1 || true)
+      batterytest.BatteryTest 2>&1 || true)
 
-    mv ${testOutputDir}/../execute-battery.log ${testOutputDir}
     cd -
 
     find $testOutputDir -name core -exec rm -f {} \; >/dev/null
@@ -186,9 +185,6 @@ while [ $# -gt 0 ]; do
           SUBJECT="FATAL ERRORS on `hostname` running Battery Test ${testname}"
           echo "" >> ${testOutputDir}/resultReport.txt
           echo "Unable to locate oneliner.txt indicating hydra never got started." >> ${testOutputDir}/resultReport.txt
-          echo "Contents of execute-battery.log:" >> ${testOutputDir}/resultReport.txt
-          echo "" >> ${testOutputDir}/resultReport.txt
-          cat ${testOutputDir}/execute-battery.log >> ${testOutputDir}/resultReport.txt
           echo "" >> ${testOutputDir}/resultReport.txt
           echo "Contents of batterytest.log:" >> ${testOutputDir}/resultReport.txt
           cat ${testOutputDir}/batterytest.log >> ${testOutputDir}/resultReport.txt
