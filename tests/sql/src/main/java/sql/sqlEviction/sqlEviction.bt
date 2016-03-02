@@ -5,7 +5,7 @@ sql/sqlEviction/evictionOverflow.conf
   maxHeapSize=256
   setCriticalHeap = false
   
-/*sql/sqlEviction/evictionOverflow.conf
+sql/sqlEviction/evictionOverflow.conf
   A=store storeHosts=2 storeVMsPerHost=2 storeThreadsPerVM=1
   B=accessor accessorHosts=2 accessorVMsPerHost=2 accessorThreadsPerVM=9
   useHeapPercentage=true
@@ -64,7 +64,7 @@ sql/sqlEviction/evictionOverflowHA.conf
   dropIndex = true
   useHeapPercentage = true 
   maxHeapSize=128
-  setCriticalHeap = false */
+  setCriticalHeap = false
 /* thest two tests are replaced by evictionOverflowCriticalHeap and evictionOverflowCriticalHeapHA  
 sql/sqlEviction/evictionOverflow.conf
   A=store storeHosts=2 storeVMsPerHost=2 storeThreadsPerVM=1
@@ -83,7 +83,7 @@ sql/sqlEviction/evictionOverflowHA.conf
   setCriticalHeap = true
 */
 
-/*sql/sqlEviction/evictionOverflowCriticalHeap.conf
+sql/sqlEviction/evictionOverflowCriticalHeap.conf
   locatorHosts=1 locatorVMsPerHost=1 locatorThreadsPerVM=1
   A=store storeHosts=2 storeVMsPerHost=2 storeThreadsPerVM=1
   B=accessor accessorHosts=2 accessorVMsPerHost=2 accessorThreadsPerVM=9
@@ -189,4 +189,4 @@ sql/sqlEviction/evictionOverflowHAOffHeap.conf
   dropIndex = true
   useHeapPercentage = true 
   maxHeapSize=350 offHeapMemorySize=1m
-  setCriticalHeap = true */
+  setCriticalHeap = true
