@@ -42,6 +42,7 @@ import com.gemstone.gemfire.cache.DiskAccessException;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.RegionAttributes;
 import com.gemstone.gemfire.cache.asyncqueue.AsyncEventQueue;
+import com.gemstone.gemfire.cache.hdfs.internal.HDFSStoreImpl;
 import com.gemstone.gemfire.cache.wan.GatewayReceiver;
 import com.gemstone.gemfire.cache.wan.GatewaySender;
 import com.gemstone.gemfire.distributed.DistributedMember;
@@ -89,7 +90,6 @@ import org.apache.derby.iapi.services.monitor.Monitor;
 import org.apache.derby.iapi.services.stream.HeaderPrintWriter;
 import org.apache.derbyTesting.junit.CleanDatabaseTestSetup;
 import org.apache.derbyTesting.junit.TestConfiguration;
-import org.apache.log4j.Logger;
 import org.junit.internal.MethodSorter;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -279,23 +279,22 @@ public class DistributedSQLTestBase extends DistributedTestBase {
     }
   }
 
+  public static void startCommonLocator(int locatorPort) {
+    FabricLocator loc = FabricServiceManager.getFabricLocatorInstance();
+    if (loc.status() != FabricService.State.RUNNING) {
+      try {
+        loc.start("localhost", locatorPort, null);
+      } catch (SQLException e) {
+        throw new TestException("Failed to start locator", e);
+      }
+    }
+    assert (loc.status() == FabricService.State.RUNNING);
+  }
+
   public void beforeClass() throws Exception {
     // Start a locator once for whole suite
-    final int locatorPort = getDUnitLocatorPort();
-    DistributedTestBase.invokeInLocator(new SerializableRunnable() {
-      @Override
-      public void run() {
-        FabricLocator loc = FabricServiceManager.getFabricLocatorInstance();
-        if (loc.status() != FabricService.State.RUNNING) {
-          try {
-            loc.start("localhost", locatorPort, null);
-          } catch (SQLException e) {
-            throw new TestException("Failed to start locator", e);
-          }
-        }
-        assert (loc.status() == FabricService.State.RUNNING);
-      }
-    });
+    Host.getLocator().invoke(DistributedSQLTestBase.class,
+        "startCommonLocator", getDUnitLocatorPort());
   }
 
   public void afterClass() throws Exception {
@@ -440,7 +439,7 @@ public class DistributedSQLTestBase extends DistributedTestBase {
     }
   }
 
-  protected String getSysDirName() {
+  protected static String getSysDirName() {
     return new File(".").getAbsolutePath();
   }
 
@@ -538,15 +537,17 @@ public class DistributedSQLTestBase extends DistributedTestBase {
       setGFXDProperty(props, "log-level", logLevel);
     }
     // reduce timeout properties for faster dunit runs
-    setGFXDProperty(props, "member-timeout", "2000");
     System.setProperty("p2p.discoveryTimeout", "1000");
     System.setProperty("p2p.joinTimeout", "2000");
+    /*
+    setGFXDProperty(props, "member-timeout", "2000");
     System.setProperty("p2p.leaveTimeout", "1000");
     System.setProperty("p2p.socket_timeout", "4000");
     System.setProperty("p2p.disconnectDelay", "500");
     System.setProperty("p2p.handshakeTimeoutMs", "2000");
     System.setProperty("p2p.lingerTime", "500");
     System.setProperty("p2p.listenerCloseTimeout", "4000");
+    */
     if (extraProps != null) {
       Enumeration<?> e = extraProps.propertyNames();
       while (e.hasMoreElements()) {
@@ -845,10 +846,10 @@ public class DistributedSQLTestBase extends DistributedTestBase {
   }
 
   public static DistributedMember _startNewServer(String className,
-      String name, int mcastPort, String serverGroups, Properties extraProps, boolean configureOffHeap)
-      throws Exception {
+      String name, int mcastPort, String serverGroups, Properties extraProps,
+      boolean configureOffHeap) throws Exception {
     final Class<?> c = Class.forName(className);
-   
+
     final DistributedSQLTestBase test = (DistributedSQLTestBase)c
         .getConstructor(String.class).newInstance(name);
     test.configureDefaultOffHeap = configureOffHeap;
@@ -2052,6 +2053,10 @@ public class DistributedSQLTestBase extends DistributedTestBase {
             executeCleanup(stmt, "drop gatewayreceiver \"" + receiver.getId()
                 + '"');
           }
+          for (HDFSStoreImpl hdfsStore : cache.getAllHDFSStores()) {
+            executeCleanup(stmt, "drop hdfsstore \"" +
+                hdfsStore.getName() + '"');
+          }
           for (DiskStoreImpl ds : cache.listDiskStores()) {
             if (!GfxdConstants.GFXD_DEFAULT_DISKSTORE_NAME.equals(ds
                 .getName()) && !GfxdConstants.GFXD_DD_DISKSTORE_NAME
@@ -2388,9 +2393,10 @@ public class DistributedSQLTestBase extends DistributedTestBase {
     try {
       deleteDataDictionaryDir();
       deleteGlobalIndexCachinDir();
-      String[] testSpecificDirs = testInstance
-          .testSpecificDirectoriesForDeletion();
-      if (testSpecificDirs != null) {
+      final DistributedSQLTestBase test = testInstance;
+      final String[] testSpecificDirs;
+      if (test != null && (testSpecificDirs = test
+          .testSpecificDirectoriesForDeletion()) != null) {
         for (String file : testSpecificDirs) {
           File dir = new File(getSysDiskDir(), file);
           boolean result = TestUtil.deleteDir(dir);
@@ -2402,6 +2408,28 @@ public class DistributedSQLTestBase extends DistributedTestBase {
       }
     } catch (Exception ex) {
       throw new TestException("unexpected exception", ex);
+    }
+  }
+
+  @SuppressWarnings("ResultOfMethodCallIgnored")
+  public static void delete(File file) {
+    if (!file.exists()) {
+      return;
+    }
+    if (file.isDirectory()) {
+      if (file.list().length == 0) {
+        file.delete();
+      } else {
+        File[] files = file.listFiles();
+        if (files != null) {
+          for (File f : files) {
+            delete(f);
+          }
+        }
+        file.delete();
+      }
+    } else {
+      file.delete();
     }
   }
 
@@ -2560,7 +2588,7 @@ public class DistributedSQLTestBase extends DistributedTestBase {
 
   public static String getSysDiskDir() {
     try {
-      return testInstance.getSysDirName();
+      return getSysDirName();
     } catch (Exception ex) {
       throw new TestException("unexpected exception", ex);
     }

@@ -320,9 +320,12 @@ public class LdapTestServer {
     if (server != null && server.isStarted()) {
       server.stop();
     }
-    service.shutdown();
-    FileUtils.deleteQuietly(service.getWorkingDirectory());
-    // null the singleton instance
-    instance = null;
+    try {
+      service.shutdown();
+    } finally {
+      FileUtils.deleteQuietly(service.getWorkingDirectory());
+      // null the singleton instance
+      instance = null;
+    }
   }
 }

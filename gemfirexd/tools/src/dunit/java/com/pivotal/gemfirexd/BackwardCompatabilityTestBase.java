@@ -671,7 +671,7 @@ public abstract class BackwardCompatabilityTestBase extends
     javaCommandLine.add(clientJar);
     javaCommandLine.add(Boolean.toString(useSQLFireUrl));
     javaCommandLine.add(doWhat);
-    getLogWriter().info("Starting: " + javaCommandLine);
+    System.out.println("Starting: " + javaCommandLine);
 
     ProcessBuilder builder = new ProcessBuilder(
         javaCommandLine.toArray(new String[javaCommandLine.size()]));
@@ -681,9 +681,8 @@ public abstract class BackwardCompatabilityTestBase extends
     final Process clientProc = builder.start();
     String clientOut = TestUtil.getProcessOutput(clientProc, 0, 90000,
         exitValue);
-    getLogWriter().info(
-        "Output from ProductClient using client " + clientJar + " : "
-            + clientOut);
+    System.out.println("Output from ProductClient using client "
+        + clientJar + " : " + clientOut);
     if (exitValue[0] != 0) {
       throw new TestException("Unexpected exit value " + exitValue[0]
           + " while running client version " + version + ", OUTPUT=\n"

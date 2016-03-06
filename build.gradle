@@ -328,6 +328,8 @@ subprojects {
   test {
     dependsOn "${subprojectBase}product"
     maxParallelForks = (2 * Runtime.getRuntime().availableProcessors())
+    minHeapSize = '768m'
+    maxHeapSize = '768m'
 
     include '**/*Test.class'
     exclude '**/*DUnitTest.class'
@@ -346,11 +348,14 @@ subprojects {
   }
   task distributedTest(type:Test) {
     dependsOn "${subprojectBase}product"
-    maxParallelForks = Runtime.getRuntime().availableProcessors()
+    maxParallelForks = Math.max((int)Math.sqrt(Runtime.getRuntime().availableProcessors() + 2) + 1, 2)
     //maxParallelForks = 1
+    minHeapSize = '512m'
+    maxHeapSize = '512m'
 
     include '**/*DUnitTest.class'
     include '**/*DUnit.class'
+    exclude '**/pivotal/gemfirexd/wan/**/*DUnit.class'
 
     workingDir = "${testResultsBase}/dunit"
 
@@ -387,8 +392,6 @@ subprojects {
       test.configure {
         onlyIf { ! Boolean.getBoolean('skip.tests') }
 
-        minHeapSize '768m'
-        maxHeapSize '768m'
         jvmArgs = ['-XX:+HeapDumpOnOutOfMemoryError', '-XX:MaxPermSize=128M', '-ea']
 
         testLogging.exceptionFormat = 'full'
@@ -397,10 +400,11 @@ subprojects {
           'gemfire.disallowMcastDefaults'  : 'true',
           'java.net.preferIPv4Stack'       : 'true',
           'jline.terminal'                 : 'scala.tools.jline.UnsupportedTerminal',
-          'gemfiretest.sourceDir'          : "${projectDir}/src/test/resources",
+          'store.test.resourceDir'         : "${projectDir}/src/test/resources",
           'GEMFIREXD'                      : productDir.getAbsolutePath()
 
-        environment 'GEMFIREXD': productDir.getAbsolutePath()
+        environment 'GEMFIREXD'            : productDir.getAbsolutePath(),
+                    'JUNIT_JAR'            : sourceSets.test.output.classesDir
 
         if (rootProject.name == 'snappy-store') {
           def eol = System.getProperty('line.separator')

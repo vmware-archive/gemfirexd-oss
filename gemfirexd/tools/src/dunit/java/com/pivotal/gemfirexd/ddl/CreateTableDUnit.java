@@ -278,7 +278,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
     PartitionAttributesFactory<?, ?> paf = new PartitionAttributesFactory()
         .setPartitionResolver(resolver);
     if(enableOffHeap) {
-      paf.setLocalMaxMemory(50);
+      paf.setLocalMaxMemory(500);
     }
     PartitionAttributes<? , ?> pa = paf.create();
     expectedAttrs.setPartitionAttributes(pa);
@@ -376,7 +376,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
    paf = new PartitionAttributesFactory()
     .setPartitionResolver(resolver_list);
    if(enableOffHeap) {
-     paf.setLocalMaxMemory(50);
+     paf.setLocalMaxMemory(500);
    }
 
     PartitionAttributes pa_list = paf.create();
@@ -461,7 +461,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
     .setRecoveryDelay(100).setPartitionResolver(
         new GfxdPartitionByExpressionResolver());
     if(enableOffHeap) {
-      pafact.setLocalMaxMemory(50);
+      pafact.setLocalMaxMemory(500);
     }
     partAttrs.setPartitionAttributes(pafact.create());
     partAttrs.setInitialCapacity(TestUtil.TEST_DEFAULT_INITIAL_CAPACITY);
@@ -1000,6 +1000,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
       final String table, final String xmlElement) throws CacheException {
     final String schemaName = schema.toUpperCase(Locale.ENGLISH);
     final String tableName = table.toUpperCase(Locale.ENGLISH);
+    final String resourceDir = TestUtil.getResourcesDir();
     SerializableRunnable checkSYS = new SerializableRunnable(
         "Clear cache and check tables") {
       @Override
@@ -1010,7 +1011,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
               + "tab.SERVERGROUPS FROM SYS.SYSSCHEMAS sc, SYS.SYSTABLES tab "
               + "WHERE sc.SCHEMANAME='" + schemaName
               + "' AND tab.TABLENAME='" + tableName
-              + "' AND sc.SCHEMAID = tab.SCHEMAID", TestUtil.getResourcesDir()
+              + "' AND sc.SCHEMAID = tab.SCHEMAID", resourceDir
               + "/lib/checkCreateTable.xml", xmlElement, true, false);
 
           // Test the fields from SYSSCHEMAS on client with non-index table scan
@@ -1018,7 +1019,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
               + "tab.SERVERGROUPS FROM SYS.SYSSCHEMAS sc, SYS.SYSTABLES tab "
               + "WHERE sc.SCHEMANAME LIKE '" + schemaName
               + "%' AND tab.TABLENAME LIKE '" + tableName
-              + "%' AND sc.SCHEMAID = tab.SCHEMAID", TestUtil.getResourcesDir()
+              + "%' AND sc.SCHEMAID = tab.SCHEMAID", resourceDir
               + "/lib/checkCreateTable.xml", xmlElement, true, false);
         } catch (Exception ex) {
           throw new CacheException(ex) {

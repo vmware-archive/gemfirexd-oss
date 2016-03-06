@@ -359,7 +359,7 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
     // no close message is sent rather only closed on client which maybe
     // detected by server after sometime during the read
     assertNumConnections(-2, -2, 2);
-    assertNumConnections(-1, -1, 1);
+    assertNumConnections(-1, -2, 1);
 
     sop(testName + " part1 ended");
 
@@ -381,7 +381,7 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
     assertNumConnections(-2, 0, 4);
     assertNumConnections(-2, -2, 2);
     // 1 control connection + 1 data connection + data connection closed
-    assertNumConnections(-2, -2, 1);
+    assertNumConnections(-3, -3, 1);
     assertNumConnections(-1, -1, 3);
 
     sop(testName + " part2 ended");

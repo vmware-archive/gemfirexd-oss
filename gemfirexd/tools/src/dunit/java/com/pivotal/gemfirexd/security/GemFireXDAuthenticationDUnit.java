@@ -66,7 +66,23 @@ public class GemFireXDAuthenticationDUnit extends DistributedSQLTestBase {
       origmonitorverbose = System.setProperty("gemfirexd.monitor.verbose", "true");
     }
   }
-  
+
+  @Override
+  public void beforeClass() throws Exception {
+    final LdapTestServer server = LdapTestServer.getInstance();
+    if (!server.isServerStarted()) {
+      server.startServer();
+    }
+  }
+
+  @Override
+  public void afterClass() throws Exception {
+    final LdapTestServer server = LdapTestServer.getInstance();
+    if (server.isServerStarted()) {
+      server.stopService();
+    }
+  }
+
   @Override
   public void tearDown2() throws Exception {
     if (getLogLevel().startsWith("fine")) {
@@ -662,7 +678,7 @@ public class GemFireXDAuthenticationDUnit extends DistributedSQLTestBase {
 
   /**
    */
-  public void testSchemaSharedBetweenUsersWithoutAuthorization() throws Exception {
+  public void DISABLED_GEMXD11_testSchemaSharedBetweenUsersWithoutAuthorization() throws Exception {
     Properties extraServerProps = new Properties();
 
     final AuthenticationSchemes scheme = AuthenticationSchemes.BUILTIN;

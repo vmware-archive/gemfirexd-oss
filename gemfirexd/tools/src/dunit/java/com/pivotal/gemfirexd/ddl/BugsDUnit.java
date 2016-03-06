@@ -155,8 +155,8 @@ public class BugsDUnit extends DistributedSQLTestBase {
     Properties props = new Properties();
     props.setProperty("log-level", "config");
     startVMs(1, 3, 0, null, props);
-    Connection conn = TestUtil.getConnection(props);   
-    Statement st = conn.createStatement();    
+    Connection conn = TestUtil.getConnection(props);
+    Statement st = conn.createStatement();
     st.execute("CREATE TABLE app.t1 (c1 int not null, c2 int not null) persistent asynchronous");
 
     PreparedStatement ps = conn.prepareStatement("insert into app.t1 values (?, ?)");
@@ -179,10 +179,10 @@ public class BugsDUnit extends DistributedSQLTestBase {
   }
 
   /**
-   * This test should fail as is due to non-colocated columns but does not. Keeping test as is till
-   * #51134 is open against this.
+   * This test should fail as is due to non-colocated columns but does not.
+   * Keeping test as is till #51134 is open against this.
    */
-  public void DISABLED_BUG_51746_testBug51039() throws Throwable {
+  public void testBug51039_51746() throws Throwable {
     reduceLogLevelForTest("config");
 
     final Properties bprops = new Properties();
@@ -532,7 +532,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
           new Object[] { Integer.valueOf(0) });
     }
   }
-  
+
   public void testBug48343() throws Exception {
     startVMs(1, 2);
     Connection conn = TestUtil.getConnection();
@@ -559,7 +559,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
     assertEquals(1, rs.getInt(1));
     assertFalse(rs.next());
   }
-  
+
   public void testBug48335() throws Exception {
     reduceLogLevelForTest("config");
 
@@ -889,7 +889,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
       }
     }
   }
-  
+
   public void testInsertFailoverbug_47407() throws Exception {
     // System.setProperty("gemfirexd.client.traceLevel", "");
     // System.setProperty("gemfirexd.client.traceDirectory",
@@ -953,7 +953,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
       vm3.invoke(BugsDUnit.class, "unssetCacheCloser");
     }
   }
- 
+
   public void testBug47148() throws Exception {
     Properties p = new Properties();
     // start a network server
@@ -990,11 +990,11 @@ public class BugsDUnit extends DistributedSQLTestBase {
       stopNetworkServer(1);
     }
   }
- 
+
   /**
    * There is also a junit for #46584
    * Because client driver and embedded driver
-   * might behave differently for the same 
+   * might behave differently for the same
    * user input string (varchar/char)
    */
   public void testBug46584() throws Exception {
@@ -1027,7 +1027,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
     rs = st.getResultSet();
     assertTrue(rs.next());
     assertEquals(3, rs.getInt(1));
-    
+
     st.execute("insert into trade.securities values (2, 'EMC ', 'nye')");
     st.execute("select length(symbol) from trade.securities_vw where symbol = 'EMC'");
     rs = st.getResultSet();
@@ -1291,7 +1291,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
               + ", dupsExpected assertion through with count: " + count);
     }
   }
-  
+
   public void testBug43115() throws Exception {
     startVMs(1, 2);
     Connection conn = TestUtil.getConnection();
@@ -1332,7 +1332,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
   }
 
   /*
-   * Move this test to GfxdJarInstallationDUnit 
+   * Move this test to GfxdJarInstallationDUnit
    * once the locator can be stopped within this test;
    * Locators in two tests in the same DUnit may have
    * issues showing up in error.grep even DUnit passes
@@ -1358,14 +1358,14 @@ public class BugsDUnit extends DistributedSQLTestBase {
         + ']');
     startVMs(0, 1, 0, null, serverProps);
     startNetworkServer(1, null, null);
-    
+
     Connection conn = TestUtil.getNetConnection(locatorBindAddress,  netPort,  null, new Properties());
-    
+
     Statement st = conn.createStatement();
-    
+
     String sql = null;
     CallableStatement mergeCS = null;
-    
+
     // try with both procedures and "gfxd install-jar/replace-jar" tool
 
     JarTools.main(new String[] { "install-jar", "-file=" + myjar,
@@ -1677,7 +1677,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
       ps_insert_gfxd.setInt(3, 1 * 3 * 100);
       ps_insert_gfxd.setNull(4, java.sql.Types.VARCHAR);
       ps_insert_gfxd.executeUpdate();
-      
+
       ps_insert_derby.setInt(1, 11);
       ps_insert_derby.setInt(2, 3);
       ps_insert_derby.setInt(3, 1 * 3 * 100);
@@ -1689,7 +1689,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
       ps_insert_gfxd.setInt(3, 1 * 3 * 100);
       ps_insert_gfxd.setString(4, "buy");
       ps_insert_gfxd.executeUpdate();
-      
+
       ps_insert_derby.setInt(1, 11);
       ps_insert_derby.setInt(2, 3);
       ps_insert_derby.setInt(3, 1 * 3 * 100);
@@ -1701,7 +1701,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
       ps_insert_gfxd.setInt(3, 1 * 3 * 100);
       ps_insert_gfxd.setString(4, "buy");
       ps_insert_gfxd.executeUpdate();
-      
+
 
       ps_insert_derby.setInt(1, 22);
       ps_insert_derby.setInt(2, 3);
@@ -1838,7 +1838,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
       derbyStmt1 = derbyConn.createStatement();
       derbyStmt1.execute(table);
       derbyStmt1.execute(index);
-     
+
       conn = TestUtil.getConnection();
 
       // Creating a statement object that we can use for running various
@@ -1875,7 +1875,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
       ps_insert_gfxd.setInt(3, 1 * 3 * 100);
       ps_insert_gfxd.setString(4, "sell");
       ps_insert_gfxd.executeUpdate();
-      
+
       ps_insert_derby.setInt(1, 11);
       ps_insert_derby.setInt(2, 3);
       ps_insert_derby.setInt(3, 1 * 3 * 100);
@@ -1887,7 +1887,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
       ps_insert_gfxd.setInt(3, 1 * 3 * 100);
       ps_insert_gfxd.setString(4, "buy");
       ps_insert_gfxd.executeUpdate();
-      
+
       ps_insert_derby.setInt(1, 11);
       ps_insert_derby.setInt(2, 3);
       ps_insert_derby.setInt(3, 1 * 3 * 100);
@@ -1899,7 +1899,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
       ps_insert_gfxd.setInt(3, 1 * 3 * 100);
       ps_insert_gfxd.setString(4, "buy");
       ps_insert_gfxd.executeUpdate();
-      
+
 
       ps_insert_derby.setInt(1, 22);
       ps_insert_derby.setInt(2, 3);
@@ -1953,7 +1953,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
           try {
 
             Connection gfxdConn = TestUtil.getConnection();
-           
+
 
             PreparedStatement derbyStmt = derbyConn.prepareStatement(query);
 
@@ -1973,7 +1973,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
 
             TestUtil.validateResults(derbyStmt, stmt, query, false);
             SerializableRunnable csr = new SerializableRunnable("set observer") {
-              
+
               @Override
               public void run() {
                 GemFireXDQueryObserver old = GemFireXDQueryObserverHolder
@@ -1990,12 +1990,12 @@ public class BugsDUnit extends DistributedSQLTestBase {
                         return 1;
                       }
 
-                    });                
+                    });
               }
             };
-            
+
             serverExecute(4, csr);
-            
+
             String query2 = "select cid, sum(qty) as amount from txhistory  where sid = ?  GROUP BY cid, type ORDER BY amount";
             stmt = gfxdConn.prepareStatement(query2);
             derbyStmt = derbyConn.prepareStatement(query2);
@@ -2029,8 +2029,8 @@ public class BugsDUnit extends DistributedSQLTestBase {
       }
     }
   }
-  
-  
+
+
   public void testBug46803_1() throws Exception {
     startVMs(1, 4);
     PreparedStatement psInsert1, psInsert4 = null;
@@ -2378,7 +2378,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
       GemFireXDQueryObserverHolder.setInstance(new GemFireXDQueryObserverAdapter());
     }
   }
-  
+
   public void testBug46803_4() throws Exception {
 
     startVMs(1, 4);
@@ -2504,7 +2504,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
     }
   }
 
-  
+
   public void testBug46803_5() throws Exception {
 
     startClientVMs(1,0, null);
@@ -2552,7 +2552,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
         assertEquals(1, psInsert4.executeUpdate());
       }
 
-      
+
       s.execute("create table buyorders(oid int not null"
           + " constraint buyorders_pk primary key,"
           + " sid int,  tid int, sec_id2 int,"
@@ -2575,7 +2575,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
       int n = s.executeUpdate("update securities set sec_id = sec_id * sec_id , sec_id2 = sec_id2*4 ");
       // No violation expected.
       assertEquals(2, n);
-  
+
     } finally {
       // Statements and PreparedStatements
       int i = 0;
@@ -2933,8 +2933,8 @@ public class BugsDUnit extends DistributedSQLTestBase {
     }
 
   }
-  
-  
+
+
   public void testBug47289_1() throws Exception {
 
     // Start two server VMs
@@ -2952,7 +2952,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
     try {
       conn = TestUtil.getConnection();
       st = conn.createStatement();
-     
+
       st.execute("create table trade.securities (sec_id int not null, symbol varchar(10) not null,"
           + " exchange varchar(10) not null, tid int, constraint sec_pk primary key (sec_id), "
           + "constraint sec_uq unique (symbol, exchange),"
@@ -2969,7 +2969,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
         psSec.setInt(4, 50);
         psSec.executeUpdate();
       }
-      
+
       st.execute("create table trade.companies (symbol varchar(10) not null, exchange varchar(10) not null, "
           + "companytype int, tid int, constraint comp_pk primary key (symbol, exchange)) replicate");
       PreparedStatement psComp = conn
@@ -2990,8 +2990,8 @@ public class BugsDUnit extends DistributedSQLTestBase {
       assertTrue(k >= 1);
       st.execute("alter table trade.companies add constraint comp_fk foreign key (symbol, exchange) "
           + "references trade.securities (symbol, exchange) on delete restrict");
-        
-    
+
+
     } finally {
       TestUtil.shutDown();
     }
@@ -3014,7 +3014,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
               + " exchange varchar(10) not null,tid int, constraint sec_pk primary key (sec_id), "
               + "constraint sec_uq unique (symbol, exchange)) "
               + "  partition by column(tid) redundancy 1");
-    
+
           PreparedStatement ps = conn.prepareStatement("insert into securities values (?,?,?,?)");
           for(int i =1 ; i < 22; ++i) {
             ps.setInt(1, i);
@@ -3023,9 +3023,9 @@ public class BugsDUnit extends DistributedSQLTestBase {
             ps.setInt(4, i);
             ps.executeUpdate();
           }
-          
+
           startServerVMs(2, -1, null);
-          
+
           //wait for gii
           Thread.sleep(5000);
           dataStore1 = serverVMs.get(0);
@@ -3048,23 +3048,21 @@ public class BugsDUnit extends DistributedSQLTestBase {
           s.executeUpdate("update securities set symbol = 'symbol20', exchange = 'fse' where sec_id= 20 and tid = 20");
           s.executeUpdate("delete from securities where sec_id = 20");
         } finally {
-          if(dataStore1 != null) {
+          if (dataStore1 != null) {
             dataStore1.invoke(new SerializableRunnable("reset") {
               public void run() {
-                GemFireXDQueryObserverHolder.clearInstance();   
+                GemFireXDQueryObserverHolder.clearInstance();
                 try {
-                  TestUtil.getConnection();
-                } catch (SQLException ignore) {
+                  _startNewServer(BugsDUnit.class.getName(),
+                      BugsDUnit.this.getName(), -1, null, null, false);
+                } catch (Exception ignore) {
                   ignore.printStackTrace();
                 }
-              };              
+              }
             });
-           
-            
           }
           TestUtil.shutDown();
         }
-           
   }
 
   public void testBug47289_2() throws Exception {
@@ -3134,8 +3132,8 @@ public class BugsDUnit extends DistributedSQLTestBase {
     }
 
   }
-  
-  
+
+
   public void testBug47289_3() throws Exception {
 
     // Start two server VMs
@@ -3153,7 +3151,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
     try {
       conn = TestUtil.getConnection();
       st = conn.createStatement();
-     
+
       st.execute("create table trade.securities (sec_id int not null, symbol varchar(10) not null,"
           + " exchange varchar(10) not null, tid int, constraint sec_pk primary key (sec_id), "
           + "constraint sec_uq unique (symbol, exchange, tid),"
@@ -3170,7 +3168,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
         psSec.setInt(4, i);
         psSec.executeUpdate();
       }
-      
+
       st.execute("create table trade.companies (symbol varchar(10) not null, exchange varchar(10) not null, "
           + "companytype int, tid int, constraint comp_pk primary key (symbol, exchange)) replicate");
       PreparedStatement psComp = conn
@@ -3192,14 +3190,14 @@ public class BugsDUnit extends DistributedSQLTestBase {
       assertTrue(k >= 1);
       st.execute("alter table trade.companies add constraint comp_fk foreign key (symbol, exchange, tid) "
           + "references trade.securities (symbol, exchange, tid) on delete restrict");
-        
-    
+
+
     } finally {
       TestUtil.shutDown();
     }
 
   }
-  
+
   public void testBug47289_47611_4() throws Exception {
 
     // Start some server VMs
@@ -3217,7 +3215,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
     try {
       conn = TestUtil.getConnection();
       st = conn.createStatement();
-     
+
       st.execute("create table trade.securities (sec_id int not null, symbol varchar(10) not null,"
           + " exchange varchar(10) not null, tid int, constraint sec_pk primary key (sec_id), "
           + "constraint sec_uq unique (symbol, exchange, tid),"
@@ -3234,7 +3232,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
         psSec.setInt(4, i);
         psSec.executeUpdate();
       }
-      
+
       st.execute("create table trade.companies (symbol varchar(10) not null, exchange varchar(10) not null, "
           + "companytype int, tid int, constraint comp_pk primary key (symbol, exchange)) replicate");
       PreparedStatement psComp = conn
@@ -3256,25 +3254,25 @@ public class BugsDUnit extends DistributedSQLTestBase {
       assertTrue(k >= 1);
       st.execute("alter table trade.companies add constraint comp_fk foreign key (symbol, exchange, tid) "
           + "references trade.securities (symbol, exchange, tid) on delete restrict");
-        
-    
+
+
     } finally {
       TestUtil.shutDown();
     }
   }
-  
-  // #48263: when batch update statement is re-prepared values 
+
+  // #48263: when batch update statement is re-prepared values
   // accumulated till the re-prepare time for putAll are lost
   public void testBug48263() throws Exception {
     startVMs(1, 2);
     Connection conn = TestUtil.getConnection();
     Statement st = conn.createStatement();
-    
+
     st.execute("create table t1 (col1 int, col2 int, col3 int, constraint "
         + "pk1 primary key (col1))");
-    
+
     st.execute("insert into t1 values (1, 1, 1), (2, 2, 2)");
-    
+
     // to forcefully re-prepare the update statement
     SerializableRunnable csr = new SerializableRunnable("_48263_") {
       @Override
@@ -3289,21 +3287,21 @@ public class BugsDUnit extends DistributedSQLTestBase {
             });
       }
     };
-    
+
     clientExecute(1, csr);
 //    serverExecute(1, csr);
 //    serverExecute(2, csr);
-    
+
     PreparedStatement ps1 = conn.prepareStatement("update t1 set col2 = ? "
         + "where col1 = ?");
-    
+
     for (int i = 1; i <= 2; i++) {
       ps1.setInt(1, 10);
       ps1.setInt(2, i);
       ps1.addBatch();
     }
     ps1.executeBatch();
-    
+
     // verify the contents of table
     ResultSet rs = st.executeQuery("select col1, col2 from t1 order by col1");
     assertTrue(rs.next());
@@ -3333,7 +3331,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
     clientSQLExecute(3, "insert into scott.t1 values(1)");
     sqlExecuteVerify(new int[] { 3 }, null, "select * from t1", null, "1");
   }
-  
+
   public void testBug48232_2() throws Exception {
     // also test whether set current schema causes any issue on
     // restart
@@ -3360,9 +3358,9 @@ public class BugsDUnit extends DistributedSQLTestBase {
     serverSQLExecute(1, "insert into s2.t2 values(1)");
     sqlExecuteVerify(null, new int[] { 1 }, "select * from s1.t1", null, "1");
     sqlExecuteVerify(null, new int[] { 1 }, "select * from s2.t2", null, "1");
-    
+
   }
-  
+
   public void testTSMCImportFailureBug() throws Exception {
     startVMs(1, 2);
     try {
@@ -3432,28 +3430,28 @@ public class BugsDUnit extends DistributedSQLTestBase {
     props.clear();
     props.setProperty("locators", "localhost[" + locPort + ']');
     startVMs(1, 3, 0, null, props);
-    
+
   Connection conn = TestUtil.getConnection();
     Statement st = conn.createStatement();
-    
+
     st.execute("CREATE TABLE APP.TEST1( ID varchar(20), " +
     		"COL1 int, COL2 int, COL3 int, COL4 int, " +
     		"PRIMARY KEY (ID, COL1)) PARTITION BY " +
     		"PRIMARY KEY REDUNDANCY 1 PERSISTENT ASYNCHRONOUS");
-    
+
     st.execute("insert into APP.test1 values ('3', 3, 1, 1, 1)");
-    
+
     conn.setAutoCommit(false);
-    
+
     PreparedStatement stmt = conn.prepareStatement("UPDATE APP.TEST1 " +
     		"SET COL2 = ? WHERE ID = ? AND COL1 = ?");
-    
+
     for(int i=0; i < 1; i++)
     {
       stmt.setInt(1, 9);
       stmt.setString(2, "3");
       stmt.setInt(3, 3);
-      
+
       stmt.addBatch();
       if( ((i+1) % 10) == 0)
       {
@@ -3647,7 +3645,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
         + " pvt from TRADE.COMPANIES where tid >= 105 and tid < 110");
     BugsTest.checkLobs(rs, clobChars, blobBytes);
   }
-  
+
   public void testBug47943() throws Exception {
     startVMs(1, 4);
 
@@ -3682,13 +3680,13 @@ public class BugsDUnit extends DistributedSQLTestBase {
 
           psInsert.setString(3, securities[i % 9]);
           psInsert2.setString(3, securities[i % 9]);
-          
+
           psInsert.setString(4, securities[(2 * i) % 9]);
           psInsert2.setString(4, securities[(2 * i) % 9]);
 
           psInsert.setInt(5, i * 4);
           psInsert2.setInt(5, i * 4);
-          
+
           psInsert.setInt(6, i % 10);
           psInsert2.setInt(6, i % 10);
 
@@ -3711,7 +3709,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
           r.close();
         }
       }
-      
+
       {
         String query = "SELECT * FROM trade.customerrep order by c_first offset 3 row fetch first row only";
         PreparedStatement st1 = conn.prepareStatement(query);
@@ -3741,7 +3739,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
           r.close();
         }
       }
-      
+
       {
         String query = "SELECT * FROM trade.customerrep order by c_first offset 3 row fetch next 4 row only";
         PreparedStatement st1 = conn.prepareStatement(query);
@@ -4032,12 +4030,12 @@ public class BugsDUnit extends DistributedSQLTestBase {
   }
 
   public void testIdentityColumns() throws Throwable {
-    
-    // Bug #51832. 
+
+    // Bug #51832.
     if (isTransactional) {
       return;
     }
-    
+
     reduceLogLevelForTest("config");
 
     Properties props = new Properties();
@@ -4340,8 +4338,8 @@ public class BugsDUnit extends DistributedSQLTestBase {
     assertEquals(3, rs.getInt(2));
     assertFalse(rs.next());
   }
-  
-  
+
+
   public void test48808() throws Exception {
     reduceLogLevelForTest("config");
     startVMs(1, 3);
@@ -4399,14 +4397,14 @@ public class BugsDUnit extends DistributedSQLTestBase {
     ResultSet rs = stmt.executeQuery("select * from trade.companies");
     JDBC.assertEmpty(rs);
   }
-  
+
 
   public void test47662() throws Exception {
     //reduceLogLevelForTest("config");
     startVMs(0, 2);
     int netPort = startNetworkServer(1, null, null);
     startNetworkServer(2, null, null);
-    
+
     // Use this VM as the network client
     TestUtil.loadNetDriver();
     TestUtil.deletePersistentFiles = true;
@@ -4416,13 +4414,13 @@ public class BugsDUnit extends DistributedSQLTestBase {
     final InetAddress localHost = SocketCreator.getLocalHost();
     String url = TestUtil.getNetProtocol(localHost.getHostName(), netPort);
     conn = DriverManager.getConnection(url, connProps);
-    
+
     Statement stmt = conn.createStatement();
-    
+
     stmt.execute("create table trade.txhistory (cid int, sid int, tid int)  "
         + "partition by range (cid) ( VALUES BETWEEN 0 AND 699, VALUES BETWEEN 699 AND 1102, VALUES BETWEEN 1102 AND 1251, VALUES BETWEEN 1251 AND 1577, VALUES BETWEEN 1577 AND 1800, VALUES BETWEEN 1800 AND 100000)  "
         + "REDUNDANCY 1");
-    
+
     PreparedStatement ps = conn.prepareStatement("insert into trade.txhistory values (?,?,?)");
     for(int i = 0; i < 10; i++) {
       ps.setInt(1, i);
@@ -4434,19 +4432,19 @@ public class BugsDUnit extends DistributedSQLTestBase {
 
     ps.close();
     conn.close();
-    
+
     stopVMNums(-1);
     restartVMNums(-1);
     netPort = startNetworkServer(1, null, null);
-    
+
     stopVMNums(-2);
     restartVMNums(-2);
     startNetworkServer(2, null, null);
-    
+
     url = TestUtil.getNetProtocol(localHost.getHostName(), netPort);
     conn = DriverManager.getConnection(url, connProps);
     ps = conn.prepareStatement("insert into trade.txhistory values (?,?,?)");
-    
+
     for(int i = 0; i < 10; i++) {
       ps.setInt(1, i);
       ps.setInt(2, i);
@@ -4455,20 +4453,20 @@ public class BugsDUnit extends DistributedSQLTestBase {
       assertEquals(1, effected);
     }
   }
-  
+
   /**
-   *    * Test for verification of transaction is still active exception 
+   *    * Test for verification of transaction is still active exception
    *       * when the statement is prepared but not executed and connection is closed.
-   *          * 
+   *          *
    *             * @throws Exception
    *                */
    public void testBug49621() throws Exception {
-    
-     startVMs(0, 1); 
- 
+
+     startVMs(0, 1);
+
     // Start a network server
     final int netPort = startNetworkServer(1, null, null);
-    
+
     // Use this VM as the network client
     final Connection conn = TestUtil.getNetConnection(netPort, null, null);
 
@@ -4489,7 +4487,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
     stmt.close();
     conn.close();
    }
-   
+
   public void testBug51249() throws Exception {
     final Properties authProp = new Properties();
     authProp.setProperty(Property.GFXD_AUTH_PROVIDER,
@@ -4539,9 +4537,7 @@ public class BugsDUnit extends DistributedSQLTestBase {
     final Connection conn = TestUtil.getNetConnection(netPort1, null, props);
 
     // Create a table
-    final Statement ddlPlay = conn.createStatement();
-
-    final String basePath = System.getProperty("EXTRA_JTESTS")
+    final String basePath = TestUtil.getResourcesDir()
         + "/lib/useCase11/51249/";
     final String ddls = basePath + "/ddl";
 
@@ -4581,17 +4577,17 @@ public class BugsDUnit extends DistributedSQLTestBase {
     } finally {
       MiscTools.outputStream = null;
     }
-    
+
     GemFireXDUtils.executeSQLScripts(conn, new String[] {basePath + "/queries/queryOk_1.sql"}, false, getLogWriter(),
         null, null, true);
     GemFireXDUtils.executeSQLScripts(conn, new String[] {basePath + "/queries/queryOk_2.sql"}, false, getLogWriter(),
         null, null, true);
     GemFireXDUtils.executeSQLScripts(conn, new String[] {basePath + "/queries/queryOk_3.sql"}, false, getLogWriter(),
         null, null, true);
-    
+
     GemFireXDUtils.executeSQLScripts(conn, new String[] {basePath + "/queries/queryFail.sql"}, false, getLogWriter(),
         null, null, true);
-    
+
   }
 
   public void testTMG_GEMXD_1() throws Exception {

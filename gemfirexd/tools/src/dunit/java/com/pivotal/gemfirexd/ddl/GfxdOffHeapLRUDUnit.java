@@ -242,6 +242,6 @@ public class GfxdOffHeapLRUDUnit extends DistributedSQLTestBase {
     OffHeapMemoryMonitor ohmm = Misc.getGemFireCache().getResourceManager().getOffHeapMonitor();
     ohmm.stopMonitoring();
 
-    ohmm.updateStateAndSendEvent(120795955);
+    ohmm.updateStateAndSendEvent(471859199);
   }
 }

@@ -63,7 +63,6 @@ import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
 import com.pivotal.gemfirexd.internal.engine.access.GemFireTransaction;
 import com.pivotal.gemfirexd.internal.engine.distributed.utils.GemFireXDUtils;
 import com.pivotal.gemfirexd.internal.engine.jdbc.GemFireXDRuntimeException;
-import com.pivotal.gemfirexd.internal.engine.store.GemFireStore;
 import com.pivotal.gemfirexd.internal.iapi.store.access.TransactionController;
 // GemStone changes END
 import com.pivotal.gemfirexd.internal.iapi.db.Database;
@@ -318,21 +317,6 @@ public final class TransactionResourceImpl
                     this.ncjCacheSize = 0;
                   }
                 }
-	}
-
-	private boolean isSnappyStore(String url) {
-		try {
-			GemFireStore store = GemFireStore.getBootingInstance();
-			if (store != null) {
-				return store.isSnappyStore();
-			}
-		} catch (Exception ex) {
-			// probably memstore might not have booted. Check from the URL
-			if (url != null && url.contains("snappydata")) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	private final boolean getPropertyValue(String propName,
@@ -746,10 +730,13 @@ public final class TransactionResourceImpl
 		    && thrownException.getCause() != null) {
 		  thrownException = thrownException.getCause();
 		}
-		if (thrownException.getCause() != null &&
-		    (thrownException.getCause() instanceof SQLException ||
-		     thrownException.getCause() instanceof StandardException)) {
-		  thrownException = thrownException.getCause();
+		Throwable cause = thrownException.getCause();
+		if (cause != null &&
+		    ((cause instanceof SQLException) &&
+		    ((SQLException)cause).getSQLState() != null) ||
+		    ((cause instanceof StandardException) &&
+		    ((StandardException)cause).getSQLState() != null)) {
+		  thrownException = cause;
 		}
 		DerbyIOException dioe;
 		if (thrownException instanceof DerbyIOException && (dioe =

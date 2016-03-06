@@ -32,6 +32,7 @@ import com.gemstone.gemfire.cache.PartitionAttributesFactory;
 import com.gemstone.gemfire.distributed.DistributedMember;
 import com.gemstone.gemfire.internal.SocketCreator;
 import com.gemstone.gemfire.internal.cache.xmlcache.RegionAttributesCreation;
+import com.gemstone.gemfire.internal.util.ArrayUtils;
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.internal.engine.ddl.resolver.GfxdPartitionByExpressionResolver;
@@ -43,7 +44,6 @@ import io.snappydata.test.dunit.RMIException;
 import io.snappydata.test.dunit.SerializableCallable;
 import io.snappydata.test.dunit.SerializableRunnable;
 import io.snappydata.test.dunit.VM;
-import junit.framework.Assert;
 import junit.framework.AssertionFailedError;
 import org.apache.log4j.Logger;
 
@@ -221,7 +221,7 @@ public class GfxdDiagsDUnit extends DistributedSQLTestBase {
         String currType;
         String currRoles;
         String currSgs;
-        String currLocators;
+        OrObject currLocators;
         for (int num = 1; num <= 2; ++num) {
           assertTrue("num=" + num, rs.next());
 
@@ -232,7 +232,7 @@ public class GfxdDiagsDUnit extends DistributedSQLTestBase {
             currType = "false";
             currRoles = "";
             currSgs = "";
-            currLocators = getLocatorStr();
+            currLocators = getLocatorObj();
           }
           else {
             if (isServer) {
@@ -253,8 +253,8 @@ public class GfxdDiagsDUnit extends DistributedSQLTestBase {
           assertEquals(currRoles, rs.getObject("ROLES"));
           assertEquals(currSgs, rs.getString("SERVERGROUPS"));
           assertEquals(currSgs, rs.getObject("SERVERGROUPS"));
-          assertEquals(currLocators, rs.getString("LOCATOR"));
-          assertEquals(currLocators, rs.getObject("LOCATOR"));
+          assertEquals(currLocators, OrObject.create(rs.getString("LOCATOR")));
+          assertEquals(currLocators, OrObject.create(rs.getObject("LOCATOR")));
 
           // just log other fields since no fixed value is known
           final Logger logger = getGlobalLogger();
@@ -368,7 +368,7 @@ public class GfxdDiagsDUnit extends DistributedSQLTestBase {
     // last hydra's GemFireXD locator
     assertTrue("expected 4 results but failed on " + (++numResults), rs.next());
     assertEquals("locator(normal)", rs.getString(1));
-    assertEquals(getLocatorStr(), rs.getString(2));
+    assertEquals(getLocatorObj(), OrObject.create(rs.getString(2)));
     assertEquals("", rs.getString(3));
     // close the result set and connection
     assertFalse("expected 4 results but got more", rs.next());
@@ -1119,7 +1119,7 @@ public class GfxdDiagsDUnit extends DistributedSQLTestBase {
     String currType;
     String currRoles;
     String currSgs;
-    String currLocators;
+    OrObject currLocators;
     for (int num = 1; num <= 2; ++num) {
       assertTrue("num=" + num, rs.next());
 
@@ -1130,7 +1130,7 @@ public class GfxdDiagsDUnit extends DistributedSQLTestBase {
         currType = "false";
         currRoles = "";
         currSgs = "";
-        currLocators = getLocatorStr();
+        currLocators = getLocatorObj();
       }
       else {
         if (isServer) {
@@ -1151,8 +1151,8 @@ public class GfxdDiagsDUnit extends DistributedSQLTestBase {
       assertEquals(currRoles, rs.getObject("ROLES"));
       assertEquals(currSgs, rs.getString("SERVERGROUPS"));
       assertEquals(currSgs, rs.getObject("SERVERGROUPS"));
-      assertEquals(currLocators, rs.getString("LOCATOR"));
-      assertEquals(currLocators, rs.getObject("LOCATOR"));
+      assertEquals(currLocators, OrObject.create(rs.getString("LOCATOR")));
+      assertEquals(currLocators, OrObject.create(rs.getObject("LOCATOR")));
 
       // just log other fields since no fixed value is known
       getLogWriter().info("Got ID as " + rs.getString("ID"));
@@ -1204,9 +1204,10 @@ public class GfxdDiagsDUnit extends DistributedSQLTestBase {
     assertFalse(rs.next());
   }
 
-  private static String getLocatorStr() {
+  private static OrObject getLocatorObj() {
     // extract port separately
-    return getDUnitLocatorString();
+    return OrObject.create(getDUnitLocatorString(),
+        "127.0.0.1[" + getDUnitLocatorPort() + ']');
   }
 
   private void checkMembersResultForServerGroups(boolean project,
@@ -1248,7 +1249,7 @@ public class GfxdDiagsDUnit extends DistributedSQLTestBase {
         currServerGroups = clientSGs;
       }
       else {
-        Assert.fail("unexpected HOSTDATA: " + currType);
+        fail("unexpected HOSTDATA: " + currType);
       }
       assertEquals(currKind, rs.getObject("KIND"));
       assertEquals(currKind, rs.getString("KIND"));
@@ -1310,5 +1311,49 @@ public class GfxdDiagsDUnit extends DistributedSQLTestBase {
     }
     assertTrue(numServers == 0 && numClients == 0 && numAdmins == 0);
     assertFalse(rs.next());
+  }
+
+  public static final class OrObject {
+    public final Object o1, o2;
+
+    private OrObject(Object o1, Object o2) {
+      this.o1 = o1;
+      this.o2 = o2;
+    }
+
+    public static OrObject create(Object o1) {
+      return o1 != null ? new OrObject(o1, null) : null;
+    }
+
+    public static OrObject create(Object o1, Object o2) {
+      return o1 != null ? new OrObject(o1, o2) : null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (o instanceof OrObject) {
+        OrObject obj = this;
+        OrObject other = (OrObject)o;
+        if (other.o2 == null) {
+          obj = other;
+          other = this;
+        }
+        if (obj.o2 == null) {
+          return ArrayUtils.objectEquals(obj.o1, other.o1) ||
+              ArrayUtils.objectEquals(obj.o1, other.o2);
+        } else {
+          return ArrayUtils.objectEquals(obj.o1, other.o1) ||
+              ArrayUtils.objectEquals(obj.o2, other.o2);
+        }
+      } else {
+        return false;
+      }
+    }
+
+    @Override
+    public String toString() {
+      return o2 == null ? String.valueOf(o1)
+          : String.valueOf(o1) + ',' + String.valueOf(o2);
+    }
   }
 }

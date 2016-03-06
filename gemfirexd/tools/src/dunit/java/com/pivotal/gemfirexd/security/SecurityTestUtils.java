@@ -47,9 +47,9 @@ import com.pivotal.gemfirexd.internal.iapi.services.monitor.Monitor;
 import com.pivotal.gemfirexd.internal.impl.jdbc.authentication.AuthenticationServiceBase;
 import com.pivotal.gemfirexd.internal.shared.common.SharedUtils;
 import com.pivotal.gemfirexd.internal.shared.common.sanity.SanityManager;
+import io.snappydata.test.dunit.AvailablePortHelper;
 import io.snappydata.test.dunit.SerializableRunnable;
 import io.snappydata.test.dunit.standalone.DUnitBB;
-import io.snappydata.test.dunit.standalone.DUnitLauncher;
 
 /**
  * 
@@ -265,30 +265,12 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
         Properties props = new Properties();
         setCommonProperties(props, withAuthorization, readOnlyDistUser);
 
-        props.setProperty(Property.GFXD_AUTH_PROVIDER,
-            com.pivotal.gemfirexd.Constants.AUTHENTICATION_PROVIDER_LDAP);
-
-        // from build.xml
-        String ldapServer = System.getProperty("gf.ldap.server");
-        String ldapBaseDN = System.getProperty("gf.ldap.basedn");
-        String ldapUseSSL = System.getProperty("gf.ldap.usessl");
-
-        // ldapsearch -h ldap.gemstone.com -p 389 -b ou=ldapTesting,dc=pune,dc=gemstone,dc=com -D uid=gemfire1,ou=ldapTesting,dc=pune,dc=gemstone,dc=com -w gemfire1
-        props.setProperty("gemfirexd.auth-ldap-search-base",
-            ldapBaseDN); // ou=ldapTesting,dc=pune,dc=gemstone,dc=com
-
-        if (Boolean.parseBoolean(ldapUseSSL)) {
-          assertTrue("we will prefix 'ldaps:' to gf.ldap.server property ",
-              !ldapServer.startsWith("ldap:"));
-
-          if (ldapServer.startsWith("//")) {
-            ldapServer = "ldaps:" + ldapServer;
-          }
-          else {
-            ldapServer = "ldaps://" + ldapServer;
-          }
+        try {
+          setLdapServerBootProperties(LdapTestServer.getInstance(), -1, -1,
+              sysUser, props);
+        } catch (Exception e) {
+          fail("failed to get LDAP server instance", e);
         }
-        props.setProperty(com.pivotal.gemfirexd.Property.AUTH_LDAP_SERVER, ldapServer); // =ldap
 
         if (setExplicitPeerAuth) {
           props.setProperty(Property.GFXD_SERVER_AUTH_PROVIDER,
@@ -451,6 +433,8 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
           .toString(true));
 
       props.setProperty(DistributionConfig.GEMFIRE_PREFIX
+          + DistributionConfig.LOG_LEVEL_NAME, "finest");
+      props.setProperty(DistributionConfig.GEMFIRE_PREFIX
           + DistributionConfig.SECURITY_LOG_LEVEL_NAME, "finest");
 
       props.setProperty(Monitor.DEBUG_TRUE, GfxdConstants.TRACE_AUTHENTICATION
@@ -506,7 +490,9 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
     }
 
     public String getLocatorString() {
-      return DUnitLauncher.getLocatorString();
+      String available_port = String.valueOf(AvailablePortHelper
+          .getRandomAvailableTCPPort());
+      return "localhost[" + available_port + "]";
     }
   }
 
@@ -1265,17 +1251,23 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
     if (!server.isServerStarted()) {
       server.startServer();
     }
-
-    int serverPort = server.getServerPort();
     Properties bootProps = new Properties();
+    setLdapServerBootProperties(server, locatorPort, mcastPort,
+        sysUser, bootProps);
+    return bootProps;
+  }
+
+  public static void setLdapServerBootProperties(LdapTestServer server,
+      int locatorPort, int mcastPort, String sysUser, Properties bootProps) {
+    int serverPort = server.getServerPort();
     if (locatorPort > 0) {
       bootProps.setProperty(DistributionConfig.LOCATORS_NAME,
           "localhost[" + locatorPort + ']');
-    } else {
+    } else if (mcastPort > 0) {
       bootProps.setProperty(DistributionConfig.MCAST_PORT_NAME,
           Integer.toString(mcastPort));
     }
-    bootProps.setProperty(DistributionConfig.SECURITY_LOG_LEVEL_NAME, "fine");
+    bootProps.setProperty(DistributionConfig.SECURITY_LOG_LEVEL_NAME, "finest");
     bootProps.setProperty(Monitor.DEBUG_TRUE,
         GfxdConstants.TRACE_AUTHENTICATION + ","
             + GfxdConstants.TRACE_SYS_PROCEDURES + ","
@@ -1291,8 +1283,6 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
     bootProps.setProperty(com.pivotal.gemfirexd.Property.AUTH_LDAP_SERVER,
         "ldap://localhost:" + serverPort);
     setUserProps(sysUser, bootProps);
-
-    return bootProps;
   }
 
   public static void setUserProps(String user, Properties props) {

@@ -120,12 +120,12 @@ public class GfxdJarInstallationTest extends JdbcTestBase {
       count++;
     }
     assertEquals(1, count);
-    
+
     Properties props = new Properties();
     Connection connClient = startNetserverAndGetLocalNetConnection(props);
-    
-    CallableStatement stmt_client = conn
-    .prepareCall("{CALL LIST_BOOKS(?)}");
+
+    CallableStatement stmt_client = connClient
+        .prepareCall("{CALL LIST_BOOKS(?)}");
     stmt_client.setString(1, "10");
     stmt_client.execute();
     stmt_client.setString(1, "10");
