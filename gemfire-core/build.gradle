@@ -44,7 +44,7 @@ dependencies {
   provided "org.springframework:spring-webmvc:${springVersion}"
   provided "org.springframework:spring-tx:${springVersion}"
   provided 'org.springframework.shell:spring-shell:1.0.0.RELEASE'
-  compile 'org.xerial.snappy:snappy-java:1.1.2'
+  compile 'org.xerial.snappy:snappy-java:1.1.2.1'
 
   provided "org.apache.hadoop:hadoop-annotations:${hadoopVersion}"
   provided "org.apache.hadoop:hadoop-auth:${hadoopVersion}"
