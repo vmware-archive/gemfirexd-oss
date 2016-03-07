@@ -191,12 +191,18 @@ javadoc {
 javadoc.dependsOn.clear()
 
 shadowJar {
-  zip64 = true
   dependsOn doSplit
+  dependsOn jar
+  zip64 = true
   baseName = 'gemfirexd'
   classifier = ''
 
   mergeServiceFiles()
+}
+
+jar {
+  dependsOn doSplit
+
   doLast {
     // copy the native JNI library
     if (osName.isLinux()) {
@@ -212,5 +218,3 @@ shadowJar {
     }
   }
 }
-
-jar.dependsOn doSplit

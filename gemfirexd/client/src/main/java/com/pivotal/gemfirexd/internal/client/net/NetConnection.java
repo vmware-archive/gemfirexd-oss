@@ -273,12 +273,6 @@ public class NetConnection extends com.pivotal.gemfirexd.internal.client.am.Conn
         isODBCDriver = ClientBaseDataSource.getIsODBCDriver(properties);
         flowConnect(password, securityMechanism_, true /* GemStone change */);
 
-
-       String drdaProtocol = properties.getProperty(ClientDRDADriver.DRDA_CONNECTION_PROTOCOL);
-      if (drdaProtocol != null && drdaProtocol.toLowerCase().contains(ClientDRDADriver.SNAPPY_PROTOCOL) ) {
-        snappyDRDAProtocol = true;
-      }
-
         if(!isConnectionNull())
         	completeConnect();
         
@@ -376,6 +370,14 @@ public class NetConnection extends com.pivotal.gemfirexd.internal.client.am.Conn
             "NetConnection::preInitialize new connection: " + this);
       }
       if (properties != null) {
+
+        String drdaProtocol = properties.getProperty(
+            ClientDRDADriver.DRDA_CONNECTION_PROTOCOL);
+        if (drdaProtocol != null && drdaProtocol.toLowerCase().contains(
+            ClientDRDADriver.SNAPPY_PROTOCOL)) {
+          snappyDRDAProtocol = true;
+        }
+
         String timeoutStr = properties.getProperty(ClientAttribute.READ_TIMEOUT);
         if (timeoutStr != null) {
           this.loginTimeout_ = Integer.parseInt(timeoutStr);

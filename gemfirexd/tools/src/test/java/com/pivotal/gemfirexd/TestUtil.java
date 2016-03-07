@@ -56,7 +56,6 @@ import com.gemstone.gemfire.internal.cache.xmlcache.CacheCreation;
 import com.gemstone.gemfire.internal.cache.xmlcache.CacheXmlGenerator;
 import com.gemstone.gemfire.internal.cache.xmlcache.RegionAttributesCreation;
 import com.gemstone.gemfire.internal.cache.xmlcache.RegionCreation;
-import com.gemstone.gemfire.internal.shared.NativeCalls;
 import com.gemstone.gemfire.internal.shared.OSType;
 import com.gemstone.gemfire.internal.shared.StringPrintWriter;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserver;
@@ -96,7 +95,7 @@ import com.pivotal.gemfirexd.internal.iapi.types.DataValueFactory;
 import com.pivotal.gemfirexd.internal.iapi.util.StringUtil;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedConnection;
 import com.pivotal.gemfirexd.internal.impl.store.access.sort.Scan;
-import io.snappydata.test.dunit.standalone.DUnitLauncher;
+import io.snappydata.test.dunit.DistributedTestBase.InitializeRun;
 import junit.framework.TestCase;
 import org.apache.derbyTesting.junit.TestConfiguration;
 import org.apache.log4j.LogManager;
@@ -207,15 +206,7 @@ public class TestUtil extends TestCase {
   private static boolean oldDMVerbose = false;
 
   static {
-    // skip for ChildVM's in dunits
-    if (System.getProperty(DUnitLauncher.VM_NUM_PARAM) == null) {
-      // change current working directory to this base directory
-      File baseDirFile = new File(getBaseDir());
-      //noinspection ResultOfMethodCallIgnored
-      baseDirFile.mkdirs();
-      NativeCalls.getInstance().setCurrentWorkingDirectory(
-          baseDirFile.getAbsolutePath());
-    }
+    InitializeRun.setUp();
     initSysProperties = System.getProperties().stringPropertyNames();
   }
 
@@ -462,10 +453,6 @@ public class TestUtil extends TestCase {
       final int[] exitValue) throws IOException, InterruptedException {
     return GemFireTestCase.getProcessOutput(p, expectedExitValue,
         maxWaitMillis, exitValue);
-  }
-
-  public static String getBaseDir() {
-    return "vm_" + NativeCalls.getInstance().getProcessId();
   }
 
   public static Properties doMinimalSetup(Properties props) {

@@ -61,6 +61,12 @@ public class GfxdUtilLauncher extends GemFireUtilLauncher {
    */
   static final String GET_CANONICAL_PATH_ARG = "--get-canonical-path";
 
+  protected static boolean snappyStore;
+
+  public static boolean isSnappyStore() {
+    return snappyStore;
+  }
+
   /**
    * Returns a mapping of utility names to the class used to spawn them for
    * GemFireXD.
