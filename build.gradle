@@ -348,7 +348,7 @@ subprojects {
   }
   task distributedTest(type:Test) {
     dependsOn "${subprojectBase}product"
-    maxParallelForks = Math.max((int)Math.sqrt(Runtime.getRuntime().availableProcessors() + 2) + 1, 2)
+    maxParallelForks = Math.max((int)Math.sqrt(Runtime.getRuntime().availableProcessors() + 1) + 2, 2)
     //maxParallelForks = 1
     minHeapSize = '512m'
     maxHeapSize = '512m'
@@ -392,7 +392,7 @@ subprojects {
       test.configure {
         onlyIf { ! Boolean.getBoolean('skip.tests') }
 
-        jvmArgs = ['-XX:+HeapDumpOnOutOfMemoryError', '-XX:MaxPermSize=128M', '-ea']
+        jvmArgs = ['-XX:+HeapDumpOnOutOfMemoryError', '-XX:MaxPermSize=128M', '-XX:+UseParNewGC', '-XX:+UseConcMarkSweepGC', '-XX:CMSInitiatingOccupancyFraction=50', '-XX:+CMSClassUnloadingEnabled', '-ea']
 
         testLogging.exceptionFormat = 'full'
 

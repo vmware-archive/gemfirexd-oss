@@ -1072,8 +1072,8 @@ public class CreateTablePart2DUnit extends DistributedSQLTestBase {
     while ((numResults = conn.createStatement().executeUpdate(
         "update flights set miles = miles + 500 where miles <= 1000")) == 0) {
       getLogWriter().info("missed updating " + numResults + " rows");
-      if ((System.currentTimeMillis() - start) > 30000) {
-        fail("Did not detect successful update for 30 secs");
+      if ((System.currentTimeMillis() - start) > 120000) {
+        fail("Did not detect successful update for 120 secs");
       }
     }
 
