@@ -16,26 +16,13 @@
  */
 package com.pivotal.gemfirexd.jdbc;
 
-import java.io.File;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.Statement;
-import java.sql.SQLException;
-import java.util.HashSet;
-import java.util.Properties;
-import java.util.Set;
 
-import org.apache.derbyTesting.junit.JDBC;
-
-import com.gemstone.gemfire.cache.DataPolicy;
-import com.gemstone.gemfire.cache.Region;
-import com.gemstone.gemfire.cache.RegionAttributes;
 import com.pivotal.gemfirexd.TestUtil;
-import com.pivotal.gemfirexd.internal.engine.Misc;
-import com.pivotal.gemfirexd.internal.engine.sql.catalog.DistributionDescriptor;
-
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
+import org.apache.derbyTesting.junit.JDBC;
 
 public class LangScripts_LOBTest extends JdbcTestBase {
 
@@ -53,14 +40,12 @@ public class LangScripts_LOBTest extends JdbcTestBase {
   }
 
   // This test is the as-is LangScript conversion, without any partitioning clauses
-  public void testLangScript_LOB_NoPartitioning() throws Exception
-  {
+  public void testLangScript_LOB_NoPartitioning() throws Exception {
     // This is a JUnit conversion of the Derby Lang LOB.sql script
     // without any GemFireXD extensions
 	  
     // Catch exceptions from illegal syntax
-    // Tests still not fixed marked FIXME
-	  
+
     // Array of SQL text to execute and sqlstates to expect
     // The first object is a String, the second is either 
     // 1) null - this means query returns no rows and throws no exceptions
@@ -99,9 +84,9 @@ public class LangScripts_LOBTest extends JdbcTestBase {
       { "select 1 from b where X'80' = cast(X'80' as blob(1))", "42818" },
       { "select 1 from b where cast(X'80' as blob(1)) = X'80'", "42818" },
       { "select 1 from b where cast(X'80' as blob(1)) = cast(X'80' as blob(1))", "42818" },
-      { "select 1 from b where '1' = cast('1' as clob(1))", "42818" },
-      { "select 1 from b where cast('1' as clob(1)) = '1'", "42818" },
-      { "select 1 from b where cast('1' as clob(1)) = cast('1' as clob(1))", "42818" },
+      { "select 1 from b where '1' = cast('1' as clob(1))", new String[][] { { "1" } } },
+      { "select 1 from b where cast('1' as clob(1)) = '1'", new String[][] { { "1" } } },
+      { "select 1 from b where cast('1' as clob(1)) = cast('1' as clob(1))", new String[][] { { "1" } } },
       // NCLOB not supported
       { "select 1 from b where '1' = cast('1' as nclob(1))", "0A000" },
       { "select 1 from b where cast('1' as nclob(1)) = '1'", "0A000" },
@@ -117,7 +102,7 @@ public class LangScripts_LOBTest extends JdbcTestBase {
       { "select * from b as b1, b as b2 where X'7575'=b1.blob", "42818" },
       { "select b.blob, b.clob, b.nclob from b where b.blob = '1' and b.clob = '2' and b.nclob = '3'", "42X04" },
       { "select b.blob from b where b.blob = '1'", "42818" }, 
-      { "select b.clob from b where b.clob = '2'", "42818" },    // db2 cs allows clob->char but not gemfirexd
+      { "select b.clob from b where b.clob = '2'", new String[][] { { "2" } } },
       { "select b.nclob from b where b.nclob = '3'", "42X04" },
       // Test insert of null - missing nclob column as not supported though
       { "insert into b values (null, null, null)", "42802" },
@@ -164,9 +149,9 @@ public class LangScripts_LOBTest extends JdbcTestBase {
       { "select * from n", "42X05" },
       { "values cast('12' as clob(2)) || cast('34' as clob(2))", new String[][]{ {"1234"} } },
       { "values cast('12' as nclob(2)) || cast('34' as nclob(2))", "0A000" },
-      { "select 1 from b where cast('12' as clob(2)) || cast('34' as clob(2)) = '1234'", "42818" },
+      { "select 1 from b where cast('12' as clob(2)) || cast('34' as clob(2)) = '1234'", new String[][] { { "1" }, { "1" }, { "1" }, { "1" }, { "1" } } },
       { "select 1 from b where cast('12' as nclob(2)) || cast('34' as nclob(2)) = '1234'", "0A000" },
-      { "select 1 from b where cast('12' as clob(2)) || cast('34' as clob(2)) = cast('1234' as clob(4))", "42818" },
+      { "select 1 from b where cast('12' as clob(2)) || cast('34' as clob(2)) = cast('1234' as clob(4))", new String[][] { { "1" }, { "1" }, { "1" }, { "1" }, { "1" } } },
       { "select 1 from b where cast('12' as nclob(2)) || cast('34' as nclob(2)) = cast('1234' as nclob(4))", "0A000" },
       // LIKE
       { "select * from b where b like '0102%'", "42884" },
@@ -189,10 +174,10 @@ public class LangScripts_LOBTest extends JdbcTestBase {
       { "create table e(a string(204K))"+ getOffHeapSuffix(), null },
       // Create index (not allowed)
       { "create index ia on a(a)", "X0X67" },
-      { "create index ib on b(a)", "X0X67" },
+      { "create index ib on b(a)", null },
       { "create index ic on c(a)", "42Y55" },
-      { "create index id on d(a)", "X0X67" },
-      { "create index id on e(a)", "X0X67" },
+      { "create index id on d(a)", null },
+      { "create index ie on e(a)", null },
       { "drop table a", null },
       { "drop table c", "42Y55" },
       { "drop table d", null },
@@ -204,24 +189,24 @@ public class LangScripts_LOBTest extends JdbcTestBase {
       { "select 1 from b where cast(X'e0' as blob(5))>cast(X'e0' as blob(5))", "42818" },
       { "select 1 from b where cast(X'e0' as blob(5))<=cast(X'e0' as blob(5))", "42818" },
       { "select 1 from b where cast(X'e0' as blob(5))>=cast(X'e0' as blob(5))", "42818" },
-      { "select 1 from b where cast('fish' as clob(5))=cast('fish' as clob(5))", "42818" },
-      { "select 1 from b where cast('fish' as clob(5))!=cast('fish' as clob(5))", "42818" },
-      { "select 1 from b where cast('fish' as clob(5))<cast('fish' as clob(5))", "42818" },
-      { "select 1 from b where cast('fish' as clob(5))>cast('fish' as clob(5))", "42818" },
-      { "select 1 from b where cast('fish' as clob(5))<=cast('fish' as clob(5))", "42818" },
-      { "select 1 from b where cast('fish' as clob(5))>=cast('fish' as clob(5))", "42818" },
+      { "select 1 from b where cast('fish' as clob(5))=cast('fish' as clob(5))", new String[0][0] },
+      { "select 1 from b where cast('fish' as clob(5))!=cast('fish' as clob(5))", new String[0][0] },
+      { "select 1 from b where cast('fish' as clob(5))<cast('fish' as clob(5))", new String[0][0] },
+      { "select 1 from b where cast('fish' as clob(5))>cast('fish' as clob(5))", new String[0][0] },
+      { "select 1 from b where cast('fish' as clob(5))<=cast('fish' as clob(5))", new String[0][0] },
+      { "select 1 from b where cast('fish' as clob(5))>=cast('fish' as clob(5))", new String[0][0] },
       { "select 1 from b where cast('fish' as nclob(5))=cast('fish' as nclob(5))", "0A000" },
       { "select 1 from b where cast('fish' as nclob(5))!=cast('fish' as nclob(5))", "0A000" },
       { "select 1 from b where cast('fish' as nclob(5))<cast('fish' as nclob(5))", "0A000" },
       { "select 1 from b where cast('fish' as nclob(5))>cast('fish' as nclob(5))", "0A000" },
       { "select 1 from b where cast('fish' as nclob(5))<=cast('fish' as nclob(7))", "0A000" },
       { "select 1 from b where cast('fish' as nclob(5))>=cast('fish' as nclob(7))", "0A000" },
-      { "select 1 from b where cast('fish' as string(5))=cast('fish' as string(5))", "42818" },
-      { "select 1 from b where cast('fish' as string(5))!=cast('fish' as string(5))", "42818" },
-      { "select 1 from b where cast('fish' as string(5))<cast('fish' as string(5))", "42818" },
-      { "select 1 from b where cast('fish' as string(5))>cast('fish' as string(5))", "42818" },
-      { "select 1 from b where cast('fish' as string(5))<=cast('fish' as string(5))", "42818" },
-      { "select 1 from b where cast('fish' as string(5))>=cast('fish' as string(5))", "42818" },
+      { "select 1 from b where cast('fish' as string(5))=cast('fish' as string(5))", new String[0][0] },
+      { "select 1 from b where cast('fish' as string(5))!=cast('fish' as string(5))", new String[0][0] },
+      { "select 1 from b where cast('fish' as string(5))<cast('fish' as string(5))", new String[0][0] },
+      { "select 1 from b where cast('fish' as string(5))>cast('fish' as string(5))", new String[0][0] },
+      { "select 1 from b where cast('fish' as string(5))<=cast('fish' as string(5))", new String[0][0] },
+      { "select 1 from b where cast('fish' as string(5))>=cast('fish' as string(5))", new String[0][0] },
       // Test operands on auto-cast
       { "create table testoperatorclob (colone clob(1K))"+ getOffHeapSuffix(), null },
       { "insert into testoperatorclob values (CAST('50' as clob(1K)))", null },
@@ -241,16 +226,15 @@ public class LangScripts_LOBTest extends JdbcTestBase {
       { "select * from testoperatorclob where colone >= 10", "42818" },
       { "select * from testoperatorclob where colone <> 10", "42818" },
       { "select * from testoperatorstring where colone > 10", "42818" },
-      // NOTE : because of this failure, a partitioning range on CLOB should not be comparable - test this FIXME
-      { "select * from testoperatorclob where colone > '10'", "42818" },
-      { "select * from testoperatorclob where colone > '5'", "42818" },
-      { "select * from testoperatorclob where colone < '70'", "42818" },
-      { "select * from testoperatorclob where colone = '50'", "42818" },
-      { "select * from testoperatorclob where colone != '10'", "42818" },
-      { "select * from testoperatorclob where colone <= '70'", "42818" },
-      { "select * from testoperatorclob where colone >= '10'", "42818" },
-      { "select * from testoperatorclob where colone <> '10'", "42818" },
-      { "select * from testoperatorclob where colone > '10'", "42818" },
+      { "select * from testoperatorclob where colone > '10'", new String[][] { { "50" }, { "50" } } },
+      { "select * from testoperatorclob where colone > '5'", new String[][] { { "50" }, { "50" } } },
+      { "select * from testoperatorclob where colone < '70'", new String[][] { { "50" }, { "50" } } },
+      { "select * from testoperatorclob where colone = '50'", new String[][] { { "50" }, { "50" } } },
+      { "select * from testoperatorclob where colone != '10'", new String[][] { { "50" }, { "50" } } },
+      { "select * from testoperatorclob where colone <= '70'", new String[][] { { "50" }, { "50" } } },
+      { "select * from testoperatorclob where colone >= '10'", new String[][] { { "50" }, { "50" } } },
+      { "select * from testoperatorclob where colone <> '10'", new String[][] { { "50" }, { "50" } } },
+      { "select * from testoperatorclob where colone > '10'", new String[][] { { "50" }, { "50" } } },
       { "drop table testoperatorclob", null },
       { "drop table testoperatorstring", null },
       // BLOB testing (inserts fail, otherwise results identical to clob)
@@ -307,9 +291,9 @@ public class LangScripts_LOBTest extends JdbcTestBase {
       { "insert into c values(cast('33' as clob(77)))", null },
       { "insert into d values(cast('33' as string(77)))", null },
       { "values (cast('1' as blob(1M)))->toString()", "42846" },
-      { "values (cast('1' as clob(1M)))->toString()", "XJ082" },
+      { "values (cast('1' as clob(1M)))->toString()", "42X01" },
       { "values (cast('1' as nclob(1M)))->toString()", "0A000" },
-      { "values (cast('1' as string(1M)))->toString()", "XJ082" },
+      { "values (cast('1' as string(1M)))->toString()", "42X01" },
       { "drop table b", null },
       { "drop table c", null },
       { "drop table d", null },
@@ -330,12 +314,12 @@ public class LangScripts_LOBTest extends JdbcTestBase {
       { "insert into testPredicate1 (c1) values 'a'", null },
       { "insert into testPredicate2 (c1) values 'a'", null },
       { "select * from testPredicate1 union select * from testPredicate2", new String[][]{ {"a"} } },  //GFXD allows LONG VARCHAR in UNION statements
-      { "select c1 from testPredicate1 where c1 in (select c1 from testPredicate2)", "42818" },
-      { "select c1 from testPredicate1 where c1 not in (select c1 from testPredicate2)", "42818" },
+      { "select c1 from testPredicate1 where c1 in (select c1 from testPredicate2)", new String[][]{ {"a"} } },
+      { "select c1 from testPredicate1 where c1 not in (select c1 from testPredicate2)", new String[0][0] },
       { "select * from testPredicate1 order by c1", new String[][]{ {"a"} } },   // GFXD allows LV in ORDER BY
       { "select substr(c1,1,2) from testPredicate1 group by c1", new String[][]{ {"a"} } },   // and in GROUP BY
-      { "select * from testPredicate1 t1, testPredicate2 t2 where t1.c1=t2.c1", "42818" },
-      { "select * from testPredicate1 left outer join testPredicate2 on testPredicate1.c1=testPredicate2.c1", "42818" },
+      { "select * from testPredicate1 t1, testPredicate2 t2 where t1.c1=t2.c1", new String[][]{ { "a", "a" } } },
+      { "select * from testPredicate1 left outer join testPredicate2 on testPredicate1.c1=testPredicate2.c1", new String[][]{ { "a", "a" } } },
       { "create table testConst1(c1 long varchar not null primary key)"+ getOffHeapSuffix(), null },    // GemFireXD allows this!
       { "create table testConst2(col1 long varchar not null, constraint uk unique(col1))"+ getOffHeapSuffix(), null },
       { "create table testConst3(c1 char(10) not null, primary key(c1))"+ getOffHeapSuffix(), null },
@@ -490,8 +474,7 @@ public class LangScripts_LOBTest extends JdbcTestBase {
   }
   
   //This test is the script enhanced with partitioning
-  public void testLangScript_LOB_WithPartitioning() throws Exception
-  {
+  public void testLangScript_LOB_WithPartitioning() throws Exception {
     // This test has to do with LOBs and is not very extendable for partitioning
     // Simply add column partitioning on all tables
     Object[][] Script_LOBUT_WithPartitioning = {
@@ -526,9 +509,9 @@ public class LangScripts_LOBTest extends JdbcTestBase {
       { "select 1 from b where X'80' = cast(X'80' as blob(1))", "42818" },
       { "select 1 from b where cast(X'80' as blob(1)) = X'80'", "42818" },
       { "select 1 from b where cast(X'80' as blob(1)) = cast(X'80' as blob(1))", "42818" },
-      { "select 1 from b where '1' = cast('1' as clob(1))", "42818" },
-      { "select 1 from b where cast('1' as clob(1)) = '1'", "42818" },
-      { "select 1 from b where cast('1' as clob(1)) = cast('1' as clob(1))", "42818" },
+      { "select 1 from b where '1' = cast('1' as clob(1))", new String[][] { { "1" } } },
+      { "select 1 from b where cast('1' as clob(1)) = '1'", new String[][] { { "1" } } },
+      { "select 1 from b where cast('1' as clob(1)) = cast('1' as clob(1))", new String[][] { { "1" } } },
       // NCLOB not supported
       { "select 1 from b where '1' = cast('1' as nclob(1))", "0A000" },
       { "select 1 from b where cast('1' as nclob(1)) = '1'", "0A000" },
@@ -543,8 +526,8 @@ public class LangScripts_LOBTest extends JdbcTestBase {
       { "select * from b as b1, b as b2 where b1.blob=X'7575'", "42818" },
       { "select * from b as b1, b as b2 where X'7575'=b1.blob", "42818" },
       { "select b.blob, b.clob, b.nclob from b where b.blob = '1' and b.clob = '2' and b.nclob = '3'", "42X04" },
-      { "select b.blob from b where b.blob = '1'", "42818" },    
-      { "select b.clob from b where b.clob = '2'", "42818" },    // db2 cs allows clob->char but not gemfirexd
+      { "select b.blob from b where b.blob = '1'", "42818" },
+      { "select b.clob from b where b.clob = '2'", new String[][] { { "2" } } },
       { "select b.nclob from b where b.nclob = '3'", "42X04" },
       // Test insert of null - missing nclob column as not supported though
       { "insert into b values (null, null, null)", "42802" },
@@ -591,9 +574,9 @@ public class LangScripts_LOBTest extends JdbcTestBase {
       { "select * from n", "42X05" },
       { "values cast('12' as clob(2)) || cast('34' as clob(2))", new String[][]{ {"1234"} } },
       { "values cast('12' as nclob(2)) || cast('34' as nclob(2))", "0A000" },
-      { "select 1 from b where cast('12' as clob(2)) || cast('34' as clob(2)) = '1234'", "42818" },
+      { "select 1 from b where cast('12' as clob(2)) || cast('34' as clob(2)) = '1234'", new String[][] { { "1" }, { "1" }, { "1" }, { "1" }, { "1" } } },
       { "select 1 from b where cast('12' as nclob(2)) || cast('34' as nclob(2)) = '1234'", "0A000" },
-      { "select 1 from b where cast('12' as clob(2)) || cast('34' as clob(2)) = cast('1234' as clob(4))", "42818" },
+      { "select 1 from b where cast('12' as clob(2)) || cast('34' as clob(2)) = cast('1234' as clob(4))", new String[][] { { "1" }, { "1" }, { "1" }, { "1" }, { "1" } } },
       { "select 1 from b where cast('12' as nclob(2)) || cast('34' as nclob(2)) = cast('1234' as nclob(4))", "0A000" },
       // LIKE
       { "select * from b where b like '0102%'", "42884" },
@@ -614,10 +597,10 @@ public class LangScripts_LOBTest extends JdbcTestBase {
       { "create table e(a string(204K)) partition by column(a)"+ getOffHeapSuffix(), null },
       // Create index (not allowed)
       { "create index ia on a(a)", "X0X67" },
-      { "create index ib on b(a)", "X0X67" },
+      { "create index ib on b(a)", null },
       { "create index ic on c(a)", "42Y55" },
-      { "create index id on d(a)", "X0X67" },
-      { "create index id on e(a)", "X0X67" },
+      { "create index id on d(a)", null },
+      { "create index ie on e(a)", null },
       { "drop table a", null },
       { "drop table c", "42Y55" },
       { "drop table d", null },
@@ -629,18 +612,24 @@ public class LangScripts_LOBTest extends JdbcTestBase {
       { "select 1 from b where cast(X'e0' as blob(5))>cast(X'e0' as blob(5))", "42818" },
       { "select 1 from b where cast(X'e0' as blob(5))<=cast(X'e0' as blob(5))", "42818" },
       { "select 1 from b where cast(X'e0' as blob(5))>=cast(X'e0' as blob(5))", "42818" },
-      { "select 1 from b where cast('fish' as clob(5))=cast('fish' as clob(5))", "42818" },
-      { "select 1 from b where cast('fish' as clob(5))!=cast('fish' as clob(5))", "42818" },
-      { "select 1 from b where cast('fish' as clob(5))<cast('fish' as clob(5))", "42818" },
-      { "select 1 from b where cast('fish' as clob(5))>cast('fish' as clob(5))", "42818" },
-      { "select 1 from b where cast('fish' as clob(5))<=cast('fish' as clob(5))", "42818" },
-      { "select 1 from b where cast('fish' as clob(5))>=cast('fish' as clob(5))", "42818" },
+      { "select 1 from b where cast('fish' as clob(5))=cast('fish' as clob(5))", new String[0][0] },
+      { "select 1 from b where cast('fish' as clob(5))!=cast('fish' as clob(5))", new String[0][0] },
+      { "select 1 from b where cast('fish' as clob(5))<cast('fish' as clob(5))", new String[0][0] },
+      { "select 1 from b where cast('fish' as clob(5))>cast('fish' as clob(5))", new String[0][0] },
+      { "select 1 from b where cast('fish' as clob(5))<=cast('fish' as clob(5))", new String[0][0] },
+      { "select 1 from b where cast('fish' as clob(5))>=cast('fish' as clob(5))", new String[0][0] },
       { "select 1 from b where cast('fish' as nclob(5))=cast('fish' as nclob(5))", "0A000" },
       { "select 1 from b where cast('fish' as nclob(5))!=cast('fish' as nclob(5))", "0A000" },
       { "select 1 from b where cast('fish' as nclob(5))<cast('fish' as nclob(5))", "0A000" },
       { "select 1 from b where cast('fish' as nclob(5))>cast('fish' as nclob(5))", "0A000" },
       { "select 1 from b where cast('fish' as nclob(5))<=cast('fish' as nclob(7))", "0A000" },
       { "select 1 from b where cast('fish' as nclob(5))>=cast('fish' as nclob(7))", "0A000" },
+      { "select 1 from b where cast('fish' as string(5))=cast('fish' as string(5))", new String[0][0] },
+      { "select 1 from b where cast('fish' as string(5))!=cast('fish' as string(5))", new String[0][0] },
+      { "select 1 from b where cast('fish' as string(5))<cast('fish' as string(5))", new String[0][0] },
+      { "select 1 from b where cast('fish' as string(5))>cast('fish' as string(5))", new String[0][0] },
+      { "select 1 from b where cast('fish' as string(5))<=cast('fish' as string(5))", new String[0][0] },
+      { "select 1 from b where cast('fish' as string(5))>=cast('fish' as string(5))", new String[0][0] },
       // Test operands on auto-cast
       { "create table testoperatorclob (colone clob(1K)) partition by column(colone)"+ getOffHeapSuffix(), null },
       { "insert into testoperatorclob values (CAST('50' as clob(1K)))", null },
@@ -655,15 +644,15 @@ public class LangScripts_LOBTest extends JdbcTestBase {
       { "select * from testoperatorclob where colone <= 70", "42818" },
       { "select * from testoperatorclob where colone >= 10", "42818" },
       { "select * from testoperatorclob where colone <> 10", "42818" },
-      // NOTE : because of this failure, a partitioning range on CLOB should not be comparable - test this FIXME
-      { "select * from testoperatorclob where colone > '10'", "42818" },
-      { "select * from testoperatorclob where colone > '5'", "42818" },
-      { "select * from testoperatorclob where colone < '70'", "42818" },
-      { "select * from testoperatorclob where colone = '50'", "42818" },
-      { "select * from testoperatorclob where colone != '10'", "42818" },
-      { "select * from testoperatorclob where colone <= '70'", "42818" },
-      { "select * from testoperatorclob where colone >= '10'", "42818" },
-      { "select * from testoperatorclob where colone <> '10'", "42818" },
+      { "select * from testoperatorclob where colone > '10'", new String[][] { { "50" }, { "50" } } },
+      { "select * from testoperatorclob where colone > '5'", new String[][] { { "50" }, { "50" } } },
+      { "select * from testoperatorclob where colone < '70'", new String[][] { { "50" }, { "50" } } },
+      { "select * from testoperatorclob where colone = '50'", new String[][] { { "50" }, { "50" } } },
+      { "select * from testoperatorclob where colone != '10'", new String[][] { { "50" }, { "50" } } },
+      { "select * from testoperatorclob where colone <= '70'", new String[][] { { "50" }, { "50" } } },
+      { "select * from testoperatorclob where colone >= '10'", new String[][] { { "50" }, { "50" } } },
+      { "select * from testoperatorclob where colone <> '10'", new String[][] { { "50" }, { "50" } } },
+      { "select * from testoperatorclob where colone > '10'", new String[][] { { "50" }, { "50" } } },
       { "drop table testoperatorclob", null },
       // BLOB testing (inserts fail, otherwise results identical to clob)
       { "create table testoperatorblob (colone blob(1K)) partition by column(colone)"+ getOffHeapSuffix(), null },
@@ -717,8 +706,9 @@ public class LangScripts_LOBTest extends JdbcTestBase {
       { "create table c(c clob(77)) partition by column(c)"+ getOffHeapSuffix(), null },
       { "insert into c values(cast('33' as clob(77)))", null },
       { "values (cast('1' as blob(1M)))->toString()", "42846" },
-      { "values (cast('1' as clob(1M)))->toString()", "XJ082" },
+      { "values (cast('1' as clob(1M)))->toString()", "42X01" },
       { "values (cast('1' as nclob(1M)))->toString()", "0A000" },
+      { "values (cast('1' as string(1M)))->toString()", "42X01" },
       { "drop table b", null },
       { "drop table c", null },
       // Test length functions on LOBs
@@ -736,12 +726,12 @@ public class LangScripts_LOBTest extends JdbcTestBase {
       { "insert into testPredicate1 (c1) values 'a'", null },
       { "insert into testPredicate2 (c1) values 'a'", null },
       { "select * from testPredicate1 union select * from testPredicate2", new String[][]{ {"a"} } },  //GFXD allows LONG VARCHAR in UNION statements
-      { "select c1 from testPredicate1 where c1 in (select c1 from testPredicate2)", "42818" },
-      { "select c1 from testPredicate1 where c1 not in (select c1 from testPredicate2)", "42818" },
+      { "select c1 from testPredicate1 where c1 in (select c1 from testPredicate2)", new String[][]{ {"a"} } },
+      { "select c1 from testPredicate1 where c1 not in (select c1 from testPredicate2)", new String[0][0] },
       { "select * from testPredicate1 order by c1", new String[][]{ {"a"} } },   // GFXD allows LV in ORDER BY
       { "select substr(c1,1,2) from testPredicate1 group by c1", new String[][]{ {"a"} } },   // and in GROUP BY
-      { "select * from testPredicate1 t1, testPredicate2 t2 where t1.c1=t2.c1", "42818" },
-      { "select * from testPredicate1 left outer join testPredicate2 on testPredicate1.c1=testPredicate2.c1", "42818" },
+      { "select * from testPredicate1 t1, testPredicate2 t2 where t1.c1=t2.c1", new String[][]{ { "a", "a" } } },
+      { "select * from testPredicate1 left outer join testPredicate2 on testPredicate1.c1=testPredicate2.c1", new String[][]{ { "a", "a" } } },
       { "create table testConst1(c1 long varchar not null primary key) partition by primary key"+ getOffHeapSuffix(), null },    // GemFireXD allows this!
       { "create table testConst2(col1 long varchar not null, constraint uk unique(col1)) partition by column(col1)"+ getOffHeapSuffix(), null },
       { "create table testConst3(c1 char(10) not null, primary key(c1)) partition by primary key"+ getOffHeapSuffix(), null },

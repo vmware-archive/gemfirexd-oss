@@ -163,7 +163,7 @@ public class PreparedStatementDUnit extends DistributedSQLTestBase {
             String maxCid = "create function maxCidBug41222() "
                 + "RETURNS INTEGER " + "PARAMETER STYLE JAVA "
                 + "LANGUAGE JAVA " + "READS SQL DATA "
-                + "EXTERNAL NAME 'sql.FunctionTest.getMaxCidBug41222'";
+                + "EXTERNAL NAME 'sql.TestFunctions.getMaxCidBug41222'";
             TestUtil.setupConnection();
             Connection conn = TestUtil.jdbcConn;
             Statement stmt = conn.createStatement();
@@ -1780,7 +1780,7 @@ public class PreparedStatementDUnit extends DistributedSQLTestBase {
               + getSuffix());
       clientSQLExecute(
           1,
-          "create function maxCid(DP1 Integer) RETURNS INTEGER PARAMETER STYLE JAVA LANGUAGE JAVA READS SQL DATA EXTERNAL NAME 'sql.FunctionTest.getMaxCid'");
+          "create function maxCid(DP1 Integer) RETURNS INTEGER PARAMETER STYLE JAVA LANGUAGE JAVA READS SQL DATA EXTERNAL NAME 'sql.TestFunctions.getMaxCid'");
 
       String subquery = "select * from trade.customers c where c.cid = maxCid( 3  )";
       TestUtil.setupConnection();
@@ -1824,7 +1824,7 @@ public class PreparedStatementDUnit extends DistributedSQLTestBase {
               + getSuffix());
       clientSQLExecute(
           1,
-          "create function maxCid(DP1 Integer) RETURNS INTEGER PARAMETER STYLE JAVA LANGUAGE JAVA READS SQL DATA EXTERNAL NAME 'sql.FunctionTest.getMaxCidForBug41005' ");
+          "create function maxCid(DP1 Integer) RETURNS INTEGER PARAMETER STYLE JAVA LANGUAGE JAVA READS SQL DATA EXTERNAL NAME 'sql.TestFunctions.getMaxCidForBug41005' ");
       clientSQLExecute(1, "insert into trade.customers values (1,'test' ,1)");
       clientSQLExecute(1, "insert into trade.networth values (1,1 ,1)");
       clientSQLExecute(1, "insert into trade.customers values (2,'test' ,2)");
@@ -2778,7 +2778,7 @@ public class PreparedStatementDUnit extends DistributedSQLTestBase {
           Object[] obj = new Object[50];
           dummy += obj.hashCode();
         }
-        globalLogger.info("statement not GCed, dummy=" + dummy);
+        getGlobalLogger().info("statement not GCed, dummy=" + dummy);
       }
       invokeGC();
       GfxdConnectionHolder holder = GfxdConnectionHolder.getHolder();

@@ -177,7 +177,7 @@ public class StatementQueryDUnit extends DistributedSQLTestBase {
             @Override
             public void beforeGemFireResultSetExecuteOnActivation(
                 AbstractGemFireActivation activation) {
-              StatementQueryDUnit.globalLogger.info(
+              StatementQueryDUnit.getGlobalLogger().info(
                   "StatementQueryDunit::testRegionGetConversionForCompositeKey: "
                       + "The activation object is = " + activation);
               assertTrue(activation instanceof GemFireSelectActivation);

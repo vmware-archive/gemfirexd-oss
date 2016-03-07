@@ -32,7 +32,7 @@ public class ExpirationDUnit extends DistributedSQLTestBase {
   public ExpirationDUnit(String name) {
     super(name);
   }
-  
+
   // basic check to make sure that the entry expires
   private void checkExpiration(Statement st1) throws Exception {
     st1.execute("truncate table t1");
@@ -190,6 +190,10 @@ public class ExpirationDUnit extends DistributedSQLTestBase {
 
     startServerVMs(1, 0, null);
     startClientVMs(1, 0, null);
+    try {
+      serverSQLExecute(1, "drop diskstore teststore");
+    } catch (Exception ignore) {
+    }
     serverSQLExecute(1, "create diskstore teststore");
     // INVALIDATE not supported in GemFireXD - test changed to use DESTROY
     clientSQLExecute(1, "create table EMP.TESTTABLE_ONE (ID int not null, "
@@ -224,6 +228,10 @@ public class ExpirationDUnit extends DistributedSQLTestBase {
     Thread.sleep(5000);
     validateResults("EMP.TESTTABLE_ONE", null);
     validateResults("EMP.TESTTABLE_TWO", null);
+
+    clientSQLExecute(1, "drop table EMP.TESTTABLE_TWO");
+    clientSQLExecute(1, "drop table EMP.TESTTABLE_ONE");
+    serverSQLExecute(1, "drop diskstore teststore");
   }
   
   public void testAlterCommandTimeToLive() throws Exception {
@@ -234,6 +242,10 @@ public class ExpirationDUnit extends DistributedSQLTestBase {
 
     startServerVMs(1, 0, null);
     startClientVMs(1, 0, null);
+    try {
+      serverSQLExecute(1, "drop diskstore teststore");
+    } catch (Exception ignore) {
+    }
     serverSQLExecute(1, "create diskstore teststore");
     // INVALIDATE not supported in GemFireXD - test changed to use DESTROY
     clientSQLExecute(1, "create table EMP.TESTTABLE (ID int not null, "
@@ -264,6 +276,9 @@ public class ExpirationDUnit extends DistributedSQLTestBase {
 
     Thread.sleep(10000);
     validateResults("EMP.TESTTABLE", null);
+
+    clientSQLExecute(1, "drop table EMP.TESTTABLE");
+    serverSQLExecute(1, "drop diskstore teststore");
   }
   
   /**
@@ -279,6 +294,10 @@ public class ExpirationDUnit extends DistributedSQLTestBase {
     
     startServerVMs(1, 0, null);
     startClientVMs(1, 0, null);
+    try {
+      serverSQLExecute(1, "drop diskstore teststore");
+    } catch (Exception ignore) {
+    }
     serverSQLExecute(1, "create diskstore teststore");
     // INVALIDATE not supported in GemFireXD - test changed to use DESTROY
     clientSQLExecute(1, "create table EMP.TESTTABLE_ONE (ID int not null, "
@@ -318,6 +337,10 @@ public class ExpirationDUnit extends DistributedSQLTestBase {
     Thread.sleep(5000);
     validateResults("EMP.TESTTABLE_ONE", null);
     validateResults("EMP.TESTTABLE_TWO", null);
+
+    clientSQLExecute(1, "drop table EMP.TESTTABLE_TWO");
+    clientSQLExecute(1, "drop table EMP.TESTTABLE_ONE");
+    serverSQLExecute(1, "drop diskstore teststore");
   }
 
   protected void validateResults(String tablename, TIntHashSet expected)

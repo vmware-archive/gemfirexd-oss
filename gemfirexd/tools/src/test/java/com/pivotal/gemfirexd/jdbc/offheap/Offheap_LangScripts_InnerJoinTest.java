@@ -37,8 +37,8 @@ public class Offheap_LangScripts_InnerJoinTest extends LangScripts_InnerJoinTest
   @Override
   public void setUp() throws Exception {
     super.setUp();
-    System.setProperty("gemfire.OFF_HEAP_TOTAL_SIZE", "100M");
-    System.setProperty("gemfire."+DistributionConfig.OFF_HEAP_MEMORY_SIZE_NAME, "50M");
+    System.setProperty("gemfire.OFF_HEAP_TOTAL_SIZE", "500m");
+    System.setProperty("gemfire."+DistributionConfig.OFF_HEAP_MEMORY_SIZE_NAME, "500m");
     System.setProperty(GfxdManagementService.DISABLE_MANAGEMENT_PROPERTY,"true");
   }
   

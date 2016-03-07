@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Properties;
 
+import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import junit.framework.TestCase;
 
 import com.gemstone.gemfire.cache.CacheFactory;
@@ -104,7 +105,7 @@ public class ArraySortedCollectionJUnitTest extends TestCase {
       this.numCalls++;
       if (this.numCalls >= NUM_CALLS_BEFORE_EVICT
           && ((this.numCalls % NUM_CALLS_BEFORE_EVICT) == 0
-          || (AvailablePort.rand.nextBoolean()
+          || (PartitionedRegion.rand.nextBoolean()
               && (this.numCalls % NUM_CALLS_BEFORE_EVICT) == 1))) {
         return true;
       }
@@ -115,7 +116,7 @@ public class ArraySortedCollectionJUnitTest extends TestCase {
     public boolean isCritical() {
       if (this.numCalls >= NUM_CALLS_BEFORE_CRITICAL
           && ((this.numCalls % NUM_CALLS_BEFORE_CRITICAL) == 0
-          || (AvailablePort.rand.nextBoolean()
+          || (PartitionedRegion.rand.nextBoolean()
               && (this.numCalls % NUM_CALLS_BEFORE_CRITICAL) == 1))) {
         return true;
       }
@@ -132,7 +133,7 @@ public class ArraySortedCollectionJUnitTest extends TestCase {
       TIntHashSet randInts = new TIntHashSet(numItems);
       final String[] values = new String[numItems];
       for (int i = 0; i < numItems; i++) {
-        int rnd = AvailablePort.rand.nextInt(numItems);
+        int rnd = PartitionedRegion.rand.nextInt(numItems);
         randInts.add(rnd);
         values[i] = "strkey-" + rnd;
       }
@@ -194,7 +195,7 @@ public class ArraySortedCollectionJUnitTest extends TestCase {
       TIntHashSet randInts = new TIntHashSet(numItems);
       final String[] values = new String[numItems];
       for (int i = 0; i < numItems; i++) {
-        int rnd = AvailablePort.rand.nextInt(numItems);
+        int rnd = PartitionedRegion.rand.nextInt(numItems);
         randInts.add(rnd);
         values[i] = "strkey-" + rnd;
       }

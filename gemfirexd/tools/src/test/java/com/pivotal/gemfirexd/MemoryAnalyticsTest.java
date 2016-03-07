@@ -89,13 +89,13 @@ public class MemoryAnalyticsTest extends JdbcTestBase {
     props.setProperty("persist-dd", "true");
     Connection conn = getConnection(props);
     String useCase3Script = TestUtil.getResourcesDir()
-        + "/lib/UseCase3Data/schema.sql";
+        + "/lib/useCase3Data/schema.sql";
     if (!testSimpleQueryCalledAgain) {
       GemFireXDUtils.executeSQLScripts(conn, new String[] { useCase3Script },
           false, getLogger(), null, null, false);
 
       String useCase3DataScript = TestUtil.getResourcesDir()
-          + "/lib/UseCase3Data/importAll.sql";
+          + "/lib/useCase3Data/importAll.sql";
 
       GemFireXDUtils.executeSQLScripts(conn, new String[] { useCase3DataScript },
           false, getLogger(), "<path_prefix>",
@@ -121,20 +121,20 @@ public class MemoryAnalyticsTest extends JdbcTestBase {
         MemoryAnalyticsVTI.NUM_VALUES_OFFHEAP, MemoryAnalyticsVTI.TOTAL_SIZE };
 
         HashMap<String, float[]> indexColValues = new HashMap<String, float[]>();
-        indexColValues.put("IDX_FACT3_POSN_ID", new float[] {0.144f, 3.912f, 0.0f, 0.072f, 0.0f, 97.0f, 0.0f, 0.0f, 0.0f, 4.128f});
-        indexColValues.put("IDX_INSM_ID", new float[] {0.144f, 3.944f, 0.0f, 0.048f, 0.0f, 98.0f, 0.0f, 0.0f, 0.0f, 4.136f});
-        indexColValues.put("IDX_FACT2_POSN_ID", new float[] {0.144f, 4.392f, 0.0f, 0.072f, 0.0f, 97.0f, 0.0f, 0.0f, 0.0f, 4.608f});
-        indexColValues.put("TF_EDEALER_PAA_ID", new float[] {0.144f, 0.064f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.208f});
-        indexColValues.put("TF_EDEALER_PAA_NUI", new float[] {0.144f, 0.064f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.208f});
-        indexColValues.put("IDX_FACT1_TM_ID", new float[] {0.144f, 0.368f, 0.0f, 0.48f, 0.0f, 5.0f, 0.0f, 0.0f, 0.0f, 0.992f});
-        indexColValues.put("IDX_EXT_ID", new float[] {0.144f, 4.336f, 0.0f, 0.024f, 0.0f, 99.0f, 0.0f, 0.0f, 0.0f, 4.504f});
-        indexColValues.put("IDX_ADJ_POSN_ID", new float[] {0.144f, 4.176f, 0.0f, 0.072f, 0.0f, 97.0f, 0.0f, 0.0f, 0.0f, 4.392f});
-        indexColValues.put("TF_GEMFIRE_PAA_ID", new float[] {0.144f, 0.064f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.208f});
-        indexColValues.put("TF_GEMFIRE_PAA_NUI", new float[] {0.144f, 0.064f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.208f});
-        indexColValues.put("IDX_TRADER_FIRM_ID", new float[] {0.144f, 4.488f, 0.0f, 0.0f, 0.0f, 100.0f, 0.0f, 0.0f, 0.0f, 4.632f});
-        indexColValues.put("IDX_SOURCE_ID", new float[] {0.144f, 4.032f, 0.0f, 0.048f, 0.0f, 97.0f, 0.0f, 0.0f, 0.0f, 4.224f});
-        indexColValues.put("TF_EQRMS_PAA_ID", new float[] {0.144f, 0.064f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.208f});
-        indexColValues.put("TF_EQRMS_PAA_NUI", new float[] {0.144f, 0.064f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.208f});
+        indexColValues.put("TF_GEMFIRE_PAA_ID", new float[] {0.152f, 0.072f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.224f});
+        indexColValues.put("TF_GEMFIRE_PAA_NUI", new float[] {0.152f, 0.072f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.224f});
+        indexColValues.put("TF_EQRMS_PAA_ID", new float[] {0.152f, 0.072f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.224f});
+        indexColValues.put("TF_EQRMS_PAA_NUI", new float[] {0.152f, 0.072f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.224f});
+        indexColValues.put("TF_EDEALER_PAA_ID", new float[] {0.152f, 0.072f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.224f});
+        indexColValues.put("TF_EDEALER_PAA_NUI", new float[] {0.152f, 0.072f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.224f});
+        indexColValues.put("IDX_FACT1_TM_ID", new float[] {0.152f, 0.368f, 0.0f, 0.9f, 0.0f, 5.0f, 0.0f, 0.0f, 0.0f, 1.42f});
+        indexColValues.put("IDX_SOURCE_ID", new float[] {0.152f, 5.392f, 0.0f, 0.472f, 0.0f, 97.0f, 0.0f, 0.0f, 0.0f, 6.016f});
+        indexColValues.put("IDX_FACT3_POSN_ID", new float[] {0.152f, 4.912f, 0.0f, 0.484f, 0.0f, 97.0f, 0.0f, 0.0f, 0.0f, 5.548f});
+        indexColValues.put("IDX_FACT2_POSN_ID", new float[] {0.152f, 4.944f, 0.0f, 0.484f, 0.0f, 97.0f, 0.0f, 0.0f, 0.0f, 5.58f});
+        indexColValues.put("IDX_ADJ_POSN_ID", new float[] {0.152f, 4.912f, 0.0f, 0.484f, 0.0f, 97.0f, 0.0f, 0.0f, 0.0f, 5.548f});
+        indexColValues.put("IDX_TRADER_FIRM_ID", new float[] {0.152f, 5.288f, 0.0f, 0.4f, 0.0f, 100.0f, 0.0f, 0.0f, 0.0f, 5.84f});
+        indexColValues.put("IDX_EXT_ID", new float[] {0.152f, 4.992f, 0.0f, 0.428f, 0.0f, 99.0f, 0.0f, 0.0f, 0.0f, 5.572f});
+        indexColValues.put("IDX_INSM_ID", new float[] {0.152f, 5.56f, 0.0f, 0.456f, 0.0f, 98.0f, 0.0f, 0.0f, 0.0f, 6.168f});
         
     /* eclipse output
     indexColValues.put("TF_EDEALER_PAA_ID", new float[] {0.2265625f, 0.109375f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.3359375f});
@@ -156,22 +156,22 @@ public class MemoryAnalyticsTest extends JdbcTestBase {
     String[] expectedOutputArr = new String[] {
         "APP.TL_CURRENCY null null 1.696 0.0 0.0 0.0 0.0 0 0 0 0 1.696 ",
         "APP.TD_PL_POSITION_INDICATIVE null null 1.696 0.0 0.0 0.0 0.0 0 0 0 0 1.696 ",
-        "APP.TF_EDEALER_PAA null null 1.8 0.0 0.0 0.0 0.0 0 0 0 0 1.8 ",
-        "APP.TF_GEMFIRE_PAA null null 1.8 0.0 0.0 0.0 0.0 0 0 0 0 1.8 ",
-        "APP.TF_PL_POSITION_YTD null null 1.8 10.4 1.6 626.512 0.0 100 100 100 0 640.312 ",
-        "APP.TD_POSN_EXTENDED_KEY null null 1.696 8.8 1.6 25.064 0.0 100 100 100 0 37.16 ",
-        "APP.TX_PL_POSITION null null 1.8 0.0 0.0 0.0 0.0 0 0 0 0 1.8 ",
-        "APP.TF_PL_POSITION_PTD null null 1.8 10.4 1.6 299.44 0.0 100 100 100 0 313.24 ",
-        "APP.TD_TRADER_SCD null null 1.696 8.8 1.6 217.072 0.0 100 100 100 0 229.168 ",
-        "APP.TF_PL_POSITION_FUNC null null 1.8 0.0 0.0 0.0 0.0 0 0 0 0 1.8 ",
-        "APP.TF_PL_ADJ_REPORT null null 1.8 10.4 1.6 622.208 0.0 100 100 100 0 636.008 ",
-        "APP.TF_PL_POSITION_DLY null null 1.8 0.0 0.0 0.0 0.0 0 0 0 0 1.8 ",
-        "APP.TF_EQRMS_PAA null null 1.8 0.0 0.0 0.0 0.0 0 0 0 0 1.8 ",
-        "APP.TX_PL_USER_POSN_MAP null null 1.8 10.4 1.6 109.032 0.0 100 100 100 0 122.832 ",
-        "APP.TL_SOURCE_SYSTEM null null 1.696 8.8 1.6 20.632 0.0 100 100 100 0 32.728 ",
+        "APP.TF_EDEALER_PAA null null 1.808 0.0 0.0 0.0 0.0 0 0 0 0 1.808 ",
+        "APP.TF_GEMFIRE_PAA null null 1.808 0.0 0.0 0.0 0.0 0 0 0 0 1.808 ",
+        "APP.TF_PL_POSITION_YTD null null 1.808 12.0 2.4 626.912 0.0 100 100 100 0 643.12 ",
+        "APP.TD_POSN_EXTENDED_KEY null null 1.696 9.6 2.4 25.472 0.0 100 100 100 0 39.168 ",
+        "APP.TX_PL_POSITION null null 1.808 0.0 0.0 0.0 0.0 0 0 0 0 1.808 ",
+        "APP.TF_PL_POSITION_PTD null null 1.808 12.0 2.4 299.88 0.0 100 100 100 0 316.088 ",
+        "APP.TD_TRADER_SCD null null 1.696 9.6 2.4 217.448 0.0 100 100 100 0 231.144 ",
+        "APP.TF_PL_POSITION_FUNC null null 1.808 0.0 0.0 0.0 0.0 0 0 0 0 1.808 ",
+        "APP.TF_PL_ADJ_REPORT null null 1.808 12.0 2.4 622.6 0.0 100 100 100 0 638.808 ",
+        "APP.TF_PL_POSITION_DLY null null 1.808 0.0 0.0 0.0 0.0 0 0 0 0 1.808 ",
+        "APP.TF_EQRMS_PAA null null 1.808 0.0 0.0 0.0 0.0 0 0 0 0 1.808 ",
+        "APP.TX_PL_USER_POSN_MAP null null 1.808 12.0 2.4 109.456 0.0 100 100 100 0 125.664 ",
+        "APP.TL_SOURCE_SYSTEM null null 1.696 9.6 2.4 21.088 0.0 100 100 100 0 34.784 ",
         "APP.TD_FIRM_ACCOUNT_SCD null null 1.696 0.0 0.0 0.0 0.0 0 0 0 0 1.696 ",
         "APP.TL_REGION null null 1.696 0.0 0.0 0.0 0.0 0 0 0 0 1.696 ",
-        "APP.TD_INSTRUMENT_SCD null null 1.696 8.8 1.6 95.92 0.0 100 100 100 0 108.016 ",
+        "APP.TD_INSTRUMENT_SCD null null 1.696 9.6 2.4 96.288 0.0 100 100 100 0 109.984 ",
         /*--eclipse output
         "APP.TF_EDEALER_PAA null null 2.578125 0.0 0.0 0.0 0.0 0 0 0 0 2.578125 ",
         "APP.TF_PL_POSITION_YTD null null 2.578125 15.625 2.34375 611.0762 0.0 100 100 100 0 631.62305 ",
@@ -284,24 +284,24 @@ public class MemoryAnalyticsTest extends JdbcTestBase {
         		" sum(total_size) as totsz from sys.memoryanalytics group by table_name");
 
     indexColValues = new HashMap<String, float[]>();
-    indexColValues.put("APP.TD_FIRM_ACCOUNT_SCD", new float[] {1.664f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.664f});
-    indexColValues.put("APP.TD_INSTRUMENT_SCD", new float[] {1.8080001f, 12.744f, 1.6f, 96.376f, 0.0f, 198.0f, 100.0f, 100.0f, 0.0f, 112.432f});
-    indexColValues.put("APP.TD_PL_POSITION_INDICATIVE", new float[] {1.664f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.664f});
-    indexColValues.put("APP.TD_POSN_EXTENDED_KEY", new float[] {1.8080001f, 13.136f, 1.6f, 25.491999f, 0.0f, 199.0f, 100.0f, 100.0f, 0.0f, 40.095f});
-    indexColValues.put("APP.TD_TRADER_SCD", new float[] {1.8080001f, 13.288f, 1.6f, 217.472f, 0.0f, 200.0f, 100.0f, 100.0f, 0.0f, 234.024f});
-    indexColValues.put("APP.TF_EDEALER_PAA", new float[] {2.056f, 0.128f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 2.184f});
-    indexColValues.put("APP.TF_EQRMS_PAA", new float[] {2.056f, 0.128f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 2.184f});
-    indexColValues.put("APP.TF_GEMFIRE_PAA", new float[] {2.056f, 0.128f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 2.184f});
-    indexColValues.put("APP.TF_PL_ADJ_REPORT", new float[] {1.912f, 15.375999f, 1.6f, 622.692f, 0.0f, 197.0f, 100.0f, 100.0f, 0.0f, 641.388f});
-    indexColValues.put("APP.TF_PL_POSITION_DLY", new float[] {1.768f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.768f});
-    indexColValues.put("APP.TF_PL_POSITION_FUNC", new float[] {1.768f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.768f});
-    indexColValues.put("APP.TF_PL_POSITION_PTD", new float[] {1.912f, 15.592f, 1.6f, 299.924f, 0.0f, 197.0f, 100.0f, 100.0f, 0.0f, 319.172f});
-    indexColValues.put("APP.TF_PL_POSITION_YTD", new float[] {1.912f, 15.1119995f, 1.6f, 626.99603f, 0.0f, 197.0f, 100.0f, 100.0f, 0.0f, 645.932f});
-    indexColValues.put("APP.TL_CURRENCY", new float[] {1.664f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.664f});
-    indexColValues.put("APP.TL_REGION", new float[] {1.664f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.664f});
-    indexColValues.put("APP.TL_SOURCE_SYSTEM", new float[] {1.8080001f, 12.832001f, 1.6f, 21.088f, 0.0f, 197.0f, 100.0f, 100.0f, 0.0f, 37.544f});
-    indexColValues.put("APP.TX_PL_POSITION", new float[] {1.768f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.768f});
-    indexColValues.put("APP.TX_PL_USER_POSN_MAP", new float[] {1.912f, 11.568f, 1.6f, 109.932f, 0.0f, 105.0f, 100.0f, 100.0f, 0.0f, 124.939995f});
+    indexColValues.put("APP.TD_FIRM_ACCOUNT_SCD", new float[] {1.696f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.696f});
+    indexColValues.put("APP.TD_INSTRUMENT_SCD", new float[] {1.8479999f, 15.16f, 2.4f, 96.744f, 0.0f, 198.0f, 100.0f, 100.0f, 0.0f, 116.152f});
+    indexColValues.put("APP.TD_PL_POSITION_INDICATIVE", new float[] {1.696f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.696f});
+    indexColValues.put("APP.TD_POSN_EXTENDED_KEY", new float[] {1.8479999f, 14.592001f, 2.4f, 25.9f, 0.0f, 199.0f, 100.0f, 100.0f, 0.0f, 44.739998f});
+    indexColValues.put("APP.TD_TRADER_SCD", new float[] {1.8479999f, 14.8880005f, 2.4f, 217.84799f, 0.0f, 200.0f, 100.0f, 100.0f, 0.0f, 236.984f});
+    indexColValues.put("APP.TF_EDEALER_PAA", new float[] {2.112f, 0.144f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 2.256f});
+    indexColValues.put("APP.TF_EQRMS_PAA", new float[] {2.112f, 0.144f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 2.256f});
+    indexColValues.put("APP.TF_GEMFIRE_PAA", new float[] {2.112f, 0.144f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 2.256f});
+    indexColValues.put("APP.TF_PL_ADJ_REPORT", new float[] {1.9599999f, 16.912f, 2.4f, 623.084f, 0.0f, 197.0f, 100.0f, 100.0f, 0.0f, 644.35596f});
+    indexColValues.put("APP.TF_PL_POSITION_DLY", new float[] {1.808f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.808f});
+    indexColValues.put("APP.TF_PL_POSITION_FUNC", new float[] {1.808f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.808f});
+    indexColValues.put("APP.TF_PL_POSITION_PTD", new float[] {1.9599999f, 16.944f, 2.4f, 300.364f, 0.0f, 197.0f, 100.0f, 100.0f, 0.0f, 321.668f});
+    indexColValues.put("APP.TF_PL_POSITION_YTD", new float[] {1.9599999f, 16.912f, 2.4f, 627.396f, 0.0f, 197.0f, 100.0f, 100.0f, 0.0f, 648.66797f});
+    indexColValues.put("APP.TL_CURRENCY", new float[] {1.696f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.696f});
+    indexColValues.put("APP.TL_REGION", new float[] {1.696f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.696f});
+    indexColValues.put("APP.TL_SOURCE_SYSTEM", new float[] {1.8479999f, 14.992001f, 2.4f, 21.56f, 0.0f, 197.0f, 100.0f, 100.0f, 0.0f, 40.8f});
+    indexColValues.put("APP.TX_PL_POSITION", new float[] {1.808f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.808f});
+    indexColValues.put("APP.TX_PL_USER_POSN_MAP", new float[] {1.9599999f, 12.368f, 2.4f, 110.356f, 0.0f, 105.0f, 100.0f, 100.0f, 0.0f, 127.084f});
     /*eclipse output
     indexColValues.put("APP.TD_FIRM_ACCOUNT_SCD", new float[] {2.3984375f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 2.3984375f});
     indexColValues.put("APP.TD_INSTRUMENT_SCD", new float[] {2.625f, 19.984375f, 5.2714844f, 93.81641f, 0.0f, 198.0f, 198.0f, 100.0f, 0.0f, 121.697266f});
@@ -390,25 +390,24 @@ public class MemoryAnalyticsTest extends JdbcTestBase {
             + ") as memA group by table_name ");
 
     indexColValues = new HashMap<String, float[]>();
-    indexColValues.put("APP.TD_FIRM_ACCOUNT_SCD", new float[] {1.664f, 0.0f});
-    indexColValues.put("APP.TD_INSTRUMENT_SCD", new float[] {110.572f, 100.0f});
-    indexColValues.put("APP.TD_PL_POSITION_INDICATIVE", new float[] {1.664f, 0.0f});
-    indexColValues.put("APP.TD_POSN_EXTENDED_KEY", new float[] {40.095f, 100.0f});
-    indexColValues.put("APP.TD_TRADER_SCD", new float[] {232.22f, 100.0f});
-    indexColValues.put("APP.TF_EDEALER_PAA", new float[] {2.184f, 0.0f});
-    indexColValues.put("APP.TF_EQRMS_PAA", new float[] {2.184f, 0.0f});
-    indexColValues.put("APP.TF_GEMFIRE_PAA", new float[] {2.184f, 0.0f});
-    indexColValues.put("APP.TF_PL_ADJ_REPORT", new float[] {639.617f, 100.0f});
-    indexColValues.put("APP.TF_PL_POSITION_DLY", new float[] {1.768f, 0.0f});
-    indexColValues.put("APP.TF_PL_POSITION_FUNC", new float[] {1.768f, 0.0f});
-    indexColValues.put("APP.TF_PL_POSITION_PTD", new float[] {317.057f, 100.0f});
-    indexColValues.put("APP.TF_PL_POSITION_YTD", new float[] {646.73206f, 100.0f});
-    indexColValues.put("APP.TL_CURRENCY", new float[] {1.664f, 0.0f});
-    indexColValues.put("APP.TL_REGION", new float[] {1.664f, 0.0f});
-    indexColValues.put("APP.TL_SOURCE_SYSTEM", new float[] {35.421f, 100.0f});
-    indexColValues.put("APP.TX_PL_POSITION", new float[] {1.768f, 0.0f});
-    indexColValues.put("APP.TX_PL_USER_POSN_MAP", new float[] {123.047005f, 100.0f});
-    
+    indexColValues.put("APP.TD_FIRM_ACCOUNT_SCD", new float[] {1.696f, 0.0f});
+    indexColValues.put("APP.TD_INSTRUMENT_SCD", new float[] {116.152f, 100.0f});
+    indexColValues.put("APP.TD_PL_POSITION_INDICATIVE", new float[] {1.696f, 0.0f});
+    indexColValues.put("APP.TD_POSN_EXTENDED_KEY", new float[] {44.739998f, 100.0f});
+    indexColValues.put("APP.TD_TRADER_SCD", new float[] {236.984f, 100.0f});
+    indexColValues.put("APP.TF_EDEALER_PAA", new float[] {2.256f, 0.0f});
+    indexColValues.put("APP.TF_EQRMS_PAA", new float[] {2.256f, 0.0f});
+    indexColValues.put("APP.TF_GEMFIRE_PAA", new float[] {2.256f, 0.0f});
+    indexColValues.put("APP.TF_PL_ADJ_REPORT", new float[] {644.35596f, 100.0f});
+    indexColValues.put("APP.TF_PL_POSITION_DLY", new float[] {1.808f, 0.0f});
+    indexColValues.put("APP.TF_PL_POSITION_FUNC", new float[] {1.808f, 0.0f});
+    indexColValues.put("APP.TF_PL_POSITION_PTD", new float[] {321.668f, 100.0f});
+    indexColValues.put("APP.TF_PL_POSITION_YTD", new float[] {648.66797f, 100.0f});
+    indexColValues.put("APP.TL_CURRENCY", new float[] {1.696f, 0.0f});
+    indexColValues.put("APP.TL_REGION", new float[] {1.696f, 0.0f});
+    indexColValues.put("APP.TL_SOURCE_SYSTEM", new float[] {40.8f, 100.0f});
+    indexColValues.put("APP.TX_PL_POSITION", new float[] {1.808f, 0.0f});
+    indexColValues.put("APP.TX_PL_USER_POSN_MAP", new float[] {127.084f, 100.0f});
     /* eclipse output
     indexColValues.put("APP.TD_FIRM_ACCOUNT_SCD", new float[] {2.3984375f, 0.0f});
     indexColValues.put("APP.TD_INSTRUMENT_SCD", new float[] {121.697266f, 100.0f});
@@ -576,27 +575,27 @@ public class MemoryAnalyticsTest extends JdbcTestBase {
     Connection conn = getConnection(props);
    
     {
-      String nordScript = TestUtil.getResourcesDir()
-          + "/lib/nordstrom/schema.sql";
-      GemFireXDUtils.executeSQLScripts(conn, new String[] { nordScript }, false,
+      String useCase7Script = TestUtil.getResourcesDir()
+          + "/lib/useCase7/schema.sql";
+      GemFireXDUtils.executeSQLScripts(conn, new String[] { useCase7Script }, false,
           getLogger(), null, null, false);
 
-      String nordDataScript = TestUtil.getResourcesDir()
-          + "/lib/nordstrom/import.sql";
+      String useCase7DataScript = TestUtil.getResourcesDir()
+          + "/lib/useCase7/import.sql";
 
-      GemFireXDUtils.executeSQLScripts(conn, new String[] { nordDataScript },
+      GemFireXDUtils.executeSQLScripts(conn, new String[] { useCase7DataScript },
           false, getLogger(), "<path_prefix>",
           TestUtil.getResourcesDir(), false);
     }
 
     {
       String useCase3Script = TestUtil.getResourcesDir()
-          + "/lib/UseCase3Data/schema.sql";
+          + "/lib/useCase3Data/schema.sql";
       GemFireXDUtils.executeSQLScripts(conn, new String[] { useCase3Script }, false,
           getLogger(), null, null, false);
 
       String useCase3DataScript = TestUtil.getResourcesDir()
-          + "/lib/UseCase3Data/importAll.sql";
+          + "/lib/useCase3Data/importAll.sql";
 
       GemFireXDUtils.executeSQLScripts(conn, new String[] { useCase3DataScript },
           false, getLogger(), "<path_prefix>",
@@ -671,10 +670,10 @@ public class MemoryAnalyticsTest extends JdbcTestBase {
     
     rows = 0;
     rs = stmt
-        .executeQuery("select * from sys.memoryanalytics where entry_size > 0.1");
+        .executeQuery("select * from sys.memoryanalytics where entry_size > 0.2");
     while(rs.next()) {
       rows++;
-      assertTrue(rs.getFloat("ENTRY_SIZE") > 0.1f);
+      assertTrue(rs.getFloat("ENTRY_SIZE") > 0.2f);
       final String report = rs.getString("MEMORY");
       assertMemReport(report);
       getLogger().info(

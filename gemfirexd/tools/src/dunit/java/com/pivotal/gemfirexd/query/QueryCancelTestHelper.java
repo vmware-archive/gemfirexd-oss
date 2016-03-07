@@ -59,7 +59,7 @@ public abstract class QueryCancelTestHelper extends DistributedSQLTestBase {
   public static boolean serversReadyForCancellation(String key,
       Integer expectedNumOfServers) {
     Integer value = (Integer)DUnitBB.getBB().get(key);
-    globalLogger.info(
+    getGlobalLogger().info(
         " serversReadyForCancellation: value in BB map for key: " + key
             + " value is " + value);
     if ((value != null) && value.equals(expectedNumOfServers)) {
@@ -83,13 +83,13 @@ public abstract class QueryCancelTestHelper extends DistributedSQLTestBase {
       bb.acquireSharedLock();
       Integer v = (Integer)bb.get(key);
       if (v == null) {
-        globalLogger.info(
+        getGlobalLogger().info(
             "incrementValueInBBMap: putting value=" + 1 + " for key=" + key);
         bb.put(key, 1);
       } else if (v.equals(expectedMaxValue)) {
         return;
       } else {
-        globalLogger.info(
+        getGlobalLogger().info(
             "incrementValueInBBMap: putting value=" + (v + 1) + " for key="
                 + key);
         bb.put(key, v + 1);

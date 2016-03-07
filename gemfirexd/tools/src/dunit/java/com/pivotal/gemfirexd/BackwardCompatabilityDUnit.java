@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
+import java.net.URI;
 import java.sql.*;
 import java.util.HashSet;
 import java.util.Properties;
@@ -433,22 +434,22 @@ public class BackwardCompatabilityDUnit extends BackwardCompatabilityTestBase {
       throws Exception {
 
     String[] products = { 
-        PRODUCT_SQLFIRE, 
-        PRODUCT_GEMFIREXD,
+        //PRODUCT_SQLFIRE,
+        //PRODUCT_GEMFIREXD,
         //PRODUCT_GEMFIREXD,
         PRODUCT_GEMFIREXD
     };
     String[] versions = { 
-        "1.1.2",
-        "1.0",
+        //"1.1.2",
+        //"1.0",
         //"1.3",
         "1.3.1"
     };
     final boolean isWindows = NativeCalls.getInstance().getOSType().isWindows();
     String[] versionDirs = {
-        "sqlfire/releases/SQLFire1.1.2-all",
+        //"sqlfire/releases/SQLFire1.1.2-all",
         // GFXD 1.0.X was not released for Windows
-        isWindows ? null : "gemfireXD/releases/GemFireXD1.0.0-all",
+        //isWindows ? null : "gemfireXD/releases/GemFireXD1.0.0-all",
         //isWindows ? "gemfireXD/releases/GemFireXD1.3.0-all/Windows_NT"
         //    : "gemfireXD/releases/GemFireXD1.3.0-all/Linux",
         isWindows ? "gemfireXD/releases/GemFireXD1.3.1-all/Windows_NT"
@@ -576,7 +577,7 @@ public class BackwardCompatabilityDUnit extends BackwardCompatabilityTestBase {
     }
   }
 
-  public void testBug50794()
+  public void DISABLED_testBug50794()
       throws Exception {
     String[] versions = {"1.1.2"};
     String[] versionDirs = {"sqlfire/releases/SQLFire1.1.2-all"};
@@ -1506,32 +1507,46 @@ public class BackwardCompatabilityDUnit extends BackwardCompatabilityTestBase {
         int clientPort = Integer.parseInt(args[2]);
         File clientJar = new File(args[3]).getCanonicalFile();
         boolean useSQLFireURL = Boolean.parseBoolean(args[4]);
-        String urlPrefix = null;
+        String urlPrefix;
         // verify that this is really running the expected version
-        if(product.equals(PRODUCT_SQLFIRE)) {
-          Class<?> clazz = Class.forName("com.vmware.sqlfire.jdbc.ClientDriver");
-          assertEquals(clientJar.toURI(), clazz.getProtectionDomain().getCodeSource().getLocation().toURI());
-          
-          urlPrefix = "jdbc:sqlfire://";
-        } else if (product.equals(PRODUCT_GEMFIREXD)) {
-          Class<?> clazz = Class.forName("com.pivotal.gemfirexd.jdbc.ClientDriver");
-          assertEquals(clientJar.toURI(), clazz.getProtectionDomain().getCodeSource().getLocation().toURI());
-          if (useSQLFireURL) {
+        switch (product) {
+          case PRODUCT_SQLFIRE: {
+            Class<?> clazz = Class.forName("com.vmware.sqlfire.jdbc.ClientDriver");
+            URI classJarURI = clazz.getProtectionDomain().getCodeSource()
+                .getLocation().toURI();
+            if (!clientJar.toURI().equals(classJarURI)) {
+              throw new AssertionError("Expected URI=" + clientJar.toURI() +
+                  " classURI=" + classJarURI);
+            }
             urlPrefix = "jdbc:sqlfire://";
-          } else {
-            urlPrefix = "jdbc:gemfirexd://";  
+            break;
           }
-        } else {
-          throw new Exception("No PRODUCT set");
+          case PRODUCT_GEMFIREXD: {
+            Class<?> clazz = Class.forName("com.pivotal.gemfirexd.jdbc.ClientDriver");
+            URI classJarURI = clazz.getProtectionDomain().getCodeSource()
+                .getLocation().toURI();
+            if (!clientJar.toURI().equals(classJarURI)) {
+              throw new AssertionError("Expected URI=" + clientJar.toURI() +
+                  " classURI=" + classJarURI);
+            }
+            if (useSQLFireURL) {
+              urlPrefix = "jdbc:sqlfire://";
+            } else {
+              urlPrefix = "jdbc:gemfirexd://";
+            }
+            break;
+          }
+          default:
+            throw new Exception("No PRODUCT set");
         }
         String connectString = urlPrefix + host + ':' + clientPort;
         System.out.println("Creating a client connection with connect string:" + connectString);
-        Connection conn = null;
+        Connection conn;
         int attempts = 1;
         // Try hard to get a connection
         while (true) {
           try {
-            System.out.println("getConnection:attempt-"+attempts);
+            System.out.println("getConnection:attempt-" + attempts);
             Properties props = new Properties();
             props.put("load-balance", "false");
             conn = DriverManager.getConnection(connectString, props);
@@ -1549,16 +1564,16 @@ public class BackwardCompatabilityDUnit extends BackwardCompatabilityTestBase {
                 + " and autocommit=" + conn.getAutoCommit());
             break;
           } catch (SQLException e) {
-            if(attempts++ < 10 && e.getSQLState().startsWith("08")) {
+            if (attempts++ < 10 && e.getSQLState().startsWith("08")) {
               Thread.sleep(1000);
-              continue;
             } else {
               throw e;
             }
           }
         }
         String doMethod = args[5];
-        Method method = ProductClient.class.getMethod(doMethod, new Class[]{Connection.class});
+        Method method = ProductClient.class.getMethod(doMethod,
+            Connection.class);
         method.invoke(null, conn);
         conn.close();
       } catch (Throwable t) {
@@ -1567,6 +1582,7 @@ public class BackwardCompatabilityDUnit extends BackwardCompatabilityTestBase {
         System.exit(1);
       }
     }
+
     public static void createDataForClient(Connection conn) throws Exception {
       System.out.println("Creating tables");
       Statement st = conn.createStatement();
@@ -1676,7 +1692,7 @@ public class BackwardCompatabilityDUnit extends BackwardCompatabilityTestBase {
     }
     public static void verifyDataForClientBug50794(Connection conn) throws SQLException {
       ProductClient.verifyData(conn, ProductClient.TABLE_NAMES_BUG50794);
-    } 
+    }
     public static void verifyData(Connection conn, String[] tables)
         throws SQLException {
       SQLException exception = null;
@@ -1692,9 +1708,11 @@ public class BackwardCompatabilityDUnit extends BackwardCompatabilityTestBase {
           while (rs.next()) {
             int resId = rs.getInt(1);
             if (resultIds.contains(resId)) {
-              fail("double result for " + resId);
+              throw new AssertionError("double result for " + resId);
             }
-            assertTrue("unexpected ID " + resId, resId > 0);
+            if (resId <= 0) {
+              throw new AssertionError("unexpected ID " + resId);
+            }
             resultIds.add(resId);
 
             for (int i = 2; i <= colCount; i++) {
@@ -1703,15 +1721,21 @@ public class BackwardCompatabilityDUnit extends BackwardCompatabilityTestBase {
                   || colType == java.sql.Types.CHAR
                   || colType == java.sql.Types.CLOB) {
                 String value = rs.getString(i);
-                assertNotNull(value);
+                if (value == null) {
+                  throw new AssertionError("unexpected null value");
+                }
               }
               else if (colType == java.sql.Types.BLOB) {
                 byte[] value = rs.getBytes(i);
-                assertNotNull(value);
+                if (value == null) {
+                  throw new AssertionError("unexpected null value");
+                }
               }
               else if (colType == java.sql.Types.INTEGER) {
                 int value = rs.getInt(i);
-                assertTrue(value > 0);
+                if (value <= 0) {
+                  throw new AssertionError("unexpected value=" + value);
+                }
               }
             }
           }
@@ -1725,9 +1749,8 @@ public class BackwardCompatabilityDUnit extends BackwardCompatabilityTestBase {
         throw exception;
       }
     }
-    
   }
-  
+
   /**
    * Class containing the "main" method to be run on each of the older version
    * client jars. We do this way rather than just running sql scripts is to
@@ -1863,7 +1886,7 @@ public class BackwardCompatabilityDUnit extends BackwardCompatabilityTestBase {
       Set<Integer> resultIds = new HashSet<Integer>();
       final String table = (String)tableObj[0];
       final int offset = (Integer)tableObj[2];
-      globalLogger.info("checking data for table " + table);
+      getGlobalLogger().info("checking data for table " + table);
       ResultSet rs = conn.createStatement().executeQuery(
           "select * from " + table);
       while (rs.next()) {

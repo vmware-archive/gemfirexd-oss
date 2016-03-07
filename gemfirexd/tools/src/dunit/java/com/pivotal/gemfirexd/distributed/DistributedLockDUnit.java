@@ -129,7 +129,7 @@ public class DistributedLockDUnit extends DistributedSQLTestBase {
           throw new CacheException("failed to obtain the lock") {
           };
         }
-        globalLogger.info(this.toString() + " acquired the "
+        getGlobalLogger().info(this.toString() + " acquired the "
             + (this.readLock ? "read" : "write") + " lock on object "
             + lockObject + "; sleeping for " + this.sleepTimeMillis + "ms");
         try {
@@ -138,7 +138,7 @@ public class DistributedLockDUnit extends DistributedSQLTestBase {
           Thread.currentThread().interrupt();
           throw new TestException("unexpected interrupt", ie);
         }
-        globalLogger.info(this.toString() + (this.readLock ? " read" :
+        getGlobalLogger().info(this.toString() + (this.readLock ? " read" :
             " write") + " lock on object " + lockObject + "; sleep complete");
       }
       for (Object lockObject : this.lockObjects) {
@@ -612,14 +612,14 @@ public class DistributedLockDUnit extends DistributedSQLTestBase {
             lastKey = currentKey;
           }
           else {
-            globalLogger.info("Failed due to duplicate value. Keys: "
+            getGlobalLogger().info("Failed due to duplicate value. Keys: "
                 + Arrays.toString(array));
             throw new TestException("unexpected duplicate " + key + " for VM: "
                 + vm + ", oldVM: " + oldVM);
           }
         }
         else {
-          globalLogger.info("Failed due to decrease in value. Keys: "
+          getGlobalLogger().info("Failed due to decrease in value. Keys: "
               + Arrays.toString(array));
           throw new TestException("unexpected decrease in value=" + key
               + " currentValue=" + currentKey + " lastValue=" + lastKey

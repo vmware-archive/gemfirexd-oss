@@ -1520,8 +1520,8 @@ public final class RegionEntryUtils {
     }
 
     @Override
-    public void log(String traceFlag, String logLine) {
-      SanityManager.DEBUG_PRINT(traceFlag, logLine);
+    public void log(String traceFlag, String logLine, Throwable t) {
+      SanityManager.DEBUG_PRINT(traceFlag, logLine, t);
     }
 
     @Override

@@ -41,11 +41,11 @@ import com.gemstone.gemfire.DataSerializable;
 import com.gemstone.gemfire.Instantiator;
 import com.gemstone.gemfire.cache.*;
 import com.gemstone.gemfire.cache.execute.Function;
-import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.InternalDataSerializer;
 import com.gemstone.gemfire.internal.cache.EntryEventImpl;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
+import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.RegionEntry;
 import com.pivotal.gemfirexd.Attribute;
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
@@ -73,7 +73,6 @@ import com.pivotal.gemfirexd.internal.iapi.types.SQLDate;
 import com.pivotal.gemfirexd.internal.iapi.types.SQLTime;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedResultSet;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedStatement;
-import io.snappydata.test.dunit.Host;
 import io.snappydata.test.dunit.SerializableRunnable;
 import io.snappydata.test.dunit.VM;
 import io.snappydata.test.util.TestException;
@@ -104,21 +103,21 @@ public class DistributedQueryDUnit extends DistributedSQLTestBase {
     // Create the table and insert a row
     clientSQLExecute(1, "create table EMP.TESTTABLE (ID int , "
         + "DESCRIPTION varchar(1024) not null, primary key (ID))");
-    clientSQLExecute(1, "insert into EMP.TESTTABLE values (1, 'First')");   
-    
+    clientSQLExecute(1, "insert into EMP.TESTTABLE values (1, 'First')");
+
     clientSQLExecute(1, "create synonym synForEmpTestTable for EMP.TESTTABLE");
-    
+
     sqlExecuteVerify(new int[] { 1 }, null,
         "select ID, DESCRIPTION from synForEmpTestTable", null, null,
         false /* do not use prep stmnt */, false /* do not check for type information */);
     clientSQLExecute(1, "Drop table EMP.TESTTABLE ");
   }
-  
+
   /**
-   * Uses  Uses <TEST>/lib/distributedQuery.xml 
+   * Uses  Uses <TEST>/lib/distributedQuery.xml
    * ResultSet ID = "q_1"
    * @throws Exception
-   */  
+   */
   public void testBasicDistributedQueryUsingPreparedStatement() throws Exception {
     // Start one client a two servers
     startServerVMs(2, 0, "SG1");
@@ -132,20 +131,20 @@ public class DistributedQueryDUnit extends DistributedSQLTestBase {
         + "DESCRIPTION varchar(1024) not null, primary key (ID))");
     clientSQLExecute(1, "insert into TESTTABLE values (1, 'First')");
     clientSQLExecute(1, "insert into TESTTABLE values (2, 'Second')");
-    
+
     clientSQLExecute(1, "create synonym synForTestTable for TESTTABLE");
     sqlExecuteVerify(new int[] { 1 }, null,
         "select ID, DESCRIPTION from synForTestTable",  TestUtil.getResourcesDir() + "/lib/distributedQuery.xml", "q_1",
         true /* do not use prep stmnt */, false /* do not check for type information */);
     clientSQLExecute(1, "Drop table TESTTABLE ");
   }
-  
-  
+
+
   /**
-   * Uses  Uses <TEST>/lib/distributedQuery.xml 
+   * Uses  Uses <TEST>/lib/distributedQuery.xml
    * ResultSet ID = "q_1"
    * @throws Exception
-   */  
+   */
   public void testBasicDistributedQueryUsingPreparedStatementWithParamterization()
       throws Exception {
     // Start one client a two servers
@@ -153,7 +152,7 @@ public class DistributedQueryDUnit extends DistributedSQLTestBase {
     startClientVMs(1, 0, null);
 
     // Create a schema with default server groups GemFire extension
-    clientSQLExecute(1, "create schema EMP default server groups (SG1)"); 
+    clientSQLExecute(1, "create schema EMP default server groups (SG1)");
 
     // Create the table and insert a row
     clientSQLExecute(1, "create table EMP.TESTTABLE (ID int , "
@@ -326,7 +325,7 @@ public class DistributedQueryDUnit extends DistributedSQLTestBase {
     if (isTransactional) {
       return;
     }
-    
+
     // Start a client and one servers
     startVMs(1, 1);
     // Create a schema and table in it
@@ -340,7 +339,7 @@ public class DistributedQueryDUnit extends DistributedSQLTestBase {
     //This will create a bucket B1 on server1 which will be primary
     clientSQLExecute(1, "insert into trade.customers values(1,'name_1','addr_1',1)");
    //Attach a sql observer on server 1
-    
+
     SerializableRunnable dbShutter = new SerializableRunnable(
         "attach observer on server1") {
       @Override
@@ -352,38 +351,38 @@ public class DistributedQueryDUnit extends DistributedSQLTestBase {
             Thread th = new Thread(new Runnable() {
               @Override
               public void run() {
-               
-                  Misc.getGemFireCache().close("no reason", null, 
+
+                  Misc.getGemFireCache().close("no reason", null,
                       false, true);
-                
+
               }
             });
             th.start();
             try {
               th.join();
-            } catch (InterruptedException ignore) {              
-              
+            } catch (InterruptedException ignore) {
+
             }
           }
         };
         GemFireXDQueryObserverHolder.setInstance(sqo);
       }
-    }; 
-   
+    };
+
     startServerVMs(1, 0, null);
     Thread.sleep(5000);
     serverExecute(1, dbShutter);
     Connection conn = TestUtil.getConnection();
     Statement stmt = conn.createStatement();
     stmt.execute("insert into trade.customers values(114,'name_114','addr_114',1)");
-   
+
     ResultSet rs = stmt.executeQuery("select * from trade.customers where cid >= 0");
     int numRows = 0;
-    while(rs.next()) {      
+    while(rs.next()) {
       ++numRows;
     }
     assertEquals(2,numRows);
-    
+
   }
 
 
@@ -417,19 +416,15 @@ public class DistributedQueryDUnit extends DistributedSQLTestBase {
   }
 
   /**
-   * test serialization/deserialization using StatArchiveWriter for normal GFE
+   * test serialization/deserialization using IDS.writeSignedVL for normal GFE
    * regions
    */
   public void test41179_1() throws Exception {
     // start a couple of VMs to use as datastore and this VM as accessor
-    Host host = Host.getHost(0);
-    VM vm0 = host.getVM(0);
-    VM vm1 = host.getVM(1);
+    startVMs(1, 2);
 
-    // create cache in the three VMs
-    vm0.invoke(DistributedQueryDUnit.class, "createCacheInVm");
-    vm1.invoke(DistributedQueryDUnit.class, "createCacheInVm");
-    createCacheInVm();
+    VM vm0 = this.serverVMs.get(0);
+    VM vm1 = this.serverVMs.get(1);
 
     try {
       // create region for puts/gets
@@ -437,6 +432,7 @@ public class DistributedQueryDUnit extends DistributedSQLTestBase {
           new Object[] { Boolean.FALSE });
       vm1.invoke(DistributedQueryDUnit.class, "createRegionForTest",
           new Object[] { Boolean.FALSE });
+      Cache cache = CacheFactory.getAnyInstance();
       String regionName = createRegionForTest(Boolean.TRUE);
       Region<SerializableCompactLong, SerializableCompactLong> region = cache
           .getRegion(regionName);
@@ -480,14 +476,12 @@ public class DistributedQueryDUnit extends DistributedSQLTestBase {
         }
       }
     } finally {
-      vm0.invoke(DistributedQueryDUnit.class, "closeCache");
-      vm1.invoke(DistributedQueryDUnit.class, "closeCache");
-      closeCache();
+      stopAllVMs();
     }
   }
 
   /**
-   * Test serialization/deserialization using StatArchiveWriter for GemFireXD.
+   * Test serialization/deserialization using IDS.writeSignedVL for GemFireXD.
    * Was disabled due to bug #41196 and now is also a testcase for that bug.
    */
   public void test41179_2() throws Exception {
@@ -601,18 +595,18 @@ public class DistributedQueryDUnit extends DistributedSQLTestBase {
     startVMs(1, 3);
 
     final boolean [] failed = new boolean[]{false};
-    final Statement stmt = TestUtil.jdbcConn.createStatement(); 
+    final Statement stmt = TestUtil.jdbcConn.createStatement();
     try {
       stmt.execute("create table TestInt (id int primary key, tid int)");
       stmt.execute("insert into TestInt values(1,1)");
       stmt.execute("update table TestInt set tid =2");
       stmt.execute( "create table TestLong (id bigint primary key, tid int, id int)");
       fail("Table creation should have failed");
-    }catch(Exception expected) {      
+    }catch(Exception expected) {
     }
     Thread th = new Thread( new  Runnable() {
       public void run() {
-         try {       
+         try {
           ResultSet rs = stmt.executeQuery("select  * from TestInt");
           assertTrue(rs.next());
           assertFalse(rs.next());
@@ -630,7 +624,7 @@ public class DistributedQueryDUnit extends DistributedSQLTestBase {
 
   /**
    * Test for member going down during ResultSet iteration (bug #41471).
-   * 
+   *
    * Also added test for bug #41661 that will verify that client does not hang
    * if {@link Function#execute} throws a runtime exception.
    */
@@ -977,7 +971,7 @@ public class DistributedQueryDUnit extends DistributedSQLTestBase {
           StringBuilder ins = new StringBuilder(sql);
           for (int i = 0; i < 100; i++) {
             ins.append(i).append(",");
-            ins.append(i + AvailablePort.rand.nextInt(1000)).append(",");
+            ins.append(i + PartitionedRegion.rand.nextInt(1000)).append(",");
             ins.append(1).append(", '");
             ins.append(TestUtil.numstr(i)).append("' )");
             if (i % 2 == 0) {
@@ -1039,7 +1033,7 @@ public class DistributedQueryDUnit extends DistributedSQLTestBase {
             GemFireXDQueryObserverHolder
                 .setInstance(new GemFireXDQueryObserverAdapter());
           }
-          
+
         } catch (SQLException unexpected) {
           throw new GemFireXDRuntimeException(unexpected);
         }
@@ -1762,30 +1756,6 @@ public class DistributedQueryDUnit extends DistributedSQLTestBase {
     assertTrue("failed to find ID: " + id, foundId);
   }
 
-  protected static Cache cache = null;
-
-  public static void createCacheInVm() throws Exception {
-    Properties props = new Properties();
-    new DistributedQueryDUnit("temp").createCache(props);
-  }
-
-  public static void closeCache() {
-    if (cache != null) {
-      DistributedSystem sys = cache.getDistributedSystem();
-      cache.close();
-      sys.disconnect();
-    }
-  }
-
-  private void createCache(Properties props) throws Exception {
-    DistributedSystem ds = getSystem(props);
-    assertNotNull(ds);
-    ds.disconnect();
-    ds = getSystem(props);
-    cache = CacheFactory.create(ds);
-    assertNotNull(cache);
-  }
-
   @SuppressWarnings({ "unchecked", "rawtypes" })
   public static String createRegionForTest(Boolean accessor) {
     Instantiator.register(new Instantiator(SerializableCompactLong.class, 79) {
@@ -1804,6 +1774,7 @@ public class DistributedQueryDUnit extends DistributedSQLTestBase {
     }
     PartitionAttributes prAttr = paf.create();
     attr.setPartitionAttributes(prAttr);
+    Cache cache = CacheFactory.getAnyInstance();
     Region reg = cache.createRegion("TESTLONG", attr.create());
     return reg.getFullPath();
   }
@@ -1908,7 +1879,7 @@ public class DistributedQueryDUnit extends DistributedSQLTestBase {
             public void run() {
               try {
                 TestUtil.shutDown();
-                globalLogger.info("completed shutdown");
+                getGlobalLogger().info("completed shutdown");
               } catch (SQLException ex) {
                 throw new TestException("failed in shutdown", ex);
               }

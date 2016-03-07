@@ -164,13 +164,13 @@ public class SelectsToGetDUnit extends DistributedSQLTestBase {
   public static void prepareTableWithOneKey(int rows) throws SQLException {
     
     Statement s = TestUtil.jdbcConn.createStatement();
-    globalLogger.info(" creating tables ");
+    getGlobalLogger().info(" creating tables ");
     
     s.execute("create table Account (" +
                " id varchar(10) primary key, name varchar(100), type int )");
     TestUtil.jdbcConn.commit();
 
-    globalLogger.info(" populating values ");
+    getGlobalLogger().info(" populating values ");
     PreparedStatement ps = TestUtil.jdbcConn.prepareStatement("insert into Account values(?,?,?)"); 
     while( rows > 0) {
       ps.setString(1, String.valueOf(rows));
@@ -190,7 +190,7 @@ public class SelectsToGetDUnit extends DistributedSQLTestBase {
                 " constraint order_pk primary key(account, id ) )" );
     
     TestUtil.jdbcConn.commit();
-    globalLogger.info( " populating values ");
+    getGlobalLogger().info( " populating values ");
     PreparedStatement ps = TestUtil.jdbcConn.prepareStatement("insert into finOrder values(?,?,?,?)"); 
     while( rows > 0) {
       ps.setLong(1, rows);

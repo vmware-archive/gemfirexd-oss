@@ -3617,7 +3617,7 @@ public class CreateTableTest extends JdbcTestBase {
   }
   
   public void testMemScaleDDL() throws Exception {
-    System.setProperty("gemfire.off-heap-memory-size", "128m");
+    System.setProperty("gemfire.off-heap-memory-size", "500m");
     Properties props = new Properties();
     int mcastPort = AvailablePort.getRandomAvailablePort(AvailablePort.JGROUPS);
     props.put("mcast-port", String.valueOf(mcastPort));    

@@ -17,29 +17,21 @@
 
 package com.gemstone.gemfire.internal.shared;
 
-import com.sun.jna.Callback;
-import com.sun.jna.LastErrorException;
-import com.sun.jna.Library;
-import com.sun.jna.Native;
-import com.sun.jna.NativeLibrary;
-import com.sun.jna.NativeLong;
-import com.sun.jna.Platform;
-import com.sun.jna.Pointer;
-import com.sun.jna.Structure;
-import com.sun.jna.ptr.IntByReference;
-import com.sun.jna.win32.StdCallLibrary;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.sun.jna.*;
+import com.sun.jna.ptr.IntByReference;
+import com.sun.jna.win32.StdCallLibrary;
 
 /**
  * Implementation of {@link NativeCalls} interface that encapsulates native C
@@ -107,6 +99,8 @@ public final class NativeCallsJNAImpl {
     public static native int unsetenv(String name) throws LastErrorException;
 
     public static native String getenv(String name);
+
+    public static native int chdir(String path) throws LastErrorException;
 
     public static native int getpid();
 
@@ -227,6 +221,18 @@ public final class NativeCallsJNAImpl {
           javaEnv.remove(name);
         }
       }
+    }
+
+    /**
+     * @see NativeCalls#setCurrentWorkingDirectory(String)
+     */
+    @Override
+    public void setCurrentWorkingDirectory(String path)
+        throws LastErrorException {
+      // set the java property separately in any case
+      System.setProperty("user.dir", path);
+      // now change the OS path
+      chdir(path);
     }
 
     /**
@@ -1134,6 +1140,9 @@ public final class NativeCallsJNAImpl {
       public static native int GetEnvironmentVariableA(String name,
           byte[] pvalue, int psize);
 
+      public static native boolean SetCurrentDirectory(String path)
+          throws LastErrorException;
+
       public static native int GetCurrentProcessId();
 
       public static native Pointer OpenProcess(int desiredAccess,
@@ -1198,6 +1207,18 @@ public final class NativeCallsJNAImpl {
           javaEnv.remove(name);
         }
       }
+    }
+
+    /**
+     * @see NativeCalls#setCurrentWorkingDirectory(String)
+     */
+    @Override
+    public void setCurrentWorkingDirectory(String path)
+        throws LastErrorException {
+      // set the java property separately in any case
+      System.setProperty("user.dir", path);
+      // now change the OS path
+      Kernel32.SetCurrentDirectory(path);
     }
 
     /**

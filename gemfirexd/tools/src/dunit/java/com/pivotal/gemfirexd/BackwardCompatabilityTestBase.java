@@ -113,10 +113,6 @@ public abstract class BackwardCompatabilityTestBase extends
     vm2WorkingDir = (String)Host.getHost(0).getVM(1).invoke(getVMWorkingDir);
     vm3WorkingDir = (String)Host.getHost(0).getVM(2).invoke(getVMWorkingDir);
     vm4WorkingDir = (String)Host.getHost(0).getVM(3).invoke(getVMWorkingDir);
-
-    // Begin with clean directories
-    cleanUp(new String[] { vm1WorkingDir, vm2WorkingDir, vm3WorkingDir,
-        vm4WorkingDir });
   }
 
   @Override
@@ -138,8 +134,6 @@ public abstract class BackwardCompatabilityTestBase extends
         vm2WorkingDir + "/dir1", vm3WorkingDir + "/dir1",
         vm4WorkingDir + "/dir1" };
     cleanUpCustomStoreFiles(customStoreDirs);
-    cleanUp(new String[] { vm1WorkingDir, vm2WorkingDir, vm3WorkingDir,
-        vm4WorkingDir });
   }
 
   public BackwardCompatabilityTestBase(String name) {
@@ -677,7 +671,7 @@ public abstract class BackwardCompatabilityTestBase extends
     javaCommandLine.add(clientJar);
     javaCommandLine.add(Boolean.toString(useSQLFireUrl));
     javaCommandLine.add(doWhat);
-    getLogWriter().info("Starting: " + javaCommandLine);
+    System.out.println("Starting: " + javaCommandLine);
 
     ProcessBuilder builder = new ProcessBuilder(
         javaCommandLine.toArray(new String[javaCommandLine.size()]));
@@ -687,9 +681,8 @@ public abstract class BackwardCompatabilityTestBase extends
     final Process clientProc = builder.start();
     String clientOut = TestUtil.getProcessOutput(clientProc, 0, 90000,
         exitValue);
-    getLogWriter().info(
-        "Output from ProductClient using client " + clientJar + " : "
-            + clientOut);
+    System.out.println("Output from ProductClient using client "
+        + clientJar + " : " + clientOut);
     if (exitValue[0] != 0) {
       throw new TestException("Unexpected exit value " + exitValue[0]
           + " while running client version " + version + ", OUTPUT=\n"

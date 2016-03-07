@@ -41,12 +41,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import junit.framework.Assert;
-
-import org.apache.derbyTesting.junit.JDBC;
-
-import com.gemstone.gemfire.internal.SystemAdmin;
 import com.pivotal.gemfirexd.internal.engine.distributed.utils.GemFireXDUtils;
+import junit.framework.Assert;
+import org.apache.derbyTesting.junit.JDBC;
 
 /**
  * Utilities for creating and loading the example ToursDB data
@@ -113,11 +110,7 @@ public class ToursDBUtil {
   }
 
   public static File getQuickstartDir() {
-    File gfeProductDir = SystemAdmin.getProductDir();
-    // !!!:ezoerner:20091008 should not hard-code the directory/file names
-    File gfxdProductDir = new File(gfeProductDir.getParentFile(),
-        "product-gfxd");
-    return new File(gfxdProductDir, "quickstart");
+    String productDir = System.getProperty("GEMFIREXD");
+    return new File(productDir, "quickstart");
   }
-
 }

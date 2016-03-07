@@ -474,23 +474,24 @@ public class QueryTimeOutDUnit extends DistributedSQLTestBase {
 
   private File createPropertyFile() throws Exception {
     final File file = new File(PROP_FILE_NAME);
-    file.createNewFile();
-    Properties props = new Properties();
-    props.setProperty("gemfirexd.query-timeout", "2");
-    props.store(new FileOutputStream(file),
-        "-- gfxd properties file for testQueryTimeOutThruPropertiesFile");
-    return file;
+    try (FileOutputStream fos = new FileOutputStream(file)) {
+      Properties props = new Properties();
+      props.setProperty("gemfirexd.query-timeout", "2");
+      props.store(fos,
+          "-- gfxd properties file for testQueryTimeOutThruPropertiesFile");
+      return file;
+    }
   }
 
   // gemfirexd.query-timeout setting in properties file should apply to all
   // statements
   public void testQueryTimeOutThruPropertiesFile() throws Exception {
+    // create a properties file and set it so that gfxd read props thru it
+    File propFile = createPropertyFile();
     try {
-      // create a properties file and set it so that gfxd read props thru it
-      createPropertyFile();
       Properties p1 = new Properties();
       p1.setProperty(com.pivotal.gemfirexd.Property.PROPERTIES_FILE,
-          PROP_FILE_NAME);
+          propFile.getAbsolutePath());
       startVMs(1, 2, 0, null, p1);
 
       Connection cxn = TestUtil.getConnection();
@@ -556,8 +557,8 @@ public class QueryTimeOutDUnit extends DistributedSQLTestBase {
             SQLException.class);
       }
     } finally {
-      new File(PROP_FILE_NAME).delete();
+      //noinspection ResultOfMethodCallIgnored
+      propFile.delete();
     }
   }
-    
 }

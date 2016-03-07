@@ -730,11 +730,11 @@ public class StatementStatsDUnit extends DistributedSQLTestBase {
       final Statistics[] stats = dsys.findStatisticsByType(st);
       assertTrue(stats.length >= 1);
       for(Statistics _s : stats) {
-        globalLogger.info("Searching statistics for " + query
+        getGlobalLogger().info("Searching statistics for " + query
             + " and looking into " + _s.getTextId());
         if(query.equals(_s.getTextId())) {
           s = _s;
-          globalLogger.info("Got statistics for " + s.getTextId());
+          getGlobalLogger().info("Got statistics for " + s.getTextId());
           break;
         }
       }
@@ -834,7 +834,7 @@ public class StatementStatsDUnit extends DistributedSQLTestBase {
       for(Statistics _s : stats) {
         if(query.equals(_s.getTextId())) {
           s = _s;
-          globalLogger.info("Got statistics for " + s.getTextId());
+          getGlobalLogger().info("Got statistics for " + s.getTextId());
           break;
         }
       }
@@ -971,7 +971,7 @@ public class StatementStatsDUnit extends DistributedSQLTestBase {
       for(Statistics _s : stats) {
         if(_s.getTextId().startsWith(query)) {
           s = _s;
-          globalLogger.info("Got statistics for " + s.getTextId());
+          getGlobalLogger().info("Got statistics for " + s.getTextId());
           break;
         }
       }

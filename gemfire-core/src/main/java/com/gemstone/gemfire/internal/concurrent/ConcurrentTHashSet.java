@@ -77,7 +77,7 @@ public final class ConcurrentTHashSet<T> extends THashParameters implements
   @SuppressWarnings("unchecked")
   public ConcurrentTHashSet(int concurrency, int initialCapacity,
       float loadFactor, TObjectHashingStrategy strategy, HashingStats stats) {
-    super(loadFactor, strategy, null, stats);
+    super(loadFactor, strategy, stats);
 
     if (concurrency <= 0 || !(loadFactor > 0) || initialCapacity < 0) {
       throw new IllegalArgumentException();

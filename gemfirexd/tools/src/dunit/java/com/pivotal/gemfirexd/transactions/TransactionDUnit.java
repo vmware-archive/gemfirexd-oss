@@ -91,7 +91,8 @@ public class TransactionDUnit extends DistributedSQLTestBase {
     Statement st = conn.createStatement();
     st.execute("Create table t1 (c1 int not null , c2 int not null, "
         + "primary key(c1)) partition by primary key" + getSuffix());
-    st.execute("create table t2 (c1 int, c2 int, primary key(c1)) partition by primary key" + getSuffix());
+    st.execute("create table t2 (c1 int, c2 int, primary key(c1)) " +
+        "partition by primary key" + getSuffix());
     st.execute("insert into t1 values (1,1)");
     st.execute("insert into t1 values (2,2)");
     st.execute("insert into t2 select * from t1");
@@ -108,10 +109,10 @@ public class TransactionDUnit extends DistributedSQLTestBase {
     assertTrue((rs.getInt(2) == 1) || (rs.getInt(2) == 2));
     assertTrue(rs.next());
     assertTrue((rs.getInt(1) == 1) || (rs.getInt(1) == 2));
-    assertTrue((rs.getInt(2) == 1) || (rs.getInt(2) == 2));
+    assertTrue("rs.getInt(2)=" + rs.getInt(2), (rs.getInt(2) == 1) || (rs.getInt(2) == 2));
     assertFalse(rs.next());
   }
-  
+
   public void testTransactionalInsertAsSubSelects() throws Exception {
     startVMs(1, 2);
     java.sql.Connection conn = TestUtil.jdbcConn;
@@ -120,7 +121,8 @@ public class TransactionDUnit extends DistributedSQLTestBase {
     Statement st = conn.createStatement();
     st.execute("Create table t1 (c1 int not null , c2 int not null, "
         + "primary key(c1)) partition by primary key" + getSuffix());
-    st.execute("create table t2 (c1 int, c2 int not null, primary key(c1)) partition by primary key" + getSuffix());
+    st.execute("create table t2 (c1 int, c2 int not null, primary key(c1)) " +
+        "partition by primary key" + getSuffix());
     st.execute("insert into t1 values (1,1)");
     st.execute("insert into t1 values (2,2)");
     st.execute("insert into t2 select * from t1");
@@ -639,7 +641,8 @@ public class TransactionDUnit extends DistributedSQLTestBase {
         conn.rollback();
       }
     }
-    
+
+    TXManagerImpl.waitForPendingCommitForTest();
     // approx. 240 commits/rollbacks gets distributed across 2 nodes. adjust these numbers to a little lower value
     // if unbalanced commits/rollbacks happen.
     checkTxStatistics("commit-afterInserts", 240, 240, 240, 240, 500, 501); 
@@ -655,6 +658,7 @@ public class TransactionDUnit extends DistributedSQLTestBase {
     st.close();
     conn.commit();
     conn.close();
+    TXManagerImpl.waitForPendingCommitForTest();
     checkTxStatistics("commit-afterSelects", 240, 240, 240, 240, 500, 501);
   }
   
@@ -3235,12 +3239,13 @@ public class TransactionDUnit extends DistributedSQLTestBase {
       ps.setInt(2, 2);
       ps.setInt(3, i);
       ps.setInt(4, i);
-      
+
       ps.addBatch();
     }
     ps.executeBatch();
     getLogWriter().info("commiting batch");
     conn.commit();
+    TXManagerImpl.waitForPendingCommitForTest();
     getLogWriter().info("verifying");
     for (VM vm : serverVMs) {
       vm.invoke(TransactionDUnit.class, "verifyNumEntries", new Object[] {
@@ -3254,7 +3259,7 @@ public class TransactionDUnit extends DistributedSQLTestBase {
 
   public static void verifyNumEntries(int expectedNum, int bucketid,
       String regionName) {
-    globalLogger.info("executing verifyNumEntries");
+    getGlobalLogger().info("executing verifyNumEntries");
     Region<?, ?> r = Misc.getRegion(regionName, true, false);
     PartitionedRegion pr = (PartitionedRegion)r;
     PartitionedRegionDataStore ds = pr.getDataStore();
@@ -3264,7 +3269,7 @@ public class TransactionDUnit extends DistributedSQLTestBase {
         continue;
       }
       int entryCnt = b.entryCount();
-      globalLogger.info(
+      getGlobalLogger().info(
           "executing verifyNumEntries for bucket region: " + b
               + " entry count is: " + entryCnt);
       assertEquals(expectedNum, entryCnt);
@@ -3624,7 +3629,8 @@ public class TransactionDUnit extends DistributedSQLTestBase {
       @Override
       public void run() {
         try {
-          final AnyCyclicBarrier barrier = new AnyCyclicBarrier(2);
+          final AnyCyclicBarrier barrier = new AnyCyclicBarrier(
+              2, "fk_barrier");
           final long waitMillis = 10000L;
           Connection conn = TestUtil.getConnection();
           conn.setTransactionIsolation(getIsolationLevel());
@@ -3692,7 +3698,8 @@ public class TransactionDUnit extends DistributedSQLTestBase {
       @Override
       public void run() {
         try {
-          final AnyCyclicBarrier barrier = new AnyCyclicBarrier(2);
+          final AnyCyclicBarrier barrier = new AnyCyclicBarrier(
+              2, "fk_barrier");
           final long waitMillis = 10000L;
           Connection conn = TestUtil.getConnection();
           conn.setTransactionIsolation(getIsolationLevel());
@@ -3801,6 +3808,8 @@ public class TransactionDUnit extends DistributedSQLTestBase {
 
     asyncServer.join();
     asyncChild.join();
+
+    AnyCyclicBarrier.destroy("fk_barrier");
 
     Throwable failure = null;
     if (asyncServer.exceptionOccurred()) {

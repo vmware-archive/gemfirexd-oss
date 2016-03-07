@@ -5584,13 +5584,13 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
     public boolean tracePersistFinestON();
 
     public String getDDLStatementRegionName();
-    
+
     /**
-     * Call this when gemfire logger isn't initialized but GemFireXD layer 
+     * Call this when gemfire logger isn't initialized but GemFireXD layer
      * is already logging.
      */
-    public void log(String traceFlag, String logline);
-    
+    public void log(String traceFlag, String logline, Throwable t);
+
     /**
      * Returns true if this PR is being used for a global index.
      */

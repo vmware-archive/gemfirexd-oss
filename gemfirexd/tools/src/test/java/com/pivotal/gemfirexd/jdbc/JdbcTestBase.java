@@ -43,6 +43,7 @@ import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverAdapter;
 import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.distributed.utils.GemFireXDUtils;
 import com.pivotal.gemfirexd.internal.engine.jdbc.GemFireXDRuntimeException;
+import com.pivotal.gemfirexd.internal.engine.store.GemFireStore;
 import com.pivotal.gemfirexd.internal.iapi.sql.conn.LanguageConnectionContext;
 import com.pivotal.gemfirexd.internal.impl.sql.compile.DropTableNode;
 import com.pivotal.gemfirexd.internal.impl.sql.compile.StatementNode;
@@ -67,6 +68,9 @@ public class JdbcTestBase extends TestUtil implements UnitTest {
 
   @Override
   protected void setUp() throws Exception {
+    if (GemFireStore.getBootingInstance() != null) {
+      shutDown();
+    }
     //Uncommeting it would make all gemfirexd tests run with offheap
     //System.setProperty("gemfire."+DistributionConfig.OFF_HEAP_MEMORY_SIZE_NAME, "1G");
     //System.setProperty("gemfirexd.TEST_FLAG_OFFHEAP_ENABLE","true");
@@ -77,53 +81,52 @@ public class JdbcTestBase extends TestUtil implements UnitTest {
     loadDriver();
     loadNetDriver();
   }
-  
+
   protected static Map<String, Long> getAllOplogFiles() {
     String currDir = System.getProperty("user.dir");
     File cdir = new File(currDir);
-    
+
     File[] files = FileUtil.listFiles(cdir);
+
     Map<String, Long> results = new TreeMap<String, Long>();
-    for(File file : files) {
+    for (File file : files) {
       long length = file.length();
       //Don't count .lk files
-      if(file.getName().endsWith(".lk")) {
+      if (file.getName().endsWith(".lk")) {
         continue;
       }
       //crf files are truncated before backing up, so the file length may change
       //we do want to validate krf and idxkrf file length.
-      if(file.getName().endsWith(".crf") || file.getName().endsWith(".drf")) {
+      if (file.getName().endsWith(".crf") || file.getName().endsWith(".drf")) {
         length = 0;
       }
-      
+
       if (file.getName().matches(".*GFXD-DEFAULT-DISKSTORE.*")) {
         results.put(file.getPath(), length);
       }
     }
-    
+
     return results;
   }
 
   protected static void clearAllOplogFiles() {
     String currDir = System.getProperty("user.dir");
     File cdir = new File(currDir);
-    String[] files = cdir.list();
-    if (files != null) {
-      for(String file : files) {
-        if (file.matches(".*GFXD-DEFAULT-DISKSTORE.*")) {
-          File f = new File(file);
-          f.delete();
-        }
-        else if(file.matches("datadictionary")) {
-          File f = new File(file);
-          if (f.isDirectory()) {
-            deleteDir(f);
-          }
+
+    File[] files = FileUtil.listFiles(cdir);
+
+    for (File file : files) {
+      if (file.getName().matches(".*GFXD-DEFAULT-DISKSTORE.*")) {
+        //noinspection ResultOfMethodCallIgnored
+        file.delete();
+      } else if (file.getName().matches("datadictionary")) {
+        if (file.isDirectory()) {
+          deleteDir(file);
         }
       }
     }
   }
-  
+
   protected void doOffHeapValidations() throws Exception {
     SimpleMemoryAllocatorImpl sma = null;
     try {

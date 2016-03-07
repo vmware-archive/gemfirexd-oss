@@ -1099,7 +1099,7 @@ public class GemFireXDDataExtractorDUnit  extends DistributedSQLTestBase {
   public static void corruptFile(File file) throws IOException {
     byte[] fileBytes = FileUtils.readFileToByteArray(file);
     if (fileBytes != null && fileBytes.length > 0) {
-      globalLogger.info("#SB Corrupting the file : " + file.getCanonicalPath());
+      getGlobalLogger().info("#SB Corrupting the file : " + file.getCanonicalPath());
 
       for (int i =0; i<fileBytes.length; i++) {
         fileBytes[i] = (byte) (fileBytes[i]>>2);

@@ -42,6 +42,7 @@ import com.gemstone.gemfire.cache.DiskAccessException;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.RegionAttributes;
 import com.gemstone.gemfire.cache.asyncqueue.AsyncEventQueue;
+import com.gemstone.gemfire.cache.hdfs.internal.HDFSStoreImpl;
 import com.gemstone.gemfire.cache.wan.GatewayReceiver;
 import com.gemstone.gemfire.cache.wan.GatewaySender;
 import com.gemstone.gemfire.distributed.DistributedMember;
@@ -89,7 +90,6 @@ import org.apache.derby.iapi.services.monitor.Monitor;
 import org.apache.derby.iapi.services.stream.HeaderPrintWriter;
 import org.apache.derbyTesting.junit.CleanDatabaseTestSetup;
 import org.apache.derbyTesting.junit.TestConfiguration;
-import org.apache.log4j.Logger;
 import org.junit.internal.MethodSorter;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -279,7 +279,22 @@ public class DistributedSQLTestBase extends DistributedTestBase {
     }
   }
 
+  public static void startCommonLocator(int locatorPort) {
+    FabricLocator loc = FabricServiceManager.getFabricLocatorInstance();
+    if (loc.status() != FabricService.State.RUNNING) {
+      try {
+        loc.start("localhost", locatorPort, null);
+      } catch (SQLException e) {
+        throw new TestException("Failed to start locator", e);
+      }
+    }
+    assert (loc.status() == FabricService.State.RUNNING);
+  }
+
   public void beforeClass() throws Exception {
+    // Start a locator once for whole suite
+    Host.getLocator().invoke(DistributedSQLTestBase.class,
+        "startCommonLocator", getDUnitLocatorPort());
   }
 
   public void afterClass() throws Exception {
@@ -287,10 +302,6 @@ public class DistributedSQLTestBase extends DistributedTestBase {
 
   protected static String getDUnitLocatorString() {
     return "localhost[" + getDUnitLocatorPort() + ']';
-  }
-
-  protected final Logger getLogWriter() {
-    return logger;
   }
 
   protected void baseSetUp() throws Exception {
@@ -306,8 +317,7 @@ public class DistributedSQLTestBase extends DistributedTestBase {
           new Object[] { currentTestName, currentClassName });
     }
 
-    // Setup the tests to use the hydra locator
-
+    // Setup the tests to use the common locator started in beforeClass
     this.locatorString = getDUnitLocatorString();
 
     TestUtil.setRandomUserName();
@@ -417,19 +427,19 @@ public class DistributedSQLTestBase extends DistributedTestBase {
    * exception.
    */
   public static void fail(String message, Throwable ex) {
-    globalLogger.error(message, ex);
+    getGlobalLogger().error(message, ex);
     DistributedTestBase.fail(message, ex);
   }
 
   protected void configureDefaultOffHeap(boolean on) {
     this.configureDefaultOffHeap = on;
     if(this.configureDefaultOffHeap) {
-      System.setProperty("gemfire.OFF_HEAP_TOTAL_SIZE", "1G");
-      System.setProperty("gemfire."+DistributionConfig.OFF_HEAP_MEMORY_SIZE_NAME, "1G");
+      System.setProperty("gemfire.OFF_HEAP_TOTAL_SIZE", "500m");
+      System.setProperty("gemfire."+DistributionConfig.OFF_HEAP_MEMORY_SIZE_NAME, "500m");
     }
   }
 
-  protected String getSysDirName() {
+  protected static String getSysDirName() {
     return new File(".").getAbsolutePath();
   }
 
@@ -494,7 +504,7 @@ public class DistributedSQLTestBase extends DistributedTestBase {
       if(this.configureDefaultOffHeap) {
         if( !(extraProps.containsKey("gemfire.off-heap-memory-size")
             || System.getProperty("gemfire.off-heap-memory-size") != null) ) {
-          extraProps.setProperty("gemfire.off-heap-memory-size", "50M");
+          extraProps.setProperty("gemfire.off-heap-memory-size", "500m");
         }
       }
       for (Map.Entry<Object, Object> entry : extraProps.entrySet()) {
@@ -504,7 +514,7 @@ public class DistributedSQLTestBase extends DistributedTestBase {
     }else {
       if(this.configureDefaultOffHeap) {
         if( !( System.getProperty("gemfire.off-heap-memory-size") != null) ) {
-          setGFXDProperty(props, "gemfire.off-heap-memory-size", "50M");
+          setGFXDProperty(props, "gemfire.off-heap-memory-size", "500m");
           
         }
       }
@@ -527,15 +537,17 @@ public class DistributedSQLTestBase extends DistributedTestBase {
       setGFXDProperty(props, "log-level", logLevel);
     }
     // reduce timeout properties for faster dunit runs
-    setGFXDProperty(props, "member-timeout", "2000");
     System.setProperty("p2p.discoveryTimeout", "1000");
     System.setProperty("p2p.joinTimeout", "2000");
+    /*
+    setGFXDProperty(props, "member-timeout", "2000");
     System.setProperty("p2p.leaveTimeout", "1000");
     System.setProperty("p2p.socket_timeout", "4000");
     System.setProperty("p2p.disconnectDelay", "500");
     System.setProperty("p2p.handshakeTimeoutMs", "2000");
     System.setProperty("p2p.lingerTime", "500");
     System.setProperty("p2p.listenerCloseTimeout", "4000");
+    */
     if (extraProps != null) {
       Enumeration<?> e = extraProps.propertyNames();
       while (e.hasMoreElements()) {
@@ -834,10 +846,10 @@ public class DistributedSQLTestBase extends DistributedTestBase {
   }
 
   public static DistributedMember _startNewServer(String className,
-      String name, int mcastPort, String serverGroups, Properties extraProps, boolean configureOffHeap)
-      throws Exception {
+      String name, int mcastPort, String serverGroups, Properties extraProps,
+      boolean configureOffHeap) throws Exception {
     final Class<?> c = Class.forName(className);
-   
+
     final DistributedSQLTestBase test = (DistributedSQLTestBase)c
         .getConstructor(String.class).newInstance(name);
     test.configureDefaultOffHeap = configureOffHeap;
@@ -1834,7 +1846,7 @@ public class DistributedSQLTestBase extends DistributedTestBase {
           return Boolean.TRUE;
         }
       } catch (Exception ex) {
-        globalLogger.error("unexpected exception in cleanup", ex);
+        getGlobalLogger().error("unexpected exception in cleanup", ex);
       }
       return Boolean.FALSE;
     }
@@ -1993,7 +2005,7 @@ public class DistributedSQLTestBase extends DistributedTestBase {
           }
         }
       } catch (Exception ex) {
-        globalLogger.error("unexpected exception in cleanup", ex);
+        getGlobalLogger().error("unexpected exception in cleanup", ex);
       }
     }
   }
@@ -2020,7 +2032,7 @@ public class DistributedSQLTestBase extends DistributedTestBase {
           }
         }
       } catch (Exception ex) {
-        globalLogger.error("unexpected exception in cleanup", ex);
+        getGlobalLogger().error("unexpected exception in cleanup", ex);
       }
     }
   }
@@ -2041,6 +2053,10 @@ public class DistributedSQLTestBase extends DistributedTestBase {
             executeCleanup(stmt, "drop gatewayreceiver \"" + receiver.getId()
                 + '"');
           }
+          for (HDFSStoreImpl hdfsStore : cache.getAllHDFSStores()) {
+            executeCleanup(stmt, "drop hdfsstore \"" +
+                hdfsStore.getName() + '"');
+          }
           for (DiskStoreImpl ds : cache.listDiskStores()) {
             if (!GfxdConstants.GFXD_DEFAULT_DISKSTORE_NAME.equals(ds
                 .getName()) && !GfxdConstants.GFXD_DD_DISKSTORE_NAME
@@ -2059,7 +2075,7 @@ public class DistributedSQLTestBase extends DistributedTestBase {
           }
         }
       } catch (Exception ex) {
-        globalLogger.error("unexpected exception in cleanup", ex);
+        getGlobalLogger().error("unexpected exception in cleanup", ex);
       }
     }
   }
@@ -2174,7 +2190,7 @@ public class DistributedSQLTestBase extends DistributedTestBase {
       stmt.execute(sql);
     } catch (SQLException sqle) {
       // ignore
-      globalLogger.warn("unexpected exception", sqle);
+      getGlobalLogger().warn("unexpected exception", sqle);
     }
   }
 
@@ -2280,8 +2296,8 @@ public class DistributedSQLTestBase extends DistributedTestBase {
   }
 
   static void deleteStrayDataDictionaryDir(boolean force) {
-    String parent = System
-        .getProperty(com.pivotal.gemfirexd.Attribute.SYS_PERSISTENT_DIR);
+    String parent = System.getProperty(GfxdConstants.GFXD_PREFIX +
+        com.pivotal.gemfirexd.Attribute.SYS_PERSISTENT_DIR);
     File dir = null;
     if (parent == null || parent.equals("")) {
       if (!force) {
@@ -2306,7 +2322,7 @@ public class DistributedSQLTestBase extends DistributedTestBase {
   public static void deleteGlobalIndexCachinDir() {
     File dir = new File(getSysDiskDir(), "globalIndex");
     boolean result = TestUtil.deleteDir(dir);
-    globalLogger.info(
+    getGlobalLogger().info(
         "For Test: " + currentClassName + ":" + currentTestName
             + " found and deleted globalIndex cache at: " + dir.toString()
             + " : " + result);
@@ -2322,7 +2338,7 @@ public class DistributedSQLTestBase extends DistributedTestBase {
     File dir = new File(getSysDiskDir(), "datadictionary");
     if (!create) {
       boolean result = TestUtil.deleteDir(dir);
-      globalLogger.info(
+      getGlobalLogger().info(
           "For Test: " + currentClassName + ":" + currentTestName
               + " found and deleted datadictionarydir at: " + dir.toString()
               + " : " + result);
@@ -2333,7 +2349,7 @@ public class DistributedSQLTestBase extends DistributedTestBase {
       throw new DiskAccessException("Could not create directory for "
           + " datadictionary: " + dir.getAbsolutePath(), (Region<?, ?>)null);
     }
-    globalLogger.info(
+    getGlobalLogger().info(
         "For Test: " + currentClassName + ":" + currentTestName
             + " created datadictionarydir at: " + dir.toString());
   }
@@ -2377,13 +2393,14 @@ public class DistributedSQLTestBase extends DistributedTestBase {
     try {
       deleteDataDictionaryDir();
       deleteGlobalIndexCachinDir();
-      String[] testSpecificDirs = testInstance
-          .testSpecificDirectoriesForDeletion();
-      if (testSpecificDirs != null) {
+      final DistributedSQLTestBase test = testInstance;
+      final String[] testSpecificDirs;
+      if (test != null && (testSpecificDirs = test
+          .testSpecificDirectoriesForDeletion()) != null) {
         for (String file : testSpecificDirs) {
           File dir = new File(getSysDiskDir(), file);
           boolean result = TestUtil.deleteDir(dir);
-          globalLogger.info(
+          getGlobalLogger().info(
               "For Test: " + currentClassName + ":" + currentTestName
                   + " found and deleted test specific directory at: "
                   + dir.toString() + " : " + result);
@@ -2391,6 +2408,28 @@ public class DistributedSQLTestBase extends DistributedTestBase {
       }
     } catch (Exception ex) {
       throw new TestException("unexpected exception", ex);
+    }
+  }
+
+  @SuppressWarnings("ResultOfMethodCallIgnored")
+  public static void delete(File file) {
+    if (!file.exists()) {
+      return;
+    }
+    if (file.isDirectory()) {
+      if (file.list().length == 0) {
+        file.delete();
+      } else {
+        File[] files = file.listFiles();
+        if (files != null) {
+          for (File f : files) {
+            delete(f);
+          }
+        }
+        file.delete();
+      }
+    } else {
+      file.delete();
     }
   }
 
@@ -2549,7 +2588,7 @@ public class DistributedSQLTestBase extends DistributedTestBase {
 
   public static String getSysDiskDir() {
     try {
-      return testInstance.getSysDirName();
+      return getSysDirName();
     } catch (Exception ex) {
       throw new TestException("unexpected exception", ex);
     }
@@ -2638,7 +2677,7 @@ public class DistributedSQLTestBase extends DistributedTestBase {
 
   public static Boolean getQueryStatus() {
     try {
-      globalLogger.info(
+      getGlobalLogger().info(
           "Getting query status for this VM: " + isQueryExecutedOnNode);
       return Boolean.valueOf(isQueryExecutedOnNode);
     } finally {
