@@ -1295,7 +1295,7 @@ public final class GemFireXDUtils {
     }
   }
 
-  public static void unlockObject(GfxdLockable lockable, Object lockObject,
+  public static boolean unlockObject(GfxdLockable lockable, Object lockObject,
       boolean forUpdate, boolean localOnly, TransactionController tc) {
     if (tc == null || !Misc.initialDDLReplayInProgress()) {
       final GemFireTransaction tran = (GemFireTransaction)tc;
@@ -1309,7 +1309,8 @@ public final class GemFireXDUtils {
                   + " lock on object " + lockable + " [TX " + tran + ']');
         }
         if (tran != null) {
-          tran.getLockSpace().releaseLock(lockable, forUpdate, localOnly);
+          return tran.getLockSpace().releaseLock(lockable,
+              forUpdate, localOnly);
         }
         else {
           final GfxdLockService lockService = Misc.getMemStore()
@@ -1317,9 +1318,11 @@ public final class GemFireXDUtils {
           final Object lockOwner = lockService.newCurrentOwner();
           GfxdLockSet.unlock(lockService, lockable, lockOwner, forUpdate,
               localOnly);
+          return true;
         }
       }
     }
+    return false;
   }
 
   public static void freeLockResources(Object lockObject,
@@ -1855,6 +1858,16 @@ public final class GemFireXDUtils {
     SanityManager.THROWASSERT(msg);
   }
 
+  private static boolean checkSQLStateForRetry(String sqlState) {
+    return SQLState.GFXD_NODE_SHUTDOWN_PREFIX.equals(sqlState)
+        || SQLState.GFXD_NODE_BUCKET_MOVED_PREFIX.equals(sqlState)
+        || SQLState.NO_CURRENT_CONNECTION.equals(sqlState)
+        || SQLState.DATABASE_NOT_FOUND.substring(0, 5).equals(sqlState)
+        || SQLState.BOOT_DATABASE_FAILED.substring(0, 5).equals(sqlState)
+        || SQLState.CREATE_DATABASE_FAILED.substring(0, 5).equals(sqlState)
+        || SQLState.NO_SUCH_DATABASE.substring(0, 5).equals(sqlState);
+  }
+
   /**
    * Check if the given exception denotes that retry needs to be done for the
    * operation.
@@ -1888,24 +1901,16 @@ public final class GemFireXDUtils {
     if (t instanceof StandardException) {
       final StandardException se = (StandardException)t;
       final String sqlState = se.getSQLState();
-      if (SQLState.GFXD_NODE_SHUTDOWN_PREFIX.equals(sqlState)
-          || SQLState.GFXD_NODE_BUCKET_MOVED_PREFIX.equals(sqlState)
-          || SQLState.NO_CURRENT_CONNECTION.equals(sqlState)) {
-        return true;
-      }
-      return (se.getErrorCode() >= ExceptionSeverity.DATABASE_SEVERITY
-          && ("08006".equals(sqlState) || "XJ015".equals(sqlState)));
+      return checkSQLStateForRetry(sqlState) ||
+          (se.getErrorCode() >= ExceptionSeverity.DATABASE_SEVERITY
+              && ("08006".equals(sqlState) || "XJ015".equals(sqlState)));
     }
     if (t instanceof SQLException) {
       final SQLException sqle = (SQLException)t;
       final String sqlState = sqle.getSQLState();
-      if (SQLState.GFXD_NODE_SHUTDOWN_PREFIX.equals(sqlState)
-          || SQLState.GFXD_NODE_BUCKET_MOVED_PREFIX.equals(sqlState)
-          || SQLState.NO_CURRENT_CONNECTION.equals(sqlState)) {
-        return true;
-      }
-      return (sqle.getErrorCode() >= ExceptionSeverity.DATABASE_SEVERITY
-          && ("08006".equals(sqlState) || "XJ015".equals(sqlState)));
+      return checkSQLStateForRetry(sqlState) ||
+          (sqle.getErrorCode() >= ExceptionSeverity.DATABASE_SEVERITY
+              && ("08006".equals(sqlState) || "XJ015".equals(sqlState)));
     }
     return false;
   }

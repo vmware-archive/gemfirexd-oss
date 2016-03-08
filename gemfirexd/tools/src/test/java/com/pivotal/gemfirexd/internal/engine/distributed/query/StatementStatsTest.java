@@ -57,8 +57,9 @@ public class StatementStatsTest extends JdbcTestBase {
   @Override
   protected void setUp() throws Exception {
     System.setProperty(SharedLibrary.LOADLIBRARY_DEBUG_PROPERTY, "true");
+    super.setUp();
   }
-  
+
   @Override
   public void tearDown() throws Exception {
     super.tearDown();

@@ -157,7 +157,6 @@ import com.gemstone.gemfire.i18n.LogWriterI18n;
 import com.gemstone.gemfire.internal.Assert;
 import com.gemstone.gemfire.internal.DebugLogWriter;
 import com.gemstone.gemfire.internal.LogWriterImpl;
-import com.gemstone.gemfire.internal.NanoTimer;
 import com.gemstone.gemfire.internal.SetUtils;
 import com.gemstone.gemfire.internal.cache.BucketAdvisor.ServerBucketProfile;
 import com.gemstone.gemfire.internal.cache.CacheDistributionAdvisor.CacheProfile;
@@ -276,7 +275,7 @@ public class PartitionedRegion extends LocalRegion implements
   CacheDistributionAdvisee, QueryExecutor {
 
   public static final Random rand = new Random(Long.getLong(
-      "gemfire.PartitionedRegionRandomSeed", NanoTimer.getTime()).longValue());
+      "gemfire.PartitionedRegionRandomSeed", System.nanoTime()).longValue());
   
   private static final AtomicInteger SERIAL_NUMBER_GENERATOR = new AtomicInteger();
   

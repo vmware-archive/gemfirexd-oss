@@ -2901,7 +2901,7 @@ public class RemoteTransactionDUnitTest extends CacheTestCase {
 
     // now try with filter and random firing/verifying nodes
     VM execVM1, execVM2;
-    switch (AvailablePort.rand.nextInt(2)) {
+    switch (PartitionedRegion.rand.nextInt(2)) {
       case 0: execVM1 = accessor; execVM2 = datastore1; break;
       case 1: execVM1 = datastore1; execVM2 = datastore2; break;
       default: execVM1 = datastore2; execVM2 = accessor; break;

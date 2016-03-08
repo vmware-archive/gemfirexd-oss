@@ -399,12 +399,12 @@ public class BugsTest extends JdbcTestBase {
         + "COLOCATE WITH (APP.PERSON) " + "BUCKETS 163");
 
     st.execute("CALL SYSCS_UTIL.IMPORT_TABLE_EX ('APP', 'PERSON', '"
-        + getResourcesDir() + "/lib/UseCase9/person_data.tbl', ',', "
+        + getResourcesDir() + "/lib/useCase9/person_data.tbl', ',', "
         + "null, null, 0, 0 , 6 , 0 , null , null )");
 
     st.execute("CALL SYSCS_UTIL.IMPORT_TABLE_EX ('APP', 'EARN_ROLLUP_PERSON', '"
             + getResourcesDir()
-            + "/lib/UseCase9/earn_rollup_data.tbl', ',', "
+            + "/lib/useCase9/earn_rollup_data.tbl', ',', "
             + "null, null, 0, 0 , 6 , 0 , null , null )");
 
     st.execute("SELECT  t1.YEAR_nr, "
@@ -467,8 +467,17 @@ public class BugsTest extends JdbcTestBase {
       File locDir = new File(locDirName);
       assertTrue(locDir.mkdir());
       this.deleteDirs[0] = locDir.getAbsolutePath();
-      String remDirName = "/home/" + System.getenv().get("USER")
-       + "/preBlow-" + currTime;
+      String remDirName;
+      boolean hasExportDir;
+      String exportDir = "/srv/users/" + System.getenv().get("USER");
+      if (new File(exportDir).exists()) {
+        hasExportDir = true;
+        remDirName = exportDir + "/preBlow-" + currTime;
+      } else {
+        hasExportDir = false;
+        remDirName = "/home/" + System.getenv().get("USER")
+            + "/preBlow-" + currTime;
+      }
       File remDir = new File(remDirName);
       assertTrue(remDir.mkdir());
       this.deleteDirs[1] = remDir.getAbsolutePath();
@@ -515,11 +524,16 @@ public class BugsTest extends JdbcTestBase {
       assertEquals(5000, rs.getInt(1));
       HashSet<String> preBlowNotDoneDirs = new HashSet<String>();
       preBlowNotDoneDirs.addAll(NativeCalls.TEST_NO_FALLOC_DIRS);
-      assertTrue(NativeCalls.TEST_CHK_FALLOC_DIRS.isEmpty());
+      if (hasExportDir) {
+        assertTrue(NativeCalls.TEST_CHK_FALLOC_DIRS.isEmpty());
+        assertEquals(preBlowDoneDirs.size(), preBlowNotDoneDirs.size());
+      } else {
+        assertFalse(NativeCalls.TEST_CHK_FALLOC_DIRS.isEmpty());
+        assertEquals(0, preBlowNotDoneDirs.size());
+      }
       NativeCalls.TEST_CHK_FALLOC_DIRS = null;
       NativeCalls.TEST_NO_FALLOC_DIRS.clear();
       NativeCalls.TEST_NO_FALLOC_DIRS = null;
-      assertEquals(preBlowDoneDirs.size(), preBlowNotDoneDirs.size());
       assertTrue(preBlowDoneDirs.size() > 0);
     }
   }
@@ -626,8 +640,8 @@ public class BugsTest extends JdbcTestBase {
     //PrintWriter bw =new PrintWriter(new OutputStreamWriter(new FileOutputStream(file)));
     PrintStream bw = System.out;
 
-    System.setProperty("gemfire.OFF_HEAP_TOTAL_SIZE", "2G");
-    System.setProperty("gemfire."+DistributionConfig.OFF_HEAP_MEMORY_SIZE_NAME, "2G");
+    System.setProperty("gemfire.OFF_HEAP_TOTAL_SIZE", "500m");
+    System.setProperty("gemfire."+DistributionConfig.OFF_HEAP_MEMORY_SIZE_NAME, "500m");
     //SelectQueryInfo.setTestFlagIgnoreSingleVMCriteria(true);
     Properties props = new Properties();
     props.setProperty("log-level", "config");
@@ -753,8 +767,8 @@ public class BugsTest extends JdbcTestBase {
     reduceLogLevelForTest("config");
 
     try {
-    System.setProperty("gemfire.OFF_HEAP_TOTAL_SIZE", "2G");
-    System.setProperty("gemfire."+DistributionConfig.OFF_HEAP_MEMORY_SIZE_NAME, "2G");
+    System.setProperty("gemfire.OFF_HEAP_TOTAL_SIZE", "500m");
+    System.setProperty("gemfire."+DistributionConfig.OFF_HEAP_MEMORY_SIZE_NAME, "500m");
     SelectQueryInfo.setTestFlagIgnoreSingleVMCriteria(true);
     Properties props = new Properties();
     props.setProperty("log-level", "config");
@@ -909,9 +923,9 @@ public class BugsTest extends JdbcTestBase {
     reduceLogLevelForTest("config");
 
     try {
-      System.setProperty("gemfire.OFF_HEAP_TOTAL_SIZE", "2G");
+      System.setProperty("gemfire.OFF_HEAP_TOTAL_SIZE", "500m");
       System.setProperty("gemfire."
-          + DistributionConfig.OFF_HEAP_MEMORY_SIZE_NAME, "2G");
+          + DistributionConfig.OFF_HEAP_MEMORY_SIZE_NAME, "500m");
       SelectQueryInfo.setTestFlagIgnoreSingleVMCriteria(true);
       Properties props = new Properties();
       props.setProperty("log-level", "config");
@@ -7066,7 +7080,7 @@ public class BugsTest extends JdbcTestBase {
             + "exchange, companytype, uid, uuid, companyname, companyInfo, " +
             "note, histprice, asset, logo, tid, pvt) values " +
             "(?,?,?,?,?,?,?,?,?,?,?,?,?)");
-    Random rnd = AvailablePort.rand;
+    Random rnd = PartitionedRegion.rand;
     char[] clobChars = new char[10000];
     byte[] blobBytes = new byte[20000];
     char[] chooseChars = ("abcdefghijklmnopqrstuvwxyz"
@@ -7129,7 +7143,7 @@ public class BugsTest extends JdbcTestBase {
         + ".procSecuritasBug' "     ;
     
     st.execute(createProcUpdateSQLStr_WITH_MODIFIES);
-    Random rnd = AvailablePort.rand;
+    Random rnd = PartitionedRegion.rand;
     char[] clobChars = new char[10000];
     byte[] blobBytes = new byte[20000];
     char[] chooseChars = ("abcdefghijklmnopqrstuvwxyz"
@@ -7351,7 +7365,7 @@ public class BugsTest extends JdbcTestBase {
   private final String booksJar = getResourcesDir() + "/lib/Books.jar";
 
   public void testSysRoutinePermissions_48279() throws Throwable {
-    System.setProperty("gemfire.off-heap-memory-size", "128m");
+    System.setProperty("gemfire.off-heap-memory-size", "500m");
     Properties props = new Properties();
     props.setProperty("auth-provider", "BUILTIN");
     props.setProperty("gemfirexd.user.admin", "pass");

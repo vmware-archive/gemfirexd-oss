@@ -36,7 +36,6 @@ import com.gemstone.gemfire.cache.control.ResourceManager;
 import com.gemstone.gemfire.cache.execute.FunctionException;
 import com.gemstone.gemfire.distributed.DistributedSystemDisconnectedException;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
-import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.EntryEventImpl;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.internal.cache.PRHARedundancyProvider;
@@ -68,7 +67,7 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
 
   public static void joinAsyncInvocation(AsyncInvocation async, long ms) {
     if (async.isAlive()) {
-      join(async, ms, globalLogger);
+      join(async, ms, getGlobalLogger());
     }
   }
 
@@ -360,7 +359,7 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
     // no close message is sent rather only closed on client which maybe
     // detected by server after sometime during the read
     assertNumConnections(-2, -2, 2);
-    assertNumConnections(-1, -1, 1);
+    assertNumConnections(-1, -2, 1);
 
     sop(testName + " part1 ended");
 
@@ -382,7 +381,7 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
     assertNumConnections(-2, 0, 4);
     assertNumConnections(-2, -2, 2);
     // 1 control connection + 1 data connection + data connection closed
-    assertNumConnections(-2, -2, 1);
+    assertNumConnections(-3, -3, 1);
     assertNumConnections(-1, -1, 3);
 
     sop(testName + " part2 ended");
@@ -886,14 +885,14 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
       boolean doClose = false;
       if (conn == null) {
         if (clientPort != null && clientPort.intValue() > 0) {
-          globalLogger.info("creating new client connection for current VM");
+          getGlobalLogger().info("creating new client connection for current VM");
           conn = TestUtil.getNetConnection(clientPort.intValue(), null, null);
-          globalLogger.info("created new client connection for current VM");
+          getGlobalLogger().info("created new client connection for current VM");
         }
         else {
-          globalLogger.info("creating new server connection for current VM");
+          getGlobalLogger().info("creating new server connection for current VM");
           conn = TestUtil.getConnection();
-          globalLogger.info("created new server connection for current VM");
+          getGlobalLogger().info("created new server connection for current VM");
         }
         // TODO: TX: only valid for non-transactional ops for now
         conn.setTransactionIsolation(Connection.TRANSACTION_NONE);
@@ -902,9 +901,9 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
       }
       assertEquals(Connection.TRANSACTION_NONE, conn.getTransactionIsolation());
       assertFalse(conn.getAutoCommit());
-      globalLogger.info("Executing DML: " + dmlStmt);
+      getGlobalLogger().info("Executing DML: " + dmlStmt);
       // choose randomly between a prepared statement or normal one
-      final boolean usePrepStatement = AvailablePort.rand.nextBoolean();
+      final boolean usePrepStatement = PartitionedRegion.rand.nextBoolean();
       int cnt = -1;
       PreparedStatement ps;
       final Statement stmt = conn.createStatement();
@@ -925,7 +924,7 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
       }
       // verify that change has actually taken place correctly
       if (verifyStmt != null) {
-        globalLogger.info("Verifying with DML: " + verifyStmt);
+        getGlobalLogger().info("Verifying with DML: " + verifyStmt);
         ProcessResultSet<Object> verifyResult = new ProcessResultSet<Object>() {
           @Override
           public Object process(final ResultSet rs) throws SQLException {
@@ -964,9 +963,9 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
       // cleanup stuff
       stmt.close();
       if (doClose) {
-        globalLogger.info("closing the new connection");
+        getGlobalLogger().info("closing the new connection");
         conn.close();
-        globalLogger.info("closed the new connection");
+        getGlobalLogger().info("closed the new connection");
       }
     } catch (SQLException e) {
       fail("unexpected exception occured in fireOps: ", e);
@@ -994,7 +993,7 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
       Integer startCnt, java.sql.Connection conn) {
     StringBuilder insertStmt = new StringBuilder("insert into Account values");
     // one or two inserts at a time to test both put and putAll
-    final int numInserts = AvailablePort.rand.nextInt(2) + 1;
+    final int numInserts = PartitionedRegion.rand.nextInt(2) + 1;
     for (int i = startCnt; i < startCnt + numInserts; ++i) {
       if (i > startCnt) {
         insertStmt.append(',');
@@ -1102,7 +1101,7 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
   }
 
   private static void sop(String s) {
-    globalLogger.info(s);
+    getGlobalLogger().info(s);
   }
 
   public static void disconnectVMs(List<VM> vms, List<AsyncInvocation> ainvoke) {
@@ -1130,7 +1129,7 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
 
   @SuppressWarnings("deprecation")
   public static void assertEquals(int expected, int actual) {
-    globalLogger.info("comparing " + expected + " with actual " + actual);
+    getGlobalLogger().info("comparing " + expected + " with actual " + actual);
     junit.framework.Assert.assertEquals(expected, actual);
   }
 }

@@ -19,23 +19,23 @@
  */
 package org.apache.derbyTesting.junit;
 
-import java.io.FileNotFoundException;
-import java.net.InetAddress;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
-import java.sql.SQLException;
+import java.sql.DriverManager;
 import java.util.ArrayList;
-import junit.framework.Test;
 
-import com.pivotal.gemfirexd.FabricServiceManager;
+import com.pivotal.gemfirexd.Attribute;
 import com.pivotal.gemfirexd.internal.drda.NetworkServerControl;
+import com.pivotal.gemfirexd.internal.engine.store.GemFireStore;
+import junit.framework.Test;
 
 /**
  * Test decorator that starts the network server on startup
@@ -211,6 +211,9 @@ final public class NetworkServerTestSetup extends BaseTestSetup {
             
 // GemStone changes BEGIN
             System.setProperty("gemfire.mcast-port", "0");
+            if (GemFireStore.getBootingInstance() == null) {
+                DriverManager.getConnection(Attribute.PROTOCOL);
+            }
 // GemStone changes END
             serverOutput = (FileOutputStream)
             AccessController.doPrivileged(new PrivilegedAction() {
@@ -237,6 +240,9 @@ final public class NetworkServerTestSetup extends BaseTestSetup {
         
 // GemStone changes BEGIN
         System.setProperty("gemfire.mcast-port", "0");
+        if (GemFireStore.getBootingInstance() == null) {
+            DriverManager.getConnection(Attribute.PROTOCOL);
+        }
 // GemStone changes END
         // start the server through the command line
         // arguments using a new thread to do so.
@@ -615,7 +621,7 @@ final public class NetworkServerTestSetup extends BaseTestSetup {
     {
         if ( !t.getClass().getName().equals( "java.lang.Exception" ) ) { return false; }
         
-        return ( t.getMessage().startsWith( "DRDA_NoIO.S:Could not connect to GemFireXD Network Server" ) );
+        return ( t.getMessage().startsWith( "DRDA_NoIO.S:Could not connect to " ) );
     }
     
     // return true if this is a drda error

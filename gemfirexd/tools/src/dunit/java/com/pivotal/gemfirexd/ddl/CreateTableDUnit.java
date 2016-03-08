@@ -244,7 +244,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
     Properties extra =null;
     if(enableOffHeap) {
       extra = new Properties();
-      extra.put("gemfire.off-heap-memory-size","50M");
+      extra.put("gemfire.off-heap-memory-size","500m");
     }
     // Start one client and four servers
     AsyncVM async1 = invokeStartServerVM(1, 0, "sg1", extra);
@@ -278,7 +278,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
     PartitionAttributesFactory<?, ?> paf = new PartitionAttributesFactory()
         .setPartitionResolver(resolver);
     if(enableOffHeap) {
-      paf.setLocalMaxMemory(50);
+      paf.setLocalMaxMemory(500);
     }
     PartitionAttributes<? , ?> pa = paf.create();
     expectedAttrs.setPartitionAttributes(pa);
@@ -376,7 +376,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
    paf = new PartitionAttributesFactory()
     .setPartitionResolver(resolver_list);
    if(enableOffHeap) {
-     paf.setLocalMaxMemory(50);
+     paf.setLocalMaxMemory(500);
    }
 
     PartitionAttributes pa_list = paf.create();
@@ -461,7 +461,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
     .setRecoveryDelay(100).setPartitionResolver(
         new GfxdPartitionByExpressionResolver());
     if(enableOffHeap) {
-      pafact.setLocalMaxMemory(50);
+      pafact.setLocalMaxMemory(500);
     }
     partAttrs.setPartitionAttributes(pafact.create());
     partAttrs.setInitialCapacity(TestUtil.TEST_DEFAULT_INITIAL_CAPACITY);
@@ -592,7 +592,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
     Properties extra =null;
     if(enableOffHeap) {
       extra = new Properties();
-      extra.put("gemfire.off-heap-memory-size","50M");
+      extra.put("gemfire.off-heap-memory-size","500m");
     }
     // Start one client and one server
     startClientVMs(2, 0, null,extra);
@@ -653,7 +653,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
     Properties extra =null;
     if(enableOffHeap) {
       extra = new Properties();
-      extra.put("gemfire.off-heap-memory-size","50M");
+      extra.put("gemfire.off-heap-memory-size","500m");
     }
     // Start one client and one server
     startVMs(1, 1, -1,null,extra);
@@ -718,7 +718,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
     Properties extra =null;
     if(enableOffHeap) {
       extra = new Properties();
-      extra.put("gemfire.off-heap-memory-size","50M");
+      extra.put("gemfire.off-heap-memory-size","500m");
     }
     startServerVMs(1, 0, "sg1", extra);
     startClientVMs(1, 0, null, extra);
@@ -755,7 +755,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
     Properties extra =null;
     if(enableOffHeap) {
       extra = new Properties();
-      extra.put("gemfire.off-heap-memory-size","50M");
+      extra.put("gemfire.off-heap-memory-size","500m");
     }
     // Start one client and two servers
     startServerVMs(2, 0, "SG1", extra);
@@ -868,7 +868,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
     Properties extra =null;
     if(enableOffHeap) {
       extra = new Properties();
-      extra.put("gemfire.off-heap-memory-size","50M");
+      extra.put("gemfire.off-heap-memory-size","500m");
     }
     // Start one client and three servers
     startServerVMs(2, 0, "SG1", extra);
@@ -1000,6 +1000,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
       final String table, final String xmlElement) throws CacheException {
     final String schemaName = schema.toUpperCase(Locale.ENGLISH);
     final String tableName = table.toUpperCase(Locale.ENGLISH);
+    final String resourceDir = TestUtil.getResourcesDir();
     SerializableRunnable checkSYS = new SerializableRunnable(
         "Clear cache and check tables") {
       @Override
@@ -1010,7 +1011,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
               + "tab.SERVERGROUPS FROM SYS.SYSSCHEMAS sc, SYS.SYSTABLES tab "
               + "WHERE sc.SCHEMANAME='" + schemaName
               + "' AND tab.TABLENAME='" + tableName
-              + "' AND sc.SCHEMAID = tab.SCHEMAID", TestUtil.getResourcesDir()
+              + "' AND sc.SCHEMAID = tab.SCHEMAID", resourceDir
               + "/lib/checkCreateTable.xml", xmlElement, true, false);
 
           // Test the fields from SYSSCHEMAS on client with non-index table scan
@@ -1018,7 +1019,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
               + "tab.SERVERGROUPS FROM SYS.SYSSCHEMAS sc, SYS.SYSTABLES tab "
               + "WHERE sc.SCHEMANAME LIKE '" + schemaName
               + "%' AND tab.TABLENAME LIKE '" + tableName
-              + "%' AND sc.SCHEMAID = tab.SCHEMAID", TestUtil.getResourcesDir()
+              + "%' AND sc.SCHEMAID = tab.SCHEMAID", resourceDir
               + "/lib/checkCreateTable.xml", xmlElement, true, false);
         } catch (Exception ex) {
           throw new CacheException(ex) {
@@ -1054,7 +1055,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
     Properties extra =null;
     if(enableOffHeap) {
       extra = new Properties();
-      extra.put("gemfire.off-heap-memory-size","50M");
+      extra.put("gemfire.off-heap-memory-size","500m");
     }
     // Start one client and three servers
     startServerVMs(2, 0, "SG1", extra);
@@ -1153,7 +1154,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
     Properties extra =null;
     if(enableOffHeap) {
       extra = new Properties();
-      extra.put("gemfire.off-heap-memory-size","50M");
+      extra.put("gemfire.off-heap-memory-size","500m");
     }
     // Start one client and three servers
     startServerVMs(2, 0, "SG1", extra);
@@ -1251,7 +1252,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
     Properties extra =null;
     if(enableOffHeap) {
       extra = new Properties();
-      extra.put("gemfire.off-heap-memory-size","50M");
+      extra.put("gemfire.off-heap-memory-size","500m");
     }
     // Start one client and four servers
     startVMs(1, 4, -1, null, extra);
@@ -1664,7 +1665,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
     Properties extra =null;
     if(enableOffHeap) {
       extra = new Properties();
-      extra.put("gemfire.off-heap-memory-size","50M");
+      extra.put("gemfire.off-heap-memory-size","500m");
     }
     startVMs(2, 3, -1, null, extra);
 
@@ -2017,7 +2018,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
     Properties extra =null;
     if(enableOffHeap) {
       extra = new Properties();
-      extra.put("gemfire.off-heap-memory-size","50M");
+      extra.put("gemfire.off-heap-memory-size","500m");
     }
     try {
       startServerVMs(2, -1, "SG1", extra);
@@ -2136,7 +2137,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
     Properties extra =null;
     if(enableOffHeap) {
       extra = new Properties();
-      extra.put("gemfire.off-heap-memory-size","50M");
+      extra.put("gemfire.off-heap-memory-size","500m");
     }
     // start a client and couple of servers
     startVMs(1, 2, -1, null, extra);
@@ -2632,7 +2633,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
       if (bRegion == null) {
         continue;
       }
-      globalLogger.info(
+      getGlobalLogger().info(
           "checkBucketValuesInList: Iterating over bucket region: "
               + bRegion.getFullPath());
       Object expectedValue = null;
@@ -2640,13 +2641,13 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
       for (Object knkey : bRegion.keySet()) {
         keylog += knkey.toString() + ",";
       }
-      globalLogger.info(
+      getGlobalLogger().info(
           "keys in this bucket region = " + bRegion.getName() + " are: "
               + keylog);
       for (Object bEntry : bRegion.entrySet()) {
         final Object bucketValue = ((RegionKey)((Map.Entry<?, ?>)bEntry)
             .getKey()).getKeyColumn(0).getObject();
-        globalLogger.info(
+        getGlobalLogger().info(
             "checkBucketValuesInList: Checking for bucket entry: "
                 + bucketValue);
 
@@ -2656,7 +2657,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
           Object foundNode = null;
 
           public boolean visit(Object node) {
-            globalLogger.info(
+            getGlobalLogger().info(
                 "KNS: visit being called for bvfuzzy: " + bvFuzzy
                     + ", in range: " + node.toString());
             boolean found;
@@ -2669,7 +2670,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
             if (found) {
               this.foundNode = node;
             }
-            globalLogger.info("KNS: returning found = " + found);
+            getGlobalLogger().info("KNS: returning found = " + found);
             return found;
           }
 
@@ -2687,7 +2688,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
                 forEach(valueList, expectedListVisitor));
             ResolverUtils.GfxdRange expectedRange = (ResolverUtils.GfxdRange)expectedListVisitor.getState();
             expectedValue = expectedRange.clone();
-            globalLogger.info(
+            getGlobalLogger().info(
                 "invalidate called while checking for entry: " + bucketValue);
             expectedRange.invalidate();
           }
@@ -2720,7 +2721,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
           assertNotNull(
               "checkBucketValuesInList: expected to find a list/range for "
                   + "first bucket value [" + bucketValue + ']', expectedValue);
-          globalLogger.info(
+          getGlobalLogger().info(
               "checkBucketValuesInList: found first bucket value ["
                   + bucketValue + "] in list/range: " + expectedValue);
         }
@@ -2735,7 +2736,7 @@ public class CreateTableDUnit extends DistributedSQLTestBase {
                 + "] not in the expected list of values: " + expectedValue,
                 forEach((List<?>)expectedValue, expectedListVisitor));
           }
-          globalLogger.info(
+          getGlobalLogger().info(
               "checkBucketValuesInList: found bucket value [" + bucketValue
                   + "] in list/range: " + expectedValue);
         }

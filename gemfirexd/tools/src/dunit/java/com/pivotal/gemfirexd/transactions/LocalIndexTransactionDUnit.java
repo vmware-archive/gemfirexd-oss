@@ -25,9 +25,9 @@ import java.util.Properties;
 import java.util.concurrent.CyclicBarrier;
 
 import com.gemstone.gemfire.cache.CacheException;
-import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
+import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.TXManagerImpl;
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
@@ -579,7 +579,7 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
     conn.commit();
 
     // do ops from server to check batching
-    serverExecute(AvailablePort.rand.nextInt(3) + 1,
+    serverExecute(PartitionedRegion.rand.nextInt(3) + 1,
         new SerializableRunnable() {
 
       @Override
@@ -1140,11 +1140,11 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
      private final String qualifiedIndexName;
      private volatile int numInvocations;
      
-     IndexInvocationObserver(String schema, String baseTable, String indexName ) {       
+     IndexInvocationObserver(String schema, String baseTable, String indexName ) {
        qualifiedIndexName = schema.toUpperCase()+"."+indexName.toUpperCase() + ":base-table:"+
-      schema.toUpperCase()+"."+baseTable.toUpperCase();
-       globalLogger.info("Qualified index name to compare="+qualifiedIndexName);
-     }
+     schema.toUpperCase()+"."+baseTable.toUpperCase();
+     getGlobalLogger().info("Qualified index name to compare="+qualifiedIndexName);
+    }
     
     @Override
     public double overrideDerbyOptimizerIndexUsageCostForHash1IndexScan(

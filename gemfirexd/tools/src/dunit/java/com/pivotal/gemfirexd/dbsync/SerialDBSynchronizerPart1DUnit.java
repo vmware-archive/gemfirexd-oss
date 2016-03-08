@@ -2086,7 +2086,7 @@ public class SerialDBSynchronizerPart1DUnit extends DBSynchronizerTestBase {
 
   }
 
-  public void testOracle_UseCase1() throws Throwable {
+  public void DISABLED_testOracle_UseCase1() throws Throwable {
     startVMs(1, 2, 0, "CHANNELDATAGRP", null);
     int netPort = startNetworkServer(1, null, null);
     Connection conn = TestUtil.getNetConnection(netPort, null, null);

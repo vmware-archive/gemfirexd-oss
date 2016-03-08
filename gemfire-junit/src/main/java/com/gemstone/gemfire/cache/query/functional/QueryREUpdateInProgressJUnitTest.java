@@ -303,14 +303,14 @@ public class QueryREUpdateInProgressJUnitTest extends TestCase {
             "PRQueryDUnitHelper#compareTwoQueryResults: Type 2 is NULL "
                 + type2, type2);
         if ((type1.getClass().getName()).equals(type2.getClass().getName())) {
-          DistributedTestBase.globalLogger
+          DistributedTestBase.getGlobalLogger()
               .info(
                   "PRQueryDUnitHelper#compareTwoQueryResults: Both Search Results are of the same Type i.e.--> "
-                      + ((SelectResults) r[j][0]).getCollectionType()
-                          .getElementType());
+                      + ((SelectResults)r[j][0]).getCollectionType()
+                      .getElementType());
 
         } else {
-          DistributedTestBase.globalLogger.error(
+          DistributedTestBase.getGlobalLogger().error(
               "PRQueryDUnitHelper#compareTwoQueryResults: Classes are : "
                   + type1.getClass().getName() + " "
                   + type2.getClass().getName());
@@ -320,13 +320,13 @@ public class QueryREUpdateInProgressJUnitTest extends TestCase {
         int size0 = ((SelectResults) r[j][0]).size();
         int size1 = ((SelectResults) r[j][1]).size();
         if (size0 == size1) {
-          DistributedTestBase.globalLogger
+          DistributedTestBase.getGlobalLogger()
               .info(
                   "PRQueryDUnitHelper#compareTwoQueryResults: Both Search Results are non-zero and are of Same Size i.e.  Size= "
                       + size1 + ";j=" + j);
 
         } else {
-          DistributedTestBase.globalLogger
+          DistributedTestBase.getGlobalLogger()
               .error(
                   "PRQueryDUnitHelper#compareTwoQueryResults: FAILED:Search resultSet size are different in both cases; size0="
                       + size0 + ";size1=" + size1 + ";j=" + j);

@@ -66,7 +66,7 @@ public abstract class GemFireTestCase extends TestCase {
   /////////  Helper methods
 
   public static String getResourcesDir() {
-    String testDir = System.getProperty("gemfiretest.sourceDir");
+    String testDir = System.getProperty("store.test.resourceDir");
     if (testDir != null && testDir.length() > 0) {
       return testDir;
     } else {

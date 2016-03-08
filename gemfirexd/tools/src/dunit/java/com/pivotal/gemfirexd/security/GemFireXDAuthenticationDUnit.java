@@ -66,7 +66,23 @@ public class GemFireXDAuthenticationDUnit extends DistributedSQLTestBase {
       origmonitorverbose = System.setProperty("gemfirexd.monitor.verbose", "true");
     }
   }
-  
+
+  @Override
+  public void beforeClass() throws Exception {
+    final LdapTestServer server = LdapTestServer.getInstance();
+    if (!server.isServerStarted()) {
+      server.startServer();
+    }
+  }
+
+  @Override
+  public void afterClass() throws Exception {
+    final LdapTestServer server = LdapTestServer.getInstance();
+    if (server.isServerStarted()) {
+      server.stopService();
+    }
+  }
+
   @Override
   public void tearDown2() throws Exception {
     if (getLogLevel().startsWith("fine")) {
@@ -662,7 +678,7 @@ public class GemFireXDAuthenticationDUnit extends DistributedSQLTestBase {
 
   /**
    */
-  public void testSchemaSharedBetweenUsersWithoutAuthorization() throws Exception {
+  public void DISABLED_GEMXD11_testSchemaSharedBetweenUsersWithoutAuthorization() throws Exception {
     Properties extraServerProps = new Properties();
 
     final AuthenticationSchemes scheme = AuthenticationSchemes.BUILTIN;
@@ -1767,7 +1783,7 @@ public class GemFireXDAuthenticationDUnit extends DistributedSQLTestBase {
       }
 
       // create dist-sys level users
-      logger.info("about to create distributed sys users ");
+      getLogWriter().info("about to create distributed sys users ");
 
       CallableStatement cusr = systemconn
           .prepareCall("call SYSCS_UTIL.SYSCS_SET_DATABASE_PROPERTY(?,?)");
@@ -1775,7 +1791,7 @@ public class GemFireXDAuthenticationDUnit extends DistributedSQLTestBase {
         cusr.setString(1, "derby.user." + u);
         cusr.setString(2, "PWD_" + u);
         cusr.execute();
-        logger.info("created database user " + u);
+        getLogWriter().info("created database user " + u);
       }
       systemconn.close();
 

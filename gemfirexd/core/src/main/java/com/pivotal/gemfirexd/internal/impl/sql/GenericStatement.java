@@ -91,6 +91,7 @@ import com.pivotal.gemfirexd.internal.iapi.sql.dictionary.DataDictionary;
 import com.pivotal.gemfirexd.internal.iapi.sql.dictionary.SchemaDescriptor;
 import com.pivotal.gemfirexd.internal.iapi.sql.dictionary.TableDescriptor;
 import com.pivotal.gemfirexd.internal.iapi.sql.execute.ExecutionContext;
+import com.pivotal.gemfirexd.internal.iapi.store.access.TransactionController;
 import com.pivotal.gemfirexd.internal.iapi.types.DataTypeDescriptor;
 import com.pivotal.gemfirexd.internal.impl.sql.compile.CursorNode;
 import com.pivotal.gemfirexd.internal.impl.sql.compile.ExecSPSNode;
@@ -339,8 +340,9 @@ public class GenericStatement
     // will never be true for the former case.
     DataDictionary dataDictionary = lcc.getDataDictionary();
 
-    int ddMode =0 ;
+    int ddMode = 0;
     boolean ddLockAcquired = false;
+    int additionalDDLocks = 0;
     // don't cancel DROP/TRUNCATE TABLE/INDEX statements
     final boolean checkCancellation = !SKIP_CANCEL_STMTS
         .matcher(statementText).find();
@@ -375,7 +377,8 @@ public class GenericStatement
 				if (preparedStmt.upToDate()) {
 				  // GemStone changes BEGIN
                                    foundStats = fetchStatementStats(lcc, null);
-                                   assert foundStats == true: "prepMinion: expected the stats to be present after waiting for compilation.";
+                                   assert foundStats: "prepMinion: expected " +
+				       "the stats to be present after waiting for compilation.";
                                   // GemStone changes END
 				     return preparedStmt;
 				}
@@ -395,9 +398,21 @@ public class GenericStatement
 				        if (dataDictionary != null && ddLockAcquired) {
 				          dataDictionary.doneReading(ddMode, lcc);
 				          ddLockAcquired = false;
+					  // check for any more remaining DD locks
+					  TransactionController tc = lcc.getTransactionExecute();
+					  while (dataDictionary.unlockAfterReading(tc)) {
+					    additionalDDLocks++;
+					  }
 				        }
 // GemStone changes END
 					preparedStmt.wait();
+// GemStone changes BEGIN
+					while (additionalDDLocks > 0) {
+					  dataDictionary.lockForReading(
+					      lcc.getTransactionExecute());
+					  additionalDDLocks--;
+					}
+// GemStone changes END
 					continue outer;
 				} catch (final InterruptedException ie) {
 					throw StandardException.interrupt(ie);

@@ -2,6 +2,8 @@ plugins {
   id "ca.coglinc.javacc" version "2.3.1"
 }
 
+apply plugin: 'com.github.johnrengelman.shadow'
+
 dependencies {
   compile project(subprojectBase + 'gemfire-core')
   compile project(subprojectBase + 'gemfirexd-shared')
@@ -11,15 +13,22 @@ dependencies {
   provided 'xalan:xalan:2.7.2'
   provided 'xalan:serializer:2.7.2'
   provided "com.pivotal:pxf-api:${pxfVersion}"
-  provided "org.osgi:org.osgi.core:${osgiVersion}"
-  provided "org.apache.ant:ant:${antVersion}"
-  provided 'javax.servlet:javax.servlet-api:3.0.1'
+  compile "org.osgi:org.osgi.core:${osgiVersion}"
+  compile "org.apache.ant:ant:${antVersion}"
+  compile 'javax.servlet:javax.servlet-api:3.0.1'
 
   provided "org.apache.hadoop:hadoop-annotations:${hadoopVersion}"
   provided "org.apache.hadoop:hadoop-auth:${hadoopVersion}"
   provided "org.apache.hadoop:hadoop-common:${hadoopVersion}"
   provided "org.apache.hadoop:hadoop-hdfs:${hadoopVersion}"
   provided "org.apache.hadoop:hadoop-mapreduce-client-core:${hadoopVersion}"
+  provided "com.google.protobuf:protobuf-java:${protobufVersion}"
+  provided "com.sun.jersey:jersey-core:${jerseyVersion}"
+  provided "com.sun.jersey:jersey-server:${jerseyVersion}"
+  provided "org.mortbay.jetty:jetty:${hadoopJettyVersion}"
+  provided "org.mortbay.jetty:jetty-util:${hadoopJettyVersion}"
+  provided "org.apache.hbase:hbase:${hbaseVersion}"
+  provided "com.google.code.findbugs:jsr305:${jsr305Version}"
 }
 
 // move javacc output directory to a place where IDEA can easily register
@@ -181,26 +190,30 @@ javadoc {
 }
 javadoc.dependsOn.clear()
 
-archivesBaseName = 'gemfirexd'
+shadowJar {
+  dependsOn doSplit
+  dependsOn jar
+  zip64 = true
+  baseName = 'gemfirexd'
+  classifier = ''
+
+  mergeServiceFiles()
+}
+
 jar {
   dependsOn doSplit
-  baseName = 'gemfirexd'
 
-  from {
-    configurations.runtime.collect {
-      it.isDirectory() ? it : zipTree(it).matching {
-        exclude {
-          it.path.contains('META-INF')
-        }
-      }
-    }
-  }
   doLast {
     // copy the native JNI library
     if (osName.isLinux()) {
       copy {
         from "${projectDir}/lib"
         into "${buildDir}/libs"
+      }
+      def gemfireCoreProject = project("${subprojectBase}gemfire-core")
+      copy {
+        from "${projectDir}/lib"
+        into "${gemfireCoreProject.buildDir}/libs"
       }
     }
   }

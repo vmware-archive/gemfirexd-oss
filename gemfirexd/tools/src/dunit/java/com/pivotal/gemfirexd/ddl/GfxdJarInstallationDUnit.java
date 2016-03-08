@@ -354,7 +354,7 @@ public class GfxdJarInstallationDUnit extends DistributedSQLTestBase {
 
     Connection conn = TestUtil.getConnection();
     Statement stmt = conn.createStatement();
-    String sql = null;
+    String sql;
     CallableStatement mergeCS = null;
     // try with both procedures and "gfxd install-jar/replace-jar" tool
     for (int i = 1; i <= 4; i++) {
@@ -486,7 +486,6 @@ public class GfxdJarInstallationDUnit extends DistributedSQLTestBase {
     GfxdJarInstallationTest.udtTypeTest(conn, true, false, true, true, false);
   }
 
-  
   public void testUDTINJarFromClientWithLocator() throws Exception {
     // Allow test when bug #51551 is fixed
     if (isTransactional) {
@@ -895,7 +894,6 @@ public class GfxdJarInstallationDUnit extends DistributedSQLTestBase {
         .getAsyncEventListener();
     com.pivotal.gemfirexd.callbacks.AsyncEventListener alis = lis
         .getAsyncEventListenerForTest();
-    Class<?> c = alis.getClass();
     try {
       assertNull(alis);
       return true;

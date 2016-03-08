@@ -1352,6 +1352,10 @@ implements LogWriterI18n, LogWriter {
     return this;
   }
 
+  public boolean isClosed() {
+    return false;
+  }
+
   /**
    * Used to convert the given object to a String. If anything goes wrong in this conversion
    * put some info about what went wrong on the result string but do not throw an exception.
