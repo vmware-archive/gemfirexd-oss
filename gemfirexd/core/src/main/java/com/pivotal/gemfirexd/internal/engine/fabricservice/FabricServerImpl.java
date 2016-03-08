@@ -55,28 +55,26 @@ public class FabricServerImpl extends FabricServiceImpl implements FabricServer 
     // take locks acquired by IDS.tryReconnect first to avoid deadlock
     // between start and reconnect thread
     synchronized (CacheFactory.class) {
-      synchronized (GemFireCacheImpl.class) {
-        synchronized (this) {
-          try {
-            startImpl(bootProperties, ignoreIfStarted, false);
-          } catch (Throwable t) {
-            Error err;
-            if (t instanceof Error && SystemFailure.isJVMFailureError(
-                err = (Error)t)) {
-              FabricServiceUtils.clearSystemProperties(monitorlite, sysProps);
-              SystemFailure.initiateFailure(err);
-              // If this ever returns, rethrow the error. We're poisoned
-              // now, so don't let this thread continue.
-              throw err;
-            }
-            // Whenever you catch Error or Throwable, you must also
-            // check for fatal JVM error (see above).  However, there is
-            // _still_ a possibility that you are dealing with a cascading
-            // error condition, so you also need to check to see if the JVM
-            // is still usable:
-            SystemFailure.checkFailure();
-            handleThrowable(t);
+      synchronized (this) {
+        try {
+          startImpl(bootProperties, ignoreIfStarted, false);
+        } catch (Throwable t) {
+          Error err;
+          if (t instanceof Error && SystemFailure.isJVMFailureError(
+              err = (Error)t)) {
+            FabricServiceUtils.clearSystemProperties(monitorlite, sysProps);
+            SystemFailure.initiateFailure(err);
+            // If this ever returns, rethrow the error. We're poisoned
+            // now, so don't let this thread continue.
+            throw err;
           }
+          // Whenever you catch Error or Throwable, you must also
+          // check for fatal JVM error (see above).  However, there is
+          // _still_ a possibility that you are dealing with a cascading
+          // error condition, so you also need to check to see if the JVM
+          // is still usable:
+          SystemFailure.checkFailure();
+          handleThrowable(t);
         }
       }
     }
