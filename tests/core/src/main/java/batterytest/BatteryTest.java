@@ -502,7 +502,7 @@ public class BatteryTest {
     log.info( "Parsing batterytest input file: " + testFileName + "..." );
     Vector tests = null;
     try {
-      tests = ConfigParser.parseFile(testFileName);
+      tests = ConfigParser.parseFile( testFileName );
       if ( log.fineEnabled() ) {
         for ( int i = 0; i < tests.size(); i++ ) {
           log.fine( "Test " + i + " = " + tests.get(i) );
@@ -579,20 +579,10 @@ public class BatteryTest {
 	      log.info( "test file not found in " + oldTest + " trying in " + test);
             }
           }
-//          else
-//          if ( jtestsResources != null ) {
-//            test = jtestsResources + sep + relativetest;
-//            if (! FileUtil.exists( test )) {
-//              String oldTest = test;
-//              test = oldTest.replaceFirst("core", "sql");
-//              log.info( "test file not found in " + oldTest + " trying in " + test);
-//            }
-//          }
           else {
               test = jtests + sep + relativetest;
           }
-        log.info("rjk: test ===== " + test);
-        // bring in default properties not overridden in the .bt file, if any
+     // bring in default properties not overridden in the .bt file, if any
 	int index = test.indexOf( ".conf" );
 	if ( index != -1 ) { // hydra test
 	  String propFileName = test.substring( 0, index ) + ".prop";

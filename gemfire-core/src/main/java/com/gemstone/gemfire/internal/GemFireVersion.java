@@ -474,7 +474,6 @@ public class GemFireVersion {
     }
   }
 
-
   /** Public method that returns the URL of the gemfire.jar/gemfirexd.jar file */
   public static URL getJarURL() {
     java.security.CodeSource cs = 

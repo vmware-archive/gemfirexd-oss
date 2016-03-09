@@ -38,7 +38,6 @@ public final class PureJavaMode {
       }
       tmpIsPure = true;
     } else {
-      System.out.println("SS GFCI.gfxdSystem() " + GemFireCacheImpl.gfxdSystem());
       tmpIsPure = GemFireCacheImpl.gfxdSystem() //don't load gemfire native library for now as we don't supply one.
           || !SharedLibrary.loadLibrary(SharedLibrary.getName("gemfire"));
     }

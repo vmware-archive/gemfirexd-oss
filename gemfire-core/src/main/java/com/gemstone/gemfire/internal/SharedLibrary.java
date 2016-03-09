@@ -19,7 +19,6 @@ package com.gemstone.gemfire.internal;
 import com.gemstone.gemfire.InternalGemFireError;
 import com.gemstone.gemfire.LogWriter;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
-import com.gemstone.gemfire.internal.cache.tier.sockets.ClientProxyMembershipID;
 import com.gemstone.gnu.trove.THashSet;
 import com.gemstone.gemfire.pdx.internal.unsafe.UnsafeWrapper;
 
