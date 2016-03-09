@@ -318,7 +318,7 @@ implements Serializable {
           }
         }
         vd.setVersions(tmp);
-        vd .setVersion(null); //override version
+        vd.setVersion(null); //override version
       }
     }
     // postprocess

@@ -578,13 +578,12 @@ public class BatteryTest {
               test = jtests + sep + relativetest;
 	      log.info( "test file not found in " + oldTest + " trying in " + test);
             }
+          } else {
+            test = jtests + sep + relativetest;
           }
-          else {
-              test = jtests + sep + relativetest;
-          }
-     // bring in default properties not overridden in the .bt file, if any
-	int index = test.indexOf( ".conf" );
-	if ( index != -1 ) { // hydra test
+        // bring in default properties not overridden in the .bt file, if any
+        int index = test.indexOf( ".conf" );
+        if ( index != -1 ) { // hydra test
 	  String propFileName = test.substring( 0, index ) + ".prop";
           btc.fillInWithDefaultsFrom( propFileName );
         }
