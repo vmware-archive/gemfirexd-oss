@@ -23,6 +23,7 @@ allprojects {
     maven { url 'http://repo.spring.io/libs-release' }
     maven { url 'http://repo.spring.io/ext-release-local' }
     maven { url 'https://dl.bintray.com/big-data/maven' }
+    mavenLocal()
   }
 
   gradle.taskGraph.whenReady( { graph ->
@@ -674,4 +675,19 @@ task product(dependsOn: [ subprojectBase + 'gemfirexd-client:jar',
     into "${productDir}/docs"
     rename 'gfxd-index.html', 'index.html'
   }
+}
+
+task cleanAll {
+  dependsOn clean, subprojects.clean
+}
+task buildAll {
+  dependsOn subprojects.assemble, subprojects.testClasses, product
+  mustRunAfter cleanAll
+}
+task checkAll {
+  dependsOn subprojects.check
+  mustRunAfter buildAll
+}
+task precheckin {
+  dependsOn cleanAll, buildAll, checkAll
 }
