@@ -688,5 +688,7 @@ task checkAll {
   mustRunAfter buildAll
 }
 task precheckin {
-  dependsOn cleanAll, buildAll, checkAll
+  if (project.hasProperty('gfxd')) {
+    dependsOn cleanAll, buildAll, checkAll
+  }
 }
