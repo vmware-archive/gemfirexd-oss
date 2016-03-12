@@ -2784,7 +2784,8 @@ public final class GemFireXDUtils {
     try {
       // try to get the GfxdDRWLockService and dump locks and threads
       if (memStore != null) {
-        memStore.getDDLLockService().dumpAllRWLocks(header, false, false);
+        memStore.getDDLLockService().dumpAllRWLocks(header,
+            false, false, true);
       }
       else {
         throw new ShutdownException();
