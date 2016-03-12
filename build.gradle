@@ -563,7 +563,6 @@ def includeJar(def jarFile) {
 task product(dependsOn: [ subprojectBase + 'gemfirexd-client:jar',
     subprojectBase + 'gemfirexd-core:shadowJar',
     subprojectBase + 'gemfirexd-tools:jar',
-    subprojectBase + 'gemfirexd-tests:jar',
     subprojectBase + 'gemfirexd-shared:javadoc',
     subprojectBase + 'gemfirexd-core:javadoc' ]) << {
 
@@ -689,5 +688,7 @@ task checkAll {
   mustRunAfter buildAll
 }
 task precheckin {
-  dependsOn cleanAll, buildAll, checkAll
+  if (project.hasProperty('gfxd')) {
+    dependsOn cleanAll, buildAll, checkAll
+  }
 }
