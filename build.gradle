@@ -445,7 +445,6 @@ subprojects {
   integrationTest.dependsOn subprojectBase + 'cleanIntegrationOutput'
   check.dependsOn test
   check.dependsOn distributedTest
-  check.dependsOn integrationTest
 }
 
 // maven publish tasks
