@@ -42,7 +42,6 @@ package com.pivotal.gemfirexd.internal.impl.tools.ij;
 
 import java.util.Hashtable;
 import java.util.Properties;
-import java.lang.Math;
 import java.io.FileNotFoundException;
 import java.io.BufferedInputStream;
 
@@ -264,7 +263,7 @@ public class mtTestCase
 		LocalizedInput [] in = { is };
 	
 		out.println("--------------"+file+"-----------------");
-		utilInstance = new utilMain(1, out, ignoreErrors, null);
+		utilInstance = new utilMain(1, out, ignoreErrors, null, null, 1);
 		utilInstance.initFromEnvironment();
 		utilInstance.setMtUse(true);
 		utilInstance.go(in, out, (java.util.Properties) null);

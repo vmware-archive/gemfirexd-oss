@@ -28,7 +28,6 @@ import com.gemstone.gemfire.cache.CacheException;
 import com.gemstone.gemfire.cache.EntryExistsException;
 import com.gemstone.gemfire.cache.EntryNotFoundException;
 import com.gemstone.gemfire.cache.persistence.PartitionOfflineException;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.FileUtil;
 import com.gemstone.gemfire.internal.cache.ForceReattemptException;
@@ -44,9 +43,9 @@ import com.pivotal.gemfirexd.jdbc.AlterTableTest;
 import com.pivotal.gemfirexd.jdbc.CreateTableTest;
 import com.pivotal.gemfirexd.jdbc.AlterTableTest.ConstraintNumber;
 
-import dunit.RMIException;
-import dunit.SerializableRunnable;
-import dunit.VM;
+import io.snappydata.test.dunit.RMIException;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.dunit.VM;
 
 /**
  * DUnit tests for "ALTER TABLE" with replay and persistence.
@@ -198,10 +197,10 @@ public class AlterTableDUnit extends DistributedSQLTestBase {
     SelectQueryInfo[] sqi = new SelectQueryInfo[1];
     setupObservers(new VM[] { datastore1, datastore2, datastore3 }, sqi);
     //with #42682. 
-    CacheSerializableRunnable setObserver = new CacheSerializableRunnable(
+    SerializableRunnable setObserver = new SerializableRunnable(
         "Set GemFireXDObserver on DataStore Node") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           isQueryExecutedOnNode = false;
           GemFireXDQueryObserverHolder
@@ -222,7 +221,7 @@ public class AlterTableDUnit extends DistributedSQLTestBase {
         }
       }
     };
-    setObserver.run2();
+    setObserver.run();
     sqlExecuteVerify(new int[] { 1 }, null,
         "select count(*) from trade.customers", null, "100");
     checkQueryExecution(false, datastore1, datastore2, datastore3, client1);

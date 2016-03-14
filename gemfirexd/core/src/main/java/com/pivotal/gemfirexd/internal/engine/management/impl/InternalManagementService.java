@@ -16,8 +16,6 @@
  */
 package com.pivotal.gemfirexd.internal.engine.management.impl;
 
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,9 +35,10 @@ import javax.management.ObjectName;
 import com.gemstone.gemfire.LogWriter;
 import com.gemstone.gemfire.distributed.DistributedSystemDisconnectedException;
 import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
-import com.gemstone.gemfire.i18n.LogWriterI18n;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
+import com.gemstone.gemfire.internal.snappy.CallbackFactoryProvider;
+import com.gemstone.gemfire.internal.snappy.StoreCallbacks;
 import com.gemstone.gemfire.management.ManagementException;
 import com.gemstone.gemfire.management.internal.BaseManagementService;
 import com.gemstone.gemfire.management.internal.FederationComponent;
@@ -74,7 +73,6 @@ import com.pivotal.gemfirexd.internal.iapi.store.access.TransactionController;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedConnection;
 import com.pivotal.gemfirexd.internal.impl.sql.GenericStatement;
 import com.pivotal.gemfirexd.internal.impl.sql.StatementStats;
-import com.pivotal.gemfirexd.internal.impl.sql.conn.GenericLanguageConnectionContext;
 
 /**
  *
@@ -367,7 +365,8 @@ public class InternalManagementService {
     Set<String> serverGroupsToUse = Collections.EMPTY_SET;
     LocalRegion region = container.getRegion();
 
-    if (region == null) {
+    // Do not display tables without region names or created in internal schema.
+    if (region == null || hasInternalTableSchema(container)) {
       return;
     }
     RegionMBeanBridge<?, ?>   regionMBeanBridge = RegionMBeanBridge.getInstance(region);
@@ -408,7 +407,16 @@ public class InternalManagementService {
     this.tableMBeanDataUpdater.addUpdatable(tableMBeanBridge.getFullName(), tableMBeanBridge); // start updates after creation
   }  
 
-  List<String> getTableDefinition (String parentSchema, String tableName){   
+  private boolean hasInternalTableSchema(GemFireContainer container) {
+    for (String schema : CallbackFactoryProvider.getStoreCallbacks().getInternalTableSchemas()) {
+      if (schema.equalsIgnoreCase(container.getSchemaName())) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  List<String> getTableDefinition (String parentSchema, String tableName){
     List<String> columnList = new ArrayList<String>(); 
 
     final EmbedConnection conn = this.connectionWrapperHolder.getConnection();
@@ -482,19 +490,21 @@ public class InternalManagementService {
     if (serverGroupsToUse.isEmpty()) {
       serverGroupsToUse = DEFAULT_SERVERGROUP_SET;
     }
-    
+
     try {
       for (String serverGroup : serverGroupsToUse) {
         ObjectName tableMBeanName = ManagementUtils.getTableMBeanName(
-        serverGroup, memberNameOrId, tableName);        
-        TableMXBean mbean = (TableMXBean) InternalManagementService.getAnyInstance().getMBeanInstance(tableMBeanName,TableMXBean.class);        
-        TableMBean tableMbean = (TableMBean) mbean;        
-        tableMbean.setDefinition(getTableDefinition(container.getSchemaName(), container.getTableName()));        
+            serverGroup, memberNameOrId, tableName);
+        TableMXBean mbean = (TableMXBean)InternalManagementService.getAnyInstance()
+            .getMBeanInstance(tableMBeanName, TableMXBean.class);
+        if (mbean != null) {
+          TableMBean tableMbean = (TableMBean)mbean;
+          tableMbean.setDefinition(getTableDefinition(container.getSchemaName(),
+              container.getTableName()));
+        }
       }
-
     } catch (Exception ex) {
-      logger
-      .warning("handleTableAlter exception == " + ex.getMessage() + 
+      logger.warning("handleTableAlter exception == " + ex.getMessage() +
           " Full Exception = " + ex);
     }
   }

@@ -31,9 +31,6 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.regex.Pattern;
 
-import org.w3c.dom.Element;
-
-import com.gemstone.gemfire.LogWriter;
 import com.gemstone.gemfire.internal.SharedLibrary;
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
@@ -42,7 +39,6 @@ import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.distributed.utils.GemFireXDUtils;
 import com.pivotal.gemfirexd.internal.engine.sql.catalog.XPLAINDistPropsDescriptor;
 import com.pivotal.gemfirexd.internal.engine.store.GemFireStore;
-import com.pivotal.gemfirexd.internal.iapi.error.StandardException;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedConnection;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedResultSet;
 import com.pivotal.gemfirexd.internal.impl.sql.catalog.XPLAINResultSetDescriptor;
@@ -55,8 +51,9 @@ import com.pivotal.gemfirexd.tools.planexporter.AccessDistributedSystem;
 import com.pivotal.gemfirexd.tools.planexporter.StatisticsCollectionObserver;
 import com.pivotal.gemfirexd.tools.planexporter.TreeNode;
 import com.pivotal.gemfirexd.tools.utils.ExecutionPlanUtils;
-
-import dunit.SerializableRunnable;
+import io.snappydata.test.dunit.SerializableRunnable;
+import org.apache.log4j.Logger;
+import org.w3c.dom.Element;
 
 /**
  * @author soubhikc
@@ -200,7 +197,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
       for (TreeNode data : dataArr) {
 
         cn = data;
-        getLogWriter().info("checking " + cn);
+        getGlobalLogger().info("checking " + cn);
 
         text = data.getId();
         assertTrue(text != null);
@@ -274,13 +271,13 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
    * TODO: Enable once #51271 is fixed.
    */
   public void DISABLED_51271_testSingleNodePlanGeneration() throws Exception {
-    LogWriter log = getLogWriter();
+    Logger log = getLogWriter();
     startVMs(0, 4, 0, null, null);
     startVMs(1, 0, 0, null, null);
 
     setNativeNanoTimer();
     final Properties p = new Properties();
-    p.setProperty("log-level", getDUnitLogLevel());
+    p.setProperty("log-level", getLogLevel());
     final Thread[] parallelEx = new Thread[10];
     try {
       {
@@ -429,7 +426,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
 
   public void testExecutionPlanGeneration() throws Exception {
     Properties p = new Properties();
-    p.setProperty("log-level", getDUnitLogLevel());
+    p.setProperty("log-level", getLogLevel());
 
     startServerVMs(4, 0, null, p);
 
@@ -456,7 +453,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
 
     String sql = "insert into course values( ";
     StringBuilder ins = new StringBuilder(sql);
-    LogWriter log = getLogWriter();
+    Logger log = getLogWriter();
     for (int i = 0; i < TotalRows; i++) {
       ins.append(i).append(", '");
       ins.append(TestUtil.numstr(i)).append("' )");
@@ -526,7 +523,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
   public void testExecutionPlanGenerationAcrossConnections()
       throws Exception {
     final Properties p = new Properties();
-    p.setProperty("log-level", getDUnitLogLevel());
+    p.setProperty("log-level", getLogLevel());
 
     startServerVMs(4, 0, null, p);
 
@@ -552,7 +549,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
 
     String sql = "insert into course values( ";
     StringBuilder ins = new StringBuilder(sql);
-    LogWriter log = getLogWriter();
+    Logger log = getLogWriter();
     final long TotalRows = 100;
     for (int i = 0; i < TotalRows; i++) {
       ins.append(i).append(", '");
@@ -723,7 +720,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
     checkLoadLib(getTestName());
     try {
       Properties cp = new Properties();
-      cp.setProperty("log-level", getDUnitLogLevel());
+      cp.setProperty("log-level", getLogLevel());
       setNativeNanoTimer();
       Connection conn = TestUtil.getConnection(cp);
       
@@ -760,7 +757,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
     checkLoadLib(getTestName());
     setNativeNanoTimer();
     Properties cp = new Properties();
-    cp.setProperty("log-level", getDUnitLogLevel());
+    cp.setProperty("log-level", getLogLevel());
     Connection conn = TestUtil.getConnection(cp);
 
     Statement st = conn.createStatement();
@@ -789,7 +786,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
     try {
 
       Properties cp = new Properties();
-      cp.setProperty("log-level", getDUnitLogLevel());
+      cp.setProperty("log-level", getLogLevel());
       Connection conn = TestUtil.getConnection(cp);
 
       Statement st = conn.createStatement();
@@ -911,7 +908,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
 
     setNativeNanoTimer();
     Properties cp = new Properties();
-    cp.setProperty("log-level", getDUnitLogLevel());
+    cp.setProperty("log-level", getLogLevel());
     Connection conn = TestUtil.getConnection(cp);
 
     Statement st = conn.createStatement();
@@ -951,7 +948,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
     checkLoadLib(getTestName());
     setNativeNanoTimer();
     Properties cp = new Properties();
-    cp.setProperty("log-level", getDUnitLogLevel());
+    cp.setProperty("log-level", getLogLevel());
     Connection conn = TestUtil.getConnection(cp);
 
     Statement st = conn.createStatement();
@@ -1026,7 +1023,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
     checkLoadLib(getTestName());
 
     Properties cp = new Properties();
-    cp.setProperty("log-level", getDUnitLogLevel());
+    cp.setProperty("log-level", getLogLevel());
     Connection conn = TestUtil.getConnection(cp);
 
     ResultSet rs;
@@ -1120,7 +1117,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
     checkLoadLib(getTestName());
 
     Properties cp = new Properties();
-    cp.setProperty("log-level", getDUnitLogLevel());
+    cp.setProperty("log-level", getLogLevel());
     Connection conn = TestUtil.getConnection(cp);
     Statement st = conn.createStatement();
 
@@ -1369,7 +1366,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
     checkLoadLib(getTestName());
 
     Properties cp = new Properties();
-    cp.setProperty("log-level", getDUnitLogLevel());
+    cp.setProperty("log-level", getLogLevel());
     Connection conn = TestUtil.getConnection(cp);
     Statement st = conn.createStatement();
 
@@ -1473,7 +1470,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
         Pattern.MULTILINE);
 
     final String[] originatorDone = planMatcher.split(input);
-    getLogWriter().info(java.util.Arrays.toString(originatorDone));
+    getGlobalLogger().info(java.util.Arrays.toString(originatorDone));
     assertEquals(2, originatorDone.length);
     return originatorDone[1];
   }
@@ -1495,7 +1492,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
         Pattern.MULTILINE);
 
     final String[] distributionDone = planMatcher.split(input);
-    getLogWriter().info(java.util.Arrays.toString(distributionDone));
+    getGlobalLogger().info(java.util.Arrays.toString(distributionDone));
     assertEquals(2, distributionDone.length);
     return distributionDone[1];
   }
@@ -1510,7 +1507,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
         Pattern.MULTILINE);
 
     final String[] sequentialDone = planMatcher.split(input);
-    getLogWriter().info(java.util.Arrays.toString(sequentialDone));
+    getGlobalLogger().info(java.util.Arrays.toString(sequentialDone));
     assertEquals(2, sequentialDone.length);
     return sequentialDone[1];
   }
@@ -1525,7 +1522,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
         Pattern.MULTILINE);
 
     final String[] roundRobinDone = planMatcher.split(input);
-    getLogWriter().info(java.util.Arrays.toString(roundRobinDone));
+    getGlobalLogger().info(java.util.Arrays.toString(roundRobinDone));
     assertEquals(2, roundRobinDone.length);
     return roundRobinDone[1];
   }
@@ -1541,7 +1538,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
         Pattern.MULTILINE);
 
     final String[] orderedDone = planMatcher.split(input);
-    getLogWriter().info(java.util.Arrays.toString(orderedDone));
+    getGlobalLogger().info(java.util.Arrays.toString(orderedDone));
     assertEquals(2, orderedDone.length);
     return orderedDone[1];
   }
@@ -1556,7 +1553,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
         Pattern.MULTILINE);
 
     final String[] getallDone = planMatcher.split(input);
-    getLogWriter().info("regiongetall:" + java.util.Arrays.toString(getallDone));
+    getGlobalLogger().info("regiongetall:" + java.util.Arrays.toString(getallDone));
     assertEquals("microseconds", getallDone[1].trim());
     return getallDone[1];
   }
@@ -1573,7 +1570,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
         Pattern.MULTILINE);
 
     final String[] getallDone = planMatcher.split(input);
-    getLogWriter().info(
+    getGlobalLogger().info(
         "localindexgetall:" + java.util.Arrays.toString(getallDone));
     assertEquals(2, getallDone.length);
     return getallDone[1];
@@ -1584,7 +1581,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
     Pattern planMatcher = Pattern.compile("Slowest Member Plan:",
         Pattern.MULTILINE);
     String[] introLineDone = planMatcher.split(input);
-    getLogWriter().info(java.util.Arrays.toString(introLineDone));
+    getGlobalLogger().info(java.util.Arrays.toString(introLineDone));
     assertEquals(2, introLineDone.length);
     return introLineDone[1];
   }
@@ -1594,7 +1591,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
     Pattern planMatcher = Pattern.compile("Fastest Member Plan:",
         Pattern.MULTILINE);
     String[] introLineDone = planMatcher.split(input);
-    getLogWriter().info(java.util.Arrays.toString(introLineDone));
+    getGlobalLogger().info(java.util.Arrays.toString(introLineDone));
     assertEquals(2, introLineDone.length);
     return introLineDone[1];
   }
@@ -1606,7 +1603,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
     Pattern planMatcher = Pattern.compile(patternString.toString(),
         Pattern.MULTILINE);
     String[] localPlanDone = planMatcher.split(input);
-    getLogWriter().info(java.util.Arrays.toString(localPlanDone));
+    getGlobalLogger().info(java.util.Arrays.toString(localPlanDone));
     assertEquals(2, localPlanDone.length);
     return localPlanDone[1];
   }
@@ -1621,7 +1618,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
     Pattern planMatcher = Pattern.compile(patternString.toString(),
         Pattern.MULTILINE);
     String[] planMemberDone = planMatcher.split(input);
-    getLogWriter().info(java.util.Arrays.toString(planMemberDone));
+    getGlobalLogger().info(java.util.Arrays.toString(planMemberDone));
     assertEquals(2, planMemberDone.length);
     return planMemberDone[1];
   }
@@ -1641,7 +1638,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
         Pattern.MULTILINE);
 
     String[] queryRecRespSendDone = planMatcher.split(input);
-    getLogWriter().info(java.util.Arrays.toString(queryRecRespSendDone));
+    getGlobalLogger().info(java.util.Arrays.toString(queryRecRespSendDone));
     assert queryRecRespSendDone.length == 2;
     return queryRecRespSendDone[1];
   }
@@ -1656,7 +1653,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
     Pattern planMatcher = Pattern.compile(patternString.toString(),
         Pattern.MULTILINE);
     String[] queryReceiveDone = planMatcher.split(input);
-    getLogWriter().info(java.util.Arrays.toString(queryReceiveDone));
+    getGlobalLogger().info(java.util.Arrays.toString(queryReceiveDone));
     assert queryReceiveDone.length == 2;
     return queryReceiveDone[1];
   }
@@ -1671,7 +1668,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
     Pattern planMatcher = Pattern.compile(patternString.toString(),
         Pattern.MULTILINE);
     String[] querySendDone = planMatcher.split(input);
-    getLogWriter().info(java.util.Arrays.toString(querySendDone));
+    getGlobalLogger().info(java.util.Arrays.toString(querySendDone));
     assert querySendDone.length == 2;
     return querySendDone[1];
   }
@@ -1686,7 +1683,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
     Pattern planMatcher = Pattern.compile(patternString.toString(),
         Pattern.MULTILINE);
     String[] resultSendDone = planMatcher.split(input);
-    getLogWriter().info(java.util.Arrays.toString(resultSendDone));
+    getGlobalLogger().info(java.util.Arrays.toString(resultSendDone));
     assertEquals(2, resultSendDone.length);
     return resultSendDone[1];
   }
@@ -1703,7 +1700,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
         Pattern.MULTILINE);
 
     String[] resultHolderDone = planMatcher.split(input);
-    getLogWriter().info(java.util.Arrays.toString(resultHolderDone));
+    getGlobalLogger().info(java.util.Arrays.toString(resultHolderDone));
     assertEquals(2, resultHolderDone.length);
     return resultHolderDone[1];
   }
@@ -1719,7 +1716,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
     Pattern planMatcher = Pattern.compile(patternString.toString(),
         Pattern.MULTILINE);
     String[] resultHolderDone = planMatcher.split(input, 2);
-    getLogWriter().info(java.util.Arrays.toString(resultHolderDone));
+    getGlobalLogger().info(java.util.Arrays.toString(resultHolderDone));
     assertEquals(2, resultHolderDone.length);
     return resultHolderDone[1];
   }
@@ -1734,7 +1731,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
     Pattern planMatcher = Pattern.compile(patternString.toString(),
         Pattern.MULTILINE);
     String[] sortDone = planMatcher.split(input);
-    getLogWriter().info(java.util.Arrays.toString(sortDone));
+    getGlobalLogger().info(java.util.Arrays.toString(sortDone));
     assertEquals(2, sortDone.length);
     return sortDone[1];
   }
@@ -1750,7 +1747,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
     Pattern planMatcher = Pattern.compile(patternString.toString(),
         Pattern.MULTILINE);
     String[] rowIDScanDone = planMatcher.split(input);
-    getLogWriter().info(java.util.Arrays.toString(rowIDScanDone));
+    getGlobalLogger().info(java.util.Arrays.toString(rowIDScanDone));
     assertEquals(2, rowIDScanDone.length);
     return rowIDScanDone[1];
   }
@@ -1819,7 +1816,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
     Pattern planMatcher = Pattern.compile(patternString.toString(),
         Pattern.MULTILINE);
     String[] indexScanDone = planMatcher.split(input);
-    getLogWriter().info(java.util.Arrays.toString(indexScanDone));
+    getGlobalLogger().info(java.util.Arrays.toString(indexScanDone));
     assertEquals(2, indexScanDone.length);
     return indexScanDone[1];
   }
@@ -1873,7 +1870,7 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
       public void run() {
         
         GemFireStore store = Misc.getMemStoreBootingNoThrow();
-        LogWriter log = getLogWriter();
+        Logger log = getLogWriter();
         
         if (store == null) {
           log.info("SB: server not booted");

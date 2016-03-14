@@ -39,7 +39,6 @@ import java.util.concurrent.CyclicBarrier;
 import com.gemstone.gemfire.cache.CacheClosedException;
 import com.gemstone.gemfire.cache.CacheException;
 import com.gemstone.gemfire.cache.control.RebalanceFactory;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.offheap.ByteSource;
 import com.gemstone.gemfire.pdx.internal.unsafe.UnsafeWrapper;
@@ -66,10 +65,9 @@ import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedPreparedStatement;
 import com.pivotal.gemfirexd.internal.impl.sql.GenericParameter;
 import com.pivotal.gemfirexd.internal.impl.sql.GenericParameterValueSet;
 import com.pivotal.gemfirexd.internal.impl.sql.GenericPreparedStatement;
-import dunit.SerializableCallable;
-import dunit.SerializableRunnable;
-import dunit.VM;
-import hydra.HydraRuntimeException;
+import io.snappydata.test.dunit.SerializableCallable;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.dunit.VM;
 
 /**
  * Tests whether the statementID , connectionID etc are being passed correctly
@@ -156,16 +154,16 @@ public class PreparedStatementDUnit extends DistributedSQLTestBase {
 
       VM dataStore1 = this.serverVMs.get(0);
 
-      CacheSerializableRunnable setObserver = new CacheSerializableRunnable(
+      SerializableRunnable setObserver = new SerializableRunnable(
           "Set GemFireXDObserver") {
         @Override
-        public void run2() throws CacheException
+        public void run() throws CacheException
         {
           try {
             String maxCid = "create function maxCidBug41222() "
                 + "RETURNS INTEGER " + "PARAMETER STYLE JAVA "
                 + "LANGUAGE JAVA " + "READS SQL DATA "
-                + "EXTERNAL NAME 'sql.FunctionTest.getMaxCidBug41222'";
+                + "EXTERNAL NAME 'sql.TestFunctions.getMaxCidBug41222'";
             TestUtil.setupConnection();
             Connection conn = TestUtil.jdbcConn;
             Statement stmt = conn.createStatement();
@@ -203,7 +201,7 @@ public class PreparedStatementDUnit extends DistributedSQLTestBase {
         }
       };
       dataStore1.invoke(setObserver);
-      // setObserver.run2();
+      // setObserver.run();
       TestUtil.setupConnection();
 
       final PreparedStatement[] eps = new PreparedStatement[numThreads];
@@ -270,10 +268,10 @@ public class PreparedStatementDUnit extends DistributedSQLTestBase {
 
       VM dataStore1 = this.serverVMs.get(0);
       VM dataStore2 = this.serverVMs.get(1);
-      CacheSerializableRunnable setObserver = new CacheSerializableRunnable(
+      SerializableRunnable setObserver = new SerializableRunnable(
           "Set GemFireXDObserver") {
         @Override
-        public void run2() throws CacheException
+        public void run() throws CacheException
         {
           try {
             GemFireXDQueryObserverHolder.setInstance(getQueryObserver(false));
@@ -298,10 +296,10 @@ public class PreparedStatementDUnit extends DistributedSQLTestBase {
       checkOneResult(rs);
       final long clientConnID = mcon.getConnectionID();
       final long clientStmntID = eps.getID();
-      CacheSerializableRunnable validate = new CacheSerializableRunnable(
+      SerializableRunnable validate = new SerializableRunnable(
           "validate") {
         @Override
-        public void run2() throws CacheException
+        public void run() throws CacheException
         {
           try {
             assertEquals(clientConnID, connID);
@@ -362,10 +360,10 @@ public class PreparedStatementDUnit extends DistributedSQLTestBase {
 
       VM dataStore1 = this.serverVMs.get(0);
       VM dataStore2 = this.serverVMs.get(1);
-      CacheSerializableRunnable setObserver = new CacheSerializableRunnable(
+      SerializableRunnable setObserver = new SerializableRunnable(
           "Set GemFireXDObserver") {
         @Override
-        public void run2() throws CacheException
+        public void run() throws CacheException
         {
           try {
             GemFireXDQueryObserverHolder
@@ -406,10 +404,10 @@ public class PreparedStatementDUnit extends DistributedSQLTestBase {
       checkOneResult(rs);
       final long clientConnID = mcon.getConnectionID();
       final long clientStmntID = eps.getID();
-      CacheSerializableRunnable validate = new CacheSerializableRunnable(
+      SerializableRunnable validate = new SerializableRunnable(
           "validate") {
         @Override
-        public void run2() throws CacheException
+        public void run() throws CacheException
         {
           try {
             assertEquals(clientConnID, connID);
@@ -485,9 +483,9 @@ public class PreparedStatementDUnit extends DistributedSQLTestBase {
       //bucket creation, all of the buckets have already been created on data store
       //1. So this test will fail, because we never create any buckets on data store 2,
       //so we never need to send the statement to the second data store.
-      dataStore2.invoke(new CacheSerializableRunnable("Rebalance") {
+      dataStore2.invoke(new SerializableRunnable("Rebalance") {
         @Override
-        public void run2() {
+        public void run() {
           RebalanceFactory rf = GemFireCacheImpl.getInstance().getResourceManager().createRebalanceFactory();
           try {
             rf.start().getResults();
@@ -496,10 +494,10 @@ public class PreparedStatementDUnit extends DistributedSQLTestBase {
           }
         }
       });
-      CacheSerializableRunnable setObserver = new CacheSerializableRunnable(
+      SerializableRunnable setObserver = new SerializableRunnable(
           "Set GemFireXDObserver") {
         @Override
-        public void run2() throws CacheException
+        public void run() throws CacheException
         {
           try {
             GemFireXDQueryObserverHolder.setInstance(getQueryObserver(false));
@@ -520,10 +518,10 @@ public class PreparedStatementDUnit extends DistributedSQLTestBase {
       checkOneResult(rs);
       final long clientConnID = mcon.getConnectionID();
       final long clientStmntID = eps.getID();
-      CacheSerializableRunnable validateNoQuerySend = new CacheSerializableRunnable(
+      SerializableRunnable validateNoQuerySend = new SerializableRunnable(
           "validate") {
         @Override
-        public void run2() throws CacheException
+        public void run() throws CacheException
         {
           try {
             assertEquals(clientConnID, connID);
@@ -542,10 +540,10 @@ public class PreparedStatementDUnit extends DistributedSQLTestBase {
         }
       };
 
-      CacheSerializableRunnable validateQuerySend = new CacheSerializableRunnable(
+      SerializableRunnable validateQuerySend = new SerializableRunnable(
           "validate") {
         @Override
-        public void run2() throws CacheException
+        public void run() throws CacheException
         {
           try {
             assertEquals(clientConnID, connID);
@@ -700,10 +698,10 @@ public class PreparedStatementDUnit extends DistributedSQLTestBase {
 
       VM dataStore1 = this.serverVMs.get(0);
       VM dataStore2 = this.serverVMs.get(1);
-      CacheSerializableRunnable setObserver = new CacheSerializableRunnable(
+      SerializableRunnable setObserver = new SerializableRunnable(
           "Set GemFireXDObserver") {
         @Override
-        public void run2() throws CacheException
+        public void run() throws CacheException
         {
           try {
             GemFireXDQueryObserverHolder
@@ -730,10 +728,10 @@ public class PreparedStatementDUnit extends DistributedSQLTestBase {
         }
       };
 
-      CacheSerializableRunnable validate = new CacheSerializableRunnable(
+      SerializableRunnable validate = new SerializableRunnable(
           "validate no gfxd fabric activation used") {
         @Override
-        public void run2() throws CacheException
+        public void run() throws CacheException
         {
           try {
             assertFalse(executionUsingGemFireXDActivation);
@@ -776,10 +774,10 @@ public class PreparedStatementDUnit extends DistributedSQLTestBase {
             }
           });
 
-      CacheSerializableRunnable validateGemFireXDActivation = new CacheSerializableRunnable(
+      SerializableRunnable validateGemFireXDActivation = new SerializableRunnable(
           "validate  gfxd fabric activation used") {
         @Override
-        public void run2() throws CacheException
+        public void run() throws CacheException
         {
           try {
             assertTrue(executionUsingGemFireXDActivation);
@@ -895,10 +893,10 @@ public class PreparedStatementDUnit extends DistributedSQLTestBase {
       // Now fire the same query on one of the data store & we should ideally
       // see two records but because of bug only one record being fetched
       VM dataStore1 = this.serverVMs.get(0);
-      CacheSerializableRunnable queryExecutor = new CacheSerializableRunnable(
+      SerializableRunnable queryExecutor = new SerializableRunnable(
           "Query Executor") {
         @Override
-        public void run2() throws CacheException
+        public void run() throws CacheException
         {
           try {
             TestUtil.setupConnection();
@@ -964,10 +962,10 @@ public class PreparedStatementDUnit extends DistributedSQLTestBase {
       VM dataStore1 = this.serverVMs.get(0);
       VM dataStore2 = this.serverVMs.get(1);
       VM dataStore3 = this.serverVMs.get(2);
-      CacheSerializableRunnable setObserver = new CacheSerializableRunnable(
+      SerializableRunnable setObserver = new SerializableRunnable(
           "Set GemFireXDObserver") {
         @Override
-        public void run2() throws CacheException
+        public void run() throws CacheException
         {
           try {
             GemFireXDQueryObserverHolder.setInstance(getQueryObserver(true));
@@ -993,10 +991,10 @@ public class PreparedStatementDUnit extends DistributedSQLTestBase {
       checkOneResult(rs);
       final long clientConnID = mcon.getConnectionID();
       final long clientStmntID = eps.getID();
-      CacheSerializableRunnable validate = new CacheSerializableRunnable(
+      SerializableRunnable validate = new SerializableRunnable(
           "validate") {
         @Override
-        public void run2() throws CacheException
+        public void run() throws CacheException
         {
           try {
             assertEquals(clientConnID, connID);
@@ -1090,10 +1088,10 @@ public class PreparedStatementDUnit extends DistributedSQLTestBase {
       VM dataStore2 = this.serverVMs.get(1);
       VM dataStore3 = this.serverVMs.get(2);
 
-      CacheSerializableRunnable setObserver = new CacheSerializableRunnable(
+      SerializableRunnable setObserver = new SerializableRunnable(
           "Set GemFireXDObserver") {
         @Override
-        public void run2() throws CacheException
+        public void run() throws CacheException
         {
           try {
             GemFireXDQueryObserverHolder.setInstance(getQueryObserver(true));
@@ -1131,10 +1129,10 @@ public class PreparedStatementDUnit extends DistributedSQLTestBase {
       assertTrue(rs.next());
       assertTrue(rs.next());
       assertFalse(rs.next());
-      CacheSerializableRunnable validate = new CacheSerializableRunnable(
+      SerializableRunnable validate = new SerializableRunnable(
           "validate") {
         @Override
-        public void run2() throws CacheException
+        public void run() throws CacheException
         {
           try {
             // Check if the connection holder still contains the connection
@@ -1227,10 +1225,10 @@ public class PreparedStatementDUnit extends DistributedSQLTestBase {
       VM dataStore1 = this.serverVMs.get(0);
       VM dataStore2 = this.serverVMs.get(1);
       VM dataStore3 = this.serverVMs.get(2);
-      CacheSerializableRunnable setObserver = new CacheSerializableRunnable(
+      SerializableRunnable setObserver = new SerializableRunnable(
           "Set GemFireXDObserver") {
         @Override
-        public void run2() throws CacheException
+        public void run() throws CacheException
         {
           try {
             GemFireXDQueryObserverHolder.setInstance(getQueryObserver(false));
@@ -1257,10 +1255,10 @@ public class PreparedStatementDUnit extends DistributedSQLTestBase {
       final long clientConnID = mcon.getConnectionID();
       final long clientStmntID = eps.getID();
       eps.close();
-      CacheSerializableRunnable validate = new CacheSerializableRunnable(
+      SerializableRunnable validate = new SerializableRunnable(
           "validate") {
         @Override
-        public void run2() throws CacheException
+        public void run() throws CacheException
         {
           try {
             assertEquals(clientConnID, connID);
@@ -1350,10 +1348,10 @@ public class PreparedStatementDUnit extends DistributedSQLTestBase {
       VM dataStore3 = this.serverVMs.get(2);
       VM dataStore4 = this.serverVMs.get(3);
       final GemFireXDQueryObserver soo = getQueryObserver(false);
-      CacheSerializableRunnable setObserver = new CacheSerializableRunnable(
+      SerializableRunnable setObserver = new SerializableRunnable(
           "Set GemFireXDObserver") {
         @Override
-        public void run2() throws CacheException
+        public void run() throws CacheException
         {
           try {
             GemFireXDQueryObserverHolder.setInstance(soo);
@@ -1371,10 +1369,10 @@ public class PreparedStatementDUnit extends DistributedSQLTestBase {
       GemFireXDQueryObserverHolder.setInstance(soo);
 
       // Execute query from DataStore1
-      CacheSerializableRunnable queryExecutor = new CacheSerializableRunnable(
+      SerializableRunnable queryExecutor = new SerializableRunnable(
           "queryExecutor") {
         @Override
-        public void run2() throws CacheException
+        public void run() throws CacheException
         {
           try {
             // Obtain a new connection
@@ -1396,10 +1394,10 @@ public class PreparedStatementDUnit extends DistributedSQLTestBase {
 
       dataStore1.invoke(queryExecutor);
 
-      CacheSerializableRunnable validate = new CacheSerializableRunnable(
+      SerializableRunnable validate = new SerializableRunnable(
           "validate") {
         @Override
-        public void run2() throws CacheException
+        public void run() throws CacheException
         {
           try {
             assertTrue(connID != -1);
@@ -1494,10 +1492,10 @@ public class PreparedStatementDUnit extends DistributedSQLTestBase {
       VM dataStore3 = this.serverVMs.get(2);
 
       final GemFireXDQueryObserver soo = getQueryObserver(false);
-      CacheSerializableRunnable setObserver = new CacheSerializableRunnable(
+      SerializableRunnable setObserver = new SerializableRunnable(
           "Set GemFireXDObserver") {
         @Override
-        public void run2() throws CacheException
+        public void run() throws CacheException
         {
           try {
             GemFireXDQueryObserverHolder.setInstance(soo);
@@ -1515,10 +1513,10 @@ public class PreparedStatementDUnit extends DistributedSQLTestBase {
       GemFireXDQueryObserverHolder.setInstance(soo);
 
       // Execute query from Accessor1
-      CacheSerializableRunnable queryExecutor = new CacheSerializableRunnable(
+      SerializableRunnable queryExecutor = new SerializableRunnable(
           "queryExecutor") {
         @Override
-        public void run2() throws CacheException
+        public void run() throws CacheException
         {
           try {
             // Obtain a new connection
@@ -1538,12 +1536,12 @@ public class PreparedStatementDUnit extends DistributedSQLTestBase {
         }
       };
       // Execute query on local client VM which is acessor
-      queryExecutor.run2();
+      queryExecutor.run();
 
-      CacheSerializableRunnable validate = new CacheSerializableRunnable(
+      SerializableRunnable validate = new SerializableRunnable(
           "validate") {
         @Override
-        public void run2() throws CacheException
+        public void run() throws CacheException
         {
           try {
             // Check if the connection holder still contains the connection
@@ -1782,7 +1780,7 @@ public class PreparedStatementDUnit extends DistributedSQLTestBase {
               + getSuffix());
       clientSQLExecute(
           1,
-          "create function maxCid(DP1 Integer) RETURNS INTEGER PARAMETER STYLE JAVA LANGUAGE JAVA READS SQL DATA EXTERNAL NAME 'sql.FunctionTest.getMaxCid'");
+          "create function maxCid(DP1 Integer) RETURNS INTEGER PARAMETER STYLE JAVA LANGUAGE JAVA READS SQL DATA EXTERNAL NAME 'sql.TestFunctions.getMaxCid'");
 
       String subquery = "select * from trade.customers c where c.cid = maxCid( 3  )";
       TestUtil.setupConnection();
@@ -1826,7 +1824,7 @@ public class PreparedStatementDUnit extends DistributedSQLTestBase {
               + getSuffix());
       clientSQLExecute(
           1,
-          "create function maxCid(DP1 Integer) RETURNS INTEGER PARAMETER STYLE JAVA LANGUAGE JAVA READS SQL DATA EXTERNAL NAME 'sql.FunctionTest.getMaxCidForBug41005' ");
+          "create function maxCid(DP1 Integer) RETURNS INTEGER PARAMETER STYLE JAVA LANGUAGE JAVA READS SQL DATA EXTERNAL NAME 'sql.TestFunctions.getMaxCidForBug41005' ");
       clientSQLExecute(1, "insert into trade.customers values (1,'test' ,1)");
       clientSQLExecute(1, "insert into trade.networth values (1,1 ,1)");
       clientSQLExecute(1, "insert into trade.customers values (2,'test' ,2)");
@@ -1915,10 +1913,10 @@ public class PreparedStatementDUnit extends DistributedSQLTestBase {
           + ", 'First1" + (i + 1) + "', 'J1 604')");
     }
 
-    CacheSerializableRunnable queryExecutor = new CacheSerializableRunnable(
+    SerializableRunnable queryExecutor = new SerializableRunnable(
         "BugVerifier") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         GemFireXDQueryObserver sqo = null;
         try {
           // Obtain a new connection
@@ -2179,12 +2177,6 @@ public class PreparedStatementDUnit extends DistributedSQLTestBase {
     derbyStmt.execute(table1DDL);
     derbyStmt.execute(table2DDL);
 
-    try {
-      hydra.Log.getLogWriter();
-    }
-    catch (HydraRuntimeException hre) {
-      hydra.Log.createLogWriter("DBSynchronizer", getDUnitLogLevel());
-    }
     clientSQLExecute(1, table1DDL + "PARTITION BY COLUMN ( ID1 )"
         + getSuffix());
     clientSQLExecute(1, table2DDL + "replicate " + getSuffix());
@@ -2339,12 +2331,6 @@ public class PreparedStatementDUnit extends DistributedSQLTestBase {
     derbyStmt.execute(table1DDL);
     derbyStmt.execute(table2DDL);
 
-    try {
-      hydra.Log.getLogWriter();
-    }
-    catch (HydraRuntimeException hre) {
-      hydra.Log.createLogWriter("DBSynchronizer", getDUnitLogLevel());
-    }
     clientSQLExecute(1, table1DDL + "PARTITION BY COLUMN ( ID1 )"
         + "server groups (SG1, SG2)" + getSuffix());
     clientSQLExecute(1, table2DDL + "replicate " + "server groups ( SG2)"
@@ -2587,12 +2573,12 @@ public class PreparedStatementDUnit extends DistributedSQLTestBase {
     }
   }
 
-  protected static CacheSerializableRunnable getExecutorToManipulatePVS(final long connectionID,
+  protected static SerializableRunnable getExecutorToManipulatePVS(final long connectionID,
       final long statementID) {
-    CacheSerializableRunnable pvsManip = new CacheSerializableRunnable(
+    SerializableRunnable pvsManip = new SerializableRunnable(
         "PVS manipulator") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         GfxdConnectionHolder holder = GfxdConnectionHolder.getHolder();
         EmbedPreparedStatement ps = (EmbedPreparedStatement)holder
             .getExistingWrapper(connectionID).getStatementForTEST(statementID);
@@ -2792,7 +2778,7 @@ public class PreparedStatementDUnit extends DistributedSQLTestBase {
           Object[] obj = new Object[50];
           dummy += obj.hashCode();
         }
-        getLogWriter().info("statement not GCed, dummy=" + dummy);
+        getGlobalLogger().info("statement not GCed, dummy=" + dummy);
       }
       invokeGC();
       GfxdConnectionHolder holder = GfxdConnectionHolder.getHolder();

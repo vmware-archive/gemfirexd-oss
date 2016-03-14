@@ -26,6 +26,7 @@ import java.util.TreeSet;
 import com.gemstone.gemfire.InternalGemFireError;
 import com.gemstone.gemfire.internal.GemFireTerminateError;
 import com.gemstone.gemfire.internal.GemFireUtilLauncher;
+import com.gemstone.gemfire.internal.GemFireUtilLauncher.CommandEntry;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.pivotal.gemfirexd.internal.iapi.tools.i18n.LocalizedResource;
 import com.pivotal.gemfirexd.internal.shared.common.sanity.SanityManager;
@@ -59,6 +60,12 @@ public class GfxdUtilLauncher extends GemFireUtilLauncher {
    * including any symlinks (see #43722).
    */
   static final String GET_CANONICAL_PATH_ARG = "--get-canonical-path";
+
+  protected static boolean snappyStore;
+
+  public static boolean isSnappyStore() {
+    return snappyStore;
+  }
 
   /**
    * Returns a mapping of utility names to the class used to spawn them for

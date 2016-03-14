@@ -1166,7 +1166,7 @@ public class HeapDataOutputStream extends OutputStream implements
     if (ASCII_STRINGS) {
       writeAsciiUTF(str, true);
     } else {
-      writeFullUTF(str, true);
+      writeFullUTF(str, true, true);
     }
   }
   private final void writeAsciiUTF(String str, boolean encodeLength) throws UTFDataFormatException {
@@ -1198,16 +1198,17 @@ public class HeapDataOutputStream extends OutputStream implements
 //       this.buffer.put(bytes);
     }
   }
-  
+
   /**
    * The logic used here is based on java's DataOutputStream.writeUTF() from 
    * the version 1.6.0_10.
    * The reader code should use the logic similar to DataOutputStream.readUTF() 
    * from the version 1.6.0_10 to decode this properly.
    */
-  private final void writeFullUTF(String str, boolean encodeLength) throws UTFDataFormatException {
+  public final void writeFullUTF(String str, boolean encodeLength,
+      boolean useShortLen) throws UTFDataFormatException {
     int strlen = str.length();
-    if (encodeLength && strlen > 65535) {
+    if (encodeLength && useShortLen && strlen > 65535) {
       throw new UTFDataFormatException();
     }
     // make room for worst case space 3 bytes for each char and 2 for len
@@ -1221,7 +1222,11 @@ public class HeapDataOutputStream extends OutputStream implements
     int utfSizeIdx = this.buffer.position();
     if (encodeLength) {
       // skip bytes reserved for length
-      this.buffer.position(utfSizeIdx+2);
+      if (useShortLen) {
+        this.buffer.position(utfSizeIdx + 2);
+      } else {
+        this.buffer.position(utfSizeIdx + 4);
+      }
     }
     for (int i = 0; i < strlen; i++) {
       int c = str.charAt(i);
@@ -1236,15 +1241,20 @@ public class HeapDataOutputStream extends OutputStream implements
         this.buffer.put((byte) (0x80 | ((c >>  0) & 0x3F)));
       }
     }
-    int utflen = this.buffer.position() - utfSizeIdx;
+    int utfLen = this.buffer.position() - utfSizeIdx;
     if (encodeLength) {
-      utflen -= 2;
-      if (utflen > 65535) {
-        // act as if we wrote nothing to this buffer
-        this.buffer.position(utfSizeIdx);
-        throw new UTFDataFormatException();
+      if (useShortLen) {
+        utfLen -= 2;
+        if (utfLen > 65535) {
+          // act as if we wrote nothing to this buffer
+          this.buffer.position(utfSizeIdx);
+          throw new UTFDataFormatException();
+        }
+        this.buffer.putShort(utfSizeIdx, (short)utfLen);
+      } else {
+        utfLen -= 4;
+        this.buffer.putInt(utfSizeIdx, utfLen);
       }
-      this.buffer.putShort(utfSizeIdx, (short)utflen);
     }
   }
 
@@ -1259,14 +1269,14 @@ public class HeapDataOutputStream extends OutputStream implements
       if (ASCII_STRINGS) {
         writeAsciiUTF(str, false);
       } else {
-        writeFullUTF(str, false);
+        writeFullUTF(str, false, false);
       }
     } catch (UTFDataFormatException ex) {
       // this shouldn't happen since we did not encode the length
       throw new IllegalStateException(LocalizedStrings.HeapDataOutputStream_UNEXPECTED_0.toLocalizedString(ex));
     }
   }
-  
+
   /**
    * Writes the given object to this stream as a byte array.
    * The byte array is produced by serializing v. The serialization

@@ -23,8 +23,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
 import com.gemstone.gemfire.cache.CacheException;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.distributed.DistributedMember;
 import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
 import com.gemstone.gemfire.internal.cache.PartitionedRegion;
@@ -33,7 +33,6 @@ import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverAdapter;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
 import com.pivotal.gemfirexd.internal.engine.ddl.resolver.GfxdPartitionResolver;
-import com.pivotal.gemfirexd.internal.engine.distributed.GfxdConnectionWrapper;
 import com.pivotal.gemfirexd.internal.engine.distributed.metadata.QueryInfo;
 import com.pivotal.gemfirexd.internal.engine.distributed.metadata.SelectQueryInfo;
 import com.pivotal.gemfirexd.internal.iapi.sql.conn.LanguageConnectionContext;
@@ -44,8 +43,8 @@ import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedPreparedStatement;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedStatement;
 import com.pivotal.gemfirexd.internal.impl.sql.GenericPreparedStatement;
 import com.pivotal.gemfirexd.query.QueryEvaluationHelper;
-
-import dunit.VM;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.dunit.VM;
 
 /**
  * Tests the pruning behaviour of distributed queries based on partition
@@ -476,10 +475,10 @@ public class PrepStatementNodesPruningDUnit extends DistributedSQLTestBase {
   
       // set up a sql query observer in server VM to keep track of whether the
       // query got executed on the node or not
-      CacheSerializableRunnable setObserver = new CacheSerializableRunnable(
+      SerializableRunnable setObserver = new SerializableRunnable(
           "Set GemFireXDObserver on DataStore Node") {
         @Override
-        public void run2() throws CacheException {
+        public void run() throws CacheException {
           try {
             GemFireXDQueryObserverHolder
                 .setInstance(new GemFireXDQueryObserverAdapter() {
@@ -506,10 +505,10 @@ public class PrepStatementNodesPruningDUnit extends DistributedSQLTestBase {
           .prepareStatement("select ID, DESCRIPTION from TESTTABLE "
               + "where ID  >= ? And ID <= ?  AND ID <= 7 AND ID >= 4");
 
-      CacheSerializableRunnable validateQueryExecution = new CacheSerializableRunnable(
+      SerializableRunnable validateQueryExecution = new SerializableRunnable(
           "validate node has executed the query") {
         @Override
-        public void run2() throws CacheException {
+        public void run() throws CacheException {
           try {
             GemFireXDQueryObserverHolder
                 .setInstance(new GemFireXDQueryObserverAdapter());
@@ -523,10 +522,10 @@ public class PrepStatementNodesPruningDUnit extends DistributedSQLTestBase {
           }
         }
       };
-      CacheSerializableRunnable validateNoQueryExecution = new CacheSerializableRunnable(
+      SerializableRunnable validateNoQueryExecution = new SerializableRunnable(
           "validate node has NOT executed the query") {
         @Override
-        public void run2() throws CacheException {
+        public void run() throws CacheException {
           try {
             GemFireXDQueryObserverHolder
                 .setInstance(new GemFireXDQueryObserverAdapter());
@@ -1055,10 +1054,10 @@ public class PrepStatementNodesPruningDUnit extends DistributedSQLTestBase {
 
     // set up a sql query observer in server VM to keep track of whether the
     // query got executed on the node or not
-    CacheSerializableRunnable setObserver = new CacheSerializableRunnable(
+    SerializableRunnable setObserver = new SerializableRunnable(
         "Set GemFireXDObserver on DataStore Node for query " + queryStr) {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           GemFireXDQueryObserverHolder
               .setInstance(new GemFireXDQueryObserverAdapter() {
@@ -1105,10 +1104,10 @@ public class PrepStatementNodesPruningDUnit extends DistributedSQLTestBase {
 
   private void verifyExecutionOnDMs(final SelectQueryInfo sqi, Set<DistributedMember> prunedNodes, int noOfPrunedNodes, int noOfNoExecQueryNodes, String query) {
 
-    CacheSerializableRunnable validateQueryExecution = new CacheSerializableRunnable(
+    SerializableRunnable validateQueryExecution = new SerializableRunnable(
         "validate node has executed the query " + query) {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           GemFireXDQueryObserverHolder
               .setInstance(new GemFireXDQueryObserverAdapter());
@@ -1122,10 +1121,10 @@ public class PrepStatementNodesPruningDUnit extends DistributedSQLTestBase {
         }
       }
     };
-    CacheSerializableRunnable validateNoQueryExecution = new CacheSerializableRunnable(
+    SerializableRunnable validateNoQueryExecution = new SerializableRunnable(
         "validate node has NOT executed the query " + query) {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           GemFireXDQueryObserverHolder
               .setInstance(new GemFireXDQueryObserverAdapter());

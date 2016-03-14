@@ -33,6 +33,7 @@ import com.gemstone.gemfire.cache.RegionAttributes;
 
 import com.gemstone.gemfire.internal.cache.EvictionAttributesImpl;
 import com.gemstone.gemfire.internal.cache.PartitionAttributesImpl;
+import com.gemstone.gemfire.internal.snappy.StoreCallbacks;
 import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
 import com.pivotal.gemfirexd.internal.engine.ddl.resolver.GfxdPartitionByExpressionResolver;
@@ -702,7 +703,8 @@ public class DistributionDefinitionNode extends TableElementNode {
       }
       // check in the target table
 
-      if (!(tableName.toUpperCase().endsWith("_SHADOW_") || srcTableName.toUpperCase().endsWith("_SHADOW_"))) {
+      if (!(tableName.toUpperCase().endsWith(StoreCallbacks.SHADOW_TABLE_SUFFIX)
+          || srcTableName.toUpperCase().endsWith(StoreCallbacks.SHADOW_TABLE_SUFFIX))) {
         int[] colpositions = targetDistributionDesc.getColumnPositionsSorted();
         int size = columnNames.length;
         if (colpositions.length != size) {

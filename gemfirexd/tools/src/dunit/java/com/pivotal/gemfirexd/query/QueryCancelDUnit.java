@@ -26,8 +26,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 
-
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserver;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverAdapter;
@@ -35,6 +33,7 @@ import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
 import com.pivotal.gemfirexd.internal.iapi.sql.Activation;
 import com.pivotal.gemfirexd.internal.iapi.sql.conn.LanguageConnectionContext;
 import com.pivotal.gemfirexd.procedure.ProcedureExecutionContext;
+import io.snappydata.test.dunit.SerializableRunnable;
 
 /**
  * Tests for query cancel functionality
@@ -86,11 +85,11 @@ public class QueryCancelDUnit extends QueryCancelTestHelper {
     }
 
     final String key = testName;
-    CacheSerializableRunnable csr1 = new CacheSerializableRunnable(
+    SerializableRunnable csr1 = new SerializableRunnable(
         testName) {
 
       @Override
-      public void run2() {
+      public void run() {
         GemFireXDQueryObserver old = GemFireXDQueryObserverHolder
             .setInstance(new GemFireXDQueryObserverAdapter() {
               private boolean flag = false;
@@ -227,11 +226,11 @@ public class QueryCancelDUnit extends QueryCancelTestHelper {
     }
 
     final String key = testName;
-    CacheSerializableRunnable csr1 = new CacheSerializableRunnable(
+    SerializableRunnable csr1 = new SerializableRunnable(
         testName) {
 
       @Override
-      public void run2() {
+      public void run() {
         GemFireXDQueryObserver old = GemFireXDQueryObserverHolder
             .setInstance(new GemFireXDQueryObserverAdapter() {
               private boolean flag = false;
@@ -303,11 +302,11 @@ public class QueryCancelDUnit extends QueryCancelTestHelper {
     }
 
     final String key = testName;
-    CacheSerializableRunnable csr1 = new CacheSerializableRunnable(
+    SerializableRunnable csr1 = new SerializableRunnable(
         testName) {
 
       @Override
-      public void run2() {
+      public void run() {
         GemFireXDQueryObserver old = GemFireXDQueryObserverHolder
             .setInstance(new GemFireXDQueryObserverAdapter() {
               private boolean flag = false;
@@ -432,11 +431,11 @@ public class QueryCancelDUnit extends QueryCancelTestHelper {
     pstmt2.setInt(1, tableSize);
 
     final String key = testName;
-    CacheSerializableRunnable csr1 = new CacheSerializableRunnable(
+    SerializableRunnable csr1 = new SerializableRunnable(
         testName) {
 
       @Override
-      public void run2() {
+      public void run() {
         GemFireXDQueryObserver old = GemFireXDQueryObserverHolder
             .setInstance(new GemFireXDQueryObserverAdapter() {
               private boolean flag = false;
@@ -500,11 +499,11 @@ public class QueryCancelDUnit extends QueryCancelTestHelper {
     pstmt2.setInt(1, 0);
 
     final String key = testName;
-    CacheSerializableRunnable csr1 = new CacheSerializableRunnable(
+    SerializableRunnable csr1 = new SerializableRunnable(
         testName) {
 
       @Override
-      public void run2() {
+      public void run() {
         GemFireXDQueryObserver old = GemFireXDQueryObserverHolder
             .setInstance(new GemFireXDQueryObserverAdapter() {
               private boolean flag = false;
@@ -578,11 +577,11 @@ public class QueryCancelDUnit extends QueryCancelTestHelper {
     }
 
     final String key = "testBatchInsert";
-    CacheSerializableRunnable csr1 = new CacheSerializableRunnable(
+    SerializableRunnable csr1 = new SerializableRunnable(
         "_testBatchInsert_") {
 
       @Override
-      public void run2() {
+      public void run() {
         GemFireXDQueryObserver old = GemFireXDQueryObserverHolder
             .setInstance(new GemFireXDQueryObserverAdapter() {
               private boolean flag = false;
@@ -765,10 +764,10 @@ public class QueryCancelDUnit extends QueryCancelTestHelper {
             + "and stop_dt < '2014-01-24 18:49:59'" + ")");
     
     final String key = testName;
-    CacheSerializableRunnable csr1 = new CacheSerializableRunnable(testName) {
+    SerializableRunnable csr1 = new SerializableRunnable(testName) {
 
       @Override
-      public void run2() {
+      public void run() {
         GemFireXDQueryObserver old = GemFireXDQueryObserverHolder
             .setInstance(new GemFireXDQueryObserverAdapter() {
               private boolean flag = false;
@@ -843,10 +842,10 @@ public class QueryCancelDUnit extends QueryCancelTestHelper {
     PreparedStatement pstmt = cxn.prepareStatement(query);
     
     final String key = testName;
-    CacheSerializableRunnable csr1 = new CacheSerializableRunnable(testName) {
+    SerializableRunnable csr1 = new SerializableRunnable(testName) {
 
       @Override
-      public void run2() {
+      public void run() {
         GemFireXDQueryObserver old = GemFireXDQueryObserverHolder
             .setInstance(new GemFireXDQueryObserverAdapter() {
               private boolean flag = false;

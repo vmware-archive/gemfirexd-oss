@@ -17,11 +17,14 @@
 
 package com.gemstone.gemfire.internal.snappy;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 import com.gemstone.gemfire.internal.cache.BucketRegion;
 
 public interface StoreCallbacks {
+  String SHADOW_TABLE_SUFFIX = "_COLUMN_STORE_";
   Set createCachedBatch(BucketRegion region, UUID batchID, int bucketID);
+  List<String> getInternalTableSchemas();
 }

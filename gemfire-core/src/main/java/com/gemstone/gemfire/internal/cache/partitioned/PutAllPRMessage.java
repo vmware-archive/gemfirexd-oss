@@ -649,13 +649,7 @@ public final class PutAllPRMessage extends PartitionMessageWithDirectReply {
           // the putAlls in worst case so cachedbatchsize may be large?
           if (bucketRegion.getPartitionedRegion().needsBatching()
               && bucketRegion.size() >= GemFireCacheImpl.getColumnBatchSize()) {
-            bucketRegion.putAllLock.writeLock().lock();
-            try {
-              bucketRegion.createAndInsertCachedBatch();
-            }
-            finally {
-              bucketRegion.putAllLock.writeLock().unlock();
-            }
+            bucketRegion.createAndInsertCachedBatch(false);
           }
           if (lockedForPrimary) {
             bucketRegion.doUnlockForPrimary();

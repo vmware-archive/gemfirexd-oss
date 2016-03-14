@@ -44,11 +44,19 @@ public class HashIndexDUnitTest extends DistributedTestCase{
     Host host = Host.getHost(0);
     vm0 = host.getVM(0);
     utils = new QueryTestUtils();
-    utils.createServer(vm0, null);
-    utils.createReplicateRegion("exampleRegion", vm0);
-    utils.createHashIndex(vm0,"ID", "r.ID", "/exampleRegion r");
+    CompactRangeIndexDUnitTest.createServer(vm0, null, utils);
+    CompactRangeIndexDUnitTest.createReplicateRegion("exampleRegion", vm0, utils);
+    createHashIndex(vm0, "ID", "r.ID", "/exampleRegion r", utils);
   }
-  
+
+  public static void createHashIndex(VM vm, final String name,
+      final String field, final String region, final QueryTestUtils utils) {
+    vm.invoke(new SerializableRunnable("Create Replicated region") {
+      public void run() throws CacheException {
+        utils.createHashIndex(name, field, region);
+      }
+    });
+  }
 
   public void testHashIndexForIndexElemArray() throws Exception{
     doPut(200);// around 66 entries for a key in the index (< 100 so does not create a ConcurrentHashSet)
@@ -122,7 +130,6 @@ public class HashIndexDUnitTest extends DistributedTestCase{
   
   public void tearDown2() throws Exception{
     Thread.sleep(5000);
-    utils.closeServer(vm0);
+    CompactRangeIndexDUnitTest.closeServer(vm0, utils);
   }
-
 }

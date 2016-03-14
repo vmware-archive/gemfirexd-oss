@@ -16,41 +16,20 @@
  */
 package com.pivotal.gemfirexd.jdbc;
 
-import hydra.HydraRuntimeException;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-import java.util.Random;
-import java.util.Set;
-import java.util.StringTokenizer;
-
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
-
-import org.apache.derbyTesting.junit.JDBC;
+import java.sql.*;
+import java.util.*;
 
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gnu.trove.THashSet;
 import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.internal.catalog.SystemProcedures;
-import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserver;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverAdapter;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
+import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.distributed.metadata.SelectQueryInfo;
 import com.pivotal.gemfirexd.internal.iapi.sql.Activation;
 import com.pivotal.gemfirexd.internal.iapi.sql.conn.LanguageConnectionContext;
@@ -68,7 +47,9 @@ import com.pivotal.gemfirexd.internal.impl.sql.compile.ResultSetNode;
 import com.pivotal.gemfirexd.internal.impl.sql.compile.ScrollInsensitiveResultSetNode;
 import com.pivotal.gemfirexd.internal.impl.sql.compile.StatementNode;
 import com.pivotal.gemfirexd.stats.StatementPlanDUnit;
-import com.pivotal.gemfirexd.tools.planexporter.CreateXML;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
+import org.apache.derbyTesting.junit.JDBC;
 
 public class QueryTest extends JdbcTestBase {
 
@@ -1749,11 +1730,6 @@ public class QueryTest extends JdbcTestBase {
 			Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
 			final String derbyDbUrl = tempDerbyUrl;
 			Connection derbyConn = DriverManager.getConnection(derbyDbUrl);
-			try {
-				hydra.Log.getLogWriter();
-			} catch (HydraRuntimeException hre) {
-				hydra.Log.createLogWriter("DBSynchronizer", "fine");
-			}
 			derbyStmt = derbyConn.createStatement();
 			derbyStmt.execute(table);
 			derbyStmt.execute(index);
@@ -1915,11 +1891,6 @@ public class QueryTest extends JdbcTestBase {
 			Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
 			final String derbyDbUrl = tempDerbyUrl;
 			Connection derbyConn = DriverManager.getConnection(derbyDbUrl);
-			try {
-				hydra.Log.getLogWriter();
-			} catch (HydraRuntimeException hre) {
-				hydra.Log.createLogWriter("DBSynchronizer", "fine");
-			}
 			derbyStmt = derbyConn.createStatement();
 			derbyStmt.execute(table);
 			derbyStmt.execute(index);
@@ -2080,11 +2051,6 @@ public class QueryTest extends JdbcTestBase {
 			Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
 			final String derbyDbUrl = tempDerbyUrl;
 			Connection derbyConn = DriverManager.getConnection(derbyDbUrl);
-			try {
-				hydra.Log.getLogWriter();
-			} catch (HydraRuntimeException hre) {
-				hydra.Log.createLogWriter("DBSynchronizer", "fine");
-			}
 			derbyStmt = derbyConn.createStatement();
 			derbyStmt.execute(table);
 			Statement derbyStmt1 = derbyConn.createStatement();
@@ -2241,11 +2207,6 @@ public class QueryTest extends JdbcTestBase {
 			Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
 			final String derbyDbUrl = tempDerbyUrl;
 			Connection derbyConn = DriverManager.getConnection(derbyDbUrl);
-			try {
-				hydra.Log.getLogWriter();
-			} catch (HydraRuntimeException hre) {
-				hydra.Log.createLogWriter("DBSynchronizer", "fine");
-			}
 			derbyStmt = derbyConn.createStatement();
 			derbyStmt.execute(table);
 			derbyStmt.execute(index);

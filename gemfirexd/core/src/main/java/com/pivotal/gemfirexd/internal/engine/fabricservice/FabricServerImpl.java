@@ -21,12 +21,14 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 import com.gemstone.gemfire.SystemFailure;
+import com.gemstone.gemfire.cache.CacheFactory;
+import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.pivotal.gemfirexd.FabricServer;
 
 /**
  * Implementation of {@link FabricServer} API. Future product versions may
  * extend this class to alter its behaviour.
- * 
+ *
  * @author soubhikc
  */
 public class FabricServerImpl extends FabricServiceImpl implements FabricServer {
@@ -48,28 +50,33 @@ public class FabricServerImpl extends FabricServiceImpl implements FabricServer 
    * @see FabricServer#start(Properties, boolean)
    */
   @Override
-  public synchronized void start(Properties bootProperties,
+  public void start(Properties bootProperties,
       boolean ignoreIfStarted) throws SQLException {
-
-    try {
-      startImpl(bootProperties, ignoreIfStarted, false);
-    } catch (Throwable t) {
-      Error err;
-      if (t instanceof Error && SystemFailure.isJVMFailureError(
-          err = (Error)t)) {
-        FabricServiceUtils.clearSystemProperties(monitorlite, sysProps);
-        SystemFailure.initiateFailure(err);
-        // If this ever returns, rethrow the error. We're poisoned
-        // now, so don't let this thread continue.
-        throw err;
+    // take locks acquired by IDS.tryReconnect first to avoid deadlock
+    // between start and reconnect thread
+    synchronized (CacheFactory.class) {
+      synchronized (this) {
+        try {
+          startImpl(bootProperties, ignoreIfStarted, false);
+        } catch (Throwable t) {
+          Error err;
+          if (t instanceof Error && SystemFailure.isJVMFailureError(
+              err = (Error)t)) {
+            FabricServiceUtils.clearSystemProperties(monitorlite, sysProps);
+            SystemFailure.initiateFailure(err);
+            // If this ever returns, rethrow the error. We're poisoned
+            // now, so don't let this thread continue.
+            throw err;
+          }
+          // Whenever you catch Error or Throwable, you must also
+          // check for fatal JVM error (see above).  However, there is
+          // _still_ a possibility that you are dealing with a cascading
+          // error condition, so you also need to check to see if the JVM
+          // is still usable:
+          SystemFailure.checkFailure();
+          handleThrowable(t);
+        }
       }
-      // Whenever you catch Error or Throwable, you must also
-      // check for fatal JVM error (see above).  However, there is
-      // _still_ a possibility that you are dealing with a cascading
-      // error condition, so you also need to check to see if the JVM
-      // is still usable:
-      SystemFailure.checkFailure();
-      handleThrowable(t);
     }
   }
 }

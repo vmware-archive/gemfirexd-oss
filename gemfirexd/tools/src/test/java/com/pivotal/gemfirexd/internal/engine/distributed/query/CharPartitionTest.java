@@ -40,7 +40,6 @@ public class CharPartitionTest extends JdbcTestBase{
   
   public CharPartitionTest(String name) {
     super(name);
-    hydra.Log.createLogWriter("CharPartitionTest", "fine");
   }
 
   public static void main(String[] args) {

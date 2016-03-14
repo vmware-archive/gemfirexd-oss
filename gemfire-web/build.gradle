@@ -18,10 +18,8 @@ dependencies {
 
   // have to use output since we exclude the dependent classes from jar :(
   provided project(subprojectBase + 'gemfire-core').sourceSets.main.output
-
   provided project(subprojectBase + 'gemfire-core')
-
-  provided project(path: subprojectBase + 'gemfire-junit', configuration: 'testOutput')
+  provided project(subprojectBase + 'gemfire-junit')
 }
 
 war {

@@ -26,18 +26,17 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.Arrays;
+import java.util.concurrent.CyclicBarrier;
 import java.util.zip.CRC32;
 
+import com.gemstone.gemfire.internal.cache.PartitionedRegion;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
 import org.apache.derbyTesting.functionTests.tests.jdbc4.BlobClobTestSetup;
 import org.apache.derbyTesting.functionTests.tests.jdbc4.ClobTest;
 import org.apache.derbyTesting.functionTests.util.streams.CharAlphabet;
 import org.apache.derbyTesting.functionTests.util.streams.LoopingAlphabetReader;
 import org.apache.derbyTesting.functionTests.util.streams.LoopingAlphabetStream;
-
-import com.gemstone.gemfire.internal.AvailablePort;
-
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
 
 public class BlobTest extends JdbcTestBase {
 
@@ -63,7 +62,7 @@ public class BlobTest extends JdbcTestBase {
     return "config";
   }
 
-  public void SW_testBlobAsString() throws SQLException {
+  public void testBlobAsString() throws SQLException {
     setupConnection();
     Statement stmt = getStatement();
     stmt.executeUpdate("create table b (blob blob(3K))" + getSuffix());
@@ -97,23 +96,25 @@ public class BlobTest extends JdbcTestBase {
 
     final int numThreads = 50;
     Thread[] ts = new Thread[numThreads];
-    final SQLException[] failure = new SQLException[1];
+    final Exception[] failure = new Exception[1];
+    final CyclicBarrier barrier = new CyclicBarrier(numThreads);
     for (int i = 0; i < numThreads; i++) {
       ts[i] = new Thread(new Runnable() {
         @Override
         public void run() {
           try {
             final Connection c = getNetConnection(netPort, "", null);
+            barrier.await();
             // perform some inserts into the table
             final byte[] jobData = new byte[JOBDATA_LEN];
-            AvailablePort.rand.nextBytes(jobData);
+            PartitionedRegion.rand.nextBytes(jobData);
             final String group = Thread.currentThread().getName();
             try {
-              for (int i = 0; i < 500; i++) {
+              for (int i = 1; i <= 200; i++) {
                 insertData_43623_2(c, jobData, group);
                 selectData_43623_2(c, group);
                 deleteData_43623_2(c, group);
-                if ((i % 100) == 0) {
+                if ((i % 40) == 0) {
                   Statement s = c.createStatement();
                   ResultSet rs = s
                       .executeQuery("SELECT COUNT(*) FROM QUARTZ_TRIGGERS");
@@ -127,9 +128,9 @@ public class BlobTest extends JdbcTestBase {
             } finally {
               c.close();
             }
-          } catch (SQLException sqle) {
-            sqle.printStackTrace();
-            failure[0] = sqle;
+          } catch (Exception e) {
+            e.printStackTrace();
+            failure[0] = e;
           }
         }
       });
@@ -212,7 +213,7 @@ public class BlobTest extends JdbcTestBase {
   }
 
   /** Test for bug #42711 from derby's ResultSetTest. */
-  public void SW_testUpdateBinaryStream() throws Exception {
+  public void testUpdateBinaryStream() throws Exception {
     setupConnection();
     final Statement stmt = getStatement();
     stmt.execute("create table UpdateTestTableResultSet ("
@@ -274,7 +275,7 @@ public class BlobTest extends JdbcTestBase {
   /**
    * Adapted from Derby's BlobClob4BlobTest#testGetBinaryStream().
    */
-  public void SW_testGetBinaryStream() throws Exception {
+  public void testGetBinaryStream() throws Exception {
     setupConnection();
     createBlobClobTables();
     insertDefaultData();
@@ -287,7 +288,7 @@ public class BlobTest extends JdbcTestBase {
   /**
    * Adapted from Derby's BlobClobTestSetup#testFreeandMethodsAfterCallingFree
    */
-  public void SW_testFreeandMethodsAfterCallingFree() throws Exception {
+  public void testFreeandMethodsAfterCallingFree() throws Exception {
     setupConnection();
     createBlobClobTable();
     new ClobTest("tmp").testFreeandMethodsAfterCallingFree();
@@ -537,7 +538,7 @@ public class BlobTest extends JdbcTestBase {
     PreparedStatement pstmt = conn.prepareStatement("insert into "
         + "QUARTZ_TRIGGERS(TRIGGER_NAME, TRIGGER_GROUP, TRIGGER_STATE, "
         + "JOB_NAME, JOB_GROUP, JOB_DATA) values(?, ?, ?, ?, ?, ?)");
-    AvailablePort.rand.nextBytes(jobData);
+    PartitionedRegion.rand.nextBytes(jobData);
     final int numRows = 10;
     for (int cnt = 1; cnt <= numRows; cnt++) {
       pstmt.setString(1, "trig" + cnt);

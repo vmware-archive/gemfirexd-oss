@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Set;
 
 import com.gemstone.gemfire.cache.CacheException;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.distributed.DistributedMember;
 import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
 import com.gemstone.gemfire.internal.AvailablePort;
@@ -49,10 +48,9 @@ import com.pivotal.gemfirexd.internal.iapi.sql.conn.LanguageConnectionContext;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedPreparedStatement;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedStatement;
 import com.pivotal.gemfirexd.internal.impl.sql.GenericPreparedStatement;
-import dunit.AsyncInvocation;
-import dunit.SerializableRunnable;
-import dunit.VM;
-import hydra.HydraRuntimeException;
+import io.snappydata.test.dunit.AsyncInvocation;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.dunit.VM;
 import org.apache.derby.drda.NetworkServerControl;
 
 /**
@@ -72,16 +70,9 @@ public class SubqueryDUnit extends DistributedSQLTestBase
 
   public SubqueryDUnit(String name) {
     super(name);
-    try {
-      hydra.Log.getLogWriter();
-    }
-    catch (HydraRuntimeException hre) {
-      hydra.Log.createLogWriter("SubqueryDUnit", getDUnitLogLevel());
-    }
   }
 
-  public void testPR_PR_IN_NonCorrelatedSubqueryPKBased() throws Exception
-  {
+  public void testPR_PR_IN_NonCorrelatedSubqueryPKBased() throws Exception {
     try {
 
       final String subqueryStr = "Select SUM(ID2) from Testtable2  where description2 = ? and  address2 = ?";
@@ -619,10 +610,10 @@ public class SubqueryDUnit extends DistributedSQLTestBase
 
     // set up a sql query observer in server VM to keep track of whether the
     // query got executed on the node or not
-    CacheSerializableRunnable setObserver = new CacheSerializableRunnable(
+    SerializableRunnable setObserver = new SerializableRunnable(
         "Set GemFireXDObserver on DataStore Node for query " + queryStr) {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           GemFireXDQueryObserverHolder
               .setInstance(new GemFireXDQueryObserverAdapter() {
@@ -671,10 +662,10 @@ public class SubqueryDUnit extends DistributedSQLTestBase
       Set<DistributedMember> prunedNodes, int noOfPrunedNodes,
       int noOfNoExecQueryNodes, String query) {
 
-    CacheSerializableRunnable validateQueryExecution = new CacheSerializableRunnable(
+    SerializableRunnable validateQueryExecution = new SerializableRunnable(
         "validate node has executed the query " + query) {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           GemFireXDQueryObserverHolder
               .setInstance(new GemFireXDQueryObserverAdapter());
@@ -687,10 +678,10 @@ public class SubqueryDUnit extends DistributedSQLTestBase
         }
       }
     };
-    CacheSerializableRunnable validateNoQueryExecution = new CacheSerializableRunnable(
+    SerializableRunnable validateNoQueryExecution = new SerializableRunnable(
         "validate node has NOT executed the query " + query) {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           GemFireXDQueryObserverHolder
               .setInstance(new GemFireXDQueryObserverAdapter());
@@ -1087,14 +1078,14 @@ public class SubqueryDUnit extends DistributedSQLTestBase
       ResultSet rsGfxd = executeQuery(query2, false, null, false);
       ResultSet rsDerby = executeQuery(query2, false, null, true);
       TestUtil.validateResults(rsDerby, rsGfxd, false);
-      CacheSerializableRunnable csr = new CacheSerializableRunnable(
+      SerializableRunnable csr = new SerializableRunnable(
           "query executor") {
         final String uName = TestUtil.currentUserName;
 
         final String psswd = TestUtil.currentUserPassword;
 
         @Override
-        public void run2() throws CacheException
+        public void run() throws CacheException
         {
           try {
             TestUtil.currentUserName = uName;
@@ -1216,14 +1207,14 @@ public class SubqueryDUnit extends DistributedSQLTestBase
       // wait for server to initialize completely
       ClientServerDUnit.waitForDerbyInitialization(server);
 
-      CacheSerializableRunnable csr = new CacheSerializableRunnable(
+      SerializableRunnable csr = new SerializableRunnable(
           "query executor") {
         final String uName = TestUtil.currentUserName;
 
         final String psswd = TestUtil.currentUserPassword;
 
         @Override
-        public void run2() throws CacheException {
+        public void run() throws CacheException {
           try {
             TestUtil.currentUserName = uName;
             TestUtil.currentUserPassword = psswd;
@@ -1346,14 +1337,14 @@ public class SubqueryDUnit extends DistributedSQLTestBase
       // wait for server to initialize completely
       ClientServerDUnit.waitForDerbyInitialization(server);
 
-      CacheSerializableRunnable csr = new CacheSerializableRunnable(
+      SerializableRunnable csr = new SerializableRunnable(
           "query executor") {
         final String uName = TestUtil.currentUserName;
 
         final String psswd = TestUtil.currentUserPassword;
 
         @Override
-        public void run2() throws CacheException {
+        public void run() throws CacheException {
           try {
             TestUtil.currentUserName = uName;
             TestUtil.currentUserPassword = psswd;
@@ -1687,14 +1678,14 @@ public class SubqueryDUnit extends DistributedSQLTestBase
       ResultSet rsGfxd = executeQuery(query1, false, null, false);
       ResultSet rsDerby = executeQuery(query1, false, null, true);
       TestUtil.validateResults(rsDerby, rsGfxd, false);
-      CacheSerializableRunnable csr = new CacheSerializableRunnable(
+      SerializableRunnable csr = new SerializableRunnable(
           "query executor") {
         final String uName = TestUtil.currentUserName;
 
         final String psswd = TestUtil.currentUserPassword;
 
         @Override
-        public void run2() throws CacheException
+        public void run() throws CacheException
         {
           try {
             TestUtil.currentUserName = uName;
@@ -1819,15 +1810,14 @@ public class SubqueryDUnit extends DistributedSQLTestBase
       ResultSet rsGfxd = executeQuery(query1, true, new Object[] {new Integer(5)}, false);
       ResultSet rsDerby = executeQuery(query1, true, new Object[] {new Integer(5)}, true);
       TestUtil.validateResults(rsDerby, rsGfxd, false);
-      CacheSerializableRunnable csr = new CacheSerializableRunnable(
+      SerializableRunnable csr = new SerializableRunnable(
           "query executor") {
         final String uName = TestUtil.currentUserName;
 
         final String psswd = TestUtil.currentUserPassword;
 
         @Override
-        public void run2() throws CacheException
-        {
+        public void run() throws CacheException {
           try {
             TestUtil.currentUserName = uName;
             TestUtil.currentUserPassword = psswd;
@@ -1953,15 +1943,14 @@ public class SubqueryDUnit extends DistributedSQLTestBase
       ResultSet rsGfxd = executeQuery(query1, true, new Object[] {new Integer(0)}, false);
       ResultSet rsDerby = executeQuery(query1, true, new Object[] {new Integer(0)}, true);
       TestUtil.validateResults(rsDerby, rsGfxd, false);
-      CacheSerializableRunnable csr = new CacheSerializableRunnable(
+      SerializableRunnable csr = new SerializableRunnable(
           "query executor") {
         final String uName = TestUtil.currentUserName;
 
         final String psswd = TestUtil.currentUserPassword;
 
         @Override
-        public void run2() throws CacheException
-        {
+        public void run() throws CacheException {
           try {
             TestUtil.currentUserName = uName;
             TestUtil.currentUserPassword = psswd;
@@ -2292,15 +2281,14 @@ public class SubqueryDUnit extends DistributedSQLTestBase
       // wait for server to initialize completely
       ClientServerDUnit.waitForDerbyInitialization(server);
 
-      CacheSerializableRunnable csr = new CacheSerializableRunnable(
+      SerializableRunnable csr = new SerializableRunnable(
           "query executor") {
         final String uName = TestUtil.currentUserName;
 
         final String psswd = TestUtil.currentUserPassword;
 
         @Override
-        public void run2() throws CacheException
-        {
+        public void run() throws CacheException {
           try {
             TestUtil.currentUserName = uName;
             TestUtil.currentUserPassword = psswd;
@@ -2426,15 +2414,14 @@ public class SubqueryDUnit extends DistributedSQLTestBase
       // wait for server to initialize completely
       ClientServerDUnit.waitForDerbyInitialization(server);
 
-      CacheSerializableRunnable csr = new CacheSerializableRunnable(
+      SerializableRunnable csr = new SerializableRunnable(
           "query executor") {
         final String uName = TestUtil.currentUserName;
 
         final String psswd = TestUtil.currentUserPassword;
 
         @Override
-        public void run2() throws CacheException
-        {
+        public void run() throws CacheException {
           try {
             TestUtil.currentUserName = uName;
             TestUtil.currentUserPassword = psswd;
@@ -2568,14 +2555,14 @@ public class SubqueryDUnit extends DistributedSQLTestBase
       // wait for server to initialize completely
       ClientServerDUnit.waitForDerbyInitialization(server);
 
-      CacheSerializableRunnable csr = new CacheSerializableRunnable(
+      SerializableRunnable csr = new SerializableRunnable(
           "query executor") {
         final String uName = TestUtil.currentUserName;
 
         final String psswd = TestUtil.currentUserPassword;
 
         @Override
-        public void run2() throws CacheException {
+        public void run() throws CacheException {
           try {
             TestUtil.currentUserName = uName;
             TestUtil.currentUserPassword = psswd;
@@ -2604,7 +2591,7 @@ public class SubqueryDUnit extends DistributedSQLTestBase
 
         }
       };
-      csr.run2();   
+      csr.run();
       //serverExecute(1, csr);
     } finally {
       clientSQLExecute(1, "drop table networth");
@@ -2698,12 +2685,12 @@ public class SubqueryDUnit extends DistributedSQLTestBase
         vm.invoke(SubqueryDUnit.class, "reset");
       }
       //Set up 
-      CacheSerializableRunnable setObserver = new CacheSerializableRunnable(
+      SerializableRunnable setObserver = new SerializableRunnable(
           "Set GemFireXDObserver on DataStore Node for test= testStatementMatchingForSubquery") {
         private List<SelectQueryInfo> sqiList = new ArrayList<SelectQueryInfo>();
         private int numTimesInvoked = 0;
         @Override
-        public void run2() throws CacheException {
+        public void run() throws CacheException {
           try {
             GemFireXDQueryObserverHolder
                 .setInstance(new GemFireXDQueryObserverAdapter() {                 
@@ -2771,11 +2758,11 @@ public class SubqueryDUnit extends DistributedSQLTestBase
       rsGfxd = executeQuery(query, false, null, false);
       rsDerby = executeQuery(query, false, null, true);
       TestUtil.validateResults(rsDerby, rsGfxd, false);
-     
-      CacheSerializableRunnable assertQueryExec = new CacheSerializableRunnable(
+
+      SerializableRunnable assertQueryExec = new SerializableRunnable(
           "Assert that queryExecutedOnNode is true") {        
         @Override
-        public void run2() throws CacheException {
+        public void run() throws CacheException {
            assertTrue(isQueryExecutedOnNode);  
         }
       };

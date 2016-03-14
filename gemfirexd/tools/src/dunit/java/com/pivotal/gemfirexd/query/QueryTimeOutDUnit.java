@@ -19,26 +19,16 @@ package com.pivotal.gemfirexd.query;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.SQLWarning;
-import java.sql.Statement;
-import java.sql.Types;
+import java.sql.*;
 import java.util.Properties;
 
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserver;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverAdapter;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
-import com.pivotal.gemfirexd.internal.iapi.sql.Activation;
-import com.pivotal.gemfirexd.internal.impl.sql.GenericPreparedStatement;
 import com.pivotal.gemfirexd.procedure.ProcedureExecutionContext;
+import io.snappydata.test.dunit.SerializableRunnable;
 
 /**
  * Tests for query timeout functionality
@@ -69,10 +59,10 @@ public class QueryTimeOutDUnit extends DistributedSQLTestBase {
         .prepareStatement("select * from MyTable where x > ?");
     pstmt2.setInt(1, 0);
 
-    CacheSerializableRunnable csr2 = new CacheSerializableRunnable(
+    SerializableRunnable csr2 = new SerializableRunnable(
         "_testSimpleSelectQuery_") {
       @Override
-      public void run2() {
+      public void run() {
         GemFireXDQueryObserver old = GemFireXDQueryObserverHolder
             .setInstance(new GemFireXDQueryObserverAdapter() {
               @Override
@@ -193,10 +183,10 @@ public class QueryTimeOutDUnit extends DistributedSQLTestBase {
         + ",('13', 1, '2014-01-24 18:48:00', '2014-01-24 18:47:59', 41)");
 
     // suspend the execution to allow query get timed out
-    CacheSerializableRunnable csr = new CacheSerializableRunnable(
+    SerializableRunnable csr = new SerializableRunnable(
         "_testTimeOut_") {
       @Override
-      public void run2() {
+      public void run() {
         GemFireXDQueryObserver old = GemFireXDQueryObserverHolder
             .setInstance(new GemFireXDQueryObserverAdapter() {
               @Override
@@ -441,10 +431,10 @@ public class QueryTimeOutDUnit extends DistributedSQLTestBase {
     callableStmt.setQueryTimeout(timOutOnCallableStmt);
     
     // suspend the execution to allow query get timed out
-    CacheSerializableRunnable csr = new CacheSerializableRunnable(
+    SerializableRunnable csr = new SerializableRunnable(
         "_testTimeOut_") {
       @Override
-      public void run2() {
+      public void run() {
         GemFireXDQueryObserver old = GemFireXDQueryObserverHolder
             .setInstance(new GemFireXDQueryObserverAdapter() {
               @Override
@@ -484,23 +474,24 @@ public class QueryTimeOutDUnit extends DistributedSQLTestBase {
 
   private File createPropertyFile() throws Exception {
     final File file = new File(PROP_FILE_NAME);
-    file.createNewFile();
-    Properties props = new Properties();
-    props.setProperty("gemfirexd.query-timeout", "2");
-    props.store(new FileOutputStream(file),
-        "-- gfxd properties file for testQueryTimeOutThruPropertiesFile");
-    return file;
+    try (FileOutputStream fos = new FileOutputStream(file)) {
+      Properties props = new Properties();
+      props.setProperty("gemfirexd.query-timeout", "2");
+      props.store(fos,
+          "-- gfxd properties file for testQueryTimeOutThruPropertiesFile");
+      return file;
+    }
   }
 
   // gemfirexd.query-timeout setting in properties file should apply to all
   // statements
   public void testQueryTimeOutThruPropertiesFile() throws Exception {
+    // create a properties file and set it so that gfxd read props thru it
+    File propFile = createPropertyFile();
     try {
-      // create a properties file and set it so that gfxd read props thru it
-      createPropertyFile();
       Properties p1 = new Properties();
       p1.setProperty(com.pivotal.gemfirexd.Property.PROPERTIES_FILE,
-          PROP_FILE_NAME);
+          propFile.getAbsolutePath());
       startVMs(1, 2, 0, null, p1);
 
       Connection cxn = TestUtil.getConnection();
@@ -522,10 +513,10 @@ public class QueryTimeOutDUnit extends DistributedSQLTestBase {
       // file is applied to the statement
       assertEquals(2, pstmt2.getQueryTimeout());
 
-      CacheSerializableRunnable csr2 = new CacheSerializableRunnable(
+      SerializableRunnable csr2 = new SerializableRunnable(
           "testQueryTimeOutThruPropertiesFile") {
         @Override
-        public void run2() {
+        public void run() {
           GemFireXDQueryObserver old = GemFireXDQueryObserverHolder
               .setInstance(new GemFireXDQueryObserverAdapter() {
                 @Override
@@ -566,8 +557,8 @@ public class QueryTimeOutDUnit extends DistributedSQLTestBase {
             SQLException.class);
       }
     } finally {
-      new File(PROP_FILE_NAME).delete();
+      //noinspection ResultOfMethodCallIgnored
+      propFile.delete();
     }
   }
-    
 }

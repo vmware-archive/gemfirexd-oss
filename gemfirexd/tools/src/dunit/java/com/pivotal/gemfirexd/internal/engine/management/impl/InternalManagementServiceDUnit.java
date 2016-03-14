@@ -31,10 +31,9 @@ import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.management.impl.TableMBeanDataUpdater.MemoryAnalyticsHolder;
 import com.pivotal.gemfirexd.internal.engine.store.GemFireStore;
 
-import dunit.Host;
-import dunit.SerializableRunnable;
-import dunit.VM;
-import dunit.DistributedTestCase.WaitCriterion;
+import io.snappydata.test.dunit.Host;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.dunit.VM;
 
 @SuppressWarnings("serial")
 public class InternalManagementServiceDUnit extends GfxdManagementTestBase {
@@ -226,11 +225,13 @@ public class InternalManagementServiceDUnit extends GfxdManagementTestBase {
   }
 
   static ObjectName addEmployee(String uid, String employeeId) {
-    InternalManagementService ims = InternalManagementService.getInstance(GemFireStore.getBootedInstance());
+    InternalManagementService ims = InternalManagementService.getInstance(
+        GemFireStore.getBootedInstance());
     assertNotNull("InternalManagementService not found.", ims);
 
     EmployeeMBean employeeMBean = new EmployeeMBean(uid, employeeId);
-    ObjectName registeredMBean = ims.registerMBean(employeeMBean, EmployeeMBean.getEmployeeObjectName(uid, employeeId));
+    ObjectName registeredMBean = ims.registerMBean(employeeMBean,
+        getEmployeeObjectName(uid, employeeId));
 
     assertNotNull("registeredMBean is null.", registeredMBean);
 
@@ -238,24 +239,32 @@ public class InternalManagementServiceDUnit extends GfxdManagementTestBase {
   }
 
   static void removeEmployee(ObjectName employeeMBeanName) {
-    InternalManagementService ims = InternalManagementService.getInstance(GemFireStore.getBootedInstance());
-    EmployeeMBean employeeMBean = ims.getMBeanInstance(employeeMBeanName, EmployeeMBean.class);
-    assertNotNull("InternalManagementService not found.", ims);;
-    ims.unregisterMBean(EmployeeMBean.getEmployeeObjectName(employeeMBean.getDivision(), employeeMBean.getEmployeeId()));
+    InternalManagementService ims = InternalManagementService.getInstance(
+        GemFireStore.getBootedInstance());
+    EmployeeMBean employeeMBean = ims.getMBeanInstance(employeeMBeanName,
+        EmployeeMBean.class);
+    assertNotNull("InternalManagementService not found.", ims);
+    ims.unregisterMBean(getEmployeeObjectName(employeeMBean.getDivision(),
+        employeeMBean.getEmployeeId()));
   }
 
   static void removeAllEmployees() {
     InternalManagementService ims = InternalManagementService.getInstance(GemFireStore.getBootedInstance());
     assertNotNull("InternalManagementService not found.", ims);
 
-    ObjectName employeesPattern = EmployeeMBean.getEmployeeObjectName("*", "*");
+    ObjectName employeesPattern = getEmployeeObjectName("*", "*");
 
     Set<ObjectName> unregisteredMBeans = ims.unregisterMBeanByPattern(employeesPattern);
     assertTrue("No MBeans unregstered", !unregisteredMBeans.isEmpty());
-    getLogWriter().info("Unregstered MBeans "+unregisteredMBeans);
+    getGlobalLogger().info("Unregstered MBeans " + unregisteredMBeans);
   }
 
-  static interface EmployeeMXBean {
+  static ObjectName getEmployeeObjectName(String uid, String employeeId) {
+    return MBeanJMXAdapter.getObjectName(ManagementConstants
+        .OBJECTNAME__PREFIX_GFXD + "type=Employee,uid=" + uid + ",eid=" + employeeId);
+  }
+
+  public interface EmployeeMXBean {
     String getDivision();
     String getEmployeeId();
     double calculateBonus(Double performanceIndex);
@@ -263,7 +272,7 @@ public class InternalManagementServiceDUnit extends GfxdManagementTestBase {
     void updateSalary(Double salary);
   }
 
-  static class EmployeeMBean implements EmployeeMXBean, Serializable {
+  public static class EmployeeMBean implements EmployeeMXBean, Serializable {
     private String employeeId;
     private String division;
     private double salary;
@@ -277,6 +286,7 @@ public class InternalManagementServiceDUnit extends GfxdManagementTestBase {
     /**
      * @return the division
      */
+    @Override
     public String getDivision() {
       return division;
     }
@@ -303,10 +313,6 @@ public class InternalManagementServiceDUnit extends GfxdManagementTestBase {
     @Override
     public void updateSalary(Double salary) {
       this.salary = salary.doubleValue();
-    }
-
-    static ObjectName getEmployeeObjectName(String uid, String employeeId) {
-      return MBeanJMXAdapter.getObjectName(ManagementConstants.OBJECTNAME__PREFIX_GFXD + "type=Employee,uid="+uid+",eid="+employeeId);
     }
   }
 }

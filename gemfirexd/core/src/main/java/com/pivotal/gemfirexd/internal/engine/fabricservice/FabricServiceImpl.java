@@ -25,17 +25,8 @@ import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
-
-import org.apache.thrift.transport.TTransportException;
 
 import com.gemstone.gemfire.CancelCriterion;
 import com.gemstone.gemfire.cache.client.internal.BridgeServerLoadMessage;
@@ -95,6 +86,7 @@ import com.pivotal.gemfirexd.thrift.common.SocketParameters;
 import com.pivotal.gemfirexd.thrift.common.ThriftExceptionUtil;
 import com.pivotal.gemfirexd.thrift.common.ThriftUtils;
 import com.pivotal.gemfirexd.thrift.server.GfxdThriftServer;
+import org.apache.thrift.transport.TTransportException;
 
 /**
  * Base implementation of the fabric service startup.
@@ -119,6 +111,12 @@ public abstract class FabricServiceImpl implements FabricService {
 
   protected String userName;
   protected String password;
+  // bind address for network server
+  private String clientBindAddress = null;
+  // port for network server
+  private int clientPort = -1;
+  // properties for network server
+  private Properties clientProperties = null;
 
   protected HashSet<NetworkInterface> allnetservers =
     new HashSet<NetworkInterface>();
@@ -367,6 +365,13 @@ public abstract class FabricServiceImpl implements FabricService {
       } catch (Exception ex) {
         throw Util.javaException(ex);
       }
+      // was the network server stopped due to reconnect?
+      // relying on the fact that networkserverstatus will be in
+      // STOPPED state (if it was started, otherwise should in UNINITIALIZED)
+      // when reconnect happens
+    } else if (clientPort > 0 && networkserverstatus == State.STOPPED
+        && this.isReconnecting()) {
+      this.startNetworkServer(clientBindAddress, clientPort, clientProperties);
     }
   }
 
@@ -619,8 +624,7 @@ public abstract class FabricServiceImpl implements FabricService {
 
   /**
    * This method invoked from GemFire to end notify waiting for another JVM to
-   * initialize for disk GII after a previous call to
-   * {@link #notifyWaiting(String)}.
+   * initialize for disk GII after a previous call to {@link #notifyWaiting}.
    * 
    * NOTE: It is deliberately not synchronized since it can be invoked by a
    * thread other than the booting thread itself which may be stuck waiting for
@@ -730,6 +734,11 @@ public abstract class FabricServiceImpl implements FabricService {
     SanityManager.DEBUG_PRINT(GfxdConstants.TRACE_FABRIC_SERVICE_BOOT,
         "Starting " + serverType + " on: " + listenAddress
           + '[' + port + ']');
+
+    this.clientPort = port;
+    this.clientBindAddress = bindAddress;
+    this.clientProperties = new Properties();
+    this.clientProperties.putAll(networkProperties);
 
     final NetworkInterfaceImpl netImpl = thriftServer
         ? new ThriftNetworkInterface(listenAddress, port)
@@ -845,7 +854,7 @@ public abstract class FabricServiceImpl implements FabricService {
   }
 
   @Override
-  public Collection<NetworkInterface> getAllNetworkServers() {
+  public List<NetworkInterface> getAllNetworkServers() {
     synchronized (this.allnetservers) {
       return new ArrayList<NetworkInterface>(this.allnetservers);
     }

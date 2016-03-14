@@ -646,7 +646,6 @@ public abstract class AuthenticationServiceBase
 	 *
 	 * @param userName the name of the user
 	 * @param plainTxtUserPassword Plain text user password
-	 * @param forceEncrypt bypasses connection remote check.
 	 * must be used only outside the product code like ij, tests etc.
 	 *
 	 * @return encrypted user password (digest) as a String object

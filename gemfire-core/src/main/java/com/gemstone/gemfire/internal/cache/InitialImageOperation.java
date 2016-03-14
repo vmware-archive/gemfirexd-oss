@@ -2799,20 +2799,21 @@ public class InitialImageOperation  {
       boolean sendFailureMessage = true;
       LocalRegion lclRgn = null;
       ReplyException rex = null;
+      RegionVersionVector<?> rvv;
       try {
         Assert.assertTrue(this.regionPath != null, "Region path is null.");        
         final DistributedRegion rgn = (DistributedRegion)getGIIRegion(dm, this.regionPath, this.targetReinitialized);
         if (rgn == null) {
           return;
         }
-        if (!rgn.getGenerateVersionTag()) {
+        if (!rgn.getGenerateVersionTag() || (rvv = rgn.getVersionVector()) == null) {
           logger.fine(this + " non-persistent proxy region, nothing to do. Just reply");
           // allow finally block to send a failure message
           RVVReplyMessage.send(dm, getSender(), processorId, null, null);
           sendFailureMessage = false;
           return;
         } else {
-          RegionVersionVector rvv = rgn.getVersionVector().getCloneForTransmission();
+          rvv = rvv.getCloneForTransmission();
           RVVReplyMessage.send(dm, getSender(), processorId, rvv, null);
           sendFailureMessage = false;
         }

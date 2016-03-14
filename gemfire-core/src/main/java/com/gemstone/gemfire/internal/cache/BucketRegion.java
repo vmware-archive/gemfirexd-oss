@@ -714,37 +714,48 @@ public class BucketRegion extends DistributedRegion implements Bucket {
         //create and insert cached batch
         if (getPartitionedRegion().needsBatching()
             && this.size() >= GemFireCacheImpl.getColumnBatchSize()) {
-          putAllLock.writeLock().lock();
-          try {
-            createAndInsertCachedBatch();
-          } finally {
-            putAllLock.writeLock().unlock();
-          }
+          createAndInsertCachedBatch(false);
         }
       }
     }
   }
 
-  public synchronized boolean createAndInsertCachedBatch() {
+  public final boolean createAndInsertCachedBatch(boolean forceFlush) {
+    final ReentrantReadWriteLock.WriteLock sync = putAllLock.writeLock();
+    sync.lock();
+    try {
+      return internalCreateAndInsertCachedBatch(forceFlush);
+    } finally {
+      sync.unlock();
+    }
+  }
+
+  private boolean internalCreateAndInsertCachedBatch(boolean forceFlush) {
+    // TODO: with forceFlush, ideally we should merge with an existing
+    // CachedBatch if the current size to be flushed is small like < 1000
+    // (and split if total size has become too large)
+    final int batchSize = !forceFlush ? GemFireCacheImpl.getColumnBatchSize()
+        : GemFireCacheImpl.getColumnMinBatchSize();
     // we may have to use region.size so that no state
     // has to be maintained
     // one more check for size to make sure that concurrent call doesn't succeed.
     // anyway batchUUID will be null in that case.
-    if (this.batchUUID != null &&
-        this.getBucketAdvisor().isPrimary() && this.size() >= GemFireCacheImpl.getColumnBatchSize()) {
+    if (this.batchUUID != null && this.getBucketAdvisor().isPrimary() &&
+        getRegionSize() >= batchSize) {
       // need to flush the region
       if (getCache().getLoggerI18n().fineEnabled()) {
-        getCache()
-            .getLoggerI18n()
-            .fine("createAndInsertCachedBatch: Creating the cached batch for bucket " + this.getId()
-                + ", and batchID " + this.batchUUID);
+        getCache().getLoggerI18n().fine("createAndInsertCachedBatch: " +
+            "Creating the cached batch for bucket " + this.getId()
+            + ", and batchID " + this.batchUUID);
       }
       Set keysToDestroy = createCachedBatchAndPutInColumnTable();
       destroyAllEntries(keysToDestroy);
       // create new batchUUID
       this.batchUUID = null;
+      return true;
+    } else {
+      return false;
     }
-    return true;
   }
 
   //TODO: Suranjan. it will change for tx operations, setting of batchID will be from commitPhase1

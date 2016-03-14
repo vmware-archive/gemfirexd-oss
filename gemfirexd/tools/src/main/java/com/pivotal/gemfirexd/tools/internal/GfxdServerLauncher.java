@@ -19,17 +19,13 @@ package com.pivotal.gemfirexd.tools.internal;
 
 import java.io.Console;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.OperatingSystemMXBean;
+import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import com.gemstone.gemfire.DataSerializer;
 import com.gemstone.gemfire.SystemFailure;
@@ -53,6 +49,7 @@ import com.gemstone.gemfire.internal.cache.control.HeapMemoryMonitor;
 import com.gemstone.gemfire.internal.cache.lru.HeapEvictor;
 import com.gemstone.gemfire.internal.cache.persistence.PersistentMemberID;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
+import com.gemstone.gemfire.internal.lang.StringUtils;
 import com.gemstone.gemfire.internal.shared.NativeCalls;
 import com.gemstone.gnu.trove.THashSet;
 import com.pivotal.gemfirexd.FabricServer;
@@ -83,7 +80,9 @@ public class GfxdServerLauncher extends CacheServerLauncher {
   //There attributes are no longer supported. They get populated in deprecatedAttributes map.
   protected static final String INITIAL_HEAP = "initial-heap";
   protected static final String MAX_HEAP = "max-heap";
-  
+  protected static final long DEFAULT_HEAPSIZE_GB = 4L;
+  protected static final long DEFAULT_HEAPSIZE_SMALL_GB = 2L;
+
   protected static final String RUN_NETSERVER = "run-netserver";
   protected static final String LWC_BIND_ADDRESS_ARG = "client-bind-address";
   protected static final String LWC_PORT_ARG = "client-port";
@@ -351,6 +350,10 @@ public class GfxdServerLauncher extends CacheServerLauncher {
     }
   }
 
+  protected boolean setDefaultHeapSize() {
+    return true;
+  }
+
   @Override
   protected void processStartArg(String key, String value,
       Map<String, Object> m, List<String> vmArgs, Properties props)
@@ -597,19 +600,53 @@ public class GfxdServerLauncher extends CacheServerLauncher {
       this.maxPermGenSize = MAX_PERM_SIZE + MAX_PERM_DEFAULT;
       vmArgs.add(this.maxPermGenSize);
     }
-    
+
     // If either the max heap or initial heap is null, set the one that is null
     // equal to the one that isn't.
     if (this.maxHeapSize == null) {
       if (this.initialHeapSize != null) {
         vmArgs.add("-Xmx" + this.initialHeapSize);
         this.maxHeapSize = this.initialHeapSize;
+      } else {
+        final Properties props = (Properties)map.get(PROPERTIES);
+        if (setDefaultHeapSize() && !"false".equalsIgnoreCase(props
+            .getProperty(com.pivotal.gemfirexd.Attribute.GFXD_HOST_DATA))) {
+          // Try some sane default for heapSize if none specified.
+          // Set it only if total RAM is more than 1.5X of the default.
+          OperatingSystemMXBean bean = ManagementFactory
+              .getOperatingSystemMXBean();
+          Object memSize = null;
+          try {
+            Method m = bean.getClass().getMethod("getTotalPhysicalMemorySize");
+            m.setAccessible(true);
+            memSize = m.invoke(bean);
+          } catch (Exception e) {
+            // ignore and move with JVM defaults
+          }
+          if (memSize != null && (memSize instanceof Number)) {
+            long totalMemory = ((Number)memSize).longValue();
+            long useDefaultMemoryGB = DEFAULT_HEAPSIZE_GB;
+            long defaultMemory = DEFAULT_HEAPSIZE_GB * 1024L * 1024L * 1024L;
+            if ((totalMemory * 2) < (defaultMemory * 3)) {
+              useDefaultMemoryGB = DEFAULT_HEAPSIZE_SMALL_GB;
+              defaultMemory = DEFAULT_HEAPSIZE_SMALL_GB * 1024L * 1024L * 1024L;
+              if ((totalMemory * 2) < (defaultMemory * 3)) {
+                useDefaultMemoryGB = 0;
+              }
+            }
+            if (useDefaultMemoryGB > 0) {
+              this.maxHeapSize = this.initialHeapSize =
+                  Long.toString(useDefaultMemoryGB) + 'g';
+              vmArgs.add("-Xmx" + this.maxHeapSize);
+              vmArgs.add("-Xms" + this.initialHeapSize);
+            }
+          }
+        }
       }
     } else if (this.initialHeapSize == null) {
       vmArgs.add("-Xms" + this.maxHeapSize);
       this.initialHeapSize = this.maxHeapSize;
     }
-    
     if (this.maxHeapSize != null && this.maxHeapSize.equals(this.initialHeapSize)) {
       if (!map.containsKey(CRITICAL_HEAP_PERCENTAGE)) {
         criticalPercent = 90;
@@ -713,7 +750,10 @@ public class GfxdServerLauncher extends CacheServerLauncher {
 
   @Override
   protected String getBaseName(final String name) {
-    return "gfxdserver";
+    if (!StringUtils.isBlank(System.getenv("SNAPPY_HOME")))
+      return "snappyserver";
+    else
+      return "gfxdserver";
   }
 
   /**
@@ -1167,7 +1207,7 @@ public class GfxdServerLauncher extends CacheServerLauncher {
         message);
   }
 
-  /** @see CacheServerLauncher.stopAdditionalServices() */
+  /** @see CacheServerLauncher#stopAdditionalServices() */
   @Override
   protected void stopAdditionalServices() throws Exception {
     getFabricServiceInstance().stopAllNetworkServers();

@@ -161,7 +161,7 @@ public class SMACK extends Protocol implements AckMcastSenderWindow.RetransmitCo
 
             case Event.SUSPECT:
 
-                if(log.isInfoEnabled()) log.info(ExternalStrings.SMACK_REMOVING_SUSPECTED_MEMBER__0, evt.getArg());
+                if(log.isInfoEnabled()) log.info(ExternalStrings.SMACK_REMOVING_SUSPECTED_MEMBER__0, (Object)evt.getArg());
                 removeMember((Address)evt.getArg());
                 break;
 

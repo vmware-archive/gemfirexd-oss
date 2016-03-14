@@ -128,16 +128,28 @@ public final class LeadNodeExecutorMsg extends MemberExecutorMessage<Object> {
                 "LeadNodeExecutorMsg.execute: Sent Last result ");
       }
     } catch (Exception ex) {
-      // Catch all exceptions and convert so can be caugh at XD side
-      if (ex.getClass().getName().contains("AnalysisException")) {
-        throw StandardException.newException(
-            SQLState.LANG_UNEXPECTED_USER_EXCEPTION, ex, ex.getMessage());
-      } else if (ex.getClass().getName().contains("apache.spark.storage")) {
-        throw StandardException.newException(
-            SQLState.DATA_UNEXPECTED_EXCEPTION, ex, ex.getMessage());
-      } else if (ex.getClass().getName().contains("apache.spark.sql")) {
-        throw StandardException.newException(
-            SQLState.LANG_UNEXPECTED_USER_EXCEPTION, ex, ex.getMessage());
+    // Catch all exceptions and convert so can be caugh at XD side
+    Throwable cause = ex;
+      while (cause != null) {
+        if (cause.getClass().getName().contains("AnalysisException")) {
+          throw StandardException.newException(
+              SQLState.LANG_UNEXPECTED_USER_EXCEPTION, cause, cause.getMessage());
+        } else if (cause.getClass().getName().contains("apache.spark.storage")) {
+          throw StandardException.newException(
+              SQLState.DATA_UNEXPECTED_EXCEPTION, cause, cause.getMessage());
+        } else if (cause.getClass().getName().contains("apache.spark.sql")) {
+          Throwable nestedCause = cause.getCause();
+          while (nestedCause != null) {
+            if (nestedCause.getClass().getName().contains("ErrorLimitExceededException")) {
+              throw StandardException.newException(
+                  SQLState.LANG_UNEXPECTED_USER_EXCEPTION, nestedCause, nestedCause.getMessage());
+            }
+            nestedCause = nestedCause.getCause();
+          }
+          throw StandardException.newException(
+              SQLState.LANG_UNEXPECTED_USER_EXCEPTION, cause, cause.getMessage());
+        }
+        cause = cause.getCause();
       }
       throw ex;
     }

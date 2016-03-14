@@ -17,6 +17,8 @@
 
 package com.gemstone.gemfire.internal.snappy;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -30,6 +32,11 @@ public abstract class CallbackFactoryProvider {
     @Override
     public Set createCachedBatch(BucketRegion region, UUID batchID, int bucketID) {
       return null;
+    }
+
+    @Override
+    public List<String> getInternalTableSchemas() {
+      return Collections.emptyList();
     }
   };
 

@@ -19,8 +19,6 @@ package com.pivotal.gemfirexd.stats;
 import java.sql.Connection;
 import java.util.Properties;
 
-import util.TestException;
-
 import com.gemstone.gemfire.Statistics;
 import com.gemstone.gemfire.StatisticsType;
 import com.gemstone.gemfire.distributed.DistributedSystem;
@@ -28,6 +26,7 @@ import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.stats.ConnectionStats;
+import io.snappydata.test.util.TestException;
 
 /**
  * Test class for connection stats.

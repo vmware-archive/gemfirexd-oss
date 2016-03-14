@@ -17,26 +17,18 @@
 
 package com.gemstone.gemfire.internal.cache;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import dunit.Host;
-import dunit.SerializableRunnable;
-import dunit.VM;
-
-import com.gemstone.gemfire.DataSerializable;
-import com.gemstone.gemfire.DataSerializer;
+import com.gemstone.gemfire.DeltaTestImpl.TestObject1;
 import com.gemstone.gemfire.cache.Cache;
 import com.gemstone.gemfire.cache.PartitionedRegionStorageException;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
-import com.gemstone.gemfire.internal.cache.lru.Sizeable;
-import com.gemstone.gemfire.internal.util.Sizeof;
+import dunit.Host;
+import dunit.SerializableRunnable;
+import dunit.VM;
 
 /**
  * This class is to test localMaxMemory property of partition region while
@@ -260,56 +252,5 @@ public class PartitionedRegionLocalMaxMemoryDUnitTest extends
       }
     };
     vm.invoke(destroyObj);
-  }
-  
-  /** 
-   * Object used for the put() operation as key and object
-   * @author gthombar
-   */
-  static public class TestObject1 implements DataSerializable, Sizeable
-  {
-    String name;
-
-    byte arr[] = new byte[1024 * 4];
-
-    int identifier;
-    
-    public TestObject1() {}
-
-    public TestObject1(String objectName, int objectIndentifier) {
-      this.name = objectName;
-      Arrays.fill(this.arr, (byte)'A');
-      this.identifier = objectIndentifier;
-    }
-
-    public int hashCode()
-    {
-      return this.identifier;
-    }
-
-    public boolean equals(TestObject1 obj)
-    {
-      return (this.name.equals(obj.name) 
-            && Arrays.equals(this.arr, obj.arr));
-    }
-
-    public void toData(DataOutput out) throws IOException
-    {
-      DataSerializer.writeByteArray(this.arr, out);
-      DataSerializer.writeString(this.name, out);
-      out.writeInt(this.identifier);
-    }
-
-    public void fromData(DataInput in) throws IOException, ClassNotFoundException
-    {
-      this.arr = DataSerializer.readByteArray(in);
-      this.name = DataSerializer.readString(in);
-      this.identifier = in.readInt();
-    }
-
-    public int getSizeInBytes()
-    {
-      return Sizeof.sizeof(arr) + Sizeof.sizeof(name) + Sizeof.sizeof(identifier) + Sizeable.PER_OBJECT_OVERHEAD * 3;
-    }
   }
 }

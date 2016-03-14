@@ -84,7 +84,6 @@ import com.pivotal.gemfirexd.procedure.ProcedureExecutionContext;
 import com.pivotal.gemfirexd.tools.internal.JarTools;
 import com.pivotal.gemfirexd.tools.utils.ExecutionPlanUtils;
 import com.sun.jna.Platform;
-import hydra.HydraRuntimeException;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 import org.apache.derbyTesting.junit.JDBC;
@@ -400,12 +399,12 @@ public class BugsTest extends JdbcTestBase {
         + "COLOCATE WITH (APP.PERSON) " + "BUCKETS 163");
 
     st.execute("CALL SYSCS_UTIL.IMPORT_TABLE_EX ('APP', 'PERSON', '"
-        + getResourcesDir() + "/lib/UseCase9/person_data.tbl', ',', "
+        + getResourcesDir() + "/lib/useCase9/person_data.tbl', ',', "
         + "null, null, 0, 0 , 6 , 0 , null , null )");
 
     st.execute("CALL SYSCS_UTIL.IMPORT_TABLE_EX ('APP', 'EARN_ROLLUP_PERSON', '"
             + getResourcesDir()
-            + "/lib/UseCase9/earn_rollup_data.tbl', ',', "
+            + "/lib/useCase9/earn_rollup_data.tbl', ',', "
             + "null, null, 0, 0 , 6 , 0 , null , null )");
 
     st.execute("SELECT  t1.YEAR_nr, "
@@ -468,8 +467,17 @@ public class BugsTest extends JdbcTestBase {
       File locDir = new File(locDirName);
       assertTrue(locDir.mkdir());
       this.deleteDirs[0] = locDir.getAbsolutePath();
-      String remDirName = "/home/" + System.getenv().get("USER")
-       + "/preBlow-" + currTime;
+      String remDirName;
+      boolean hasExportDir;
+      String exportDir = "/srv/users/" + System.getenv().get("USER");
+      if (new File(exportDir).exists()) {
+        hasExportDir = true;
+        remDirName = exportDir + "/preBlow-" + currTime;
+      } else {
+        hasExportDir = false;
+        remDirName = "/home/" + System.getenv().get("USER")
+            + "/preBlow-" + currTime;
+      }
       File remDir = new File(remDirName);
       assertTrue(remDir.mkdir());
       this.deleteDirs[1] = remDir.getAbsolutePath();
@@ -516,11 +524,16 @@ public class BugsTest extends JdbcTestBase {
       assertEquals(5000, rs.getInt(1));
       HashSet<String> preBlowNotDoneDirs = new HashSet<String>();
       preBlowNotDoneDirs.addAll(NativeCalls.TEST_NO_FALLOC_DIRS);
-      assertTrue(NativeCalls.TEST_CHK_FALLOC_DIRS.isEmpty());
+      if (hasExportDir) {
+        assertTrue(NativeCalls.TEST_CHK_FALLOC_DIRS.isEmpty());
+        assertEquals(preBlowDoneDirs.size(), preBlowNotDoneDirs.size());
+      } else {
+        assertFalse(NativeCalls.TEST_CHK_FALLOC_DIRS.isEmpty());
+        assertEquals(0, preBlowNotDoneDirs.size());
+      }
       NativeCalls.TEST_CHK_FALLOC_DIRS = null;
       NativeCalls.TEST_NO_FALLOC_DIRS.clear();
       NativeCalls.TEST_NO_FALLOC_DIRS = null;
-      assertEquals(preBlowDoneDirs.size(), preBlowNotDoneDirs.size());
       assertTrue(preBlowDoneDirs.size() > 0);
     }
   }
@@ -627,8 +640,8 @@ public class BugsTest extends JdbcTestBase {
     //PrintWriter bw =new PrintWriter(new OutputStreamWriter(new FileOutputStream(file)));
     PrintStream bw = System.out;
 
-    System.setProperty("gemfire.OFF_HEAP_TOTAL_SIZE", "2G");
-    System.setProperty("gemfire."+DistributionConfig.OFF_HEAP_MEMORY_SIZE_NAME, "2G");
+    System.setProperty("gemfire.OFF_HEAP_TOTAL_SIZE", "500m");
+    System.setProperty("gemfire."+DistributionConfig.OFF_HEAP_MEMORY_SIZE_NAME, "500m");
     //SelectQueryInfo.setTestFlagIgnoreSingleVMCriteria(true);
     Properties props = new Properties();
     props.setProperty("log-level", "config");
@@ -754,8 +767,8 @@ public class BugsTest extends JdbcTestBase {
     reduceLogLevelForTest("config");
 
     try {
-    System.setProperty("gemfire.OFF_HEAP_TOTAL_SIZE", "2G");
-    System.setProperty("gemfire."+DistributionConfig.OFF_HEAP_MEMORY_SIZE_NAME, "2G");
+    System.setProperty("gemfire.OFF_HEAP_TOTAL_SIZE", "500m");
+    System.setProperty("gemfire."+DistributionConfig.OFF_HEAP_MEMORY_SIZE_NAME, "500m");
     SelectQueryInfo.setTestFlagIgnoreSingleVMCriteria(true);
     Properties props = new Properties();
     props.setProperty("log-level", "config");
@@ -910,9 +923,9 @@ public class BugsTest extends JdbcTestBase {
     reduceLogLevelForTest("config");
 
     try {
-      System.setProperty("gemfire.OFF_HEAP_TOTAL_SIZE", "2G");
+      System.setProperty("gemfire.OFF_HEAP_TOTAL_SIZE", "500m");
       System.setProperty("gemfire."
-          + DistributionConfig.OFF_HEAP_MEMORY_SIZE_NAME, "2G");
+          + DistributionConfig.OFF_HEAP_MEMORY_SIZE_NAME, "500m");
       SelectQueryInfo.setTestFlagIgnoreSingleVMCriteria(true);
       Properties props = new Properties();
       props.setProperty("log-level", "config");
@@ -4254,13 +4267,6 @@ public class BugsTest extends JdbcTestBase {
       derbyStmt
           .execute("create table testtable (id int primary key, type_int int) ");
 
-      try {
-        hydra.Log.getLogWriter();
-      }
-      catch (HydraRuntimeException hre) {
-        hydra.Log.createLogWriter("DBSynchronizer", "fine");
-      }
-
       JdbcTestBase.addAsyncEventListener("SG1", currentTest,
           "com.pivotal.gemfirexd.callbacks.DBSynchronizer",  new Integer(
               10), null, null, null, null, Boolean.FALSE, Boolean.FALSE, null, 
@@ -4368,13 +4374,6 @@ public class BugsTest extends JdbcTestBase {
       derbyStmt = derbyConn.createStatement();
       derbyStmt
           .execute("create table testtable (id int primary key, type_int int) ");
-
-      try {
-        hydra.Log.getLogWriter();
-      }
-      catch (HydraRuntimeException hre) {
-        hydra.Log.createLogWriter("DBSynchronizer", "fine");
-      }
 
       JdbcTestBase.addAsyncEventListener("SG1", currentTest,
           "com.pivotal.gemfirexd.callbacks.DBSynchronizer",  new Integer(
@@ -5996,11 +5995,6 @@ public class BugsTest extends JdbcTestBase {
     Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
     final String derbyDbUrl = tempDerbyUrl;
     Connection derbyConn = DriverManager.getConnection(derbyDbUrl);
-    try {
-      hydra.Log.getLogWriter();
-    } catch (HydraRuntimeException hre) {
-      hydra.Log.createLogWriter("DBSynchronizer", "fine");
-    }
     Statement derbyStmt = derbyConn.createStatement();
 
     String query = "select cid,  avg(qty*bid)  as amount from buyorders  where status =?"
@@ -6220,11 +6214,6 @@ public class BugsTest extends JdbcTestBase {
       Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
       final String derbyDbUrl = tempDerbyUrl;
       Connection derbyConn = DriverManager.getConnection(derbyDbUrl);
-      try {
-        hydra.Log.getLogWriter();
-      } catch (HydraRuntimeException hre) {
-        hydra.Log.createLogWriter("DBSynchronizer", "fine");
-      }
       derbyStmt = derbyConn.createStatement();
       derbyStmt.execute(table);
    //   derbyStmt.execute(index1);
@@ -7091,7 +7080,7 @@ public class BugsTest extends JdbcTestBase {
             + "exchange, companytype, uid, uuid, companyname, companyInfo, " +
             "note, histprice, asset, logo, tid, pvt) values " +
             "(?,?,?,?,?,?,?,?,?,?,?,?,?)");
-    Random rnd = AvailablePort.rand;
+    Random rnd = PartitionedRegion.rand;
     char[] clobChars = new char[10000];
     byte[] blobBytes = new byte[20000];
     char[] chooseChars = ("abcdefghijklmnopqrstuvwxyz"
@@ -7154,7 +7143,7 @@ public class BugsTest extends JdbcTestBase {
         + ".procSecuritasBug' "     ;
     
     st.execute(createProcUpdateSQLStr_WITH_MODIFIES);
-    Random rnd = AvailablePort.rand;
+    Random rnd = PartitionedRegion.rand;
     char[] clobChars = new char[10000];
     byte[] blobBytes = new byte[20000];
     char[] chooseChars = ("abcdefghijklmnopqrstuvwxyz"
@@ -7376,7 +7365,7 @@ public class BugsTest extends JdbcTestBase {
   private final String booksJar = getResourcesDir() + "/lib/Books.jar";
 
   public void testSysRoutinePermissions_48279() throws Throwable {
-    System.setProperty("gemfire.off-heap-memory-size", "128m");
+    System.setProperty("gemfire.off-heap-memory-size", "500m");
     Properties props = new Properties();
     props.setProperty("auth-provider", "BUILTIN");
     props.setProperty("gemfirexd.user.admin", "pass");
@@ -8703,7 +8692,7 @@ public class BugsTest extends JdbcTestBase {
   }
   
   public void createTables51718(Connection conn, Statement st) throws Exception {
-    String extra_jtests = System.getProperty("EXTRA_JTESTS");
+    String extra_jtests = getResourcesDir();
     GemFireXDUtils.executeSQLScripts(conn, new String[] {
         extra_jtests + "/lib/rtrddl.sql",
         extra_jtests + "/lib/sales_credits_ddl.sql",
@@ -8713,7 +8702,7 @@ public class BugsTest extends JdbcTestBase {
   }
   
   public void importData51718(Statement st) throws Exception {
-    String extra_jtests = System.getProperty("EXTRA_JTESTS");
+    String extra_jtests = getResourcesDir();
     String importFile1 = extra_jtests + "/lib/rtr.dat";
     String importFile2 = extra_jtests + "/lib/SALES_CREDITS20000.dat";
     

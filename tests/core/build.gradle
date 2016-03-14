@@ -13,17 +13,16 @@ idea {
 }
 
 dependencies {
-  // have to use jgroups output since we need the jg-magic-map.txt file from it
-  provided project(subprojectBase + 'gemfire-jgroups').sourceSets.main.output
-
-  compile project(subprojectBase + 'gemfire-core')
-  compile project(subprojectBase + 'gemfire-examples')
+  provided project(subprojectBase + 'gemfire-jgroups')
+  provided project(subprojectBase + 'gemfire-core')
+  provided project(subprojectBase + 'gemfire-examples')
+  compile project(subprojectBase + 'gemfire-junit')
 
   compile "junit:junit:${junitVersion}"
   compile "org.apache.ant:ant:${antVersion}"
   compile "org.apache.ant:ant-junit:${antVersion}"
-  compile 'org.hamcrest:hamcrest-core:1.1'
-  compile 'org.hamcrest:hamcrest-library:1.1'
+  compile 'org.hamcrest:hamcrest-core:1.3'
+  compile 'org.hamcrest:hamcrest-library:1.3'
   compile "org.osgi:org.osgi.core:${osgiVersion}"
   compile 'org.apache.bcel:bcel:5.2'
   compile 'org.beanshell:bsh:2.0b5'
@@ -47,11 +46,20 @@ dependencies {
   provided "org.apache.hadoop:hadoop-annotations:${hadoopVersion}"
   provided "org.apache.hadoop:hadoop-auth:${hadoopVersion}"
   provided "org.apache.hadoop:hadoop-common:${hadoopVersion}"
-  provided "org.apache.hadoop:hadoop-common:${hadoopVersion}:tests"
   provided "org.apache.hadoop:hadoop-hdfs:${hadoopVersion}"
-  provided "org.apache.hadoop:hadoop-hdfs:${hadoopVersion}:tests"
   provided "org.apache.hadoop:hadoop-mapreduce-client-core:${hadoopVersion}"
+  provided "com.google.protobuf:protobuf-java:${protobufVersion}"
+  provided "com.sun.jersey:jersey-core:${jerseyVersion}"
+  provided "com.sun.jersey:jersey-server:${jerseyVersion}"
+  provided "org.mortbay.jetty:jetty:${hadoopJettyVersion}"
+  provided "org.mortbay.jetty:jetty-util:${hadoopJettyVersion}"
   provided "org.apache.hbase:hbase:${hbaseVersion}"
+  provided "com.google.code.findbugs:jsr305:${jsr305Version}"
   provided "org.springframework:spring-core:${springVersion}"
   provided 'org.springframework.shell:spring-shell:1.0.0.RELEASE'
+
+  provided "org.apache.hadoop:hadoop-common:${hadoopVersion}:tests"
+  provided "org.apache.hadoop:hadoop-hdfs:${hadoopVersion}:tests"
 }
+
+archivesBaseName = 'gemfire-hydra-tests'

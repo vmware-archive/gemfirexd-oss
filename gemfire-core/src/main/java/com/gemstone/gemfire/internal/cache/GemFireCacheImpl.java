@@ -235,8 +235,6 @@ import com.gemstone.gemfire.pdx.internal.PdxInstanceFactoryImpl;
 import com.gemstone.gemfire.pdx.internal.PdxInstanceImpl;
 import com.gemstone.gemfire.pdx.internal.TypeRegistry;
 import com.gemstone.gnu.trove.THashSet;
-import com.sun.jna.Native;
-import com.sun.jna.Platform;
 
 // @todo somebody Come up with more reasonable values for {@link #DEFAULT_LOCK_TIMEOUT}, etc.
 /**
@@ -555,7 +553,11 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
   // Indicates whether foreign key checks for events received on WAN gateways should be skipped when applying them 
   private boolean skipFKChecksForGatewayEvents = false;
 
-  private static int COLUMN_BATCH_SIZE = 10000; // default value
+  /** Default size for CachedBatches. */
+  private static int COLUMN_BATCH_SIZE = 10000;
+
+  /** Minimum size for CachedBatches. */
+  private static int COLUMN_MIN_BATCH_SIZE = 200;
 
   /** {@link PropertyResolver} to resolve ${} type property strings */
   protected static PropertyResolver resolver;
@@ -5460,7 +5462,7 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
      * (or raw key bytes) recovered from disk or received from a remote node.
      * This is mostly useful for raw pre-serialized objects like byte[]s that
      * GemFireXD uses that cannot otherwise handle this in their fromData calls.
-     * 
+     *
      * Return value is required to be serialized byte[] for serialized objects
      * and raw byte[] for non-serialized ones.
      */
@@ -5582,13 +5584,13 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
     public boolean tracePersistFinestON();
 
     public String getDDLStatementRegionName();
-    
+
     /**
-     * Call this when gemfire logger isn't initialized but GemFireXD layer 
+     * Call this when gemfire logger isn't initialized but GemFireXD layer
      * is already logging.
      */
-    public void log(String traceFlag, String logline);
-    
+    public void log(String traceFlag, String logline, Throwable t);
+
     /**
      * Returns true if this PR is being used for a global index.
      */
@@ -5928,14 +5930,19 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
     return skipFKChecksForGatewayEvents;
   }
 
-  public static void setColumnBatchSize(int size) {
+  public static void setColumnBatchSizes(int size, int minSize) {
     COLUMN_BATCH_SIZE = size;
+    COLUMN_MIN_BATCH_SIZE = minSize;
   }
 
   public static int getColumnBatchSize() {
     return COLUMN_BATCH_SIZE;
   }
-  
+
+  public static int getColumnMinBatchSize() {
+    return COLUMN_MIN_BATCH_SIZE;
+  }
+
   public final boolean isHadoopGfxdLonerMode() {
     return this.system.isHadoopGfxdLonerMode();
   }

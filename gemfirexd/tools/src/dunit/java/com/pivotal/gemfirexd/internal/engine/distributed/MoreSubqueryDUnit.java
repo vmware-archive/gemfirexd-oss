@@ -26,7 +26,6 @@ import java.sql.Types;
 
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
-import hydra.HydraRuntimeException;
 
 public class MoreSubqueryDUnit extends DistributedSQLTestBase
 {
@@ -40,14 +39,8 @@ public class MoreSubqueryDUnit extends DistributedSQLTestBase
 
   public MoreSubqueryDUnit(String name) {
     super(name);
-    try {
-      hydra.Log.getLogWriter();
-    }
-    catch (HydraRuntimeException hre) {
-      hydra.Log.createLogWriter("MoreSubqueryDUnit", getDUnitLogLevel());
-    }
   }
-  
+
   public void testBug45216() throws Exception {
     try {
 
