@@ -45,7 +45,7 @@ import com.pivotal.gemfirexd.internal.engine.management.impl.ManagementUtils;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedStatement;
 import com.pivotal.gemfirexd.stats.StatementStatsDUnit.StatementStatsObserver;
 
-import dunit.VM;
+import io.snappydata.test.dunit.VM;
 
 /**
  * @author rishim

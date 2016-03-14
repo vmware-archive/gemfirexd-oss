@@ -20,11 +20,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-
 import com.gemstone.gemfire.cache.CacheException;
 import com.gemstone.gemfire.cache.hdfs.internal.HDFSStoreImpl;
 import com.gemstone.gemfire.cache.hdfs.internal.hoplog.DDLHoplogOrganizer;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.internal.util.BlobHelper;
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
@@ -35,9 +33,8 @@ import com.pivotal.gemfirexd.internal.engine.ddl.DDLConflatable;
 import com.pivotal.gemfirexd.internal.engine.jdbc.GemFireXDRuntimeException;
 import com.pivotal.gemfirexd.internal.iapi.sql.conn.LanguageConnectionContext;
 import com.pivotal.gemfirexd.internal.impl.sql.compile.StatementNode;
-
-import dunit.SerializableRunnable;
-import dunit.VM;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.dunit.VM;
 
 /**
  * 
@@ -56,13 +53,17 @@ public class AlterHDFSStoreDUnit extends DistributedSQLTestBase {
    * @throws Exception
    */
   public void testDistributionOfHDFSStoreAlter() throws Exception {
-    
+
     // Start one client a two servers
-    checkDirExistence("./myhdfs");
     startVMs(1, 2);
-    
-    clientSQLExecute(1, "create hdfsstore TEST namenode 'localhost' homedir './myhdfs'");
-    
+
+    final File homeDirFile = new File(".", "myhdfs");
+    final String homeDir = homeDirFile.getAbsolutePath();
+
+    checkDirExistence(homeDir);
+    clientSQLExecute(1, "create hdfsstore TEST namenode 'localhost' homedir '" +
+        homeDir + "'");
+
     // Test the HDFSStore presence by using SYS.SYSHDFSSTORES
     sqlExecuteVerify(new int[] { 1 }, new int[] { 1, 2 },
         "select NAME, MAXWRITEONLYFILESIZE, WRITEONLYFILEROLLOVERINTERVALSECS,  MAXINPUTFILECOUNT , " +
@@ -132,7 +133,7 @@ public class AlterHDFSStoreDUnit extends DistributedSQLTestBase {
         "ddl-altered");
     
     clientSQLExecute(1, "drop hdfsstore TEST ");
-    delete(new File("./myhdfs"));
+    delete(homeDirFile);
   }
   
   /**
@@ -141,18 +142,24 @@ public class AlterHDFSStoreDUnit extends DistributedSQLTestBase {
    * @throws Exception
    */
   public void testDDLPersistenceFromClientOnMultipleServers() throws Exception {
-    
+
     // Start one client a two servers
     startVMs(2, 3);
 
-    checkDirExistence("./myhdfsfromclient");
-    checkDirExistence("./myhdfsfromclient1");
-    clientSQLExecute(1, "create hdfsstore test namenode 'localhost' homedir './myhdfsfromclient'");
+    final File homeDirFile1 = new File(".", "myhdfsfromclient");
+    final String homeDir1 = homeDirFile1.getAbsolutePath();
+    final File homeDirFile2 = new File(".", "myhdfsfromclient1");
+    final String homeDir2 = homeDirFile2.getAbsolutePath();
+
+    checkDirExistence(homeDir1);
+    checkDirExistence(homeDir2);
+    clientSQLExecute(1, "create hdfsstore test namenode 'localhost' homedir '" +
+        homeDir1 + "'");
     clientSQLExecute(1, "create table mytab (col1 int primary key, col2 int) persistent hdfsstore (test)");
-    clientSQLExecute(1, "create hdfsstore test1 namenode 'localhost' homedir './myhdfsfromclient1'");
+    clientSQLExecute(1, "create hdfsstore test1 namenode 'localhost' homedir '" +
+        homeDir2 + "'");
     clientSQLExecute(1, "create table mytab1 (col1 int primary key, col2 int) persistent hdfsstore (test1)");
 
-   
     //add a new server
     clientSQLExecute(1, "alter hdfsstore TEST "
         + "SET MaxWriteOnlyFileSize 47 "
@@ -190,8 +197,8 @@ public class AlterHDFSStoreDUnit extends DistributedSQLTestBase {
         "select NAME from SYS.SYSHDFSSTORES WHERE NAME = 'TEST' ",
         TestUtil.getResourcesDir() + "/lib/checkHDFSStore.xml", "empty");
     
-    delete(new File("./myhdfsfromclient"));
-    delete(new File("./myhdfsfromclient1"));
+    delete(homeDirFile1);
+    delete(homeDirFile2);
   }
  
   /**
@@ -199,15 +206,22 @@ public class AlterHDFSStoreDUnit extends DistributedSQLTestBase {
    * @throws Exception
    */
  public void testDDLPersistenceFromServer() throws Exception {
-   
+
    // Start one client a two servers
    startVMs(2, 3);
 
-   checkDirExistence("./myhdfsfromclient");
-   checkDirExistence("./myhdfsfromclient1");
-   serverSQLExecute(1, "create hdfsstore test namenode 'localhost' homedir './myhdfsfromclient'");
+   final File homeDirFile1 = new File(".", "myhdfsfromclient");
+   final String homeDir1 = homeDirFile1.getAbsolutePath();
+   final File homeDirFile2 = new File(".", "myhdfsfromclient1");
+   final String homeDir2 = homeDirFile2.getAbsolutePath();
+
+   checkDirExistence(homeDir1);
+   checkDirExistence(homeDir2);
+   serverSQLExecute(1, "create hdfsstore test namenode 'localhost' homedir '" +
+       homeDir1 + "'");
    serverSQLExecute(1, "create table mytab (col1 int primary key, col2 int) persistent hdfsstore (test)");
-   serverSQLExecute(1, "create hdfsstore test1 namenode 'localhost' homedir './myhdfsfromclient1'");
+   serverSQLExecute(1, "create hdfsstore test1 namenode 'localhost' homedir '" +
+       homeDir2 + "'");
    serverSQLExecute(1, "create table mytab1 (col1 int primary key, col2 int) persistent hdfsstore (test1)");
 
    //add a new server
@@ -255,8 +269,8 @@ public class AlterHDFSStoreDUnit extends DistributedSQLTestBase {
        "select NAME from SYS.SYSHDFSSTORES WHERE NAME = 'TEST' ",
        TestUtil.getResourcesDir() + "/lib/checkHDFSStore.xml", "empty");
    
-   delete(new File("./myhdfsfromclient"));
-   delete(new File("./myhdfsfromclient1"));
+   delete(homeDirFile1);
+   delete(homeDirFile2);
  }
  
  /**
@@ -265,12 +279,15 @@ public class AlterHDFSStoreDUnit extends DistributedSQLTestBase {
   */
  public void testRestart() throws Exception {
      // Start one client a two servers
-     startVMs(1, 1);        
-  
-     
-     checkDirExistence("./myhdfs");
-     clientSQLExecute(1, "create hdfsstore TEST namenode 'localhost'  homedir './myhdfs'");
-     
+     startVMs(1, 1);
+
+     final File homeDirFile = new File(".", "myhdfs");
+     final String homeDir = homeDirFile.getAbsolutePath();
+
+     checkDirExistence(homeDir);
+     clientSQLExecute(1, "create hdfsstore TEST namenode 'localhost'  homedir '" +
+         homeDir + "'");
+
      clientSQLExecute(1, "alter hdfsstore TEST "
          + "SET MaxWriteOnlyFileSize 47 "
          + "SET WriteOnlyFileRolloverInterval 347 minutes "
@@ -310,7 +327,7 @@ public class AlterHDFSStoreDUnit extends DistributedSQLTestBase {
          "ddl-altered"); 
      clientSQLExecute(1, "drop hdfsstore TEST ");
      
-     delete(new File("./myhdfs"));
+     delete(homeDirFile);
    }
  
   /**
@@ -320,13 +337,15 @@ public class AlterHDFSStoreDUnit extends DistributedSQLTestBase {
   */
    public void testRollback() throws Exception {
      // Start one client a two servers
-     startVMs(1, 3);        
-  
-     
-     checkDirExistence("./myhdfs");
-     
-     clientSQLExecute(1, "create hdfsstore TEST namenode 'localhost'  homedir './myhdfs'");
-     
+     startVMs(1, 3);
+
+     final File homeDirFile = new File(".", "myhdfs");
+     final String homeDir = homeDirFile.getAbsolutePath();
+
+     checkDirExistence(homeDir);
+     clientSQLExecute(1, "create hdfsstore TEST namenode 'localhost'  homedir '" +
+         homeDir + "'");
+
      setupObservers(serverVMs.get(2));
      boolean exception = false; 
      addExpectedException(null, new int[] { 3 },
@@ -376,9 +395,8 @@ public class AlterHDFSStoreDUnit extends DistributedSQLTestBase {
          TestUtil.getResourcesDir() + "/lib/checkHDFSStore.xml",
          "ddl-original"); 
      clientSQLExecute(1, "drop hdfsstore TEST ");
-     
-     delete(new File("./myhdfs"));
-     
+
+     delete(homeDirFile);
    }
    
    /**
@@ -387,9 +405,14 @@ public class AlterHDFSStoreDUnit extends DistributedSQLTestBase {
     */
    public void testAlterForNonExistentHDFSStore() throws Exception { 
      // Start one client a two servers
-     checkDirExistence("./myhdfs");
      startVMs(1, 2);
-     clientSQLExecute(1, "create hdfsstore TEST namenode 'localhost' homedir './myhdfs'");
+
+     final File homeDirFile = new File(".", "myhdfs");
+     final String homeDir = homeDirFile.getAbsolutePath();
+
+     checkDirExistence(homeDir);
+     clientSQLExecute(1, "create hdfsstore TEST namenode 'localhost' homedir '" +
+         homeDir + "'");
      boolean exception = false;
      try  {
        clientSQLExecute(1, "alter hdfsstore TEST1 "
@@ -409,7 +432,7 @@ public class AlterHDFSStoreDUnit extends DistributedSQLTestBase {
      }
      assertTrue("alter command for a non existent HDFSStore should have failed", exception);
      clientSQLExecute(1, "drop hdfsstore TEST ");
-     delete(new File("./myhdfs"));
+     delete(homeDirFile);
    }
    
    private SerializableRunnable verifyDDLPersistenceForTest1() {
@@ -445,16 +468,13 @@ public class AlterHDFSStoreDUnit extends DistributedSQLTestBase {
            HDFSStoreImpl hdfsStore = Misc.getGemFireCache().findHDFSStore("TEST");
            ddlconflatables = getDDLConflatables(hdfsStore);
          } catch (Exception e) {
-           Misc.getGemFireCache().getLoggerI18n().fine("EXCEPTION " + e);
+           getLogWriter().warn("EXCEPTION " + e);
          }
-         
          assertTrue(ddlconflatables.size() == 3);
          assertTrue(ddlconflatables.get(0).getValueToConflate().startsWith("create hdfsstore"));
          assertTrue(ddlconflatables.get(1).getValueToConflate().startsWith("create table"));
          assertTrue(ddlconflatables.get(2).getValueToConflate().startsWith("alter hdfsstore"));
-         
        }
-      
      };
    }
    private ArrayList<DDLConflatable> getDDLConflatables(HDFSStoreImpl store) throws IOException,
@@ -512,10 +532,10 @@ public class AlterHDFSStoreDUnit extends DistributedSQLTestBase {
       };
     }
     protected void setupObservers(VM dataStore) {
-        CacheSerializableRunnable setObserver = new CacheSerializableRunnable(
+        SerializableRunnable setObserver = new SerializableRunnable(
           "Set GemFireXDObserver on DataStore Node") {
         @Override
-        public void run2() throws CacheException {
+        public void run() throws CacheException {
           try {
             GemFireXDQueryObserverHolder
                 .setInstance(new GemFireXDQueryObserverAdapter() {
@@ -538,10 +558,10 @@ public class AlterHDFSStoreDUnit extends DistributedSQLTestBase {
     }
     
     protected void clearObservers(VM dataStore) {
-          CacheSerializableRunnable clearObserver = new CacheSerializableRunnable(
+          SerializableRunnable clearObserver = new SerializableRunnable(
           "Clear GemFireXDObserver on DataStore Node") {
         @Override
-        public void run2() throws CacheException {
+        public void run() throws CacheException {
           try {
             GemFireXDQueryObserverHolder.clearInstance();
           } catch (Exception e) {
@@ -568,25 +588,4 @@ public class AlterHDFSStoreDUnit extends DistributedSQLTestBase {
        delete(dir);
      }
    }
-    private void delete(File file) {
-      if (!file.exists()) {
-        return;
-      }
-      if (file.isDirectory()) {
-        if (file.list().length == 0) {
-          file.delete();
-        }
-        else {
-          File[] files = file.listFiles();
-          for (File f : files) {
-            delete(f);
-          }        
-          file.delete();        
-        }
-      }
-      else {
-        file.delete();
-      }
-    }
-
 }

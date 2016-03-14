@@ -20,41 +20,10 @@ package com.pivotal.gemfirexd.thrift.server;
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.security.SecureRandom;
-import java.sql.Blob;
-import java.sql.CallableStatement;
-import java.sql.Clob;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
+import java.sql.*;
 import java.sql.Date;
-import java.sql.ParameterMetaData;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.SQLWarning;
-import java.sql.Statement;
-import java.sql.Time;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import org.apache.thrift.ProcessFunction;
-import org.apache.thrift.TApplicationException;
-import org.apache.thrift.TException;
-import org.apache.thrift.protocol.TMessage;
-import org.apache.thrift.protocol.TMessageType;
-import org.apache.thrift.protocol.TProtocol;
-import org.apache.thrift.protocol.TProtocolUtil;
-import org.apache.thrift.protocol.TType;
 
 import com.gemstone.gemfire.InternalGemFireError;
 import com.gemstone.gemfire.SystemFailure;
@@ -78,55 +47,31 @@ import com.pivotal.gemfirexd.internal.iapi.types.DataTypeDescriptor;
 import com.pivotal.gemfirexd.internal.iapi.types.DataTypeUtilities;
 import com.pivotal.gemfirexd.internal.iapi.types.TypeId;
 import com.pivotal.gemfirexd.internal.iapi.util.IdUtil;
-import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedBlob;
-import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedClob;
-import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedConnection;
-import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedDatabaseMetaData;
-import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedResultSet;
-import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedResultSetMetaData;
-import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedStatement;
-import com.pivotal.gemfirexd.internal.impl.jdbc.Util;
+import com.pivotal.gemfirexd.internal.impl.jdbc.*;
 import com.pivotal.gemfirexd.internal.jdbc.InternalDriver;
 import com.pivotal.gemfirexd.internal.shared.common.SharedUtils;
 import com.pivotal.gemfirexd.internal.shared.common.error.ExceptionSeverity;
 import com.pivotal.gemfirexd.internal.shared.common.reference.JDBC40Translation;
 import com.pivotal.gemfirexd.internal.shared.common.reference.SQLState;
 import com.pivotal.gemfirexd.internal.shared.common.sanity.SanityManager;
-import com.pivotal.gemfirexd.thrift.BlobChunk;
-import com.pivotal.gemfirexd.thrift.ClobChunk;
-import com.pivotal.gemfirexd.thrift.ColumnDescriptor;
-import com.pivotal.gemfirexd.thrift.ConnectionProperties;
-import com.pivotal.gemfirexd.thrift.EntityId;
-import com.pivotal.gemfirexd.thrift.GFXDException;
-import com.pivotal.gemfirexd.thrift.GFXDExceptionData;
-import com.pivotal.gemfirexd.thrift.GFXDService;
-import com.pivotal.gemfirexd.thrift.GFXDType;
-import com.pivotal.gemfirexd.thrift.JSONObject;
-import com.pivotal.gemfirexd.thrift.OpenConnectionArgs;
-import com.pivotal.gemfirexd.thrift.OutputParameter;
-import com.pivotal.gemfirexd.thrift.PDXObject;
-import com.pivotal.gemfirexd.thrift.PrepareResult;
-import com.pivotal.gemfirexd.thrift.Row;
+import com.pivotal.gemfirexd.thrift.*;
 import com.pivotal.gemfirexd.thrift.RowIdLifetime;
-import com.pivotal.gemfirexd.thrift.RowSet;
-import com.pivotal.gemfirexd.thrift.ServiceFeature;
-import com.pivotal.gemfirexd.thrift.ServiceFeatureParameterized;
-import com.pivotal.gemfirexd.thrift.ServiceMetaData;
-import com.pivotal.gemfirexd.thrift.ServiceMetaDataArgs;
-import com.pivotal.gemfirexd.thrift.ServiceMetaDataCall;
-import com.pivotal.gemfirexd.thrift.StatementAttrs;
-import com.pivotal.gemfirexd.thrift.StatementResult;
-import com.pivotal.gemfirexd.thrift.TransactionAttribute;
-import com.pivotal.gemfirexd.thrift.UpdateResult;
-import com.pivotal.gemfirexd.thrift.gfxdConstants;
 import com.pivotal.gemfirexd.thrift.common.Converters;
 import com.pivotal.gemfirexd.thrift.common.OptimizedElementArray;
 import com.pivotal.gemfirexd.thrift.common.ThriftUtils;
 import com.pivotal.gemfirexd.thrift.server.ConnectionHolder.StatementHolder;
+import org.apache.thrift.ProcessFunction;
+import org.apache.thrift.TApplicationException;
+import org.apache.thrift.TException;
+import org.apache.thrift.protocol.TMessage;
+import org.apache.thrift.protocol.TMessageType;
+import org.apache.thrift.protocol.TProtocol;
+import org.apache.thrift.protocol.TProtocolUtil;
+import org.apache.thrift.protocol.TType;
 
 /**
  * Server-side implementation of thrift GFXDService (see gfxd.thrift).
- * 
+ *
  * @author swale
  * @since gfxd 1.1
  */
@@ -234,13 +179,18 @@ public final class GFXDServiceImpl extends LocatorServiceImpl implements
         clientId = arguments.getClientID();
       }
 
+      final String protocol;
       // default route-query to true on client connections
-      if (Misc.getMemStoreBooting().isSnappyStore() &&
-          !props.containsKey(Attribute.ROUTE_QUERY)) {
-        props.setProperty(Attribute.ROUTE_QUERY, "true");
+      if (Misc.getMemStoreBooting().isSnappyStore()) {
+        if (!props.containsKey(Attribute.ROUTE_QUERY)) {
+          props.setProperty(Attribute.ROUTE_QUERY, "true");
+        }
+        protocol = Attribute.SNAPPY_PROTOCOL;
+      } else {
+        protocol = Attribute.PROTOCOL;
       }
       EmbedConnection conn = (EmbedConnection)InternalDriver.activeDriver()
-          .connect(Attribute.PROTOCOL, props, Converters
+          .connect(protocol, props, Converters
               .getJdbcIsolation(gfxdConstants.DEFAULT_TRANSACTION_ISOLATION));
       conn.setAutoCommit(gfxdConstants.DEFAULT_AUTOCOMMIT);
       while (true) {
@@ -334,7 +284,7 @@ public final class GFXDServiceImpl extends LocatorServiceImpl implements
   /**
    * Helper method Validate the connection Id. If Id not found in the map throw
    * the connection unavailable exception.
-   * 
+   *
    * @param token
    * @return ConnectionHolder if found in the map.
    * @throws GFXDException
@@ -479,7 +429,7 @@ public final class GFXDServiceImpl extends LocatorServiceImpl implements
   /**
    * Returns the Concurrency associated with the statement if set the the input
    * object if not set by default returns java.sql.ResultSet.CONCUR_READ_ONLY
-   * 
+   *
    * @param attrs
    * @return
    */
@@ -491,7 +441,7 @@ public final class GFXDServiceImpl extends LocatorServiceImpl implements
   /**
    * Returns the Holdability associated with the statement if set the the input
    * object if not set by default returns #ResultS
-   * 
+   *
    * @param attrs
    * @return
    */
@@ -574,7 +524,7 @@ public final class GFXDServiceImpl extends LocatorServiceImpl implements
    * value in the ColumnValue structure. We cannot make it union becuase of the
    * existing bug in the Apache Thrift.
    * https://issues.apache.org/jira/browse/THRIFT-1833
-   * 
+   *
    * The java version of Row overrides the thrift one to make use of
    * {@link OptimizedElementArray} to reduce overhead/objects while still
    * keeping serialization compatible with thrift Row.
@@ -790,7 +740,7 @@ public final class GFXDServiceImpl extends LocatorServiceImpl implements
    * value in the ColumnValue structure. We cannot make it union becuase of the
    * existing bug in the Apache Thrift.
    * https://issues.apache.org/jira/browse/THRIFT-1833
-   * 
+   *
    * The java version of Row overrides the thrift one to make use of
    * {@link OptimizedElementArray} to reduce overhead/objects while still
    * keeping serialization compatible with thrift Row.

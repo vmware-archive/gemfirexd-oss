@@ -298,8 +298,8 @@ public class AUTH extends Protocol {
 
     Properties props = (Properties)System.getProperties().clone(); // for bug 46822
     Properties securityProps = new Properties();
-    final String secPrefix =  System.getProperty("gemfire.sys." // DistributionConfigImpl.SECURITY_SYSTEM_PREFIX
-        +  "security-"); //  DistributionConfig.SECURITY_PREFIX_NAME;
+    final String secPrefix =  "gemfire.sys." // DistributionConfigImpl.SECURITY_SYSTEM_PREFIX
+        +  "security-"; //  DistributionConfig.SECURITY_PREFIX_NAME;
     Iterator propIter = props.entrySet().iterator();
     while (propIter.hasNext()) {
       Map.Entry propEntry = (Map.Entry)propIter.next();

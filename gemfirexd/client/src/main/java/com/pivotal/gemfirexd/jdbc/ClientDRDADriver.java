@@ -70,7 +70,8 @@ public class ClientDRDADriver implements java.sql.Driver {
     public static String GEMXD_PROTOCOL =  "jdbc:gemfirexd:";
     public static String  DRDA_CONNECTION_PROTOCOL = "DRDA_CONNECTION_PROTOCOL";
 
-    protected final static String URL_PREFIX_REGEX = "("+SNAPPY_PROTOCOL+"|"+GEMXD_PROTOCOL+")" ;
+  protected final static String URL_PREFIX_REGEX = "(" + SNAPPY_PROTOCOL +
+      "|" + GEMXD_PROTOCOL + ")";
     protected final static String URL_SUFFIX_REGEX =
         "//(([^:]+:[0-9]+)|([^\\[]+\\[[0-9]+\\]))(/(gemfirexd;|snappydata;)?;?(.*)?)?";
 

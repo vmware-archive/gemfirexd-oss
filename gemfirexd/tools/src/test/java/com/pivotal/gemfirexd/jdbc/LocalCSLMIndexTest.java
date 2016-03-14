@@ -33,21 +33,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
-
-import org.apache.derbyTesting.junit.JDBC;
-
-import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.AbstractRegionEntry;
-import com.gemstone.gemfire.internal.cache.CacheObserverHolder;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
+import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.concurrent.ConcurrentSkipListMap;
 import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserver;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverAdapter;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
-import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
 import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.access.index.MemIndexScanController;
 import com.pivotal.gemfirexd.internal.engine.access.index.OpenMemIndex;
@@ -60,6 +53,9 @@ import com.pivotal.gemfirexd.internal.iapi.sql.conn.LanguageConnectionContext;
 import com.pivotal.gemfirexd.internal.iapi.store.access.TransactionController;
 import com.pivotal.gemfirexd.internal.iapi.store.access.conglomerate.Conglomerate;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedConnection;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
+import org.apache.derbyTesting.junit.JDBC;
 
 /**
  * junit tests for the CNM2Index
@@ -779,7 +775,7 @@ public class LocalCSLMIndexTest extends JdbcTestBase {
     AlterTableTest.checkIndexType(schemaName, "ctstable3", "LOCALSORTEDMAP",
         "TYPE_ID", "KEY_ID");
 
-    final int numRows = AvailablePort.rand.nextInt(50) + 50;
+    final int numRows = PartitionedRegion.rand.nextInt(50) + 50;
     int rows = 0;
     for (int v = 1; v <= numRows; v++) {
       stmt.execute(String.format(

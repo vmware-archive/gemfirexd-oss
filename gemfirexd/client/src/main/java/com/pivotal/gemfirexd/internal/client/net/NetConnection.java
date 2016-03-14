@@ -273,12 +273,6 @@ public class NetConnection extends com.pivotal.gemfirexd.internal.client.am.Conn
         isODBCDriver = ClientBaseDataSource.getIsODBCDriver(properties);
         flowConnect(password, securityMechanism_, true /* GemStone change */);
 
-
-       String drdaProtocol = properties.getProperty(ClientDRDADriver.DRDA_CONNECTION_PROTOCOL);
-      if (drdaProtocol != null && drdaProtocol.toLowerCase().contains(ClientDRDADriver.SNAPPY_PROTOCOL) ) {
-        snappyDRDAProtocol = true;
-      }
-
         if(!isConnectionNull())
         	completeConnect();
         
@@ -376,6 +370,14 @@ public class NetConnection extends com.pivotal.gemfirexd.internal.client.am.Conn
             "NetConnection::preInitialize new connection: " + this);
       }
       if (properties != null) {
+
+        String drdaProtocol = properties.getProperty(
+            ClientDRDADriver.DRDA_CONNECTION_PROTOCOL);
+        if (drdaProtocol != null && drdaProtocol.toLowerCase().contains(
+            ClientDRDADriver.SNAPPY_PROTOCOL)) {
+          snappyDRDAProtocol = true;
+        }
+
         String timeoutStr = properties.getProperty(ClientAttribute.READ_TIMEOUT);
         if (timeoutStr != null) {
           this.loginTimeout_ = Integer.parseInt(timeoutStr);
@@ -438,19 +440,21 @@ public class NetConnection extends com.pivotal.gemfirexd.internal.client.am.Conn
         }
 
         // Using the queryHDFS flag for query routing property
-        // by default query-routing will be true
-        boolean toRouteQuery = false;
+        // by default query-routing will be true for snappydata
+        // URL but false otherwise
+        boolean toRouteQuery = isSnappyDRDAProtocol();
         String routeQuery = properties.getProperty(
-            ClientAttribute.ROUTE_QUERY, "true");
+            ClientAttribute.ROUTE_QUERY);
         if (routeQuery != null) {
           toRouteQuery = "true".equalsIgnoreCase(routeQuery);
         }
-
+        // can't set both query-HDFS and route-query due to above
         if (this.queryHDFS_ && toRouteQuery) {
           throw new SqlException(agent_.logWriter_,
-              new ClientMessageId(SQLState.PROPERTY_INVALID_VALUE), ClientAttribute.QUERY_HDFS, "true");
+              new ClientMessageId(SQLState.PROPERTY_INVALID_VALUE),
+              ClientAttribute.QUERY_HDFS, "true");
         }
-        this.queryHDFS_ = toRouteQuery;
+        this.queryHDFS_ |= toRouteQuery;
         String skipConstraints = properties.getProperty(
             ClientAttribute.SKIP_CONSTRAINT_CHECKS, "false");
         if (skipConstraints != null) {
@@ -3491,7 +3495,7 @@ public class NetConnection extends com.pivotal.gemfirexd.internal.client.am.Conn
 
   /**
    * The maximum number of DistributedSystems that will be tracked in
-   * {@link #allFailoverQueryAddrs_} beyond which it will be clean up the older
+   * {@link #allDSQueryAddrs_} beyond which it will be clean up the older
    * ones.
    */
   private static final int MAX_CACHED_DISTRIBUTED_SYSTEMS = 2;
@@ -3773,7 +3777,7 @@ public class NetConnection extends com.pivotal.gemfirexd.internal.client.am.Conn
     this.serverVersion = serverVersion;
   }
 
-  public boolean isSnappyDRDAProtocol() {
+  public final boolean isSnappyDRDAProtocol() {
     return this.snappyDRDAProtocol;
   }
 

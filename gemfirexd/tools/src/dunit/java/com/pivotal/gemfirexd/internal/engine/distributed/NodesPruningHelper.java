@@ -19,7 +19,6 @@ package com.pivotal.gemfirexd.internal.engine.distributed;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.gemstone.gemfire.LogWriter;
 import com.gemstone.gemfire.distributed.DistributedMember;
 import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
 import com.gemstone.gemfire.internal.cache.PartitionedRegion;
@@ -27,16 +26,15 @@ import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverAdapter;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
 import com.pivotal.gemfirexd.internal.engine.ddl.resolver.GfxdPartitionResolver;
 import com.pivotal.gemfirexd.internal.engine.distributed.metadata.QueryInfo;
-import com.pivotal.gemfirexd.internal.engine.distributed.metadata.QueryInfoConstants;
-import com.pivotal.gemfirexd.internal.engine.sql.execute.*;
+import com.pivotal.gemfirexd.internal.engine.sql.execute.AbstractGemFireActivation;
 import com.pivotal.gemfirexd.internal.iapi.error.StandardException;
 import com.pivotal.gemfirexd.internal.iapi.sql.Activation;
 import com.pivotal.gemfirexd.internal.iapi.sql.conn.LanguageConnectionContext;
 import com.pivotal.gemfirexd.internal.iapi.types.DataValueDescriptor;
 import com.pivotal.gemfirexd.internal.impl.sql.GenericPreparedStatement;
 import com.pivotal.gemfirexd.internal.shared.common.ResolverUtils;
-
-import dunit.DistributedTestCase;
+import io.snappydata.test.dunit.DistributedTestBase;
+import org.apache.log4j.Logger;
 
 /**
  * Helper class used  to calculate pruned nodes 
@@ -86,25 +84,31 @@ public class NodesPruningHelper {
         });
   }
 
-  public static void validateNodePruningForQuery(final String query, QueryInfo sqi, Object[][]routingInfo, DistributedTestCase test, Activation activation) throws StandardException {
-    
-    Set <DistributedMember> expected =  getExpectedNodes(query,
+  public static void validateNodePruningForQuery(final String query,
+      QueryInfo sqi, Object[][] routingInfo, DistributedTestBase test,
+      Activation activation) throws StandardException {
+
+    Set<DistributedMember> expected = getExpectedNodes(query,
         sqi, routingInfo, test.getLogWriter());
-    Set <DistributedMember> actual = new HashSet<DistributedMember>();
-    Set <Object> actualRoutingKeys = new HashSet<Object>(); 
-    actualRoutingKeys.add(ResolverUtils.TOK_ALL_NODES);    
+    Set<DistributedMember> actual = new HashSet<DistributedMember>();
+    Set<Object> actualRoutingKeys = new HashSet<Object>();
+    actualRoutingKeys.add(ResolverUtils.TOK_ALL_NODES);
     sqi.computeNodes(actualRoutingKeys, activation, false);
-    actual.addAll(convertRoutingKeysIntoMembersForPR(actualRoutingKeys,(PartitionedRegion)sqi.getRegion()));
-    test.assertEquals(expected.size(),actual.size());
+    actual.addAll(convertRoutingKeysIntoMembersForPR(actualRoutingKeys,
+        (PartitionedRegion)sqi.getRegion()));
+    test.assertEquals(expected.size(), actual.size());
     actual.removeAll(expected);
     test.assertTrue(actual.isEmpty());
   }
-   
-  public static void validateNodePruningForQuery(final String query, QueryInfo sqi, Object[][]routingInfo, DistributedTestCase test) throws StandardException {
-    validateNodePruningForQuery(query,sqi,routingInfo,test,null);  
+
+  public static void validateNodePruningForQuery(final String query,
+      QueryInfo sqi, Object[][] routingInfo,
+      DistributedTestBase test) throws StandardException {
+    validateNodePruningForQuery(query, sqi, routingInfo, test, null);
   }
-  
-  public  static Set<InternalDistributedMember> convertRoutingKeysIntoMembersForPR(Set<Object> routingKeys, PartitionedRegion prgn) {
+
+  public static Set<InternalDistributedMember> convertRoutingKeysIntoMembersForPR(
+      Set<Object> routingKeys, PartitionedRegion prgn) {
     if (routingKeys.contains(ResolverUtils.TOK_ALL_NODES)) {
 
       Set<InternalDistributedMember> nodesOfPr = prgn
@@ -126,18 +130,16 @@ public class NodesPruningHelper {
    * 
    * @param query
    * @param sqi
-   * @param partioningType
-   * @param routingInfo . It is two dimensional Object[][]. Each row represents the pruning  which 
+   * @param routingInfo . It is two dimensional Object[][]. Each row represents the pruning  which
    * can be accomplished by a condition. Two consecutive rows (conditions) are tied by an AND or OR junction  
    * @return
    * @throws StandardException
    */
-  
   public static Set<DistributedMember> getExpectedNodes(final String query,
-      QueryInfo sqi, Object[][] routingInfo, LogWriter logger) throws StandardException {
+      QueryInfo sqi, Object[][] routingInfo,
+      Logger logger) throws StandardException {
     PartitionedRegion pr = (PartitionedRegion)sqi.getRegion();
-    pr
-        .getPartitionResolver();
+    pr.getPartitionResolver();
     Set<InternalDistributedMember> allNodes = pr
         .getRegionAdvisor().adviseDataStore();
     Set<DistributedMember> expected = new HashSet<DistributedMember>();
@@ -147,26 +149,31 @@ public class NodesPruningHelper {
       int partitioningType = ((Integer)currentConditionRow[0]).intValue();
       switch (partitioningType) {
         case byrange:
-          handleRangePartitioning(sqi, currentConditionRow, allNodes, expected,i, logger);
-          break;      
-        case bylist : 
-          handleListPartitioning(sqi, currentConditionRow, allNodes, expected,i,logger);
-        break; 
-        case bycolumn :
-          handleColumnPartitioning(sqi, currentConditionRow, allNodes, expected,i,logger); 
+          handleRangePartitioning(sqi, currentConditionRow, allNodes,
+              expected, i, logger);
+          break;
+        case bylist:
+          handleListPartitioning(sqi, currentConditionRow, allNodes,
+              expected, i, logger);
+          break;
+        case bycolumn:
+          handleColumnPartitioning(sqi, currentConditionRow, allNodes,
+              expected, i, logger);
           break;
         case allnodes:
-          expected.addAll(allNodes);   
-          break;    
-      default:
-        throw new IllegalArgumentException("The partition type is undefined");
+          expected.addAll(allNodes);
+          break;
+        default:
+          throw new IllegalArgumentException("The partition type is undefined");
       }
     }
     return expected;
 
   }
-  
-  private static void handleRangePartitioning(QueryInfo sqi,Object[] currentRowRoutingInfo, Set<InternalDistributedMember> allNodes, Set<DistributedMember> prunedNodes, int conditionNumIndx, LogWriter logger) {
+
+  private static void handleRangePartitioning(QueryInfo sqi,
+      Object[] currentRowRoutingInfo, Set<InternalDistributedMember> allNodes,
+      Set<DistributedMember> prunedNodes, int conditionNumIndx, Logger logger) {
     PartitionedRegion pr = (PartitionedRegion)sqi.getRegion();
     //Identify the nodes which should see the query based on partition resolver
     GfxdPartitionResolver spr = (GfxdPartitionResolver)pr.getPartitionResolver();   
@@ -224,8 +231,10 @@ public class NodesPruningHelper {
       }   
     
   }
-  
-  private static void handleColumnPartitioning(QueryInfo sqi,Object[] currentRowRoutingInfo, Set<InternalDistributedMember> allNodes, Set<DistributedMember> prunedNodes, int conditionNumIndx,LogWriter logger) {
+
+  private static void handleColumnPartitioning(QueryInfo sqi,
+      Object[] currentRowRoutingInfo, Set<InternalDistributedMember> allNodes,
+      Set<DistributedMember> prunedNodes, int conditionNumIndx, Logger logger) {
     PartitionedRegion pr = (PartitionedRegion)sqi.getRegion();
     //Identify the nodes which should see the query based on partition resolver
     GfxdPartitionResolver spr = (GfxdPartitionResolver)pr.getPartitionResolver();   
@@ -284,8 +293,10 @@ public class NodesPruningHelper {
         }      
       }    
   }
-  
-  private static void handleListPartitioning(QueryInfo sqi,Object[] currentRowRoutingInfo, Set<InternalDistributedMember> allNodes, Set<DistributedMember> prunedNodes, int conditionNumIndx, LogWriter logger) {
+
+  private static void handleListPartitioning(QueryInfo sqi,
+      Object[] currentRowRoutingInfo, Set<InternalDistributedMember> allNodes,
+      Set<DistributedMember> prunedNodes, int conditionNumIndx, Logger logger) {
     PartitionedRegion pr = (PartitionedRegion)sqi.getRegion();
     //Identify the nodes which should see the query based on partition resolver
     GfxdPartitionResolver spr = (GfxdPartitionResolver)pr.getPartitionResolver();   

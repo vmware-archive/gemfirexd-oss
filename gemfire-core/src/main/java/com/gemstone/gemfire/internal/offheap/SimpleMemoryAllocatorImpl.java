@@ -286,7 +286,6 @@ public final class SimpleMemoryAllocatorImpl implements MemoryAllocator, MemoryI
       }
 
     }else {
-      
       this.chunkFactory = new GemFireChunkFactory();
     }
     
@@ -842,15 +841,17 @@ public final class SimpleMemoryAllocatorImpl implements MemoryAllocator, MemoryI
       long addr = slab.getMemoryAddress();
       while (addr <= (slab.getMemoryAddress() + slab.getSize() - Chunk.MIN_CHUNK_SIZE)) {
         Fragment f = isAddrInFragmentFreeSpace(addr);
+        int curChunkSize;
         if (f != null) {
           addr = f.getMemoryAddress() + f.getSize();
-        } else {
-          int curChunkSize = Chunk.getSize(addr);
+        } else if ((curChunkSize = Chunk.getSize(addr)) > 0) {
           int refCount = Chunk.getRefCount(addr);
           if (refCount > 0) {
             result.add(SimpleMemoryAllocatorImpl.this.chunkFactory.newChunk(addr));
           }
           addr += curChunkSize;
+        } else {
+          break;
         }
       }
     }

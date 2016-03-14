@@ -34,20 +34,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
-
-import org.apache.derbyTesting.junit.JDBC;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.LocatedFileStatus;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.fs.RemoteIterator;
-import org.apache.hadoop.hdfs.DFSConfigKeys;
-import org.apache.hadoop.hdfs.HdfsConfiguration;
-import org.apache.hadoop.hdfs.MiniDFSCluster;
-import org.apache.hadoop.hdfs.MiniDFSCluster.Builder;
-
 import com.gemstone.gemfire.cache.RegionAttributes;
 import com.gemstone.gemfire.cache.hdfs.internal.HDFSStoreFactoryImpl;
 import com.gemstone.gemfire.cache.hdfs.internal.HDFSStoreImpl;
@@ -58,7 +44,6 @@ import com.gemstone.gemfire.cache.partition.PartitionRegionInfo;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.i18n.LogWriterI18n;
 import com.gemstone.gemfire.internal.AvailablePort;
-import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.cache.DiskRegionStats;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
@@ -74,6 +59,19 @@ import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.distributed.metadata.SelectQueryInfo;
 import com.pivotal.gemfirexd.internal.iapi.sql.conn.LanguageConnectionContext;
 import com.pivotal.gemfirexd.internal.impl.sql.GenericPreparedStatement;
+import io.snappydata.test.dunit.AvailablePortHelper;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
+import org.apache.derbyTesting.junit.JDBC;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.LocatedFileStatus;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.RemoteIterator;
+import org.apache.hadoop.hdfs.DFSConfigKeys;
+import org.apache.hadoop.hdfs.HdfsConfiguration;
+import org.apache.hadoop.hdfs.MiniDFSCluster;
+import org.apache.hadoop.hdfs.MiniDFSCluster.Builder;
 
 /**
 * 

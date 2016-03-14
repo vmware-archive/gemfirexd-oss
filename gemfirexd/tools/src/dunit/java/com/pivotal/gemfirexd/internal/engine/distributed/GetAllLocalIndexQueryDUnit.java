@@ -27,7 +27,6 @@ import java.util.Set;
 import javax.sql.rowset.serial.SerialBlob;
 
 import com.gemstone.gemfire.cache.CacheException;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.internal.SocketCreator;
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
@@ -45,7 +44,7 @@ import com.pivotal.gemfirexd.internal.iapi.sql.conn.LanguageConnectionContext;
 import com.pivotal.gemfirexd.internal.impl.sql.GenericPreparedStatement;
 import com.pivotal.gemfirexd.jdbc.GfxdCallbacksTest;
 import com.pivotal.gemfirexd.jdbc.TestRowLoader;
-import dunit.SerializableRunnable;
+import io.snappydata.test.dunit.SerializableRunnable;
 
 /**
  * Tests for GetAllConvertible Queries
@@ -298,7 +297,7 @@ public class GetAllLocalIndexQueryDUnit extends DistributedSQLTestBase {
     final Properties connSHOPProps = new Properties();
     connSHOPProps.setProperty("single-hop-enabled", "true");
     connSHOPProps.setProperty("single-hop-max-connections", "5");
-    String logLevel = getDUnitLogLevel();
+    String logLevel = getLogLevel();
     connSHOPProps.setProperty("log-level", logLevel);
     if (logLevel.startsWith("fine")) {
       connSHOPProps.setProperty("gemfirexd.debug.true", "TraceSingleHop");
@@ -363,10 +362,10 @@ public class GetAllLocalIndexQueryDUnit extends DistributedSQLTestBase {
       }
     };
 
-    SerializableRunnable getAllObsSet = new CacheSerializableRunnable(
+    SerializableRunnable getAllObsSet = new SerializableRunnable(
         "Set GetAll Observer") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         remoteCallbackInvoked[0] = false;
         remoteCallbackInvoked[1] = false;
         remoteCallbackInvoked[2] = false;
@@ -376,20 +375,20 @@ public class GetAllLocalIndexQueryDUnit extends DistributedSQLTestBase {
       }
     };
 
-    SerializableRunnable getAllObsReset = new CacheSerializableRunnable(
+    SerializableRunnable getAllObsReset = new SerializableRunnable(
         "Reset GetAll Observer") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         GemFireXDQueryObserverHolder
             .setInstance(new GemFireXDQueryObserverAdapter() {
             });
       }
     };
     
-    SerializableRunnable clearStmtCache = new CacheSerializableRunnable(
+    SerializableRunnable clearStmtCache = new SerializableRunnable(
         "Clear Stmt Cache") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           TestUtil.clearStatementCache();
           remoteCallbackInvoked[3] = true;
@@ -399,18 +398,18 @@ public class GetAllLocalIndexQueryDUnit extends DistributedSQLTestBase {
       }
     };
     
-    SerializableRunnable verifyStmtCache = new CacheSerializableRunnable(
+    SerializableRunnable verifyStmtCache = new SerializableRunnable(
         "Verify Stmt Cache") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         assertTrue(remoteCallbackInvoked[3]);
       }
     };
 
-    SerializableRunnable getAllObsVerify_noData = new CacheSerializableRunnable(
+    SerializableRunnable getAllObsVerify_noData = new SerializableRunnable(
         "Verify GetAll Observer") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         assertTrue(remoteCallbackInvoked[0]);
         assertTrue(remoteCallbackInvoked[1]);
         assertTrue(remoteCallbackInvoked[2]);
@@ -419,10 +418,10 @@ public class GetAllLocalIndexQueryDUnit extends DistributedSQLTestBase {
       }
     };
 
-    SerializableRunnable getAllObsVerify = new CacheSerializableRunnable(
+    SerializableRunnable getAllObsVerify = new SerializableRunnable(
         "Verify GetAll Observer") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         assertTrue(remoteCallbackInvoked[0]);
         assertTrue(remoteCallbackInvoked[1]);
         assertTrue(remoteCallbackInvoked[2]);
@@ -487,7 +486,7 @@ public class GetAllLocalIndexQueryDUnit extends DistributedSQLTestBase {
     final Properties connSHOPProps = new Properties();
     connSHOPProps.setProperty("single-hop-enabled", "false");
     connSHOPProps.setProperty("single-hop-max-connections", "5");
-    String logLevel = getDUnitLogLevel();
+    String logLevel = getLogLevel();
     connSHOPProps.setProperty("log-level", logLevel);
     if (logLevel.startsWith("fine")) {
       connSHOPProps.setProperty("gemfirexd.debug.true", "TraceSingleHop");
@@ -552,10 +551,10 @@ public class GetAllLocalIndexQueryDUnit extends DistributedSQLTestBase {
       }
     };
 
-    SerializableRunnable getAllObsSet = new CacheSerializableRunnable(
+    SerializableRunnable getAllObsSet = new SerializableRunnable(
         "Set GetAll Observer to false") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         remoteCallbackInvoked[0] = false;
         remoteCallbackInvoked[1] = false;
         remoteCallbackInvoked[2] = false;
@@ -565,20 +564,20 @@ public class GetAllLocalIndexQueryDUnit extends DistributedSQLTestBase {
       }
     };
 
-    SerializableRunnable getAllObsReset = new CacheSerializableRunnable(
+    SerializableRunnable getAllObsReset = new SerializableRunnable(
         "Reset GetAll Observer") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         GemFireXDQueryObserverHolder
             .setInstance(new GemFireXDQueryObserverAdapter() {
             });
       }
     };
     
-    SerializableRunnable clearStmtCache = new CacheSerializableRunnable(
+    SerializableRunnable clearStmtCache = new SerializableRunnable(
         "Clear Stmt Cache") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           TestUtil.clearStatementCache();
           remoteCallbackInvoked[3] = true;
@@ -588,18 +587,18 @@ public class GetAllLocalIndexQueryDUnit extends DistributedSQLTestBase {
       }
     };
     
-    SerializableRunnable verifyStmtCache = new CacheSerializableRunnable(
+    SerializableRunnable verifyStmtCache = new SerializableRunnable(
         "Verify Stmt Cache") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         assertTrue(remoteCallbackInvoked[3]);
       }
     };
 
-    SerializableRunnable getAllObsVerify_noData = new CacheSerializableRunnable(
+    SerializableRunnable getAllObsVerify_noData = new SerializableRunnable(
         "Verify GetAll Observer") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         assertTrue(remoteCallbackInvoked[0]);
         assertTrue(remoteCallbackInvoked[1]);
         assertTrue(remoteCallbackInvoked[2]);
@@ -608,10 +607,10 @@ public class GetAllLocalIndexQueryDUnit extends DistributedSQLTestBase {
       }
     };
 
-    SerializableRunnable getAllObsVerify = new CacheSerializableRunnable(
+    SerializableRunnable getAllObsVerify = new SerializableRunnable(
         "Verify GetAll Observer") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         assertTrue(remoteCallbackInvoked[0]);
         assertTrue(remoteCallbackInvoked[1]);
         assertTrue(remoteCallbackInvoked[2]);
@@ -951,7 +950,7 @@ public class GetAllLocalIndexQueryDUnit extends DistributedSQLTestBase {
     // Start one client and three servers
     startVMs(1, 3);
     Properties props = new Properties();
-    props.setProperty("log-level", getDUnitLogLevel());
+    props.setProperty("log-level", getLogLevel());
     Connection conn = TestUtil.getConnection(props);
     Statement s = conn.createStatement();
     s.execute("create table t1 ( id int, name varchar(10), type int primary key) " +
@@ -2940,7 +2939,7 @@ public class GetAllLocalIndexQueryDUnit extends DistributedSQLTestBase {
     final Properties connSHOPProps = new Properties();
     connSHOPProps.setProperty("single-hop-enabled", "false");
     connSHOPProps.setProperty("single-hop-max-connections", "5");
-    String logLevel = getDUnitLogLevel();
+    String logLevel = getLogLevel();
     connSHOPProps.setProperty("log-level", logLevel);
     if (logLevel.startsWith("fine")) {
       connSHOPProps.setProperty("gemfirexd.debug.true", "TraceSingleHop");

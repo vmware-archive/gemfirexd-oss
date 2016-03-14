@@ -1408,7 +1408,7 @@ public final class Oplog implements CompactableOplog {
     
     // Check for krf existence
     if(getParent().getDiskInitFile().hasKrf(this.oplogId)) {
-      File krfFile = getKrfFile();
+      File krfFile = new File(getKrfFilePath());
       if(krfFile.exists()) {
         files.add(IOUtils.tryGetCanonicalFileElseGetAbsoluteFile(krfFile));      
       }
@@ -4669,11 +4669,15 @@ public final class Oplog implements CompactableOplog {
 
   private final AtomicBoolean krfCreationCancelled = new AtomicBoolean();
 
+  private String getKrfFilePath() {
+    return this.diskFile.getPath() + KRF_FILE_EXT;
+  }
+
   public void krfFileCreate() throws IOException {
     // this method is only used by offline compaction. validating will not create krf
     assert (getParent().isValidating() == false);
     
-    this.krf.f = new File(this.diskFile.getPath() + KRF_FILE_EXT);
+    this.krf.f = new File(getKrfFilePath());
     if (this.krf.f.exists()) {
       throw new IllegalStateException("krf file " + this.krf.f + " already exists.");
     }  
@@ -4914,6 +4918,9 @@ public final class Oplog implements CompactableOplog {
             // handle io exceptions; we failed to write to the file
             throw new IllegalStateException("failed writing krf " + this.krf.f, ex);
           } finally {
+            synchronized (this.krfCreated) {
+              this.krfCreated.notifyAll();
+            }
             // if IOException happened in writeOneKeyEntryForKRF(), delete krf here
             if (!krfCreateSuccess) {
               closeAndDeleteKrf();
@@ -4952,6 +4959,28 @@ public final class Oplog implements CompactableOplog {
         .getInternalProductCallbacks();
     final boolean traceOn = sysCb.tracePersistFinestON();
 
+    // wait for krf creation to complete if in progress
+    if (!this.krfCreated.get()) {
+      final long start = System.currentTimeMillis();
+      final long maxWait = 60000L;
+      synchronized (this.krfCreated) {
+        while (!this.krfCreated.get()) {
+          if (System.currentTimeMillis() > (start + maxWait)) {
+            throw new DiskAccessException("Failed to write index file due " +
+                "to missing key file (" + getKrfFilePath() + ')', getParent());
+          }
+          try {
+            this.krfCreated.wait(500L);
+          } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+            DiskStoreImpl dsi = getParent();
+            dsi.getCache().getCancelCriterion().checkCancelInProgress(ie);
+            throw new DiskAccessException("Failed to write index file due " +
+                "to missing key file (" + getKrfFilePath() + ')', ie, dsi);
+          }
+        }
+      }
+    }
     // truncate existing idxkrf if records for all indexes need to be written
     this.idxkrf.initializeForWriting(dumpIndexes == null);
     long numEntries = 0;
@@ -5006,6 +5035,11 @@ public final class Oplog implements CompactableOplog {
           "writeIRF going to flush and close idkkrf for: " + this);
     }
     this.idxkrf.close();
+    if (logger.infoEnabled()) {
+      logger.info(LocalizedStrings.Oplog_CREATE_0_1_2, new Object[]{
+          toString(), this.idxkrf.getIndexFile().getAbsolutePath(),
+          getParent().getName()});
+    }
     return numEntries;
   }
 
@@ -5045,10 +5079,6 @@ public final class Oplog implements CompactableOplog {
       sb.append(" ** ");
     }
     return sb.toString();
-  }
-
-  private File getKrfFile() {
-    return new File(this.diskFile.getPath() + KRF_FILE_EXT);
   }
 
   public List<KRFEntry> getSortedLiveEntries(Collection<DiskRegionInfo> targetRegions) {
@@ -8974,10 +9004,6 @@ public final class Oplog implements CompactableOplog {
     return this.idxkrf.getIndexFileIfValid();
   }
 
-  public File getKRFFile() {
-    return this.krf.f;
-  }
-  
   public boolean isNewOplog() {
     return this.newOplog;
   }

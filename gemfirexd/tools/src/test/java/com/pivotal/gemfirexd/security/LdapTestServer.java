@@ -42,6 +42,7 @@ import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
+import com.pivotal.gemfirexd.TestUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.directory.server.constants.ServerDNConstants;
 import org.apache.directory.server.core.DefaultDirectoryService;
@@ -53,16 +54,13 @@ import org.apache.directory.server.core.schema.SchemaPartition;
 import org.apache.directory.server.ldap.LdapServer;
 import org.apache.directory.server.protocol.shared.store.LdifFileLoader;
 import org.apache.directory.server.protocol.shared.transport.TcpTransport;
-import org.apache.directory.shared.ldap.entry.DefaultServerAttribute;
 import org.apache.directory.shared.ldap.entry.EntryAttribute;
 import org.apache.directory.shared.ldap.entry.Modification;
 import org.apache.directory.shared.ldap.entry.ModificationOperation;
 import org.apache.directory.shared.ldap.entry.ServerEntry;
-import org.apache.directory.shared.ldap.entry.ServerModification;
 import org.apache.directory.shared.ldap.entry.client.ClientModification;
 import org.apache.directory.shared.ldap.entry.client.DefaultClientAttribute;
 import org.apache.directory.shared.ldap.name.DN;
-import org.apache.directory.shared.ldap.schema.AttributeType;
 import org.apache.directory.shared.ldap.schema.ldif.extractor.impl.DefaultSchemaLdifExtractor;
 import org.apache.directory.shared.ldap.schema.loader.ldif.LdifSchemaLoader;
 import org.apache.directory.shared.ldap.schema.manager.impl.DefaultSchemaManager;
@@ -80,7 +78,12 @@ public class LdapTestServer {
 
   public static LdapTestServer getInstance() throws Exception {
     return getInstance("./apacheds",
-        System.getProperty("EXTRA_JTESTS") + "/lib/ldap/auth.ldif");
+        TestUtil.getResourcesDir() + "/lib/ldap/auth.ldif");
+  }
+
+  public static LdapTestServer getInstance(String ldifFilePath)
+      throws Exception {
+    return getInstance("./apacheds", ldifFilePath);
   }
 
   public static LdapTestServer getInstance(String workingDir,
@@ -322,9 +325,12 @@ public class LdapTestServer {
     if (server != null && server.isStarted()) {
       server.stop();
     }
-    service.shutdown();
-    FileUtils.deleteQuietly(service.getWorkingDirectory());
-    // null the singleton instance
-    instance = null;
+    try {
+      service.shutdown();
+    } finally {
+      FileUtils.deleteQuietly(service.getWorkingDirectory());
+      // null the singleton instance
+      instance = null;
+    }
   }
 }

@@ -256,7 +256,8 @@ public class PureLogWriter extends LogWriterImpl {
        // ignore , we are closing.
        }
     }
-    
+
+    @Override
     public final boolean isClosed() {
       return this.closed;
     }

@@ -18,7 +18,7 @@ package com.pivotal.gemfirexd.derbylang;
 
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
 
-import dunit.SerializableRunnable;
+import io.snappydata.test.dunit.SerializableRunnable;
 
 /*
  * Porting @com.pivotal.gemfirexd.derbylang.LangScripts_InnerJoinDUnit

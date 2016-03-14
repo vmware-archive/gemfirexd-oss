@@ -24,14 +24,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.HashSet;
 import com.gemstone.gemfire.cache.CacheException;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserver;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverAdapter;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
-import dunit.SerializableRunnable;
+import io.snappydata.test.dunit.SerializableRunnable;
 
 /**
  * Non Collocated Join Functional Test.
@@ -524,8 +523,8 @@ public class NCJoinMultiTablesDUnit extends DistributedSQLTestBase {
     }
   };
   
-  class NcjPullResultsetTestCacheSerializableRunnable extends
-      CacheSerializableRunnable {
+  class NcjPullResultsetTestSerializableRunnable extends
+      SerializableRunnable {
     private int[] verifyCount = {0, 0, 0, 0};//0,1,2,3
 
     public SerializableRunnable setVerifyCount(int param0, int param1,
@@ -537,12 +536,12 @@ public class NCJoinMultiTablesDUnit extends DistributedSQLTestBase {
       return this;
     }
 
-    public NcjPullResultsetTestCacheSerializableRunnable(String name) {
+    public NcjPullResultsetTestSerializableRunnable(String name) {
       super(name);
     }
 
     @Override
-    public void run2() throws CacheException {
+    public void run() throws CacheException {
       StringBuilder sb = new StringBuilder();
       if (remoteCallbackInvokeCount[0] != this.verifyCount[0]) {
         sb.append("remoteCallbackInvokeCount[0]=").append(remoteCallbackInvokeCount[0])
@@ -570,13 +569,13 @@ public class NCJoinMultiTablesDUnit extends DistributedSQLTestBase {
     }
   }
   
-  NcjPullResultsetTestCacheSerializableRunnable ncjPullResultSetOpenCoreObserverVerify = new NcjPullResultsetTestCacheSerializableRunnable(
+  NcjPullResultsetTestSerializableRunnable ncjPullResultSetOpenCoreObserverVerify = new NcjPullResultsetTestSerializableRunnable(
       "Verify ncjPullResultSetOpenCoreObserver");
 
-  SerializableRunnable ncjPullResultSetOpenCoreObserverSet = new CacheSerializableRunnable(
+  SerializableRunnable ncjPullResultSetOpenCoreObserverSet = new SerializableRunnable(
       "Set ncjPullResultSetOpenCoreObserver") {
     @Override
-    public void run2() throws CacheException {
+    public void run() throws CacheException {
       remoteCallbackInvokeCount[0] = 0;
       remoteCallbackInvokeCount[1] = 0;
       remoteCallbackInvokeCount[2] = 0;
@@ -586,10 +585,10 @@ public class NCJoinMultiTablesDUnit extends DistributedSQLTestBase {
     }
   };
   
-  SerializableRunnable ncjPullResultSetOpenCoreObserverReset = new CacheSerializableRunnable(
+  SerializableRunnable ncjPullResultSetOpenCoreObserverReset = new SerializableRunnable(
       "Reset ncjPullResultSetOpenCoreObserver") {
     @Override
-    public void run2() throws CacheException {
+    public void run() throws CacheException {
       remoteCallbackInvokeCount[0] = 0;
       remoteCallbackInvokeCount[1] = 0;
       remoteCallbackInvokeCount[2] = 0;
@@ -2024,10 +2023,10 @@ public class NCJoinMultiTablesDUnit extends DistributedSQLTestBase {
   /**
    * Runnable to set the Observer for root-ids, on server
    */
-  SerializableRunnable ncjRootIDObserverServerSet = new CacheSerializableRunnable(
+  SerializableRunnable ncjRootIDObserverServerSet = new SerializableRunnable(
       "Set ncjRootIDServerObserverServerSet") {
     @Override
-    public void run2() throws CacheException {
+    public void run() throws CacheException {
       NCJoinMultiTablesDUnit.ncjRootID = 0;
       GemFireXDQueryObserverHolder.setInstance(ncjRootIDServerObserver);
     }
@@ -2036,10 +2035,10 @@ public class NCJoinMultiTablesDUnit extends DistributedSQLTestBase {
   /**
    * Runnable to set the Observer for root-ids, on client
    */
-  SerializableRunnable ncjRootIDObserverClientSet = new CacheSerializableRunnable(
+  SerializableRunnable ncjRootIDObserverClientSet = new SerializableRunnable(
       "Set ncjRootIDServerObserverClientSet") {
     @Override
-    public void run2() throws CacheException {
+    public void run() throws CacheException {
       NCJoinMultiTablesDUnit.ncjRootID = 0;
       GemFireXDQueryObserverHolder.setInstance(ncjRootIDClientObserver);
     }
@@ -2048,10 +2047,10 @@ public class NCJoinMultiTablesDUnit extends DistributedSQLTestBase {
   /**
    * Runnable to reset the Observer for root-id
    */
-  SerializableRunnable ncjRootIDObserverReSet = new CacheSerializableRunnable(
+  SerializableRunnable ncjRootIDObserverReSet = new SerializableRunnable(
       "Set ncjRootIDServerObserverReset") {
     @Override
-    public void run2() throws CacheException {
+    public void run() throws CacheException {
       NCJoinMultiTablesDUnit.ncjRootID = 0;
       GemFireXDQueryObserverHolder
           .setInstance(new GemFireXDQueryObserverAdapter() {
@@ -2089,9 +2088,9 @@ public class NCJoinMultiTablesDUnit extends DistributedSQLTestBase {
   /**
    * Runnable to verify the data stored by Observer
    */
-  class NcjRootIDCacheSerializableRunnable extends CacheSerializableRunnable {
+  class NcjRootIDSerializableRunnable extends SerializableRunnable {
 
-    public NcjRootIDCacheSerializableRunnable(String name) {
+    public NcjRootIDSerializableRunnable(String name) {
       super(name);
     }
 
@@ -2103,7 +2102,7 @@ public class NCJoinMultiTablesDUnit extends DistributedSQLTestBase {
     }
 
     @Override
-    public void run2() throws CacheException {
+    public void run() throws CacheException {
       StringBuilder sb = new StringBuilder();
       if (NCJoinMultiTablesDUnit.ncjRootID != this.verifyStatementID) {
         sb.append("ncjPullResultSet rootID for level 2 statements should be set correctly; ");
@@ -2118,7 +2117,7 @@ public class NCJoinMultiTablesDUnit extends DistributedSQLTestBase {
     }
   }
 
-  NcjRootIDCacheSerializableRunnable ncjRootIDObserverVerify = new NcjRootIDCacheSerializableRunnable(
+  NcjRootIDSerializableRunnable ncjRootIDObserverVerify = new NcjRootIDSerializableRunnable(
       "Verify ncjRootIDObserver");
 }  
 

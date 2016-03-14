@@ -9,36 +9,54 @@ if (rootProject.hasProperty('enablePublish')) {
 }
 
 dependencies {
-  provided project(subprojectBase + 'gemfirexd:core')
+  provided project(subprojectBase + 'gemfirexd-core')
   compile project(subprojectBase + 'gemfirexd-hibernate')
 
   // ddlutils dependencies
   compile 'commons-beanutils:commons-beanutils:1.9.2'
   compile 'commons-codec:commons-codec:1.10'
   compile 'commons-collections:commons-collections:3.2.2'
+  compile 'commons-configuration:commons-configuration:1.10'
+  compile 'commons-pool:commons-pool:1.6'
   compile 'commons-dbcp:commons-dbcp:1.4'
   compile "org.scala-lang:jline:${scalaVersion}"
-  provided "org.apache.ant:ant:${antVersion}"
 
-  // need hydra support classes for unit tests too
-  testCompile project(subprojectBase + 'tests-core')
-  testCompile project(subprojectBase + 'gemfirexd:client')
+  // use dunit support from snappydata
+  if (subprojectBase == ':') {
+    testCompile 'io.snappydata:dunit:1.0.0'
+  } else {
+    testCompile project(':dunit')
+  }
+
+  testCompile project(subprojectBase + 'gemfirexd-client')
   testCompile project(subprojectBase + 'gemfire-junit')
+
+  provided files("${System.getProperty('java.home')}/../lib/tools.jar")
+  provided 'xalan:xalan:2.7.2'
+  provided 'xalan:serializer:2.7.2'
+  provided "com.pivotal:pxf-api:${pxfVersion}"
 
   provided "org.apache.hadoop:hadoop-annotations:${hadoopVersion}"
   provided "org.apache.hadoop:hadoop-auth:${hadoopVersion}"
   provided "org.apache.hadoop:hadoop-common:${hadoopVersion}"
   provided "org.apache.hadoop:hadoop-hdfs:${hadoopVersion}"
   provided "org.apache.hadoop:hadoop-mapreduce-client-core:${hadoopVersion}"
-  provided "org.apache.hadoop:hadoop-common:${hadoopVersion}:tests"
-  provided "org.apache.hadoop:hadoop-hdfs:${hadoopVersion}:tests"
+  provided "com.google.protobuf:protobuf-java:${protobufVersion}"
+  provided "com.sun.jersey:jersey-core:${jerseyVersion}"
+  provided "com.sun.jersey:jersey-server:${jerseyVersion}"
+  provided "org.mortbay.jetty:jetty-util:${hadoopJettyVersion}"
+  provided "org.mortbay.jetty:jetty:${hadoopJettyVersion}"
+  provided "org.mortbay.jetty:jetty-util:${hadoopJettyVersion}"
   provided "org.apache.hbase:hbase:${hbaseVersion}"
-  provided 'commons-configuration:commons-configuration:1.6'
+  provided "com.google.code.findbugs:jsr305:${jsr305Version}"
 
-  provided "com.pivotal:pxf-api:${pxfVersion}"
-
+  testCompile "org.apache.hadoop:hadoop-common:${hadoopVersion}:tests"
+  testCompile "org.apache.hadoop:hadoop-hdfs:${hadoopVersion}:tests"
+  testCompile "org.apache.ant:ant-launcher:${antVersion}"
   testCompile "org.apache.derby:derby:${derbyVersion}"
   testCompile "org.apache.derby:derbynet:${derbyVersion}"
+  testRuntime "org.apache.derby:derbytools:${derbyVersion}"
+  testRuntime "org.apache.derby:derbyclient:${derbyVersion}"
   testCompile 'oro:oro:2.0.8'
   testCompile 'dom4j:dom4j:1.6.1'
   // Embedded Apache Directory Server for LDAP tests
@@ -46,7 +64,7 @@ dependencies {
     exclude(group: 'org.apache.directory.shared', module: 'shared-ldap-schema')
   }
 
-  testRuntime project(subprojectBase + 'gemfirexd:core')
+  testRuntime project(subprojectBase + 'gemfirexd-core')
 }
 
 // move javacc output directory to a place where IDEA can easily register

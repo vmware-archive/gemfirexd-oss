@@ -21,10 +21,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
-import util.TestException;
-
 import com.gemstone.gemfire.cache.CacheException;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserver;
@@ -36,9 +33,9 @@ import com.pivotal.gemfirexd.internal.engine.sql.execute.GemFireInsertResultSet;
 import com.pivotal.gemfirexd.internal.iapi.error.StandardException;
 import com.pivotal.gemfirexd.internal.iapi.sql.ResultSet;
 import com.pivotal.gemfirexd.internal.iapi.sql.conn.LanguageConnectionContext;
-
-import dunit.SerializableCallable;
-import dunit.SerializableRunnable;
+import io.snappydata.test.dunit.SerializableCallable;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.util.TestException;
 
 public class DistributedInsertDUnit extends DistributedSQLTestBase {
 
@@ -180,10 +177,10 @@ public class DistributedInsertDUnit extends DistributedSQLTestBase {
           return remoteCallbackInvoked[0];
         }
       };
-      final SerializableRunnable obsVerify = new CacheSerializableRunnable(
+      final SerializableRunnable obsVerify = new SerializableRunnable(
           "Verify Observer") {
         @Override
-        public void run2() throws CacheException {
+        public void run() throws CacheException {
           assertTrue(remoteCallbackInvoked[0]);
           assertTrue(remoteCallbackInvoked[1]);
         }

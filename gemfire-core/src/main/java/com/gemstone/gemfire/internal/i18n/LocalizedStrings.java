@@ -1945,7 +1945,7 @@ public class LocalizedStrings extends ParentLocalizedStrings {
 
   public static final StringId TCPConduit_EXCEPTION_PARSING_TCPPORTRANGESTART = new StringIdImpl(5434, "Exception parsing membership-port-range start port.");
   public static final StringId TCPConduit_EXCEPTION_PARSING_TCPPORTRANGEEND = new StringIdImpl(5435, "Exception parsing membership-port-range end port.");
-  public static final StringId TCPConduit_UNABLE_TO_FIND_FREE_PORT = new StringIdImpl(5436, "Unable to find a free port in the membership-port-range");
+  public static final StringId TCPConduit_UNABLE_TO_FIND_FREE_PORT = new StringIdImpl(5436, "Unable to find a free port in the membership-port-range {0}-{1}");
   public static final StringId AbstractDistributionConfig_COULD_NOT_SET_0_TO_1_BECAUSE_ITS_DIFF_CAN_NOT_BE_LESS_THAN_2 = new StringIdImpl(5437, "Could not set \"{0}\" to \"{1}\" because a minimum of \"{2}\" values are required in the range.");
 
   public static final StringId Snapshot_INVALID_EXPORT_FILE = new StringIdImpl(5438, "File is invalid or is a directory: {0}");

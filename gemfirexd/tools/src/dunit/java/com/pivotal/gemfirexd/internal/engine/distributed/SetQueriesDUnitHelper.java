@@ -25,9 +25,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 
-import com.gemstone.gemfire.LogWriter;
 import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.internal.shared.common.sanity.SanityManager;
+import org.apache.log4j.Logger;
 
 public class SetQueriesDUnitHelper {
   static String schemaName = "setopqry";
@@ -824,7 +824,7 @@ public class SetQueriesDUnitHelper {
     s.close();
   }
 
-  static void loadSampleData(LogWriter logw, Connection conn, int numOfRows, String tabname, int startVal) throws SQLException {
+  static void loadSampleData(Logger logw, Connection conn, int numOfRows, String tabname, int startVal) throws SQLException {
     String tablename = schemaName + "." + tabname;
     logw.info("Loading data (" 
         + numOfRows + " rows..."
@@ -872,7 +872,7 @@ public class SetQueriesDUnitHelper {
   /*
    * Execute given query
    */
-  static void executeSetOp_1(LogWriter logw, String queryType, 
+  static void executeSetOp_1(Logger logw, String queryType,
       int expectedRows,
       String query1,
       String query2, 
@@ -900,7 +900,7 @@ public class SetQueriesDUnitHelper {
   /*
    * Help execute given query in PK case
    */
-  static void callExecuteSetOp_withPK(LogWriter logw,
+  static void callExecuteSetOp_withPK(Logger logw,
       boolean doSetOp,
       boolean doSetOpDistinct,
       boolean doSetOpAll, 
@@ -987,7 +987,7 @@ public class SetQueriesDUnitHelper {
   /*
    * Help execute given query in no PK case
    */
-  static void callExecuteSetOp_noPK(LogWriter logw,
+  static void callExecuteSetOp_noPK(Logger logw,
       boolean doSetOp,
       boolean doSetOpDistinct,
       boolean doSetOpAll, 
@@ -1075,7 +1075,7 @@ public class SetQueriesDUnitHelper {
    * Non-colocated
    * Test various combinations of PR PR and RR 
    */
-  static void caseSetOperators_noColoc_withPK_scenario1(LogWriter logw,
+  static void caseSetOperators_noColoc_withPK_scenario1(Logger logw,
       int leftTableIndex,
       int rightTableIndex,
       boolean createIndex,

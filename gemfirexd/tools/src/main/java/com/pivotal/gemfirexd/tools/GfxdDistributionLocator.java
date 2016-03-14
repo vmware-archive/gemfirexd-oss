@@ -28,6 +28,7 @@ import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.distributed.internal.DistributionConfigImpl;
 import com.gemstone.gemfire.internal.DistributionLocator;
 import com.gemstone.gemfire.internal.cache.CacheServerLauncher;
+import com.gemstone.gemfire.internal.lang.StringUtils;
 import com.pivotal.gemfirexd.FabricLocator;
 import com.pivotal.gemfirexd.FabricService;
 import com.pivotal.gemfirexd.internal.engine.fabricservice.FabricServiceUtils;
@@ -185,7 +186,10 @@ public class GfxdDistributionLocator extends GfxdServerLauncher {
 
   @Override
   protected String getBaseName(final String name) {
-    return "gfxdlocator";
+    if (!StringUtils.isBlank(System.getenv("SNAPPY_HOME")))
+      return "snappylocator";
+    else
+      return "gfxdlocator";
   }
 
   /** @see CacheServerLauncher#addToServerCommand */

@@ -44,14 +44,14 @@ import scala.tools.jline.console.ConsoleReader;
 /**
  * Base class for command-line launcher tools. Encapsulates the common
  * connection options used by all the new tools.
- * 
+ *
  * @author swale
  * @since 7.0
  */
 public abstract class ToolsBase {
 
   protected Options currentOpts;
-  
+
   public static PrintStream outputStream;
 
   /**
@@ -91,16 +91,16 @@ public abstract class ToolsBase {
    * Interface to be implemented for processing of a command including adding
    * command specific options, and then processing and executing the command.
    */
-  protected static interface ProcessCommand {
+  protected interface ProcessCommand {
     /**
      * Add options specific to the command.
      */
-    public void addCommandOptions(Options opts);
+    void addCommandOptions(Options opts);
 
     /**
      * Execute the command.
      */
-    public void executeCommand(CommandLine cmdLine, String cmd,
+    void executeCommand(CommandLine cmdLine, String cmd,
         String cmdDescKey) throws ParseException, IOException, SQLException;
   }
 
@@ -144,7 +144,6 @@ public abstract class ToolsBase {
           && (args[1].equals(helpFormatter.getOptPrefix() + HELP) || args[1]
               .equals(helpFormatter.getLongOptPrefix() + HELP))) {
         showUsage(null, cmd, cmdDescKey);
-        return;
       }
       else {
         final String errMsg = LocalizedResource
@@ -451,12 +450,16 @@ public abstract class ToolsBase {
           "url must start with jdbc:. passed url=" + connOpts.connectionUrl);
       urlBuilder.append(connOpts.connectionUrl);
     } else if (connOpts.clientPort < 0) {
-      urlBuilder.append(Attribute.PROTOCOL).append(";host-data=false");
+      String protocol = GfxdUtilLauncher.isSnappyStore()
+          ? Attribute.SNAPPY_PROTOCOL : Attribute.PROTOCOL;
+      urlBuilder.append(protocol).append(";host-data=false");
     }
     else {
+      String protocol = GfxdUtilLauncher.isSnappyStore()
+          ? Attribute.SNAPPY_DNC_PROTOCOL : Attribute.DNC_PROTOCOL;
       final String hostName = connOpts.clientBindAddress != null
           ? connOpts.clientBindAddress : "localhost";
-      urlBuilder.append(Attribute.DNC_PROTOCOL).append(hostName).append(':')
+      urlBuilder.append(protocol).append(hostName).append(':')
           .append(connOpts.clientPort).append('/');
     }
     if (connOpts.properties.length() > 0) {

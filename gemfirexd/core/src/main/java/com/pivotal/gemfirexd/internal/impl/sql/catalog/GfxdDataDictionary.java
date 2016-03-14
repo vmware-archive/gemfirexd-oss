@@ -458,9 +458,11 @@ public final class GfxdDataDictionary extends DataDictionaryImpl {
    * after reading is done.
    */
   @Override
-  public final void unlockAfterReading(TransactionController tc) {
+  public final boolean unlockAfterReading(TransactionController tc) {
     if (!SKIP_LOCKS.get()) {
-      GemFireXDUtils.unlockObject(ddLockObject, null, false, false, tc);
+      return GemFireXDUtils.unlockObject(ddLockObject, null, false, false, tc);
+    } else {
+      return false;
     }
   }
 
@@ -735,7 +737,8 @@ public final class GfxdDataDictionary extends DataDictionaryImpl {
     SanityManager.DEBUG_PRINT("DataDictionary DEBUG", strbuf.toString());
     // also dump all GfxdDRWLockService locks
     GfxdDRWLockService ddlService = Misc.getMemStore().getDDLLockService();
-    ddlService.dumpAllRWLocks("LOCK TABLE at the time of failure", true, false);
+    ddlService.dumpAllRWLocks("LOCK TABLE at the time of failure",
+        true, false, true);
   }
 
   /**

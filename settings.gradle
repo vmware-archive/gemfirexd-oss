@@ -4,23 +4,29 @@ include ':gemfire-jgroups'
 include ':gemfire-trove'
 include 'gemfire-joptsimple'
 include 'gemfire-json'
-include 'gemfire-junit'
 include 'gemfire-shared'
 include 'gemfire-core'
+include 'gemfire-junit'
 include 'gemfire-web'
 include 'gemfire-examples'
-include 'gemfirexd:shared'
-include 'gemfirexd:prebuild'
-include 'gemfirexd:core'
-include 'gemfirexd:client'
-include 'gemfirexd:native'
+include ':gemfirexd-shared'
+include ':gemfirexd-prebuild'
+include ':gemfirexd-core'
+include ':gemfirexd-client'
+include ':gemfirexd-native'
 include ':gemfirexd-hibernate'
-include 'gemfirexd:tools'
-include ':tests-core'
-include ':tests-sql'
+include ':gemfirexd-tools'
+include ':gemfire-tests'
+include ':gemfirexd-tests'
 
 project(':gemfire-jgroups').projectDir = "$rootDir/lgpl/gemfire-jgroups" as File
 project(':gemfire-trove').projectDir = "$rootDir/lgpl/gemfire-trove" as File
+project(':gemfirexd-shared').projectDir = "$rootDir/gemfirexd/shared" as File
+project(':gemfirexd-prebuild').projectDir = "$rootDir/gemfirexd/prebuild" as File
+project(':gemfirexd-core').projectDir = "$rootDir/gemfirexd/core" as File
+project(':gemfirexd-client').projectDir = "$rootDir/gemfirexd/client" as File
+project(':gemfirexd-native').projectDir = "$rootDir/gemfirexd/native" as File
 project(':gemfirexd-hibernate').projectDir = "$rootDir/lgpl/gemfirexd-hibernate" as File
-project(':tests-core').projectDir = "$rootDir/tests/core" as File
-project(':tests-sql').projectDir = "$rootDir/tests/sql" as File
+project(':gemfirexd-tools').projectDir = "$rootDir/gemfirexd/tools" as File
+project(':gemfire-tests').projectDir = "$rootDir/tests/core" as File
+project(':gemfirexd-tests').projectDir = "$rootDir/tests/sql" as File

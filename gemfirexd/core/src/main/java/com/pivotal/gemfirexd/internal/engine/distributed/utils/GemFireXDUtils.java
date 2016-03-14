@@ -17,43 +17,17 @@
 
 package com.pivotal.gemfirexd.internal.engine.distributed.utils;
 
-import java.io.BufferedReader;
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.Reader;
-import java.io.Serializable;
+import java.io.*;
 import java.security.AlgorithmParameters;
 import java.security.PrivilegedActionException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Random;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.spec.SecretKeySpec;
@@ -63,18 +37,7 @@ import com.gemstone.gemfire.GemFireException;
 import com.gemstone.gemfire.GemFireIOException;
 import com.gemstone.gemfire.LogWriter;
 import com.gemstone.gemfire.SystemFailure;
-import com.gemstone.gemfire.cache.CacheClosedException;
-import com.gemstone.gemfire.cache.ConflictException;
-import com.gemstone.gemfire.cache.DiskAccessException;
-import com.gemstone.gemfire.cache.EntryDestroyedException;
-import com.gemstone.gemfire.cache.EntryExistsException;
-import com.gemstone.gemfire.cache.IsolationLevel;
-import com.gemstone.gemfire.cache.LockTimeoutException;
-import com.gemstone.gemfire.cache.PartitionAttributes;
-import com.gemstone.gemfire.cache.PartitionAttributesFactory;
-import com.gemstone.gemfire.cache.Region;
-import com.gemstone.gemfire.cache.RegionDestroyedException;
-import com.gemstone.gemfire.cache.TransactionFlag;
+import com.gemstone.gemfire.cache.*;
 import com.gemstone.gemfire.cache.asyncqueue.AsyncEvent;
 import com.gemstone.gemfire.cache.execute.FunctionInvocationTargetException;
 import com.gemstone.gemfire.distributed.DistributedMember;
@@ -89,22 +52,7 @@ import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedM
 import com.gemstone.gemfire.i18n.LogWriterI18n;
 import com.gemstone.gemfire.internal.FileUtil;
 import com.gemstone.gemfire.internal.InternalDataSerializer;
-import com.gemstone.gemfire.internal.cache.AbstractRegion;
-import com.gemstone.gemfire.internal.cache.DataLocationException;
-import com.gemstone.gemfire.internal.cache.DiskInitFile;
-import com.gemstone.gemfire.internal.cache.DiskStoreImpl;
-import com.gemstone.gemfire.internal.cache.ForceReattemptException;
-import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
-import com.gemstone.gemfire.internal.cache.LocalRegion;
-import com.gemstone.gemfire.internal.cache.OffHeapRegionEntry;
-import com.gemstone.gemfire.internal.cache.PartitionedRegion;
-import com.gemstone.gemfire.internal.cache.PrimaryBucketException;
-import com.gemstone.gemfire.internal.cache.RegionEntry;
-import com.gemstone.gemfire.internal.cache.TXId;
-import com.gemstone.gemfire.internal.cache.TXState;
-import com.gemstone.gemfire.internal.cache.TXStateProxy;
-import com.gemstone.gemfire.internal.cache.Token;
-import com.gemstone.gemfire.internal.cache.VMIdAdvisor;
+import com.gemstone.gemfire.internal.cache.*;
 import com.gemstone.gemfire.internal.cache.execute.BucketMovedException;
 import com.gemstone.gemfire.internal.cache.locks.ExclusiveSharedSynchronizer;
 import com.gemstone.gemfire.internal.cache.locks.LockMode;
@@ -155,7 +103,6 @@ import com.pivotal.gemfirexd.internal.engine.sql.catalog.ExtraTableInfo;
 import com.pivotal.gemfirexd.internal.engine.stats.ConnectionStats;
 import com.pivotal.gemfirexd.internal.engine.store.AbstractCompactExecRow;
 import com.pivotal.gemfirexd.internal.engine.store.CompactCompositeIndexKey;
-import com.pivotal.gemfirexd.internal.engine.store.CompactCompositeKey;
 import com.pivotal.gemfirexd.internal.engine.store.CompactCompositeRegionKey;
 import com.pivotal.gemfirexd.internal.engine.store.CompositeRegionKey;
 import com.pivotal.gemfirexd.internal.engine.store.GemFireContainer;
@@ -194,6 +141,7 @@ import com.pivotal.gemfirexd.internal.shared.common.SharedUtils;
 import com.pivotal.gemfirexd.internal.shared.common.reference.SQLState;
 import com.pivotal.gemfirexd.internal.shared.common.sanity.AssertFailure;
 import com.pivotal.gemfirexd.internal.shared.common.sanity.SanityManager;
+import org.apache.log4j.Logger;
 
 /**
  * Various static utility methods used by GemFireXD.
@@ -278,7 +226,7 @@ public final class GemFireXDUtils {
           new GemFireXDRuntimeException("unexpected format for boot/sys property "
               + Attribute.DEFAULT_RECOVERY_DELAY_PROP
               + " where a long was expected: " + defaultRecoveryDelayStr),
-          TypeId.LONGINT_NAME);
+          TypeId.LONGINT_NAME, (String)null);
     }
 
     // set default-startup-recovery-delay from the system property
@@ -301,7 +249,7 @@ public final class GemFireXDUtils {
           new GemFireXDRuntimeException("unexpected format for boot/sys property "
               + GfxdConstants.DEFAULT_STARTUP_RECOVERY_DELAY_PROP
               + " where a long was expected: " + defaultStartupRecoveryDelayStr),
-          TypeId.LONGINT_NAME);
+          TypeId.LONGINT_NAME, (String)null);
     }
 
     // set initial-capacity for all tables from the system property if provided
@@ -323,7 +271,7 @@ public final class GemFireXDUtils {
           new GemFireXDRuntimeException("unexpected format for boot/sys property "
               + Attribute.DEFAULT_INITIAL_CAPACITY_PROP
               + " where an integer was expected: " + defaultInitialCapacityStr),
-          TypeId.INTEGER_NAME);
+          TypeId.INTEGER_NAME, (String)null);
     }
 
     String propStr = PropertyUtil.getServiceProperty(store,
@@ -1347,7 +1295,7 @@ public final class GemFireXDUtils {
     }
   }
 
-  public static void unlockObject(GfxdLockable lockable, Object lockObject,
+  public static boolean unlockObject(GfxdLockable lockable, Object lockObject,
       boolean forUpdate, boolean localOnly, TransactionController tc) {
     if (tc == null || !Misc.initialDDLReplayInProgress()) {
       final GemFireTransaction tran = (GemFireTransaction)tc;
@@ -1361,7 +1309,8 @@ public final class GemFireXDUtils {
                   + " lock on object " + lockable + " [TX " + tran + ']');
         }
         if (tran != null) {
-          tran.getLockSpace().releaseLock(lockable, forUpdate, localOnly);
+          return tran.getLockSpace().releaseLock(lockable,
+              forUpdate, localOnly);
         }
         else {
           final GfxdLockService lockService = Misc.getMemStore()
@@ -1369,9 +1318,11 @@ public final class GemFireXDUtils {
           final Object lockOwner = lockService.newCurrentOwner();
           GfxdLockSet.unlock(lockService, lockable, lockOwner, forUpdate,
               localOnly);
+          return true;
         }
       }
     }
+    return false;
   }
 
   public static void freeLockResources(Object lockObject,
@@ -1515,6 +1466,24 @@ public final class GemFireXDUtils {
       boolean continueOnError, LogWriter logger, String cmdReplace,
       String cmdReplaceWith, boolean verbose) throws SQLException, IOException,
       PrivilegedActionException, StandardException {
+    executeSQLScripts(conn, scripts, continueOnError, logger, null,
+        cmdReplace, cmdReplaceWith, verbose);
+  }
+
+  public static void executeSQLScripts(Connection conn, String[] scripts,
+      boolean continueOnError, Logger logger, String cmdReplace,
+      String cmdReplaceWith, boolean verbose) throws SQLException, IOException,
+      PrivilegedActionException, StandardException {
+    executeSQLScripts(conn, scripts, continueOnError, null, logger,
+        cmdReplace, cmdReplaceWith, verbose);
+  }
+
+  protected static void executeSQLScripts(Connection conn, String[] scripts,
+      boolean continueOnError, LogWriter logger, Logger logger2, String cmdReplace,
+      String cmdReplaceWith, boolean verbose) throws SQLException, IOException,
+      PrivilegedActionException, StandardException {
+    final boolean fineEnabled = verbose || (logger != null
+        ? logger.fineEnabled() : logger2.isTraceEnabled());
     Reader[] scriptReaders = new Reader[scripts.length];
     for (int index = 0; index < scripts.length; ++index) {
       final String scriptPath = scripts[index].trim();
@@ -1576,23 +1545,33 @@ public final class GemFireXDUtils {
         String command;
         String logPrefix = "SQLConnection: [script: " + scripts[index] + "] ";
         while ((command = commandFinder.nextStatement()) != null) {
-          if (verbose || logger.fineEnabled()) {
-            logger.info(logPrefix + "Starting execution of command: " +
-                command);
+          if (fineEnabled) {
+            if (logger != null) {
+              logger.info(logPrefix + "Starting execution of command: " +
+                  command);
+            } else {
+              logger2.info(logPrefix + "Starting execution of command: " +
+                  command);
+            }
           }
           try {
             if(cmdReplace != null && cmdReplaceWith != null) {
               command = command.replace(cmdReplace, cmdReplaceWith);
             }
             stmt.execute(command);
-            if (stmt.getWarnings() != null) {
+            if (stmt.getWarnings() != null && logger != null) {
               GfxdMessage.logWarnings(stmt, command, logPrefix
                   + "SQL warning in execution of command: ", logger);
             }
           } catch (SQLException sqle) {
             if (continueOnError) {
-              logger.error("Exception in execution of command: " + command,
-                  sqle);
+              if (logger != null) {
+                logger.error("Exception in execution of command: " + command,
+                    sqle);
+              } else {
+                logger2.error("Exception in execution of command: " + command,
+                    sqle);
+              }
             }
             else {
               throw sqle;
@@ -1606,9 +1585,14 @@ public final class GemFireXDUtils {
               conn.commit();
             }
           }
-          if (verbose || logger.fineEnabled()) {
-            logger.info(logPrefix + "Successfully executed command: " +
-                command);
+          if (fineEnabled) {
+            if (logger != null) {
+              logger.info(logPrefix + "Successfully executed command: " +
+                  command);
+            } else {
+              logger2.info(logPrefix + "Successfully executed command: " +
+                  command);
+            }
           }
         }
       } finally {
@@ -1681,7 +1665,7 @@ public final class GemFireXDUtils {
   }
 
   /**
-   * Decrypt a message encrypted using {@link #encrypt(String, byte[], String)}.
+   * Decrypt a message encrypted using {@link #encrypt}.
    * 
    * @param encMsg
    *          the encrypted message to be decrypted
@@ -1700,8 +1684,7 @@ public final class GemFireXDUtils {
   }
 
   /**
-   * Decrypt a message encrypted using
-   * {@link #encryptBytes(byte[], byte[], String)}.
+   * Decrypt a message encrypted using {@link #encryptBytes}.
    * 
    * @param encMsg
    *          the encrypted message to be decrypted
@@ -1875,6 +1858,16 @@ public final class GemFireXDUtils {
     SanityManager.THROWASSERT(msg);
   }
 
+  private static boolean checkSQLStateForRetry(String sqlState) {
+    return SQLState.GFXD_NODE_SHUTDOWN_PREFIX.equals(sqlState)
+        || SQLState.GFXD_NODE_BUCKET_MOVED_PREFIX.equals(sqlState)
+        || SQLState.NO_CURRENT_CONNECTION.equals(sqlState)
+        || SQLState.DATABASE_NOT_FOUND.substring(0, 5).equals(sqlState)
+        || SQLState.BOOT_DATABASE_FAILED.substring(0, 5).equals(sqlState)
+        || SQLState.CREATE_DATABASE_FAILED.substring(0, 5).equals(sqlState)
+        || SQLState.NO_SUCH_DATABASE.substring(0, 5).equals(sqlState);
+  }
+
   /**
    * Check if the given exception denotes that retry needs to be done for the
    * operation.
@@ -1908,24 +1901,16 @@ public final class GemFireXDUtils {
     if (t instanceof StandardException) {
       final StandardException se = (StandardException)t;
       final String sqlState = se.getSQLState();
-      if (SQLState.GFXD_NODE_SHUTDOWN_PREFIX.equals(sqlState)
-          || SQLState.GFXD_NODE_BUCKET_MOVED_PREFIX.equals(sqlState)
-          || SQLState.NO_CURRENT_CONNECTION.equals(sqlState)) {
-        return true;
-      }
-      return (se.getErrorCode() >= ExceptionSeverity.DATABASE_SEVERITY
-          && ("08006".equals(sqlState) || "XJ015".equals(sqlState)));
+      return checkSQLStateForRetry(sqlState) ||
+          (se.getErrorCode() >= ExceptionSeverity.DATABASE_SEVERITY
+              && ("08006".equals(sqlState) || "XJ015".equals(sqlState)));
     }
     if (t instanceof SQLException) {
       final SQLException sqle = (SQLException)t;
       final String sqlState = sqle.getSQLState();
-      if (SQLState.GFXD_NODE_SHUTDOWN_PREFIX.equals(sqlState)
-          || SQLState.GFXD_NODE_BUCKET_MOVED_PREFIX.equals(sqlState)
-          || SQLState.NO_CURRENT_CONNECTION.equals(sqlState)) {
-        return true;
-      }
-      return (sqle.getErrorCode() >= ExceptionSeverity.DATABASE_SEVERITY
-          && ("08006".equals(sqlState) || "XJ015".equals(sqlState)));
+      return checkSQLStateForRetry(sqlState) ||
+          (sqle.getErrorCode() >= ExceptionSeverity.DATABASE_SEVERITY
+              && ("08006".equals(sqlState) || "XJ015".equals(sqlState)));
     }
     return false;
   }
@@ -2799,7 +2784,8 @@ public final class GemFireXDUtils {
     try {
       // try to get the GfxdDRWLockService and dump locks and threads
       if (memStore != null) {
-        memStore.getDDLLockService().dumpAllRWLocks(header, false, false);
+        memStore.getDDLLockService().dumpAllRWLocks(header,
+            false, false, true);
       }
       else {
         throw new ShutdownException();

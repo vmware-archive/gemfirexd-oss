@@ -31,7 +31,7 @@ import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.iapi.types.RowLocation;
 
-import dunit.VM;
+import io.snappydata.test.dunit.VM;
 
 @SuppressWarnings("serial")
 public class DefaultColocatedTablesEquiJoinDUnit extends DistributedSQLTestBase {
@@ -64,11 +64,11 @@ public class DefaultColocatedTablesEquiJoinDUnit extends DistributedSQLTestBase 
         .getPartitionAttributes();
     assertNotNull(pattrs);
     assertEquals(table1AsRegionPath, pattrs.getColocatedWith());
-    getLogWriter().info(
+    getGlobalLogger().info(
         "table 2: " + table2AsRegionPath + " getColocatedwith returned: "
             + pattrs.getColocatedWith());
     if (dumpEntries.booleanValue()) {
-      getLogWriter().info(
+      getGlobalLogger().info(
           "Dumping all entries in table1: " + table1AsRegionPath);
       dumpRegionEntries(table1AsRegionPath);
       dumpRegionEntries(table2AsRegionPath);
@@ -81,11 +81,11 @@ public class DefaultColocatedTablesEquiJoinDUnit extends DistributedSQLTestBase 
     assertNotNull(reg);
     Iterator<?> irl = reg.getSharedDataView().getLocalEntriesIterator(
         (InternalRegionFunctionContext)null, true, false, true, reg);
-    getLogWriter().info("Dumping all local entries in table1: " + regionPath);
+    getGlobalLogger().info("Dumping all local entries in table1: " + regionPath);
     int i = 0;
     while (irl.hasNext()) {
       RowLocation rl = (RowLocation)irl.next();
-      getLogWriter().info("entry" + (i++) + " = " + rl);
+      getGlobalLogger().info("entry" + (i++) + " = " + rl);
     }
   }
 

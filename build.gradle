@@ -6,7 +6,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.2'
+    classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
   }
 }
 
@@ -23,6 +23,7 @@ allprojects {
     maven { url 'http://repo.spring.io/libs-release' }
     maven { url 'http://repo.spring.io/ext-release-local' }
     maven { url 'https://dl.bintray.com/big-data/maven' }
+    mavenLocal()
   }
 
   gradle.taskGraph.whenReady( { graph ->
@@ -44,6 +45,10 @@ allprojects {
     osgiVersion = '6.0.0'
     jettyVersion = '8.1.14.v20131031'
     hadoopVersion = '2.4.1'
+    protobufVersion = '2.6.1'
+    jerseyVersion = '1.9'
+    hadoopJettyVersion = '6.1.26'
+    jsr305Version = '1.3.9'
     hbaseVersion = '0.94.27'
     derbyVersion = '10.10.2.0'
     //hbaseVersion = '0.94.4-gemfire-r45047'
@@ -55,6 +60,11 @@ allprojects {
 
     GEMFIRE_PRODUCT = 'Pivotal GemFire'
     GEMFIRE_VERSION = '7.5.Beta'
+    DERBY_NAME = 'Apache Derby'
+    DERBY_MAJOR = '10'
+    DERBY_MINOR = '4'
+    DERBY_MAINT = '2000000'
+    DERBY_DRDA_MAINT = '1'
 
     PRODUCT_MAJOR = '2'
     PRODUCT_MINOR = '0'
@@ -81,6 +91,17 @@ allprojects {
     buildDate = new Date().format('yyyy-MM-dd HH:mm:ss Z')
     buildNumber = new Date().format('MMddyy')
     jdkVersion = System.getProperty('java.version')
+
+    derbyProps = [ 'gemfirexd.version.major': DERBY_MAJOR,
+        'gemfirexd.version.minor': DERBY_MINOR,
+        'gemfirexd.version.maint': DERBY_MAINT,
+        'gemfirexd.version.drdamaint': DERBY_DRDA_MAINT,
+        'gemfirexd.build.number': '1',
+        'gemfirexd.product.external.name': DERBY_NAME,
+        'gemfirexd.product.external.version': "${DERBY_MAJOR}.${DERBY_MINOR}.${DERBY_MAINT}",
+        'gemfirexd.version.beta': 'true',
+        'gemfirexd.product.vendor': PRODUCT_VENDOR,
+        'gemfirexd.product.file': 'gemfirexd.jar' ]
   }
 
   buildRoot = buildRoot.trim()
@@ -92,6 +113,15 @@ allprojects {
   }
 
   ext {
+    productDir = file("${rootProject.buildDir}/store")
+    locDir = 'com/pivotal/gemfirexd/internal/loc'
+    clientMsgOutDir = "${project(subprojectBase + 'gemfirexd-core').buildDir}/client/${locDir}"
+    if (!project.hasProperty("sanity")) {
+      isSane = 'true'
+    } else {
+      isSane = sanity
+    }
+
     if (rootProject.name == 'snappy-store') {
       testResultsBase = "${rootProject.buildDir}/tests"
     } else {
@@ -171,6 +201,11 @@ def replaceRegex(def fileDir, def fileName, def regex, def replacement) {
   file("${tmpDir}/${fileName}").renameTo(file(filePath))
 }
 
+def getProcessId() {
+  def name = java.lang.mangement.ManagementFactory.getRuntimeMXBean().getName()
+  return name[0..name.indexOf("@") - 1]
+}
+
 def getStackTrace(def t) {
   java.io.StringWriter sw = new java.io.StringWriter()
   java.io.PrintWriter pw = new java.io.PrintWriter(sw)
@@ -178,19 +213,39 @@ def getStackTrace(def t) {
   return sw.toString()
 }
 
-task cleanStoreJUnit << {
-  def workingDir = "${testResultsBase}/junit"
-  delete workingDir
-  file(workingDir).mkdirs()
+task cleanTestOutput << {
+  def testDir = "${testResultsBase}/junit"
+  delete testDir
+  file(testDir).mkdirs()
+}
+task cleanDUnitOutput << {
+  def testDir = "${testResultsBase}/dunit"
+  delete testDir
+  file(testDir).mkdirs()
+  // writeTestProperties(testDir, '.')
+}
+task cleanIntegrationOutput << {
+  def testDir = "${testResultsBase}/integration"
+  delete testDir
+  file(testDir).mkdirs()
 }
 
 subprojects {
   // apply compiler options
-  sourceCompatibility = 1.7
-  targetCompatibility = 1.7
-
   compileJava.options.encoding = 'UTF-8'
-  javadoc.options.charSet = 'UTF-8'
+
+  javadoc {
+    options {
+      charSet = 'UTF-8'
+      windowTitle = 'GemFire XD Java API Documentation'
+      docTitle = "<h1>GemFire XD ${project.version} Java API</h1>"
+      header = "<i>GemFire XD ${project.version}</i>"
+      bottom = '<i>Copyright &copy; 2010-2015 Pivotal Software, Inc. All rights reserved.</i>'
+      use = true
+      links = [ 'http://docs.oracle.com/javase/7/docs/api/' ]
+      verbose = true
+    }
+  }
 
   configurations {
     provided {
@@ -256,14 +311,14 @@ subprojects {
   javadoc.classpath += configurations.provided
 
   dependencies {
-    provided 'com.google.code.findbugs:annotations:3.0.0'
+    compile 'com.google.code.findbugs:annotations:3.0.0'
     compile "log4j:log4j:${log4jVersion}"
     compile "org.slf4j:slf4j-api:${slf4jVersion}"
     compile "org.slf4j:slf4j-log4j12:${slf4jVersion}"
 
     testCompile "junit:junit:${junitVersion}"
-    testCompile 'org.hamcrest:hamcrest-core:1.1'
-    testCompile 'org.hamcrest:hamcrest-library:1.1'
+    testCompile 'org.hamcrest:hamcrest-core:1.3'
+    testCompile 'org.hamcrest:hamcrest-library:1.3'
     testCompile 'org.jmock:jmock:2.5.1'
     testCompile 'org.jmock:jmock-legacy:2.5.1'
     testCompile 'edu.umd.cs.mtc:multithreadedtc:1.01'
@@ -272,7 +327,10 @@ subprojects {
   }
 
   test {
-    //maxParallelForks = (2 * Runtime.getRuntime().availableProcessors())
+    dependsOn "${subprojectBase}product"
+    maxParallelForks = (2 * Runtime.getRuntime().availableProcessors())
+    minHeapSize = '768m'
+    maxHeapSize = '768m'
 
     include '**/*Test.class'
     exclude '**/*DUnitTest.class'
@@ -284,19 +342,33 @@ subprojects {
     }
 
     workingDir = "${testResultsBase}/junit"
-    delete workingDir
-    file(workingDir).mkdirs()
-    writeTestProperties(workingDir, '.')
+
+    binResultsDir = file("${workingDir}/binary/${project.name}")
+    reports.html.destination = file("${workingDir}/html/${project.name}")
+    reports.junitXml.destination = file(workingDir)
+  }
+  task distributedTest(type:Test) {
+    dependsOn "${subprojectBase}product"
+    maxParallelForks = Math.max((int)Math.sqrt(Runtime.getRuntime().availableProcessors() + 1) + 2, 2)
+    //maxParallelForks = 1
+    minHeapSize = '512m'
+    maxHeapSize = '512m'
+
+    include '**/*DUnitTest.class'
+    include '**/*DUnit.class'
+    exclude '**/pivotal/gemfirexd/wan/**/*DUnit.class'
+
+    workingDir = "${testResultsBase}/dunit"
 
     binResultsDir = file("${workingDir}/binary/${project.name}")
     reports.html.destination = file("${workingDir}/html/${project.name}")
     reports.junitXml.destination = file(workingDir)
 
-    // run each test in its own vm to avoid interference issues if a test doesn't clean up
-    // state
-    //forkEvery 1
+    //I'm hoping this might deal with SOME OOMEs I've seen
+    //forkEvery 30
   }
   task integrationTest(type:Test) {
+    dependsOn "${subprojectBase}product"
     maxParallelForks = (2 * Runtime.getRuntime().availableProcessors())
 
     include '**/*Test.class'
@@ -309,46 +381,19 @@ subprojects {
     }    
 
     workingDir = "${testResultsBase}/integration"
-    delete workingDir
-    file(workingDir).mkdirs()
-    writeTestProperties(workingDir, '.')
 
     binResultsDir = file("${workingDir}/binary/${project.name}")
     reports.html.destination = file("${workingDir}/html/${project.name}")
     reports.junitXml.destination = file(workingDir)
-
-    forkEvery 1
-  }
-  task distributedTest(type:Test) {
-    maxParallelForks = Runtime.getRuntime().availableProcessors()
-
-    include '**/*DUnitTest.class'
-    include '**/*DUnit.class'
-
-    workingDir = "${testResultsBase}/dunit"
-    delete workingDir
-    file(workingDir).mkdirs()
-    writeTestProperties(workingDir, '.')
-
-    binResultsDir = file("${workingDir}/binary/${project.name}")
-    reports.html.destination = file("${workingDir}/html/${project.name}")
-    reports.junitXml.destination = file(workingDir)
-
-    //I'm hoping this might deal with SOME OOMEs I've seen
-    forkEvery 30
   }
 
   // apply common test configuration
   gradle.taskGraph.whenReady( { graph ->
     tasks.withType(Test).each { test ->
-      check.dependsOn test
       test.configure {
         onlyIf { ! Boolean.getBoolean('skip.tests') }
 
-        minHeapSize '128m'
-        maxHeapSize '1g'
-        jvmArgs = ['-XX:+HeapDumpOnOutOfMemoryError', '-XX:MaxPermSize=256M', '-ea']
-        maxParallelForks = 1
+        jvmArgs = ['-XX:+HeapDumpOnOutOfMemoryError', '-XX:MaxPermSize=128M', '-XX:+UseParNewGC', '-XX:+UseConcMarkSweepGC', '-XX:CMSInitiatingOccupancyFraction=50', '-XX:+CMSClassUnloadingEnabled', '-ea']
 
         testLogging.exceptionFormat = 'full'
 
@@ -356,7 +401,11 @@ subprojects {
           'gemfire.disallowMcastDefaults'  : 'true',
           'java.net.preferIPv4Stack'       : 'true',
           'jline.terminal'                 : 'scala.tools.jline.UnsupportedTerminal',
-          'gemfiretest.sourceDir'          : "${projectDir}/src/test/resources"
+          'store.test.resourceDir'         : "${projectDir}/src/test/resources",
+          'GEMFIREXD'                      : productDir.getAbsolutePath()
+
+        environment 'GEMFIREXD'            : productDir.getAbsolutePath(),
+                    'JUNIT_JAR'            : sourceSets.test.output.classesDir
 
         if (rootProject.name == 'snappy-store') {
           def eol = System.getProperty('line.separator')
@@ -369,7 +418,11 @@ subprojects {
           }
           onOutput { desc, event ->
             def output = new File(workingDir, "output.txt")
-            output  << event.message
+            def msg = event.message
+            if (event.destination.toString() == 'StdErr') {
+              msg = msg.replace("\n", "\n[error]  ")
+            }
+            output << msg
           }
           afterTest { desc, result ->
             def now = new Date().format('yyyy-MM-dd HH:mm:ss.SSS Z')
@@ -387,8 +440,10 @@ subprojects {
     }
   })
 
-  test.dependsOn subprojectBase + 'cleanStoreJUnit'
-  check.dependsOn integrationTest
+  test.dependsOn subprojectBase + 'cleanTestOutput'
+  distributedTest.dependsOn subprojectBase + 'cleanDUnitOutput'
+  integrationTest.dependsOn subprojectBase + 'cleanIntegrationOutput'
+  check.dependsOn test
   check.dependsOn distributedTest
 }
 
@@ -464,8 +519,13 @@ subprojects {
   }
 }
 
-test.dependsOn subprojects.collect { p -> p.getTasksByName('test', false).collect { it.path } }
-check.dependsOn subprojects.collect { p -> p.getTasksByName('check', false).collect { it.path } }
+//test.dependsOn subprojects.collect { p -> p.getTasksByName('test', false).collect { it.path } }
+test.dependsOn subprojects.test
+check.dependsOn subprojects.check
+
+task distributedTest {
+  dependsOn subprojects.distributedTest
+}
 
 task combineReports(type: TestReport) {
   description 'Combines the test reports.'
@@ -479,33 +539,39 @@ gradle.taskGraph.whenReady({ graph ->
 task generateSources {
   dependsOn subprojectBase + 'gemfire-jgroups:jgMagic'
   dependsOn subprojectBase + 'gemfire-core:createVersionPropertiesFile'
-  dependsOn subprojectBase + 'gemfirexd:generateSources'
+  dependsOn subprojectBase + 'gemfirexd-core:compileJavacc'
+  dependsOn subprojectBase + 'gemfirexd-core:generatePropertiesFiles'
+  dependsOn subprojectBase + 'gemfire-core:createVersionPropertiesFile'
+  dependsOn subprojectBase + 'gemfirexd-shared:createVersionPropertiesFile'
+  dependsOn subprojectBase + 'gemfirexd-core:doSplit'
+  dependsOn subprojectBase + 'gemfirexd-client:generatePropertiesFiles'
+  dependsOn subprojectBase + 'gemfirexd-tools:compileJavacc'
+  dependsOn subprojectBase + 'gemfirexd-tools:generatePropertiesFiles'
 }
 
 def includeJar(def jarFile) {
   def jarName = jarFile.getName()
   return jarName.contains('jetty') || jarName.contains('spring') ||
-    jarName.contains('hbase') || jarName.contains('pxf') ||
-    jarName.contains('osgi') || jarName.contains('ant-') ||
-    jarName.contains('jline')
+    jarName.contains('hadoop') || jarName.contains('protobuf') ||
+    jarName.contains('jersey') || jarName.contains('jetty') ||
+    jarName.contains('hbase') || jarName.contains('jsr305') ||
+    jarName.contains('pxf') || jarName.contains('jline')
 }
 
 // pack the entire GemFireXD product tree
-task product(dependsOn: [ subprojectBase + 'gemfirexd:client:jar',
-    subprojectBase + 'gemfirexd:core:jar',
-    subprojectBase + 'gemfirexd:tools:jar',
-    subprojectBase + 'tests-sql:jar',
-    subprojectBase + 'gemfirexd:shared:javadoc',
-    subprojectBase + 'gemfirexd:core:javadoc' ]) << {
+task product(dependsOn: [ subprojectBase + 'gemfirexd-client:jar',
+    subprojectBase + 'gemfirexd-core:shadowJar',
+    subprojectBase + 'gemfirexd-tools:jar',
+    subprojectBase + 'gemfirexd-shared:javadoc',
+    subprojectBase + 'gemfirexd-core:javadoc' ]) << {
 
-  def productDir = file("${rootProject.buildDir}/store")
   delete productDir
 
-  def sharedProject = project(subprojectBase + 'gemfirexd:shared')
-  def clientProject = project(subprojectBase + 'gemfirexd:client')
+  def sharedProject = project(subprojectBase + 'gemfirexd-shared')
+  def clientProject = project(subprojectBase + 'gemfirexd-client')
   def gemcoreProject = project(subprojectBase + 'gemfire-core')
-  def coreProject = project(subprojectBase + 'gemfirexd:core')
-  def toolsProject = project(subprojectBase + 'gemfirexd:tools')
+  def coreProject = project(subprojectBase + 'gemfirexd-core')
+  def toolsProject = project(subprojectBase + 'gemfirexd-tools')
 
   def gcmDir = System.getProperty('GCMDIR', '/gcm')
 
@@ -520,7 +586,7 @@ task product(dependsOn: [ subprojectBase + 'gemfirexd:client:jar',
       include clientProject.jar.archiveName
     }
     from(coreProject.jar.destinationDir) {
-      include coreProject.jar.archiveName
+      include coreProject.shadowJar.archiveName
     }
     from(toolsProject.jar.destinationDir) {
       include toolsProject.jar.archiveName
@@ -561,7 +627,7 @@ task product(dependsOn: [ subprojectBase + 'gemfirexd:client:jar',
 
   // examples, javadocs, vsd
   copy {
-    from(project(subprojectBase + 'gemfirexd').projectDir.getAbsolutePath() + '/examples') {
+    from(project(subprojectBase + 'gemfirexd-core').projectDir.getAbsolutePath() + '/../examples') {
       exclude 'src/main/java/mapreduce/README.txt'
       exclude 'src/main/java/mapreduce/pom.xml'
     }
@@ -572,7 +638,7 @@ task product(dependsOn: [ subprojectBase + 'gemfirexd:client:jar',
     into "${productDir}/examples"
   }
   copy {
-    from(project(subprojectBase + 'gemfirexd').projectDir.getAbsolutePath() + '/examples') {
+    from(project(subprojectBase + 'gemfirexd-core').projectDir.getAbsolutePath() + '/../examples') {
       include 'src/main/java/mapreduce/README.txt'
       include 'src/main/java/mapreduce/pom.xml'
     }
@@ -582,7 +648,7 @@ task product(dependsOn: [ subprojectBase + 'gemfirexd:client:jar',
     }
   }
   copy {
-    from project(subprojectBase + 'gemfirexd').projectDir.getAbsolutePath() + '/quickstart'
+    from project(subprojectBase + 'gemfirexd-core').projectDir.getAbsolutePath() + '/../quickstart'
     into "${productDir}/quickstart"
   }
   copy {
@@ -606,5 +672,22 @@ task product(dependsOn: [ subprojectBase + 'gemfirexd:client:jar',
     }
     into "${productDir}/docs"
     rename 'gfxd-index.html', 'index.html'
+  }
+}
+
+task cleanAll {
+  dependsOn clean, subprojects.clean
+}
+task buildAll {
+  dependsOn subprojects.assemble, subprojects.testClasses, product
+  mustRunAfter cleanAll
+}
+task checkAll {
+  dependsOn subprojects.check
+  mustRunAfter buildAll
+}
+task precheckin {
+  if (project.hasProperty('gfxd')) {
+    dependsOn cleanAll, buildAll, checkAll
   }
 }

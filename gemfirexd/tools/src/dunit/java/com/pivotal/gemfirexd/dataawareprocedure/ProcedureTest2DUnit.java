@@ -34,7 +34,7 @@ import com.pivotal.gemfirexd.internal.engine.procedure.cohort.ProcedureExecution
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedConnection;
 import com.pivotal.gemfirexd.procedure.ProcedureExecutionContext;
 
-import dunit.VM;
+import io.snappydata.test.dunit.VM;
 
 @SuppressWarnings("serial")
 public class ProcedureTest2DUnit extends DistributedSQLTestBase {
@@ -50,7 +50,7 @@ public class ProcedureTest2DUnit extends DistributedSQLTestBase {
   
   public static void setStaticValues(String[] ctns, String filt,
       String procName, String tabName) {
-    getLogWriter().info(
+    getGlobalLogger().info(
         "setStaticValues called with ctns: " + ctns + ", filt: " + filt
             + ", procName: " + procName + ", tabName: " + tabName);
     colocatedTableNames = ctns;
@@ -62,7 +62,7 @@ public class ProcedureTest2DUnit extends DistributedSQLTestBase {
   private static void checkPECsAPIs(ProcedureExecutionContext pec) {
     String[] colnames = pec.getColocatedTableNames();
     
-    getLogWriter().info(
+    getGlobalLogger().info(
         "static Values and corresponding from contexts are ctns: "
             + colocatedTableNames + ", from context: "
             + pec.getColocatedTableNames() + ", filt: " + filter
@@ -121,7 +121,7 @@ public class ProcedureTest2DUnit extends DistributedSQLTestBase {
     assertFalse(pec.isPartitioned("DAP.T2_REPLICATE"));
     
     String userName = pec.getConnection().getMetaData().getUserName();
-    getLogWriter().info("checkPECsAPIs_one username: "+userName);
+    getGlobalLogger().info("checkPECsAPIs_one username: " + userName);
     
     //assertTrue(pec.isPartitioned(userName+".t1_partitioned"));
     //assertFalse(pec.isPartitioned(userName+".t2_replicate"));
@@ -321,12 +321,12 @@ public class ProcedureTest2DUnit extends DistributedSQLTestBase {
   public static void select_proc(int invocationType, ResultSet[] rs1,
       ResultSet[] rs2, ResultSet[] rs3, ResultSet[] rs4,
       ProcedureExecutionContext pec) throws SQLException {
-    getLogWriter().info(
+    getGlobalLogger().info(
         "select_proc called with " + "invocation type: "
             + getInvocationType(invocationType) + " and pec: " + pec);
     ProcedureExecutionContextImpl cimpl = (ProcedureExecutionContextImpl)pec;
     Connection c = DriverManager.getConnection("jdbc:default:connection");
-    getLogWriter().info("from pec tablename is: " + pec.getTableName());
+    getGlobalLogger().info("from pec tablename is: " + pec.getTableName());
     if (cimpl.getTableName() != null) {
       assertTrue(cimpl.getTableName().equalsIgnoreCase("emp.partitiontestTable"));
     }
@@ -358,7 +358,7 @@ public class ProcedureTest2DUnit extends DistributedSQLTestBase {
       default:
         break;
     }
-    getLogWriter().info(
+    getGlobalLogger().info(
         "select_proc def sql is: " + sql + " local sql is: " + local_sql
             + " and global sql is: " + global_sql);
 
@@ -640,7 +640,7 @@ public class ProcedureTest2DUnit extends DistributedSQLTestBase {
     GemFireTransaction gftxn = (GemFireTransaction)((EmbedConnection)c)
         .getLanguageConnectionContext().getTransactionExecute();
     TXId txid = gftxn.getActiveTXState().getTransactionId();
-    getLogWriter().info("from proc txid is: " + txid);
+    getGlobalLogger().info("from proc txid is: " + txid);
   }
 
   public void testTxn() throws Exception {
