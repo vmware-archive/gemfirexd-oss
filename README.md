@@ -1,14 +1,16 @@
 ## Overview
-GemFire XD is a row oriented, transactional, main-memory distributed data store that is designed for applications that have demanding scalability and availability requirements. You can use GemFire XD as a standalone high performance database or as a cache with automatic asynchronous write back to RDBs or as a operational store in "big data" analytic applications. With GemFire XD you can manage data entirely using in-memory tables, or you can persist very large tables to local disk store files or to a Hadoop Distributed File System (HDFS) for big data deployments. GemFire XD provides a low-latency SQL interface to in-memory table data, while seamlessly integrating data that is persisted in HDFS. A single GemFire XD distributed system can be easily scaled out using commodity hardware to support thousands of concurrent clients, and you can also replicate data between distinct GemFire XD clusters over a WAN interface. 
+SnappyStore is a row oriented, transactional, main-memory distributed data store that is designed for applications that have demanding scalability and availability requirements. You can use the store as a standalone high performance database or as a cache with automatic asynchronous write back to RDBs or as a operational store in "big data" analytic applications. You can manage data entirely using in-memory tables, or you can persist very large tables to local disk store files or to a Hadoop Distributed File System (HDFS) for big data deployments. It provides a low-latency SQL interface to in-memory table data, while seamlessly integrating data that is persisted in HDFS. A single SnappyStore distributed system can be easily scaled out using commodity hardware to support thousands of concurrent clients, and you can also replicate data between multiple clusters over a WAN interface. 
 
+<!--
 ![GemXD_Architecture](http://gemfirexd.docs.pivotal.io/docs-gemfirexd/common/images/esql_at_a_glance.png)
+-->
 
 ## History
-GemFire XD grew out of [GemFire](http://pivotal.io/big-data/pivotal-gemfire), an in-memory data grid developed over a decade. It adds a SQL processing layer on top of GemFire along with several other extensions to integrate with HDFS for working with extremely large volumes of data. GemFire is deployed in hundreds of enterprises worldwide. 
-GemFire transitioned from a commercial product developed at [Pivotal](www.pivotal.io) (and [VMWare](www.vmware.com) and [GemStone](www.gemstone.com) before that) to a Open source project to support a growing community of developers. 
+SnappyStore is a fork of GemFire XD. And, GemFire XD grew out of [GemFire](http://pivotal.io/big-data/pivotal-gemfire), an in-memory data grid developed over a decade. It adds a SQL processing layer on top of GemFire along with several other extensions to integrate with HDFS for working with extremely large volumes of data. GemFire is deployed in hundreds of enterprises worldwide. 
+GemFire transitioned from a commercial product developed at [Pivotal](www.pivotal.io) (and [VMWare](www.vmware.com) and [GemStone](www.gemstone.com) before that) to a Open source project(geode) to support a growing community of developers. 
 
 ## Getting started
-See the instructions below to build the product from source. Once built, you can follow the instructions [here](http://gemfirexd.docs.pivotal.io/docs-gemfirexd/getting_started/book_intro.html) to get started with GemFire XD.
+See the instructions below to build the product from source. Once built, you can follow the instructions [here](http://gemfirexd.docs.pivotal.io/docs-gemfirexd/getting_started/book_intro.html) to get started with SnappyStore.
 
 
 ## Repository layout
