@@ -237,10 +237,9 @@ task cleanReports << {
 }
 
 
-def parallelTests(def proj, def testTask, def baseDir, def prefix, def splitSize, def parallelism) {
+def parallelTests(def proj, def testClasses, def baseDir, def prefix, def splitSize, def parallelism) {
   proj.task("${prefix}Parallel") {
     dependsOn proj.testClasses, "${subprojectBase}product"
-    def testClasses = testTask.getCandidateClassFiles().getFiles()
     def ntestClasses = testClasses.size()
     def testClassesGroups = testClasses.collate(splitSize)
     def ntestClassesGroups = testClassesGroups.size()
@@ -455,8 +454,31 @@ subprojects {
     reports.html.destination = file("${workingDir}/html/${project.name}")
     reports.junitXml.destination = file(workingDir)
   }
+  task junitSingle1(type: Test) {
+    def single = System.getProperty("junit.single")
+    if (single == null || single.length() == 0) {
+      include '**/BugsTest.class'
+      include '**/DDLPersistenceHDFSTest.class'
+    } else {
+      include single
+    }
+  }
+  task junitSingle2(type: Test) {
+    def single = System.getProperty("junit.single")
+    if (single == null || single.length() == 0) {
+      include '**/*Test.class'
+      exclude '**/BugsTest.class'
+      exclude '**/DDLPersistenceHDFSTest.class'
+      exclude '**/*DUnitTest.class'
+      exclude '**/*DUnit.class'
+      exclude '**/derbyTesting/**'
+    }
+  }
   task junit {
-    parallelTests(project, test, "${testResultsBase}/junit", 'junit', 2, 2 * Runtime.getRuntime().availableProcessors())
+    def testClasses = new ArrayList()
+    testClasses.addAll(junitSingle1.getCandidateClassFiles().getFiles())
+    testClasses.addAll(junitSingle2.getCandidateClassFiles().getFiles())
+    parallelTests(project, testClasses, "${testResultsBase}/junit", 'junit', 3, 2 * Runtime.getRuntime().availableProcessors())
   }
   task junitReport(type: TestReport) {
     description 'Combines the parallel junit test reports.'
@@ -493,7 +515,8 @@ subprojects {
     //forkEvery 30
   }
   task dunit {
-    parallelTests(project, dunitSingle, "${testResultsBase}/dunit", 'dunit', 4, Math.max((int) Math.sqrt(Runtime.getRuntime().availableProcessors() + 1) + 1, 2))
+    def testClasses = dunitSingle.getCandidateClassFiles().getFiles()
+    parallelTests(project, testClasses, "${testResultsBase}/dunit", 'dunit', 4, Math.max((int) Math.sqrt(Runtime.getRuntime().availableProcessors() + 1) + 1, 2))
   }
   task dunitReport(type: TestReport) {
     description 'Combines the parallel dunit test reports.'
