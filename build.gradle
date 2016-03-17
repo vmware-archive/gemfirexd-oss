@@ -225,6 +225,11 @@ task cleanDUnitOutput << {
   file(testDir).mkdirs()
   // writeTestProperties(testDir, '.')
 }
+task cleanWanOutput << {
+  def testDir = "${testResultsBase}/wan"
+  delete testDir
+  file(testDir).mkdirs()
+}
 task cleanIntegrationOutput << {
   def testDir = "${testResultsBase}/integration"
   delete testDir
@@ -237,7 +242,7 @@ task cleanReports << {
 }
 
 
-def parallelTests(def proj, def testClasses, def baseDir, def prefix, def splitSize, def parallelism) {
+def parallelTests(def proj, def testClasses, def testObj, def prefix, def splitSize, def parallelism) {
   proj.task("${prefix}Parallel") {
     dependsOn proj.testClasses, "${subprojectBase}product"
     def ntestClasses = testClasses.size()
@@ -249,18 +254,20 @@ def parallelTests(def proj, def testClasses, def baseDir, def prefix, def splitS
     def testTasks = (0..<ntestClassesGroups).collect { index ->
       proj.task("${prefix}Parallel${index}", type: Test) {
         maxParallelForks = 1
-        minHeapSize = '512m'
-        maxHeapSize = '512m'
+        minHeapSize = testObj.minHeapSize
+        maxHeapSize = testObj.maxHeapSize
 
         def baseURI = getTestClassesDir().toURI()
         include testClassesGroups[index].collect {
           baseURI.relativize(it.toURI()).getPath()
         }
 
-        workingDir = baseDir
-        binResultsDir = file("${workingDir}/binary/${project.name}_$index")
+        workingDir = testObj.workingDir
+        binResultsDir = file("${testObj.binResultsDir}_${index}")
         reports.html.enabled = false
         reports.junitXml.destination = file(workingDir)
+
+        systemProperties testObj.systemProperties
 
         beforeTest { desc ->
           def lastClass = lastTestClass.get()
@@ -315,8 +322,8 @@ def parallelTests(def proj, def testClasses, def baseDir, def prefix, def splitS
         threads.each { it.start() }
         threads.each { it.join() }
 
-        def progressTxt = file("${baseDir}/progress.txt").getAbsolutePath().toURI()
-        def report = file("${baseDir}/html/${proj.name}/index.html").getAbsolutePath().toURI()
+        def progressTxt = file("${testObj.workingDir}/progress.txt").getAbsolutePath().toURI()
+        def report = file("${testObj.workingDir}/html/${proj.name}/index.html").getAbsolutePath().toURI()
         if (failureCount.get() > 0) {
           println()
           def failureMsg = "FAILED: There were ${failureCount.get()} failures.\n"
@@ -468,17 +475,12 @@ subprojects {
     }
   }
   task junitSingle2(type: Test) {
-    def single = System.getProperty("junit.single")
-    if (single == null || single.length() == 0) {
-      include '**/*Test.class'
-      exclude '**/BugsTest.class'
-      exclude '**/DDLPersistenceHDFSTest.class'
-      exclude '**/*DUnitTest.class'
-      exclude '**/*DUnit.class'
-      exclude '**/derbyTesting/**'
-    } else {
-      include single
-    }
+    include '**/*Test.class'
+    exclude '**/BugsTest.class'
+    exclude '**/DDLPersistenceHDFSTest.class'
+    exclude '**/*DUnitTest.class'
+    exclude '**/*DUnit.class'
+    exclude '**/derbyTesting/**'
   }
   task junit {
     def testClasses = new ArrayList()
@@ -487,21 +489,23 @@ subprojects {
     if (single == null || single.length() == 0) {
       testClasses.addAll(junitSingle2.getCandidateClassFiles().getFiles())
     }
-    parallelTests(project, testClasses, "${testResultsBase}/junit", 'junit', 3, 2 * Runtime.getRuntime().availableProcessors())
+    parallelTests(project, testClasses, test, 'junit', 3, test.maxParallelForks)
   }
   task junitReport(type: TestReport) {
     description 'Combines the parallel junit test reports.'
     destinationDir = file("${testResultsBase}/junit/html/${project.name}")
-    mustRunAfter 'junitParallel'
+    mustRunAfter junitParallel
   }
   gradle.taskGraph.whenReady({ graph ->
-    project.tasks.getByName('junitReport').reportOn project.tasks.withType(Test).matching { it.getName().startsWith('junitParallel') }
+    project.tasks.getByName('junitReport').reportOn project.tasks.withType(Test).matching {
+      it.getName().startsWith('junitParallel')
+    }
   })
-  junit.dependsOn 'junitParallel', junitReport
+  junit.dependsOn junitParallel, junitReport
 
-  task dunitSingle(type:Test) {
+  task dunitTest(type:Test) {
     dependsOn "${subprojectBase}product"
-    maxParallelForks = 1
+    maxParallelForks = Math.max((int)Math.sqrt(Runtime.getRuntime().availableProcessors() + 1) + 1, 2)
     minHeapSize = '512m'
     maxHeapSize = '512m'
 
@@ -524,8 +528,8 @@ subprojects {
     //forkEvery 30
   }
   task dunit {
-    def testClasses = dunitSingle.getCandidateClassFiles().getFiles()
-    parallelTests(project, testClasses, "${testResultsBase}/dunit", 'dunit', 4, Math.max((int) Math.sqrt(Runtime.getRuntime().availableProcessors() + 1) + 1, 2))
+    def testClasses = dunitTest.getCandidateClassFiles().getFiles()
+    parallelTests(project, testClasses, dunitTest, 'dunit', 4, dunitTest.maxParallelForks)
   }
   task dunitReport(type: TestReport) {
     description 'Combines the parallel dunit test reports.'
@@ -533,9 +537,49 @@ subprojects {
     mustRunAfter dunitParallel
   }
   gradle.taskGraph.whenReady({ graph ->
-    project.tasks.getByName('dunitReport').reportOn project.tasks.withType(Test).matching { it.getName().startsWith('dunitParallel') }
+    project.tasks.getByName('dunitReport').reportOn project.tasks.withType(Test).matching {
+      it.getName().startsWith('dunitParallel')
+    }
   })
-  dunit.dependsOn 'dunitParallel', dunitReport
+  dunit.dependsOn dunitParallel, dunitReport
+
+  task wanTest(type:Test) {
+    dependsOn "${subprojectBase}product"
+    maxParallelForks = (int)Math.sqrt(Runtime.getRuntime().availableProcessors() + 1)
+    minHeapSize = '512m'
+    maxHeapSize = '512m'
+
+    def single = System.getProperty("wan.single")
+    if (single == null || single.length() == 0) {
+      include '**/pivotal/gemfirexd/wan/**/*DUnit.class'
+    } else {
+      include single
+    }
+
+    workingDir = "${testResultsBase}/wan"
+
+    binResultsDir = file("${workingDir}/binary/${project.name}")
+    reports.html.destination = file("${workingDir}/html/${project.name}")
+    reports.junitXml.destination = file(workingDir)
+
+    // increase the number of JVMs for WAN tests
+    systemProperties 'gemfire.DUnitLauncher.NUM_VMS' : '8'
+  }
+  task wan {
+    def wanClasses = wanTest.getCandidateClassFiles().getFiles()
+    parallelTests(project, wanClasses, wanTest, 'wan', 1, wanTest.maxParallelForks)
+  }
+  task wanReport(type: TestReport) {
+    description 'Combines the parallel wan test reports.'
+    destinationDir = file("${testResultsBase}/wan/html/${project.name}")
+    mustRunAfter wanParallel
+  }
+  gradle.taskGraph.whenReady({ graph ->
+    project.tasks.getByName('wanReport').reportOn project.tasks.withType(Test).matching {
+      it.getName().startsWith('wanParallel')
+    }
+  })
+  wan.dependsOn wanParallel, wanReport
 
   task integrationTest(type:Test) {
     dependsOn "${subprojectBase}product"
@@ -622,11 +666,13 @@ subprojects {
 
   test.dependsOn subprojectBase + 'cleanTestOutput'
   junitParallel.dependsOn subprojectBase + 'cleanTestOutput'
-  dunitSingle.dependsOn subprojectBase + 'cleanDUnitOutput'
+  dunitTest.dependsOn subprojectBase + 'cleanDUnitOutput'
   dunitParallel.dependsOn subprojectBase + 'cleanDUnitOutput'
+  wanTest.dependsOn subprojectBase + 'cleanWanOutput'
+  wanParallel.dependsOn subprojectBase + 'cleanWanOutput'
   integrationTest.dependsOn subprojectBase + 'cleanIntegrationOutput'
   check.dependsOn.clear()
-  check.dependsOn junit, dunit
+  check.dependsOn junit, dunit, wan
 }
 
 // maven publish tasks
@@ -707,6 +753,9 @@ task junit {
 task dunit {
   dependsOn "${subprojectBase}gemfirexd-tools:dunit"
 }
+task wan {
+  dependsOn "${subprojectBase}gemfirexd-tools:wan"
+}
 task integrationTest {
   dependsOn subprojects.integrationTest
 }
@@ -715,7 +764,7 @@ task combineReports(type: TestReport) {
   description 'Combines the test reports.'
   dependsOn cleanReports
   destinationDir = file("${testResultsBase}/combined-reports")
-  mustRunAfter test, junit, dunit, integrationTest
+  mustRunAfter test, junit, dunit, wan, integrationTest
 }
 
 gradle.taskGraph.whenReady({ graph ->
@@ -725,6 +774,9 @@ gradle.taskGraph.whenReady({ graph ->
 junit.dependsOn subprojects.junit
 check.dependsOn.clear()
 check.dependsOn junit, dunit
+if (!Boolean.getBoolean('skip.wanTest')) {
+  check.dependsOn wan
+}
 // skip combineReports for top-level builds which has its own combineReports
 if (!rootProject.hasProperty('store')) {
   check.dependsOn combineReports
