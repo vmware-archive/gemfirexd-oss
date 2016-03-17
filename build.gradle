@@ -567,14 +567,25 @@ subprojects {
         testLogging.exceptionFormat = 'full'
 
         systemProperties 'gemfire.DEFAULT_MAX_OPLOG_SIZE' : '10',
-          'gemfire.disallowMcastDefaults'  : 'true',
-          'java.net.preferIPv4Stack'       : 'true',
-          'jline.terminal'                 : 'scala.tools.jline.UnsupportedTerminal',
-          'store.test.resourceDir'         : "${projectDir}/src/test/resources",
-          'GEMFIREXD'                      : productDir.getAbsolutePath()
+                         'gemfire.disallowMcastDefaults'  : 'true',
+                         'java.net.preferIPv4Stack'       : 'true',
+                         'jline.terminal'                 : 'scala.tools.jline.UnsupportedTerminal',
+                         'store.test.resourceDir'         : "${projectDir}/src/test/resources",
+                         'GEMFIREXD'                      : productDir.getAbsolutePath()
 
-        environment 'GEMFIREXD'            : productDir.getAbsolutePath(),
-                    'JUNIT_JAR'            : sourceSets.test.output.classesDir
+        def logLevel = System.getProperty('logLevel')
+        if (logLevel != null && logLevel.length() > 0) {
+          systemProperties 'gemfire.log-level'            : logLevel,
+                           'logLevel'                     : logLevel
+        }
+        logLevel = System.getProperty('securityLogLevel')
+        if (logLevel != null && logLevel.length() > 0) {
+          systemProperties 'gemfire.security-log-level'   : logLevel,
+                           'securityLogLevel'             : logLevel
+        }
+
+        environment 'GEMFIREXD'                           : productDir.getAbsolutePath(),
+                    'JUNIT_JAR'                           : sourceSets.test.output.classesDir
 
         if (rootProject.name == 'snappy-store') {
           def eol = System.getProperty('line.separator')

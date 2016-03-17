@@ -484,6 +484,7 @@ public class DistributedSQLTestBase extends DistributedTestBase {
 
   protected void setCommonProperties(Properties props, int mcastPort,
       String serverGroups, Properties extraProps) {
+    assert props != null;
     // ---- system files (logs and archive) ----//
     final String sysDirName = getSysDirName();
     final String testLogPrefix = getTestLogPrefix();
@@ -531,11 +532,13 @@ public class DistributedSQLTestBase extends DistributedTestBase {
     //    "true");
 
     // get the log-level from GemFirePrms
-    String logLevel = DUnitEnv.get().getDistributedSystemProperties()
-        .getProperty("log-level");
-    if (System.getProperty("gemfire.log-level") == null) {
-      setGFXDProperty(props, "log-level", logLevel);
+    Properties dsProps = DUnitEnv.get().getDistributedSystemProperties();
+    for (String prop : dsProps.stringPropertyNames()) {
+      if (System.getProperty("gemfire." + prop) != null) {
+        dsProps.remove(prop);
+      }
     }
+    props.putAll(dsProps);
     //setGFXDProperty(props, "enable-network-partition-detection", "true");
     /*
     // reduce timeout properties for faster dunit runs
@@ -566,7 +569,7 @@ public class DistributedSQLTestBase extends DistributedTestBase {
     setGFXDProperty(props, DistributionConfig.STATISTIC_SAMPLING_ENABLED_NAME,
         "true");
     System.setProperty("gemfirexd-impl.observer-volatile-read", "true");
-    if (serverGroups != null && props != null) {
+    if (serverGroups != null) {
       props.setProperty("server-groups", serverGroups);
     }
     if (mcastPort > 0) {
