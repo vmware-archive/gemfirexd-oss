@@ -319,10 +319,14 @@ def parallelTests(def proj, def testClasses, def baseDir, def prefix, def splitS
         def report = file("${baseDir}/html/${proj.name}/index.html").getAbsolutePath().toURI()
         if (failureCount.get() > 0) {
           println()
-          throw new GradleException("FAILED: There were ${failureCount.get()} failures. See the progress report in: file://$progressTxt, html report in: file://$report")
+          def failureMsg = "FAILED: There were ${failureCount.get()} failures.\n"
+          failureMsg    += "        See the progress report in: file://$progressTxt\n"
+          failureMsg    += "        HTML report in: file://$report"
+          throw new GradleException(failureMsg)
         } else {
           println()
-          println("SUCCESS: See the progress report in: file://$progressTxt, html report in: file://$report")
+          println("SUCCESS: See the progress report in: file://$progressTxt")
+          println("         HTML report in: file://$report")
           println()
         }
       }
@@ -472,12 +476,17 @@ subprojects {
       exclude '**/*DUnitTest.class'
       exclude '**/*DUnit.class'
       exclude '**/derbyTesting/**'
+    } else {
+      include single
     }
   }
   task junit {
     def testClasses = new ArrayList()
     testClasses.addAll(junitSingle1.getCandidateClassFiles().getFiles())
-    testClasses.addAll(junitSingle2.getCandidateClassFiles().getFiles())
+    def single = System.getProperty("junit.single")
+    if (single == null || single.length() == 0) {
+      testClasses.addAll(junitSingle2.getCandidateClassFiles().getFiles())
+    }
     parallelTests(project, testClasses, "${testResultsBase}/junit", 'junit', 3, 2 * Runtime.getRuntime().availableProcessors())
   }
   task junitReport(type: TestReport) {
