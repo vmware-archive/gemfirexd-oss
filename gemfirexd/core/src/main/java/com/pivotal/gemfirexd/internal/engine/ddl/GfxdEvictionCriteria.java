@@ -73,7 +73,7 @@ public class GfxdEvictionCriteria implements EvictionCriteria<Object, Object> {
   public GfxdEvictionCriteria(ValueNode predicate, String sqlText,
       int beginOffset, int endOffset) {
     this.predicateCompiler = new ExpressionCompiler(predicate,
-        new HashMap<>(), "EVICTION BY CRITERIA");
+        new HashMap<String, Integer>(), "EVICTION BY CRITERIA");
     this.predicateString = sqlText.substring(beginOffset, endOffset);
   }
 
