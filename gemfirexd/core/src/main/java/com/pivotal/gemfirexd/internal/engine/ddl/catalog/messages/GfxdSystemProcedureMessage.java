@@ -19,6 +19,7 @@ package com.pivotal.gemfirexd.internal.engine.ddl.catalog.messages;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -39,6 +40,7 @@ import com.gemstone.gemfire.internal.cache.DiskStoreImpl;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.util.ArrayUtils;
 import com.pivotal.gemfirexd.Constants;
+import com.pivotal.gemfirexd.internal.catalog.SystemProcedures;
 import com.pivotal.gemfirexd.internal.catalog.UUID;
 import com.pivotal.gemfirexd.internal.catalog.types.RoutineAliasInfo;
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
@@ -1469,6 +1471,78 @@ public final class GfxdSystemProcedureMessage extends
       String getSQLStatement(Object[] params) throws StandardException {
         final StringBuilder sb = new StringBuilder();
         return sb.append("CALL SYS.SET_NANOTIMER_TYPE('").append(params[0])
+            .append("','").append(params[1]).append("')").toString();
+      }
+    },
+
+    checkTableEx {
+
+      @Override
+      boolean allowExecution(Object[] params) {
+        return GemFireXDUtils.getMyVMKind().isStore();
+      }
+
+      @Override
+      public void processMessage(Object[] params, DistributedMember sender)
+          throws StandardException {
+
+        String schema = (String)params[0];
+        String table = (String)params[1];
+        SanityManager.DEBUG_PRINT(GfxdConstants.TRACE_SYS_PROCEDURES,
+            "GfxdSystemProcedureMessage:CHECK_TABLE_EX schema: " + schema +
+                " table: " + table );
+        EmbedConnection conn = null;
+        boolean contextSet = false;
+        try {
+          LanguageConnectionContext lcc = Misc.getLanguageConnectionContext();
+          if (lcc == null) {
+            // Refer Bug 42810.In case of WAN, a PK based insert is converted
+            // into
+            // region.put since it bypasses GemFireXD layer, the LCC can be
+            // null.
+            conn = GemFireXDUtils.getTSSConnection(true, true, false);
+            conn.getTR().setupContextStack();
+            contextSet = true;
+            lcc = conn.getLanguageConnectionContext();
+            // lcc can be null if the node has started to go down.
+            if (lcc == null) {
+              Misc.getGemFireCache().getCancelCriterion()
+                  .checkCancelInProgress(null);
+            }
+          }
+          SanityManager.DEBUG_PRINT(GfxdConstants.TRACE_SYS_PROCEDURES, "sdeshmukh lcc: " +lcc);
+          System.out.println("sdeshmukh lcc =" + lcc);
+          SystemProcedures.CHECK_TABLE(schema, table);
+        } catch (SQLException sq) {
+          throw StandardException.unexpectedUserException(sq);
+        } finally {
+          if (contextSet) {
+            conn.getTR().restoreContextStack();
+          }
+        }
+      }
+
+      @Override
+      public Object[] readParams(DataInput in, short flags) throws IOException,
+          ClassNotFoundException {
+        Object[] inParams = new Object[2];
+        inParams[0] = in.readUTF();
+        inParams[1] = in.readUTF();
+
+        return inParams;
+      }
+
+      @Override
+      public void writeParams(Object[] params, DataOutput out)
+          throws IOException {
+        out.writeUTF((String)params[0]);
+        out.writeUTF((String)params[1]);
+      }
+
+      @Override
+      String getSQLStatement(Object[] params) throws StandardException {
+        final StringBuilder sb = new StringBuilder();
+        return sb.append("VALUES SYS.CHECK_TABLE_EX('").append(params[0])
             .append("','").append(params[1]).append("')").toString();
       }
     },

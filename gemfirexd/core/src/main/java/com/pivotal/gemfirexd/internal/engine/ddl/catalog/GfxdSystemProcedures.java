@@ -2014,6 +2014,22 @@ public class GfxdSystemProcedures extends SystemProcedures {
     }
   }
 
+  public static int CHECK_TABLE_EX(String schema, String table) throws
+      SQLException {
+    final Object[] params = new Object[]{schema, table};
+    try {
+      if (GemFireXDUtils.getMyVMKind().isStore()) {
+        GfxdSystemProcedureMessage.SysProcMethod.checkTableEx.processMessage(params,
+            Misc.getMyId());
+      }
+      publishMessage(params, false,
+          GfxdSystemProcedureMessage.SysProcMethod.checkTableEx, false, false);
+    } catch (StandardException se) {
+      throw PublicAPI.wrapStandardException(se);
+    }
+    return 1;
+  }
+
   /**
    * Refresh LDAP group permissions for all relevant tables on all nodes.
    *

@@ -44,7 +44,10 @@ package com.pivotal.gemfirexd.internal.iapi.db;
 
 import java.util.HashSet;
 
+import com.gemstone.gemfire.internal.cache.LocalRegion;
+import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
+import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.store.CompositeRegionKey;
 import com.pivotal.gemfirexd.internal.shared.common.sanity.SanityManager;
 // GemStone changes END
@@ -76,6 +79,7 @@ import com.pivotal.gemfirexd.internal.iapi.types.DataValueFactory;
 import com.pivotal.gemfirexd.internal.iapi.types.RowLocation;
 
 import java.sql.SQLException;
+import java.util.Set;
 
 /**
  * The ConsistencyChecker class provides static methods for verifying
@@ -148,10 +152,19 @@ public class ConsistencyChecker
 		int						baseColumns = 0;
 		DataValueFactory		dvf;
 		long					indexRows;
+		long          indexRowsForLocalPrimaryBuckets = 0;
 		ConglomerateController	baseCC = null;
 		ConglomerateController	indexCC = null;
 		SchemaDescriptor		sd;
 		ConstraintDescriptor	constraintDesc;
+
+		LocalRegion region = (LocalRegion)Misc.getRegionForTable(schemaName + "." + tableName, true);
+		Set<Integer> localPrimaryBucketSet = null;
+		if (region.getDataPolicy().withPartitioning()) {
+			localPrimaryBucketSet = ((PartitionedRegion)region)
+					.getDataStore().getAllLocalPrimaryBucketIds();
+		}
+
 
 		LanguageConnectionContext lcc = ConnectionUtil.getCurrentLCC();
 		tc = lcc.getTransactionExecute();
@@ -207,9 +220,11 @@ public class ConsistencyChecker
 
 			/* Look at all the indexes on the table */
 			ConglomerateDescriptor[] cds = td.getConglomerateDescriptors();
+			SanityManager.DEBUG_PRINT("info", "sdeshmukh cds.length ="  + cds.length);
 			for (int index = 0; index < cds.length; index++)
 			{
 				indexCD = cds[index];
+				SanityManager.DEBUG_PRINT("info", "sdeshmukh index ="  + indexCD.toString());
 //Gemstone changes BEGIN @author yjing
 				String indexType=null;
 //Gemstone changes END					
@@ -224,6 +239,7 @@ public class ConsistencyChecker
 				    continue;
 				  }
 				}
+				SanityManager.DEBUG_PRINT("info", "sdeshmukh processing index ="  + indexCD.toString());
 //GemStone changes END				  							
 				/* Check the internal consistency of the index */
 				indexCC = 
@@ -337,7 +353,8 @@ public class ConsistencyChecker
 				{
 					baseRowIndexOrder[i] = baseObjectArray[baseColumnPositions[i] - 1];
 				}
-			
+
+					SanityManager.DEBUG_PRINT("info", "sdeshmukh about to count indexRows");
 				/* Get the index rows and count them */
 				for (indexRows = 0; scan.fetchNext(indexRow); indexRows++)
 				{
@@ -353,6 +370,10 @@ public class ConsistencyChecker
 				  boolean base_row_exists = baseRL != null;
 				  if (base_row_exists) {
 				    indexRow.setColumn(baseColumns + 1,baseRL);
+						if (region.getDataPolicy().withPartitioning() &&
+								localPrimaryBucketSet.contains(baseRL.getBucketID())) {
+							indexRowsForLocalPrimaryBuckets ++;
+						}
 				  }
 // GemStone changes END
 					/* Throw exception if fetch() returns false */
@@ -415,6 +436,13 @@ public class ConsistencyChecker
 				scan.close();
 				scan = null;
 
+				/*
+				 ** for partitioned regions consider index entries
+				 ** for local primary buckets only
+				 */
+				if (region.getDataPolicy().withPartitioning()) {
+					indexRows = indexRowsForLocalPrimaryBuckets;
+				}
 				/*
 				** The index is supposed to have the same number of rows as the
 				** base conglomerate.
