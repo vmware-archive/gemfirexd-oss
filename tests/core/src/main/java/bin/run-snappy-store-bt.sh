@@ -73,7 +73,7 @@ SOURCES=$TESTBIN/../../../../../..
 export NO_BUILD_LOG=true
 export JPROBE_HOME=/do/not/use/JPROBE
 options=''
-TESTSPATH=${SOURCES}/tests/core/build-artifacts/linux/classes/main
+TESTSPATH=${SOURCES}/tests/sql/build-artifacts/linux/classes/main
 export CLASSPATH=${TESTSPATH}:$CLASSPATH
 while [ $# -gt 0 ]; do
 

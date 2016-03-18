@@ -425,13 +425,16 @@ public class UseCase6Client extends QueryPerfClient {
       this.connection.commit();
       this.useCase6stats.endTransaction(start, 0);
 
+      if (select != null) {
+        select.close();
+        select = null;
+      }
+      if (update != null) {
+        update.close();
+        update = null;
+      }
     }
-    if (update != null) {
-      update.close();
-    }
-    if (select != null) {
-      select.close();
-    }
+
   }
 
 }

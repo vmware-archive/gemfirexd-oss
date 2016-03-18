@@ -894,7 +894,7 @@ task product(dependsOn: [ subprojectBase + 'gemfirexd-client:jar',
     }
   }
   copy {
-    from project(subprojectBase + 'gemfirexd-core').projectDir.getAbsolutePath() + '/../quickstart'
+    from (project(subprojectBase + 'gemfirexd-core').projectDir.getAbsolutePath() + '/../quickstart')
     into "${productDir}/quickstart"
   }
   copy {
@@ -921,8 +921,7 @@ task product(dependsOn: [ subprojectBase + 'gemfirexd-client:jar',
   }
 
   copy {
-    def osDir = osName.getFamilyName().replace(" ", "").toLowerCase()
-    from (rootDir.getAbsolutePath() + '/snappy-store/tests/core/src/main/java') {
+    from (project(subprojectBase +  'gemfire-tests').projectDir.getAbsolutePath() + '/src/main/java') {
       include '**/*.bt'
       include '**/*.conf'
       include '**/*.inc'
@@ -938,7 +937,7 @@ task product(dependsOn: [ subprojectBase + 'gemfirexd-client:jar',
       include 'hydratest/hydracheck/*.sh'
       include 'bin/scaleperf/*'
     }
-    from (rootDir.getAbsolutePath() + '/snappy-store/tests/sql/src/main/java') {
+    from (project(subprojectBase +  'gemfirexd-tests').projectDir.getAbsolutePath() + '/src/main/java') {
       include '**/*.bt'
       include '**/*.conf'
       include '**/*.inc'
@@ -951,7 +950,7 @@ task product(dependsOn: [ subprojectBase + 'gemfirexd-client:jar',
       include '**/*.ts'
       include '**/*.pl'
     }
-    into rootDir.getAbsolutePath() + '/snappy-store/tests/core/build-artifacts/' + osDir + '/classes/main'
+    into (project(subprojectBase + 'gemfirexd-tests').buildDir.getAbsolutePath() + '/classes/main')
   }
 }
 

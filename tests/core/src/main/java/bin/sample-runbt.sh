@@ -5,7 +5,7 @@ resultDir=
 if [ $# -lt 3 ]; then
   echo "Usage: sample-runbt.sh <result-directory-path> <snappy-data-directory-path> <list-of-bts>" 1>&2
   echo " result-directory-path          Location to put the test results " 1>&2
-  echo " snappy-store-directory-path    checkout path of snappy-store " 1>&2
+  echo " snappy-data-directory-path    checkout path of snappy-data " 1>&2
   echo " list-of-bts                    name of bts to run " 1>&2
   echo " (e.g. sh sample-runbt.sh /home/rajesh/gemxdRegression /home/rajesh/project/snappydata sql/sql.bt sql/sqlDisk/sqlDisk.bt )" 1>&2
   exit 1
@@ -23,8 +23,8 @@ while [ $# -gt 0 ]; do
 done
 # If JAVA_HOME is not already set in system then set JAVA_HOME using TEST_JVM
 TEST_JVM=
-export JTESTS=$SNAPPYDATADIR/snappy-store/tests/core/build-artifacts/linux/classes/main
-export PATH=$JAVA_HOME:$PATH:$SNAPPYDATADIR/snappy-store/tests/sql/build-artifacts/linux/classes/main:$JTESTS
+export JTESTS=$SNAPPYDATADIR/snappy-store/tests/sql/build-artifacts/linux/classes/main
+export PATH=$JAVA_HOME:$PATH:$JTESTS
 export GEMFIRE=$SNAPPYDATADIR/build-artifacts/scala-2.10/store
 export OUTPUT_DIR=$resultDir
 if [ "x$JAVA_HOME" = "x" ]; then
@@ -33,9 +33,9 @@ else
   TEST_JVM=$JAVA_HOME
 fi
 
-export EXTRA_JTESTS=$SNAPPYDATADIR/snappy-store/tests/sql/build-artifacts/linux/classes/main
+export EXTRA_JTESTS=$SNAPPYDATADIR/snappy-store/tests/core/build-artifacts/linux/classes/main
 #export JTESTS_RESOURCES=$SNAPPYDATADIR/snappy-store/tests/core/src/main/java
-export CLASSPATH=$JTESTS:$EXTRA_JTESTS:$GEMFIRE/lib/gemfirexd-2.0-BETA.jar:$GEMFIRE/lib/gemfirexd-client-2.0-BETA.jar:$JTESTS/../../libs/gemfire-hydra-tests-2.0-BETA.jar:$EXTRA_JTESTS/../../libs/gemfirexd-hydra-tests-2.0-BETA-all.jar:$GEMFIRE/lib/gemfirexd-tools-2.0-BETA.jar:$SNAPPYDATADIR/snappy-dtests/build-artifacts/scala-2.10/libs/gemfirexd-scala-tests-0.1.0-SNAPSHOT.jar
+export CLASSPATH=$JTESTS:$EXTRA_JTESTS:$GEMFIRE/lib/gemfirexd-1.5.0-BETA.jar:$GEMFIRE/lib/gemfirexd-client-1.5.0-BETA.jar:$JTESTS/../../libs/gemfirexd-hydra-tests-1.5.0-BETA-all.jar:$GEMFIRE/lib/gemfirexd-tools-1.5.0-BETA.jar
 #/home/rajesh/extraJars/bsh.jar:
 
 # This is the command to run the test, make sure the correct release version of jar used or change the jar path to use correctly. Also change the jar name in sql/snappy.local.conf if incorrect
