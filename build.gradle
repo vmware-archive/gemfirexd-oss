@@ -894,7 +894,7 @@ task product(dependsOn: [ subprojectBase + 'gemfirexd-client:jar',
     }
   }
   copy {
-    from project(subprojectBase + 'gemfirexd-core').projectDir.getAbsolutePath() + '/../quickstart'
+    from (project(subprojectBase + 'gemfirexd-core').projectDir.getAbsolutePath() + '/../quickstart')
     into "${productDir}/quickstart"
   }
   copy {
@@ -918,6 +918,39 @@ task product(dependsOn: [ subprojectBase + 'gemfirexd-client:jar',
     }
     into "${productDir}/docs"
     rename 'gfxd-index.html', 'index.html'
+  }
+
+  copy {
+    from (project(subprojectBase +  'gemfire-tests').projectDir.getAbsolutePath() + '/src/main/java') {
+      include '**/*.bt'
+      include '**/*.conf'
+      include '**/*.inc'
+      include '**/*.sql'
+      include '**/*.prop'
+      include '**/*.spec'
+      include '**/*.gold'
+      include '**/*.properties'
+      include '**/*.keystore'
+      include '**/*.ts'
+      include '**/*.pl'
+      include 'bin/testManagerLogWriter.sh'
+      include 'hydratest/hydracheck/*.sh'
+      include 'bin/scaleperf/*'
+    }
+    from (project(subprojectBase +  'gemfirexd-tests').projectDir.getAbsolutePath() + '/src/main/java') {
+      include '**/*.bt'
+      include '**/*.conf'
+      include '**/*.inc'
+      include '**/*.sql'
+      include '**/*.prop'
+      include '**/*.spec'
+      include '**/*.gold'
+      include '**/*.properties'
+      include '**/*.keystore'
+      include '**/*.ts'
+      include '**/*.pl'
+    }
+    into (project(subprojectBase + 'gemfirexd-tests').buildDir.getAbsolutePath() + '/classes/main')
   }
 }
 
