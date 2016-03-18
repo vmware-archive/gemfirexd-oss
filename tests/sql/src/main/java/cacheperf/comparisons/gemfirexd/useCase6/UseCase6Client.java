@@ -115,10 +115,9 @@ public class UseCase6Client extends QueryPerfClient {
   throws FileNotFoundException, IOException, SQLException {
     UseCase6Client c = new UseCase6Client();
     c.initialize();
-    c.executeDDL();
-//    if (c.sttgid == 0) {
-//      c.executeDDL();
-//    }
+    if (c.sttgid == 0) {
+      c.executeDDL();
+    }
   }
   private void executeDDL()
   throws FileNotFoundException, IOException, SQLException {
@@ -394,7 +393,6 @@ public class UseCase6Client extends QueryPerfClient {
     do {
       executeTaskTerminator(); // does not commit
       executeWarmupTerminator(); // does not commit
-      //Log.getLogWriter().info("rjk: val = " + val);
       //useCase6SelectAndUpdate();
       ++this.batchCount;
       ++this.count;
@@ -404,7 +402,7 @@ public class UseCase6Client extends QueryPerfClient {
   private void useCase6SelectAndUpdate() throws SQLException {
     PreparedStatement update = null;
     PreparedStatement select = null;
-//    Random rand = new Random();
+    //Random rand = new Random();
     //int val = rand.nextInt(paramValues[0].size() - 1);
     //Log.getLogWriter().info("useCase6SelectAndUpdateTask - done loading " + paramValues[0] + " items");
     for (int iter = 0; iter < paramValues[0].size() ; iter++) {
@@ -423,7 +421,7 @@ public class UseCase6Client extends QueryPerfClient {
       update.setTimestamp(1, ts);
       update.setString(2, id);
       update.executeUpdate();
-      Log.getLogWriter().info("Updated table with id " + id);
+      //Log.getLogWriter().info("Updated table with id " + id);
       this.connection.commit();
       this.useCase6stats.endTransaction(start, 0);
 

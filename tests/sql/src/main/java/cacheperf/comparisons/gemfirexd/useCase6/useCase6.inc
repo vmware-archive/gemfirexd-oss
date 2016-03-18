@@ -47,12 +47,6 @@ THREADGROUP server
   clientNames  = fcn "hydra.TestConfigFcns.generateNames(\"server\", ${serverHosts}, true)"
                  ncf;
 
-//THREADGROUP ddlThread
-//            totalThreads = 1
-//           totalVMs     = 1
-//            clientNames  = fcn "hydra.TestConfigFcns.generateNames
-//                                (\"client\", ${clientHosts}, true)" ncf;
-
 
 INITTASK  taskClass = cacheperf.comparisons.gemfirexd.useCase6.UseCase6Client
           taskMethod = openStatisticsTask
