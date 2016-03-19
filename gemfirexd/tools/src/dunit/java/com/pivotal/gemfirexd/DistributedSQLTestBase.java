@@ -81,7 +81,6 @@ import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedStatement;
 import com.pivotal.gemfirexd.internal.impl.sql.GenericPreparedStatement;
 import com.pivotal.gemfirexd.internal.impl.store.raw.data.GfxdJarResource;
 import io.snappydata.test.dunit.*;
-import io.snappydata.test.dunit.standalone.DUnitLauncher;
 import io.snappydata.test.util.TestException;
 import junit.framework.Test;
 import org.apache.derby.drda.NetworkServerControl;
