@@ -208,6 +208,14 @@ public class RebalanceOperationImpl implements RebalanceOperation {
         } else if(e.getCause() instanceof InternalGemFireError) {
           throw (InternalGemFireError) e.getCause();
         } else {
+          Error err;
+          if (e.getCause() instanceof Error && SystemFailure.isJVMFailureError(
+              err = (Error)e.getCause())) {
+            SystemFailure.initiateFailure(err);
+            // If this ever returns, rethrow the error. We're poisoned
+            // now, so don't let this thread continue.
+            throw err;
+          }
           throw new InternalGemFireError(e.getCause());
         }
       }

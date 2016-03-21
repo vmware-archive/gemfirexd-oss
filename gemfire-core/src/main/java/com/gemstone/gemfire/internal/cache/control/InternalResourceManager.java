@@ -529,7 +529,7 @@ public class InternalResourceManager implements ResourceManager {
   /**
    * This method is test purposes only.
    */
-  public LoadProbe setLoadProbe(LoadProbe probe) {
+  LoadProbe setLoadProbe(LoadProbe probe) {
     LoadProbe old = this.loadProbe;
     this.loadProbe = probe;
     return old;

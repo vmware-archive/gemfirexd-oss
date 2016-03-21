@@ -1144,12 +1144,6 @@ public class PRHARedundancyProvider
           return false;
         }
       }
-      catch (VirtualMachineError err) {
-        SystemFailure.initiateFailure(err);
-        // If this ever returns, rethrow the error.  We're poisoned
-        // now, so don't let this thread continue.
-        throw err;
-      }
       catch (Throwable e) {
         Error err;
         if (e instanceof Error && SystemFailure.isJVMFailureError(
@@ -1270,12 +1264,6 @@ public class PRHARedundancyProvider
         }
       } catch(PartitionOfflineException e) {
         throw e;
-      }
-      catch (VirtualMachineError err) {
-        SystemFailure.initiateFailure(err);
-        // If this ever returns, rethrow the error.  We're poisoned
-        // now, so don't let this thread continue.
-        throw err;
       }
       catch (Throwable e) {
         Error err;
