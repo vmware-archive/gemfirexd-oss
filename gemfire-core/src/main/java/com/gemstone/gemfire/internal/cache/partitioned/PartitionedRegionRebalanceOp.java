@@ -490,6 +490,8 @@ public class PartitionedRegionRebalanceOp {
       model.addRegion(region.getFullPath(), memberDetailSet, offlineDetails, enforceLocalMaxMemory);
     }
     
+    model.initialize();
+    
     return model;
   }
 
