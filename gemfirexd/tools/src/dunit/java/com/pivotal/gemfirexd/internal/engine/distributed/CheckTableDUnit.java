@@ -27,10 +27,10 @@ public class CheckTableDUnit extends DistributedSQLTestBase {
     super(name);
   }
 
-  @Override
-  public String reduceLogging() {
-    return "fine";
-  }
+//  @Override
+//  public String reduceLogging() {
+//    return "fine";
+//  }
 
 
   public void testLocalIndexConsistency() throws Exception {
@@ -41,7 +41,9 @@ public class CheckTableDUnit extends DistributedSQLTestBase {
     final int netPort1 = startNetworkServer(1, null, null);
 
     Connection conn = TestUtil.getNetConnection(netPort1, null, null);
+    // for partitioned table
     testLocalIndexConsistency(conn, false);
+    // for replicated table
     testLocalIndexConsistency(conn, true);
   }
 
@@ -77,7 +79,7 @@ public class CheckTableDUnit extends DistributedSQLTestBase {
     rs0.close();
 
     // should not throw exception
-    rs0 = st.executeQuery("values SYS.CHECK_TABLE_EX('TEST', 'TABLE1')");
+    rs0 = st.executeQuery("VALUES SYS.CHECK_TABLE_EX('TEST', 'TABLE1')");
 
     VM serverVM1 = serverVMs.get(0);
     VM serverVM2 = serverVMs.get(1);
@@ -88,7 +90,7 @@ public class CheckTableDUnit extends DistributedSQLTestBase {
     invokeInVM(serverVM2, CheckTableDUnit.class, "deleteEntryFromIndex",
         new Object[]{"/TEST/TABLE1", "IDX1"});
     try {
-      ResultSet rs1 = st.executeQuery("values SYS.CHECK_TABLE_EX('TEST', " +
+      ResultSet rs1 = st.executeQuery("VALUES SYS.CHECK_TABLE_EX('TEST', " +
           "'TABLE1')");
       fail("SYS.CHECK_TABLE_EX should have thrown an exception");
     } catch (SQLException se1) {
@@ -108,7 +110,7 @@ public class CheckTableDUnit extends DistributedSQLTestBase {
     invokeInVM(serverVM2, CheckTableDUnit.class, "updateEntryInIndex",
         new Object[]{"/TEST/TABLE1", "IDX2"} );
     try {
-      ResultSet rs1 = st.executeQuery("values SYS.CHECK_TABLE_EX('TEST'," +
+      ResultSet rs1 = st.executeQuery("VALUES SYS.CHECK_TABLE_EX('TEST'," +
           " 'TABLE1')");
       fail("SYS.CHECK_TABLE_EX should have thrown an exception");
     } catch (SQLException se2) {
@@ -133,7 +135,8 @@ public class CheckTableDUnit extends DistributedSQLTestBase {
     }
   }
 
-  // deletes an entry from the index to make it inconsistent
+  // deletes an entry from the local index to make it inconsistent with the
+  // base table
   public static void deleteEntryFromIndex(String regionPath, String index) {
     LocalRegion r = (LocalRegion)Misc.getRegion(regionPath, false, false);
     GfxdIndexManager sqlim = (GfxdIndexManager)r.getIndexUpdater();
@@ -150,6 +153,8 @@ public class CheckTableDUnit extends DistributedSQLTestBase {
     }
   }
 
+  // updates an entry in the local index such that value associated with a
+  // key is incorrect
   public static void updateEntryInIndex(String regionPath, String index) {
     LocalRegion r = (LocalRegion)Misc.getRegion(regionPath, false, false);
     GfxdIndexManager sqlim = (GfxdIndexManager)r.getIndexUpdater();
