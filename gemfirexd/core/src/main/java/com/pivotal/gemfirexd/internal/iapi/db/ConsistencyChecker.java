@@ -220,11 +220,9 @@ public class ConsistencyChecker
 
 			/* Look at all the indexes on the table */
 			ConglomerateDescriptor[] cds = td.getConglomerateDescriptors();
-			SanityManager.DEBUG_PRINT("info", "sdeshmukh cds.length ="  + cds.length);
 			for (int index = 0; index < cds.length; index++)
 			{
 				indexCD = cds[index];
-				SanityManager.DEBUG_PRINT("info", "sdeshmukh index ="  + indexCD.toString());
 //Gemstone changes BEGIN @author yjing
 				String indexType=null;
 //Gemstone changes END					
@@ -239,8 +237,7 @@ public class ConsistencyChecker
 				    continue;
 				  }
 				}
-				SanityManager.DEBUG_PRINT("info", "sdeshmukh processing index ="  + indexCD.toString());
-//GemStone changes END				  							
+//GemStone changes END
 				/* Check the internal consistency of the index */
 				indexCC = 
 			        tc.openConglomerate(
@@ -354,7 +351,6 @@ public class ConsistencyChecker
 					baseRowIndexOrder[i] = baseObjectArray[baseColumnPositions[i] - 1];
 				}
 
-					SanityManager.DEBUG_PRINT("info", "sdeshmukh about to count indexRows");
 				/* Get the index rows and count them */
 				for (indexRows = 0; scan.fetchNext(indexRow); indexRows++)
 				{

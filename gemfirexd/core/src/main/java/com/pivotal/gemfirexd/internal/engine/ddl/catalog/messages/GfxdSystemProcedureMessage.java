@@ -1496,10 +1496,6 @@ public final class GfxdSystemProcedureMessage extends
         try {
           LanguageConnectionContext lcc = Misc.getLanguageConnectionContext();
           if (lcc == null) {
-            // Refer Bug 42810.In case of WAN, a PK based insert is converted
-            // into
-            // region.put since it bypasses GemFireXD layer, the LCC can be
-            // null.
             conn = GemFireXDUtils.getTSSConnection(true, true, false);
             conn.getTR().setupContextStack();
             contextSet = true;
@@ -1510,8 +1506,6 @@ public final class GfxdSystemProcedureMessage extends
                   .checkCancelInProgress(null);
             }
           }
-          SanityManager.DEBUG_PRINT(GfxdConstants.TRACE_SYS_PROCEDURES, "sdeshmukh lcc: " +lcc);
-          System.out.println("sdeshmukh lcc =" + lcc);
           SystemProcedures.CHECK_TABLE(schema, table);
         } catch (SQLException sq) {
           throw StandardException.unexpectedUserException(sq);
