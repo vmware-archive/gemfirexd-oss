@@ -2,10 +2,8 @@ plugins {
   id "ca.coglinc.javacc" version "2.3.1"
 }
 
-if (rootProject.hasProperty('enablePublish')) {
-  artifacts {
-    archives packageTests
-  }
+artifacts {
+  archives packageTests
 }
 
 dependencies {
