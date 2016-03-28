@@ -27,7 +27,7 @@ import java.util.logging.Logger;
  * Set the global system properties. This class is the supported way to change
  * system properties before client (or server) side API is invoked that uses one
  * or more properties defined in the class.
- * 
+ *
  * @author swale
  * @since gfxd 1.1
  */
@@ -66,7 +66,7 @@ public final class SystemProperties {
    * sockets. This is the time interval between successive TCP KeepAlive probes
    * if there is no response to the previous probe ({@link #KEEPALIVE_IDLE_NAME})
    * to determine if the other side is alive or not.
-   * 
+   *
    * Note that this may not be supported by all platforms (e.g. Solaris), in
    * which case this will be ignored and an info-level message logged that the
    * option could not be enabled on the socket.
@@ -77,7 +77,7 @@ public final class SystemProperties {
    * TCP KeepAlive COUNT for the network server and client sockets. This is the
    * number of TCP KeepAlive probes sent before declaring the other side to be
    * dead.
-   * 
+   *
    * Note that this may not be supported by all platforms (e.g. Solaris), in
    * which case this will be ignored and an info-level message logged that the
    * option could not be enabled on the socket.
@@ -140,10 +140,10 @@ public final class SystemProperties {
   public interface Callbacks {
 
     /** Get prefix to be used for system property names. */
-    public String getSystemPropertyNamePrefix();
+    String getSystemPropertyNamePrefix();
 
     /** Get system property for given key or null if key not set. */
-    public String getSystemProperty(String key, SystemProperties properties)
+    String getSystemProperty(String key, SystemProperties properties)
         throws PrivilegedActionException;
   }
 
@@ -208,7 +208,7 @@ public final class SystemProperties {
         DEFAULT_GFXDCLIENT_PROPERTY_NAME_PREFIX));
   }
 
-  public static final boolean isUsingGemFireXDEntryPoint() {
+  public static boolean isUsingGemFireXDEntryPoint() {
     StackTraceElement[] stack = Thread.currentThread().getStackTrace();
     for (StackTraceElement frame : stack) {
       final String frameCls = frame.getClassName();
@@ -320,22 +320,13 @@ public final class SystemProperties {
       else {
         return defaultValue;
       }
-    } catch (PrivilegedActionException pae) {
+    } catch (PrivilegedActionException | SecurityException e) {
       Logger log = ClientSharedUtils.getLogger();
       if (log != null) {
         StringBuilder msg = new StringBuilder(
             "Could not read system property: ");
         msg.append(name);
-        ClientSharedUtils.getStackTrace(pae, msg, null);
-        log.warning(msg.toString());
-      }
-    } catch (SecurityException se) {
-      Logger log = ClientSharedUtils.getLogger();
-      if (log != null) {
-        StringBuilder msg = new StringBuilder(
-            "Could not read system property: ");
-        msg.append(name);
-        ClientSharedUtils.getStackTrace(se, msg, null);
+        ClientSharedUtils.getStackTrace(e, msg, null);
         log.warning(msg.toString());
       }
     }

@@ -64,6 +64,7 @@ import com.gemstone.gemfire.internal.offheap.OffHeapHelper;
 import com.gemstone.gemfire.internal.offheap.SimpleMemoryAllocatorImpl;
 import com.gemstone.gemfire.internal.offheap.annotations.Released;
 import com.gemstone.gemfire.internal.offheap.annotations.Unretained;
+import com.gemstone.gemfire.internal.shared.ClientSharedData;
 import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
 import com.gemstone.gemfire.internal.shared.HostLocationBase;
 import com.gemstone.gemfire.internal.shared.NativeCalls;
@@ -1622,7 +1623,8 @@ public final class GemFireXDUtils {
    */
   public static String encrypt(final String msg, String transformation,
       final byte[] keyBytes) throws Exception {
-    return encryptBytes(msg.getBytes("UTF-8"), transformation, keyBytes);
+    return encryptBytes(msg.getBytes(ClientSharedData.UTF8),
+        transformation, keyBytes);
   }
 
   /**
@@ -1680,7 +1682,8 @@ public final class GemFireXDUtils {
    */
   public static String decrypt(final String encMsg, String transformation,
       final byte[] keyBytes) throws Exception {
-    return new String(decryptBytes(encMsg, transformation, keyBytes), "UTF-8");
+    return new String(decryptBytes(encMsg, transformation, keyBytes),
+        ClientSharedData.UTF8);
   }
 
   /**
@@ -1778,7 +1781,7 @@ public final class GemFireXDUtils {
     if (user == null || user.length() == 0) {
       user = "USER";
     }
-    updateCipherKeyBytes(keyBytes, user.getBytes("UTF-8"));
+    updateCipherKeyBytes(keyBytes, user.getBytes(ClientSharedData.UTF8));
     return keyBytes;
   }
 
