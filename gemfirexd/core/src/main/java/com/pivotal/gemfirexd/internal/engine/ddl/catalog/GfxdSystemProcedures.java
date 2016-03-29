@@ -2016,7 +2016,18 @@ public class GfxdSystemProcedures extends SystemProcedures {
 
   public static int CHECK_TABLE_EX(String schema, String table) throws
       SQLException {
-    final Object[] params = new Object[]{schema, table};
+    Object[] params = null;
+
+    // just add one data store member id as 3rd param on which
+    // we will verify global index region size with base table size
+    if (GemFireXDUtils.getMyVMKind().isStore()) {
+      params = new Object[]{schema, table, Misc.getMyId()};
+    } else {
+      Set<DistributedMember> dataStores = GfxdMessage.getAllDataStores();
+      DistributedMember m = dataStores.iterator().next();
+      params = new Object[]{schema, table, m};
+    }
+
     try {
       if (GemFireXDUtils.getMyVMKind().isStore()) {
         GfxdSystemProcedureMessage.SysProcMethod.checkTableEx.processMessage(params,

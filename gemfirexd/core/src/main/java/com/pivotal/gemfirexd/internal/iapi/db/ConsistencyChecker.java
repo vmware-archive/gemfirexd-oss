@@ -762,16 +762,6 @@ public class ConsistencyChecker
 			indexScan.close();
 			indexScan = null;
 		}
-		LocalRegion baseTableRegion = (LocalRegion)Misc.getRegionForTable(
-				heapCD.getDescriptorName(), true);
-		int numTableEntries = baseTableRegion.size();
-		numIndexEntries = globalIndexRegion.size();
-		if (numTableEntries != numIndexEntries) {
-			throw StandardException.newException(
-					SQLState.LANG_INDEX_ROW_COUNT_MISMATCH,
-					indexCD.getConglomerateName(), td.getSchemaName(), td.getName(),
-					numIndexEntries, numTableEntries);
-		}
 		if (indexScan != null) {
 			indexScan.close();
 			indexScan = null;
