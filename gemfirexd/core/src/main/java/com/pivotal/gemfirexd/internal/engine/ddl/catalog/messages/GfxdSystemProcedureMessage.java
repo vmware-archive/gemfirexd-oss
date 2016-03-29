@@ -1495,17 +1495,11 @@ public final class GfxdSystemProcedureMessage extends
         SanityManager.DEBUG_PRINT(GfxdConstants.TRACE_SYS_PROCEDURES,
             "GfxdSystemProcedureMessage:CHECK_TABLE_EX schema: " + schema +
                 " table: " + table );
-        EmbedConnection conn = null;
-        boolean contextSet = false;
         try {
           SystemProcedures.CHECK_TABLE(schema, table);
         } catch (SQLException sq) {
           throw StandardException.unexpectedUserException(sq);
-        } finally {
-          if (contextSet) {
-            conn.getTR().restoreContextStack();
-          }
-        }
+        } 
       }
 
       @Override
