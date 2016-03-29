@@ -1483,9 +1483,13 @@ public final class GfxdSystemProcedureMessage extends
       }
 
       @Override
+      boolean initConnection() {
+        return true;
+      }
+
+      @Override
       public void processMessage(Object[] params, DistributedMember sender)
           throws StandardException {
-
         String schema = (String)params[0];
         String table = (String)params[1];
         SanityManager.DEBUG_PRINT(GfxdConstants.TRACE_SYS_PROCEDURES,
@@ -1494,18 +1498,6 @@ public final class GfxdSystemProcedureMessage extends
         EmbedConnection conn = null;
         boolean contextSet = false;
         try {
-          LanguageConnectionContext lcc = Misc.getLanguageConnectionContext();
-          if (lcc == null) {
-            conn = GemFireXDUtils.getTSSConnection(true, true, false);
-            conn.getTR().setupContextStack();
-            contextSet = true;
-            lcc = conn.getLanguageConnectionContext();
-            // lcc can be null if the node has started to go down.
-            if (lcc == null) {
-              Misc.getGemFireCache().getCancelCriterion()
-                  .checkCancelInProgress(null);
-            }
-          }
           SystemProcedures.CHECK_TABLE(schema, table);
         } catch (SQLException sq) {
           throw StandardException.unexpectedUserException(sq);
