@@ -2015,7 +2015,12 @@ public class GfxdSystemProcedures extends SystemProcedures {
   }
 
   public static int CHECK_TABLE_EX(String schema, String table) throws
-      SQLException {
+      SQLException, StandardException {
+    if (schema == null || table == null) {
+      throw StandardException.newException(
+          SQLState.LANG_INVALID_FUNCTION_ARGUMENT, "NULL",
+          "CHECK_TABLE_EX");
+    }
     Object[] params = null;
 
     // just add one data store member id as 3rd param on which
@@ -2024,20 +2029,17 @@ public class GfxdSystemProcedures extends SystemProcedures {
       params = new Object[]{schema, table, Misc.getMyId()};
     } else {
       Set<DistributedMember> dataStores = GfxdMessage.getAllDataStores();
-      DistributedMember m = dataStores.iterator().next();
-      params = new Object[]{schema, table, m};
+      DistributedMember targetNode = dataStores.iterator().next();
+      params = new Object[]{schema, table, targetNode};
     }
 
-    try {
-      if (GemFireXDUtils.getMyVMKind().isStore()) {
-        GfxdSystemProcedureMessage.SysProcMethod.checkTableEx.processMessage(params,
-            Misc.getMyId());
-      }
-      publishMessage(params, false,
-          GfxdSystemProcedureMessage.SysProcMethod.checkTableEx, false, false);
-    } catch (StandardException se) {
-      throw PublicAPI.wrapStandardException(se);
+    if (GemFireXDUtils.getMyVMKind().isStore()) {
+      GfxdSystemProcedureMessage.SysProcMethod.checkTableEx.processMessage(params,
+          Misc.getMyId());
     }
+    publishMessage(params, false,
+        GfxdSystemProcedureMessage.SysProcMethod.checkTableEx, false, false);
+
     return 1;
   }
 

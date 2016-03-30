@@ -46,6 +46,16 @@ public class CheckTableDUnit extends DistributedSQLTestBase {
     final int netPort1 = startNetworkServer(1, null, null);
 
     Connection conn = TestUtil.getNetConnection(netPort1, null, null);
+
+    // should throw an error
+    try {
+      conn.createStatement().executeQuery("VALUES SYS.CHECK_TABLE_EX(NULL, 'TABLE1')");
+      fail("null argument to SYS.CHECK_TABLE_EX() should throw an error");
+    } catch(SQLException se) {
+      if (!se.getSQLState().equals("22008")) {
+        throw se;
+      }
+    }
     // for partitioned table
     checkLocalIndexConsistency(conn, false);
     // for replicated table

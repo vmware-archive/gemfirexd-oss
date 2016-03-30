@@ -1496,7 +1496,7 @@ public final class GfxdSystemProcedureMessage extends
         String schema = (String)params[0];
         String table = (String)params[1];
         // member on which global index size are verified
-        DistributedMember m = (DistributedMember)params[2];
+        DistributedMember targetNode = (DistributedMember)params[2];
         SanityManager.DEBUG_PRINT(GfxdConstants.TRACE_SYS_PROCEDURES,
             "GfxdSystemProcedureMessage:CHECK_TABLE_EX schema: " + schema +
                 " table: " + table );
@@ -1507,7 +1507,7 @@ public final class GfxdSystemProcedureMessage extends
           // instead of verifying global index region size on each node
           // just verify it on mentioned node as we need to check verify
           // total region sizes for global index (and not local sizes)
-          if (Misc.getMyId().equals(m)) {
+          if (Misc.getMyId().equals(targetNode)) {
             verifyGlobalIndexSizes(params);
           }
         } catch (SQLException sq) {
