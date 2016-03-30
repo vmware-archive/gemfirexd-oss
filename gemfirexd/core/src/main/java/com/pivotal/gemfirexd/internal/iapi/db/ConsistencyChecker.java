@@ -42,11 +42,11 @@ package com.pivotal.gemfirexd.internal.iapi.db;
 
 // GemStone changes BEGIN
 
-import java.util.HashSet;
+import java.util.Arrays;
+import java.util.Collection;
 
 import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.internal.cache.PartitionedRegion;
-import com.gemstone.gemfire.internal.util.CollectionUtils;
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
 import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.store.CompositeRegionKey;
@@ -724,47 +724,46 @@ public class ConsistencyChecker
 				0, null); // not used with null stop posn.
 		irg.getIndexRow(baseRow, scan.newRowLocationTemplate(), indexRow, null);
 
-		final HashSet<Object> tableIndexKeys =
-				new HashSet();
-		ScanController indexScan = null;
+		int batchSize = 5000;
+		Object[] tableIndexKeys = new Object[batchSize];
 		Object key;
 		int numRows = 0;
+
+		// allocate key objects upfront to be reused
+		// for every batch
+		if (baseColumns > 1) {
+			for (int p = 0; p < batchSize; p++) {
+				tableIndexKeys[p] = new CompositeRegionKey();
+			}
+		}
 		while (scan.next()) {
-			numRows++;
 			scan.fetch(baseRow);
 			for (int i = 0; i < baseColumns; ++i) {
 				searchCondition[i] = baseRow.getColumn(baseColumnPositions[i]);
 			}
 			if (searchCondition.length == 1) {
 				key = searchCondition[0].getClone();
+				tableIndexKeys[numRows] = key;
 			} else {
-				key = new CompositeRegionKey(getNewArray(searchCondition,
-						baseColumns, true));
+				key = getNewArray(searchCondition, baseColumns, true);
+				((CompositeRegionKey)tableIndexKeys[numRows]).setPrimaryKey((
+						DataValueDescriptor[])key);
 			}
-			tableIndexKeys.add(key);
+			numRows++;
 
-			if ((numRows % 1000) == 0) {
+			if ((numRows % batchSize) == 0) {
 				checkTableKeysInGlobalIndexRegion(td, indexCD, globalIndexRegion,
-						baseRow, searchCondition, tableIndexKeys);
-				tableIndexKeys.clear();
+						searchCondition, Arrays.asList(tableIndexKeys));
+				Arrays.asList(tableIndexKeys);
+				numRows = 0;
 			}
 		}
 
-		if (tableIndexKeys.size() > 0) {
+		if (numRows > 0) {
+			Object[] remainingTableIndexKeys = Arrays.copyOfRange(tableIndexKeys,
+					0, numRows);
 			checkTableKeysInGlobalIndexRegion(td, indexCD, globalIndexRegion,
-					baseRow, searchCondition, tableIndexKeys);
-			tableIndexKeys.clear();
-		}
-
-		// now check the total number of keys in the index
-		int numIndexEntries = 0;
-		if (indexScan != null) {
-			indexScan.close();
-			indexScan = null;
-		}
-		if (indexScan != null) {
-			indexScan.close();
-			indexScan = null;
+					searchCondition, Arrays.asList(remainingTableIndexKeys));
 		}
 		scan.close();
 		scan = null;
@@ -772,12 +771,13 @@ public class ConsistencyChecker
 
 	private static void checkTableKeysInGlobalIndexRegion(TableDescriptor td,
 			ConglomerateDescriptor indexCD, LocalRegion globalIndexRegion,
-			ExecRow baseRow, DataValueDescriptor[] searchCondition,
-			HashSet<Object> tableIndexKeys) throws StandardException {
+			DataValueDescriptor[] searchCondition,
+			Collection tableIndexKeys) throws StandardException {
 		Map globalIndexEntriesMap = globalIndexRegion.getAll(tableIndexKeys);
 		for (Object o : tableIndexKeys) {
 			if (globalIndexEntriesMap.get(o) == null) {
-				DataValueDescriptor keyColumns[] = new DataValueDescriptor[searchCondition.length];
+				DataValueDescriptor keyColumns[] = new
+						DataValueDescriptor[searchCondition.length];
 				if (searchCondition.length == 1) {
 					keyColumns[0] = (DataValueDescriptor)o;
 				} else {
