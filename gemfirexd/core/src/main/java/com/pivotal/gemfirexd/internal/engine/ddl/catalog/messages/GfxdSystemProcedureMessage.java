@@ -19,6 +19,7 @@ package com.pivotal.gemfirexd.internal.engine.ddl.catalog.messages;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -31,19 +32,23 @@ import com.gemstone.gemfire.distributed.DistributedMember;
 import com.gemstone.gemfire.distributed.internal.DistributionManager;
 import com.gemstone.gemfire.distributed.internal.DistributionStats;
 import com.gemstone.gemfire.distributed.internal.ReplyException;
+import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
 import com.gemstone.gemfire.internal.InternalDataSerializer;
 import com.gemstone.gemfire.internal.NanoTimer;
 import com.gemstone.gemfire.internal.cache.CachePerfStats;
 import com.gemstone.gemfire.internal.cache.Conflatable;
 import com.gemstone.gemfire.internal.cache.DiskStoreImpl;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
+import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.internal.util.ArrayUtils;
 import com.pivotal.gemfirexd.Constants;
+import com.pivotal.gemfirexd.internal.catalog.SystemProcedures;
 import com.pivotal.gemfirexd.internal.catalog.UUID;
 import com.pivotal.gemfirexd.internal.catalog.types.RoutineAliasInfo;
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
 import com.pivotal.gemfirexd.internal.engine.GfxdSerializable;
 import com.pivotal.gemfirexd.internal.engine.Misc;
+import com.pivotal.gemfirexd.internal.engine.access.index.GfxdIndexManager;
 import com.pivotal.gemfirexd.internal.engine.ddl.GfxdDDLPreprocess;
 import com.pivotal.gemfirexd.internal.engine.ddl.callbacks.CallbackProcedures;
 import com.pivotal.gemfirexd.internal.engine.ddl.catalog.GfxdSystemProcedures;
@@ -1469,6 +1474,140 @@ public final class GfxdSystemProcedureMessage extends
       String getSQLStatement(Object[] params) throws StandardException {
         final StringBuilder sb = new StringBuilder();
         return sb.append("CALL SYS.SET_NANOTIMER_TYPE('").append(params[0])
+            .append("','").append(params[1]).append("')").toString();
+      }
+    },
+
+    checkTableEx {
+
+      @Override
+      boolean allowExecution(Object[] params) {
+        return GemFireXDUtils.getMyVMKind().isStore();
+      }
+
+      @Override
+      public void processMessage(Object[] params, DistributedMember sender)
+          throws StandardException {
+
+        LanguageConnectionContext lcc = Misc.getLanguageConnectionContext();
+        if (lcc != null) {
+          // do the actual work of checking indexes
+          executeCheckTable(params);
+        } else {
+          // set up the lcc first
+          EmbedConnection conn = null;
+          StatementContext statementContext = null;
+          boolean popContext = false;
+          Throwable t = null;
+          try {
+
+            conn = GemFireXDUtils.getTSSConnection(true, true, true);
+            conn.getTR().setupContextStack();
+
+            synchronized (conn.getConnectionSynchronization()) {
+
+              // create an artificial statementContext for simulating procedure call
+              lcc = conn.getLanguageConnectionContext();
+              lcc.pushMe();
+              popContext = true;
+              assert ContextService
+                  .getContextOrNull(LanguageConnectionContext.CONTEXT_ID) != null;
+              statementContext = lcc.pushStatementContext(false, false,
+                  this.name(), null, false, 0L);
+              statementContext
+                  .setSQLAllowed(RoutineAliasInfo.MODIFIES_SQL_DATA, true);
+
+              //now do the actual work of checking indexes
+              executeCheckTable(params);
+            }
+          } finally {
+            if (statementContext != null) {
+              lcc.popStatementContext(statementContext, t);
+            }
+            if (lcc != null && popContext) {
+              lcc.popMe();
+            }
+            if (conn != null) {
+              conn.getTR().restoreContextStack();
+            }
+          }
+          }
+      }
+
+      private void executeCheckTable(Object[] params) throws StandardException {
+        try {
+          String schema = (String)params[0];
+          String table = (String)params[1];
+          // member on which global index size are verified
+          DistributedMember targetNode = (DistributedMember)params[2];
+
+          SanityManager.DEBUG_PRINT(GfxdConstants.TRACE_SYS_PROCEDURES,
+              "GfxdSystemProcedureMessage:CHECK_TABLE_EX schema: " + schema +
+                  " table: " + table + " target node to verify global " +
+                  "index size:" + targetNode);
+
+          // verify that local and global index contents are consistent
+          SystemProcedures.CHECK_TABLE(schema, table);
+
+          // instead of verifying global index region size on each node
+          // just verify it on mentioned node as we need to verify
+          // total region sizes for global index (and not local sizes)
+          if (Misc.getMyId().equals(targetNode)) {
+            verifyGlobalIndexSizes(params);
+          }
+        } catch (SQLException sq) {
+          throw StandardException.unexpectedUserException(sq);
+        }
+      }
+
+      // check whether the sizes of global index and base table are equal
+      private void verifyGlobalIndexSizes(Object[] params) throws StandardException {
+        String schema = (String)params[0];
+        String table = (String)params[1];
+        LocalRegion region = (LocalRegion)Misc.getRegionForTable(schema + "." + table, true);
+        GfxdIndexManager indexManager = (GfxdIndexManager)region.getIndexUpdater();
+        if (indexManager != null) {
+          List<GemFireContainer> indexContainers = indexManager.getIndexContainers();
+          if (indexContainers != null) {
+            for (GemFireContainer indexContainer : indexContainers) {
+              if (indexContainer.isGlobalIndex()) {
+                int numTableEntries = region.size();
+                int numIndexEntries = indexContainer.getRegion().size();
+                if (numTableEntries != numIndexEntries) {
+                  throw StandardException.newException(
+                      SQLState.LANG_INDEX_ROW_COUNT_MISMATCH,
+                      indexContainer.getName(), schema, table,
+                      numIndexEntries, numTableEntries);
+                }
+              }
+            }
+          }
+        }
+      }
+
+      @Override
+      public Object[] readParams(DataInput in, short flags) throws IOException,
+          ClassNotFoundException {
+        Object[] inParams = new Object[3];
+        inParams[0] = in.readUTF();
+        inParams[1] = in.readUTF();
+        inParams[2] = InternalDataSerializer.readObject(in);
+
+        return inParams;
+      }
+
+      @Override
+      public void writeParams(Object[] params, DataOutput out)
+          throws IOException {
+        out.writeUTF((String)params[0]);
+        out.writeUTF((String)params[1]);
+        InternalDataSerializer.writeObject(params[2], out);
+      }
+
+      @Override
+      String getSQLStatement(Object[] params) throws StandardException {
+        final StringBuilder sb = new StringBuilder();
+        return sb.append("VALUES SYS.CHECK_TABLE_EX('").append(params[0])
             .append("','").append(params[1]).append("')").toString();
       }
     },

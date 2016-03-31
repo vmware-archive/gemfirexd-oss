@@ -1242,6 +1242,23 @@ public final class GfxdDataDictionary extends DataDictionaryImpl {
     }
 
     {
+      // CHECK_TABLE_EX
+
+      // procedure argument names
+      String[] arg_names = { "SCHEMA", "TABLE" };
+
+      // procedure argument types
+      TypeDescriptor[] argTypes = new TypeDescriptor[] {
+          DataTypeDescriptor.getCatalogType(Types.VARCHAR),
+          DataTypeDescriptor.getCatalogType(Types.VARCHAR) };
+
+      super.createSystemProcedureOrFunction("CHECK_TABLE_EX", sysUUID, arg_names,
+          argTypes, 0, 0, RoutineAliasInfo.NO_SQL,
+          DataTypeDescriptor.getCatalogType(Types.INTEGER), newlyCreatedRoutines, tc,
+          GFXD_SYS_PROC_CLASSNAME, false);
+    }
+
+    {
       // void SET_CRITICAL_HEAP_PERCENTAGE(real)
 
       // procedure argument names

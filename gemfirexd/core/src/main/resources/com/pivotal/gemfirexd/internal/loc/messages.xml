@@ -3242,6 +3242,14 @@ Guide.
             </msg>
 
             <msg>
+                <name>X0X64.S</name>
+                <text>Inconsistency found between table '{0}' and index '{1}'. No value found for the key '{2}' in the global index. The suggested corrective action is to recreate the index.</text>
+                <arg>tableName</arg>
+                <arg>indexName</arg>
+                <arg>rowLocation</arg>
+            </msg>
+
+            <msg>
                 <name>X0X67.S</name>
                 <text>Columns of type '{0}' may not be used in CREATE INDEX, ORDER BY, GROUP BY, UNION, INTERSECT, EXCEPT or DISTINCT statements because comparisons are not supported for that type.</text>
                 <arg>type</arg>

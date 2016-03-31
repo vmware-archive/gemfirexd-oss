@@ -2015,6 +2015,75 @@ public class GfxdSystemProcedures extends SystemProcedures {
   }
 
   /**
+   * Checks consistency of indexes(local and global) on the given table
+   *
+   * @param schema
+   * @param table
+   * @return returns 1 when indexes are consistent, otherwise
+   * throws exception
+   *
+   * @throws SQLException
+   * @throws StandardException
+   * @throws InterruptedException
+   */
+  public static int CHECK_TABLE_EX(String schema, String table) throws
+      SQLException, StandardException, InterruptedException {
+    if (schema == null || table == null) {
+      throw StandardException.newException(
+          SQLState.LANG_INVALID_FUNCTION_ARGUMENT, "NULL",
+          "CHECK_TABLE_EX");
+    }
+    final Object[] params;
+
+    if (GemFireXDUtils.TraceExecute) {
+      SanityManager.DEBUG_PRINT(GfxdConstants.TRACE_EXECUTION,
+          "CHECK_TABLE_EX schema:" + schema + "table: " + table);
+    }
+
+    // just add any one data store member id as 3rd param on which
+    // we will verify global index region size with base table size
+    if (GemFireXDUtils.getMyVMKind().isStore()) {
+      params = new Object[]{schema, table, Misc.getMyId()};
+    } else {
+      Set<DistributedMember> dataStores = GfxdMessage.getAllDataStores();
+      DistributedMember targetNode = dataStores.iterator().next();
+      params = new Object[]{schema, table, targetNode};
+    }
+
+    Thread thread = null;
+    final StandardException[] failure = new StandardException[1];
+    try {
+      // execute on self in a different thread as this procedure might be time
+      // consuming and then send message to other nodes in parallel to execute
+      if (GemFireXDUtils.getMyVMKind().isStore()) {
+        thread = new Thread(new Runnable() {
+          @Override
+          public void run() {
+            try {
+              GfxdSystemProcedureMessage.SysProcMethod.
+                  checkTableEx.processMessage(params, Misc.getMyId());
+            } catch (StandardException s) {
+              failure[0] = s;
+            }
+          }
+        }, "CHECK_TABLE_EX sys proc executor");
+        thread.start();
+      }
+      // send message to other nodes
+      publishMessage(params, false,
+          GfxdSystemProcedureMessage.SysProcMethod.checkTableEx, false, false);
+    } finally {
+      if (thread != null) {
+        thread.join();
+        if (failure[0] != null) {
+          throw failure[0];
+        }
+      }
+    }
+    return 1;
+  }
+
+  /**
    * Refresh LDAP group permissions for all relevant tables on all nodes.
    *
    * @param ldapGroup
