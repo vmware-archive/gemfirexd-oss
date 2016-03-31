@@ -35,10 +35,10 @@ runtest() {
 
  export EXTRA_JTESTS=$SNAPPYDATADIR/snappy-store/tests/core/build-artifacts/linux/classes/main
  #export JTESTS_RESOURCES=$SNAPPYDATADIR/snappy-store/tests/core/src/main/java
- export CLASSPATH=$JTESTS:$EXTRA_JTESTS:$GEMFIRE/lib/gemfirexd-1.5.0-BETA.jar:$GEMFIRE/lib/gemfirexd-client-1.5.0-BETA.jar:$JTESTS/../../libs/gemfirexd-hydra-tests-1.5.0-BETA-all.jar:$GEMFIRE/lib/gemfirexd-tools-1.5.0-BETA.jar:$SNAPPYDATADIR/snappy-dtests/build-artifacts/scala-2.10/libs/gemfirexd-scala-tests-0.1.0-SNAPSHOT.jar
+ export CLASSPATH=$JTESTS:$EXTRA_JTESTS:$GEMFIRE/lib/gemfirexd-1.5.0-BETA2.jar:$GEMFIRE/lib/gemfirexd-client-1.5.0-BETA2.jar:$JTESTS/../../libs/gemfirexd-hydra-tests-1.5.0-BETA2-all.jar:$GEMFIRE/lib/gemfirexd-tools-1.5.0-BETA2.jar:$SNAPPYDATADIR/snappy-dtests/build-artifacts/scala-2.10/libs/gemfirexd-scala-tests-0.1.0-SNAPSHOT.jar
  echo "Running useCase6.bt using useCase6.local.conf..."
 
-  $JAVA_HOME/bin/java -server \
+  $TEST_JVM/bin/java -server \
     -classpath $CLASSPATH -DGEMFIRE=$GEMFIRE -DJTESTS=$JTESTS -DresultDir=${resultDir}\
     -DprovideRegressionSummary=false -DnukeHungTest=true -DmoveRemoteDirs=true \
     -DnumTimesToRun=1 -DtestFileName=useCase6.bt -DlocalConf=useCase6.local.conf \
