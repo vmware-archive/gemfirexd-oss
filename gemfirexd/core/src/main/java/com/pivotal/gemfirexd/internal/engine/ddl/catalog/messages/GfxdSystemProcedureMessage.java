@@ -1486,26 +1486,71 @@ public final class GfxdSystemProcedureMessage extends
       }
 
       @Override
-      boolean initConnection() {
-        return true;
-      }
-
-      @Override
       public void processMessage(Object[] params, DistributedMember sender)
           throws StandardException {
-        String schema = (String)params[0];
-        String table = (String)params[1];
-        // member on which global index size are verified
-        DistributedMember targetNode = (DistributedMember)params[2];
-        SanityManager.DEBUG_PRINT(GfxdConstants.TRACE_SYS_PROCEDURES,
-            "GfxdSystemProcedureMessage:CHECK_TABLE_EX schema: " + schema +
-                " table: " + table );
+
+        LanguageConnectionContext lcc = Misc.getLanguageConnectionContext();
+        if (lcc != null) {
+          // do the actual work of checking indexes
+          executeCheckTable(params);
+        } else {
+          // set up the lcc first
+          EmbedConnection conn = null;
+          StatementContext statementContext = null;
+          boolean popContext = false;
+          Throwable t = null;
+          try {
+
+            conn = GemFireXDUtils.getTSSConnection(true, true, true);
+            conn.getTR().setupContextStack();
+
+            synchronized (conn.getConnectionSynchronization()) {
+
+              // create an artificial statementContext for simulating procedure call
+              lcc = conn.getLanguageConnectionContext();
+              lcc.pushMe();
+              popContext = true;
+              assert ContextService
+                  .getContextOrNull(LanguageConnectionContext.CONTEXT_ID) != null;
+              statementContext = lcc.pushStatementContext(false, false,
+                  this.name(), null, false, 0L);
+              statementContext
+                  .setSQLAllowed(RoutineAliasInfo.MODIFIES_SQL_DATA, true);
+
+              //now do the actual work of checking indexes
+              executeCheckTable(params);
+            }
+          } finally {
+            if (statementContext != null) {
+              lcc.popStatementContext(statementContext, t);
+            }
+            if (lcc != null && popContext) {
+              lcc.popMe();
+            }
+            if (conn != null) {
+              conn.getTR().restoreContextStack();
+            }
+          }
+          }
+      }
+
+      private void executeCheckTable(Object[] params) throws StandardException {
         try {
+          String schema = (String)params[0];
+          String table = (String)params[1];
+          // member on which global index size are verified
+          DistributedMember targetNode = (DistributedMember)params[2];
+
+          SanityManager.DEBUG_PRINT(GfxdConstants.TRACE_SYS_PROCEDURES,
+              "GfxdSystemProcedureMessage:CHECK_TABLE_EX schema: " + schema +
+                  " table: " + table + " target node to verify global " +
+                  "index size:" + targetNode);
+
           // verify that local and global index contents are consistent
           SystemProcedures.CHECK_TABLE(schema, table);
 
           // instead of verifying global index region size on each node
-          // just verify it on mentioned node as we need to check verify
+          // just verify it on mentioned node as we need to verify
           // total region sizes for global index (and not local sizes)
           if (Misc.getMyId().equals(targetNode)) {
             verifyGlobalIndexSizes(params);

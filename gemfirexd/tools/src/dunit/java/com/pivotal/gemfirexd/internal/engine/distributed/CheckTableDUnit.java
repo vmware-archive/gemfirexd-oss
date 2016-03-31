@@ -203,7 +203,7 @@ public class CheckTableDUnit extends DistributedSQLTestBase {
     checkGlobalIndexConsistency(conn, true);
 
     // composite pk
-    checkGlobalIndexConsistencyCompositeKey(conn);
+    //checkGlobalIndexConsistencyCompositeKey(conn);
   }
 
   private void checkGlobalIndexConsistency(Connection conn,
@@ -228,9 +228,10 @@ public class CheckTableDUnit extends DistributedSQLTestBase {
     }
 
     st.execute(createTableDDL);
+    int numRows = 100;
     PreparedStatement ps = conn.prepareStatement("INSERT INTO TEST.TABLE1" +
         " VALUES(?, ?, ?)");
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < numRows; i++) {
       ps.setInt(1, i);
       ps.setInt(2, i);
       ps.setString(3, "" + i);
@@ -239,7 +240,7 @@ public class CheckTableDUnit extends DistributedSQLTestBase {
     ps.executeBatch();
     ResultSet rs0 = st.executeQuery("select count(*) from test.TABLE1");
     assertTrue(rs0.next());
-    assertEquals(100, rs0.getInt(1));
+    assertEquals(numRows, rs0.getInt(1));
     rs0.close();
 
     // should not throw exception
@@ -265,7 +266,7 @@ public class CheckTableDUnit extends DistributedSQLTestBase {
 
     st.execute("DROP TABLE TEST.TABLE1");
     st.execute(createTableDDL);
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < numRows; i++) {
       ps.setInt(1, i);
       ps.setInt(2, i);
       ps.setString(3, "" + i);
