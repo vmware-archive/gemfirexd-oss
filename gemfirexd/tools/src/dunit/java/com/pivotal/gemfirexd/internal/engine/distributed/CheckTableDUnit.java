@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2016 SnappyData, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you
+ * may not use this file except in compliance with the License. You
+ * may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * permissions and limitations under the License. See accompanying
+ * LICENSE file.
+ */
 package com.pivotal.gemfirexd.internal.engine.distributed;
 
 import java.sql.Connection;
@@ -9,7 +25,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
@@ -23,9 +38,6 @@ import com.pivotal.gemfirexd.internal.iapi.types.SQLInteger;
 import com.pivotal.gemfirexd.internal.iapi.types.SQLVarchar;
 import io.snappydata.test.dunit.VM;
 
-/**
- * Created by shirishd on 15/3/16.
- */
 public class CheckTableDUnit extends DistributedSQLTestBase {
 
   public CheckTableDUnit(String name) {
@@ -36,7 +48,6 @@ public class CheckTableDUnit extends DistributedSQLTestBase {
 //  public String reduceLogging() {
 //    return "fine";
 //  }
-
 
   public void testLocalIndexConsistency() throws Exception {
     // start some servers
@@ -100,9 +111,9 @@ public class CheckTableDUnit extends DistributedSQLTestBase {
     VM serverVM2 = serverVMs.get(1);
 
     // delete an entry from the index to make it inconsistent with the base table
-    invokeInVM(serverVM1, CheckTableDUnit.class, "deleteEntryFromLocalIndex",
+    serverVM1.invoke(CheckTableDUnit.class, "deleteEntryFromLocalIndex",
         new Object[]{"/TEST/TABLE1", "IDX1"});
-    invokeInVM(serverVM2, CheckTableDUnit.class, "deleteEntryFromLocalIndex",
+    serverVM2.invoke(CheckTableDUnit.class, "deleteEntryFromLocalIndex",
         new Object[]{"/TEST/TABLE1", "IDX1"});
     try {
       ResultSet rs1 = st.executeQuery("VALUES SYS.CHECK_TABLE_EX('TEST', " +
@@ -120,10 +131,10 @@ public class CheckTableDUnit extends DistributedSQLTestBase {
     st.execute("CREATE INDEX TEST.IDX2 ON TEST.TABLE1(COL2)");
     // update an entry in index and put a incorrect value to make index
     // inconsistent with the base table
-    invokeInVM(serverVM1, CheckTableDUnit.class, "updateEntryInLocalIndex",
-        new Object[]{"/TEST/TABLE1", "IDX2"} );
-    invokeInVM(serverVM2, CheckTableDUnit.class, "updateEntryInLocalIndex",
-        new Object[]{"/TEST/TABLE1", "IDX2"} );
+    serverVM1.invoke(CheckTableDUnit.class, "updateEntryInLocalIndex",
+        new Object[]{"/TEST/TABLE1", "IDX2"});
+    serverVM2.invoke(CheckTableDUnit.class, "updateEntryInLocalIndex",
+        new Object[]{"/TEST/TABLE1", "IDX2"});
     try {
       ResultSet rs1 = st.executeQuery("VALUES SYS.CHECK_TABLE_EX('TEST'," +
           " 'TABLE1')");
@@ -251,7 +262,7 @@ public class CheckTableDUnit extends DistributedSQLTestBase {
     VM serverVM2 = serverVMs.get(1);
 
     // delete an entry from the index to make it inconsistent with the base table
-    invokeInVM(serverVM1, CheckTableDUnit.class, "deleteEntryFromGlobalIndex",
+    serverVM1.invoke(CheckTableDUnit.class, "deleteEntryFromGlobalIndex",
         new Object[]{"/TEST/TABLE1", new Object[]{new SQLInteger(2),
             new SQLInteger(90)}});
 
@@ -275,7 +286,7 @@ public class CheckTableDUnit extends DistributedSQLTestBase {
     ps.executeBatch();
 
     // insert an entry into the global index region but not in the base region
-    invokeInVM(serverVM1, CheckTableDUnit.class, "insertEntryIntoGlobalIndex",
+    serverVM1.invoke(CheckTableDUnit.class, "insertEntryIntoGlobalIndex",
         new Object[]{"/TEST/TABLE1", 55555, "somevalue"});
 
     try {
@@ -330,7 +341,7 @@ public class CheckTableDUnit extends DistributedSQLTestBase {
     CompositeRegionKey key2 = new CompositeRegionKey(dvds2);
 
     // delete an entry from the index to make it inconsistent with the base table
-    invokeInVM(serverVM1, CheckTableDUnit.class, "deleteEntryFromGlobalIndex",
+    serverVM1.invoke(CheckTableDUnit.class, "deleteEntryFromGlobalIndex",
         new Object[]{"/TEST/TABLE_CK", new Object[]{key1, key2}});
 
     try {
