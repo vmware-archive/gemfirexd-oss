@@ -19,7 +19,6 @@ package com.pivotal.gemfirexd;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.sql.Connection;
@@ -82,7 +81,6 @@ import com.pivotal.gemfirexd.internal.impl.sql.GenericPreparedStatement;
 import com.pivotal.gemfirexd.internal.impl.store.raw.data.GfxdJarResource;
 import io.snappydata.test.dunit.*;
 import io.snappydata.test.util.TestException;
-import junit.framework.Test;
 import org.apache.derby.drda.NetworkServerControl;
 import org.apache.derby.iapi.error.ShutdownException;
 import org.apache.derby.iapi.services.monitor.ModuleFactory;
@@ -90,7 +88,6 @@ import org.apache.derby.iapi.services.monitor.Monitor;
 import org.apache.derby.iapi.services.stream.HeaderPrintWriter;
 import org.apache.derbyTesting.junit.CleanDatabaseTestSetup;
 import org.apache.derbyTesting.junit.TestConfiguration;
-import org.junit.internal.MethodSorter;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
@@ -294,12 +291,10 @@ public class DistributedSQLTestBase extends DistributedTestBase {
   }
 
   public void beforeClass() throws Exception {
+    super.beforeClass();
     // Start a locator once for whole suite
     Host.getLocator().invoke(DistributedSQLTestBase.class,
         "startCommonLocator", getDUnitLocatorPort());
-  }
-
-  public void afterClass() throws Exception {
   }
 
   protected static String getDUnitLocatorString() {
@@ -340,33 +335,6 @@ public class DistributedSQLTestBase extends DistributedTestBase {
   @Override
   public void setUp() throws Exception {
     baseSetUp();
-
-    if (!beforeClassDone) {
-      beforeClass();
-      beforeClassDone = true;
-    }
-    if (lastTest == null) {
-      // for class-level afterClass, list the test methods and do the
-      // afterClass in the tearDown of last method
-      Class<?> scanClass = getClass();
-      while (Test.class.isAssignableFrom(scanClass)) {
-        for (Method m : MethodSorter.getDeclaredMethods(scanClass)) {
-          String methodName = m.getName();
-          if (methodName.startsWith("test")
-              && m.getParameterTypes().length == 0
-              && m.getReturnType().equals(Void.TYPE)) {
-            lastTest = methodName;
-          }
-        }
-        scanClass = scanClass.getSuperclass();
-      }
-      if (lastTest == null) {
-        fail("Could not find any last test in " + getClass().getName());
-      } else {
-        getLogWriter()
-            .info("Last test for " + getClass().getName() + ": " + lastTest);
-      }
-    }
   }
 
   protected void reduceLogLevelForTest(String logLevel) {
@@ -2290,12 +2258,6 @@ public class DistributedSQLTestBase extends DistributedTestBase {
 
   public void shutDownAll() throws Exception {
     baseShutDownAll();
-
-    if (getName().equals(lastTest)) {
-      afterClass();
-      beforeClassDone = false;
-      lastTest = null;
-    }
   }
 
   public static void deleteStrayDataDictionaryDir() {

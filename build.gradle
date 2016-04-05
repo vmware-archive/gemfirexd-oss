@@ -807,9 +807,7 @@ def includeJar(def jarFile) {
 // pack the entire GemFireXD product tree
 task product(dependsOn: [ subprojectBase + 'gemfirexd-client:jar',
     subprojectBase + 'gemfirexd-core:shadowJar',
-    subprojectBase + 'gemfirexd-tools:jar',
-    subprojectBase + 'gemfirexd-shared:javadoc',
-    subprojectBase + 'gemfirexd-core:javadoc' ]) << {
+    subprojectBase + 'gemfirexd-tools:jar' ]) << {
 
   delete productDir
 
@@ -901,10 +899,12 @@ task product(dependsOn: [ subprojectBase + 'gemfirexd-client:jar',
     from "${gcmDir}/where/vsd/70/vsd"
     into "${productDir}/tools/vsd"
   }
-  copy {
-    from sharedProject.javadoc.destinationDir
-    from coreProject.javadoc.destinationDir
-    into "${productDir}/docs/japi"
+  if (rootProject.hasProperty('docs')) {
+    copy {
+      from sharedProject.javadoc.destinationDir
+      from coreProject.javadoc.destinationDir
+      into "${productDir}/docs/japi"
+    }
   }
   copy {
     from(rootDir.getAbsolutePath() + '/release/images') {
@@ -952,6 +952,10 @@ task product(dependsOn: [ subprojectBase + 'gemfirexd-client:jar',
     }
     into (project(subprojectBase + 'gemfirexd-tests').buildDir.getAbsolutePath() + '/classes/main')
   }
+}
+if (rootProject.hasProperty('docs')) {
+  product.dependsOn subprojectBase + 'gemfirexd-shared:javadoc',
+                    subprojectBase + 'gemfirexd-core:javadoc'
 }
 
 task cleanAll {

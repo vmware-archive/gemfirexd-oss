@@ -224,11 +224,21 @@ implements Serializable {
       }
 
       // classPath -- product jars
-      if ( hd.getGemFireHome() != null ) {
+      if (hd.getGemFireHome() != null) {
         classPath.add(hd.getGemFireHome() + hd.getFileSep() + "lib"
-                                          + hd.getFileSep() + "gemfirexd-" +
+                + hd.getFileSep() + "gemfirexd-" +
+                ProductVersionHelper.getInfo().getProperty(ProductVersionHelper.SNAPPYRELEASEVERSION) + ".jar");
+        classPath.add(hd.getGemFireHome() + hd.getFileSep() + "lib"
+                + hd.getFileSep() + "gemfirexd-client-" +
+                ProductVersionHelper.getInfo().getProperty(ProductVersionHelper.SNAPPYRELEASEVERSION) + ".jar");
+        classPath.add(hd.getGemFireHome() + hd.getFileSep() + "lib"
+                + hd.getFileSep() + "gemfirexd-tools-" +
                 ProductVersionHelper.getInfo().getProperty(ProductVersionHelper.SNAPPYRELEASEVERSION) + ".jar");
       }
+
+      // classPath -- test jars
+      classPath.add(hd.getTestDir() + hd.getFileSep() + ".." + hd.getFileSep() + ".." + hd.getFileSep() + "libs" + hd.getFileSep() + "gemfirexd-hydra-tests-" +
+              ProductVersionHelper.getInfo().getProperty(ProductVersionHelper.SNAPPYRELEASEVERSION) + "-all.jar");
 
       // classPath -- set at last
       vmd.setClassPath(EnvHelper.asPath(classPath, hd));
