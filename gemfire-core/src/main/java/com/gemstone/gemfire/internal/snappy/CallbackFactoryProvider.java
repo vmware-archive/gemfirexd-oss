@@ -38,6 +38,16 @@ public abstract class CallbackFactoryProvider {
     public List<String> getInternalTableSchemas() {
       return Collections.emptyList();
     }
+
+    @Override
+    public int getHashCodeSnappy(Object dvd) {
+      return 0;
+    }
+
+    @Override
+    public int getHashCodeSnappy(Object[] dvds) {
+      return 0;
+    }
   };
 
   public static void setStoreCallbacks(StoreCallbacks cb) {
