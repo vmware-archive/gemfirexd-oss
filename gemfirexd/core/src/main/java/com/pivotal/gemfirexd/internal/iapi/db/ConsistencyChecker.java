@@ -354,6 +354,7 @@ public class ConsistencyChecker
 				}
 
 				/* Get the index rows and count them */
+          indexRowsForLocalPrimaryBuckets = 0;
 				for (indexRows = 0; scan.fetchNext(indexRow); indexRows++)
 				{
 					/*
