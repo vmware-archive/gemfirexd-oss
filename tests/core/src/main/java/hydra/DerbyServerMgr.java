@@ -28,11 +28,15 @@ public class DerbyServerMgr
   private static final String cpSep;
   
   static {
+    HostDescription hd = TestConfig.getInstance().getMasterDescription()
+            .getVmDescription().getHostDescription();
     if (HostHelper.getLocalHostOS() == OSType.windows) {
-      defaultDerbyNetJarPath = "j:/where/java/derby/derby-10.8.2.2/jars/insane/derbynet.jar";
+      defaultDerbyNetJarPath = hd.getTestDir() + hd.getFileSep() + ".." + hd.getFileSep() + ".." + hd.getFileSep() + "libs" + hd.getFileSep() + "gemfirexd-hydra-tests-" +
+              ProductVersionHelper.getInfo().getProperty(ProductVersionHelper.SNAPPYRELEASEVERSION) + "-all.jar";
       cpSep = ";";
     } else {
-      defaultDerbyNetJarPath = "/export/gcm/where/java/derby/derby-10.8.2.2/jars/insane/derbynet.jar";
+      defaultDerbyNetJarPath = hd.getTestDir() + hd.getFileSep() + ".." + hd.getFileSep() + ".." + hd.getFileSep() + "libs" + hd.getFileSep() + "gemfirexd-hydra-tests-" +
+              ProductVersionHelper.getInfo().getProperty(ProductVersionHelper.SNAPPYRELEASEVERSION) + "-all.jar";
       cpSep = ":";
     }
   }
@@ -52,8 +56,9 @@ public class DerbyServerMgr
   protected static String getDerbyCmd(HostDescription hd) {
     //String derbyNetJarPath = TestConfig.tab().stringAt(Prms.derbyServerClassPath, defaultDerbyNetJarPath);
     String derbyNetJarPath = defaultDerbyNetJarPath;
-
-    Long key = Prms.derbyServerClassPath;
+    // Comminting as derby jars are packed in hydra jar which is set in defaultDerbyNetJarPath.
+    //Long key = Prms.derbyServerClassPath;
+    Long key = null;
     Vector paths = TestConfig.tab().vecAt(key, null);
     if (paths != null) {
       for (Iterator it = paths.iterator(); it.hasNext();) {
@@ -68,7 +73,6 @@ public class DerbyServerMgr
         derbyNetJarPath = EnvHelper.asPath(paths, hd);
       }
     }
-
     Log.getLogWriter().fine("derbynet.jar path: " + derbyNetJarPath);
 
     String derbyCmd = "-classpath " + derbyNetJarPath + cpSep

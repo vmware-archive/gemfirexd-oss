@@ -960,8 +960,14 @@ public final class FabricDatabase implements ModuleControl,
       // pre-initialize so before fully initializing the container and hence the
       // underlying region let's do a sanity check on the index size and region size
       // for sorted indexes.
-      if (this.memStore.getMyVMKind() == GemFireStore.VMKind.DATASTORE) {
-        checkRecoveredIndex(uninitializedContainers, logger, false);
+      if (this.memStore.isPersistIndexes() &&
+          this.memStore.getMyVMKind() == GemFireStore.VMKind.DATASTORE) {
+        try {
+          checkRecoveredIndex(uninitializedContainers, logger, false);
+        } catch (RuntimeException ex) {
+          logger.info("Runtime exception while doing checkRecoveredIndex ex: " + ex.getMessage(), ex);
+          throw ex;
+        }
       }
 
       for (GemFireContainer container : uninitializedContainers) {
@@ -1067,38 +1073,86 @@ public final class FabricDatabase implements ModuleControl,
       if (dp == DataPolicy.PERSISTENT_PARTITION || dp == DataPolicy.PERSISTENT_REPLICATE) {
         GfxdIndexManager gim = (GfxdIndexManager)region.getIndexUpdater();
         if (gim == null || container.isGlobalIndex()) continue;
-        int localRegionSz = getAndDumpLocalRegionSize(region, dp, logger, false, throwErrorOnMismatch);
+        int localRegionSize = getAndDumpLocalRegionSize(region, dp, logger, false, throwErrorOnMismatch);
         List<GemFireContainer> allIndexes = gim.getAllIndexes();
         for (GemFireContainer c : allIndexes) {
           if (c.isLocalIndex()) {
-            if (c.getIndexSize() != localRegionSz) {
+            int indexSize = c.getIndexSize();
+            if ( indexSize != localRegionSize) {
               if (!throwErrorOnMismatch) {
                 logger.warning("checkRecoveredIndex: for table: " + region.getName() + " " +
-                    "number of local entries = " + localRegionSz + " and number of " +
+                    "number of local entries = " + localRegionSize + " and number of " +
                     "index entries in the index: " + c.getName() + " = " + c.getIndexSize());
+                localRegionSize = getRegionSizeByIterating(region, dp);
+                if (indexSize != localRegionSize) {
+                  logger.info("FabricDatabase: index and region out of sync even after iterating." +
+                      " Recreating the indexes");
+                  // First clear all the indexes
+                  clearAllIndexes(uninitializedContainers);
+                  recreateAllLocalIndexes(logger);
+                  checkRecoveredIndex(uninitializedContainers, logger, true);
+                }
               } else {
-                logger.error("checkRecoveredIndex: for table: " + region.getName() + " " +
-                    "number of local entries = " + localRegionSz + " and number of " +
-                    "index entries in the index: " + c.getName() + " = " + c.getIndexSize());
-                dumpIndexAndRegion(region, dp, c, logger);
-                throw new IllegalStateException("Table data and indexes are not reconciling." +
-                    "Probably need to revoke the disk store");
+                localRegionSize = getRegionSizeByIterating(region, dp);
+                if (indexSize != localRegionSize) {
+                  logger.error("checkRecoveredIndex: for table: " + region.getName() + " " +
+                      "number of local entries = " + localRegionSize + " and number of " +
+                      "index entries in the index: " + c.getName() + " = " + c.getIndexSize());
+                  dumpIndexAndRegion(region, dp, c, logger);
+                  throw new IllegalStateException("Table data and indexes are not reconciling." +
+                      "Probably need to revoke the disk store");
+                }
               }
-              logger.info("FabricDatabase: index and region out of sync. Recreating the indexes");
-              // First clear all the indexes
-              clearAllIndexes(uninitializedContainers);
-              recreateAllLocalIndexes(logger);
-              checkRecoveredIndex(uninitializedContainers, logger, true);
             } else {
               if (logger.fineEnabled()) {
                 logger.fine("checkRecoveredIndex: local index: " + c.getName() +
-                    " and table: " + region.getName() + " with size: " + localRegionSz);
+                    " and table: " + region.getName() + " with size: " + localRegionSize);
               }
             }
           }
         }
       }
     }
+  }
+
+  private int getRegionSizeByIterating(LocalRegion region, DataPolicy dp) {
+    int sz = 0;
+    if (dp == DataPolicy.PERSISTENT_PARTITION) {
+      DiskStoreImpl ds = region.getDiskStore();
+      Collection<AbstractDiskRegion> diskRegions = ds.getAllDiskRegions().values();
+      String regionPath = region.getFullPath();
+      int prId = ((PartitionedRegion)region).getPRId();
+      long regionUUId = region.getRegionUUID();
+      for (AbstractDiskRegion diskReg : diskRegions) {
+        long parentUUid = diskReg.getUUID();
+        // check if pr id matches
+        if (parentUUid == regionUUId) {
+          // TODO: Better way to find disk regions of global index's buckets?
+          if (diskReg.getName().contains("____")) continue;
+          RegionMap rmap = diskReg.getRecoveredEntryMap();
+          if (rmap != null) {
+            Collection<RegionEntry> res = rmap != null ? rmap.regionEntriesInVM() : null;
+            for (RegionEntry re : res) {
+              if (re.getValueAsToken() != Token.TOMBSTONE) {
+                sz++;
+              }
+            }
+          }
+        }
+      }
+    } else {
+      DiskRegion diskReg = region.getDiskRegion();
+      RegionMap rmap = diskReg.getRecoveredEntryMap();
+      if (rmap != null) {
+        Collection<RegionEntry> res = rmap.regionEntriesInVM();
+        for (RegionEntry re : res) {
+          if (re.getValueAsToken() != Token.TOMBSTONE) {
+            sz++;
+          }
+        }
+      }
+    }
+    return sz;
   }
 
   private void dumpIndexAndRegion(LocalRegion region, DataPolicy dp, GemFireContainer index, LogWriter logger) {
@@ -1156,15 +1210,16 @@ public final class FabricDatabase implements ModuleControl,
         if (parentUUid == regionUUId) {
           // TODO: Better way to find disk regions of global index's buckets?
           if (diskReg.getName().contains("____")) continue;
+          RegionMap rmap = diskReg.getRecoveredEntryMap();
+          Collection<RegionEntry> res = rmap != null ? rmap.regionEntriesInVM() : null;
           if (!dump) {
             sz += diskReg.getRecoveredEntryCount();
             int invalidCnt = diskReg.getInvalidOrTombstoneEntryCount();
             sz -= invalidCnt;
           } else {
             logger.info("Dumping key value for region: " + region.getName());
-            RegionMap rmap = diskReg.getRecoveredEntryMap();
             if (rmap != null) {
-              Collection<RegionEntry> res = rmap.regionEntriesInVM();
+              //Collection<RegionEntry> res = rmap.regionEntriesInVM();
               for (RegionEntry re : res) {
                 logger.info("reKey=" + re.getKey() + " value=" + re._getValue());
               }
@@ -1180,7 +1235,6 @@ public final class FabricDatabase implements ModuleControl,
       if (!dump) {
         sz = diskReg.getRecoveredEntryCount();
         sz -= diskReg.getInvalidOrTombstoneEntryCount();
-        logger.info("region size = " + sz + " region: " + region.getName());
       }
       else {
         logger.info("Dumping key value for region: " + region.getName());
