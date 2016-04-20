@@ -137,7 +137,7 @@ public class DataGenerator {
     if (rows > 1000000)
       batchNum = 1000000;
 
-    batchNum = rows;
+    //batchNum = rows;
 
     List<ColumnMetaData> columnList = table.getColumns();
     // output file writer
@@ -158,6 +158,8 @@ public class DataGenerator {
         }
         out.write(sb.toString());
       }
+
+      log.info("Going to generate " +rows +" rows");
 
       do {
         int rowBatch = (rows - batchNum > 0) ? batchNum : rows;

@@ -23,10 +23,12 @@ import com.gemstone.gemfire.Statistics;
 import com.gemstone.gemfire.StatisticsFactory;
 import hydra.*;
 import hydra.gemfirexd.*;
+
 import java.io.*;
 import java.rmi.RemoteException;
 import java.sql.*;
 import java.util.*;
+
 import objects.query.QueryPrms;
 import org.apache.hadoop.classification.InterfaceAudience;
 import sql.SQLHelper;
@@ -73,7 +75,7 @@ public class UseCase6Client extends QueryPerfClient {
 //------------------------------------------------------------------------------
 
   /**
-   *  TASK to register the useCase6 performance statistics object.
+   * TASK to register the useCase6 performance statistics object.
    */
   public static void openStatisticsTask() {
     UseCase6Client c = new UseCase6Client();
@@ -88,9 +90,9 @@ public class UseCase6Client extends QueryPerfClient {
     }
     setUseCase6Stats(this.useCase6stats);
   }
-  
-  /** 
-   *  TASK to unregister the performance statistics object.
+
+  /**
+   * TASK to unregister the performance statistics object.
    */
   public static void closeStatisticsTask() {
     UseCase6Client c = new UseCase6Client();
@@ -98,7 +100,7 @@ public class UseCase6Client extends QueryPerfClient {
     c.closeStatistics();
     c.updateHydraThreadLocals();
   }
-  
+
   protected void closeStatistics() {
     MasterController.sleepForMs(2000);
     if (this.useCase6stats != null) {
@@ -112,15 +114,16 @@ public class UseCase6Client extends QueryPerfClient {
 //------------------------------------------------------------------------------
 
   public static void executeDDLTask()
-  throws FileNotFoundException, IOException, SQLException {
+      throws FileNotFoundException, IOException, SQLException {
     UseCase6Client c = new UseCase6Client();
     c.initialize();
     if (c.sttgid == 0) {
       c.executeDDL();
     }
   }
+
   private void executeDDL()
-  throws FileNotFoundException, IOException, SQLException {
+      throws FileNotFoundException, IOException, SQLException {
     String fn = getDDLFile(UseCase6Prms.getDDLFile());
     List<String> stmts = getDDLStatements(fn);
     for (String stmt : stmts) {
@@ -144,7 +147,7 @@ public class UseCase6Client extends QueryPerfClient {
   }
 
   private ResultSet execute(String stmt, Connection conn)
-          throws SQLException {
+      throws SQLException {
     if (this.logQueries) {
       Log.getLogWriter().info("Executing: " + stmt + " on: " + conn);
     }
@@ -160,23 +163,7 @@ public class UseCase6Client extends QueryPerfClient {
     s.close();
     return rs;
   }
-  private ResultSet executequery(String stmt, Connection conn) throws SQLException {
-    ResultSet sel = null;
-    PreparedStatement select = null;
-    select = conn.prepareStatement(stmt);
-    sel = select.executeQuery();
-    int[] rowCounts = UseCase6Prms.getInitialRowCountToPopulateTable();
-    if (sel.next()) {
-      int count = sel.getInt(1);
-      if(count == rowCounts[0])
-        Log.getLogWriter().info("Found result count for query ( " + stmt + ") " + count);
-      else
-        throw new TestException("Expected result count for (" + stmt + ") is " + rowCounts[0] + " but found " + count);
-    }
-    sel.close();
-    sel = null;
-    return sel;
-  }
+
   private String getDDLFile(String fname) {
     String fn = "$JTESTS/cacheperf/comparisons/gemfirexd/useCase6/ddl/" + fname;
     String newfn = EnvHelper.expandEnvVars(fn);
@@ -185,7 +172,7 @@ public class UseCase6Client extends QueryPerfClient {
   }
 
   private List<String> getDDLStatements(String fn)
-  throws FileNotFoundException, IOException {
+      throws FileNotFoundException, IOException {
     Log.getLogWriter().info("Reading statements from " + fn);
     String text = FileUtil.getText(fn).trim();
     StringTokenizer tokenizer = new StringTokenizer(text, ";", false);
@@ -298,46 +285,60 @@ public class UseCase6Client extends QueryPerfClient {
       c.generateAndLoadData();
     }
   }
+
   private String getMapperFileAbsolutePath() {
     String mPath = System.getProperty("JTESTS") + "/"
-            + TestConfig.tab().stringAt(UseCase6Prms.mapperFile, null);
+        + TestConfig.tab().stringAt(UseCase6Prms.mapperFile, null);
     return mPath;
   }
 
-  public void generateAndLoadData() throws SQLException{
+  public void generateAndLoadData() throws SQLException {
     // this will init DataGenerator, create CSVs for populate and create rows for inserts
-    String[] tableNames = UseCase6Prms.getTableNames();;
+    String[] tableNames = UseCase6Prms.getTableNames();
+    ;
     int[] rowCounts = UseCase6Prms.getInitialRowCountToPopulateTable();
     String mapper = getMapperFileAbsolutePath();
     DataGeneratorHelper.initDataGenerator(mapper, tableNames, rowCounts, this.connection);
+
+    int prevCount = SqlUtilityHelper.getRowsInTable(tableNames[0], this.connection);
     populateTables(this.connection);
-    //executequery("SELECT count(*) FROM OLTP_PNP_Subscriptions", this.connection);
+    int newCount = SqlUtilityHelper.getRowsInTable(tableNames[0], this.connection);
+
+    DataGeneratorHelper.clearDataGenerator();
+    if( (newCount - prevCount) != rowCounts[0]) {
+      throw new TestException("Row count mismatch. Expected (" + newCount + " - " + prevCount + ") = " + rowCounts[0]);
+    }
+
     //executequery("SELECT * FROM OLTP_PNP_Subscriptions", this.connection);
   }
-  public void populateTables(Connection gConn){
+
+  public void populateTables(Connection gConn) {
     //populate gfxd tables from CSVs
     int totalThreads = SqlUtilityHelper.totalTaskThreads();
     int ttgid = SqlUtilityHelper.ttgid();
     String[] tableNames = UseCase6Prms.getTableNames();
-    for(int i=0; i < tableNames.length ; i++){
-     if ((ttgid % totalThreads == totalThreads - 1) && SqlUtilityHelper.getRowsInTable(tableNames[i], gConn) <= 0  ) {       // thus make is single threaded and should not import if data is already in table
-        populateTables( tableNames[i], gConn);
+    Log.getLogWriter().info("Populating tables " + Arrays.toString(tableNames) + " with totalThreads = " + totalThreads + " ttgid = " + ttgid);
+    for (int i = 0; i < tableNames.length; i++) {
+      if ((ttgid % totalThreads == 0)) {       // thus make is single threaded and should not import if data is already in table
+        populateTables(tableNames[i], gConn);
       }
     }
   }
+
   private void populateTables(final String fullTableName, final Connection gConn) {
     String[] names = fullTableName.trim().split("\\.");
     String schemaName = names[0];
     String tableName = names[1];
     String csvFilePath = DataGeneratorBB.getCSVFileName(fullTableName);
 
-    importTablesToGfxd(gConn, schemaName, tableName,csvFilePath);
+    importTablesToGfxd(gConn, schemaName, tableName, csvFilePath);
     commitDDL();
   }
-  private void importTablesToGfxd(Connection conn, String schema,
-                                    String table , String csvPath ){
 
-    Log.getLogWriter().info("Gfxd - Data Population Started for " + schema + "." + table + " using " + csvPath );
+  private void importTablesToGfxd(Connection conn, String schema,
+      String table, String csvPath) {
+
+    Log.getLogWriter().info("Gfxd - Data Population Started for " + schema + "." + table + " using " + csvPath);
     String delimitor = ",";
     String procedure = "sql.datagen.ImportOraDG";
     String importTable = "CALL SYSCS_UTIL.IMPORT_DATA_EX(?, ?, null,null, ?, ?, NULL, NULL, 0, 0, 10, 0, ?, null)";
@@ -353,7 +354,7 @@ public class UseCase6Client extends QueryPerfClient {
       SQLHelper.handleSQLException(se);
     }
 
-    Log.getLogWriter().info("Gfxd - Data Population Completed for " + schema + "." + table );
+    Log.getLogWriter().info("Gfxd - Data Population Completed for " + schema + "." + table);
 
   }
 
@@ -362,6 +363,7 @@ public class UseCase6Client extends QueryPerfClient {
     c.initialize();
     c.storeUniqueDataFromTable();
   }
+
   private void storeUniqueDataFromTable() throws SQLException {
     paramValues[0] = new ArrayList<>();
     paramValues[1] = new ArrayList<>();
@@ -377,9 +379,11 @@ public class UseCase6Client extends QueryPerfClient {
         Log.getLogWriter().info("done loading " + counter + " items");
     }
 
+    Log.getLogWriter().info("Total loaded msisdn and wallentname items = " + counter);
     paramRS.close();
     ps.close();
   }
+
   public static void selectAndUpdateTask() throws SQLException {
     UseCase6Client c = new UseCase6Client();
     //c.initialize();
@@ -387,6 +391,7 @@ public class UseCase6Client extends QueryPerfClient {
     //c.useCase6SelectAndUpdateTask();
     c.useCase6SelectAndUpdate();
   }
+
   private void useCase6SelectAndUpdateTask() throws SQLException {
 //    useCase6SelectAndUpdate();
     Random rand = new Random();
@@ -399,16 +404,17 @@ public class UseCase6Client extends QueryPerfClient {
       ++this.keyCount; // not really needed
     } while (!executeBatchTerminator()); // does not commit
   }
+
   private void useCase6SelectAndUpdate() throws SQLException {
     PreparedStatement update = null;
     PreparedStatement select = null;
+    select = this.connection.prepareStatement(selstm);
+    update = this.connection.prepareStatement(updstm);
     //Random rand = new Random();
     //int val = rand.nextInt(paramValues[0].size() - 1);
     //Log.getLogWriter().info("useCase6SelectAndUpdateTask - done loading " + paramValues[0] + " items");
-    for (int iter = 0; iter < paramValues[0].size() ; iter++) {
+    for (int iter = 0; iter < paramValues[0].size(); ) {
       long start = this.useCase6stats.startTransaction();
-      select = this.connection.prepareStatement(selstm);
-      update = this.connection.prepareStatement(updstm);
       select.setString(1, paramValues[0].get(iter));
       select.setString(2, paramValues[1].get(iter));
       ResultSet sel = select.executeQuery();
@@ -420,19 +426,27 @@ public class UseCase6Client extends QueryPerfClient {
       final Timestamp ts = new Timestamp(tpsBegin);
       update.setTimestamp(1, ts);
       update.setString(2, id);
-      update.executeUpdate();
+      try {
+        update.executeUpdate();
+      } catch (SQLException txe) {
+        if ("X0Z02".equals(txe.getSQLState())) {
+          this.useCase6stats.endTransaction(start, 0);
+          continue;
+        }
+        txe.printStackTrace();
+      }
       //Log.getLogWriter().info("Updated table with id " + id);
       this.connection.commit();
       this.useCase6stats.endTransaction(start, 0);
-
-      if (select != null) {
-        select.close();
-        select = null;
-      }
-      if (update != null) {
-        update.close();
-        update = null;
-      }
+      iter++;
+    }
+    if (select != null) {
+      select.close();
+      select = null;
+    }
+    if (update != null) {
+      update.close();
+      update = null;
     }
 
   }

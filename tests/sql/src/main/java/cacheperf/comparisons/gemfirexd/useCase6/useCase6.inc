@@ -1,9 +1,9 @@
 include $JTESTS/hydraconfig/hydraparams1.inc;
-include $JTESTS/hydraconfig/gemfirexd/topology_2_locator.inc;
+include $JTESTS/hydraconfig/gemfirexd/topology_3_locator.inc;
 include $JTESTS/hydraconfig/gemfirexd/performance.inc;
 
 hydra.Prms-totalTaskTimeSec = 3600000   ; // time-based workload
-hydra.Prms-maxResultWaitSec = 1800;
+hydra.Prms-maxResultWaitSec = 3600;
 
 hydra.VmPrms-extraVMArgs =
   fcn "hydra.TestConfigFcns.duplicate
@@ -47,10 +47,17 @@ THREADGROUP server
   clientNames  = fcn "hydra.TestConfigFcns.generateNames(\"server\", ${serverHosts}, true)"
                  ncf;
 
+THREADGROUP newstore
+   totalThreads = fcn "(${${C}Hosts} * ${${C}VMsPerHost} *  ${${C}ThreadsPerVM}) "
+                  ncf
+   totalVMs     = fcn "(${${C}Hosts} * ${${C}VMsPerHost})" ncf
+   clientNames  = fcn "hydra.TestConfigFcns.generateNames(\"${C}\",
+                                ${${C}Hosts}, true)"
+                  ncf;
 
 INITTASK  taskClass = cacheperf.comparisons.gemfirexd.useCase6.UseCase6Client
           taskMethod = openStatisticsTask
-          threadGroups = locator, server, client
+          threadGroups = locator, server, client, newstore
          ;
 INITTASK  taskClass = cacheperf.comparisons.gemfirexd.useCase6.UseCase6Client
           taskMethod = executeDDLTask
@@ -72,17 +79,79 @@ INITTASK  taskClass = cacheperf.comparisons.gemfirexd.useCase6.UseCase6Client
           threadGroups = client
           ;
 
+INITTASK  taskClass = cacheperf.comparisons.gemfirexd.useCase6.UseCase6Client
+          taskMethod = generateAndLoadDataTask
+          threadGroups = client
+          ;
+
+INITTASK  taskClass = cacheperf.comparisons.gemfirexd.QueryPerfClient
+          taskMethod = rebalanceBucketsTask
+          threadGroups = server
+          ;
+
+INITTASK  taskClass = cacheperf.comparisons.gemfirexd.useCase6.UseCase6Client
+          taskMethod = selectAndUpdateTask
+          threadGroups = client
+          ;
+
+INITTASK  taskClass = cacheperf.comparisons.gemfirexd.useCase6.UseCase6Client
+          taskMethod = generateAndLoadDataTask
+          threadGroups = client
+          ;
+
+INITTASK  taskClass = cacheperf.comparisons.gemfirexd.QueryPerfClient
+          taskMethod = rebalanceBucketsTask
+          threadGroups = server
+          ;
+
+INITTASK  taskClass = cacheperf.comparisons.gemfirexd.useCase6.UseCase6Client
+          taskMethod = selectAndUpdateTask
+          threadGroups = client
+          ;
+
+INITTASK  taskClass = cacheperf.comparisons.gemfirexd.useCase6.UseCase6Client
+          taskMethod = generateAndLoadDataTask
+          threadGroups = client
+          ;
+
+INITTASK  taskClass = cacheperf.comparisons.gemfirexd.QueryPerfClient
+          taskMethod = rebalanceBucketsTask
+          threadGroups = server
+          ;
+
+INITTASK  taskClass = cacheperf.comparisons.gemfirexd.useCase6.UseCase6Client
+          taskMethod = selectAndUpdateTask
+          threadGroups = client
+          ;
+
+INITTASK  taskClass = cacheperf.comparisons.gemfirexd.useCase6.UseCase6Client
+          taskMethod = generateAndLoadDataTask
+          threadGroups = client
+          ;
+
+INITTASK  taskClass = cacheperf.comparisons.gemfirexd.QueryPerfClient
+          taskMethod = rebalanceBucketsTask
+          threadGroups = server
+          ;
+
+INITTASK  taskClass = cacheperf.comparisons.gemfirexd.useCase6.UseCase6Client
+          taskMethod = selectAndUpdateTask
+          threadGroups = client
+          ;
+
 CLOSETASK taskClass = cacheperf.comparisons.gemfirexd.QueryPerfClient
           taskMethod = reportTrimIntervalsTask
-          threadGroups = client, server
+          threadGroups = client, server, newstore
           ;
+
 CLOSETASK taskClass = cacheperf.comparisons.gemfirexd.useCase6.UseCase6Client
           taskMethod = closeStatisticsTask
           threadGroups = client
           ;
+
 CLOSETASK taskClass = cacheperf.comparisons.gemfirexd.useCase6.UseCase6Client
           taskMethod = closeStatisticsTask
-          threadGroups = server
+          threadGroups = server, newstore
           ;
 
 cacheperf.CachePerfPrms-batchSeconds              = 300;

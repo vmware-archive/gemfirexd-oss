@@ -33,13 +33,13 @@ runtest() {
    TEST_JVM=$JAVA_HOME
  fi
 
- export EXTRA_JTESTS=$SNAPPYDATADIR/store/tests/core/build-artifacts/linux/classes/main
+ export EXTRA_JTESTS=$SNAPPYDATADIR/store/tests/core/build-artifacts/linux/classes/main:$GEMFIRE/lib/gemfirexd-client-1.5.0-SNAPSHOT.jar
  #export JTESTS_RESOURCES=$SNAPPYDATADIR/store/tests/core/src/main/java
- export CLASSPATH=$JTESTS:$EXTRA_JTESTS:$GEMFIRE/lib/gemfirexd-1.5.0-BETA2.jar:$GEMFIRE/lib/gemfirexd-client-1.5.0-BETA2.jar:$JTESTS/../../libs/gemfirexd-hydra-tests-1.5.0-BETA2-all.jar:$GEMFIRE/lib/gemfirexd-tools-1.5.0-BETA2.jar:$SNAPPYDATADIR/snappy-dtests/build-artifacts/scala-2.10/libs/gemfirexd-scala-tests-0.1.0-SNAPSHOT.jar
+ export CLASSPATH=$JTESTS:$EXTRA_JTESTS:$GEMFIRE/lib/gemfirexd-1.5.0-SNAPSHOT.jar:$GEMFIRE/lib/gemfirexd-client-1.5.0-SNAPSHOT.jar:$JTESTS/../../libs/gemfirexd-hydra-tests-1.5.0-SNAPSHOT-all.jar:$GEMFIRE/lib/gemfirexd-tools-1.5.0-SNAPSHOT.jar:$SNAPPYDATADIR/snappy-dtests/build-artifacts/scala-2.10/libs/gemfirexd-scala-tests-0.1.0-SNAPSHOT.jar
  echo "Running useCase6.bt using useCase6.local.conf..."
 
   $TEST_JVM/bin/java -server \
-    -classpath $CLASSPATH -DGEMFIRE=$GEMFIRE -DJTESTS=$JTESTS -DresultDir=${resultDir}\
+    -classpath $CLASSPATH -DGEMFIRE=$GEMFIRE -DJTESTS=$JTESTS -DEXTRA_JTESTS=$EXTRA_JTESTS -DresultDir=${resultDir}\
     -DprovideRegressionSummary=false -DnukeHungTest=true -DmoveRemoteDirs=true \
     -DnumTimesToRun=1 -DtestFileName=useCase6.bt -DlocalConf=useCase6.local.conf \
     batterytest.BatteryTest

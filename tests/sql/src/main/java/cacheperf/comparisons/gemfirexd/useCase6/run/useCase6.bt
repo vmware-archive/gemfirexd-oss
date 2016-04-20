@@ -5,7 +5,7 @@ locatorVMsPerHost=1
 locatorThreadsPerVM=1
 
 A=client
-clientHosts=1
+clientHosts=4
 clientVMsPerHost=1
 clientThreadsPerVM=1
 
@@ -14,20 +14,26 @@ serverHosts=1
 serverVMsPerHost=1
 serverThreadsPerVM=1
 
+C=newstore
+newstoreHosts=3
+newstoreVMsPerHost=1
+newstoreThreadsPerVM=1
+
 api=GFXD
 
 txIsolation = read_committed
 persist = true
 
 clientHeapMB = 1024
-serverHeapMB = 2048
+serverHeapMB = 20480
 
 trimSeconds =  30
 workSeconds = 180
 ddlFile = useCase6.sql
 logQueries = false
-initialRowCount = 100000
+initialRowCount = 10000000
 perffmwk.comparisonKey = useCase6
+
 
 /* cacheperf/comparisons/gemfirexd/useCase6/useCase6Thin.conf
   clientHosts = 5

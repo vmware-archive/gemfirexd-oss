@@ -1,0 +1,50 @@
+kl () 
+{ 
+    for i in $(seq 5 12);
+    do
+        ssh dev$i killall -9 java;
+    done
+}
+
+rl () 
+{ 
+    ./run.sh /export/dev12a/users/soubhik/logs /export/dev12a/users/soubhik/snappydata
+}
+
+forlog () 
+{ 
+    for i in $(seq 5 12);
+    do
+        eval ssh dev$i -C "cd /export/dev${i}a/users/soubhik/hydra; $@" ;
+    done
+}
+
+
+
+lslog () 
+{ 
+    for i in $(seq 5 12);
+    do
+        ssh dev$i -C "cd /export/dev${i}a/users/soubhik/hydra; echo \$(hostname) ; $@ ; echo "---------------" ;" 
+    done
+}
+
+
+rsync -arvz -e "ssh -i /home/sb/rkumar-key.pem" --include="*/" --include="*.gfs" --exclude="*" ubuntu@ec2-52-38-78-106.us-west-2.compute.amazonaws.com:/snappydata/soubhik/logs/useCase6Thin-0419-130517 .
+
+
+AWS
+=====
+kl () 
+{ 
+    for i in $(seq 96 97);
+    do
+        ssh 172.31.23.$i killall -9 java;
+    done
+}
+
+rl () 
+{ 
+    ./run.sh /snappydata/soubhik/logs /snappydata/soubhik/snappydata
+}
+
