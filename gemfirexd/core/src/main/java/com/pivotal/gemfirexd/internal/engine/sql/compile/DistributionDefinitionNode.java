@@ -89,6 +89,8 @@ public class DistributionDefinitionNode extends TableElementNode {
 
   private boolean isPersistent;
 
+  private boolean customHashing = false;
+
   SortedSet<String> serverGroups;
 
   // status flags for canColocate method
@@ -148,6 +150,10 @@ public class DistributionDefinitionNode extends TableElementNode {
     this.serverGroups = groups;
   }
 
+  public void setCustomHashing(boolean customHashing) {
+    this.customHashing = customHashing;
+  }
+
   public void addColumnReference(ColumnReference cr) {
     if (this.columns == null) {
       this.columns = new ArrayList<ColumnReference>();
@@ -165,6 +171,10 @@ public class DistributionDefinitionNode extends TableElementNode {
 
   public final boolean getPersistence() {
     return this.isPersistent;
+  }
+
+  public final boolean getCustomHashing() {
+    return this.customHashing;
   }
 
   public void setTableProperties(Properties props) {

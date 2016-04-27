@@ -38,6 +38,18 @@ public abstract class CallbackFactoryProvider {
     public List<String> getInternalTableSchemas() {
       return Collections.emptyList();
     }
+
+    @Override
+    public int getHashCodeSnappy(Object dvd) {
+      throw new UnsupportedOperationException("unexpected invocation for "
+          + toString());
+    }
+
+    @Override
+    public int getHashCodeSnappy(Object[] dvds) {
+      throw new UnsupportedOperationException("unexpected invocation for "
+          + toString());
+    }
   };
 
   public static void setStoreCallbacks(StoreCallbacks cb) {

@@ -3101,7 +3101,9 @@ TOKEN [IGNORE_CASE] :
 |   <CHECKS: "checks" >
 |	<MAXWRITEONLYFILESIZE: "maxwriteonlyfilesize">
 |	<WRITEONLYFILEROLLOVERINTERVAL: "writeonlyfilerolloverinterval">
+|	<SPARKHASH: "sparkhash">
 |	<PUT: "put">
+
 // GemStone changes END
 }
 
@@ -12270,6 +12272,8 @@ partitionClauseAndColocationDefinition(AttributesFactory afact,
   }
 }
 
+
+
 PartitionResolver 
 partitioningClause(DistributionDefinitionNode distributionNode, boolean[] repPartPersFlags)
 	throws StandardException :
@@ -12277,8 +12281,17 @@ partitioningClause(DistributionDefinitionNode distributionNode, boolean[] repPar
 	PartitionResolver tmpprslvr = null;
 }
 {
-	<PARTITION> <BY> 
-	(  
+	<PARTITION> <BY>
+
+    (
+           <SPARKHASH>
+           {
+               distributionNode.setCustomHashing(true);
+            }
+    )?
+
+	(
+
 	<RANGE>	tmpprslvr = partitionRangeDefinition(distributionNode)
     |
     <LIST>  tmpprslvr = partitionListDefinition(distributionNode)
@@ -12438,10 +12451,12 @@ partitionPKeyOrColumnDefinition(DistributionDefinitionNode distributionNode)
 	GfxdPartitionByExpressionResolver prslvr = null;
 }
 {
+
 	<PRIMARY> <KEY>
 	{
 	    distributionNode.setPolicy(DistributionDescriptor.PARTITIONBYPRIMARYKEY);
 		prslvr = new GfxdPartitionByExpressionResolver();
+		prslvr.setCustomHashing(distributionNode.getCustomHashing());
 		prslvr.setPartitionByPrimaryKey();
 		return prslvr;
 	}
@@ -12463,6 +12478,7 @@ partitionPKeyOrColumnDefinition(DistributionDefinitionNode distributionNode)
     {
         distributionNode.setPolicy(DistributionDescriptor.PARTITIONBYEXPRESSION);
     	prslvr = new GfxdPartitionByExpressionResolver(colNames.toArray());
+    	prslvr.setCustomHashing(distributionNode.getCustomHashing());
     	return prslvr;
     }
 }
@@ -18013,7 +18029,9 @@ nonReservedKeyword()  :
  	|   tok = <WRITEONLYFILEROLLOVERINTERVAL>
  	|	tok = <PUT>
  	|   tok = <JSON>
+ 	|   tok = <SPARKHASH>
  	|   tok = <CLOB_STRING>
+
 // GemStone changes END
 	)
 	{

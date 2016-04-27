@@ -171,7 +171,7 @@ public final class SQLDate extends DataType
      * Convert the date into a milli-seconds since the epoch
      * with the time set to 00:00 based upon the passed in Calendar.
      */
-    private long getTimeInMillis(Calendar cal)
+    public long getTimeInMillis(Calendar cal)
     {
         if( cal == null)
             cal = ClientSharedData.getDefaultCalendar();

@@ -67,6 +67,8 @@ import com.gemstone.gemfire.internal.cache.PutAllPartialResultException;
 import com.gemstone.gemfire.internal.cache.TXManagerImpl;
 import com.gemstone.gemfire.internal.cache.execute.BucketMovedException;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
+import com.gemstone.gemfire.internal.snappy.CallbackFactoryProvider;
+import com.gemstone.gemfire.internal.snappy.StoreCallbacks;
 import com.gemstone.gemfire.internal.util.DebuggerSupport;
 import com.pivotal.gemfirexd.internal.engine.distributed.FunctionExecutionException;
 import com.pivotal.gemfirexd.internal.engine.distributed.utils.GemFireXDUtils;
@@ -631,6 +633,24 @@ public abstract class Misc {
         hash = o.hashCode();
       }*/// fix for #40407 # 40379
       hash = dvd.hashCode();
+    }
+    return hash;
+  }
+
+  public static int getUnifiedHashCodeFromDVD(DataValueDescriptor dvd) {
+    StoreCallbacks callback = CallbackFactoryProvider.getStoreCallbacks();
+    int hash = 0;
+    if (dvd != null) {
+      hash = callback.getHashCodeSnappy(dvd);
+    }
+    return hash;
+  }
+
+  public static int getUnifiedHashCodeFromDVD(DataValueDescriptor[] dvds) {
+    StoreCallbacks callback = CallbackFactoryProvider.getStoreCallbacks();
+    int hash = 0;
+    if (dvds != null) {
+      hash = callback.getHashCodeSnappy(dvds);
     }
     return hash;
   }

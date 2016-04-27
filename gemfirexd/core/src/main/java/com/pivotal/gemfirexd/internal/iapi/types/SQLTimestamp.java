@@ -890,6 +890,17 @@ public final class SQLTimestamp extends DataType
 		return t;
 	}
 
+	/**
+	 * Returns the number of millis since epoch from java.sql.Timestamp.
+	 */
+	public long getEpochTime(java.util.Calendar cal) {
+		if( cal == null)
+			cal = ClientSharedData.getDefaultCalendar();
+
+		setCalendar(cal);
+		return cal.getTimeInMillis();
+	}
+
     private void setCalendar(Calendar cal)
     {
         cal.clear();
