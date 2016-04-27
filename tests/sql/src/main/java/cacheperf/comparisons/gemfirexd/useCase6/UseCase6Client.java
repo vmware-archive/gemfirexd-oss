@@ -408,19 +408,20 @@ public class UseCase6Client extends QueryPerfClient {
   private void useCase6SelectAndUpdate() throws SQLException {
     PreparedStatement update = null;
     PreparedStatement select = null;
-    select = this.connection.prepareStatement(selstm);
-    update = this.connection.prepareStatement(updstm);
+    final Connection connection = QueryUtil.gfxdClientSetup(this);
     //Random rand = new Random();
     //int val = rand.nextInt(paramValues[0].size() - 1);
-    //Log.getLogWriter().info("useCase6SelectAndUpdateTask - done loading " + paramValues[0] + " items");
+    Log.getLogWriter().info("useCase6SelectAndUpdateTask v2 - done loading " + paramValues[0].size() + " items");
     for (int iter = 0; iter < paramValues[0].size(); ) {
       long start = this.useCase6stats.startTransaction();
+      select = connection.prepareStatement(selstm);
+      update = connection.prepareStatement(updstm);
       select.setString(1, paramValues[0].get(iter));
       select.setString(2, paramValues[1].get(iter));
       ResultSet sel = select.executeQuery();
       sel.next();
       final String id = sel.getString(1);
-      sel.close();
+      //sel.close();
       update.clearParameters();
       final long tpsBegin = System.currentTimeMillis();
       final Timestamp ts = new Timestamp(tpsBegin);
@@ -436,17 +437,17 @@ public class UseCase6Client extends QueryPerfClient {
         txe.printStackTrace();
       }
       //Log.getLogWriter().info("Updated table with id " + id);
-      this.connection.commit();
+      connection.commit();
       this.useCase6stats.endTransaction(start, 0);
       iter++;
-    }
-    if (select != null) {
-      select.close();
-      select = null;
-    }
-    if (update != null) {
-      update.close();
-      update = null;
+      if (select != null) {
+        select.close();
+        select = null;
+      }
+      if (update != null) {
+        update.close();
+        update = null;
+      }
     }
 
   }

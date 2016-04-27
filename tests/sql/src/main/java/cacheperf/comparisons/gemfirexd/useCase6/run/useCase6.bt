@@ -6,7 +6,7 @@ locatorThreadsPerVM=1
 
 A=client
 clientHosts=4
-clientVMsPerHost=1
+clientVMsPerHost=16
 clientThreadsPerVM=1
 
 B=server
@@ -24,8 +24,8 @@ api=GFXD
 txIsolation = read_committed
 persist = true
 
-clientHeapMB = 1024
-serverHeapMB = 20480
+clientHeapMB = 2048
+serverHeapMB = 128000
 
 trimSeconds =  30
 workSeconds = 180
