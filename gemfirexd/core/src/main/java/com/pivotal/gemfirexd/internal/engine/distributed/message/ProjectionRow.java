@@ -198,10 +198,11 @@ public final class ProjectionRow extends RawValue implements GfxdSerializable {
       // keep the serialization compatible with CompactExecRow* classes
       final int targetFormatOffsetIsDefault = RowFormatter
           .getOffsetValueForDefault(this.targetFormatOffsetBytes);
+      final Class<?> rawValueClass = rawValue.getClass();
       if (this.lobColumns == null) {
         // serialize the projection byte[] directly without actually creating it
-        if (this.formatter.hasLobs()) {
-          if (this.rawValue instanceof OffHeapRowWithLobs) {
+        if (rawValueClass == byte[][].class) {
+          if (rawValueClass == OffHeapRowWithLobs.class) {
             this.formatter.serializeColumns((OffHeapRowWithLobs)this.rawValue,
                 out, this.fixedColumns, this.varColumns,
                 this.targetFormatOffsetBytes, targetFormatOffsetIsDefault,
@@ -214,7 +215,7 @@ public final class ProjectionRow extends RawValue implements GfxdSerializable {
                 targetFormatter);
           }
         }
-        else if (this.rawValue instanceof OffHeapRow) {
+        else if (rawValueClass == OffHeapRow.class) {
           this.formatter.serializeColumns((OffHeapRow)this.rawValue, out,
               this.fixedColumns, this.varColumns, this.targetFormatOffsetBytes,
               targetFormatOffsetIsDefault, targetFormatter);
@@ -233,17 +234,21 @@ public final class ProjectionRow extends RawValue implements GfxdSerializable {
         // first write the byte[][] length
         InternalDataSerializer
             .writeArrayLength(this.lobColumns.length + 1, out);
-        if (this.rawValue instanceof OffHeapRowWithLobs) {
+        if (rawValueClass == OffHeapRowWithLobs.class) {
           byteSource = (OffHeapRowWithLobs)this.rawValue;
           // write the first byte[]
           this.formatter.serializeColumns(byteSource, out, this.fixedColumns,
               this.varColumns, this.targetFormatOffsetBytes,
               targetFormatOffsetIsDefault, targetFormatter);
         }
-        else {
+        else if (rawValueClass == byte[][].class) {
           byteArrays = (byte[][])this.rawValue;
           // write the first byte[]
           this.formatter.serializeColumns(byteArrays[0], out,
+              this.fixedColumns, this.varColumns, this.targetFormatOffsetBytes,
+              targetFormatOffsetIsDefault, targetFormatter);
+        } else if (rawValueClass == byte[].class) {
+          this.formatter.serializeColumns((byte[])this.rawValue, out,
               this.fixedColumns, this.varColumns, this.targetFormatOffsetBytes,
               targetFormatOffsetIsDefault, targetFormatter);
         }
