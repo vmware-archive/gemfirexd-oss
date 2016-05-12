@@ -417,7 +417,7 @@ public final class GfxdListPartitionResolver extends GfxdPartitionResolver {
         final Class<?> vclass = val.getClass();
         if (vclass == byte[].class) {
           if (cd.isLob) {
-            vbytes = null;
+            vbytes = cd.columnDefaultBytes;
           } else {
             vbytes = (byte[])val;
           }
@@ -435,9 +435,9 @@ public final class GfxdListPartitionResolver extends GfxdPartitionResolver {
           }
         } else {
           if (cd.isLob) {
-            vbytes = null;
+            vbytes = cd.columnDefaultBytes;
           } else {
-            vbytes = ((OffHeapRowWithLobs)val).getRowBytes(); // OFFHEAP: optimize; no need to read all the bytes
+            vbytes = ((OffHeapByteSource)val).getRowBytes(); // OFFHEAP: optimize; no need to read all the bytes
           }
         }
         final long offsetAndWidth = rf.getOffsetAndWidth(
