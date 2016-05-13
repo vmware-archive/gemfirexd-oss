@@ -87,7 +87,7 @@ snappyTestsJarName=`ls $SNAPPYDATADIR/dtests/build-artifacts/scala-2.10/libs/gem
 snappyTestsJarFilename=`tr "/" "\n" <<< $snappyTestsJarName | tail -1`
 export snappyTestsJarVersion=`echo "${snappyTestsJarFilename%*.*}"| cut -d'-' -f4-6`
 
-export CLASSPATH=$JTESTS:$EXTRA_JTESTS:$GEMFIRE/lib/gemfirexd-${releaseVersion}.jar:$GEMFIRE/lib/gemfirexd-client-${releaseVersion}.jar:$JTESTS/../../libs/gemfirexd-hydra-tests-${releaseVersion}-all.jar:$GEMFIRE/lib/gemfirexd-tools-${releaseVersion}.jar:$SNAPPYDATADIR/dtests/build-artifacts/scala-2.10/libs/gemfirexd-scala-tests-${snappyTestsJarVersion}.jar:$GEMFIRE/../snappy/lib/snappydata-assembly_${assemblyJarVersion}.jar
+export CLASSPATH=$JTESTS:$EXTRA_JTESTS:$JTESTS/../../libs/gemfirexd-hydra-tests-${releaseVersion}-all.jar:$SNAPPYDATADIR/dtests/build-artifacts/scala-2.10/libs/gemfirexd-scala-tests-${snappyTestsJarVersion}.jar:$GEMFIRE/../snappy/lib/snappydata-assembly_${assemblyJarVersion}.jar
 export EXTRA_JTESTS=$SNAPPYDATADIR/store/tests/core/build-artifacts/linux/classes/main
 #export JTESTS_RESOURCES=$SNAPPYDATADIR/store/tests/core/src/main/java
 

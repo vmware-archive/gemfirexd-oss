@@ -232,26 +232,17 @@ implements Serializable {
       }
 
       // classPath -- junit.jar
-      classPath.add( hd.getTestDir() + hd.getFileSep() + "junit.jar" );
+      classPath.add(hd.getTestDir() + hd.getFileSep() + "junit.jar");
 
       // classPath -- test classes
-      classPath.add( hd.getTestDir() );
+      classPath.add(hd.getTestDir());
 
-      if ( hd.getExtraTestDir() != null ) {
-        classPath.add( hd.getExtraTestDir() );
+      if (hd.getExtraTestDir() != null) {
+        classPath.add(hd.getExtraTestDir());
       }
 
       // classPath -- product jars
       if (hd.getGemFireHome() != null) {
-        classPath.add(hd.getGemFireHome() + hd.getFileSep() + "lib"
-                + hd.getFileSep() + "gemfirexd-" +
-                ProductVersionHelper.getInfo().getProperty(ProductVersionHelper.SNAPPYRELEASEVERSION) + ".jar");
-        classPath.add(hd.getGemFireHome() + hd.getFileSep() + "lib"
-                + hd.getFileSep() + "gemfirexd-client-" +
-                ProductVersionHelper.getInfo().getProperty(ProductVersionHelper.SNAPPYRELEASEVERSION) + ".jar");
-        classPath.add(hd.getGemFireHome() + hd.getFileSep() + "lib"
-                + hd.getFileSep() + "gemfirexd-tools-" +
-                ProductVersionHelper.getInfo().getProperty(ProductVersionHelper.SNAPPYRELEASEVERSION) + ".jar");
         classPath.add(getSnappyJarPath(hd.getGemFireHome() + hd.getFileSep() + ".." + hd.getFileSep() + "snappy" + hd.getFileSep() + "lib", "snappydata-assembly"));
       }
 
