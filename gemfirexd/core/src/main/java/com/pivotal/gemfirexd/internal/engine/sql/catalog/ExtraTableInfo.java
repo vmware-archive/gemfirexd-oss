@@ -190,6 +190,7 @@ public final class ExtraTableInfo extends ExtraInfo implements Dependent {
       @Unretained final OffHeapByteSource vbytes) {
     // if this is for the latest schema, then vbytes must have the same schema
     // else we may need to read vbytes to get the schema it represents
+    // Disabling this optimization for bug SNAP-766
 //    if (this.isLatestSchema) {
 //      assert getSchemaVersionFromValueBytes(vbytes) == formatter.schemaVersion:
 //        "mismatch of versions: formatter=" + formatter.schemaVersion
@@ -208,6 +209,7 @@ public final class ExtraTableInfo extends ExtraInfo implements Dependent {
       final long memAddr, @Unretained final OffHeapByteSource vbytes) {
     // if this is for the latest schema, then vbytes must have the same schema
     // else we may need to read vbytes to get the schema it represents
+    // Disabling this optimization for bug SNAP-766
 //    if (this.isLatestSchema) {
 //      assert getSchemaVersionFromValueBytes(unsafe, memAddr) ==
 //          formatter.schemaVersion: "mismatch of versions: formatter="
@@ -226,6 +228,7 @@ public final class ExtraTableInfo extends ExtraInfo implements Dependent {
   public final RowFormatter getRowFormatter(final byte[] vbytes) {
     // if this is for the latest schema, then vbytes must have the same schema
     // else we may need to read vbytes to get the schema it represents
+    // Disabling this optimization for bug SNAP-766
 //    if (this.isLatestSchema) {
 //      assert getSchemaVersionFromValueBytes(vbytes) == formatter.schemaVersion:
 //        "mismatch of versions: formatter=" + formatter.schemaVersion
