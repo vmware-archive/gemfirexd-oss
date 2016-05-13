@@ -17,6 +17,8 @@
 
 package hydra;
 
+import util.TestException;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.Serializable;
@@ -154,17 +156,21 @@ implements Serializable {
 
   protected static String getSnappyJarPath(String jarPath, final String jarName) {
     String snappyJar = null;
-    File parent = new File(jarPath);
-    File[] files = parent.listFiles(new FilenameFilter() {
-      @Override
-      public boolean accept(File dir, String name) {
-        if (name.startsWith(jarName))
-          return true;
-        else return false;
-      }
-    });
-    File snappyAssembly = files[0];
-    snappyJar = snappyAssembly.getAbsolutePath();
+    try {
+      File parent = new File(jarPath);
+      File[] files = parent.listFiles(new FilenameFilter() {
+        @Override
+        public boolean accept(File dir, String name) {
+          if (name.startsWith(jarName))
+            return true;
+          else return false;
+        }
+      });
+      File snappyJarFile = files[0];
+      snappyJar = snappyJarFile.getAbsolutePath();
+    } catch (Exception e) {
+      Log.getLogWriter().info("Unable to find " + jarName + " jar at " + jarPath + " location.");
+    }
     return snappyJar;
   }
 
