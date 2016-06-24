@@ -4395,7 +4395,7 @@ public final class GfxdIndexManager implements Dependent, IndexUpdater,
           giiLockAcquired = true;
         }
       }
-     
+
       // for the case of replicated region, simply blow away the entire
       // local indexes
       if (!region.isUsedForPartitionedRegionBucket()) {
