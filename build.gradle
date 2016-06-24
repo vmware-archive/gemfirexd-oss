@@ -102,7 +102,7 @@ allprojects {
         'gemfirexd.product.external.version': "${DERBY_MAJOR}.${DERBY_MINOR}.${DERBY_MAINT}",
         'gemfirexd.version.beta': 'true',
         'gemfirexd.product.vendor': PRODUCT_VENDOR,
-        'gemfirexd.product.file': 'gemfirexd.jar' ]
+        'gemfirexd.product.file': 'snappydata-store.jar' ]
   }
 
   buildRoot = buildRoot.trim()
@@ -803,6 +803,8 @@ def includeJar(def jarFile) {
     jarName.contains('jsr305') || jarName.contains('pxf') ||
     jarName.contains('jline')
 }
+
+jar.enabled = false
 
 // pack the entire GemFireXD product tree
 task product(dependsOn: [ subprojectBase + 'gemfirexd-client:jar',
