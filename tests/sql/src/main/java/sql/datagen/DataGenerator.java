@@ -35,29 +35,21 @@
 
 package sql.datagen;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-
 import com.gemstone.gemfire.LogWriter;
 import hydra.Log;
 import hydra.ProcessMgr;
 import hydra.TestConfig;
 import sql.SQLPrms;
 import util.TestException;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.sql.*;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class DataGenerator {
   protected static String url = "jdbc:gemfirexd://localhost:1530/";
@@ -349,7 +341,7 @@ public class DataGenerator {
       }
     }
 
-    resetParentFKValueMap(table, new ArrayList<>());
+    resetParentFKValueMap(table, new ArrayList<String>());
     return data;
   }
 
