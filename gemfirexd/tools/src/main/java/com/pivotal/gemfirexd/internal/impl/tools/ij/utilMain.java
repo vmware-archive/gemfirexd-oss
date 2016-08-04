@@ -41,7 +41,7 @@
 package com.pivotal.gemfirexd.internal.impl.tools.ij;
                 
 
-import com.pivotal.gemfirexd.internal.GemFireXDVersion;
+import com.gemstone.gemfire.internal.GemFireVersion;
 import com.pivotal.gemfirexd.internal.iapi.services.info.ProductGenusNames;
 import com.pivotal.gemfirexd.internal.iapi.tools.i18n.*;
 import com.pivotal.gemfirexd.internal.shared.common.SharedUtils;
@@ -267,8 +267,9 @@ public class utilMain implements java.security.PrivilegedAction {
 				version = "?";
 			}
 			*/
-//			out.println(convertGfxdMessageToSnappy(langUtil.getTextMessage("IJ_IjVers30C199", GemFireXDVersion.getGemFireXDVersion())));
-			out.println(GemFireXDVersion.getProductName() + " " + GemFireXDVersion.getGemFireXDVersion() + " " + GemFireXDVersion.getGemFireXDReleaseStage());
+			out.println(convertGfxdMessageToSnappy(
+					langUtil.getTextMessage("IJ_IjVers30C199", GemFireVersion.getProductVersion() + " " +
+							GemFireVersion.getProductReleaseStage())));
 			// GemStone changes END
 			for (int i = connEnv.length - 1; i >= 0; i--) { // print out any initial warnings...
 				Connection c = connEnv[i].getConnection();
