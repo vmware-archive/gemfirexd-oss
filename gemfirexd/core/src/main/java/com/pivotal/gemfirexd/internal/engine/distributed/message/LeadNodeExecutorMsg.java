@@ -196,7 +196,7 @@ public final class LeadNodeExecutorMsg extends MemberExecutorMessage<Object> {
       // a top-level exception can only have been from lead node itself
       if (dae.isRemote()) dae.setNotRemote();
     }
-    throw re;
+    return re;
   }
 
   @Override
