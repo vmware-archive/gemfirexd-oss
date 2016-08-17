@@ -75,6 +75,11 @@ compileJavacc {
   }
 }
 
+task deleteGenerated(type: Delete) {
+  delete javaccOut
+}
+clean.dependsOn deleteGenerated
+
 task generatePropertiesFiles(dependsOn: 'processResources') {
   def infoDir = file("${buildDir}/resources/main/com/pivotal/gemfirexd/internal/info")
   outputs.files "${infoDir}/DBMS.properties", "${infoDir}/net.properties"

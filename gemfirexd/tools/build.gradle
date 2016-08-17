@@ -98,6 +98,11 @@ compileJavacc {
   outputDirectory = file("${projectDir}/${javaccOut}")
 }
 
+task deleteGenerated(type: Delete) {
+  delete javaccOut
+}
+clean.dependsOn deleteGenerated
+
 sourceSets.main.java.srcDirs = [ 'src/main/java', javaccOut, 'src/ddlutils/java' ]
 sourceSets.test.java.srcDirs = [ 'src/test/java', 'src/testing/java', 'src/dunit/java',
                                  'src/demo/java', 'src/test-ddlutils/java' ]
