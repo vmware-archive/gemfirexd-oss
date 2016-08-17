@@ -32,9 +32,9 @@ public interface StoreCallbacks {
 
   List<String> getInternalTableSchemas();
 
-  int getHashCodeSnappy(Object dvd);
+  int getHashCodeSnappy(Object dvd, int numPartitions);
 
-  int getHashCodeSnappy(Object dvds[]);
+  int getHashCodeSnappy(Object dvds[], int numPartitions);
 
   boolean haveRegisteredExternalStore(String tableName);
 }

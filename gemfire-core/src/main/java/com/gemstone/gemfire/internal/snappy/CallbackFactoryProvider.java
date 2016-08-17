@@ -41,13 +41,13 @@ public abstract class CallbackFactoryProvider {
     }
 
     @Override
-    public int getHashCodeSnappy(Object dvd) {
+    public int getHashCodeSnappy(Object dvd, int numPartitions) {
       throw new UnsupportedOperationException("unexpected invocation for "
           + toString());
     }
 
     @Override
-    public int getHashCodeSnappy(Object[] dvds) {
+    public int getHashCodeSnappy(Object[] dvds, int numPartitions) {
       throw new UnsupportedOperationException("unexpected invocation for "
           + toString());
     }

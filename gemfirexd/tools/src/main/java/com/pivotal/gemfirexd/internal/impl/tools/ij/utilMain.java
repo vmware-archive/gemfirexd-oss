@@ -48,7 +48,7 @@ import com.pivotal.gemfirexd.internal.shared.common.SharedUtils;
 import com.pivotal.gemfirexd.internal.shared.common.StopWatch;
 import com.pivotal.gemfirexd.internal.shared.common.sanity.SanityManager;
 import com.pivotal.gemfirexd.internal.tools.JDBCDisplayUtil;
-import scala.tools.jline.console.ConsoleReader;
+import jline.console.ConsoleReader;
 
 import java.util.HashMap;
 import java.util.List;
