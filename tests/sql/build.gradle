@@ -22,12 +22,15 @@ plugins {
 sourceSets.main.java {
   // requires WebLogic jars
   exclude 'sql/ecotests/wls/**'
+  // tpce app is not in main compilation unit
+  exclude 'sql/ecotests/tpce/implementation/**'
 }
 
 // need to exclude specificially in IDEA
 idea {
   module {
     excludeDirs += file('src/main/java/sql/ecotests/wls')
+    excludeDirs += file('src/main/java/sql/ecotests/tpce/implementation')
   }
 }
 
