@@ -94,7 +94,6 @@ export snappyTestsJarVersion=`echo "${snappyTestsJarFilename%*.*}"| cut -d'-' -f
 CLASSPATH=$JTESTS:$EXTRA_JTESTS:$JTESTS/../../libs/snappydata-store-hydra-tests-${releaseVersion}-all.jar:$SNAPPYDATADIR/dtests/build-artifacts/scala-2.10/libs/snappydata-store-scala-tests-${snappyTestsJarVersion}-tests.jar:$GEMFIRE/../snappy/lib/snappydata-assembly_${assemblyJarVersion}.jar
 LIB=$SNAPPYDATADIR/build-artifacts/scala-2.11/snappy/jars
 for i in $LIB/*.jar; do CLASSPATH=$CLASSPATH:$i; done
-CLASSPATH=`echo $CLASSPATH | cut -c2-`
 
 export CLASSPATH=$CLASSPATH
 export EXTRA_JTESTS=$SNAPPYDATADIR/store/tests/core/build-artifacts/linux/classes/main
