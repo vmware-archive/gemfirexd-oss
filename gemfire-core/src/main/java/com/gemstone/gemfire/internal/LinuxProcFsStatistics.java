@@ -14,6 +14,25 @@
  * permissions and limitations under the License. See accompanying
  * LICENSE file.
  */
+/*
+ * Changes for SnappyData data platform.
+ *
+ * Portions Copyright (c) 2016 SnappyData, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you
+ * may not use this file except in compliance with the License. You
+ * may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * permissions and limitations under the License. See accompanying
+ * LICENSE file.
+ */
+
 package com.gemstone.gemfire.internal;
 
 import java.io.BufferedReader;
@@ -134,12 +153,7 @@ public class LinuxProcFsStatistics {
       st.skipTokens(22);
       ints[LinuxProcessStats.imageSizeINT] = (int) (st.nextTokenAsLong() / OneMeg);
       ints[LinuxProcessStats.rssSizeINT] = (int) ((st.nextTokenAsLong()*pageSize)/OneMeg);
-    } catch ( NoSuchElementException nsee ) {
-      // It might just be a case of the process going away while we
-      // where trying to get its stats. 
-      // So for now lets just ignore the failure and leave the stats
-      // as they are.
-    } catch ( IOException ioe ) {
+    } catch (NoSuchElementException | IOException ignored) {
       // It might just be a case of the process going away while we
       // where trying to get its stats. 
       // So for now lets just ignore the failure and leave the stats
@@ -151,8 +165,12 @@ public class LinuxProcFsStatistics {
   }
 
   static void refreshSystem(int[] ints, long[] longs, double[] doubles) {
-    ints[LinuxSystemStats.processesINT] = getProcessCount();        
+    ints[LinuxSystemStats.processesINT] = getProcessCount();
+    ints[LinuxSystemStats.threadsINT] = getThreadCount();
+    ints[LinuxSystemStats.threadsSystemMaxINT] = getThreadSystemMax();
     ints[LinuxSystemStats.cpusINT] = sys_cpus;
+    longs[LinuxSystemStats.threadsMaxLONG] =
+        NativeCalls.getInstance().getMaxAllowedThreads();
     InputStreamReader isr = null;
     BufferedReader br = null;
     try {
@@ -395,8 +413,7 @@ Inter-|   Receive                                                |  Transmit
       longs[LinuxSystemStats.xmitErrorsLONG] = other_xmit_errs;
       longs[LinuxSystemStats.xmitDropsLONG] = other_xmit_drop;
       longs[LinuxSystemStats.xmitCollisionsLONG] = other_xmit_colls;
-    } catch (NoSuchElementException nsee) {
-    } catch (IOException ioe) {
+    } catch (NoSuchElementException | IOException ignored) {
     } finally {
       st.releaseResources();
       if(br != null) try { br.close(); } catch(IOException ignore) {}
@@ -591,18 +608,83 @@ Inter-|   Receive                                                |  Transmit
     }
     return count;
   }
- 
+
   /**
-   * @return the number of running processes on the system 
+   * @return the number of running processes on the system
    */
   private static int getProcessCount() {
     File proc = new File("/proc");
     String[] procFiles = proc.list();
-    if(procFiles == null) {
+    if (procFiles == null) {
       //unknown error, continue without this stat
       return 0;
     }
     return procFiles.length - nonPidFilesInProc;
+  }
+
+  /**
+   * Read a given field number from first line of a file.
+   * A value of zero for field number returns the entire line.
+   */
+  private static String getParameterFromFile(String fileName, int fieldNumber) {
+    try (InputStreamReader sr = new InputStreamReader(
+        new FileInputStream(fileName))) {
+      try (BufferedReader br = new BufferedReader(sr)) {
+        String line = br.readLine();
+        if (fieldNumber == 0) {
+          return line;
+        }
+        else if (line != null) {
+          String[] split = line.split("[ \\t]");
+          if (split.length >= fieldNumber) {
+            return split[fieldNumber - 1];
+          }
+        }
+      }
+    } catch (IOException ignored) {
+    }
+    return null;
+  }
+
+  /**
+   * @return the number of total threads on the system
+   */
+  private static int getThreadCount() {
+    String threadLoad = getParameterFromFile("/proc/loadavg", 4);
+    if (threadLoad != null) {
+      int slashIndex = threadLoad.indexOf('/');
+      if (slashIndex >= 0) {
+        try {
+          return Integer.parseInt(threadLoad.substring(slashIndex + 1));
+        } catch (NumberFormatException ignored) {
+        }
+      }
+    }
+    return 0;
+  }
+
+  /**
+   * Get the maximum number of threads allowed by OS for the machine.
+   * This returns smaller of threads-max and pid_max from /proc/sys/kernel.
+   */
+  private static int getThreadSystemMax() {
+    String s = getParameterFromFile("/proc/sys/kernel/threads-max", 0);
+    int threadsMax = 0;
+    if (s != null) {
+      try {
+        threadsMax = Integer.parseInt(s);
+      } catch (NumberFormatException ignored) {
+      }
+    }
+    s = getParameterFromFile("/proc/sys/kernel/pid_max", 0);
+    if (s != null) {
+      try {
+        int pidMax = Integer.parseInt(s);
+        threadsMax = threadsMax > 0 ? Math.min(threadsMax, pidMax) : pidMax;
+      } catch (NumberFormatException ignored) {
+      }
+    }
+    return threadsMax;
   }
 
   //The array indices must be ordered as they appear in /proc/stats
