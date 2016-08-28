@@ -302,10 +302,13 @@ final class LinuxNativeCalls extends POSIXNativeCalls {
     public int f_frsize;
     public FSPAREIntArr5 f_spare;
 
+    static final StatFS instance;
+
     static {
+      StatFS struct;
       try {
         Native.register("rt");
-        StatFS struct = new StatFS();
+        struct = new StatFS();
         int ret = statfs(".", struct);
         if (ret == 0) {
           isStatFSEnabled = true;
@@ -313,8 +316,10 @@ final class LinuxNativeCalls extends POSIXNativeCalls {
           isStatFSEnabled = false;
         }
       } catch (Throwable t) {
+        struct = null;
         isStatFSEnabled = false;
       }
+      instance = struct;
     }
 
     public static native int statfs(String path, StatFS statfs)
@@ -393,10 +398,13 @@ final class LinuxNativeCalls extends POSIXNativeCalls {
     private static long[] REMOTE_TYPES = {4283649346L, 1937076805L,
         22092L, 26985L, 20859L, 16914836L};
 
+    static final StatFS64 instance;
+
     static {
+      StatFS64 struct;
       try {
         Native.register("rt");
-        StatFS64 struct = new StatFS64();
+        struct = new StatFS64();
         int ret = statfs(".", struct);
         if (ret == 0) {
           isStatFSEnabled = true;
@@ -404,10 +412,12 @@ final class LinuxNativeCalls extends POSIXNativeCalls {
           isStatFSEnabled = false;
         }
       } catch (Throwable t) {
-        System.out.println("got error t: " + t.getMessage());
+        System.out.println("got error " + t.getMessage());
         t.printStackTrace();
+        struct = null;
         isStatFSEnabled = false;
       }
+      instance = struct;
     }
 
     public static native int statfs(String path, StatFS64 statfs)
@@ -442,7 +452,7 @@ final class LinuxNativeCalls extends POSIXNativeCalls {
    * can hang. See bug #49155. On platforms other than Linux this will
    * return false even if it on local file system for now.
    */
-  public boolean isOnLocalFileSystem(final String path) {
+  public synchronized boolean isOnLocalFileSystem(final String path) {
     final Logger logger = ClientSharedUtils.getLogger();
     if (!isStatFSEnabled) {
       return false;
@@ -451,11 +461,13 @@ final class LinuxNativeCalls extends POSIXNativeCalls {
     for (int i = 1; i <= numTries; i++) {
       try {
         if (Platform.is64Bit()) {
-          StatFS64 stat = new StatFS64();
+          StatFS64 stat = StatFS64.instance;
+          stat.f_type = 0;
           StatFS64.statfs(path, stat);
           return stat.isTypeLocal();
         } else {
-          StatFS stat = new StatFS();
+          StatFS stat = StatFS.instance;
+          stat.f_type = 0;
           StatFS.statfs(path, stat);
           return stat.isTypeLocal();
         }
