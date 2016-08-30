@@ -44,6 +44,7 @@ import java.io.Reader;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -167,7 +168,8 @@ public class LinuxProcFsStatistics {
     longs[LinuxSystemStats.threadsMaxLONG] =
         NativeCalls.getInstance().getMaxAllowedThreads();
 
-    try (BufferedReader br = Files.newBufferedReader(Paths.get("/proc/stat"))) {
+    try (BufferedReader br = Files.newBufferedReader(Paths.get("/proc/stat"),
+        StandardCharsets.UTF_8)) {
       String line = null;
       while ( ( line = br.readLine() ) != null ) {
         try {
@@ -219,8 +221,8 @@ public class LinuxProcFsStatistics {
   // Example of /proc/loadavg
   // 0.00 0.00 0.07 1/218 7907
   private static void getLoadAvg(double[] doubles, int[] ints) {
-    try (BufferedReader br = Files.newBufferedReader(Paths.get(
-        "/proc/loadavg"))) {
+    try (BufferedReader br = Files.newBufferedReader(Paths.get("/proc/loadavg"),
+        StandardCharsets.UTF_8)) {
       String line = br.readLine();
       if ( line == null ) {
         return;
@@ -253,8 +255,8 @@ public class LinuxProcFsStatistics {
    * @return the available memory in bytes
    */
   public static long getAvailableMemory(LogWriter logger) {
-    try (BufferedReader br = Files.newBufferedReader(Paths.get(
-        "/proc/meminfo"))) {
+    try (BufferedReader br = Files.newBufferedReader(Paths.get("/proc/meminfo"),
+        StandardCharsets.UTF_8)) {
       long free = 0;
       Pattern p = Pattern.compile("(.*)?:\\s+(\\d+)( kB)?");
 
@@ -280,7 +282,8 @@ public class LinuxProcFsStatistics {
   //Mem:  4118380544 3816050688 302329856        0 109404160 3060326400
   //Swap: 4194881536 127942656 4066938880
   private static void getMemInfo(int[] ints) {
-    try (BufferedReader br = Files.newBufferedReader(Paths.get("/proc/meminfo"))) {
+    try (BufferedReader br = Files.newBufferedReader(Paths.get("/proc/meminfo"),
+        StandardCharsets.UTF_8)) {
       //Assume all values read in are in kB, convert to MB
       String line = null;
       while ( (line = br.readLine()) != null) {
@@ -339,7 +342,8 @@ Inter-|   Receive                                                |  Transmit
 */
 
   private static void getNetStats(long[] longs) {
-    try (BufferedReader br = Files.newBufferedReader(Paths.get("/proc/net/dev"))) {
+    try (BufferedReader br = Files.newBufferedReader(Paths.get("/proc/net/dev"),
+        StandardCharsets.UTF_8)) {
       br.readLine(); // Discard header info
       br.readLine(); // Discard header info
       long lo_recv_packets = 0, lo_recv_bytes = 0; 
@@ -443,7 +447,8 @@ Inter-|   Receive                                                |  Transmit
       // 2.4 kernel
       fileName = "/proc/partitions";
     }
-    try (BufferedReader br = Files.newBufferedReader(Paths.get(fileName))) {
+    try (BufferedReader br = Files.newBufferedReader(Paths.get(fileName),
+        StandardCharsets.UTF_8)) {
       long readsCompleted = 0, readsMerged = 0;
       long sectorsRead    = 0, timeReading  = 0; 
       long writesCompleted = 0, writesMerged = 0; 
@@ -535,7 +540,8 @@ Inter-|   Receive                                                |  Transmit
   //pswpout 14495
   private static void getVmStats(long[] longs) {
     assert hasProcVmStat != false : "getVmStats called when hasVmStat was false";
-    try (BufferedReader br = Files.newBufferedReader(Paths.get("/proc/vmstat"))) {
+    try (BufferedReader br = Files.newBufferedReader(Paths.get("/proc/vmstat"),
+        StandardCharsets.UTF_8)) {
       String line = null;
       while((line = br.readLine()) != null) {
         if(line.startsWith(PGPGIN)) {
@@ -605,7 +611,8 @@ Inter-|   Receive                                                |  Transmit
    * Read the first line from a given file.
    */
   private static String getLineFromFile(String fileName) {
-    try (BufferedReader br = Files.newBufferedReader(Paths.get(fileName))) {
+    try (BufferedReader br = Files.newBufferedReader(Paths.get(fileName),
+        StandardCharsets.UTF_8)) {
       return br.readLine();
     } catch (IOException ignored) {
     }
