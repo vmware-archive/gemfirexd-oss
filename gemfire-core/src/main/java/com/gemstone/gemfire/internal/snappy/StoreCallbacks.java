@@ -37,7 +37,13 @@ public interface StoreCallbacks {
 
   int getHashCodeSnappy(Object dvds[], int numPartitions);
 
+  public String cachedBatchTableName(String tableName);
+
+  public String snappyInternalSchemaName();
+
   void invalidateReplicatedTableCache(LocalRegion region);
 
   void cleanUpCachedObjects(String table, Boolean sentFromExternalCluster);
+
+  void registerRelationDestroyForHiveStore();
 }

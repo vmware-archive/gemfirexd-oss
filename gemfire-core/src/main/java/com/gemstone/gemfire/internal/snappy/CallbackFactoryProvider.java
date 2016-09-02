@@ -58,8 +58,24 @@ public abstract class CallbackFactoryProvider {
     }
 
     @Override
+    public String cachedBatchTableName(String tableName) {
+      throw new UnsupportedOperationException("unexpected invocation for "
+          + toString());
+    }
+
+    @Override
+    public String snappyInternalSchemaName() {
+      throw new UnsupportedOperationException("unexpected invocation for "
+          + toString());
+    }
+
+    @Override
     public void cleanUpCachedObjects(String table,
         Boolean sentFromExternalCluster) {
+    }
+
+    @Override
+    public void registerRelationDestroyForHiveStore() {
     }
   };
 

@@ -1775,7 +1775,13 @@ public final class GfxdDataDictionary extends DataDictionaryImpl {
           RoutineAliasInfo.MODIFIES_SQL_DATA, null, newlyCreatedRoutines, tc,
           GFXD_SYS_PROC_CLASSNAME, false);
     }
-    
+
+    {
+      super.createSystemProcedureOrFunction("REPAIR_CATALOG", sysUUID,
+          null, null, 0, 0, RoutineAliasInfo.READS_SQL_DATA,
+          null, newlyCreatedRoutines, tc, GFXD_SYS_PROC_CLASSNAME, true);
+    }
+
     {
       // SYS.CANCEL_STATEMENT(long statementId, long connectionId, long
       // executionId)

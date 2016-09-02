@@ -41,6 +41,7 @@ import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.control.InternalResourceManager;
+import com.gemstone.gemfire.internal.snappy.CallbackFactoryProvider;
 import com.gemstone.gnu.trove.THashSet;
 import com.pivotal.gemfirexd.Attribute;
 import com.pivotal.gemfirexd.auth.callback.UserAuthenticator;
@@ -49,6 +50,7 @@ import com.pivotal.gemfirexd.internal.catalog.SystemProcedures;
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
 import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.access.index.GfxdIndexManager;
+import com.pivotal.gemfirexd.internal.engine.db.FabricDatabase;
 import com.pivotal.gemfirexd.internal.engine.ddl.DDLConflatable;
 import com.pivotal.gemfirexd.internal.engine.ddl.GfxdDDLQueueEntry;
 import com.pivotal.gemfirexd.internal.engine.ddl.GfxdDDLRegionQueue;
@@ -82,6 +84,7 @@ import com.pivotal.gemfirexd.internal.iapi.types.HarmonySerialClob;
 import com.pivotal.gemfirexd.internal.iapi.types.TypeId;
 import com.pivotal.gemfirexd.internal.iapi.util.IdUtil;
 import com.pivotal.gemfirexd.internal.iapi.util.StringUtil;
+import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedConnection;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedResultSetMetaData;
 import com.pivotal.gemfirexd.internal.impl.jdbc.TransactionResourceImpl;
 import com.pivotal.gemfirexd.internal.impl.jdbc.Util;
@@ -2037,6 +2040,40 @@ public class GfxdSystemProcedures extends SystemProcedures {
    */
   public static String GET_NATIVE_NANOTIMER_TYPE() {
     return NanoTimer.getNativeTimerType();
+  }
+
+  /**
+   * Repair Snappy catalog (Hive MetaStore and data dictionary) by removing
+   * inconsistent entries in the catalog.
+   * @throws SQLException
+   * @throws StandardException
+   */
+  public static void REPAIR_CATALOG() throws SQLException, StandardException {
+    if (GemFireXDUtils.TraceExecute) {
+      SanityManager.DEBUG_PRINT(GfxdConstants.TRACE_EXECUTION,
+          "in procedure REPAIR_CATALOG()");
+    }
+    final boolean isLead = GemFireXDUtils.getGfxdAdvisor().getMyProfile().hasSparkURL();
+    final Object[] params = new Object[]{1}; //dummy (unused)
+    if (isLead || Misc.getDistributedSystem().isLoner()) {
+      // in case proc invoked on lead directly
+      runCatalogConsistencyChecks();
+    } else {
+      // publish a message if not lead
+      publishMessage(params, false,
+          GfxdSystemProcedureMessage.SysProcMethod.repairCatalog, false, false);
+    }
+  }
+
+  public static void runCatalogConsistencyChecks()
+      throws SQLException, StandardException {
+    EmbedConnection conn = GemFireXDUtils.createNewInternalConnection(false);
+    try {
+      FabricDatabase.checkSnappyCatalogConsistency(conn);
+      CallbackFactoryProvider.getStoreCallbacks().registerRelationDestroyForHiveStore();
+    } finally {
+      conn.close();
+    }
   }
 
   /**

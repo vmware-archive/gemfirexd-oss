@@ -17,6 +17,9 @@
 
 package com.pivotal.gemfirexd.internal.catalog;
 
+import java.util.HashMap;
+import java.util.List;
+
 /**
  * Need to keep GemXD independent of any snappy/spark/hive related
  * classes. An implementation of this can be made which adheres to this
@@ -45,6 +48,23 @@ public interface ExternalCatalog {
    * Get the schema for a column table in Json format (as in Spark).
    */
   String getColumnTableSchemaAsJson(String schema, String tableName, boolean skipLocks);
+
+  /**
+   * Retruns a map of DBs to list of store tables(those tables that
+   * are in store DD) in catalog
+   */
+  HashMap<String, List<String>> getAllStoreTablesInCatalog(boolean skipLocks);
+
+  /**
+   *  Removes a table from the external catalog
+   */
+  boolean removeTable(String schema, String table, boolean skipLocks);
+
+  /**
+   * Returns the schema in which this catalog is created
+   * @return
+   */
+  public String catalogSchemaName();
 
   void stop();
 }
