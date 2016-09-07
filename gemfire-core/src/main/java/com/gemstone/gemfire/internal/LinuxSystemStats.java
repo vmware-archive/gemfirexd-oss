@@ -64,8 +64,6 @@ public class LinuxSystemStats
   final static int cachedMemoryINT = 16;
   final static int dirtyMemoryINT = 17;
   final static int cpuNonUserINT = 18;
-  final static int threadsINT = 19;
-  final static int threadsSystemMaxINT = 20;
 
   final static int loopbackPacketsLONG = 0;
   final static int loopbackBytesLONG = 1;
@@ -95,7 +93,11 @@ public class LinuxSystemStats
   final static int iosInProgressLONG = 25;
   final static int timeIosInProgressLONG = 26;
   final static int ioTimeLONG = 27;
-  final static int threadsMaxLONG = 28;
+  final static int totalFileDescriptorsLONG = 28;
+  final static int fileDescriptorsSystemMaxLONG = 29;
+  final static int totalThreadsLONG = 30;
+  final static int threadsSessionMaxLONG = 31;
+  final static int threadsSystemMaxLONG = 32;
 
   final static int loadAverage1DOUBLE = 0;
   final static int loadAverage15DOUBLE = 1;
@@ -170,14 +172,6 @@ public class LinuxSystemStats
                             f.createIntGauge("cpuNonUser",
                                                 "The percentage of total available time that has been used to execute non-user code.(includes system, iowait, irq, softirq etc.)",
                                                 "%"),
-                            f.createIntGauge("threads",
-                                "The total number of threads in the computer at the time of " +
-                                    "data collection. Notice that this is an instantaneous " +
-                                    "count, not an average over the time interval.",
-                                "threads"),
-                            f.createIntGauge("threadsSystemMax",
-                                "The OS limit of maximum number of threads in this computer.",
-                                "threads"),
 
                             f.createLongCounter("loopbackPackets",
                                              "The number of network packets sent (or received) on the loopback interface",
@@ -263,10 +257,25 @@ public class LinuxSystemStats
                             f.createLongCounter("diskTime",
                                                 "The total number of milliseconds that measures both completed disk operations and any accumulating backlog of in progress ops.",
                                                 "milliseconds"),
-                            f.createLongGauge("threadsMax",
-                                "The OS limit of maximum number of threads in current session",
+                            f.createLongGauge("totalFileDescriptors",
+                                "The total number of open file handles in this computer " +
+                                    "at the time of data collection. Notice that this is an " +
+                                    "instantaneous count, not an average over the time interval.",
+                                "fds"),
+                            f.createLongGauge("fileDescriptorsSystemMax",
+                                "The OS limit of maximum number of open file handles in this computer.",
+                                "fds"),
+                            f.createLongGauge("totalThreads",
+                                "The total number of threads in the computer at the time of " +
+                                    "data collection. Notice that this is an instantaneous " +
+                                    "count, not an average over the time interval.",
                                 "threads"),
-
+                            f.createLongGauge("threadsSessionMax",
+                                "The OS limit of maximum number of threads+processes in current login session.",
+                                "threads"),
+                            f.createLongGauge("threadsSystemMax",
+                                "The OS limit of maximum number of threads+processes in this computer.",
+                                "threads"),
 
                             f.createDoubleGauge("loadAverage1",
                                                 "The average number of threads in the run queue or waiting for disk I/O over the last minute.",
@@ -298,8 +307,6 @@ public class LinuxSystemStats
     checkOffset("cachedMemory", cachedMemoryINT);
     checkOffset("dirtyMemory", dirtyMemoryINT);
     checkOffset("cpuNonUser", cpuNonUserINT);
-    checkOffset("threads", threadsINT);
-    checkOffset("threadsSystemMax", threadsSystemMaxINT);
 
     checkOffset("loopbackPackets", loopbackPacketsLONG);
     checkOffset("loopbackBytes", loopbackBytesLONG);
@@ -329,7 +336,11 @@ public class LinuxSystemStats
     checkOffset("diskOpsInProgress", iosInProgressLONG);
     checkOffset("diskTimeInProgress", timeIosInProgressLONG);
     checkOffset("diskTime", ioTimeLONG);
-    checkOffset("threadsMax", threadsMaxLONG);
+    checkOffset("totalFileDescriptors", totalFileDescriptorsLONG);
+    checkOffset("fileDescriptorsSystemMax", fileDescriptorsSystemMaxLONG);
+    checkOffset("totalThreads", totalThreadsLONG);
+    checkOffset("threadsSessionMax", threadsSessionMaxLONG);
+    checkOffset("threadsSystemMax", threadsSystemMaxLONG);
 
     checkOffset("loadAverage1", loadAverage1DOUBLE);
     checkOffset("loadAverage15", loadAverage15DOUBLE);
