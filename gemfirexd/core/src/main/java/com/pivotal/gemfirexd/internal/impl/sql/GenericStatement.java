@@ -784,7 +784,7 @@ public class GenericStatement
                                             }
                                           }
 
-                                          if (observer != null && qinfo.isSelect()) {
+                                          if (observer != null && qinfo != null && qinfo.isSelect()) {
                                             observer.testExecutionEngineDecision(qinfo, ExecutionEngine.STORE, this.statementText);
                                           }
 

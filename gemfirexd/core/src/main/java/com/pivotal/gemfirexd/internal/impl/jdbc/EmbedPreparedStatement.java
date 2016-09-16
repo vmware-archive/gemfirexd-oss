@@ -68,6 +68,7 @@ import com.gemstone.gnu.trove.THashMap;
 import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserver;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
+import com.pivotal.gemfirexd.internal.engine.access.GemFireTransaction;
 import com.pivotal.gemfirexd.internal.engine.distributed.utils.GemFireXDUtils;
 import com.pivotal.gemfirexd.internal.iapi.error.StandardException;
 import com.pivotal.gemfirexd.internal.iapi.jdbc.BrokeredConnectionControl;
@@ -1106,23 +1107,39 @@ public abstract class EmbedPreparedStatement
 	  // would lead to one of the set of parameters being thrown
 	  // away
   	  synchronized (getConnectionSynchronization()) {
-  			if (batchStatements == null)
-// GemStone changes BEGIN
-  			{
-  			  batchStatements = new ArrayList<Object>();
-  			}
+            if (batchStatements == null)
+              // GemStone changes BEGIN
+            {
+              batchStatements = new ArrayList<Object>();
+            }
   			/* (original code)
   				batchStatements = new Vector();
   			*/
-
           //get a clone of the parameterValueSet and save it in the vector
           //which will be used later on at the time of batch execution.
           //This way we will get a copy of the current statement's parameter
           //values rather than a pointer to the statement's parameter value
           //set which will change with every new statement in the batch.
   	  try {
-            batchStatements.add(getParms().getClone());
-  	  } catch (Throwable t) {
+            //batchStatements.add(getParms().getClone());
+            if (executeBatchInProgress == 0) {
+              batchStatements.add(getParms().getClone());
+            } else {
+              // copy into the already existing params
+              ParameterValueSet temp = (ParameterValueSet)getParms();
+              int numberOfParameters = temp.getParameterCount();
+
+              if (batchStatementCurrentIndex < batchStatements.size()) {
+                for (int j = 0; j < numberOfParameters; j++) {
+                  ((ParameterValueSet)batchStatements.get(batchStatementCurrentIndex)).getParameter(j)
+                    .setValue(temp.getParameter(j));
+                }
+              } else {
+                batchStatements.add(getParms().getClone());
+              }
+            }
+            batchStatementCurrentIndex++;
+          } catch (Throwable t) {
   	    throw TransactionResourceImpl.wrapInSQLException(t);
   	  }
           /* (original code)
@@ -1171,6 +1188,7 @@ public abstract class EmbedPreparedStatement
             }
             finally {
               rs.closeBatch();
+	      resetBatch(); // with this, if .clearBatch is skipped, we will resuse the objects already created.
             }
             if (observer != null) {
               observer.afterFlushBatch(rs, lcc);
@@ -1918,11 +1936,12 @@ public abstract class EmbedPreparedStatement
                      boolean executeQuery, boolean executeUpdate,
                      boolean skipContextRestore /* GemStone addition */)
                      throws SQLException {
-
+		// GemStone changes BEGIN
 		checkExecStatus();
 		checkIfInMiddleOfBatch();
 		clearResultSets();
 // GemStone changes BEGIN
+
 		return super.executeStatement(a, executeQuery, executeUpdate,
 		    ((GenericPreparedStatement)preparedStatement).createQueryInfo(),
 		    false /* is Context set */,

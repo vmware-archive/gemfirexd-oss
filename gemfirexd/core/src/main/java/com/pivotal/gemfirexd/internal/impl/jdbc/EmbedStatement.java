@@ -329,6 +329,9 @@ public class EmbedStatement extends ConnectionChild
  	//this is only used by JDBC 2.0
 // GemStone changes BEGIN
 	ArrayList<Object> batchStatements;
+	int batchStatementCurrentIndex = 0;
+	int executeBatchInProgress = 0;
+
 	/* (original code)
  	Vector batchStatements;
  	*/
@@ -582,7 +585,7 @@ public class EmbedStatement extends ConnectionChild
 		 * batch either by clearing the batch or executing the batch.
 		 * executeUpdate is not allowed inside the batch.
 		 */
-		if (batchStatements != null)
+		if (batchStatements != null && batchStatementCurrentIndex > 0)
   		throw newSQLException(SQLState.MIDDLE_OF_BATCH);
 	}
 
@@ -656,7 +659,9 @@ public class EmbedStatement extends ConnectionChild
 		  warnings = null;
 		  SQLText = null;
 		  batchStatements = null;
-		        		  
+      batchStatementCurrentIndex = 0;
+	    executeBatchInProgress = 0;
+
 	  }
 		
 	  
@@ -1076,6 +1081,7 @@ public class EmbedStatement extends ConnectionChild
       if (sql == null) {
         throw newSQLException(SQLState.NULL_SQL_TEXT);
       }
+			// GemStone changes BEGIN
       checkIfInMiddleOfBatch();
       clearResultSets(); // release the last statement executed, if any.
       
@@ -1605,6 +1611,8 @@ public class EmbedStatement extends ConnectionChild
 		    batchStatements = new ArrayList<Object>();
 		  }
 		  batchStatements.add(sql);
+		  batchStatementCurrentIndex++;
+
 		    /* (original code)
 			  batchStatements = new Vector();
         batchStatements.addElement(sql);
@@ -1626,10 +1634,25 @@ public class EmbedStatement extends ConnectionChild
 		checkStatus();
   	  synchronized (getConnectionSynchronization()) {
         batchStatements = null;
-  		}
+        batchStatementCurrentIndex = 0;
+          }
 	}
 
-    /**
+	public final void resetBatch() throws SQLException {
+		checkStatus();
+		synchronized (getConnectionSynchronization()) {
+			//batchStatements = null;
+			batchStatementCurrentIndex = 0;
+			if (batchStatements != null) {
+				for (int i = batchStatements.size() - 1; i >= 0; i--) {
+					((ParameterValueSet)batchStatements.get(i)).clearParameters();
+				}
+			}
+		}
+	}
+
+
+	/**
      * JDBC 2.0
      * 
      * Submit a batch of commands to the database for execution.
@@ -1652,6 +1675,7 @@ public class EmbedStatement extends ConnectionChild
 		checkExecStatus();
 		synchronized (getConnectionSynchronization()) 
 		{
+			executeBatchInProgress++;
                         setupContextStack(true);
 			int i = 0;
 			// As per the jdbc 2.0 specs, close the statement object's current resultset
@@ -1667,13 +1691,16 @@ public class EmbedStatement extends ConnectionChild
 			Vector stmts = batchStatements;
 			*/
 // GemStone changes END
-			batchStatements = null;
+			if (!isPrepared()){
+				batchStatements = null;
+			}
+
 			int size;
 			if (stmts == null)
 				size = 0;
 			else
-				size = stmts.size();
-
+				size = batchStatementCurrentIndex;//stmts.size();
+			// take the index in case if last batch
 			int[] returnUpdateCountForBatch = new int[size];
 
 			SQLException sqle;
@@ -2793,6 +2820,7 @@ public class EmbedStatement extends ConnectionChild
 	  warnings = null;
 	  SQLText = null;
 	  batchStatements = null;
+	  batchStatementCurrentIndex = 0;
 	  clearParameters();
 	}
 
