@@ -521,8 +521,8 @@ subprojects {
   task dunitTest(type:Test, overwrite: true) {
     dependsOn "${subprojectBase}product"
     maxParallelForks = Math.max((int)Math.sqrt(Runtime.getRuntime().availableProcessors() + 1) + 1, 2)
-    minHeapSize = '512m'
-    maxHeapSize = '512m'
+    minHeapSize = '1g'
+    maxHeapSize = '1g'
 
     def single = System.getProperty('dunit.single')
     if (single == null || single.length() == 0) {

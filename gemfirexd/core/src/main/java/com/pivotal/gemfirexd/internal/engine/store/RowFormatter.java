@@ -10319,19 +10319,25 @@ public final class RowFormatter implements Serializable {
       final boolean truncateSpaces) {
     // var width, offsetFromMap is negative offset of offset from end
     // of byte array
-    final int bytesLen = bytes.length;
-    final int offsetOffset = bytesLen + offsetFromMap;
-    final int offset = readVarDataOffset(bytes, offsetOffset);
-    if (offset >= this.nVersionBytes) {
-      int columnWidth = getVarColumnWidth(bytes, bytesLen,
-          offsetOffset, offset);
-      // check for removal of trailing spaces
-      if (truncateSpaces && shouldTrimTrailingSpaces(cd)) {
-        columnWidth = trimTrailingSpaces(bytes, offset, columnWidth);
+    if (offsetFromMap < 0) {
+      final int bytesLen = bytes.length;
+      final int offsetOffset = bytesLen + offsetFromMap;
+      final int offset = readVarDataOffset(bytes, offsetOffset);
+      if (offset >= this.nVersionBytes) {
+        int columnWidth = getVarColumnWidth(bytes, bytesLen,
+            offsetOffset, offset);
+        // check for removal of trailing spaces
+        if (truncateSpaces && shouldTrimTrailingSpaces(cd)) {
+          columnWidth = trimTrailingSpaces(bytes, offset, columnWidth);
+        }
+        return (((long)offset) << Integer.SIZE) | columnWidth;
+      } else if (!isVarDataOffsetDefaultToken(offset)) {
+        // null value case
+        return OFFSET_AND_WIDTH_IS_NULL;
+      } else {
+        return OFFSET_AND_WIDTH_IS_DEFAULT;
       }
-      return (((long) offset) << Integer.SIZE) | columnWidth;
-    } else if (!isVarDataOffsetDefaultToken(offset)) {
-      // null value case
+    } else if (cd.columnDefault == null) {
       return OFFSET_AND_WIDTH_IS_NULL;
     } else {
       return OFFSET_AND_WIDTH_IS_DEFAULT;
