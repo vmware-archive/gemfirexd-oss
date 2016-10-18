@@ -93,8 +93,8 @@ public class SnappyRegionStatsCollectorFunction implements Function, Declarable 
           results.add(tableStats);
         }
       }
-      context.getResultSender().lastResult(results);
     } catch (CacheClosedException e) {
+    } finally {
       context.getResultSender().lastResult(results);
     }
 
