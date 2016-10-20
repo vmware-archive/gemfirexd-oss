@@ -14,97 +14,56 @@
  * permissions and limitations under the License. See accompanying
  * LICENSE file.
  */
-
 package com.pivotal.gemfirexd.internal.engine.ui;
 
-import java.io.Serializable;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.gemstone.gemfire.cache.DataPolicy;
+import com.gemstone.gemfire.DataSerializable;
+import com.gemstone.gemfire.internal.InternalDataSerializer;
 
-public class SnappyRegionStatsCollectorResult implements Serializable {
-  private boolean isColumnTable = false;
-  DataPolicy dataPolicy;
-  private String regionName;
-  private long rowCount = 0;
-  private long sizeInMemory = 0;
-  private long totalSize = 0;
+public class SnappyRegionStatsCollectorResult implements DataSerializable {
+  private transient List<SnappyRegionStats> combinedStats = new ArrayList<>();
 
-  public SnappyRegionStatsCollectorResult(String regionName, DataPolicy datapolicy) {
-    this.regionName = regionName;
-    this.dataPolicy = datapolicy;
+  public void addRegionStat(SnappyRegionStats stats) {
+    combinedStats.add(stats);
   }
 
+  public SnappyRegionStatsCollectorResult(){}
 
-  public Boolean isReplicatedTable() {
-    if (this.dataPolicy == DataPolicy.PERSISTENT_REPLICATE || this.dataPolicy == DataPolicy.REPLICATE)
-      return true;
-    else
-      return false;
-  }
-
-  public void setTotalSize(long totalSize) {
-    this.totalSize = totalSize;
-  }
-
-  public String getRegionName() {
-    return regionName;
-  }
-
-  public void setRegionName(String regionName) {
-    this.regionName = regionName;
-  }
-
-  public boolean isColumnTable() {
-    return isColumnTable;
-  }
-
-  public void setColumnTable(boolean columnTable) {
-    isColumnTable = columnTable;
-  }
-
-  public DataPolicy getDataPolicy() {
-    return dataPolicy;
-  }
-
-  public void setDataPolicy(DataPolicy dataPolicy) {
-    this.dataPolicy = dataPolicy;
-  }
-
-  public long getRowCount() {
-    return rowCount;
-  }
-
-  public void setRowCount(long rowCount) {
-    this.rowCount = rowCount;
-  }
-
-  public long getSizeInMemory() {
-    return sizeInMemory;
-  }
-
-  public void setSizeInMemory(long sizeInMemory) {
-    this.sizeInMemory = sizeInMemory;
-  }
-
-  public long getTotalSize() {
-    return this.totalSize;
-  }
-
-  public SnappyRegionStatsCollectorResult getCombinedStats(SnappyRegionStatsCollectorResult stats) {
-    String regionName = this.isColumnTable ? stats.regionName : this.regionName;
-    SnappyRegionStatsCollectorResult combinedStats = new SnappyRegionStatsCollectorResult(regionName, this.dataPolicy);
-
-    if (this.isReplicatedTable()) {
-      combinedStats.setRowCount(stats.rowCount);
-      combinedStats.setTotalSize(stats.totalSize);
-    } else {
-      combinedStats.setRowCount(stats.rowCount + this.rowCount);
-      combinedStats.setTotalSize(stats.totalSize + this.totalSize);
-    }
-
-    combinedStats.setSizeInMemory(stats.sizeInMemory + this.sizeInMemory);
-    combinedStats.setColumnTable(this.isColumnTable ? this.isColumnTable : stats.isColumnTable);
+  public List<SnappyRegionStats> getRegionStats() {
     return combinedStats;
+  }
+
+  @Override
+  public void toData(final DataOutput out) throws IOException {
+    out.writeInt(combinedStats.size());
+    for (SnappyRegionStats stats : combinedStats) {
+      InternalDataSerializer.writeString(stats.getRegionName(), out);
+      InternalDataSerializer.writeLong(stats.getTotalSize(), out);
+      InternalDataSerializer.writeLong(stats.getSizeInMemory(), out);
+      InternalDataSerializer.writeLong(stats.getRowCount(), out);
+      InternalDataSerializer.writeBoolean(stats.isColumnTable(), out);
+      InternalDataSerializer.writeBoolean(stats.isReplicatedTable(), out);
+    }
+  }
+
+  @Override
+  public void fromData(DataInput in) throws IOException {
+    int size = in.readInt();
+    while (size > 0) {
+      size--;
+      String regionName = InternalDataSerializer.readString(in);
+      long totalSize = InternalDataSerializer.readLong(in);
+      long memorySize = InternalDataSerializer.readLong(in);
+      long count = InternalDataSerializer.readLong(in);
+      boolean isColumnTable = InternalDataSerializer.readBoolean(in);
+      boolean isReplicated = InternalDataSerializer.readBoolean(in);
+      addRegionStat(new SnappyRegionStats(regionName, totalSize, memorySize, count, isColumnTable, isReplicated));
+    }
   }
 
 }

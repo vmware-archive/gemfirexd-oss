@@ -58,9 +58,9 @@ public class SnappyRegionStatsCollectorFunction implements Function, Declarable 
 
   @Override
   public void execute(FunctionContext context) {
-    List<SnappyRegionStatsCollectorResult> results = new ArrayList<>();
-    Map<String, SnappyRegionStatsCollectorResult> cachBatchStats = new HashMap<>();
-    ArrayList<SnappyRegionStatsCollectorResult> otherStats = new ArrayList<>();
+    SnappyRegionStatsCollectorResult result = new SnappyRegionStatsCollectorResult();
+    Map<String, SnappyRegionStats> cachBatchStats = new HashMap<>();
+    ArrayList<SnappyRegionStats> otherStats = new ArrayList<>();
 
     try {
       List<GemFireContainer> containers = Misc.getMemStore().getAllContainers();
@@ -71,44 +71,47 @@ public class SnappyRegionStatsCollectorFunction implements Function, Declarable 
       for (GemFireContainer container : containers) {
         if (container.isApplicationTable()) {
           LocalRegion r = container.getRegion();
-          RegionMXBean bean = managementService.getLocalRegionMBean(r.getFullPath());
-          if (bean != null && !(r.getFullPath().startsWith("/SNAPPY_HIVE_METASTORE/"))) {
-            SnappyRegionStatsCollectorResult dataCollector = collectDataFromBean(r, bean);
-            if (dataCollector.isColumnTable()) {
-              cachBatchStats.put(dataCollector.getRegionName(), dataCollector);
-            } else {
-              otherStats.add(dataCollector);
+          if (managementService != null && r != null ) {
+            RegionMXBean bean = managementService.getLocalRegionMBean(r.getFullPath());
+            if (bean != null && !(r.getFullPath().startsWith("/SNAPPY_HIVE_METASTORE/"))) {
+              SnappyRegionStats dataCollector = collectDataFromBean(r, bean);
+              if (dataCollector.isColumnTable()) {
+                cachBatchStats.put(dataCollector.getRegionName(), dataCollector);
+              } else {
+                otherStats.add(dataCollector);
+              }
             }
           }
         }
       }
 
       // Create one entry per Column Table by combining the results of row buffer and column table
-      for (SnappyRegionStatsCollectorResult tableStats : otherStats) {
+      for (SnappyRegionStats tableStats : otherStats) {
         StoreCallbacks callback = CallbackFactoryProvider.getStoreCallbacks();
         String catchBatchTableName = callback.cachedBatchTableName(tableStats.getRegionName());
         if (cachBatchStats.containsKey(catchBatchTableName)) {
-          results.add(tableStats.getCombinedStats(cachBatchStats.get(catchBatchTableName)));
+          result.addRegionStat(tableStats.getCombinedStats(cachBatchStats.get(catchBatchTableName)));
         } else {
-          results.add(tableStats);
+          result.addRegionStat(tableStats);
         }
       }
     } catch (CacheClosedException e) {
     } finally {
-      context.getResultSender().lastResult(results);
+      context.getResultSender().lastResult(result);
     }
 
   }
 
-  private SnappyRegionStatsCollectorResult collectDataFromBean(LocalRegion lr, RegionMXBean bean) {
+  private SnappyRegionStats collectDataFromBean(LocalRegion lr, RegionMXBean bean) {
     String regionName = (Misc.getFullTableNameFromRegionPath(bean.getFullPath()));
-    SnappyRegionStatsCollectorResult tableStats =
-        new SnappyRegionStatsCollectorResult(regionName, lr.getDataPolicy());
+    SnappyRegionStats tableStats =
+        new SnappyRegionStats(regionName);
     boolean isColumnTable = bean.isColumnTable();
     tableStats.setColumnTable(isColumnTable);
+    tableStats.setReplicatedTable(isReplicatedTable(lr.getDataPolicy()));
     tableStats.setRowCount(isColumnTable ? bean.getRowsInCachedBatches(): bean.getEntryCount());
 
-    if (tableStats.isReplicatedTable()) {
+    if (isReplicatedTable(lr.getDataPolicy())) {
       java.util.Iterator<RegionEntry> ri = lr.getBestLocalIterator(true);
       long size = 0;
       while (ri.hasNext()) {
@@ -129,6 +132,14 @@ public class SnappyRegionStatsCollectorFunction implements Function, Declarable 
       tableStats.setTotalSize(sizeOfRegion);
     }
     return tableStats;
+  }
+
+
+  public Boolean isReplicatedTable(DataPolicy dataPolicy) {
+    if (dataPolicy == DataPolicy.PERSISTENT_REPLICATE || dataPolicy == DataPolicy.REPLICATE)
+      return true;
+    else
+      return false;
   }
 
   @Override
