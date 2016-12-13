@@ -2782,7 +2782,11 @@ public class BucketRegion extends DistributedRegion implements Bucket {
     closeCacheCallback(getCacheWriter());
     closeCacheCallback(getEvictionController());
   }
-  
+
+  public long getSizeInMemory() {
+    return Math.max(this.bytesInMemory.get(), 0L);
+  }
+
   public long getTotalBytes() {
     long result = this.bytesInMemory.get();
     if(result == BUCKET_DESTROYED) {

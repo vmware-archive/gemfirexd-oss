@@ -346,7 +346,7 @@ public class PartitionedRegionBridge<K, V>  extends RegionMBeanBridge<K, V> {
         Sizeable value = (Sizeable)re._getValue();
         long valSize = value.getSizeInBytes();
         if (valSize > 32) {
-          numLocalEntries = numLocalEntries + (value.getSizeInBytes() - 32) / 8;
+          numLocalEntries += (value.getSizeInBytes() - 32) / 8;
         }
       }
       return numLocalEntries;

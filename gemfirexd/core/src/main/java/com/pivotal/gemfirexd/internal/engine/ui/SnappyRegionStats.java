@@ -107,9 +107,8 @@ public class SnappyRegionStats {
     }
 
     combinedStats.setSizeInMemory(stats.sizeInMemory + this.sizeInMemory);
-    combinedStats.setColumnTable(this.isColumnTable ? this.isColumnTable : stats.isColumnTable);
+    combinedStats.setColumnTable(this.isColumnTable || stats.isColumnTable);
     combinedStats.setReplicatedTable(this.isReplicatedTable());
     return combinedStats;
   }
-
 }

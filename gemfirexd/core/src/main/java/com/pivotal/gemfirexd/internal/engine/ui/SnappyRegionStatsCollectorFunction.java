@@ -29,6 +29,8 @@ import com.gemstone.gemfire.cache.Declarable;
 import com.gemstone.gemfire.cache.execute.Function;
 import com.gemstone.gemfire.cache.execute.FunctionContext;
 import com.gemstone.gemfire.internal.cache.BucketRegion;
+import com.gemstone.gemfire.internal.cache.CachedDeserializableFactory;
+import com.gemstone.gemfire.internal.cache.DiskRegion;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.PartitionedRegionDataStore;
@@ -140,24 +142,53 @@ public class SnappyRegionStatsCollectorFunction implements Function, Declarable 
       tableStats.setRowCount(isColumnTable ? bean.getRowsInCachedBatches() : bean.getEntryCount());
     }
 
+    GemFireXDInstrumentation sizer = GemFireXDInstrumentation.getInstance();
     if (isReplicatedTable(lr.getDataPolicy())) {
       java.util.Iterator<RegionEntry> ri = lr.getBestLocalIterator(true);
-      long size = 0;
+      long size = lr.estimateMemoryOverhead(sizer);
+      long entryOverhead = -1;
       while (ri.hasNext()) {
-        size += GemFireXDInstrumentation.getInstance().sizeof(ri.next());
+        RegionEntry re = ri.next();
+        if (entryOverhead < 0) {
+          entryOverhead = sizer.sizeof(re);
+        }
+        size += entryOverhead;
+        Object key = re.getRawKey();
+        Object value = re._getValue();
+        if (key != null) {
+          size += CachedDeserializableFactory.calcMemSize(key);
+        }
+        if (value != null) {
+          size += CachedDeserializableFactory.calcMemSize(value);
+        }
       }
       tableStats.setSizeInMemory(size);
+      DiskRegion dr = lr.getDiskRegion();
+      if (dr != null) {
+        long diskBytes = dr.getStats().getBytesWritten();
+        if (lr.getDataPolicy().withPersistence()) {
+          // TODO: the stats below are calculated differently than memory size so
+          // subtracting the two is not proper; need separate like BucketRegion
+          size += Math.max(0, diskBytes - size);
+        } else {
+          size += diskBytes;
+        }
+      }
+      tableStats.setTotalSize(size);
     } else {
       PartitionedRegionDataStore datastore = ((PartitionedRegion)lr).getDataStore();
-      int sizeOfRegion =0;
+      long sizeInMemory = 0L;
+      long sizeOfRegion = 0L;
       if (datastore != null) {
         Set<BucketRegion> bucketRegions = datastore.getAllLocalBucketRegions();
         for (BucketRegion br : bucketRegions) {
-          sizeOfRegion += br.getTotalBytes();
+          long constantOverhead = br.estimateMemoryOverhead(sizer);
+          sizeInMemory += constantOverhead + br.getSizeInMemory();
+          sizeOfRegion += constantOverhead + br.getTotalBytes();
         }
       }
 
-      tableStats.setSizeInMemory(bean.getEntrySize());
+      tableStats.setSizeInMemory(sizeInMemory);
       tableStats.setTotalSize(sizeOfRegion);
     }
     return tableStats;
