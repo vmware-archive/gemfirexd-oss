@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import com.gemstone.gemfire.DataSerializer;
 import com.gemstone.gemfire.LogWriter;
@@ -283,9 +284,7 @@ public final class PutAllPRMessage extends PartitionMessageWithDirectReply {
         VersionTag<?> tag = putAllPRData[i].versionTag;
         versionTags.add(tag);
         putAllPRData[i].versionTag = null;
-        // Part of hackish fix for SNAP-1188. null batchuuid is ok here because
-        // uuid is generated at the primary bucket location. Not valid here.
-        putAllPRData[i].toData(out, requiresRegionContext, null);
+        putAllPRData[i].toData(out, requiresRegionContext);
         putAllPRData[i].versionTag = tag;
         // PutAllEntryData's toData did not serialize eventID to save
         // performance for DR, but in PR,
@@ -532,8 +531,8 @@ public final class PutAllPRMessage extends PartitionMessageWithDirectReply {
               // ev will be added into dpao in putLocally()
               // oldValue and real operation will be modified into ev in putLocally()
               // then in basicPutPart3(), the ev is added into dpao
-              putAllPRData[i].setTailKey(ev.getTailKey());
-              putAllPRData[i].setBatchUUID(ev.getBatchUUID());
+
+
               boolean didPut = false;
               try {
                 if (tx != null) {
@@ -547,6 +546,8 @@ public final class PutAllPRMessage extends PartitionMessageWithDirectReply {
                 } else {
                   didPut = view.putEntryOnRemote(ev, false, false, null,
                       false, cacheWrite, lastModified, true);
+                  putAllPRData[i].setTailKey(ev.getTailKey());
+                  putAllPRData[i].setBatchUUID(ev.getBatchUUID());
                 }
                 if (didPut && logger.fineEnabled()) {
                   logger.fine("PutAllPRMessage.doLocalPutAll:putLocally success for " + ev);

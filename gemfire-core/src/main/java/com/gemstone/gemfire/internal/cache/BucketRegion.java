@@ -764,7 +764,7 @@ public class BucketRegion extends DistributedRegion implements Bucket {
       Set keysToDestroy = createCachedBatchAndPutInColumnTable();
       destroyAllEntries(keysToDestroy);
       // create new batchUUID
-      this.batchUUID = null;
+      generateAndSetBatchIDIfNULL(true);
       return true;
     } else {
       return false;
@@ -777,11 +777,13 @@ public class BucketRegion extends DistributedRegion implements Bucket {
     // has to be maintained
     //TODO: Suranjan Will using region.size in synchronized be slower? or should maintain atomic variable per bucket?
     // PUTALL
+    boolean resetBatchId = false;
     if (getBucketAdvisor().isPrimary()) {
+      UUID batchUUIDToUse = null;
       if (event.getPutAllOperation() != null) { //isPutAll op
-        generateAndSetBatchIDIfNULL();
+        batchUUIDToUse = generateAndSetBatchIDIfNULL(resetBatchId);
       } else if (this.size() >= GemFireCacheImpl.getColumnBatchSize()) {// loose check on size..not very strict
-        generateAndSetBatchIDIfNULL();
+        batchUUIDToUse = generateAndSetBatchIDIfNULL(resetBatchId);
         if (getCache().getLoggerI18n().fineEnabled()) {
           getCache()
               .getLoggerI18n()
@@ -789,9 +791,9 @@ public class BucketRegion extends DistributedRegion implements Bucket {
                   + "(NON PUTALL operation) as " + this.batchUUID);
         }
       } else {
-        generateAndSetBatchIDIfNULL();
+        batchUUIDToUse = generateAndSetBatchIDIfNULL(resetBatchId);
       }
-      event.setBatchUUID(this.batchUUID);
+      event.setBatchUUID(batchUUIDToUse);
     } else {
       if (getCache().getLoggerI18n().fineEnabled()) {
         getCache()
@@ -804,7 +806,11 @@ public class BucketRegion extends DistributedRegion implements Bucket {
     }
   }
 
-  private synchronized void generateAndSetBatchIDIfNULL() {
+  private synchronized UUID generateAndSetBatchIDIfNULL(boolean resetBatchId) {
+    if (resetBatchId) {
+      this.batchUUID = null;
+      return this.batchUUID;
+    }
     final UUID buid = this.batchUUID;
     if (buid == null || buid.equals(zeroUUID)) {
       this.batchUUID = partitionedRegion.newJavaUUID();
@@ -823,6 +829,7 @@ public class BucketRegion extends DistributedRegion implements Bucket {
 
       }
     }
+    return this.batchUUID;
   }
 
   private Set createCachedBatchAndPutInColumnTable() {
