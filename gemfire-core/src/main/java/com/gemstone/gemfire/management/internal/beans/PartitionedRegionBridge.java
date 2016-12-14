@@ -336,6 +336,8 @@ public class PartitionedRegionBridge<K, V>  extends RegionMBeanBridge<K, V> {
     return this.prStats.getPRNumRowsInCachedBatches();
   }
 
+  private int minimumReservoirEntrySize = Sizeable.PER_OBJECT_OVERHEAD * 6;
+  
   @Override
   public long getRowsInReservoir() {
     if (parRegion.isDataStore()) {
@@ -345,8 +347,8 @@ public class PartitionedRegionBridge<K, V>  extends RegionMBeanBridge<K, V> {
         RegionEntry re = (RegionEntry)itr.next();
         Sizeable value = (Sizeable)re._getValue();
         long valSize = value.getSizeInBytes();
-        if (valSize > 32) {
-          numLocalEntries += (value.getSizeInBytes() - 32) / 8;
+        if (valSize > minimumReservoirEntrySize) {
+          numLocalEntries += (valSize - minimumReservoirEntrySize) / Sizeable.PER_OBJECT_OVERHEAD;
         }
       }
       return numLocalEntries;
