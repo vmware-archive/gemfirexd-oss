@@ -85,6 +85,8 @@ import com.pivotal.gemfirexd.internal.engine.distributed.GfxdMessage;
 import com.pivotal.gemfirexd.internal.engine.distributed.utils.GemFireXDUtils;
 import com.pivotal.gemfirexd.internal.engine.fabricservice.FabricServiceImpl;
 import com.pivotal.gemfirexd.internal.engine.jdbc.GemFireXDRuntimeException;
+import com.pivotal.gemfirexd.internal.engine.locks.DefaultGfxdLockable;
+import com.pivotal.gemfirexd.internal.engine.locks.GfxdLockSet;
 import com.pivotal.gemfirexd.internal.engine.management.GfxdManagementService;
 import com.pivotal.gemfirexd.internal.engine.management.GfxdResourceEvent;
 import com.pivotal.gemfirexd.internal.engine.sql.execute.DistributionObserver;
@@ -236,6 +238,9 @@ public final class FabricDatabase implements ModuleControl,
   private boolean runtimeStatisticsOn;
 
   private DirFile tempDir;
+
+  private final DefaultGfxdLockable hiveClientObject = new DefaultGfxdLockable(
+      "HiveMetaStoreClient", GfxdConstants.TRACE_DDLOCK);
 
   /**
    * flag for tests to avoid precompiling SPS descriptors to reduce unit test
@@ -525,12 +530,16 @@ public final class FabricDatabase implements ModuleControl,
         // SERIALIZABLE to REPEATABLE READ
         boolean writeLockTaken = false;
         try {
-          writeLockTaken = this.dd.lockForWriting(tc, false);
+          //writeLockTaken = this.dd.lockForWriting(tc, false);
+          // Changed from ddlLockObject
+          writeLockTaken = GemFireXDUtils.lockObject(hiveClientObject, null, true, false, tc,
+              GfxdLockSet.MAX_LOCKWAIT_VAL);
           this.memStore.initExternalCatalog();
         }
         finally {
           if (writeLockTaken) {
-            this.dd.unlockAfterWriting(tc, false);
+            //this.dd.unlockAfterWriting(tc, false);
+            GemFireXDUtils.unlockObject(hiveClientObject, null, true, false, tc);
           }
         }
       }
