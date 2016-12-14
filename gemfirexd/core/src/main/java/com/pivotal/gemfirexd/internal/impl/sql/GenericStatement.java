@@ -94,16 +94,13 @@ import com.pivotal.gemfirexd.internal.iapi.sql.dictionary.TableDescriptor;
 import com.pivotal.gemfirexd.internal.iapi.sql.execute.ExecutionContext;
 import com.pivotal.gemfirexd.internal.iapi.store.access.TransactionController;
 import com.pivotal.gemfirexd.internal.iapi.types.DataTypeDescriptor;
-import com.pivotal.gemfirexd.internal.impl.sql.compile.AlterTableNode;
-import com.pivotal.gemfirexd.internal.impl.sql.compile.CursorNode;
-import com.pivotal.gemfirexd.internal.impl.sql.compile.ExecSPSNode;
-import com.pivotal.gemfirexd.internal.impl.sql.compile.InsertNode;
-import com.pivotal.gemfirexd.internal.impl.sql.compile.StatementNode;
+import com.pivotal.gemfirexd.internal.impl.sql.compile.*;
 import com.pivotal.gemfirexd.internal.impl.sql.conn.GenericLanguageConnectionContext;
 import com.pivotal.gemfirexd.internal.impl.sql.rules.ExecutionEngineArbiter;
 import com.pivotal.gemfirexd.internal.shared.common.ResolverUtils;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import com.pivotal.gemfirexd.internal.impl.sql.rules.ExecutionEngineRule.ExecutionEngine;
+import org.apache.commons.lang.exception.ExceptionUtils;
 
 //GemStone changes BEGIN
 
@@ -153,6 +150,11 @@ public class GenericStatement
         private static final Pattern PUT_INTO_TABLE_SELECT_PATTERN =
             Pattern.compile(".*PUT\\s+INTO\\s+(TABLE)?.*SELECT\\s+.*",
                 Pattern.CASE_INSENSITIVE);
+        private static final Pattern EXECUTION_ENGINE_STORE_HINT =
+            Pattern.compile(".*EXECUTIONENGINE(\\s+)?+=(\\s+)?+STORE\\s+.*",
+                Pattern.CASE_INSENSITIVE);
+
+
 	      private static ExecutionEngineArbiter engineArbiter = new ExecutionEngineArbiter();
 // GemStone changes END
 	/**
@@ -259,7 +261,8 @@ public class GenericStatement
 		Timestamp			endTimestamp = null;
 		StatementContext	statementContext = null;
 // GemStone changes BEGIN
-		boolean routeQuery = Misc.getMemStore().isSnappyStore() && lcc.isQueryRoutingEnabled();
+    boolean routeQuery = Misc.getMemStore().isSnappyStore() && lcc.isQueryRoutingEnabled()
+        && (!EXECUTION_ENGINE_STORE_HINT.matcher(getSource()).matches());
 		GeneratedClass ac = null;
                 QueryInfo qinfo = null;
                 boolean createGFEPrepStmt = false;
@@ -481,7 +484,7 @@ public class GenericStatement
 			*/
 			final CompilerContext cc = lcc.pushCompilerContext(compilationSchema, true);
 // GemStone changes BEGIN
-			//reset queryHDFS to default value: false
+                       //reset queryHDFS to default value: false
 			cc.setHasQueryHDFS(false);
 			cc.setQueryHDFS(false);
 			cc.setOriginalExecFlags(this.execFlags);
@@ -591,13 +594,11 @@ public class GenericStatement
 					qt = p.parseStatement(getQueryStringForParse(lcc), paramDefaults);
 				}
 				catch (StandardException ex) {
-				    //SanityManager.DEBUG_PRINT("DEBUG", "Parse: exception routeQuery=" + routeQuery + " ,sql=" + this.getSource() + " ,flag=" + cc.isDDL4routing());
-				    //System.out.println("Parse: exception routeQuery=" + routeQuery + " ,sql=" + this.getSource() + " ,ex=" + ex.getMessage() +  " ,stack=" + ExceptionUtils.getFullStackTrace(ex));
+          //wait till the query hint is examined before throwing exceptions or
           if (routeQuery) {
             if (STREAMING_DDL_PREFIX.matcher(source).matches()) {
               cc.markAsDDLForSnappyUse(true);
             }
-
             return getPreparedStatementForSnappy(false, statementContext, lcc, cc.isMarkedAsDDLForSnappyUse(), checkCancellation);
           }
           throw ex;
@@ -672,7 +673,6 @@ public class GenericStatement
 						qt.bindStatement();
 					}
 					catch(StandardException ex) {
-						//System.out.println("Bind: exception routeQuery=" + routeQuery + " ,sql=" + this.getSource() + " ,flag=" + cc.isDDL4routing());
 						if (routeQuery) {
 							return getPreparedStatementForSnappy(true, statementContext, lcc, false, checkCancellation);
 						}
@@ -735,6 +735,7 @@ public class GenericStatement
 					}
 					try {
 						qt.optimizeStatement();
+
 					}
 					catch(StandardException ex) {
 						if (routeQuery) {
@@ -773,10 +774,10 @@ public class GenericStatement
                                           // The below should be connection specific.
                                           if ((routeQuery && qinfo != null && qinfo.isDML()
                                               && !isPreparedStatement() && cc.getExecutionEngine() != ExecutionEngine.STORE)) {
-
-                                            if (cc.getExecutionEngine() == ExecutionEngine.SPARK ||
-                                                engineArbiter.getExecutionEngine((DMLQueryInfo)qinfo)
-                                                    == ExecutionEngine.SPARK) {
+                                            // order is important. cost should be last criteria
+                                            if (cc.getExecutionEngine() == ExecutionEngine.SPARK
+                                                || engineArbiter.getExecutionEngine((DMLQueryInfo)qinfo) == ExecutionEngine.SPARK
+                                                /*|| engineArbiter.getExecutionEngine(qt, this, routeQuery) == ExecutionEngine.SPARK*/) {
                                               if (qinfo.isSelect()) {
                                                 if (observer != null) {
                                                   observer.testExecutionEngineDecision(qinfo, ExecutionEngine.SPARK, this.statementText);
