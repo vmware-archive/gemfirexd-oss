@@ -1123,6 +1123,15 @@ public abstract class FabricServiceImpl implements FabricService {
     }
 
     protected final String setHostNameForClients(Properties networkProps) {
+      // check for explicit address setting first
+      String host = PropertyUtil.findAndGetProperty(networkProps,
+          Attribute.HOSTNAME_FOR_CLIENTS, GfxdConstants.GFXD_PREFIX +
+              Attribute.HOSTNAME_FOR_CLIENTS, monitorlite);
+      if (host != null) {
+        this.hostName = host;
+        SanityManager.DEBUG_PRINT("SB:", "SB: sending host name " + host);
+        return host;
+      }
       this.preferIPAddressForClients = PropertyUtil.getBooleanProperty(
           Attribute.PREFER_NETSERVER_IP_ADDRESS,
           GfxdConstants.GFXD_PREFER_NETSERVER_IP_ADDRESS, networkProps, false,
