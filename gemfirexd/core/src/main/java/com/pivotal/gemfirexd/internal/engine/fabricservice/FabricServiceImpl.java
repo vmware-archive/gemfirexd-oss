@@ -1129,7 +1129,6 @@ public abstract class FabricServiceImpl implements FabricService {
               Attribute.HOSTNAME_FOR_CLIENTS, monitorlite);
       if (host != null) {
         this.hostName = host;
-        SanityManager.DEBUG_PRINT("SB:", "SB: sending host name " + host);
         return host;
       }
       this.preferIPAddressForClients = PropertyUtil.getBooleanProperty(
