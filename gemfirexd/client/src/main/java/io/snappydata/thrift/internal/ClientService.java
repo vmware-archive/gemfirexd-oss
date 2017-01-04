@@ -43,7 +43,7 @@ import com.pivotal.gemfirexd.internal.shared.common.SharedUtils;
 import com.pivotal.gemfirexd.internal.shared.common.reference.SQLState;
 import com.pivotal.gemfirexd.internal.shared.common.sanity.SanityManager;
 import com.pivotal.gemfirexd.jdbc.ClientAttribute;
-import com.pivotal.gemfirexd.jdbc.ClientDriver;
+import io.snappydata.jdbc.ClientDriver;
 import io.snappydata.thrift.*;
 import io.snappydata.thrift.common.*;
 import org.apache.thrift.TException;
