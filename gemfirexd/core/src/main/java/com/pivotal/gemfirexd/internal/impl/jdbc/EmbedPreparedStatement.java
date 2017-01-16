@@ -70,6 +70,8 @@ import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserver;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
 import com.pivotal.gemfirexd.internal.engine.access.GemFireTransaction;
 import com.pivotal.gemfirexd.internal.engine.distributed.utils.GemFireXDUtils;
+import com.pivotal.gemfirexd.internal.engine.sql.execute.PrepStatementSnappyActivation;
+import com.pivotal.gemfirexd.internal.engine.sql.execute.SnappyActivation;
 import com.pivotal.gemfirexd.internal.iapi.error.StandardException;
 import com.pivotal.gemfirexd.internal.iapi.jdbc.BrokeredConnectionControl;
 import com.pivotal.gemfirexd.internal.iapi.jdbc.EngineParameterMetaData;
@@ -88,6 +90,7 @@ import com.pivotal.gemfirexd.internal.iapi.types.DataValueDescriptor;
 import com.pivotal.gemfirexd.internal.iapi.types.RawToBinaryFormatStream;
 import com.pivotal.gemfirexd.internal.iapi.types.ReaderToUTF8Stream;
 import com.pivotal.gemfirexd.internal.iapi.types.VariableSizeDataValue;
+import com.pivotal.gemfirexd.internal.impl.sql.GenericActivationHolder;
 import com.pivotal.gemfirexd.internal.impl.sql.GenericPreparedStatement;
 import com.pivotal.gemfirexd.internal.impl.sql.GenericStatement;
 import com.pivotal.gemfirexd.internal.shared.common.SingleHopInformation;
@@ -1325,7 +1328,16 @@ public abstract class EmbedPreparedStatement
 					// Gemstone changes END
 					gcDuringGetMetaData = execp.getActivationClass().getName();
 				}
-				if (rMetaData == null)
+				Activation a = null;
+				if (this.getActivation() != null) {
+					if (this.getActivation() instanceof GenericActivationHolder) {
+						a = ((GenericActivationHolder)this.getActivation()).getActivation();
+					} else if (this.getActivation() instanceof Activation) {
+						a = this.getActivation();
+					}
+				}
+
+				if (rMetaData == null && !(a instanceof SnappyActivation || a instanceof PrepStatementSnappyActivation))
 				{
 					ResultDescription resd = preparedStatement.getResultDescription();
 					if (resd != null)
