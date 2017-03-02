@@ -20,12 +20,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.net.InetAddress;
 import java.sql.*;
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -53,7 +47,7 @@ import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.xmlcache.RegionAttributesCreation;
 import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
 import com.pivotal.gemfirexd.execute.CallbackStatement;
-import com.pivotal.gemfirexd.internal.client.am.*;
+import com.pivotal.gemfirexd.internal.client.am.DisconnectException;
 import com.pivotal.gemfirexd.internal.client.net.NetAgent;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserver;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverAdapter;
@@ -73,12 +67,14 @@ import com.pivotal.gemfirexd.internal.iapi.sql.dictionary.SchemaDescriptor;
 import com.pivotal.gemfirexd.internal.iapi.util.StringUtil;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedStatement;
 import com.pivotal.gemfirexd.internal.impl.jdbc.authentication.AuthenticationServiceBase;
+import io.snappydata.app.TestThrift;
 import io.snappydata.test.dunit.Host;
 import io.snappydata.test.dunit.RMIException;
 import io.snappydata.test.dunit.SerializableCallable;
 import io.snappydata.test.dunit.SerializableRunnable;
 import io.snappydata.test.dunit.VM;
 import io.snappydata.test.util.TestException;
+import io.snappydata.thrift.internal.ClientConnection;
 import org.apache.derby.drda.NetworkServerControl;
 import org.apache.derbyTesting.junit.JDBC;
 
@@ -149,9 +145,9 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
     final PartitionAttributes<?, ?> pa;
     if (isDataStore) {
       pa = new PartitionAttributesFactory<Object, Object>(clientAttrs
-          .getPartitionAttributes()).create();
-    }
-    else {
+          .getPartitionAttributes()).setLocalMaxMemory(
+          PartitionAttributesFactory.LOCAL_MAX_MEMORY_DEFAULT).create();
+    } else {
       pa = new PartitionAttributesFactory<Object, Object>(clientAttrs
           .getPartitionAttributes()).setLocalMaxMemory(0).create();
     }
@@ -477,12 +473,18 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
   private static volatile boolean hasQueryObservers = false;
   private static volatile int preparedExec = 0;
   private static volatile int unpreparedExec = 0;
+
   public void testNetworkClient() throws Exception {
+    networkClientTests(null, null);
+  }
+
+  private int[] networkClientTests(Properties extraProps,
+      Properties extraConnProps) throws Exception {
     // start a couple of servers
     startVMs(0, 2);
     // Start network server on the VMs
-    final int netPort = startNetworkServer(1, null, null);
-    final int netPort2 = startNetworkServer(2, null, null);
+    final int netPort = startNetworkServer(1, null, extraProps);
+    final int netPort2 = startNetworkServer(2, null, extraProps);
     final VM serverVM = this.serverVMs.get(0);
 
     // Use this VM as the network client
@@ -491,6 +493,9 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
     Connection conn, conn2;
     final Properties connProps = new Properties();
     connProps.setProperty("load-balance", "false");
+    if (extraConnProps != null) {
+      connProps.putAll(extraConnProps);
+    }
     final InetAddress localHost = SocketCreator.getLocalHost();
     String url = TestUtil.getNetProtocol(localHost.getHostName(), netPort);
     conn = DriverManager.getConnection(url, connProps);
@@ -763,7 +768,7 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
     if (!TestUtil.USE_ODBC_BRIDGE) {
       url = TestUtil.getNetProtocol(localHost.getHostName(), netPort) + "test";
       try {
-        conn = DriverManager.getConnection(url);
+        DriverManager.getConnection(url);
       } catch (SQLException ex) {
         if (!"XJ028".equals(ex.getSQLState())
             && !"XJ212".equals(ex.getSQLState())) {
@@ -1336,6 +1341,20 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
     stmt.execute("drop table TESTTABLE");
     stmt.close();
     conn.close();
+
+    return new int[] { netPort, netPort2 };
+  }
+
+  public void testThriftFramedProtocol() throws Exception {
+    // first check with server and JDBC client with framed protocol
+    Properties props = new Properties();
+    props.setProperty(Attribute.THRIFT_USE_FRAMED_TRANSPORT, "true");
+    Properties connProps = new Properties();
+    connProps.setProperty("framed-transport", "true");
+    int[] netPorts = networkClientTests(props, connProps);
+    // also check with direct thrift client
+    TestThrift.run(SocketCreator.getLocalHost().getHostName(),
+        netPorts[1], true);
   }
 
   public void test44240() throws Exception {
@@ -1663,7 +1682,12 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
     assertNumConnections(1, -1, 2);
 
     // Some sanity checks for DB meta-data
-    checkDBMetadata(conn2, url2);
+    // URL remains the first control connection one for thrift
+    if (ClientSharedUtils.USE_THRIFT_AS_DEFAULT) {
+      checkDBMetadata(conn2, url);
+    } else {
+      checkDBMetadata(conn2, url2);
+    }
 
     stmt = conn2.createStatement();
     rs = stmt.executeQuery("select * from TESTTABLE");
@@ -1850,9 +1874,6 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
     assertNumConnections(-4, -4, 2);
   }
 
-  public String reduceLogging() {
-    return "fine";
-  }
   /**
    * Test if multiple connections from network clients failover successfully.
    */
@@ -1869,10 +1890,17 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
     Connection conn = TestUtil.getNetConnection(
         localHost.getCanonicalHostName(), netPort, null, new Properties());
 
-    com.pivotal.gemfirexd.internal.client.am.Connection clientConn
-        = (com.pivotal.gemfirexd.internal.client.am.Connection)conn;
-    NetAgent agent = (NetAgent)clientConn.agent_;
-    int port = agent.getPort();
+    int port;
+    if (ClientSharedUtils.USE_THRIFT_AS_DEFAULT) {
+      ClientConnection clientConn = (ClientConnection)conn;
+      port = clientConn.getClientService().getCurrentHostConnection()
+          .hostAddr.getPort();
+    } else {
+      com.pivotal.gemfirexd.internal.client.am.Connection clientConn
+          = (com.pivotal.gemfirexd.internal.client.am.Connection)conn;
+      NetAgent agent = (NetAgent)clientConn.agent_;
+      port = agent.getPort();
+    }
     assertTrue(port == netPort || port == netPort2);
     boolean connectedToFirst = true;
     if (port == netPort2) {
@@ -2045,7 +2073,8 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
       fail("expected connection failure with no locator available");
     } catch (SQLException sqle) {
       if (!"08006".equals(sqle.getSQLState())
-          && !"X0Z01".equals(sqle.getSQLState())) {
+          && !"X0Z01".equals(sqle.getSQLState())
+          && !"40XD0".equals(sqle.getSQLState())) {
         fail("unexpected exception", sqle);
       }
     }
