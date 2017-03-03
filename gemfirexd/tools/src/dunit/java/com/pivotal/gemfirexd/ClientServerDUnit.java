@@ -1346,6 +1346,8 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
   }
 
   public void testThriftFramedProtocol() throws Exception {
+    // only if thrift is being used
+    if (!ClientSharedUtils.USE_THRIFT_AS_DEFAULT) return;
     // first check with server and JDBC client with framed protocol
     Properties props = new Properties();
     props.setProperty(Attribute.THRIFT_USE_FRAMED_TRANSPORT, "true");
@@ -2194,8 +2196,8 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
 
     // check new connection opened on servers successfully load-balanced
     assertNumConnections(1, 0, locator);
-    assertNumConnections(1, -1, 1);
-    assertNumConnections(1, -1, 2);
+    assertNumConnections(-2, -1, 1);
+    assertNumConnections(-2, -1, 2);
 
     stmt = conn2.createStatement();
     rs = stmt.executeQuery("select * from TESTTABLE");
@@ -2212,15 +2214,15 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
     assertFalse(rs.next());
 
     assertNumConnections(1, 0, locator);
-    assertNumConnections(1, -1, 1);
-    assertNumConnections(1, -1, 2);
+    assertNumConnections(-2, -1, 1);
+    assertNumConnections(-2, -1, 2);
 
     // now a third connection
     Connection conn3 = TestUtil.getNetConnection(localHost.getCanonicalHostName(),
         netPort, null, new Properties());
 
     assertNumConnections(1, 0, locator);
-    assertNumConnections(3, -1, 1, 2);
+    assertNumConnections(-4, -1, 1, 2);
 
     // add expected exception for server connection failure
     addExpectedException(null, new Object[] { java.net.ConnectException.class,
@@ -2241,7 +2243,7 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
 
     // check connections opened on second server
     assertNumConnections(1, 0, locator);
-    assertNumConnections(3, -1, 2);
+    assertNumConnections(-4, -1, 2);
 
     removeExpectedException(null, new Object[] {
         java.net.ConnectException.class, DisconnectException.class,
@@ -2277,7 +2279,7 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
 
     // check connection opened on second server
     assertNumConnections(1, 0, locator);
-    assertNumConnections(4, -1, 2);
+    assertNumConnections(-5, -1, 2);
 
     // now drop the table and close the connections
     stmt.execute("drop table TESTTABLE");
@@ -2285,22 +2287,22 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
     conn.close();
 
     assertNumConnections(1, 0, locator);
-    assertNumConnections(4, -2, 2);
+    assertNumConnections(-5, -2, 2);
 
     conn2.close();
 
     assertNumConnections(1, 0, locator);
-    assertNumConnections(4, -3, 2);
+    assertNumConnections(-5, -3, 2);
 
     conn3.close();
 
     assertNumConnections(1, 0, locator);
-    assertNumConnections(4, -4, 2);
+    assertNumConnections(-5, -4, 2);
 
     conn4.close();
 
     assertNumConnections(1, 0, locator);
-    assertNumConnections(4, -5, 2);
+    assertNumConnections(-5, -5, 2);
   }
 
   public void testPersistentDD() throws Exception {
