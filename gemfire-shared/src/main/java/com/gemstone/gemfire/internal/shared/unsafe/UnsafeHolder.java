@@ -91,6 +91,12 @@ public abstract class UnsafeHolder {
     return ((sun.nio.ch.DirectBuffer)buffer).address();
   }
 
+  public static void releaseIfDirectBuffer(Buffer buffer) {
+    if (buffer != null && buffer.isDirect()) {
+      releaseDirectBuffer(buffer);
+    }
+  }
+
   public static void releaseDirectBuffer(Buffer buffer) {
     sun.misc.Cleaner cleaner = ((sun.nio.ch.DirectBuffer)buffer).cleaner();
     if (cleaner != null) {

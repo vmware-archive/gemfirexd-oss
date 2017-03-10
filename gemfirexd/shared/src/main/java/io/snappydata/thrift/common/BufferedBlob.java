@@ -21,6 +21,8 @@ import java.nio.ByteBuffer;
 import java.sql.Blob;
 import java.sql.SQLException;
 
+import com.gemstone.gemfire.internal.shared.unsafe.UnsafeHolder;
+
 /**
  * Enhancement to the {@link Blob} to allow obtaining the contents
  * as a {@link ByteBuffer} that can be a heap buffer or off-heap one.
@@ -33,6 +35,12 @@ public interface BufferedBlob extends Blob {
 
   /**
    * Get the entire contents of the {@link Blob} as a {@link ByteBuffer}.
+   * If the returned buffer is a direct ByteBuffer then one of the callers
+   * must take care to either release it explicitly after use (e.g. using
+   * {@link UnsafeHolder#releaseIfDirectBuffer}) or ensure that there is enough
+   * memory to allow direct ByteBuffers to be cleaned only after a GC cycle
+   * (which may be delayed since a direct ByteBuffer will cause
+   * no significant GC pressure).
    */
   ByteBuffer getAsBuffer() throws SQLException;
 }

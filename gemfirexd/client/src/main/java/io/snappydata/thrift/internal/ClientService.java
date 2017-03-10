@@ -77,6 +77,7 @@ public final class ClientService extends ReentrantLock implements LobService {
   final boolean loadBalance;
   final SocketParameters socketParams;
   final boolean framedTransport;
+  final boolean useDirectBuffers;
   final int lobChunkSize;
   final Set<String> serverGroups;
   volatile int isolationLevel = Converters
@@ -368,6 +369,7 @@ public final class ClientService extends ReentrantLock implements LobService {
     boolean binaryProtocol = false;
     boolean framedTransport = false;
     boolean useSSL = false;
+    boolean directBuffers = false;
     int lobChunkSize = -1;
     if (props != null) {
       binaryProtocol = Boolean.parseBoolean(props
@@ -389,6 +391,9 @@ public final class ClientService extends ReentrantLock implements LobService {
           p.setParameter(this.socketParams, propValue);
         }
       }
+      // check if configured to use direct ByteBuffers
+      directBuffers = Boolean.parseBoolean(props.remove(
+          ClientAttribute.THRIFT_LOB_DIRECT_BUFFERS));
       // set the chunk size for LOBs if set
       String chunkSize = props.remove(ClientAttribute.THRIFT_LOB_CHUNK_SIZE);
       if (chunkSize != null) {
@@ -407,6 +412,7 @@ public final class ClientService extends ReentrantLock implements LobService {
     this.socketParams.setServerType(ServerType.getServerType(true,
         binaryProtocol, useSSL));
     this.framedTransport = framedTransport;
+    this.useDirectBuffers = directBuffers;
     this.lobChunkSize = lobChunkSize;
 
     connArgs.setProperties(props);
@@ -465,11 +471,15 @@ public final class ClientService extends ReentrantLock implements LobService {
           inTransport = outTransport = socket;
         }
         if (getServerType().isThriftBinaryProtocol()) {
-          inProtocol = new TBinaryProtocolOpt(inTransport, true);
-          outProtocol = new TBinaryProtocolOpt(outTransport, true);
+          inProtocol = new TBinaryProtocolDirect(inTransport,
+              this.useDirectBuffers);
+          outProtocol = new TBinaryProtocolDirect(outTransport,
+              this.useDirectBuffers);
         } else {
-          inProtocol = new TCompactProtocolOpt(inTransport, true);
-          outProtocol = new TCompactProtocolOpt(outTransport, true);
+          inProtocol = new TCompactProtocolDirect(inTransport,
+              this.useDirectBuffers);
+          outProtocol = new TCompactProtocolDirect(outTransport,
+              this.useDirectBuffers);
         }
 
         SnappyDataService.Client service = new SnappyDataService.Client(

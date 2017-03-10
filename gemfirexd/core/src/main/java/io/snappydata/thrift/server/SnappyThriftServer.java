@@ -54,12 +54,10 @@ import com.pivotal.gemfirexd.internal.iapi.error.StandardException;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedStatement;
 import io.snappydata.thrift.LocatorService;
 import io.snappydata.thrift.common.SocketParameters;
-import io.snappydata.thrift.common.TBinaryProtocolOpt;
-import io.snappydata.thrift.common.TCompactProtocolOpt;
+import io.snappydata.thrift.common.TBinaryProtocolDirect;
+import io.snappydata.thrift.common.TCompactProtocolDirect;
 import io.snappydata.thrift.common.ThriftUtils;
 import org.apache.thrift.TProcessor;
-import org.apache.thrift.protocol.TBinaryProtocol;
-import org.apache.thrift.protocol.TCompactProtocol;
 import org.apache.thrift.protocol.TProtocolFactory;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.transport.TFramedTransport;
@@ -141,8 +139,8 @@ public final class SnappyThriftServer {
       final SnappyThriftServerThreadPool.Args serverArgs =
           new SnappyThriftServerThreadPool.Args(serverTransport);
       TProtocolFactory protocolFactory = useBinaryProtocol
-          ? new TBinaryProtocolOpt.Factory(true)
-          : new TCompactProtocolOpt.Factory(true);
+          ? new TBinaryProtocolDirect.Factory(true)
+          : new TCompactProtocolDirect.Factory(true);
 
       serverArgs.processor(processor).protocolFactory(protocolFactory);
       if (useFramedTransport) {
@@ -159,7 +157,8 @@ public final class SnappyThriftServer {
       final SnappyThriftServerSelector.Args serverArgs =
           new SnappyThriftServerSelector.Args(serverTransport);
       TProtocolFactory protocolFactory = useBinaryProtocol
-          ? new TBinaryProtocol.Factory() : new TCompactProtocol.Factory();
+          ? new TBinaryProtocolDirect.Factory(true)
+          : new TCompactProtocolDirect.Factory(true);
 
       final int numSelectors = parallelism * 2;
       final int numThreads = parallelism * 2;

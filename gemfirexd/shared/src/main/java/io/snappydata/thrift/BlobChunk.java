@@ -10,6 +10,7 @@ import java.nio.ByteBuffer;
 import java.util.*;
 import javax.annotation.Generated;
 
+import io.snappydata.thrift.common.TProtocolDirectBinary;
 import io.snappydata.thrift.common.ThriftUtils;
 import org.apache.thrift.EncodingUtils;
 import org.apache.thrift.TBaseHelper;
@@ -647,7 +648,11 @@ public class BlobChunk implements org.apache.thrift.TBase<BlobChunk, BlobChunk._
         switch (schemeField.id) {
           case 1: // CHUNK
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.chunk = iprot.readBinary();
+              if (iprot instanceof TProtocolDirectBinary) {
+                struct.chunk = ((TProtocolDirectBinary)iprot).readDirectBinary();
+              } else {
+                struct.chunk = iprot.readBinary();
+              }
               struct.setChunkIsSet(true);
             } else {
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);

@@ -51,6 +51,7 @@ import io.snappydata.thrift.BlobChunk;
 import io.snappydata.thrift.SnappyException;
 import io.snappydata.thrift.common.BufferedBlob;
 import io.snappydata.thrift.common.ThriftExceptionUtil;
+import io.snappydata.thrift.common.ThriftUtils;
 import io.snappydata.thrift.snappydataConstants;
 
 public final class ClientBlob extends ClientLobBase implements BufferedBlob {
@@ -60,6 +61,7 @@ public final class ClientBlob extends ClientLobBase implements BufferedBlob {
   private int baseChunkSize;
   private long initOffset;
   private final boolean freeForStream;
+  private boolean skipCurrentChunkClean;
 
   ClientBlob(ClientService service) {
     super(service);
@@ -162,6 +164,10 @@ public final class ClientBlob extends ClientLobBase implements BufferedBlob {
    */
   @Override
   protected void clear() {
+    final BlobChunk chunk = this.currentChunk;
+    if (chunk != null && !this.skipCurrentChunkClean) {
+      ThriftUtils.releaseBlobChunk(chunk);
+    }
     this.currentChunk = null;
     // don't need to do anything to close MemInputStream yet
     this.dataStream = null;
@@ -262,7 +268,8 @@ public final class ClientBlob extends ClientLobBase implements BufferedBlob {
   public ByteBuffer getAsBuffer() throws SQLException {
     BlobChunk chunk = this.currentChunk;
     if (chunk != null && chunk.last && chunk.offset == 0) {
-      // the first and only chunk
+      // the first and only chunk whose ownership is handed over to caller
+      this.skipCurrentChunkClean = true;
       return chunk.chunk;
     } else {
       return ByteBuffer.wrap(getBytes(1, (int)length()));

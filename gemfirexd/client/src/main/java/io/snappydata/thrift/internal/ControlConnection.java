@@ -53,11 +53,11 @@ import io.snappydata.thrift.ServerType;
 import io.snappydata.thrift.SnappyException;
 import io.snappydata.thrift.common.SnappyTSocket;
 import io.snappydata.thrift.common.SocketParameters;
-import io.snappydata.thrift.common.TBinaryProtocolOpt;
-import io.snappydata.thrift.common.TCompactProtocolOpt;
 import io.snappydata.thrift.common.ThriftExceptionUtil;
 import io.snappydata.thrift.common.ThriftUtils;
 import org.apache.thrift.TException;
+import org.apache.thrift.protocol.TBinaryProtocol;
+import org.apache.thrift.protocol.TCompactProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TFramedTransport;
 import org.apache.thrift.transport.TTransport;
@@ -378,11 +378,11 @@ final class ControlConnection {
             inTransport = outTransport = socket;
           }
           if (getServerType().isThriftBinaryProtocol()) {
-            inProtocol = new TBinaryProtocolOpt(inTransport, true);
-            outProtocol = new TBinaryProtocolOpt(outTransport, true);
+            inProtocol = new TBinaryProtocol(inTransport);
+            outProtocol = new TBinaryProtocol(outTransport);
           } else {
-            inProtocol = new TCompactProtocolOpt(inTransport, true);
-            outProtocol = new TCompactProtocolOpt(outTransport, true);
+            inProtocol = new TCompactProtocol(inTransport);
+            outProtocol = new TCompactProtocol(outTransport);
           }
           break;
         } catch (TException te) {

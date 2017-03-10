@@ -408,6 +408,14 @@ public interface ClientAttribute {
   String THRIFT_LOB_CHUNK_SIZE = "lob-chunk-size";
 
   /**
+   * Use direct ByteBuffers when reading BLOBs. This will provide higher
+   * performance avoiding a copy but caller must take care to free the BLOB
+   * after use else cleanup may happen only in a GC cycle which may be delayed
+   * due to no particular GC pressure due to direct ByteBuffers.
+   */
+  String THRIFT_LOB_DIRECT_BUFFERS = "lob-direct-buffers";
+
+  /**
    * Set this to true to force using pre GemFireXD 1.3.0.2 release hashing
    * schema. This can be used if client is using {@link #SINGLE_HOP_ENABLED} for
    * a connection to a cluster containing pre 1.3.0.2 servers or data files.

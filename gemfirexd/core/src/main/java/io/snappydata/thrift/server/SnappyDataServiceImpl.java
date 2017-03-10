@@ -664,6 +664,7 @@ public final class SnappyDataServiceImpl extends LocatorServiceImpl implements
     } else {
       chunk.chunk = getAsBuffer(blob, (int)length);
       chunk.setLast(true);
+      blob.free();
     }
     return chunk;
   }
@@ -696,6 +697,7 @@ public final class SnappyDataServiceImpl extends LocatorServiceImpl implements
       chunk.setLobId(lobId);
     } else {
       chunk.setChunk(clob.getSubString(1, (int)length)).setLast(true);
+      clob.free();
     }
     return chunk;
   }
@@ -2206,6 +2208,8 @@ public final class SnappyDataServiceImpl extends LocatorServiceImpl implements
               } else if (chunk.last) {
                 // set as a normal byte[]
                 pstmt.setBytes(paramPosition, chunk.getChunk());
+                // free any direct buffer immediately
+                ThriftUtils.releaseBlobChunk(chunk);
                 break;
               } else {
                 blob = conn.createBlob();
@@ -2215,6 +2219,8 @@ public final class SnappyDataServiceImpl extends LocatorServiceImpl implements
                 offset += chunk.offset;
               }
               blob.setBytes(offset, chunk.getChunk());
+              // free any direct buffer immediately
+              ThriftUtils.releaseBlobChunk(chunk);
               pstmt.setBlob(paramPosition, blob);
             }
             break;
@@ -3355,6 +3361,8 @@ public final class SnappyDataServiceImpl extends LocatorServiceImpl implements
         offset += chunk.offset;
       }
       blob.setBytes(offset, chunk.getChunk());
+      // free any direct buffer immediately
+      ThriftUtils.releaseBlobChunk(chunk);
       return lobId;
     } catch (Throwable t) {
       checkSystemFailure(t);

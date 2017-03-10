@@ -55,6 +55,7 @@ import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLHandshakeException;
 
 import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
+import com.gemstone.gemfire.internal.shared.unsafe.UnsafeHolder;
 import org.apache.spark.unsafe.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -216,6 +217,11 @@ public final class SSLSocketChannel
         }
         netWriteBuffer.flip();
         flush(netWriteBuffer);
+      }
+      if (this.useDirectBuffers) {
+        UnsafeHolder.releaseDirectBuffer(netReadBuffer);
+        UnsafeHolder.releaseDirectBuffer(netWriteBuffer);
+        UnsafeHolder.releaseDirectBuffer(appReadBuffer);
       }
     } catch (IOException ie) {
       log.warn("Failed to send SSL Close message.", ie);

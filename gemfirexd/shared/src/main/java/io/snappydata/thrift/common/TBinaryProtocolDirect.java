@@ -27,15 +27,17 @@ import org.apache.thrift.transport.TNonblockingTransport;
 import org.apache.thrift.transport.TTransport;
 
 /**
- * Adds optimized writeBinary for direct ByteBuffers avoiding an additional
+ * Adds optimized writeBinary for direct ByteBuffers and implements
+ * ({@link TProtocolDirectBinary}) for reading avoiding an additional
  * copy if the underlying transport allows it.
  */
-public final class TBinaryProtocolOpt extends TBinaryProtocol {
+public final class TBinaryProtocolDirect extends TBinaryProtocol
+    implements TProtocolDirectBinary {
 
   private final TNonblockingTransport nonBlockingTransport;
   private final boolean useDirectBuffers;
 
-  public TBinaryProtocolOpt(TTransport trans, boolean useDirectBuffers) {
+  public TBinaryProtocolDirect(TTransport trans, boolean useDirectBuffers) {
     super(trans);
     if (trans instanceof TNonblockingTransport) {
       this.nonBlockingTransport = (TNonblockingTransport)trans;
@@ -49,7 +51,7 @@ public final class TBinaryProtocolOpt extends TBinaryProtocol {
    * {@inheritDoc}
    */
   @Override
-  public ByteBuffer readBinary() throws TException {
+  public ByteBuffer readDirectBinary() throws TException {
     if (this.useDirectBuffers && this.nonBlockingTransport != null) {
       int length = readI32();
       if (length < 0) {
@@ -76,15 +78,14 @@ public final class TBinaryProtocolOpt extends TBinaryProtocol {
 
   public static class Factory extends TBinaryProtocol.Factory {
 
-    private final boolean useDirectBuffers;
+    protected final boolean useDirectBuffers;
 
     public Factory(boolean useDirectBuffers) {
-      super();
       this.useDirectBuffers = useDirectBuffers;
     }
 
     public TProtocol getProtocol(TTransport trans) {
-      return new TBinaryProtocolOpt(trans, useDirectBuffers);
+      return new TBinaryProtocolDirect(trans, this.useDirectBuffers);
     }
   }
 }

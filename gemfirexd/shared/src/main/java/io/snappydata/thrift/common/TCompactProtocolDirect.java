@@ -15,7 +15,7 @@
  * LICENSE file.
  */
 /*
- * TCompactProtocolOpt.readVarInt32/writeVarInt32 methods have been taken
+ * TCompactProtocolDirect.readVarInt32/writeVarInt32 methods have been taken
   * from Thrift's TCompactProtocol having license as below.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -50,15 +50,18 @@ import org.apache.thrift.transport.TNonblockingTransport;
 import org.apache.thrift.transport.TTransport;
 
 /**
- * Adds optimized writeBinary for direct ByteBuffers avoiding an additional
+ * Adds optimized writeBinary for direct ByteBuffers and implements
+ * ({@link TProtocolDirectBinary}) for reading avoiding an additional
  * copy if the underlying transport allows it.
  */
-public final class TCompactProtocolOpt extends TCompactProtocol {
+public final class TCompactProtocolDirect extends TCompactProtocol
+    implements TProtocolDirectBinary {
 
   private final TNonblockingTransport nonBlockingTransport;
   private final boolean useDirectBuffers;
 
-  public TCompactProtocolOpt(TTransport transport, boolean useDirectBuffers) {
+  public TCompactProtocolDirect(TTransport transport,
+      boolean useDirectBuffers) {
     super(transport, -1, -1);
     if (transport instanceof TNonblockingTransport) {
       this.nonBlockingTransport = (TNonblockingTransport)transport;
@@ -72,7 +75,7 @@ public final class TCompactProtocolOpt extends TCompactProtocol {
    * {@inheritDoc}
    */
   @Override
-  public ByteBuffer readBinary() throws TException {
+  public ByteBuffer readDirectBinary() throws TException {
     if (this.useDirectBuffers && this.nonBlockingTransport != null) {
       int length = readVarInt32();
       if (length < 0) {
@@ -156,7 +159,7 @@ public final class TCompactProtocolOpt extends TCompactProtocol {
     }
 
     public TProtocol getProtocol(TTransport trans) {
-      return new TCompactProtocolOpt(trans, this.useDirectBuffers);
+      return new TCompactProtocolDirect(trans, this.useDirectBuffers);
     }
   }
 }

@@ -42,8 +42,10 @@ import java.util.EnumMap;
 
 import com.gemstone.gemfire.internal.shared.ClientSharedData;
 import com.gemstone.gemfire.internal.shared.SystemProperties;
+import com.gemstone.gemfire.internal.shared.unsafe.UnsafeHolder;
 import com.pivotal.gemfirexd.Attribute;
 import com.pivotal.gemfirexd.internal.shared.common.SharedUtils;
+import io.snappydata.thrift.BlobChunk;
 import io.snappydata.thrift.HostAddress;
 import io.snappydata.thrift.TransactionAttribute;
 import org.apache.spark.unsafe.Platform;
@@ -226,5 +228,10 @@ public abstract class ThriftUtils {
       final byte[] bytes = toBytes(buffer, buffer.remaining(), length);
       transport.write(bytes, 0, length);
     }
+  }
+
+  public static void releaseBlobChunk(BlobChunk chunk) {
+    UnsafeHolder.releaseIfDirectBuffer(chunk.chunk);
+    chunk.chunk = null;
   }
 }
