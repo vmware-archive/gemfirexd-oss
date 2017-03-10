@@ -175,7 +175,7 @@ namespace {
     uint32_t operator()(const Date& v) const {
       uint32_t xfer = 0;
       xfer += m_oprot->writeFieldBegin("date_val",
-          ::apache::thrift::protocol::T_STRUCT, 10);
+          ::apache::thrift::protocol::T_I64, 10);
       xfer += m_oprot->writeI64(v.m_elapsed);
       xfer += m_oprot->writeFieldEnd();
       return xfer;
@@ -184,7 +184,7 @@ namespace {
     uint32_t operator()(const Time& v) const {
       uint32_t xfer = 0;
       xfer += m_oprot->writeFieldBegin("time_val",
-          ::apache::thrift::protocol::T_STRUCT, 11);
+          ::apache::thrift::protocol::T_I64, 11);
       xfer += m_oprot->writeI64(v.m_elapsed);
       xfer += m_oprot->writeFieldEnd();
       return xfer;
@@ -193,7 +193,7 @@ namespace {
     uint32_t operator()(const Timestamp& v) const {
       uint32_t xfer = 0;
       xfer += m_oprot->writeFieldBegin("timestamp_val",
-          ::apache::thrift::protocol::T_STRUCT, 12);
+          ::apache::thrift::protocol::T_I64, 12);
       xfer += m_oprot->writeI64(v.m_elapsed);
       xfer += m_oprot->writeFieldEnd();
       return xfer;
@@ -567,7 +567,7 @@ uint32_t ColumnValue::read(::apache::thrift::protocol::TProtocol* iprot) {
         }
         break;
       case 10:
-        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+        if (ftype == ::apache::thrift::protocol::T_I64) {
           int64_t v;
           xfer += iprot->readI64(v);
           m_val = Date(v);
@@ -576,7 +576,7 @@ uint32_t ColumnValue::read(::apache::thrift::protocol::TProtocol* iprot) {
         }
         break;
       case 11:
-        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+        if (ftype == ::apache::thrift::protocol::T_I64) {
           int64_t v;
           xfer += iprot->readI64(v);
           m_val = Time(v);
@@ -585,7 +585,7 @@ uint32_t ColumnValue::read(::apache::thrift::protocol::TProtocol* iprot) {
         }
         break;
       case 12:
-        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+        if (ftype == ::apache::thrift::protocol::T_I64) {
           int64_t v;
           xfer += iprot->readI64(v);
           m_val = Timestamp(v);
