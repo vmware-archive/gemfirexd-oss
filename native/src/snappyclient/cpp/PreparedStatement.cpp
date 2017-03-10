@@ -235,7 +235,7 @@ ColumnDescriptor PreparedStatement::getColumnDescriptor(
 }
 
 bool PreparedStatement::cancel() {
-  const int32_t statementId = m_prepResult.statementId;
+  const int64_t statementId = m_prepResult.statementId;
   if (statementId != thrift::snappydataConstants::INVALID_ID) {
     m_service->cancelStatement(statementId);
     return true;

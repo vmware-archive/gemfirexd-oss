@@ -886,7 +886,7 @@ void ClientService::prepareAndExecute(thrift::StatementResult& result,
 }
 
 void ClientService::getNextResultSet(thrift::RowSet& result,
-    const int32_t cursorId, const int8_t otherResultSetBehaviour) {
+    const int64_t cursorId, const int8_t otherResultSetBehaviour) {
   try {
     boost::lock_guard<boost::mutex> sync(m_lock);
 
@@ -962,7 +962,7 @@ void ClientService::getClobChunk(thrift::ClobChunk& result,
   }
 }
 
-int32_t ClientService::sendBlobChunk(thrift::BlobChunk& chunk) {
+int64_t ClientService::sendBlobChunk(thrift::BlobChunk& chunk) {
   try {
     boost::lock_guard<boost::mutex> sync(m_lock);
 
@@ -987,7 +987,7 @@ int32_t ClientService::sendBlobChunk(thrift::BlobChunk& chunk) {
   return -1;
 }
 
-int32_t ClientService::sendClobChunk(thrift::ClobChunk& chunk) {
+int64_t ClientService::sendClobChunk(thrift::ClobChunk& chunk) {
   try {
     boost::lock_guard<boost::mutex> sync(m_lock);
 
@@ -1036,7 +1036,7 @@ void ClientService::freeLob(const int32_t lobId) {
 }
 
 void ClientService::scrollCursor(thrift::RowSet& result,
-    const int32_t cursorId, const int32_t offset, const bool offsetIsAbsolute,
+    const int64_t cursorId, const int32_t offset, const bool offsetIsAbsolute,
     const bool fetchReverse, const int32_t fetchSize) {
   try {
     boost::lock_guard<boost::mutex> sync(m_lock);
@@ -1061,7 +1061,7 @@ void ClientService::scrollCursor(thrift::RowSet& result,
   }
 }
 
-void ClientService::executeCursorUpdate(const int32_t cursorId,
+void ClientService::executeCursorUpdate(const int64_t cursorId,
     const thrift::CursorUpdateOperation::type operation,
     const thrift::Row& changedRow, const std::vector<int32_t>& changedColumns,
     const int32_t changedRowIndex) {
@@ -1070,7 +1070,7 @@ void ClientService::executeCursorUpdate(const int32_t cursorId,
       Utils::singleVector(changedRowIndex));
 }
 
-void ClientService::executeBatchCursorUpdate(const int32_t cursorId,
+void ClientService::executeBatchCursorUpdate(const int64_t cursorId,
     const std::vector<thrift::CursorUpdateOperation::type>& operations,
     const std::vector<thrift::Row>& changedRows,
     const std::vector<std::vector<int32_t> >& changedColumnsList,
@@ -1423,7 +1423,7 @@ void ClientService::getBestRowIdentifier(thrift::RowSet& result,
   }
 }
 
-void ClientService::closeResultSet(const int32_t cursorId) {
+void ClientService::closeResultSet(const int64_t cursorId) {
   try {
     boost::lock_guard<boost::mutex> sync(m_lock);
 
@@ -1443,7 +1443,7 @@ void ClientService::closeResultSet(const int32_t cursorId) {
   }
 }
 
-void ClientService::cancelStatement(const int32_t stmtId) {
+void ClientService::cancelStatement(const int64_t stmtId) {
   // TODO: SW: need a separate connection for this to work
   // Preferably the whole class should be changed to use pool of connections
   // with key being server+port+connProps and a queue of pooled connections
@@ -1468,7 +1468,7 @@ void ClientService::cancelStatement(const int32_t stmtId) {
   }
 }
 
-void ClientService::closeStatement(const int32_t stmtId) {
+void ClientService::closeStatement(const int64_t stmtId) {
   try {
     boost::lock_guard<boost::mutex> sync(m_lock);
 
