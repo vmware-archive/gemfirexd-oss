@@ -146,7 +146,6 @@ public final class ClientBlob extends ClientLobBase implements BufferedBlob {
           }
           int streamSize = out.getUsed();
           this.dataStream = new MemInputStream(out, streamSize);
-          out.close(); // no-op to remove a warning
           return streamSize;
         }
       } else {
