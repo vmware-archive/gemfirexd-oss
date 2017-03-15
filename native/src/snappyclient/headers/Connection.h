@@ -200,6 +200,14 @@ namespace client {
       }
     }
 
+    const thrift::HostAddress& getCurrentHostAddress() const noexcept {
+      return checkAndGetService().getCurrentHostAddress();
+    }
+
+    const thrift::OpenConnectionArgs& getConnectionArgs() const noexcept {
+      return checkAndGetService().getConnectionArgs();
+    }
+
     void setSendBufferSize(uint32_t sz);
 
     void setReceiveBufferSize(uint32_t sz);
