@@ -49,7 +49,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.gemstone.gemfire.cache.DiskAccessException;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
-import com.gemstone.gemfire.internal.shared.OutputStreamChannel;
 
 public class OverflowOplogSet implements OplogSet {
   private final AtomicInteger overflowOplogId = new AtomicInteger(0);
@@ -293,7 +292,7 @@ public class OverflowOplogSet implements OplogSet {
   void testHookCloseAllOverflowChannels() {
     synchronized (this.overflowMap) {
       for (OverflowOplog oo : this.overflowMap.values()) {
-        OutputStreamChannel oplogFileChannel = oo.getFileChannel();
+        FileChannel oplogFileChannel = oo.getFileChannel();
         try {
           oplogFileChannel.close();
         } catch (IOException ignore) {
@@ -302,7 +301,7 @@ public class OverflowOplogSet implements OplogSet {
     }
     synchronized (this.compactableOverflowMap) {
       for (OverflowOplog oo : this.compactableOverflowMap.values()) {
-        OutputStreamChannel oplogFileChannel = oo.getFileChannel();
+        FileChannel oplogFileChannel = oo.getFileChannel();
         try {
           oplogFileChannel.close();
         } catch (IOException ignore) {

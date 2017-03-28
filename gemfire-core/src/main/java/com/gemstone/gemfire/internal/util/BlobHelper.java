@@ -196,7 +196,7 @@ public class BlobHelper {
     }
     return result;
   }
-
+  
   private static void endSerialization(long start, int bytes) {
     DMStats stats = InternalDistributedSystem.getDMStats();
     if (stats != null) {
@@ -212,11 +212,12 @@ public class BlobHelper {
     }
     return result;
   }
-
+  
   private static void endDeserialization(long start, int bytes) {
     DMStats stats = InternalDistributedSystem.getDMStats();
     if (stats != null) {
       stats.endDeserialization(start, bytes);
     }
   }
+  
 }

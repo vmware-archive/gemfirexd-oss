@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import com.gemstone.gemfire.internal.shared.OutputStreamChannel;
 import junit.framework.Assert;
 
 import com.gemstone.gemfire.SystemFailure;
@@ -1933,7 +1932,7 @@ public class DiskRegionJUnitTest extends DiskRegionTestingBase
 
       region.create("key1", "value1");
       // Get the oplog handle & hence the underlying file & close it
-      OutputStreamChannel oplogFileChannel = ((LocalRegion)region).getDiskRegion()
+      FileChannel oplogFileChannel = ((LocalRegion)region).getDiskRegion()
           .testHook_getChild().getFileChannel();
       oplogFileChannel.close();
       try {
@@ -2001,7 +2000,7 @@ public class DiskRegionJUnitTest extends DiskRegionTestingBase
     try {     
       region.create("key1", "value1");
       // Get the oplog handle & hence the underlying file & close it
-      OutputStreamChannel oplogFileChannel = ((LocalRegion)region).getDiskRegion()
+      FileChannel oplogFileChannel = ((LocalRegion)region).getDiskRegion()
           .testHook_getChild().getFileChannel();
       oplogFileChannel.close();
       try {
@@ -2072,7 +2071,7 @@ public class DiskRegionJUnitTest extends DiskRegionTestingBase
     
     try {
       // Get the oplog handle & hence the underlying file & close it
-      OutputStreamChannel oplogFileChannel = ((LocalRegion)region).getDiskRegion()
+      FileChannel oplogFileChannel = ((LocalRegion)region).getDiskRegion()
           .testHook_getChild().getFileChannel();
       oplogFileChannel.close();
       try {
@@ -2298,7 +2297,7 @@ public class DiskRegionJUnitTest extends DiskRegionTestingBase
       region = DiskRegionHelperFactory.getAsyncPersistOnlyRegion(cache, props);
       try {
         // Get the oplog handle & hence the underlying file & close it
-        OutputStreamChannel oplogFileChannel = ((LocalRegion)region).getDiskRegion()
+        FileChannel oplogFileChannel = ((LocalRegion)region).getDiskRegion()
             .testHook_getChild().getFileChannel();
         oplogFileChannel.close();
         
@@ -2358,7 +2357,7 @@ public class DiskRegionJUnitTest extends DiskRegionTestingBase
         region.create("key1", new byte[16]);
         region.create("key2", new byte[16]);
 //      Get the oplog handle & hence the underlying file & close it
-        OutputStreamChannel oplogFileChannel = ((LocalRegion)region).getDiskRegion()
+        FileChannel oplogFileChannel = ((LocalRegion)region).getDiskRegion()
             .testHook_getChild().getFileChannel();         
         oplogFileChannel.close();
         try {
@@ -2479,8 +2478,8 @@ public class DiskRegionJUnitTest extends DiskRegionTestingBase
         region.create("key1", new byte[16]);
         region.create("key2", new byte[16]);
         //Get the oplog file path
-        FileChannel oplogFileChnl = (FileChannel)((LocalRegion)region).getDiskRegion()
-        .testHook_getChild().getFileChannel().getUnderlyingChannel();
+        FileChannel oplogFileChnl = ((LocalRegion)region).getDiskRegion()
+        .testHook_getChild().getFileChannel();
         //corrupt the opfile
         oplogFileChnl.position(2);
         ByteBuffer bf = ByteBuffer.allocate(416);

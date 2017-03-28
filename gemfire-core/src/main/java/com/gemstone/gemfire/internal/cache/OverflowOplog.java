@@ -257,7 +257,8 @@ class OverflowOplog implements CompactableOplog {
     }
     this.crf.f = f;
     this.crf.raf = new RandomAccessFile(f, "rw");
-    this.crf.channel = createChannel(previous, this.crf.raf);
+    this.crf.channel = this.crf.raf.getChannel();
+    this.crf.outputStream = createOutputStream(previous, this.crf.channel);
     preblow();
     if (logger.infoEnabled()) {
       logger.info(LocalizedStrings.Oplog_CREATE_0_1_2,
@@ -269,17 +270,16 @@ class OverflowOplog implements CompactableOplog {
     this.stats.incOpenOplogs();
   }
 
-  private static ChannelBufferUnsafeOutputStream createChannel(
-      final OverflowOplog previous, RandomAccessFile raf) throws IOException {
+  private static ChannelBufferUnsafeOutputStream createOutputStream(
+      final OverflowOplog previous, FileChannel channel) throws IOException {
     final int bufSize = Integer.getInteger("WRITE_BUF_SIZE", 32768);
     if (previous != null) {
       synchronized (previous.crf) {
-        return new ChannelBufferUnsafeOutputStream(previous.getFileChannel(),
-            raf.getChannel(), bufSize,
-            false /* limit new buffer allocations */);
+        return new ChannelBufferUnsafeOutputStream(previous.crf.outputStream,
+            channel, bufSize, false /* limit new buffer allocations */);
       }
     } else {
-      return new ChannelBufferUnsafeOutputStream(raf.getChannel(), bufSize,
+      return new ChannelBufferUnsafeOutputStream(channel, bufSize,
           false /* limit new buffer allocations */);
     }
   }
@@ -465,7 +465,7 @@ class OverflowOplog implements CompactableOplog {
    */
   public void testClose() {
     try {
-      this.crf.channel.closeChannel();
+      this.crf.outputStream.closeChannel();
     } catch (IOException ignore) {
     }
     try {
@@ -482,7 +482,7 @@ class OverflowOplog implements CompactableOplog {
 //                   new RuntimeException("STACK"));
       if (!this.crf.RAFClosed) {
         try {
-          this.crf.channel.closeChannel();
+          this.crf.outputStream.closeChannel();
         } catch (IOException ignore) {
         }
         try {
@@ -845,8 +845,8 @@ class OverflowOplog implements CompactableOplog {
 //        } while (bb.hasRemaining());
         // update bytesFlushed after entire writeBuffer is flushed to fix bug 41201
 //        olf.bytesFlushed += flushed;
-        olf.channel.flush();
-        olf.bytesFlushed = olf.channel.getBytesWritten();
+        olf.outputStream.flush();
+        olf.bytesFlushed = olf.outputStream.getBytesWritten();
 //             logger.info(LocalizedStrings.DEBUG, "DEBUG: flush bytesFlushed=" + olf.bytesFlushed
 //                        + " position=" + olf.channel.position()
 //                         + " oplog#" + getOplogId()
@@ -908,13 +908,12 @@ class OverflowOplog implements CompactableOplog {
       // Also it is only in case of synch writing, we are writing more
       // than what is actually needed, we will have to reset the pointer.
       // Also need to add in offset in writeBuf in case we are not flushing writeBuf
-      final FileChannel channel = (FileChannel)olf.channel.getUnderlyingChannel();
-      long curFileOffset = channel.position() + olf.channel.position();
+      long curFileOffset = olf.channel.position() + olf.outputStream.position();
       startPos = allocate(curFileOffset, getOpStateSize());
       if (startPos != -1) {
         if (startPos != curFileOffset) {
           flush();
-          channel.position(startPos);
+          olf.channel.position(startPos);
           olf.bytesFlushed = startPos;
           this.stats.incOplogSeeks();
         }
@@ -1047,8 +1046,9 @@ class OverflowOplog implements CompactableOplog {
   private BytesAndBits attemptWriteBufferGet(long writePosition, long readPosition,
                                              int valueLength, byte userBits) {
     BytesAndBits bb = null;
-    ByteBuffer writeBuf = this.crf.channel.getBuffer();
-    int curWriteBufPos = (int)this.crf.channel.position();
+    final ChannelBufferUnsafeOutputStream outputStream = this.crf.outputStream;
+    ByteBuffer writeBuf = outputStream.getBuffer();
+    int curWriteBufPos = (int)outputStream.position();
     if (writePosition <= readPosition
         && (writePosition+curWriteBufPos) >= (readPosition+valueLength)) {
       int bufOffset = (int)(readPosition - writePosition);
@@ -1173,7 +1173,8 @@ class OverflowOplog implements CompactableOplog {
    * 
    * @return FileChannel object representing the Oplog
    */
-  ChannelBufferUnsafeOutputStream getFileChannel() {
+  FileChannel getFileChannel()
+  {
     return this.crf.channel;
   }
 
@@ -1358,7 +1359,8 @@ class OverflowOplog implements CompactableOplog {
     public File f;
     public RandomAccessFile raf;
     public boolean RAFClosed;
-    public ChannelBufferUnsafeOutputStream channel;
+    public FileChannel channel;
+    public ChannelBufferUnsafeOutputStream outputStream;
     public long currSize; // HWM
     public long bytesFlushed;
   }
@@ -1439,7 +1441,7 @@ class OverflowOplog implements CompactableOplog {
     public long write() throws IOException {
       long bytesWritten = 0;
       if (this.needsValue && this.valueLength > 0) {
-        getOLF().channel.write(this.value);
+        getOLF().outputStream.write(this.value);
         bytesWritten += this.valueLength;
       }
       return bytesWritten;
