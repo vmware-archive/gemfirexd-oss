@@ -1113,6 +1113,7 @@ public final class Oplog implements CompactableOplog {
         // truncate crf/drf if their actual size is less than their pre-blow size
         this.crf.raf = new RandomAccessFile(this.crf.f, "rw");
         this.crf.RAFClosed = false;
+        this.crf.channel = createChannel(null, this.crf.raf);
         unpreblow(this.crf, getMaxCrfSize());
         this.crf.raf.close();
         // make crf read only
@@ -1293,6 +1294,9 @@ public final class Oplog implements CompactableOplog {
         getParent().getSyncWrites() ? "rwd" : "rw");
     this.crf.RAFClosed = false;
     oplogSet.crfCreate(this.oplogId);
+    if (this.crf.channel != null) {
+      this.crf.channel.close();
+    }
     this.crf.channel = createChannel(prevOlf, this.crf.raf);
 
     if (logger.infoEnabled()) {
