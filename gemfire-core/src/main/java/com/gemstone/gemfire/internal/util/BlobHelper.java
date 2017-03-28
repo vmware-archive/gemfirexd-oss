@@ -36,12 +36,14 @@
 package com.gemstone.gemfire.internal.util;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import com.gemstone.gemfire.DataSerializer;
 import com.gemstone.gemfire.distributed.internal.DMStats;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.internal.ByteArrayDataInput;
 import com.gemstone.gemfire.internal.DSCODE;
+import com.gemstone.gemfire.internal.DirectByteBufferDataOutput;
 import com.gemstone.gemfire.internal.HeapDataOutputStream;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl.StaticSystemCallbacks;
@@ -74,8 +76,6 @@ public class BlobHelper {
   throws IOException
   {
     final long start = startSerialization();
-    // TODO: SW: add special optimization for byte[][] used by GemFireXD to both
-    // serialization and deserialization
     HeapDataOutputStream hdos = new HeapDataOutputStream(version);
     DataSerializer.writeObject(obj, hdos);
     byte[] result = hdos.toByteArray();
@@ -98,6 +98,21 @@ public class BlobHelper {
   }
 
   /**
+   * This method serializes the object into a direct ByteBuffer.
+   */
+  public static ByteBuffer serializeToDirectBuffer(Object obj, Version version)
+      throws IOException {
+    final long start = startSerialization();
+    // serialize into an expanding direct ByteBuffer
+    DirectByteBufferDataOutput out = new DirectByteBufferDataOutput(version);
+    DataSerializer.writeObject(obj, out);
+    ByteBuffer result = out.getByteBuffer();
+    result.flip();
+    endSerialization(start, result.limit());
+    return result;
+  }
+
+  /**
    * A blob is a serialized Object.  This method serializes the
    * object into the given HeapDataOutputStream.
    */
@@ -109,7 +124,6 @@ public class BlobHelper {
     DataSerializer.writeObject(obj, hdos);
     endSerialization(start, hdos.size()-startBytes);
   }
-                                                                        
 
 
   /**
@@ -174,7 +188,7 @@ public class BlobHelper {
     return result;
   }
 
-  public static long startSerialization() {
+  private static long startSerialization() {
     long result = 0;
     DMStats stats = InternalDistributedSystem.getDMStats();
     if (stats != null) {
@@ -183,14 +197,14 @@ public class BlobHelper {
     return result;
   }
 
-  public static void endSerialization(long start, int bytes) {
+  private static void endSerialization(long start, int bytes) {
     DMStats stats = InternalDistributedSystem.getDMStats();
     if (stats != null) {
       stats.endSerialization(start, bytes);
     }
   }
 
-  public static long startDeserialization() {
+  private static long startDeserialization() {
     long result = 0;
     DMStats stats = InternalDistributedSystem.getDMStats();
     if (stats != null) {
@@ -199,7 +213,7 @@ public class BlobHelper {
     return result;
   }
 
-  public static void endDeserialization(long start, int bytes) {
+  private static void endDeserialization(long start, int bytes) {
     DMStats stats = InternalDistributedSystem.getDMStats();
     if (stats != null) {
       stats.endDeserialization(start, bytes);

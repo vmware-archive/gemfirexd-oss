@@ -31,6 +31,10 @@ import com.gemstone.gemfire.internal.shared.unsafe.UnsafeHolder;
 /**
  * Implements {@link java.io.DataOutput} writing to a direct ByteBuffer
  * expanding it as required.
+ * <p>
+ * TODO: this can be further optimized substantially by using the
+ * Unsafe API rather than going through ByteBuffer API
+ * (e.g. see ChannelBufferUnsafeDataOutputStream)
  */
 public final class DirectByteBufferDataOutput extends ByteBufferOutput
     implements DataOutput, Closeable, VersionedDataStream {
@@ -66,8 +70,10 @@ public final class DirectByteBufferDataOutput extends ByteBufferOutput
   @Override
   public void writeBytes(@Nonnull String s) throws IOException {
     int len = s.length();
+    require(len);
     for (int i = 0; i < len; i++) {
-      super.write((byte)s.charAt(i));
+      niobuffer.put((byte)s.charAt(i));
+      position++;
     }
   }
 
@@ -95,8 +101,10 @@ public final class DirectByteBufferDataOutput extends ByteBufferOutput
     // reallocation will do full copy first time around since allocation is
     // not using UnsafeHolder.allocateDirectBuffer but next time onwards it
     // will use the efficient C realloc() call that avoids copying if possible
-    ByteBuffer newBuffer = UnsafeHolder.reallocateDirectBuffer(niobuffer,
-        capacity);
+    ByteBuffer newBuffer = UnsafeHolder.reallocateDirectBuffer(
+        niobuffer, capacity);
+    // set the position of newBuffer
+    newBuffer.position(position);
     setBuffer(newBuffer, Integer.MAX_VALUE);
     return true;
   }

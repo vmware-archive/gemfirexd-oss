@@ -61,7 +61,14 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.DistributionMessage;
 import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
 import com.gemstone.gemfire.i18n.LogWriterI18n;
-import com.gemstone.gemfire.internal.*;
+import com.gemstone.gemfire.internal.Assert;
+import com.gemstone.gemfire.internal.ByteArrayDataInput;
+import com.gemstone.gemfire.internal.DSFIDFactory;
+import com.gemstone.gemfire.internal.DataSerializableFixedID;
+import com.gemstone.gemfire.internal.HeapDataOutputStream;
+import com.gemstone.gemfire.internal.InternalDataSerializer;
+import com.gemstone.gemfire.internal.LogWriterImpl;
+import com.gemstone.gemfire.internal.Sendable;
 import com.gemstone.gemfire.internal.cache.FilterRoutingInfo.FilterInfo;
 import com.gemstone.gemfire.internal.cache.delta.Delta;
 import com.gemstone.gemfire.internal.cache.locks.LockingPolicy;
@@ -2355,14 +2362,7 @@ public class EntryEventImpl extends KeyInfo implements
           .toLocalizedString(obj));
     }
     try {
-      final long start = BlobHelper.startSerialization();
-      // serialize into an expanding direct ByteBuffer
-      DirectByteBufferDataOutput out = new DirectByteBufferDataOutput(version);
-      DataSerializer.writeObject(obj, out);
-      ByteBuffer result = out.getByteBuffer();
-      result.flip();
-      BlobHelper.endSerialization(start, result.limit());
-      return result;
+      return BlobHelper.serializeToDirectBuffer(obj, version);
     } catch (IOException e) {
       throw new SerializationException(LocalizedStrings
           .EntryEventImpl_AN_IOEXCEPTION_WAS_THROWN_WHILE_SERIALIZING
