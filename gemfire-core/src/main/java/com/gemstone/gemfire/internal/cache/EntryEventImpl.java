@@ -14,6 +14,24 @@
  * permissions and limitations under the License. See accompanying
  * LICENSE file.
  */
+/*
+ * Changes for SnappyData distributed computational and data platform.
+ *
+ * Portions Copyright (c) 2017 SnappyData, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you
+ * may not use this file except in compliance with the License. You
+ * may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * permissions and limitations under the License. See accompanying
+ * LICENSE file.
+ */
 
 package com.gemstone.gemfire.internal.cache;
 
@@ -43,14 +61,7 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.DistributionMessage;
 import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
 import com.gemstone.gemfire.i18n.LogWriterI18n;
-import com.gemstone.gemfire.internal.Assert;
-import com.gemstone.gemfire.internal.ByteArrayDataInput;
-import com.gemstone.gemfire.internal.DSFIDFactory;
-import com.gemstone.gemfire.internal.DataSerializableFixedID;
-import com.gemstone.gemfire.internal.HeapDataOutputStream;
-import com.gemstone.gemfire.internal.InternalDataSerializer;
-import com.gemstone.gemfire.internal.LogWriterImpl;
-import com.gemstone.gemfire.internal.Sendable;
+import com.gemstone.gemfire.internal.*;
 import com.gemstone.gemfire.internal.cache.FilterRoutingInfo.FilterInfo;
 import com.gemstone.gemfire.internal.cache.delta.Delta;
 import com.gemstone.gemfire.internal.cache.locks.LockingPolicy;
@@ -86,6 +97,7 @@ import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.UUID;
 
 /**
@@ -2327,6 +2339,34 @@ public class EntryEventImpl extends KeyInfo implements
     }
     catch (IOException e) {
       throw new SerializationException(LocalizedStrings.EntryEventImpl_AN_IOEXCEPTION_WAS_THROWN_WHILE_SERIALIZING.toLocalizedString(), e);
+    }
+  }
+
+  /**
+   * Serialize an object into a direct <code>ByteBuffer</code>.
+   *
+   * @throws IllegalArgumentException If <code>obj</code> should not be serialized
+   */
+  public static ByteBuffer serializeDirect(Object obj, Version version) {
+    if (obj == null || obj == Token.NOT_AVAILABLE
+        || Token.isInvalidOrRemoved(obj)) {
+      throw new IllegalArgumentException(LocalizedStrings
+          .EntryEventImpl_MUST_NOT_SERIALIZE_0_IN_THIS_CONTEXT
+          .toLocalizedString(obj));
+    }
+    try {
+      final long start = BlobHelper.startSerialization();
+      // serialize into an expanding direct ByteBuffer
+      DirectByteBufferDataOutput out = new DirectByteBufferDataOutput(version);
+      DataSerializer.writeObject(obj, out);
+      ByteBuffer result = out.getByteBuffer();
+      result.flip();
+      BlobHelper.endSerialization(start, result.limit());
+      return result;
+    } catch (IOException e) {
+      throw new SerializationException(LocalizedStrings
+          .EntryEventImpl_AN_IOEXCEPTION_WAS_THROWN_WHILE_SERIALIZING
+          .toLocalizedString(), e);
     }
   }
 

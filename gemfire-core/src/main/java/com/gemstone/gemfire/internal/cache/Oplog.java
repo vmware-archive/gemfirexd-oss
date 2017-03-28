@@ -14,6 +14,25 @@
  * permissions and limitations under the License. See accompanying
  * LICENSE file.
  */
+/*
+ * Changes for SnappyData distributed computational and data platform.
+ *
+ * Portions Copyright (c) 2017 SnappyData, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you
+ * may not use this file except in compliance with the License. You
+ * may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * permissions and limitations under the License. See accompanying
+ * LICENSE file.
+ */
+
 package com.gemstone.gemfire.internal.cache;
 
 import java.io.BufferedInputStream;
@@ -106,9 +125,12 @@ import com.gemstone.gemfire.internal.offheap.annotations.Released;
 import com.gemstone.gemfire.internal.offheap.annotations.Retained;
 import com.gemstone.gemfire.internal.sequencelog.EntryLogger;
 import com.gemstone.gemfire.internal.shared.NativeCalls;
+import com.gemstone.gemfire.internal.shared.OutputStreamChannel;
 import com.gemstone.gemfire.internal.shared.UnsupportedGFXDVersionException;
 import com.gemstone.gemfire.internal.shared.Version;
 import com.gemstone.gemfire.internal.shared.unsafe.ChannelBufferUnsafeDataInputStream;
+import com.gemstone.gemfire.internal.shared.unsafe.ChannelBufferUnsafeDataOutputStream;
+import com.gemstone.gemfire.internal.shared.unsafe.UnsafeHolder;
 import com.gemstone.gemfire.internal.util.IOUtils;
 import com.gemstone.gemfire.internal.util.TransformUtils;
 import com.gemstone.gemfire.pdx.internal.PdxWriterImpl;
@@ -1091,19 +1113,16 @@ public final class Oplog implements CompactableOplog {
         // truncate crf/drf if their actual size is less than their pre-blow size
         this.crf.raf = new RandomAccessFile(this.crf.f, "rw");
         this.crf.RAFClosed = false;
-        this.crf.channel = this.crf.raf.getChannel();
         unpreblow(this.crf, getMaxCrfSize());
         this.crf.raf.close();
         // make crf read only
         this.crf.raf = new RandomAccessFile(this.crf.f, "r");
-        this.crf.channel = this.crf.raf.getChannel();
         this.stats.incOpenOplogs();
         
         //drf.raf is null at this point. create one and close it to retain existing behavior
         try {
           this.drf.raf = new RandomAccessFile(this.drf.f, "rw");
           this.drf.RAFClosed = false;
-          this.drf.channel = this.drf.raf.getChannel();
           unpreblow(this.drf, getMaxDrfSize());
         } finally {
           this.drf.raf.close();
@@ -1274,7 +1293,7 @@ public final class Oplog implements CompactableOplog {
         getParent().getSyncWrites() ? "rwd" : "rw");
     this.crf.RAFClosed = false;
     oplogSet.crfCreate(this.oplogId);
-    this.crf.writeBuf = allocateWriteBuf(prevOlf);
+    this.crf.channel = createChannel(prevOlf, this.crf.raf);
 
     if (logger.infoEnabled()) {
       logger.info(LocalizedStrings.Oplog_CREATE_0_1_2,
@@ -1282,7 +1301,6 @@ public final class Oplog implements CompactableOplog {
                                 getFileType(this.crf),
                                 getParent().getName()});
     }
-    this.crf.channel = this.crf.raf.getChannel();
 
     this.stats.incOpenOplogs();
     writeDiskStoreRecord(this.crf);
@@ -1296,17 +1314,18 @@ public final class Oplog implements CompactableOplog {
     this.maxCrfSize += this.crf.currSize;
   }
 
-  private static ByteBuffer allocateWriteBuf(OplogFile prevOlf) {
-    if (prevOlf != null && prevOlf.writeBuf != null) {
-      ByteBuffer result = prevOlf.writeBuf;
-      prevOlf.writeBuf = null;
-      return result;
+  private static ChannelBufferUnsafeDataOutputStream createChannel(
+      final OplogFile prevOlf, RandomAccessFile raf) throws IOException {
+    final int bufSize = Integer.getInteger("WRITE_BUF_SIZE", 32768);
+    if (prevOlf != null) {
+      return new ChannelBufferUnsafeDataOutputStream(prevOlf.channel,
+          raf.getChannel(), bufSize, false /* limit new buffer allocations */);
     } else {
-      return ByteBuffer.allocateDirect(Integer.getInteger("WRITE_BUF_SIZE",
-          DEFAULT_BUFFER_SIZE).intValue());
+      return new ChannelBufferUnsafeDataOutputStream(raf.getChannel(), bufSize,
+          false /* limit new buffer allocations */);
     }
   }
-  
+
   /**
    * Creates the drf oplog file
    * 
@@ -1325,14 +1344,13 @@ public final class Oplog implements CompactableOplog {
         getParent().getSyncWrites() ? "rwd" : "rw");
     this.drf.RAFClosed = false;
     this.oplogSet.drfCreate(this.oplogId);
-    this.drf.writeBuf = allocateWriteBuf(prevOlf);
+    this.drf.channel = createChannel(prevOlf, this.drf.raf);
     if (logger.infoEnabled()) {
       logger.info(LocalizedStrings.Oplog_CREATE_0_1_2,
                   new Object[] {toString(),
                                 getFileType(this.drf),
                                 getParent().getName()});
     }
-    this.drf.channel = this.drf.raf.getChannel();
     writeDiskStoreRecord(this.drf);
     writeGemfireVersionRecord(this.drf);
     writeRVVRecord(this.drf, true);
@@ -3835,7 +3853,7 @@ public final class Oplog implements CompactableOplog {
    */
   public void testClose() {
     try {
-      this.crf.channel.close();
+      this.crf.channel.closeChannel();
     } catch (IOException ignore) {
     }
     try {
@@ -3844,7 +3862,7 @@ public final class Oplog implements CompactableOplog {
     }
     this.crf.RAFClosed = true;
     try {
-      this.drf.channel.close();
+      this.drf.channel.closeChannel();
     } catch (IOException ignore) {
     }
     try {
@@ -3861,9 +3879,13 @@ public final class Oplog implements CompactableOplog {
 //       logger.info(LocalizedStrings.DEBUG, "DEBUG closing oplog#" + getOplogId()
 //                   + " liveCount=" + this.totalLiveCount.get(),
 //                   new RuntimeException("STACK"));
+
       if (!this.crf.RAFClosed) {
+        final ChannelBufferUnsafeDataOutputStream channel = this.crf.channel;
         try {
-          this.crf.channel.close();
+          if (channel != null) {
+            channel.closeChannel();
+          }
         } catch (IOException ignore) {
         }
         try {
@@ -3878,8 +3900,11 @@ public final class Oplog implements CompactableOplog {
     synchronized (this.lock/*drf*/) {
       unpreblow(this.drf, getMaxDrfSize());
       if (!this.drf.RAFClosed) {
+        final ChannelBufferUnsafeDataOutputStream channel = this.drf.channel;
         try {
-          this.drf.channel.close();
+          if (channel != null) {
+            channel.closeChannel();
+          }
         } catch (IOException ignore) {
         }
         try {
@@ -4015,17 +4040,15 @@ public final class Oplog implements CompactableOplog {
    * @throws IOException 
    */
   private void initOpState(byte opCode, DiskRegionView dr, DiskEntry entry,
-                           byte[] value, byte userBits, boolean notToUseUserBits) throws IOException
-  {
-    int len = value != null ? value.length : 0;
-    initOpState(opCode, dr, entry, value, len, userBits, notToUseUserBits);
+      ByteBuffer value, byte userBits,
+      boolean notToUseUserBits) throws IOException {
+    initOpState(opCode, dr, entry, value, value != null ? value.limit() : 0,
+        userBits, notToUseUserBits);
   }
   
   private void initOpState(byte opCode, DiskRegionView dr, DiskEntry entry,
-                           byte[] value,
-                           int valueLength,
-                           byte userBits, boolean notToUseUserBits) throws IOException
-  {
+      ByteBuffer value, int valueLength, byte userBits,
+      boolean notToUseUserBits) throws IOException {
     this.opState.initialize(opCode, dr, entry, value, valueLength, userBits, notToUseUserBits);
   }
 
@@ -4043,24 +4066,21 @@ public final class Oplog implements CompactableOplog {
     return this.opState.getValueOffset();
   }
 
-  private byte calcUserBits(byte[] value,
-                            boolean isSerializedObject) {
+  private byte calcUserBits(DiskEntry.ValueWrapper value) {
     byte userBits = 0x0;
   
-    if (isSerializedObject) {
-      if (value == DiskEntry.INVALID_BYTES) {
+    if (value.isSerializedObject) {
+      if (value == DiskEntry.INVALID_VW) {
         // its the invalid token
         userBits = EntryBits.setInvalid(userBits, true);
-      } else if (value == DiskEntry.LOCAL_INVALID_BYTES) {
+      } else if (value == DiskEntry.LOCAL_INVALID_VW) {
         // its the local-invalid token
         userBits = EntryBits.setLocalInvalid(userBits, true);
-      } else if (value == DiskEntry.TOMBSTONE_BYTES) {
+      } else if (value == DiskEntry.TOMBSTONE_VW) {
         // its the tombstone token
         userBits = EntryBits.setTombstone(userBits, true);
       } else {
-        if (value == null) {
-          throw new IllegalStateException("userBits==1 and value is null");
-        } else if (value.length == 0) {
+        if (value.size() == 0) {
           throw new IllegalStateException("userBits==1 and value is zero length");
         }
         userBits = EntryBits.setSerialized(userBits, true);
@@ -4094,21 +4114,16 @@ public final class Oplog implements CompactableOplog {
    * @param entry
    *          The DiskEntry object for this key/value pair.
    * @param value
-   *          byte array representing the value
-   * @param isSerializedObject
-   *          boolean indicating whether the byte array is a serialized value or
-   *          not Do the bytes in <code>value</code> contain a serialized
-   *          object (or an actually <code>byte</code> array)?
+   *          The <code>ValueWrapper</code> for the byte data
    * @throws DiskAccessException
    * @throws IllegalStateException
    *  
    */
-  public final void create(LocalRegion region, DiskEntry entry, byte[] value,
-                           boolean isSerializedObject, boolean async)
-  {
+  public final void create(LocalRegion region, DiskEntry entry,
+      DiskEntry.ValueWrapper value, boolean async) {
 
     if (this != getOplogSet().getChild()) {
-      getOplogSet().getChild().create(region, entry, value, isSerializedObject, async);
+      getOplogSet().getChild().create(region, entry, value, async);
     }
     else {
       DiskId did = entry.getDiskId();
@@ -4118,7 +4133,7 @@ public final class Oplog implements CompactableOplog {
       try {
         // It is ok to do this outside of "lock" because
         // create records do not need to change.
-        byte userBits = calcUserBits(value, isSerializedObject);
+        byte userBits = calcUserBits(value);
         // save versions for creates and updates even if value is bytearrary in 7.0
         if (entry.getVersionStamp()!=null) {
           if(entry.getVersionStamp().getMemberID() == null) {
@@ -4127,7 +4142,7 @@ public final class Oplog implements CompactableOplog {
           // pdx and tx will not use version
           userBits = EntryBits.setWithVersions(userBits, true);
         }
-        basicCreate(region.getDiskRegion(), entry, value, userBits, async);
+        basicCreate(region.getDiskRegion(), entry, value.buffer, userBits, async);
       }
       catch (IOException ex) {
         exceptionOccured = true;
@@ -4170,7 +4185,8 @@ public final class Oplog implements CompactableOplog {
    * @throws IOException
    * @throws InterruptedException
    */
-  private void basicCreate(DiskRegion dr, DiskEntry entry, byte[] value, byte userBits, boolean async)
+  private void basicCreate(DiskRegion dr, DiskEntry entry,
+      ByteBuffer value, byte userBits, boolean async)
       throws IOException, InterruptedException
   {
     DiskId id = entry.getDiskId();
@@ -4261,7 +4277,7 @@ public final class Oplog implements CompactableOplog {
 //                   + " oplog#" + getOplogId());
 //          }
         if (EntryBits.isNeedsValue(userBits)) {
-          id.setValueLength(value.length);
+          id.setValueLength(value.limit());
         } else {
           id.setValueLength(0);
         }
@@ -4293,8 +4309,8 @@ public final class Oplog implements CompactableOplog {
                              + "> key=<" + entry.getKeyCopy() + ">"
                              + " valueOffset=" + startPosForSynchOp
                              + " userBits=" + userBits
-                             + " valueLen=" + (value != null ? value.length : 0)
-                             + " valueBytes=<" + baToString(value) + ">"
+                             + " valueLen=" + value.limit()
+                             + " valueBytes=<" + bufferToString(value) + ">"
                              + " drId=" + dr.getId()
                              + " versionTag=" + tag
                              + " oplog#" + getOplogId());
@@ -4325,8 +4341,8 @@ public final class Oplog implements CompactableOplog {
           EntryLogger.logPersistPut(dr.getName(), entry.getKeyCopy(),
               dr.getDiskStoreID());
         }
+        clearOpState();
       }
-      clearOpState();
 //     }
     }
     if (useNextOplog) {
@@ -4476,8 +4492,11 @@ public final class Oplog implements CompactableOplog {
           // I think at this point the drf no longer needs to be open
           synchronized (Oplog.this.lock/*drf*/) {
             if (!Oplog.this.drf.RAFClosed) {
+              final ChannelBufferUnsafeDataOutputStream channel = drf.channel;
               try {
-                Oplog.this.drf.channel.close();
+                if (channel != null) {
+                  channel.closeChannel();
+                }
               } catch (IOException ignore) {
               }
               try {
@@ -5298,12 +5317,8 @@ public final class Oplog implements CompactableOplog {
    * 
    * @param entry
    *          DiskEntry object representing the current Entry
-   * 
    * @param value
-   *          byte array representing the value
-   * @param isSerializedObject
-   *          Do the bytes in <code>value</code> contain a serialized object
-   *          (or an actually <code>byte</code> array)?
+   *          The <code>ValueWrapper</code> for the byte data
    * @throws DiskAccessException
    * @throws IllegalStateException
    */
@@ -5312,12 +5327,11 @@ public final class Oplog implements CompactableOplog {
    * during transition. Minimizing the synchronization allowing multiple put
    * operations for different entries to proceed concurrently for asynch mode
    */
-  public final void modify(LocalRegion region, DiskEntry entry, byte[] value,
-                           boolean isSerializedObject, boolean async)
-  {
+  public final void modify(LocalRegion region, DiskEntry entry,
+      DiskEntry.ValueWrapper value, boolean async) {
 
     if (getOplogSet().getChild() != this) {
-      getOplogSet().getChild().modify(region, entry, value, isSerializedObject, async);
+      getOplogSet().getChild().modify(region, entry, value, async);
     }
     else {
       DiskId did = entry.getDiskId();
@@ -5325,7 +5339,7 @@ public final class Oplog implements CompactableOplog {
       byte prevUsrBit = did.getUserBits();
       int len = did.getValueLength();
       try {
-        byte userBits = calcUserBits(value, isSerializedObject);
+        byte userBits = calcUserBits(value);
         // save versions for creates and updates even if value is bytearrary in 7.0
         if (entry.getVersionStamp()!=null) {
           if(entry.getVersionStamp().getMemberID() == null) {
@@ -5334,8 +5348,8 @@ public final class Oplog implements CompactableOplog {
           // pdx and tx will not use version
           userBits = EntryBits.setWithVersions(userBits, true);
         }
-        int valueLen = value != null ? value.length : 0;
-        basicModify(region.getDiskRegion(), entry, value, valueLen, userBits, async, false);
+        basicModify(region.getDiskRegion(), entry, value.buffer, value.size(),
+            userBits, async, false);
       }
       catch (IOException ex) {
         exceptionOccured = true;
@@ -5399,9 +5413,8 @@ public final class Oplog implements CompactableOplog {
     }
   }
 
-  private final void copyForwardModifyForCompact(DiskRegionView dr, DiskEntry entry, byte[] value,
-                                                 int valueLength, byte userBits)
-  {
+  private final void copyForwardModifyForCompact(DiskRegionView dr, DiskEntry entry,
+      ByteBuffer value, int valueLength, byte userBits) {
     if (getOplogSet().getChild() != this) {
       getOplogSet().getChild().copyForwardModifyForCompact(dr, entry, value, valueLength, userBits);
     }
@@ -5444,7 +5457,7 @@ public final class Oplog implements CompactableOplog {
    * @throws InterruptedException
    */
   private void basicModify(DiskRegionView dr, DiskEntry entry,
-                           byte[] value,
+                           ByteBuffer value,
                            int valueLength,
                            byte userBits, boolean async,
                            boolean calledByCompactor)
@@ -5519,7 +5532,7 @@ public final class Oplog implements CompactableOplog {
                              + " valueOffset=" + startPosForSynchOp
                              + " userBits=" + userBits
                              + " valueLen=" + valueLength
-                             + " valueBytes=<" + baToString(value, valueLength) + ">"
+                             + " valueBytes=<" + bufferToString(value) + ">"
                              + " drId=" + dr.getId()
                              + " versionStamp=" + tag
                              + " oplog#" + getOplogId());
@@ -6082,8 +6095,8 @@ public final class Oplog implements CompactableOplog {
   /**
    * test hook
    */
-  public final ByteBuffer getWriteBuf() {
-    return this.crf.writeBuf;
+  final ByteBuffer getWriteBuf() {
+    return this.crf.channel.getBuffer();
   }
   private final void flushNoSync(OplogFile olf) throws IOException {
     flushAllNoSync(false); // @todo
@@ -6104,15 +6117,15 @@ public final class Oplog implements CompactableOplog {
           //                     + ((olf==this.crf)? "crf" : "drf"));
           return;
         }
-        ByteBuffer bb = olf.writeBuf;
+//        ByteBuffer bb = olf.writeBuf;
         //       logger.info(LocalizedStrings.DEBUG, "DEBUG: flush "
         //                   + " oplog#" + getOplogId()
         //                   + " bb.position()=" + ((bb != null) ? bb.position() : "null")
         //                   + ((olf==this.crf)? "crf" : "drf"));
-        if (bb != null && bb.position() != 0) {
-          bb.flip();
-          int flushed = 0;
-          do {
+//        if (bb != null && bb.position() != 0) {
+//          bb.flip();
+//          int flushed = 0;
+//          do {
             //           {
             //             byte[] toPrint = new byte[bb.remaining()];
             //             for (int i=0; i < bb.remaining(); i++) {
@@ -6124,21 +6137,23 @@ public final class Oplog implements CompactableOplog {
             //                         + " oplog#" + getOplogId()
             //                         + ((olf==this.crf)? "crf" : "drf"));
             //           }
-            flushed += olf.channel.write(bb);
+//            flushed += olf.channel.write(bb);
             //            logger.info(LocalizedStrings.DEBUG, "DEBUG: flush bytesFlushed=" + olf.bytesFlushed
             //                        + " position=" + olf.channel.position()
             //                        + " oplog#" + getOplogId()
             //                        + ((olf==this.crf)? "crf" : "drf"));
-          } while (bb.hasRemaining());
+//          } while (bb.hasRemaining());
           // update bytesFlushed after entire writeBuffer is flushed to fix bug 41201
-          olf.bytesFlushed += flushed;
-          bb.clear();
-        }
+//          olf.bytesFlushed += flushed;
+//          bb.clear();
+//        }
+        olf.channel.flush();
+        olf.bytesFlushed = olf.channel.getBytesWritten();
       }
       if (doSync) {
         if (dofsync && !DiskStoreImpl.DISABLE_SYNC_WRITES_FOR_TESTS) {
           // Synch Meta Data as well as content
-          olf.channel.force(true);
+          ((FileChannel)olf.channel.getUnderlyingChannel()).force(true);
         }
       }
     } catch (ClosedChannelException ignore) {
@@ -6228,7 +6243,8 @@ public final class Oplog implements CompactableOplog {
       // Also it is only in case of synch writing, we are writing more
       // than what is actually needed, we will have to reset the pointer.
       // Also need to add in offset in writeBuf in case we are not flushing writeBuf
-      startPos = olf.channel.position() + olf.writeBuf.position();
+      final FileChannel channel = (FileChannel)olf.channel.getUnderlyingChannel();
+      startPos = channel.position() + olf.channel.position();
 //                 logger.info(LocalizedStrings.DEBUG, "writeOpLogBytes"
 //                             + " position=" + olf.channel.position()
 //                             + " writeBufPos=" + olf.writeBuf.position()
@@ -6766,11 +6782,9 @@ public final class Oplog implements CompactableOplog {
    * 
    * @return FileChannel object representing the Oplog
    */
-  FileChannel getFileChannel()
-  {
+  OutputStreamChannel getFileChannel() {
     return this.crf.channel;
   }
-
 
   DirectoryHolder getDirectoryHolder()
   {
@@ -7120,8 +7134,8 @@ public final class Oplog implements CompactableOplog {
               }
             }
             // write it to the current oplog
-            getOplogSet().getChild()
-              .copyForwardModifyForCompact(dr, de, valueBytes, length, userBits);
+            getOplogSet().getChild().copyForwardModifyForCompact(dr, de,
+                DiskEntry.Helper.wrapBytes(valueBytes), length, userBits);
             // the did's oplogId will now be set to the current active oplog
             didCompact = true;
           }
@@ -7528,7 +7542,7 @@ public final class Oplog implements CompactableOplog {
     public File f;
     public RandomAccessFile raf;
     public volatile boolean RAFClosed = true;
-    public FileChannel channel;
+    public ChannelBufferUnsafeDataOutputStream channel;
     public ByteBuffer writeBuf;
     public long currSize;
     public long bytesFlushed;
@@ -7542,6 +7556,18 @@ public final class Oplog implements CompactableOplog {
     DataOutputStream dos;
     long lastOffset = 0;
     int keyNum = 0;
+  }
+
+  public static String bufferToString(final ByteBuffer buffer) {
+    return bufferToString(buffer, buffer.limit());
+  }
+  public static String bufferToString(final ByteBuffer buffer, final int len) {
+    if (buffer == null) return "null";
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < len; i++) {
+      sb.append(buffer.get(i)).append(", ");
+    }
+    return sb.toString();
   }
 
   private static String baToString(byte[] ba) {
@@ -7616,11 +7642,11 @@ public final class Oplog implements CompactableOplog {
      */
     private int size;
     private boolean needsValue;
-    private byte[] value;
+    private ByteBuffer value;
     private int valueLength;
     private int drIdLength; // 1..9
     private final byte[] drIdBytes = new byte[DiskInitFile.DR_ID_MAX_BYTES];
-    private byte[] keyBytes;
+    private ByteBuffer keyBytes;
     private final byte[] deltaIdBytes = new byte[8];
     private int deltaIdBytesLength;
     private long newEntryBase;
@@ -7642,76 +7668,87 @@ public final class Oplog implements CompactableOplog {
       StringBuilder sb = new StringBuilder();
       sb.append(" opcode=").append(this.opCode)
         .append(" len=").append(this.valueLength)
-        .append(" vb=").append(baToString(this.value, this.valueLength));
+        .append(" vb=").append(bufferToString(this.value));
       return sb.toString();
     }
-    
+
+    private final void write(OplogFile olf,
+        ByteBuffer bytes) throws IOException {
+      olf.channel.write(bytes);
+    }
+
     private final void write(OplogFile olf, byte[] bytes, int byteLength) throws IOException {
-      int offset = 0;
-      final int maxOffset = byteLength;
-      ByteBuffer bb = olf.writeBuf;
-      while (offset < maxOffset) {
-        
-        int bytesThisTime = maxOffset - offset;
-        boolean needsFlush = false;
-        if (bytesThisTime > bb.remaining()) {
-          needsFlush = true;
-          bytesThisTime = bb.remaining();
-        }
-//         logger.info(LocalizedStrings.DEBUG,
-//                     "DEBUG offset=" + offset
-//                     + " maxOffset=" + maxOffset
-//                     + " bytesThisTime=" + bytesThisTime
-//                     + " needsFlush=" + needsFlush
-//                     + " bb.remaining()=" + bb.remaining());
-        bb.put(bytes, offset, bytesThisTime);
-        offset += bytesThisTime;
-        if (needsFlush) {
-          flushNoSync(olf);
-        }
-      }
+//      int offset = 0;
+//      final int maxOffset = byteLength;
+//      ByteBuffer bb = olf.writeBuf;
+//      while (offset < maxOffset) {
+//
+//        int bytesThisTime = maxOffset - offset;
+//        boolean needsFlush = false;
+//        if (bytesThisTime > bb.remaining()) {
+//          needsFlush = true;
+//          bytesThisTime = bb.remaining();
+//        }
+////         logger.info(LocalizedStrings.DEBUG,
+////                     "DEBUG offset=" + offset
+////                     + " maxOffset=" + maxOffset
+////                     + " bytesThisTime=" + bytesThisTime
+////                     + " needsFlush=" + needsFlush
+////                     + " bb.remaining()=" + bb.remaining());
+//        bb.put(bytes, offset, bytesThisTime);
+//        offset += bytesThisTime;
+//        if (needsFlush) {
+//          flushNoSync(olf);
+//        }
+//      }
+      olf.channel.write(bytes, 0, byteLength);
     }
     private final void writeByte(OplogFile olf, byte v) throws IOException {
-      ByteBuffer bb = olf.writeBuf;
-      if (1 > bb.remaining()) {
-        flushNoSync(olf);
-      }
-      bb.put(v);
+//      ByteBuffer bb = olf.writeBuf;
+//      if (1 > bb.remaining()) {
+//        flushNoSync(olf);
+//      }
+//      bb.put(v);
+      olf.channel.write(v);
     }
 
     private final void writeOrdinal(OplogFile olf, short ordinal)
         throws IOException {
-      ByteBuffer bb = olf.writeBuf;
-      if (3 > bb.remaining()) {
-        flushNoSync(olf);
-      }
+//      ByteBuffer bb = olf.writeBuf;
+//      if (3 > bb.remaining()) {
+//        flushNoSync(olf);
+//      }
       // don't compress since we setup fixed size of buffers
-      Version.writeOrdinal(bb, ordinal, false);
+//      Version.writeOrdinal(bb, ordinal, false);
+      Version.writeOrdinal(olf.channel, ordinal, false);
     }
 
     private final void writeInt(OplogFile olf, int v) throws IOException {
-      ByteBuffer bb = olf.writeBuf;
-      if (4 > bb.remaining()) {
-        flushNoSync(olf);
-      }
-      bb.putInt(v);
+//      ByteBuffer bb = olf.writeBuf;
+//      if (4 > bb.remaining()) {
+//        flushNoSync(olf);
+//      }
+//      bb.putInt(v);
+      olf.channel.writeInt(v);
     }
 
     private final void writeLong(OplogFile olf, long v) throws IOException {
-      ByteBuffer bb = olf.writeBuf;
-      if (8 > bb.remaining()) {
-        flushNoSync(olf);
-      }
-      bb.putLong(v);
+//      ByteBuffer bb = olf.writeBuf;
+//      if (8 > bb.remaining()) {
+//        flushNoSync(olf);
+//      }
+//      bb.putLong(v);
+      olf.channel.writeLong(v);
     }
 
     private final void writeUnsignedVL(OplogFile olf, long v, int numBytes)
         throws IOException {
-      ByteBuffer bb = olf.writeBuf;
-      if (numBytes > bb.remaining()) {
-        flushNoSync(olf);
-      }
-      InternalDataSerializer.writeUnsignedVL(v, bb);
+//      ByteBuffer bb = olf.writeBuf;
+//      if (numBytes > bb.remaining()) {
+//        flushNoSync(olf);
+//      }
+//      InternalDataSerializer.writeUnsignedVL(v, bb);
+      InternalDataSerializer.writeUnsignedVL(v, olf.channel);
     }
 
     public void initialize(long newEntryBase) {
@@ -7734,7 +7771,7 @@ public final class Oplog implements CompactableOplog {
     public void initialize(Map<Long, AbstractDiskRegion> drMap, boolean gcRVV) throws IOException {
       this.opCode = OPLOG_RVV;
       byte[] rvvBytes = serializeRVVs(drMap, gcRVV);
-      this.value = rvvBytes;
+      this.value = DiskEntry.Helper.wrapBytes(rvvBytes);
       //Size is opCode + length + end of record
       this.valueLength = rvvBytes.length;
       this.size = 1 + rvvBytes.length + 1;
@@ -7752,15 +7789,15 @@ public final class Oplog implements CompactableOplog {
       this.size = 1;// for the opcode
       saveUserBits(notToUseUserBits, userBits);
 
-      this.keyBytes = keyBytes;
-      this.value = valueBytes;
-      this.valueLength = this.value.length;
+      this.keyBytes = DiskEntry.Helper.wrapBytes(keyBytes);
+      this.value = DiskEntry.Helper.wrapBytes(valueBytes);
+      this.valueLength = valueBytes.length;
       if (this.userBits == 1 && this.valueLength == 0) {
         throw new IllegalStateException("userBits==1 and valueLength is 0");
       }
 
       this.needsValue = EntryBits.isNeedsValue(this.userBits);
-      this.size += (4 + this.keyBytes.length);
+      this.size += (4 + keyBytes.length);
       saveDrId(drId);
       initVersionsBytes(tag, lastModifiedTime);
 
@@ -7829,7 +7866,7 @@ public final class Oplog implements CompactableOplog {
     public void initialize(byte opCode,
                            DiskRegionView dr,
                            DiskEntry entry,
-                           byte[] value,
+                           ByteBuffer value,
                            int valueLength,
                            byte userBits,
                            boolean notToUseUserBits) throws IOException
@@ -7863,8 +7900,8 @@ public final class Oplog implements CompactableOplog {
 
       if (needsKey) {
         Object key = entry.getKeyCopy();
-        this.keyBytes = EntryEventImpl.serialize(key);
-        this.size += (4 + this.keyBytes.length);
+        this.keyBytes = EntryEventImpl.serializeDirect(key, null);
+        this.size += (4 + this.keyBytes.limit());
       } else {
         this.keyBytes = null;
       }
@@ -7980,8 +8017,8 @@ public final class Oplog implements CompactableOplog {
         writeLong(olf, this.diskStoreId.getMostSignificantBits());
         bytesWritten += 16;
       } else if (this.opCode == OPLOG_RVV) {
-        write(olf, this.value, this.valueLength);
-        bytesWritten+= this.valueLength;
+        write(olf, this.value);
+        bytesWritten += this.valueLength;
       } else if (this.opCode == OPLOG_GEMFIRE_VERSION) {
         writeOrdinal(olf, this.gfversion);
         bytesWritten++;
@@ -8020,16 +8057,18 @@ public final class Oplog implements CompactableOplog {
           writeInt(olf, this.valueLength);
           bytesWritten += 4;
           if (this.valueLength > 0) {
-            write(olf, this.value, this.valueLength);
+            write(olf, this.value);
             bytesWritten += this.valueLength;
           }
         }
-        if (this.keyBytes != null) {
-          writeInt(olf, this.keyBytes.length);
+        final ByteBuffer keyBytes = this.keyBytes;
+        if (keyBytes != null) {
+          final int numKeyBytes = keyBytes.limit();
+          writeInt(olf, numKeyBytes);
           bytesWritten += 4;
-          if (this.keyBytes.length > 0) {
-            write(olf, this.keyBytes, this.keyBytes.length);
-            bytesWritten += this.keyBytes.length;
+          if (numKeyBytes > 0) {
+            write(olf, keyBytes);
+            bytesWritten += numKeyBytes;
           }
         }
       }
@@ -8043,8 +8082,16 @@ public final class Oplog implements CompactableOplog {
      * Free up any references to possibly large data.
      */
     public void clear() {
-      this.value = null;
-      this.keyBytes = null;
+      this.needsValue = false;
+      this.valueLength = 0;
+      if (this.value != null) {
+        UnsafeHolder.releaseIfDirectBuffer(this.value);
+        this.value = null;
+      }
+      if (this.keyBytes != null) {
+        UnsafeHolder.releaseIfDirectBuffer(this.keyBytes);
+        this.keyBytes = null;
+      }
       this.notToUseUserBits = false;
       this.versionsBytes = null;
       this.lastModifiedTime = 0;

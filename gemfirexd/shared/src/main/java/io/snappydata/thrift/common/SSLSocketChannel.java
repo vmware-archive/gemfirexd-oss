@@ -222,11 +222,6 @@ public final class SSLSocketChannel
         UnsafeHolder.releaseDirectBuffer(netWriteBuffer);
         UnsafeHolder.releaseDirectBuffer(appReadBuffer);
       }
-      if (this.useDirectBuffers) {
-        UnsafeHolder.releaseDirectBuffer(netReadBuffer);
-        UnsafeHolder.releaseDirectBuffer(netWriteBuffer);
-        UnsafeHolder.releaseDirectBuffer(appReadBuffer);
-      }
     } catch (IOException ie) {
       log.warn("Failed to send SSL Close message.", ie);
     } finally {

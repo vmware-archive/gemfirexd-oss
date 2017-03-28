@@ -14,6 +14,25 @@
  * permissions and limitations under the License. See accompanying
  * LICENSE file.
  */
+/*
+ * Changes for SnappyData distributed computational and data platform.
+ *
+ * Portions Copyright (c) 2017 SnappyData, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you
+ * may not use this file except in compliance with the License. You
+ * may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * permissions and limitations under the License. See accompanying
+ * LICENSE file.
+ */
+
 package com.gemstone.gemfire.internal.cache;
 
 import java.io.File;
@@ -753,17 +772,16 @@ public class DiskStoreImpl implements DiskStore, ResourceListener<MemoryEvent> {
    * 
    * @param entry
    *          The entry which is going to be written to disk
-   * @param isSerializedObject
-   *          Do the bytes in <code>value</code> contain a serialized object (or
-   *          an actually <code>byte</code> array)?
+   * @param value
+   *          The <code>ValueWrapper</code> for the byte data
    * @throws RegionClearedException
    *           If a clear operation completed before the put operation completed
    *           successfully, resulting in the put operation to abort.
    * @throws IllegalArgumentException
    *           If <code>id</code> is less than zero
    */
-  final void put(LocalRegion region, DiskEntry entry, byte[] value,
-      boolean isSerializedObject, boolean async) throws RegionClearedException {
+  final void put(LocalRegion region, DiskEntry entry, DiskEntry.ValueWrapper value,
+      boolean async) throws RegionClearedException {
     DiskRegion dr = region.getDiskRegion();
     DiskId id = entry.getDiskId();
     if (dr.isBackup() && id.getKeyId() < 0) {
@@ -809,9 +827,9 @@ public class DiskStoreImpl implements DiskStore, ResourceListener<MemoryEvent> {
           // modify and not create
           OplogSet oplogSet = getOplogSet(dr);
           if (doingCreate) {
-            oplogSet.create(region, entry, value, isSerializedObject, async);
+            oplogSet.create(region, entry, value, async);
           } else {
-            oplogSet.modify(region, entry, value, isSerializedObject, async);
+            oplogSet.modify(region, entry, value, async);
           }
         } else {
           throw new RegionClearedException(

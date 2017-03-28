@@ -14,9 +14,29 @@
  * permissions and limitations under the License. See accompanying
  * LICENSE file.
  */
+/*
+ * Changes for SnappyData distributed computational and data platform.
+ *
+ * Portions Copyright (c) 2017 SnappyData, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you
+ * may not use this file except in compliance with the License. You
+ * may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * permissions and limitations under the License. See accompanying
+ * LICENSE file.
+ */
+
 package com.gemstone.gemfire.internal.cache;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import com.gemstone.gemfire.cache.CacheClosedException;
 import com.gemstone.gemfire.cache.DiskAccessException;
@@ -45,6 +65,7 @@ import com.gemstone.gemfire.internal.offheap.StoredObject;
 import com.gemstone.gemfire.internal.offheap.annotations.Released;
 import com.gemstone.gemfire.internal.offheap.annotations.Retained;
 import com.gemstone.gemfire.internal.offheap.annotations.Unretained;
+import com.gemstone.gemfire.internal.shared.ClientSharedData;
 import com.gemstone.gemfire.internal.shared.Version;
 import com.gemstone.gemfire.internal.util.BlobHelper;
 
@@ -126,8 +147,88 @@ public interface DiskEntry extends RegionEntry {
    * Used as the entry value if it was tombstone.
    */
   public static final byte[] TOMBSTONE_BYTES = new byte[0];
-    
+
+  ValueWrapper INVALID_VW = new ValueWrapper(
+      true, ByteBuffer.wrap(INVALID_BYTES));
+  ValueWrapper LOCAL_INVALID_VW = new ValueWrapper(
+      true, ByteBuffer.wrap(LOCAL_INVALID_BYTES));
+  ValueWrapper TOMBSTONE_VW = new ValueWrapper(
+      true, ByteBuffer.wrap(TOMBSTONE_BYTES));
+
   ///////////////////////  Inner Classes  //////////////////////
+
+  final class ValueWrapper {
+
+    public final boolean isSerializedObject;
+    public final ByteBuffer buffer;
+
+    public int size() {
+      return buffer.limit();
+    }
+
+    public static ValueWrapper create(Object value) {
+      if (value == Token.INVALID) {
+        // even though it is not serialized we say it is because
+        // bytes will never be an empty array when it is serialized
+        // so that gives us a way to specify the invalid value
+        // given a byte array and a boolean flag.
+        return INVALID_VW;
+      }
+      else if (value == Token.LOCAL_INVALID) {
+        // even though it is not serialized we say it is because
+        // bytes will never be an empty array when it is serialized
+        // so that gives us a way to specify the local-invalid value
+        // given a byte array and a boolean flag.
+        return LOCAL_INVALID_VW;
+      }
+      else if (value == Token.TOMBSTONE) {
+        return TOMBSTONE_VW;
+      }
+      else {
+        ByteBuffer buffer;
+        boolean isSerializedObject = true;
+        if (value instanceof CachedDeserializable) {
+          byte[] bytes;
+          CachedDeserializable proxy = (CachedDeserializable)value;
+          if (proxy instanceof StoredObject) {
+            StoredObject ohproxy = (StoredObject) proxy;
+            isSerializedObject = ohproxy.isSerialized();
+            if (isSerializedObject) {
+              bytes = ohproxy.getSerializedValue();
+            } else {
+              //TODO:Asif: Speak to Darrel for cleaner way
+              if (ohproxy instanceof ByteSource) {
+                bytes = ((ByteSource)ohproxy).getRowBytes();
+              } else {
+                bytes = (byte[])ohproxy.getDeserializedForReading();
+              }
+            }
+          } else {
+            bytes = proxy.getSerializedValue();
+          }
+          buffer = Helper.wrapBytes(bytes);
+        }
+        else if (value instanceof byte[]) {
+          isSerializedObject = false;
+          buffer = ByteBuffer.wrap((byte[])value);
+        }
+        else {
+          Assert.assertTrue(!Token.isRemovedFromDisk(value));
+          buffer = EntryEventImpl.serializeDirect(value, null);
+          if (buffer.limit() == 0) {
+            throw new IllegalStateException("serializing <" + value +
+                "> produced empty byte array");
+          }
+        }
+        return new ValueWrapper(isSerializedObject, buffer);
+      }
+    }
+
+    private ValueWrapper(boolean isSerializedObject, ByteBuffer buffer) {
+      this.isSerializedObject = isSerializedObject;
+      this.buffer = buffer;
+    }
+  }
 
   /**
    * A Helper class for performing functions common to all
@@ -135,6 +236,9 @@ public interface DiskEntry extends RegionEntry {
    */
   public static class Helper {
 
+    public static ByteBuffer wrapBytes(byte[] b) {
+      return ByteBuffer.wrap(b != null ? b : ClientSharedData.ZERO_ARRAY);
+    }
 
     /**
      * Testing purpose only
@@ -572,76 +676,7 @@ public interface DiskEntry extends RegionEntry {
         incrementBucketStats(r, 1/*InVM*/, 0/*OnDisk*/, 0);
       }
     }
-    
-    private static final ValueWrapper INVALID_VW = new ValueWrapper(true, INVALID_BYTES);
-    private static final ValueWrapper LOCAL_INVALID_VW = new ValueWrapper(true, LOCAL_INVALID_BYTES);
-    private static final ValueWrapper TOMBSTONE_VW = new ValueWrapper(true, TOMBSTONE_BYTES);
-    
-    private static class ValueWrapper {
-      public final boolean isSerializedObject;
-      public final byte[] bytes;
-      
-      public static ValueWrapper create(Object value) {
-       if (value == Token.INVALID) {
-          // even though it is not serialized we say it is because
-          // bytes will never be an empty array when it is serialized
-          // so that gives us a way to specify the invalid value
-          // given a byte array and a boolean flag.
-          return INVALID_VW;
-        }
-        else if (value == Token.LOCAL_INVALID) {
-          // even though it is not serialized we say it is because
-          // bytes will never be an empty array when it is serialized
-          // so that gives us a way to specify the local-invalid value
-          // given a byte array and a boolean flag.
-          return LOCAL_INVALID_VW;
-        }
-        else if (value == Token.TOMBSTONE) {
-          return TOMBSTONE_VW;
-        }
-        else {
-          byte[] bytes;
-          boolean isSerializedObject = true;
-          if (value instanceof CachedDeserializable) {
-            CachedDeserializable proxy = (CachedDeserializable)value;
-            if (proxy instanceof StoredObject) {
-              StoredObject ohproxy = (StoredObject) proxy;
-              isSerializedObject = ohproxy.isSerialized();
-              if (isSerializedObject) {
-                bytes = ohproxy.getSerializedValue();
-              } else {
-                //TODO:Asif: Speak to Darrel for cleaner way
-                if(ohproxy instanceof ByteSource) {
-                  bytes = ((ByteSource)ohproxy).getRowBytes();
-                }else {
-                  bytes = (byte[]) ohproxy.getDeserializedForReading();
-                }
-              }
-            } else {
-              bytes = proxy.getSerializedValue();
-            }
-          }
-          else if (value instanceof byte[]) {
-            isSerializedObject = false;
-            bytes = (byte[])value;
-          }
-          else {
-            Assert.assertTrue(!Token.isRemovedFromDisk(value));
-            bytes = EntryEventImpl.serialize(value);
-            if (bytes.length == 0) {
-              throw new IllegalStateException("serializing <" + value + "> produced empty byte array");
-            }
-          }
-          return new ValueWrapper(isSerializedObject, bytes);
-        }
-      }
-      
-      private ValueWrapper(boolean isSerializedObject, byte[] bytes) {
-        this.isSerializedObject = isSerializedObject;
-        this.bytes = bytes;
-      }
-    }
-    
+
     /**
      * Writes the key/value object stored in the given entry to disk
      * @throws RegionClearedException
@@ -664,7 +699,7 @@ public interface DiskEntry extends RegionEntry {
       // @todo does the following unmark need to be called when an async
       // write is scheduled or is it ok for doAsyncFlush to do it?
       entry.getDiskId().unmarkForWriting();
-      region.getDiskRegion().put(entry, region, vw.bytes, vw.isSerializedObject, async);
+      region.getDiskRegion().put(entry, region, vw, async);
     }
 
     /**

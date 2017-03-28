@@ -14,9 +14,29 @@
  * permissions and limitations under the License. See accompanying
  * LICENSE file.
  */
+/*
+ * Changes for SnappyData distributed computational and data platform.
+ *
+ * Portions Copyright (c) 2017 SnappyData, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you
+ * may not use this file except in compliance with the License. You
+ * may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * permissions and limitations under the License. See accompanying
+ * LICENSE file.
+ */
+
 package com.gemstone.gemfire.internal.cache;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -29,6 +49,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.gemstone.gemfire.cache.DiskAccessException;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
+import com.gemstone.gemfire.internal.shared.OutputStreamChannel;
 
 public class OverflowOplogSet implements OplogSet {
   private final AtomicInteger overflowOplogId = new AtomicInteger(0);
@@ -52,20 +73,20 @@ public class OverflowOplogSet implements OplogSet {
   }
   
   @Override
-  public final void modify(LocalRegion lr, DiskEntry entry, byte[] value,
-      boolean isSerializedObject, boolean async) {
+  public final void modify(LocalRegion lr, DiskEntry entry,
+      DiskEntry.ValueWrapper value, boolean async) {
     DiskRegion dr = lr.getDiskRegion();
     synchronized (this.overflowMap) {
       if (this.lastOverflowWrite != null) {
-        if (this.lastOverflowWrite.modify(dr, entry, value, isSerializedObject, async)) {
+        if (this.lastOverflowWrite.modify(dr, entry, value, async)) {
           return;
         }
       }
       // Create a new one and put it on the front of the list.
-      OverflowOplog oo = createOverflowOplog(value.length);
+      OverflowOplog oo = createOverflowOplog(value.size());
       addOverflow(oo);
       this.lastOverflowWrite = oo;
-      boolean didIt = oo.modify(dr, entry, value, isSerializedObject, async);
+      boolean didIt = oo.modify(dr, entry, value, async);
       assert didIt;
     }
   }
@@ -199,7 +220,8 @@ public class OverflowOplogSet implements OplogSet {
 
   
 
-  void copyForwardForOverflowCompact(DiskEntry de, byte[] valueBytes, int length, byte userBits) {
+  void copyForwardForOverflowCompact(DiskEntry de,
+      ByteBuffer valueBytes, int length, byte userBits) {
     synchronized (this.overflowMap) {
       if (this.lastOverflowWrite != null) {
         if (this.lastOverflowWrite.copyForwardForOverflowCompact(de, valueBytes, length, userBits)) {
@@ -231,9 +253,9 @@ public class OverflowOplogSet implements OplogSet {
   
   
   @Override
-  public void create(LocalRegion region, DiskEntry entry, byte[] value,
-      boolean isSerializedObject, boolean async) {
-    modify(region, entry, value, isSerializedObject, async);
+  public void create(LocalRegion region, DiskEntry entry,
+      DiskEntry.ValueWrapper value, boolean async) {
+    modify(region, entry, value, async);
   }
 
 
@@ -271,7 +293,7 @@ public class OverflowOplogSet implements OplogSet {
   void testHookCloseAllOverflowChannels() {
     synchronized (this.overflowMap) {
       for (OverflowOplog oo : this.overflowMap.values()) {
-        FileChannel oplogFileChannel = oo.getFileChannel();
+        OutputStreamChannel oplogFileChannel = oo.getFileChannel();
         try {
           oplogFileChannel.close();
         } catch (IOException ignore) {
@@ -280,7 +302,7 @@ public class OverflowOplogSet implements OplogSet {
     }
     synchronized (this.compactableOverflowMap) {
       for (OverflowOplog oo : this.compactableOverflowMap.values()) {
-        FileChannel oplogFileChannel = oo.getFileChannel();
+        OutputStreamChannel oplogFileChannel = oo.getFileChannel();
         try {
           oplogFileChannel.close();
         } catch (IOException ignore) {

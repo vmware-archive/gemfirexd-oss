@@ -45,6 +45,7 @@ import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.lru.EnableLRU;
 import com.gemstone.gemfire.internal.concurrent.CustomEntryConcurrentHashMap.HashEntry;
 
+import com.gemstone.gemfire.internal.shared.OutputStreamChannel;
 import dunit.Host;
 import dunit.SerializableRunnable;
 import dunit.VM;
@@ -449,7 +450,7 @@ public class Bug39079DUnitTest extends CacheTestCase {
       region.create("key1", new byte[16]);
       region.create("key2", new byte[16]);
 //    Get the oplog handle & hence the underlying file & close it
-      FileChannel oplogFileChannel = ((LocalRegion)region).getDiskRegion()
+      OutputStreamChannel oplogFileChannel = ((LocalRegion)region).getDiskRegion()
           .testHook_getChild().getFileChannel();
       try {
         oplogFileChannel.close();

@@ -21,6 +21,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.io.UTFDataFormatException;
 import java.nio.channels.WritableByteChannel;
+import javax.annotation.Nonnull;
 
 import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
 import org.apache.spark.unsafe.Platform;
@@ -33,21 +34,31 @@ import org.apache.spark.unsafe.Platform;
  * The implementation is not thread-safe by design. This particular class can be
  * used as an efficient, buffered DataOutput implementation for file channels,
  * socket channels and other similar.
- * 
+ *
  * @author swale
  * @since gfxd 1.0
  */
 public class ChannelBufferUnsafeDataOutputStream extends
     ChannelBufferUnsafeOutputStream implements DataOutput {
 
-  public ChannelBufferUnsafeDataOutputStream(WritableByteChannel channel)
-      throws IOException {
+  public ChannelBufferUnsafeDataOutputStream(WritableByteChannel channel) {
     super(channel);
   }
 
   public ChannelBufferUnsafeDataOutputStream(WritableByteChannel channel,
-      int bufferSize) throws IOException {
+      int bufferSize) {
     super(channel, bufferSize);
+  }
+
+  public ChannelBufferUnsafeDataOutputStream(WritableByteChannel channel,
+      int bufferSize, boolean useUnsafeAllocation) {
+    super(channel, bufferSize, useUnsafeAllocation);
+  }
+
+  public ChannelBufferUnsafeDataOutputStream(
+      ChannelBufferUnsafeOutputStream other, WritableByteChannel channel,
+      int bufferSize, boolean useUnsafeAllocation) throws IOException {
+    super(other, channel, bufferSize, useUnsafeAllocation);
   }
 
   /**
@@ -133,7 +144,7 @@ public class ChannelBufferUnsafeDataOutputStream extends
    * {@inheritDoc}
    */
   @Override
-  public final void writeBytes(String s) throws IOException {
+  public final void writeBytes(@Nonnull String s) throws IOException {
     int off = 0;
     int len = s.length();
     while (len > 0) {
@@ -166,7 +177,7 @@ public class ChannelBufferUnsafeDataOutputStream extends
    * {@inheritDoc}
    */
   @Override
-  public final void writeChars(String s) throws IOException {
+  public final void writeChars(@Nonnull String s) throws IOException {
     int off = 0;
     int len = s.length();
     while (len > 0) {
@@ -197,7 +208,7 @@ public class ChannelBufferUnsafeDataOutputStream extends
    * {@inheritDoc}
    */
   @Override
-  public final void writeUTF(String str) throws IOException {
+  public final void writeUTF(@Nonnull String str) throws IOException {
     int strlen = str.length();
     if (strlen > 65535) {
       throw new UTFDataFormatException("encoded string too long: " + strlen);
