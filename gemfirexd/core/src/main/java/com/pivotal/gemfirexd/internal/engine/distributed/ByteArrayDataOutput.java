@@ -20,6 +20,7 @@ package com.pivotal.gemfirexd.internal.engine.distributed;
 import java.io.DataOutput;
 import java.io.UTFDataFormatException;
 
+import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
 import com.pivotal.gemfirexd.internal.shared.common.ResolverUtils;
 
 /**
@@ -181,24 +182,6 @@ public final class ByteArrayDataOutput extends ByteArrayOutput implements
     return utflen;
   }
 
-  public static final int getUTFLength(final String str, final int strlen) {
-    int utflen = strlen;
-    for (int i = 0; i < strlen; i++) {
-      final char c = str.charAt(i);
-      if ((c >= 0x0001) && (c <= 0x007F)) {
-        // 1 byte for character
-        continue;
-      }
-      else if (c > 0x07FF) {
-        utflen += 2; // 3 bytes for character
-      }
-      else {
-        utflen++; // 2 bytes for character
-      }
-    }
-    return utflen;
-  }
-
   /** assumes strlen == str.length */
   final void writeUTFNoLength(final char[] str, final int strlen,
       final int utflen) {
@@ -257,41 +240,6 @@ public final class ByteArrayDataOutput extends ByteArrayOutput implements
     }
   }
 
-  public static final int getUTFLength(final String str) {
-    final int strlen = str.length();
-    final char[] chars = ResolverUtils.getInternalCharsOnly(str, strlen);
-    if (chars != null) {
-      return getUTFLength(chars, strlen);
-    }
-    else {
-      return getUTFLength(str, strlen);
-    }
-  }
-
-  public final void writeUTFNoLength(final String str, final int utflen) {
-    final int strlen = str.length();
-    final char[] chars = ResolverUtils.getInternalCharsOnly(str, strlen);
-    if (chars != null) {
-      writeUTFNoLength(chars, strlen, utflen);
-    }
-    else {
-      writeUTFNoLength(str, strlen, utflen);
-    }
-  }
-
-  public final void writeUTFNoLength(final String str) {
-    final int strlen = str.length();
-    final char[] chars = ResolverUtils.getInternalCharsOnly(str, strlen);
-    if (chars != null) {
-      final int utflen = getUTFLength(chars, strlen);
-      writeUTFNoLength(chars, strlen, utflen);
-    }
-    else {
-      final int utflen = getUTFLength(str, strlen);
-      writeUTFNoLength(str, strlen, utflen);
-    }
-  }
-
   @Override
   public final void writeUTF(final String str) throws UTFDataFormatException {
     final int strlen = str.length();
@@ -309,7 +257,7 @@ public final class ByteArrayDataOutput extends ByteArrayOutput implements
       }
     }
     else {
-      final int utflen = getUTFLength(str, strlen);
+      final int utflen = ClientSharedUtils.getUTFLength(str, strlen);
 
       if (utflen <= 65535) {
         writeShort(utflen);

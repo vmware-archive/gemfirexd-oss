@@ -40,7 +40,6 @@ import com.gemstone.gemfire.cache.TimeoutException;
 import com.gemstone.gemfire.cache.query.internal.IndexUpdater;
 import com.gemstone.gemfire.distributed.internal.DM;
 import com.gemstone.gemfire.internal.Assert;
-import com.gemstone.gemfire.internal.ByteArrayDataInput;
 import com.gemstone.gemfire.internal.InternalStatisticsDisabledException;
 import com.gemstone.gemfire.internal.cache.AbstractOperationMessage;
 import com.gemstone.gemfire.internal.cache.DistributedRegion.DiskPosition;
@@ -1269,7 +1268,7 @@ public final class GfxdTXEntryState extends TXEntryState implements
 
   @Override
   public boolean fillInValue(LocalRegion r, Entry entry,
-      ByteArrayDataInput in, DM mgr, Version targetVersion) {
+      DM mgr, Version targetVersion) {
     throw new UnsupportedOperationException("unexpected invocation");
   }
 

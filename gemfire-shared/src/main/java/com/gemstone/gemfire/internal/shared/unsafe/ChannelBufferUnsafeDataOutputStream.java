@@ -293,7 +293,7 @@ public class ChannelBufferUnsafeDataOutputStream extends
     }
   }
 
-  private static long writeUTFSegmentNoOverflow(String str, int offset,
+  public static long writeUTFSegmentNoOverflow(String str, int offset,
       int length, long addrPos, final sun.misc.Unsafe unsafe)
       throws IOException {
     final int end = (offset + length);

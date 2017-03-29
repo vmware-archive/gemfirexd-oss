@@ -2321,6 +2321,22 @@ public class EntryEventImpl extends KeyInfo implements
     }
   }
 
+  public static Object deserializeBuffer(ByteBuffer buffer, Version version) {
+    if (buffer == null) return null;
+    try {
+      return BlobHelper.deserializeBuffer(buffer, version);
+    } catch (IOException e) {
+      throw new SerializationException(LocalizedStrings
+          .EntryEventImpl_AN_IOEXCEPTION_WAS_THROWN_WHILE_DESERIALIZING
+          .toLocalizedString(), e);
+    } catch (ClassNotFoundException e) {
+      // fix for bug 43602
+      throw new SerializationException(LocalizedStrings
+          .EntryEventImpl_A_CLASSNOTFOUNDEXCEPTION_WAS_THROWN_WHILE_TRYING_TO_DESERIALIZE_CACHED_VALUE
+          .toLocalizedString(), e);
+    }
+  }
+
   /**
    * Serialize an object into a <code>byte[]</code>
    *

@@ -41,6 +41,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.InetAddress;
+import java.nio.ByteBuffer;
 import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
@@ -70,7 +71,6 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
 import com.gemstone.gemfire.i18n.LogWriterI18n;
-import com.gemstone.gemfire.internal.ByteArrayDataInput;
 import com.gemstone.gemfire.internal.FileUtil;
 import com.gemstone.gemfire.internal.LogWriterImpl;
 import com.gemstone.gemfire.internal.NanoTimer;
@@ -99,6 +99,7 @@ import com.gemstone.gemfire.internal.offheap.annotations.Released;
 import com.gemstone.gemfire.internal.offheap.annotations.Retained;
 import com.gemstone.gemfire.internal.shared.SystemProperties;
 import com.gemstone.gemfire.internal.shared.Version;
+import com.gemstone.gemfire.internal.shared.unsafe.UnsafeHolder;
 import com.gemstone.gnu.trove.THashMap;
 import com.gemstone.gnu.trove.THashSet;
 
@@ -914,7 +915,7 @@ public class DiskStoreImpl implements DiskStore, ResourceListener<MemoryEvent> {
           this.logger.info(LocalizedStrings.DEBUG,
               "DiskRegion: Tried " + count
                   + ", getBytesAndBitsWithoutLock returns wrong byte array: "
-                  + Arrays.toString(bb.getBytes()));
+                  + (bb != null ? Oplog.bufferToString(bb.getBuffer()) : "null"));
           ex = e;
         }
       } // while
@@ -953,28 +954,38 @@ public class DiskStoreImpl implements DiskStore, ResourceListener<MemoryEvent> {
   }
 
   /**
-   * Given a BytesAndBits object convert it to the relevant Object (deserialize
-   * if necessary) and return the object
-   * 
-   * @param bb
-   * @return the converted object
+   * Given a BytesAndBits object either convert it to the relevant Object
+   * (deserialize if necessary) or return the serialized blob.
    */
-  static Object convertBytesAndBitsIntoObject(BytesAndBits bb) {
-    byte[] bytes = bb.getBytes();
+  private static Object convertBytesAndBits(BytesAndBits bb, boolean asObject) {
+    final ByteBuffer buffer = bb.getBuffer();
     Object value;
     if (EntryBits.isInvalid(bb.getBits())) {
       value = Token.INVALID;
     } else if (EntryBits.isSerialized(bb.getBits())) {
       value = DiskEntry.Helper
-          .readSerializedValue(bytes, bb.getVersion(), null, true);
+          .readSerializedValue(buffer, bb.getVersion(), asObject);
     } else if (EntryBits.isLocalInvalid(bb.getBits())) {
       value = Token.LOCAL_INVALID;
     } else if (EntryBits.isTombstone(bb.getBits())) {
       value = Token.TOMBSTONE;
     } else {
-      value = DiskEntry.Helper.readRawValue(bytes, bb.getVersion(), null);
+      value = DiskEntry.Helper.readRawValue(buffer);
     }
+    // buffer will no longer be used so clean it up eagerly
+    UnsafeHolder.releaseIfDirectBuffer(buffer);
     return value;
+  }
+
+  /**
+   * Given a BytesAndBits object convert it to the relevant Object (deserialize
+   * if necessary) and return the object
+   *
+   * @param bb
+   * @return the converted object
+   */
+  static Object convertBytesAndBitsIntoObject(BytesAndBits bb) {
+    return convertBytesAndBits(bb, true);
   }
 
   /**
@@ -984,21 +995,7 @@ public class DiskStoreImpl implements DiskStore, ResourceListener<MemoryEvent> {
    * @return the converted object
    */
   static Object convertBytesAndBitsToSerializedForm(BytesAndBits bb) {
-    final byte[] bytes = bb.getBytes();
-    Object value;
-    if (EntryBits.isInvalid(bb.getBits())) {
-      value = Token.INVALID;
-    } else if (EntryBits.isSerialized(bb.getBits())) {
-      value = DiskEntry.Helper
-          .readSerializedValue(bytes, bb.getVersion(), null, false);
-    } else if (EntryBits.isLocalInvalid(bb.getBits())) {
-      value = Token.LOCAL_INVALID;
-    } else if (EntryBits.isTombstone(bb.getBits())) {
-      value = Token.TOMBSTONE;
-    } else {
-      value = DiskEntry.Helper.readRawValue(bytes, bb.getVersion(), null);
-    }
-    return value;
+    return convertBytesAndBits(bb, false);
   }
 
   // CLEAR_BB was added in reaction to bug 41306
@@ -4141,7 +4138,6 @@ public class DiskStoreImpl implements DiskStore, ResourceListener<MemoryEvent> {
       views.add(ph);
     }
 
-    final ByteArrayDataInput in = new ByteArrayDataInput();
     for (Map.Entry<String, List<PlaceHolderDiskRegion>> entry : regions
         .entrySet()) {
       String fname = entry.getKey().substring(1).replace('/', '-');
@@ -4171,7 +4167,7 @@ public class DiskStoreImpl implements DiskStore, ResourceListener<MemoryEvent> {
             if (value == null && re instanceof DiskEntry) {
               DiskEntry de = (DiskEntry) re;
               DiskEntry.Helper.recoverValue(de, de.getDiskId().getOplogId(),
-                  ((DiskRecoveryStore) drv), in);
+                  ((DiskRecoveryStore) drv));
               // TODO:KIRK:OK Rusty's code was value = de.getValueWithContext(drv);
               value = de._getValueRetain(drv, true); // OFFHEAP: passed to SnapshotRecord who copies into byte[]; so for now copy to heap CD
             }

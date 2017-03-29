@@ -16,6 +16,8 @@
  */
 package com.gemstone.gemfire.internal.cache.persistence;
 
+import java.nio.ByteBuffer;
+
 import com.gemstone.gemfire.internal.shared.Version;
 
 /**
@@ -25,16 +27,16 @@ import com.gemstone.gemfire.internal.shared.Version;
  * @since prPersistSprint1
  */
 public class BytesAndBits {
-  private final byte[] data;
+  private final ByteBuffer data;
   private final byte userBits;
   private Version version;
 
-  public BytesAndBits(byte[] data, byte userBits) {
+  public BytesAndBits(ByteBuffer data, byte userBits) {
     this.data = data;
     this.userBits = userBits;
   }
 
-  public final byte[] getBytes() {
+  public final ByteBuffer getBuffer() {
     return this.data;
   }
   public final byte getBits() {

@@ -1294,8 +1294,8 @@ public final class Oplog implements CompactableOplog {
     this.crf.raf = new RandomAccessFile(f,
         getParent().getSyncWrites() ? "rwd" : "rw");
     this.crf.RAFClosed = false;
-    oplogSet.crfCreate(this.oplogId);
     this.crf.channel = this.crf.raf.getChannel();
+    oplogSet.crfCreate(this.oplogId);
     if (this.crf.outputStream != null) {
       this.crf.outputStream.close();
     }
@@ -1349,8 +1349,8 @@ public final class Oplog implements CompactableOplog {
     this.drf.raf = new RandomAccessFile(f,
         getParent().getSyncWrites() ? "rwd" : "rw");
     this.drf.RAFClosed = false;
-    this.oplogSet.drfCreate(this.oplogId);
     this.drf.channel = this.drf.raf.getChannel();
+    this.oplogSet.drfCreate(this.oplogId);
     this.drf.outputStream = createOutputStream(prevOlf, this.drf.channel);
     if (logger.infoEnabled()) {
       logger.info(LocalizedStrings.Oplog_CREATE_0_1_2,
@@ -1518,7 +1518,7 @@ public final class Oplog implements CompactableOplog {
     if (retryOplog != null) {
       return retryOplog.getBytesAndBits(dr, id, faultingIn, bitOnly);
     }
-    BytesAndBits bb = null;
+    BytesAndBits bb;
     long start = this.stats.startRead();
 
     // Asif: If the offset happens to be -1, still it is possible that
@@ -1558,7 +1558,8 @@ public final class Oplog implements CompactableOplog {
     if (bitOnly) {
       dr.endRead(start, this.stats.endRead(start, 1), 1);
     } else {
-      dr.endRead(start, this.stats.endRead(start, bb.getBytes().length), bb.getBytes().length);
+      final int numRead = bb.getBuffer().limit();
+      dr.endRead(start, this.stats.endRead(start, numRead), numRead);
     }
     return bb;
 
@@ -6318,6 +6319,7 @@ public final class Oplog implements CompactableOplog {
         this.crf.raf = new RandomAccessFile(this.crf.f, "r");
         this.stats.incOpenOplogs();
         this.crf.RAFClosed = false;
+        this.crf.channel = this.crf.raf.getChannel();
         this.okToReopen = false;
       }
       return result;
@@ -6343,21 +6345,25 @@ public final class Oplog implements CompactableOplog {
           flushAllNoSync(true); // fix for bug 41205
         }
         try {
-          RandomAccessFile myRAF = null;
+          RandomAccessFile myRAF;
+          FileChannel crfChannel;
           if (this.crf.RAFClosed) {
             myRAF = new RandomAccessFile(this.crf.f, "r");
+            crfChannel = myRAF.getChannel();
             this.stats.incOpenOplogs();
             if (this.okToReopen) {
               this.crf.RAFClosed = false;
               this.okToReopen = false;
               this.crf.raf = myRAF;
+              this.crf.channel = crfChannel;
               didReopen = true;
             }
           } else {
             myRAF = this.crf.raf;
+            crfChannel = this.crf.channel;
             accessedInactive = true;
           }
-          BytesAndBits bb = null;
+          BytesAndBits bb;
           try {
             final long writePosition = (this.doneAppending)
               ? this.crf.bytesFlushed
@@ -6381,15 +6387,19 @@ public final class Oplog implements CompactableOplog {
 //                        + " oplog#" + getOplogId());
 //               }
               this.stats.incOplogSeeks();
-              byte[] valueBytes = new byte[valueLength];
-              myRAF.readFully(valueBytes);
+              final ByteBuffer valueBuffer = UnsafeHolder.allocateDirectBuffer(
+                  valueLength);
+              while (valueBuffer.hasRemaining()) {
+                if (crfChannel.read(valueBuffer) <= 0) throw new EOFException();
+              }
+              valueBuffer.flip();
 //         logger.info(LocalizedStrings.DEBUG,
 //                     "DEBUG attemptGet readPosition=" + readPosition
 //                     + " valueLength=" + valueLength
 //                     + " value=<" + baToString(valueBytes) + ">"
 //                     + " oplog#" + getOplogId());
               this.stats.incOplogReads();
-              bb = new BytesAndBits(valueBytes, userBits);
+              bb = new BytesAndBits(valueBuffer, userBits);
               // also set the product version for an older product
               final Version version = getProductVersionIfOld();
               if (version != null) {
@@ -6458,11 +6468,11 @@ public final class Oplog implements CompactableOplog {
     BytesAndBits bb = null;
     if (EntryBits.isAnyInvalid(userBits) || EntryBits.isTombstone(userBits) || bitOnly || valueLength == 0) {
       if (EntryBits.isInvalid(userBits)) {
-        bb = new BytesAndBits(DiskEntry.INVALID_BYTES, userBits);
+        bb = new BytesAndBits(DiskEntry.INVALID_VW.buffer, userBits);
       } else if (EntryBits.isTombstone(userBits)) {
-        bb = new BytesAndBits(DiskEntry.TOMBSTONE_BYTES, userBits);
+        bb = new BytesAndBits(DiskEntry.TOMBSTONE_VW.buffer, userBits);
       } else {
-        bb = new BytesAndBits(DiskEntry.LOCAL_INVALID_BYTES, userBits);
+        bb = new BytesAndBits(DiskEntry.LOCAL_INVALID_VW.buffer, userBits);
       }
     }
     else {
@@ -7302,7 +7312,6 @@ public final class Oplog implements CompactableOplog {
           "Oplog::recoverValuesIfNeeded: recovering values from " + toString());
     }
 
-    final ByteArrayDataInput in = new ByteArrayDataInput();
     for(KRFEntry entry : sortedLiveEntries) {
       //Early out if we start closing the parent.
       if(getParent().isClosing() || diskRecoveryStores.isEmpty()) {
@@ -7346,7 +7355,7 @@ public final class Oplog implements CompactableOplog {
 
             try {
               DiskEntry.Helper.recoverValue(diskEntry, getOplogId(),
-                  diskRecoveryStore, in);
+                  diskRecoveryStore);
             } catch(RegionDestroyedException e) {
               //This region has been destroyed, stop recovering from it.
               diskRecoveryStores.remove(diskRegionId);
@@ -8445,7 +8454,7 @@ public final class Oplog implements CompactableOplog {
     @Override
     public boolean fillInValue(LocalRegion r,
         com.gemstone.gemfire.internal.cache.InitialImageOperation.Entry entry,
-        ByteArrayDataInput in, DM mgr, Version targetVersion) {
+        DM mgr, Version targetVersion) {
       // TODO Auto-generated method stub
       return false;
     }

@@ -47,7 +47,6 @@ import com.gemstone.gemfire.internal.Assert;
 import com.gemstone.gemfire.internal.ByteArrayDataInput;
 import com.gemstone.gemfire.internal.HeapDataOutputStream;
 import com.gemstone.gemfire.internal.cache.DiskStoreImpl.AsyncDiskEntry;
-import com.gemstone.gemfire.internal.cache.GemFireCacheImpl.StaticSystemCallbacks;
 import com.gemstone.gemfire.internal.cache.lru.EnableLRU;
 import com.gemstone.gemfire.internal.cache.lru.LRUClockNode;
 import com.gemstone.gemfire.internal.cache.lru.LRUEntry;
@@ -66,7 +65,9 @@ import com.gemstone.gemfire.internal.offheap.annotations.Released;
 import com.gemstone.gemfire.internal.offheap.annotations.Retained;
 import com.gemstone.gemfire.internal.offheap.annotations.Unretained;
 import com.gemstone.gemfire.internal.shared.ClientSharedData;
+import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
 import com.gemstone.gemfire.internal.shared.Version;
+import com.gemstone.gemfire.internal.shared.unsafe.UnsafeHolder;
 import com.gemstone.gemfire.internal.util.BlobHelper;
 
 /**
@@ -429,7 +430,7 @@ public interface DiskEntry extends RegionEntry {
      * @since 3.2.1
      */
     static boolean fillInValue(DiskEntry de, InitialImageOperation.Entry entry,
-                               LocalRegion lr, ByteArrayDataInput in, DM mgr,
+                               LocalRegion lr, DM mgr,
                                RegionEntryContext context, Version targetVersion) {
       LogWriterI18n logger = mgr.getLoggerI18n();
       DiskRegion dr = lr.getDiskRegion();
@@ -460,7 +461,7 @@ public interface DiskEntry extends RegionEntry {
             }
             assert did != null;
             // do recursive call to get readLock on did
-            return fillInValue(de, entry, lr, in, mgr, context, targetVersion);
+            return fillInValue(de, entry, lr, mgr, context, targetVersion);
           }
           if (logger.finerEnabled()) {
             logger.finer("DiskEntry.Helper.fillInValue, key=" + entry.key
@@ -499,24 +500,26 @@ public interface DiskEntry extends RegionEntry {
                 deserializeForTarget = false;
               }
             }
+            final ByteBuffer buffer = bb.getBuffer();
             // TODO: upgrade: also need to handle cases of GemFire internal
             // objects (e.g. gateway events, _PR objects) changing
             // serialization below via a versioned CachedDeserializable
             if ((version == null && !deserializeForTarget)
                 || !CachedDeserializableFactory.preferObject()) {
-              entry.value = bb.getBytes();
+              entry.value = buffer;
               entry.setSerialized(EntryBits.isSerialized(bb.getBits()));
             }
             else if (EntryBits.isSerialized(bb.getBits())) {
-              entry.value = readSerializedValue(bb.getBytes(), version,
-                  in, true);
+              entry.value = readSerializedValue(buffer, version, true);
               entry.setSerialized(false);
               entry.setEagerDeserialize();
             }
             else {
-              entry.value = readRawValue(bb.getBytes(), version, in);
+              entry.value = readRawValue(buffer);
               entry.setSerialized(false);
             }
+            // buffer will no longer be used so clean it up eagerly
+            UnsafeHolder.releaseIfDirectBuffer(buffer);
           }
           return true;
         }
@@ -1163,7 +1166,7 @@ public interface DiskEntry extends RegionEntry {
     }
 
     public static void recoverValue(DiskEntry entry, long oplogId,
-        DiskRecoveryStore recoveryStore, ByteArrayDataInput in) {
+        DiskRecoveryStore recoveryStore) {
       boolean lruFaultedIn = false;
       synchronized (entry) {
         if (entry.isValueNull()) {
@@ -1177,7 +1180,7 @@ public interface DiskEntry extends RegionEntry {
               synchronized (did) {
                 // don't read if the oplog has changed.
                 if (oplogId == did.getOplogId()) {
-                  value = getValueFromDisk(dr, did, in);
+                  value = getValueFromDisk(dr, did);
                   if (value != null) {
                     setValueOnFaultIn(value, did, entry, dr, region);
                   } 
@@ -1203,7 +1206,7 @@ public interface DiskEntry extends RegionEntry {
     /**
      *  Caller must have "did" synced.
      */
-    private static Object getValueFromDisk(DiskRegionView dr, DiskId did, ByteArrayDataInput in) {
+    private static Object getValueFromDisk(DiskRegionView dr, DiskId did) {
       Object value;
       if (dr.isBackup() && did.getKeyId() == DiskRegion.INVALID_ID) {
         // must have been destroyed
@@ -1216,17 +1219,21 @@ public interface DiskEntry extends RegionEntry {
         value = dr.getRaw(did); // fix bug 40192
         if (value instanceof BytesAndBits) {
           BytesAndBits bb = (BytesAndBits)value;
-          if (EntryBits.isInvalid(bb.getBits())) {
+          final ByteBuffer buffer = bb.getBuffer();
+          final byte bits = bb.getBits();
+          if (EntryBits.isInvalid(bits)) {
             value = Token.INVALID;
-          } else if (EntryBits.isLocalInvalid(bb.getBits())) {
+          } else if (EntryBits.isLocalInvalid(bits)) {
             value = Token.LOCAL_INVALID;
-          } else if (EntryBits.isTombstone(bb.getBits())) {
+          } else if (EntryBits.isTombstone(bits)) {
             value = Token.TOMBSTONE;
-          } else if (EntryBits.isSerialized(bb.getBits())) {
-            value = readSerializedValue(bb.getBytes(), bb.getVersion(), in, false);
+          } else if (EntryBits.isSerialized(bits)) {
+            value = readSerializedValue(buffer, bb.getVersion(), false);
           } else {
-            value = readRawValue(bb.getBytes(), bb.getVersion(), in);
+            value = readRawValue(buffer);
           }
+          // buffer will no longer be used so clean it up eagerly
+          UnsafeHolder.releaseIfDirectBuffer(buffer);
         }
       }
       return value;
@@ -1290,7 +1297,7 @@ public interface DiskEntry extends RegionEntry {
       dr.acquireReadLock();
       try {
       synchronized (did) {
-        Object value = getValueFromDisk(dr, did, null);
+        Object value = getValueFromDisk(dr, did);
         if (value == null) return null;
         @Unretained Object preparedValue = setValueOnFaultIn(value, did, entry, dr, region);
         // For Gemfirexd we want to return the offheap representation.
@@ -1346,18 +1353,33 @@ public interface DiskEntry extends RegionEntry {
       }
     }
 
-    static Object readRawValue(byte[] valueBytes, Version version,
-        ByteArrayDataInput in) {
+    static Object readSerializedValue(ByteBuffer valueBuffer, Version version,
+        boolean forceDeserialize) {
+      if (forceDeserialize || CachedDeserializableFactory.preferObject()) {
+        // deserialize checking for product version change
+        return EntryEventImpl.deserializeBuffer(valueBuffer, version);
+      } else {
+        // TODO: upgrades: is there a case where GemFire values are internal
+        // ones that need to be upgraded transparently; probably messages
+        // being persisted (gateway events?)
+        return CachedDeserializableFactory.create(
+            ClientSharedUtils.toBytes(valueBuffer));
+      }
+    }
+
+    static Object readRawValue(ByteBuffer valueBuffer) {
+      // no longer support pre SQLF 1.1 so no change for RowFormatter bytes
+      /*
       final StaticSystemCallbacks sysCb;
       if (version != null && (sysCb = GemFireCacheImpl.FactoryStatics
           .systemCallbacks) != null) {
         // may need to change serialized shape for GemFireXD
-        return sysCb.fromVersion(valueBytes, valueBytes.length, false, version,
-            in);
+        return sysCb.fromVersion(valueBuffer, valueBuffer.length, false, version);
+      } else {
+        return valueBuffer;
       }
-      else {
-        return valueBytes;
-      }
+      */
+      return ClientSharedUtils.toBytes(valueBuffer);
     }
 
     public static void incrementBucketStats(Object owner,

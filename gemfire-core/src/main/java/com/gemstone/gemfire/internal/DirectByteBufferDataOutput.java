@@ -20,28 +20,31 @@ package com.gemstone.gemfire.internal;
 import java.io.Closeable;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.io.UTFDataFormatException;
 import java.nio.ByteBuffer;
 import javax.annotation.Nonnull;
 
 import com.esotericsoftware.kryo.KryoException;
 import com.esotericsoftware.kryo.io.ByteBufferOutput;
+import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
 import com.gemstone.gemfire.internal.shared.Version;
+import com.gemstone.gemfire.internal.shared.unsafe.ChannelBufferUnsafeDataOutputStream;
 import com.gemstone.gemfire.internal.shared.unsafe.UnsafeHolder;
 
 /**
- * Implements {@link java.io.DataOutput} writing to a direct ByteBuffer
+ * Implements {@link DataOutput} writing to a direct ByteBuffer
  * expanding it as required.
  * <p>
- * TODO: this can be further optimized substantially by using the
- * Unsafe API rather than going through ByteBuffer API
- * (e.g. see ChannelBufferUnsafeDataOutputStream)
+ * Note: this can be further optimized by using the Unsafe API rather than
+ * going through ByteBuffer API (e.g. see ChannelBufferUnsafeDataOutputStream)
+ * but won't have an effect for large byte array reads (like for column data)
  */
 public final class DirectByteBufferDataOutput extends ByteBufferOutput
     implements DataOutput, Closeable, VersionedDataStream {
 
   private static final int INITIAL_SIZE = 1024;
 
-  private Version version;
+  private final Version version;
 
   public DirectByteBufferDataOutput(Version version) {
     this(INITIAL_SIZE, version);
@@ -64,7 +67,27 @@ public final class DirectByteBufferDataOutput extends ByteBufferOutput
 
   @Override
   public void writeUTF(@Nonnull String s) throws IOException {
-    super.writeString(s);
+    // kryo's writeString is not DataOutput UTF8 compatible
+
+    // first calculate the UTF encoded length
+    final int strLen = s.length();
+    final int utfLen = ClientSharedUtils.getUTFLength(s, strLen);
+    if (utfLen > 65535) {
+      throw new UTFDataFormatException("encoded string too long: " + utfLen
+          + " bytes");
+    }
+    // make required space
+    require(utfLen + 2);
+    final ByteBuffer buffer = this.niobuffer;
+    // write the length first
+    buffer.putShort((short)utfLen);
+    position += 2;
+    // now write as UTF data using unsafe API
+    final long address = UnsafeHolder.getDirectBufferAddress(buffer);
+    ChannelBufferUnsafeDataOutputStream.writeUTFSegmentNoOverflow(s, 0, strLen,
+        address + position, UnsafeHolder.getUnsafe());
+    position += utfLen;
+    buffer.position(position);
   }
 
   @Override

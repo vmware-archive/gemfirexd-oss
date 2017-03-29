@@ -1397,6 +1397,25 @@ public abstract class ClientSharedUtils {
     }
   }
 
+  public static byte[] toBytes(ByteBuffer buffer) {
+    final int bufferSize = buffer.remaining();
+    return toBytes(buffer, bufferSize, bufferSize);
+  }
+
+  public static byte[] toBytes(ByteBuffer buffer, int bufferSize, int length) {
+    if (length >= bufferSize && buffer.hasArray() && buffer.position() == 0 &&
+        buffer.arrayOffset() == 0 && buffer.remaining() == buffer.capacity()) {
+      return buffer.array();
+    } else {
+      final int numBytes = Math.min(bufferSize, length);
+      final byte[] bytes = new byte[numBytes];
+      final int initPosition = buffer.position();
+      buffer.get(bytes, 0, numBytes);
+      buffer.position(initPosition);
+      return bytes;
+    }
+  }
+
   /**
    * State constants used by the FSM inside getStatementToken.
    *
@@ -1626,6 +1645,22 @@ public abstract class ClientSharedUtils {
     buffer.flip();
     newBuffer.put(buffer);
     return newBuffer;
+  }
+
+  public static int getUTFLength(final String str, final int strLen) {
+    int utfLen = strLen;
+    for (int i = 0; i < strLen; i++) {
+      final char c = str.charAt(i);
+      if ((c >= 0x0001) && (c <= 0x007F)) {
+        // 1 byte for character
+        continue;
+      } else if (c > 0x07FF) {
+        utfLen += 2; // 3 bytes for character
+      } else {
+        utfLen++; // 2 bytes for character
+      }
+    }
+    return utfLen;
   }
 
   public static final ThreadLocal ALLOW_THREADCONTEXT_CLASSLOADER =

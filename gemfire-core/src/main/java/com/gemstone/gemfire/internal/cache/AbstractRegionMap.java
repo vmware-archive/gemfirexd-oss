@@ -43,7 +43,6 @@ import com.gemstone.gemfire.distributed.internal.DM;
 import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
 import com.gemstone.gemfire.i18n.LogWriterI18n;
 import com.gemstone.gemfire.internal.Assert;
-import com.gemstone.gemfire.internal.ByteArrayDataInput;
 import com.gemstone.gemfire.internal.HeapDataOutputStream;
 import com.gemstone.gemfire.internal.cache.DiskInitFile.DiskRegionFlag;
 import com.gemstone.gemfire.internal.cache.FilterRoutingInfo.FilterInfo;
@@ -4590,11 +4589,10 @@ RETRY_LOOP:
   private boolean checkIfEqualValue(LocalRegion region, RegionEntry re, InitialImageOperation.Entry tmplEntry,
       Object tmpValue) {
     final DM dm = region.getDistributionManager();
-    final ByteArrayDataInput in = new ByteArrayDataInput();
     final HeapDataOutputStream out = new HeapDataOutputStream(
         Version.CURRENT);
 
-    if (re.fillInValue(region, tmplEntry, in, dm, null)) {
+    if (re.fillInValue(region, tmplEntry, dm, null)) {
       try {
         if (tmplEntry.value != null) {
           final byte[] valueInCache;

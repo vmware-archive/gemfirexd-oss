@@ -43,6 +43,7 @@ import com.gemstone.gemfire.distributed.internal.DMStats;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.internal.ByteArrayDataInput;
 import com.gemstone.gemfire.internal.DSCODE;
+import com.gemstone.gemfire.internal.DirectByteBufferDataInput;
 import com.gemstone.gemfire.internal.DirectByteBufferDataOutput;
 import com.gemstone.gemfire.internal.HeapDataOutputStream;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
@@ -177,6 +178,36 @@ public class BlobHelper {
 //            
 //      }
 //    }
+    return result;
+  }
+
+  /**
+   * This method returns the deserialized object reading serialized bytes
+   * from the given ByteBuffer.
+   */
+  public static Object deserializeBuffer(ByteBuffer buffer, Version version)
+      throws IOException, ClassNotFoundException {
+    Object result;
+    final long start = startDeserialization();
+    final int bufferSize = buffer.limit();
+    // no longer support pre-SQLF 1.1 format so callback is skipped
+    // here which may need to be added if row format changes in future
+    if (bufferSize > 0 && buffer.get(0) == DSCODE.PDX) {
+      // If the first byte of blob indicates a pdx then wrap
+      // blob in a PdxInputStream instead.
+      // This will prevent us from making a copy of the byte[]
+      // every time we deserialize a PdxInstance.
+      PdxInputStream is = new PdxInputStream(buffer);
+      result = DataSerializer.readObject(is);
+    } else {
+      // if we have a nested pdx then we want to make a copy
+      // when a PdxInstance is created so that the byte[] will
+      // just have the pdx bytes and not the outer objects bytes.
+      final DirectByteBufferDataInput in = new DirectByteBufferDataInput(
+          buffer, version);
+      result = DataSerializer.readObject(in);
+    }
+    endDeserialization(start, bufferSize);
     return result;
   }
 

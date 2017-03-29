@@ -35,6 +35,7 @@
 
 package com.gemstone.gemfire.internal.cache;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InterruptedIOException;
@@ -391,7 +392,8 @@ class OverflowOplog implements CompactableOplog {
     if (bitOnly) {
       dr.endRead(start, this.stats.endRead(start, 1), 1);
     } else {
-      dr.endRead(start, this.stats.endRead(start, bb.getBytes().length), bb.getBytes().length);
+      final int numRead = bb.getBuffer().limit();
+      dr.endRead(start, this.stats.endRead(start, numRead), numRead);
     }
     return bb;
 
@@ -972,6 +974,7 @@ class OverflowOplog implements CompactableOplog {
       final long readPosition = offsetInOplog;
       assert readPosition >= 0;
       RandomAccessFile myRAF = this.crf.raf;
+      FileChannel crfChannel = this.crf.channel;
       BytesAndBits bb = null;
       long writePosition = 0;
       if (!this.doneAppending) {
@@ -996,8 +999,12 @@ class OverflowOplog implements CompactableOplog {
           //                        + " oplog#" + getOplogId());
           //               }
           this.stats.incOplogSeeks();
-          byte[] valueBytes = new byte[valueLength];
-          myRAF.readFully(valueBytes);
+          final ByteBuffer valueBuffer = UnsafeHolder.allocateDirectBuffer(
+              valueLength);
+          while (valueBuffer.hasRemaining()) {
+            if (crfChannel.read(valueBuffer) <= 0) throw new EOFException();
+          }
+          valueBuffer.flip();
 //           if (EntryBits.isSerialized(userBits)) {
 //             try {
 //               com.gemstone.gemfire.internal.util.BlobHelper.deserializeBlob(valueBytes);
@@ -1022,7 +1029,7 @@ class OverflowOplog implements CompactableOplog {
           //                     + " value=<" + baToString(valueBytes) + ">"
           //                     + " oplog#" + getOplogId());
           this.stats.incOplogReads();
-          bb = new BytesAndBits(valueBytes, userBits);
+          bb = new BytesAndBits(valueBuffer, userBits);
         }
         finally {
           // if this oplog is no longer being appended to then don't waste disk io
@@ -1052,15 +1059,16 @@ class OverflowOplog implements CompactableOplog {
     if (writePosition <= readPosition
         && (writePosition+curWriteBufPos) >= (readPosition+valueLength)) {
       int bufOffset = (int)(readPosition - writePosition);
-      byte[] valueBytes = new byte[valueLength];
+      ByteBuffer valueBuffer = UnsafeHolder.allocateDirectBuffer(valueLength);
       int oldPosition = writeBuf.position();
       int oldLimit = writeBuf.limit();
       writeBuf.limit(curWriteBufPos);
       writeBuf.position(bufOffset);
-      writeBuf.get(valueBytes);
+      valueBuffer.put(writeBuf);
+      valueBuffer.flip();
       writeBuf.position(oldPosition);
       writeBuf.limit(oldLimit);
-      bb = new BytesAndBits(valueBytes, userBits);
+      bb = new BytesAndBits(valueBuffer, userBits);
     }
     return bb;
   }
@@ -1085,11 +1093,11 @@ class OverflowOplog implements CompactableOplog {
     BytesAndBits bb = null;
     if (EntryBits.isAnyInvalid(userBits) || EntryBits.isTombstone(userBits) || bitOnly || valueLength == 0) {
       if (EntryBits.isInvalid(userBits)) {
-        bb = new BytesAndBits(DiskEntry.INVALID_BYTES, userBits);
+        bb = new BytesAndBits(DiskEntry.INVALID_VW.buffer, userBits);
       } else if (EntryBits.isTombstone(userBits)) {
-        bb = new BytesAndBits(DiskEntry.TOMBSTONE_BYTES, userBits);
+        bb = new BytesAndBits(DiskEntry.TOMBSTONE_VW.buffer, userBits);
       } else {
-        bb = new BytesAndBits(DiskEntry.LOCAL_INVALID_BYTES, userBits);
+        bb = new BytesAndBits(DiskEntry.LOCAL_INVALID_VW.buffer, userBits);
       }
     }
     else {
