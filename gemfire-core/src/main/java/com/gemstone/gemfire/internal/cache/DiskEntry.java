@@ -506,7 +506,7 @@ public interface DiskEntry extends RegionEntry {
             // serialization below via a versioned CachedDeserializable
             if ((version == null && !deserializeForTarget)
                 || !CachedDeserializableFactory.preferObject()) {
-              entry.value = buffer;
+              entry.value = ClientSharedUtils.toBytes(buffer);
               entry.setSerialized(EntryBits.isSerialized(bb.getBits()));
             }
             else if (EntryBits.isSerialized(bb.getBits())) {
