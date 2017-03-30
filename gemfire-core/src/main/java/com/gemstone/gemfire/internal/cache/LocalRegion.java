@@ -33,8 +33,11 @@ import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.LongAdder;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.LongBinaryOperator;
+import java.util.function.LongUnaryOperator;
 import java.util.regex.Pattern;
 
 import com.gemstone.gemfire.CancelCriterion;
@@ -211,7 +214,12 @@ import com.gemstone.gemfire.internal.offheap.annotations.Retained;
 import com.gemstone.gemfire.internal.offheap.annotations.Unretained;
 import com.gemstone.gemfire.internal.sequencelog.EntryLogger;
 import com.gemstone.gemfire.internal.shared.Version;
+import com.gemstone.gemfire.internal.size.ReflectionObjectSizer;
+import com.gemstone.gemfire.internal.size.ReflectionSingleObjectSizer;
 import com.gemstone.gemfire.internal.size.SingleObjectSizer;
+import com.gemstone.gemfire.internal.snappy.CallbackFactoryProvider;
+import com.gemstone.gemfire.internal.snappy.StoreCallbacks;
+import com.gemstone.gemfire.internal.snappy.UMMMemoryTracker;
 import com.gemstone.gemfire.internal.util.concurrent.FutureResult;
 import com.gemstone.gemfire.internal.util.concurrent.StoppableCountDownLatch;
 import com.gemstone.gemfire.internal.util.concurrent.StoppableReentrantReadWriteLock;
@@ -320,6 +328,12 @@ public class LocalRegion extends AbstractRegion
    * Set to true if this region supports transaction else false.
    */
   private final boolean supportsTX;
+
+
+
+
+  public static final ThreadLocal<String> regionPath =
+      new ThreadLocal<String>() ;
 
   public static final ReadEntryUnderLock READ_VALUE = new ReadEntryUnderLock() {
     public final Object readEntry(final ExclusiveSharedLockObject lockObj,
@@ -738,6 +752,7 @@ public class LocalRegion extends AbstractRegion
     }
     this.regionId = getIDFromPath(this.fullPath, this.regionUUID);
     this.regionLock = new ReentrantLock();
+
 
     this.initializationLatchBeforeGetInitialImage = new StoppableCountDownLatch(
         this.stopper, 1);
@@ -1402,7 +1417,8 @@ public class LocalRegion extends AbstractRegion
                 
               } else {
                 newRegion = new BucketRegion(subregionName, regionAttributes,
-                    this, this.cache, internalRegionArgs);  
+                    this, this.cache, internalRegionArgs);
+
               }
             }
             else if (regionAttributes.getPartitionAttributes() != null) {
@@ -3538,7 +3554,7 @@ public class LocalRegion extends AbstractRegion
       if (isEntryExpiryPossible()) {
         rescheduleEntryExpiryTasks(); // called after gii to fix bug 35214
       }
-      
+      this.accountRegionOverhead();
       initialized();
     }
     catch (RegionDestroyedException e) {
@@ -7871,7 +7887,7 @@ public class LocalRegion extends AbstractRegion
                 .getDistributedSystem();
             system.handleResourceEvent(ResourceEvent.REGION_REMOVE, this);
           }
-      
+
           try {
             LocalRegion parent = this.parentRegion;
             if (parent == null) {
@@ -11620,13 +11636,18 @@ public class LocalRegion extends AbstractRegion
         final PutAllPartialResult partialKeys = new PutAllPartialResult(size);
         final Iterator iterator;
         final boolean isVersionedResults;
+        int putAllSize = 0;
         if (proxyResult != null) {
           iterator = proxyResult.iterator();
+          putAllSize = proxyResult.size();
           isVersionedResults = true;
         } else {
           iterator = map.entrySet().iterator();
+          putAllSize = map.size();
           isVersionedResults = false;
         }
+        UMMMemoryTracker memoryTracker = null;
+
         Runnable r = new Runnable() {
           public void run() {
             int offset = 0;
@@ -11732,7 +11753,23 @@ public class LocalRegion extends AbstractRegion
             }
           }
         };
-        this.syncPutAll(tx, r, eventId);
+        try {
+          if (callback.isSnappyStore()) {
+            memoryTracker = new UMMMemoryTracker(
+                Thread.currentThread().getId(), putAllSize);
+            putAllOp.getEvent().setBufferedMemoryTracker(memoryTracker);
+          }
+          this.syncPutAll(tx, r, eventId);
+        } finally {
+          if (memoryTracker != null) {
+            long unusedMemory = memoryTracker.freeMemory();
+            if (unusedMemory > 0) {
+              callback.releaseStorageMemory(
+                  memoryTracker.getFirstAllocationObject(), unusedMemory);
+            }
+          }
+        }
+
         if (partialKeys.hasFailure()) {
           partialKeys.addKeysAndVersions(succeeded);
           getGemFireCache().getLoggerI18n().info(
@@ -11856,6 +11893,7 @@ public class LocalRegion extends AbstractRegion
         putallOp, this, Operation.PUTALL_CREATE, key, value, callbackArg);
     event.setFetchFromHDFS(putallOp.getEvent().isFetchFromHDFS());
     event.setPutDML(putallOp.getEvent().isPutDML());
+    event.setBufferedMemoryTracker(putallOp.getEvent().getMemoryTracker());
     try {
     if (tagHolder != null) {
       event.setVersionTag(tagHolder.getVersionTag());
@@ -14290,4 +14328,187 @@ public class LocalRegion extends AbstractRegion
       uuidAdvisor.postInitialize();
     }
   }
+
+  protected StoreCallbacks callback = CallbackFactoryProvider.getStoreCallbacks();
+  protected volatile boolean regionOverHeadAccounted = false;
+  protected volatile long entryOverHead = -1L;
+  protected volatile long diskIdOverHead = -1L;
+
+  protected void accountRegionOverhead() {// Not throwing LowMemoryException while region creation
+    if (!this.reservedTable() && !regionOverHeadAccounted && needAccounting() ) {
+      synchronized (this) {
+        if (!regionOverHeadAccounted) {
+          callback.acquireStorageMemory(getFullPath(),
+              callback.getRegionOverhead(this), null, true);
+          regionOverHeadAccounted = true;
+
+        }
+      }
+    }
+  }
+
+  private long getEntryOverhead(RegionEntry entry){
+    long entryOverhead = ReflectionSingleObjectSizer.INSTANCE.sizeof(entry);
+    Object key = entry.getRawKey();
+    if (key != null) {
+      entryOverhead += ReflectionSingleObjectSizer.INSTANCE.sizeof(key);
+    }
+    if (entry instanceof DiskEntry) {
+      DiskId diskId = ((DiskEntry)entry).getDiskId();
+      if(diskId != null){
+        entryOverhead += ReflectionSingleObjectSizer.INSTANCE.sizeof(diskId);
+      }
+    }
+    return entryOverhead;
+  }
+
+  protected long calculateEntryOverhead(RegionEntry entry) {
+    if (!this.reservedTable() && entryOverHead == -1L && needAccounting()) {
+      entryOverHead = getEntryOverhead(entry);
+      memTrace("Entry overhead for " + getFullPath() + " = " + entryOverHead);
+    }
+    return entryOverHead;
+  }
+
+  protected long calculateDiskIdOverhead(DiskId diskId) {
+    if (!this.reservedTable() && diskIdOverHead == -1L && needAccounting()) {
+      diskIdOverHead = ReflectionObjectSizer.getInstance().sizeof(diskId);
+      memTrace("diskIdOverHead = " + diskIdOverHead);
+    }
+    return diskIdOverHead;
+  }
+
+  private AtomicLong memoryBeforeAcquire = new AtomicLong(0L);
+
+  public static long MAX_VALUE_BEFORE_ACQUIRE = 1032 * 100; //100 KB
+
+  private LongBinaryOperator op = new LongBinaryOperator() {
+
+    @Override
+    public long applyAsLong(long prev, long delta) {
+       long newVal = prev + delta;
+      if (newVal >= MAX_VALUE_BEFORE_ACQUIRE) {
+        return newVal - MAX_VALUE_BEFORE_ACQUIRE;
+      } else {
+        return newVal;
+      }
+    }
+  };
+
+  protected void delayedAcquirePoolMemory(long oldSize, long newSize, boolean withEntryOverHead,
+                                          boolean shouldEvict) throws LowMemoryException {
+    if (!this.reservedTable() && needAccounting()) {
+      long size;
+      if (withEntryOverHead) {
+        size = (newSize - oldSize) + Math.max(0L, entryOverHead);
+      } else {
+        size = (newSize - oldSize);
+      }
+
+      if (MAX_VALUE_BEFORE_ACQUIRE == 1) {
+        if (!callback.acquireStorageMemory(getFullPath(),
+                (size), null, shouldEvict)) {
+          throwLowMemoryException(size);
+        }
+      } else {
+        long prevValue = memoryBeforeAcquire.getAndAccumulate(size, op);
+        long currValue = prevValue + size;
+        if (currValue >= MAX_VALUE_BEFORE_ACQUIRE) {
+          if (!callback.acquireStorageMemory(getFullPath(),
+                  MAX_VALUE_BEFORE_ACQUIRE, null, shouldEvict)) {
+            throwLowMemoryException(size);
+          }
+        }
+      }
+    }
+  }
+
+  public void acquirePoolMemory(long oldSize, long newSize, boolean withEntryOverHead,
+      UMMMemoryTracker buffer, boolean shouldEvict) throws LowMemoryException {
+    if (!this.reservedTable() && needAccounting()) {
+      long size = 0L;
+      if (withEntryOverHead) {
+        size = (newSize - oldSize) + Math.max(0L, entryOverHead);
+      } else {
+        size = (newSize - oldSize);
+      }
+      if (!callback.acquireStorageMemory(getFullPath(),
+          size, buffer, shouldEvict)) {
+        throwLowMemoryException(size);
+      }
+    }
+  }
+
+  private void throwLowMemoryException(long size) {
+    Set<DistributedMember> sm = Collections.singleton(cache.getMyId());
+    throw new LowMemoryException("Could not obtain memory of size " + size, sm);
+  }
+
+  public void freePoolMemory(long oldSize, boolean withEntryOverHead) {
+    if (!this.reservedTable() && needAccounting()) {
+      if (withEntryOverHead) {
+        callback.releaseStorageMemory(getFullPath(), oldSize + Math.max(0L, entryOverHead));
+      } else {
+        callback.releaseStorageMemory(getFullPath(), oldSize);
+      }
+    }
+  }
+
+  public static boolean isMetaTable(String fullpath) {
+    return fullpath.startsWith("/SNAPPY_HIVE_METASTORE") ||
+        fullpath.startsWith("/__UUID_PERSIST") ||
+        fullpath.startsWith("/_DDL_STMTS_META_REGION");
+  }
+
+  public boolean reservedTable() {
+    return isSecret() || isUsedForMetaRegion() || isUsedForPartitionedRegionAdmin()
+        || isMetaTable(this.getFullPath());
+  }
+
+  protected boolean needAccounting(){
+    return callback.isSnappyStore();
+  }
+
+  // All put/delete should take care of this value;
+  // A simple integer as write will be few while read threads will be many and frequent.
+  protected int indexOverhead = 0;
+
+  private Object overHeadLock = new Object();
+
+  // Num bytes to be ignored by LocalRegion while region destroy
+  protected LongAdder ignoreBytes = new LongAdder();
+
+  protected int indicesOverHead() {
+    if (isUsedForPartitionedRegionBucket) {
+      return getPartitionedRegion().indexOverhead;
+    } else {
+      return indexOverhead;
+    }
+  }
+
+  public void setIndexOverhead(int val) {
+    synchronized (overHeadLock){
+      indexOverhead = indexOverhead + val;
+    }
+  }
+
+  public void incIgnoreBytes(long numBytes) {
+    ignoreBytes.add(numBytes);
+  }
+
+  protected long getIgnoreBytes() {
+    if (isUsedForPartitionedRegionBucket) {
+      return getPartitionedRegion().ignoreBytes.sum();
+    } else {
+      return ignoreBytes.sum();
+    }
+  }
+
+  private void memTrace(String mesage) {
+    if (java.lang.Boolean.getBoolean("snappydata.umm.memtrace")) {
+      LogWriterI18n log = getLogWriterI18n();
+      log.fine(mesage);
+    }
+  }
+
 }

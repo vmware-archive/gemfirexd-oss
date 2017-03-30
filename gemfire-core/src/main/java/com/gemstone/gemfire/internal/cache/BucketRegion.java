@@ -70,6 +70,7 @@ import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.internal.offheap.StoredObject;
 import com.gemstone.gemfire.internal.offheap.annotations.Unretained;
 import com.gemstone.gemfire.internal.shared.Version;
+import com.gemstone.gemfire.internal.size.ReflectionObjectSizer;
 import com.gemstone.gemfire.internal.snappy.CallbackFactoryProvider;
 import com.gemstone.gemfire.internal.snappy.StoreCallbacks;
 
@@ -101,7 +102,7 @@ public class BucketRegion extends DistributedRegion implements Bucket {
   private static final ThreadLocal<BucketRegionIndexCleaner> bucketRegionIndexCleaner = 
       new ThreadLocal<BucketRegionIndexCleaner>() ;
 
-  
+
   /**
    * Contains size in bytes of the values stored
    * in theRealMap. Sizes are tallied during put and remove operations.
@@ -758,7 +759,16 @@ public class BucketRegion extends DistributedRegion implements Bucket {
             "Creating the column batch for bucket " + this.getId()
             + ", and batchID " + this.batchUUID);
       }
-      Set keysToDestroy = createColumnBatchAndPutInColumnTable();
+      Set keysToDestroy = null;
+
+      try {
+        keysToDestroy = createColumnBatchAndPutInColumnTable();
+      } catch (Exception lme) {
+        getCache().getLoggerI18n().warning(lme);
+        // Returning from here as we dont want to clean the row buffer data.
+        return false;
+      }
+
       destroyAllEntries(keysToDestroy);
       // create new batchUUID
       generateAndSetBatchIDIfNULL(true);
@@ -2549,6 +2559,9 @@ public class BucketRegion extends DistributedRegion implements Bucket {
 
     if(this.isDestroyed || this.isDestroyingDiskRegion) {
       //If this region is destroyed, mark the stat as destroyed.
+      if(!this.reservedTable() && needAccounting()){
+        callback.dropStorageMemory(getFullPath(), getIgnoreBytes());
+      }
       oldMemValue = this.bytesInMemory.getAndSet(BUCKET_DESTROYED);
             
     } else if(!this.isInitialized()) {
@@ -2589,6 +2602,7 @@ public class BucketRegion extends DistributedRegion implements Bucket {
   public int calculateRegionEntryValueSize(RegionEntry re) {
     return calcMemSize(re._getValue()); // OFFHEAP _getValue ok
   }
+
 
   @Override
   void updateSizeOnPut(Object key, int oldSize, int newSize) {
@@ -2651,7 +2665,7 @@ public class BucketRegion extends DistributedRegion implements Bucket {
 //     return this.createCount.get() - this.removeCount.get() - this.invalidateCount.get()
 //       - (this.evictCount.get() - this.faultInCount.get());
 //   }
-  
+
   @Override
   void updateSizeOnCreate(Object key, int newSize) {
 //     if (cache.getLogger().infoEnabled()) {
@@ -2705,6 +2719,7 @@ public class BucketRegion extends DistributedRegion implements Bucket {
 //     this.debugMap.remove(key);
     this.partitionedRegion.getPrStats().incDataStoreEntryCount(-1);
     updateBucket2Size(oldSize, 0, SizeOp.DESTROY);
+    freePoolMemory(oldSize + indexOverhead, true);
   }
 
   @Override
@@ -3172,4 +3187,3 @@ public class BucketRegion extends DistributedRegion implements Bucket {
     
   }
 }
-

@@ -68,19 +68,15 @@ import java.util.concurrent.RejectedExecutionException;
 
 import com.gemstone.gemfire.CancelException;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
+import com.gemstone.gemfire.internal.cache.*;
+import com.gemstone.gemfire.internal.cache.control.HeapMemoryMonitor;
 import com.gemstone.gemfire.internal.cache.locks.NonReentrantReadWriteLock;
 import com.gemstone.gemfire.internal.cache.wan.GatewaySenderEventImpl;
-import com.gemstone.gemfire.internal.cache.BucketRegion;
-import com.gemstone.gemfire.internal.cache.BucketRegionIndexCleaner;
-import com.gemstone.gemfire.internal.cache.CacheObserver;
-import com.gemstone.gemfire.internal.cache.CacheObserverHolder;
-import com.gemstone.gemfire.internal.cache.LocalRegion;
-import com.gemstone.gemfire.internal.cache.OffHeapRegionEntry;
-import com.gemstone.gemfire.internal.cache.RegionEntry;
 import com.gemstone.gemfire.internal.offheap.OffHeapRegionEntryHelper;
+import com.gemstone.gemfire.internal.size.ReflectionSingleObjectSizer;
 import com.gemstone.gemfire.internal.size.SingleObjectSizer;
-import com.gemstone.gemfire.internal.cache.AbstractRegionEntry;
 
+import com.gemstone.gemfire.internal.snappy.CallbackFactoryProvider;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -231,6 +227,14 @@ public class CustomEntryConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
   public static final int keyHash(final Object o, final boolean compareValues) {
     return compareValues ? o.hashCode() : System.identityHashCode(o);
+  }
+
+  public void postMemAccount(String path){
+    if(segments != null && segments.length > 0){
+      for(Segment s : segments){
+        s.postMemAccount(path);
+      }
+    }
   }
 
   /**
@@ -896,6 +900,11 @@ RETRYLOOP:
       return null;
     }
 
+    final void postMemAccount(String path){
+      CallbackFactoryProvider.getStoreCallbacks().acquireStorageMemory(path,
+              this.table.length * ReflectionSingleObjectSizer.REFERENCE_SIZE, null, true);
+    }
+
 // End GemStone additions
 
     final void rehash() {
@@ -903,6 +912,15 @@ RETRYLOOP:
       final int oldCapacity = oldTable.length;
       if (oldCapacity >= MAXIMUM_CAPACITY) {
         return;
+      }
+
+      // update the acquired memory storage; this will always increase
+      // monotonically. Not throwing any exception if memory could not be allocated from
+      // memory manager as this is the last step of a region operation.
+      if (LocalRegion.regionPath.get() != null){
+        CallbackFactoryProvider.getStoreCallbacks().acquireStorageMemory(LocalRegion.regionPath.get(),
+            oldCapacity * ReflectionSingleObjectSizer.REFERENCE_SIZE, null, true);
+        LocalRegion.regionPath.remove();
       }
 
       /*
