@@ -61,6 +61,8 @@ import com.gemstone.gemfire.internal.cache.versions.ConcurrentCacheModificationE
 import com.gemstone.gemfire.internal.cache.versions.VersionTag;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.internal.shared.Version;
+import com.gemstone.gemfire.internal.snappy.CallbackFactoryProvider;
+import com.gemstone.gemfire.internal.snappy.UMMMemoryTracker;
 import com.gemstone.gnu.trove.THashMap;
 
 /**
@@ -407,6 +409,7 @@ public final class PutAllPRMessage extends PartitionMessageWithDirectReply {
     final TXState tx = txi != null ? txi.getTXStateForWrite() : null;
     final InternalDataView view = r.getDataView(tx);
     boolean lockedForPrimary = false;
+    UMMMemoryTracker memoryTracker = null;
     try {
     
     if (!notificationOnly) {
@@ -492,7 +495,7 @@ public final class PutAllPRMessage extends PartitionMessageWithDirectReply {
 
         final boolean cacheWrite = bucketRegion.getBucketAdvisor()
             .isPrimary();
-        //final boolean hasRedundancy = bucketRegion.getRedundancyLevel() > 0;
+        // final boolean hasRedundancy = bucketRegion.getRedundancyLevel() > 0;
         try {
           if (tx == null) {
             bucketRegion.doLockForPrimary(false);
@@ -501,6 +504,11 @@ public final class PutAllPRMessage extends PartitionMessageWithDirectReply {
             lockedForPrimary = false;
           }
 
+          if (CallbackFactoryProvider.getStoreCallbacks().isSnappyStore()) {
+            // Setting thread local buffer to 0 here. UMM will provide an initial
+            memoryTracker = new UMMMemoryTracker(
+                Thread.currentThread().getId(), putAllPRDataSize);
+          }
 
         /* The real work to be synchronized, it will take long time. We don't
          * worry about another thread to send any msg which has the same key
@@ -516,6 +524,7 @@ public final class PutAllPRMessage extends PartitionMessageWithDirectReply {
 
               ev.setPutAllOperation(dpao);
               ev.setTXState(txi);
+              ev.setBufferedMemoryTracker(memoryTracker);
 
               // set the fetchFromHDFS flag
               ev.setFetchFromHDFS(this.fetchFromHDFS);
@@ -530,7 +539,7 @@ public final class PutAllPRMessage extends PartitionMessageWithDirectReply {
               // then in basicPutPart3(), the ev is added into dpao
 
 
-              boolean didPut = false;
+              boolean didPut;
               try {
                 if (tx != null) {
                   didPut = tx.putEntryOnRemote(ev, false, false, null, false,
@@ -646,6 +655,13 @@ public final class PutAllPRMessage extends PartitionMessageWithDirectReply {
         } catch (RegionDestroyedException e) {
           ds.checkRegionDestroyedOnBucket(bucketRegion, true, e);
         } finally {
+          if (memoryTracker != null) {
+            long unusedMemory = memoryTracker.freeMemory();
+            if (unusedMemory > 0) {
+              CallbackFactoryProvider.getStoreCallbacks().releaseStorageMemory(
+                  memoryTracker.getFirstAllocationObject(), unusedMemory);
+            }
+          }
           // no need to lock keys for transactions
           if (tx == null) {
             bucketRegion.removeAndNotifyKeys(keys);

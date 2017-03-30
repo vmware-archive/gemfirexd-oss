@@ -46,6 +46,8 @@ import com.gemstone.gemfire.internal.offheap.annotations.Released;
 import com.gemstone.gemfire.internal.offheap.annotations.Retained;
 import com.gemstone.gemfire.internal.offheap.annotations.Unretained;
 import com.gemstone.gemfire.internal.shared.Version;
+import com.gemstone.gemfire.internal.size.ReflectionSingleObjectSizer;
+import com.gemstone.gemfire.internal.snappy.CallbackFactoryProvider;
 import com.gemstone.gemfire.internal.util.BlobHelper;
 
 /**
@@ -73,6 +75,7 @@ import com.gemstone.gemfire.internal.util.BlobHelper;
  * @since 3.2
  */
 public interface DiskEntry extends RegionEntry {
+
 
   /**
    * Sets the value with a {@link RegionEntryContext}.
@@ -1168,7 +1171,7 @@ public interface DiskEntry extends RegionEntry {
     /**
      *  Caller must have "did" synced.
      */
-    private static Object getValueFromDisk(DiskRegionView dr, DiskId did, ByteArrayDataInput in) {
+    private static Object  getValueFromDisk(DiskRegionView dr, DiskId did, ByteArrayDataInput in) {
       Object value;
       if (dr.isBackup() && did.getKeyId() == DiskRegion.INVALID_ID) {
         // must have been destroyed
@@ -1285,7 +1288,17 @@ public interface DiskEntry extends RegionEntry {
       // NOTE that we return this value unretained because the retain is owned by the region entry not the caller.
       @Retained Object preparedValue = entry.prepareValueForCache((RegionEntryContext) region, value,
           false, false);
-      region.updateSizeOnFaultIn(entry.getKey(), region.calculateValueSize(preparedValue), bytesOnDisk);
+
+      //Putting a workaround here. At this moment no real region is assigned for recovery.
+      //All value calculations come as zero. The below updateSizeOnFaultIn is wrong and give does not update the
+      // stats after recovery. @TODO fix the PR region Stats.
+      int recoveredValueSize = BucketRegion.calcMemSize(preparedValue);
+
+      if(!LocalRegion.isMetaTable(dr.getName())){
+        CallbackFactoryProvider.getStoreCallbacks().
+            acquireStorageMemory(dr.getName(), recoveredValueSize, null, false);
+      }
+      region.updateSizeOnFaultIn(entry.getKey(), recoveredValueSize, bytesOnDisk);
       //did.setValueSerializedSize(0);
       // I think the following assertion is true but need to run
       // a regression with it. Reenable this post 6.5
@@ -1360,7 +1373,8 @@ public interface DiskEntry extends RegionEntry {
         }
       }
       DiskRegion dr = region.getDiskRegion();
-      final int oldSize = region.calculateRegionEntryValueSize(entry);;
+      final int oldSize = region.calculateRegionEntryValueSize(entry);
+      int diskIDOverhead =  0;
 //      dr.getOwner().getCache().getLogger().info("DEBUG: overflowing entry with key " + entry.getKey());
       //Asif:Get diskID . If it is null, it implies it is
       // overflow only mode.
@@ -1369,6 +1383,8 @@ public interface DiskEntry extends RegionEntry {
       if (did == null) {
         ((AbstractDiskLRURegionEntry)entry).setDelayedDiskId(region);
         did = entry.getDiskId();
+        // add DiskId overhead to change
+        diskIDOverhead += region.calculateDiskIdOverhead(did);
       }
       
       // Notify the GemFireXD IndexManager if present
@@ -1376,7 +1392,7 @@ public interface DiskEntry extends RegionEntry {
       if(indexUpdater != null && dr.isSync()) {
         indexUpdater.onOverflowToDisk(entry);
       }*/
-      
+
       int change = 0;
       boolean scheduledAsyncHere = false;
       dr.acquireReadLock();
@@ -1407,7 +1423,7 @@ public interface DiskEntry extends RegionEntry {
         // then treat it like the sync case. This fixes bug 41310
         if (scheduledAsyncHere || wasAlreadyPendingAsync) {
           // we call _setValue(null) after it is actually written to disk
-          change = entry.updateAsyncEntrySize(ccHelper);
+          change += entry.updateAsyncEntrySize(ccHelper);
           // do the stats when it is actually written to disk
         } else {
           region.updateSizeOnEvict(entry.getKey(), oldSize);
@@ -1427,6 +1443,13 @@ public interface DiskEntry extends RegionEntry {
         if (movedValueToDisk) {
           valueLength = getValueLength(did);
         }
+
+        region.freePoolMemory(oldSize, false);
+        if (diskIDOverhead > 0) {
+          //Account positive memory increase for eviction thread.
+          region.acquirePoolMemory(0, diskIDOverhead, false, null, false);
+        }
+
         incrementBucketStats(region, -1/*InVM*/, 1/*OnDisk*/, valueLength);
       }
       } finally {

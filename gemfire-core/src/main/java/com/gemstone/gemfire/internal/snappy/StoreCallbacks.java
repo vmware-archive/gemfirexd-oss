@@ -46,4 +46,24 @@ public interface StoreCallbacks {
   void registerRelationDestroyForHiveStore();
 
   int getLastIndexOfRow(Object o);
+
+  boolean acquireStorageMemory(String objectName, long numBytes,
+      UMMMemoryTracker buffer, boolean shouldEvict);
+
+  void releaseStorageMemory(String objectName, long numBytes);
+
+  void dropStorageMemory(String objectName, long ignoreBytes);
+
+  boolean isSnappyStore();
+
+  long getRegionOverhead(LocalRegion region);
+
+  void resetMemoryManager();
+
+  long getNumBytesForEviction();
+
+  long getStoragePoolUsedMemory();
+  long getStoragePoolSize();
+  long getExecutionPoolUsedMemory();
+  long getExecutionPoolSize();
 }

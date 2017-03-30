@@ -79,6 +79,62 @@ public abstract class CallbackFactoryProvider {
       throw new UnsupportedOperationException("unexpected invocation for "
           + toString());
     }
+
+    @Override
+    public boolean acquireStorageMemory(String name, long numBytes,
+        UMMMemoryTracker buffer, boolean shouldEvict) {
+      return true;
+    }
+
+    @Override
+    public void releaseStorageMemory(String objectName, long numBytes) {
+
+    }
+
+    @Override
+    public void dropStorageMemory(String objectName, long ignoreBytes) {
+
+    }
+
+    @Override
+    public boolean isSnappyStore() {
+      return false;
+    }
+
+    @Override
+    public long getRegionOverhead(LocalRegion region) {
+      return 0;
+    }
+
+    @Override
+    public void resetMemoryManager() {
+
+    }
+
+    @Override
+    public long getNumBytesForEviction() {
+      return 0;
+    }
+
+    @Override
+    public long getStoragePoolUsedMemory() {
+      return 0;
+    }
+
+    @Override
+    public long getStoragePoolSize() {
+      return 0;
+    }
+
+    @Override
+    public long getExecutionPoolUsedMemory() {
+      return 0;
+    }
+
+    @Override
+    public long getExecutionPoolSize() {
+      return 0;
+    }
   };
 
   public static void setStoreCallbacks(StoreCallbacks cb) {

@@ -4765,6 +4765,8 @@ public class DiskStoreImpl implements DiskStore, ResourceListener<MemoryEvent> {
           }
           for (SortedIndexRecoveryJob indexRecoveryJob : allJobs) {
             indexRecoveryJob.waitForJobs(0);
+            //Approximating the index size after complete index recovery. Assumption is that sufficient memory is there.
+            indexRecoveryJob.getIndexContainer().accountMemoryForIndex(0,true);
           }
           if (!newIndexes.isEmpty()) {
             for (SortedIndexContainer index : newIndexes) {

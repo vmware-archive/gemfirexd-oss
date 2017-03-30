@@ -77,6 +77,7 @@ import static com.gemstone.gemfire.internal.offheap.annotations.OffHeapIdentifie
 import static com.gemstone.gemfire.internal.offheap.annotations.OffHeapIdentifier.ENTRY_EVENT_OLD_VALUE;
 
 import com.gemstone.gemfire.internal.shared.Version;
+import com.gemstone.gemfire.internal.snappy.UMMMemoryTracker;
 import com.gemstone.gemfire.internal.util.ArrayUtils;
 import com.gemstone.gemfire.internal.util.BlobHelper;
 import com.gemstone.gemfire.pdx.internal.PeerTypeRegistration;
@@ -156,6 +157,8 @@ public class EntryEventImpl extends KeyInfo implements
    * from raw byte arrays and routing object.
    */
   private transient Object contextObj = null;
+
+  private transient UMMMemoryTracker memoryTracker;
 
   /**
    * The current operation's lastModified stamp, if any.
@@ -1697,9 +1700,9 @@ public class EntryEventImpl extends KeyInfo implements
    */
   private static final boolean EVENT_OLD_VALUE = !Boolean.getBoolean("gemfire.disable-event-old-value");
 
-  final void putExistingEntry(final LocalRegion owner, RegionEntry re)
+  final void putExistingEntry(final LocalRegion owner, RegionEntry re, int olValueSize)
       throws RegionClearedException {
-    putExistingEntry(owner, re, false, null);
+    putExistingEntry(owner, re, false, null, olValueSize);
   }
 
   /**
@@ -1710,7 +1713,7 @@ public class EntryEventImpl extends KeyInfo implements
    * @throws RegionClearedException
    */
   final void putExistingEntry(final LocalRegion owner, final RegionEntry reentry,
-     boolean requireOldValue, Object oldValueForDelta) throws RegionClearedException {
+     boolean requireOldValue, Object oldValueForDelta, int olValueSize) throws RegionClearedException {
     makeUpdate();
     // only set oldValue if it hasn't already been set to something
     if (this.oldValue == null) {
@@ -1753,7 +1756,7 @@ public class EntryEventImpl extends KeyInfo implements
     }
 
     //setNewValueInRegion(null);
-    setNewValueInRegion(owner, reentry, oldValueForDelta);
+    setNewValueInRegion(owner, reentry, oldValueForDelta, olValueSize);
   }
 
   /**
@@ -1784,7 +1787,43 @@ public class EntryEventImpl extends KeyInfo implements
       basicSetOldValue(null);
     }
     makeCreate();
-    setNewValueInRegion(owner, reentry, null);
+    setNewValueInRegion(owner, reentry, null, 0);
+  }
+
+  private void acquireMemory(final LocalRegion owner,
+                             EntryEventImpl event,
+                             int oldSize,
+                             boolean isUpdate,
+                             boolean wasTombstone) {
+
+    if (isUpdate && !wasTombstone) {
+      if (this.memoryTracker != null) {
+        owner.acquirePoolMemory(oldSize,
+                event.getNewValueBucketSize(),
+                true,
+                this.memoryTracker,
+                true);
+      } else {
+        owner.delayedAcquirePoolMemory(oldSize,
+                event.getNewValueBucketSize(),
+                true,
+                true);
+      }
+    } else {
+      int indexOverhead = owner.indicesOverHead();
+      if (this.memoryTracker != null) {
+        owner.acquirePoolMemory(0,
+                event.getNewValueBucketSize() + indexOverhead,
+                true,
+                this.memoryTracker,
+                true);
+      } else {
+        owner.delayedAcquirePoolMemory(0,
+                event.getNewValueBucketSize() + indexOverhead,
+                true,
+                true);
+      }
+    }
   }
 
   public final void setRegionEntry(RegionEntry re) {
@@ -1797,7 +1836,7 @@ public class EntryEventImpl extends KeyInfo implements
 
   @Retained(ENTRY_EVENT_NEW_VALUE)
   private final void setNewValueInRegion(final LocalRegion owner,
-      final RegionEntry reentry, Object oldValueForDelta)
+      final RegionEntry reentry, Object oldValueForDelta, int oldValueSize)
       throws RegionClearedException {
 
     final LogWriterI18n logger = this.region.getCache().getLoggerI18n();
@@ -1876,6 +1915,12 @@ public class EntryEventImpl extends KeyInfo implements
     boolean calledSetValue = false;
     try {
     setNewValueBucketSize(owner, v);
+    if(!region.reservedTable() && region.needAccounting()){
+      owner.calculateEntryOverhead(reentry);
+      LocalRegion.regionPath.set(region.getFullPath());
+      acquireMemory(owner, this, oldValueSize, this.op.isUpdate(), isTombstone);
+    }
+
 
     // ezoerner:20081030 
     // last possible moment to do index maintenance with old value in
@@ -1936,7 +1981,8 @@ public class EntryEventImpl extends KeyInfo implements
     } finally {
       if (!success && reentry instanceof OffHeapRegionEntry && v instanceof Chunk) {
         OffHeapRegionEntryHelper.releaseEntry((OffHeapRegionEntry)reentry, (Chunk)v);
-      }      
+      }
+      LocalRegion.regionPath.remove();
     }
     if (logger.finerEnabled()) {
       if (v instanceof CachedDeserializable) {
@@ -2928,6 +2974,14 @@ public class EntryEventImpl extends KeyInfo implements
 
   public final Object getContextObject() {
     return this.contextObj;
+  }
+
+  public final void setBufferedMemoryTracker(UMMMemoryTracker memoryTracker) {
+    this.memoryTracker = memoryTracker;
+  }
+
+  public final UMMMemoryTracker getMemoryTracker(){
+    return this.memoryTracker;
   }
 
   public final void setEntryLastModified(long v) {

@@ -909,7 +909,12 @@ abstract class AbstractRegionMap implements RegionMap {
             tombstones.put(re.getVersionStamp().asVersionTag(), re);
           }
         }
-        _getOwner().updateSizeOnCreate(re.getRawKey(), _getOwner().calculateRegionEntryValueSize(re));
+        LocalRegion.regionPath.set(_getOwner().getFullPath());
+         int valueSize  = _getOwner().calculateRegionEntryValueSize(re);
+        _getOwner().calculateEntryOverhead(re);
+        //Always take the value size from recovery thread.
+        _getOwner().acquirePoolMemory(0, 0, true, null, false);
+        _getOwner().updateSizeOnCreate(re.getRawKey(), valueSize);
       }
       // Since lru was not being done during recovery call it now.
       lruUpdateCallback();
@@ -1263,7 +1268,11 @@ abstract class AbstractRegionMap implements RegionMap {
                       invokingIndexManager = true;
                       indexUpdater.onEvent(owner, event, oldRe);
                       lruEntryUpdate(oldRe);
-                      owner.updateSizeOnPut(key, oldSize, owner.calculateRegionEntryValueSize(oldRe));
+                      int newSize = owner.calculateRegionEntryValueSize(oldRe);
+                      //Can safely accquire memory here. If fails this block removes the current entry from map.
+                      LocalRegion.regionPath.set(owner.getFullPath());
+                      owner.acquirePoolMemory(newSize, oldSize, false, null, true);
+                      owner.updateSizeOnPut(key, oldSize, newSize);
                       EntryLogger.logInitialImagePut(_getOwnerObject(), key,
                           newValue);
                       result = true;
@@ -1321,9 +1330,14 @@ abstract class AbstractRegionMap implements RegionMap {
                       }
                     } else {
                       int newSize = owner.calculateRegionEntryValueSize(oldRe);
+                      //Can safely accquire memory here. If fails this block removes the current entry from map.
+                      owner.calculateEntryOverhead(newRe);
+                      LocalRegion.regionPath.set(owner.getFullPath());
                       if(!oldIsTombstone) {
+                        owner.acquirePoolMemory(newSize, oldSize, false, null, true);
                         owner.updateSizeOnPut(key, oldSize, newSize);
                       } else {
+                        owner.acquirePoolMemory(0, newSize, true, null, true);
                         owner.updateSizeOnCreate(key, newSize);
                       }
                       EntryLogger.logInitialImagePut(_getOwnerObject(), key, newValue);
@@ -1386,7 +1400,13 @@ abstract class AbstractRegionMap implements RegionMap {
                 if (newValue == Token.TOMBSTONE) {
                   owner.scheduleTombstone(newRe, entryVersion);
                 } else {
-                  owner.updateSizeOnCreate(key, owner.calculateRegionEntryValueSize(newRe));
+                  int newSize = owner.calculateRegionEntryValueSize(newRe);
+                  //Can safely accquire memory here. If fails, this block removes the current entry from map.
+                  owner.calculateEntryOverhead(newRe);
+                  LocalRegion.regionPath.set(owner.getFullPath());
+                  //System.out.println("Put "+newRe);
+                  owner.acquirePoolMemory(0, newSize, true, null, true);
+                  owner.updateSizeOnCreate(key, newSize);
                   EntryLogger.logInitialImagePut(_getOwnerObject(), key, newValue);
                   lruEntryCreate(newRe);
                 }
@@ -2509,7 +2529,7 @@ RETRY_LOOP:
                           }
                         } else {
                           processVersionTag(oldRe, event);
-                          event.putExistingEntry(owner, oldRe);
+                          event.putExistingEntry(owner, oldRe, oldSize);
                           EntryLogger.logInvalidate(event);
                           owner.recordEvent(event);
                           owner.updateSizeOnPut(event.getKey(), oldSize, event.getNewValueBucketSize());
@@ -2824,7 +2844,7 @@ RETRY_LOOP:
   protected void invalidateEntry(EntryEventImpl event, RegionEntry re,
       int oldSize) throws RegionClearedException {
     processVersionTag(re, event);
-    event.putExistingEntry(_getOwner(), re);
+    event.putExistingEntry(_getOwner(), re, oldSize);
     EntryLogger.logInvalidate(event);
     _getOwner().recordEvent(event);
     _getOwner().updateSizeOnPut(event.getKey(), oldSize, event.getNewValueBucketSize());
@@ -3766,6 +3786,10 @@ RETRY_LOOP:
   throws CacheWriterException,
         TimeoutException {
     final LocalRegion owner = _getOwner();
+    if(!owner.reservedTable()){
+      LocalRegion.regionPath.set(owner.getFullPath());
+    }
+
     boolean clearOccured = false;
     if (owner == null) {
       // "fix" for bug 32440
@@ -4033,6 +4057,7 @@ RETRY_LOOP:
       owner.handleDiskAccessException(dae, true/* stop bridge servers*/);
       throw dae;
     } finally {
+      LocalRegion.regionPath.remove();
         releaseCacheModificationLock(owner, event);
         if (indexLocked) {
           indexManager.unlockForIndexGII();
@@ -4202,7 +4227,7 @@ RETRY_LOOP:
     final boolean wasTombstone = re.isTombstone();
     processVersionTag(re, event);
     event.putExistingEntry(event.getLocalRegion(), re, requireOldValue,
-        oldValueForDelta);
+        oldValueForDelta, oldSize);
     EntryLogger.logPut(event);
     updateSize(event, oldSize, true/* isUpdate */, wasTombstone);
   }
