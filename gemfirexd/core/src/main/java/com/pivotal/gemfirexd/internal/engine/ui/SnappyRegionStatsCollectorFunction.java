@@ -82,9 +82,11 @@ public class SnappyRegionStatsCollectorFunction implements Function, Declarable 
               }
             }
           }
+          /*
           if(!LocalRegion.isMetaTable(r.getFullPath())){
             result.addAllIndexStat(getIndexStatForContainer(container));
           }
+          */
         }
       }
 
