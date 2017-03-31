@@ -39,6 +39,7 @@ import java.io.FileDescriptor;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
@@ -156,11 +157,19 @@ public abstract class UnsafeHolder {
     }
   }
 
+  private static int getAllocationSize(int size) {
+    // round to word size
+    size = ((size + 7) >>> 3) << 3;
+    if (size > 0) return size;
+    else throw new BufferOverflowException();
+  }
+
   public static ByteBuffer allocateDirectBuffer(int size) {
+    size = getAllocationSize(size);
     return allocateDirectBuffer(Platform.allocateMemory(size), size);
   }
 
-  public static ByteBuffer allocateDirectBuffer(long address, int size) {
+  private static ByteBuffer allocateDirectBuffer(long address, int size) {
     try {
       return (ByteBuffer)Wrapper.directBufferConstructor.newInstance(
           size, address, null, new FreeMemory(address));
@@ -180,6 +189,7 @@ public abstract class UnsafeHolder {
     final long address = directBuffer.address();
     long newAddress = 0L;
 
+    newSize = getAllocationSize(newSize);
     final sun.misc.Cleaner cleaner = directBuffer.cleaner();
     final Field runnableField = Wrapper.cleanerRunnableField;
     if (cleaner != null && runnableField != null) {
