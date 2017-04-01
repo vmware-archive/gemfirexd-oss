@@ -165,8 +165,11 @@ public abstract class UnsafeHolder {
   }
 
   public static ByteBuffer allocateDirectBuffer(int size) {
-    size = getAllocationSize(size);
-    return allocateDirectBuffer(Platform.allocateMemory(size), size);
+    final int allocSize = getAllocationSize(size);
+    final ByteBuffer buffer = allocateDirectBuffer(
+        Platform.allocateMemory(allocSize), allocSize);
+    buffer.limit(size);
+    return buffer;
   }
 
   private static ByteBuffer allocateDirectBuffer(long address, int size) {
