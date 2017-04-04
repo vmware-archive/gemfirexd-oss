@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.ClosedChannelException;
+import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 import javax.annotation.Nonnull;
 
@@ -240,12 +241,8 @@ public class ChannelBufferUnsafeOutputStream extends OutputStreamChannel {
     }
   }
 
-  public long position() {
-    return this.addrPosition - this.baseAddress;
-  }
-
-  public void position(int newPosition) {
-    this.addrPosition = this.baseAddress + newPosition;
+  public final int position() {
+    return (int)(this.addrPosition - this.baseAddress);
   }
 
   /**
@@ -278,6 +275,10 @@ public class ChannelBufferUnsafeOutputStream extends OutputStreamChannel {
     releaseBuffer();
   }
 
+  public final boolean validBuffer() {
+    return this.addrLimit != 0;
+  }
+
   protected final void releaseBuffer() {
     final ByteBuffer buffer = this.buffer;
     if (buffer != null) {
@@ -298,7 +299,7 @@ public class ChannelBufferUnsafeOutputStream extends OutputStreamChannel {
 
   protected void flushBufferBlocking(final ByteBuffer buffer)
       throws IOException {
-    buffer.position((int)(this.addrPosition - this.baseAddress));
+    buffer.position(position());
     buffer.flip();
     try {
       do {

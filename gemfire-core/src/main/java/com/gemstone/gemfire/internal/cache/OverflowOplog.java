@@ -55,6 +55,7 @@ import com.gemstone.gemfire.i18n.LogWriterI18n;
 import com.gemstone.gemfire.internal.Assert;
 import com.gemstone.gemfire.internal.cache.DiskStoreImpl.OplogCompactor;
 import com.gemstone.gemfire.internal.cache.Oplog.OplogDiskEntry;
+import com.gemstone.gemfire.internal.cache.Oplog.OplogFile;
 import com.gemstone.gemfire.internal.cache.persistence.BytesAndBits;
 import com.gemstone.gemfire.internal.cache.persistence.DiskRegionView;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
@@ -259,7 +260,7 @@ class OverflowOplog implements CompactableOplog {
     this.crf.f = f;
     this.crf.raf = new RandomAccessFile(f, "rw");
     this.crf.channel = this.crf.raf.getChannel();
-    this.crf.outputStream = createOutputStream(previous, this.crf.channel);
+    this.crf.outputStream = createOutputStream(previous, this.crf);
     preblow();
     if (logger.infoEnabled()) {
       logger.info(LocalizedStrings.Oplog_CREATE_0_1_2,
@@ -271,16 +272,16 @@ class OverflowOplog implements CompactableOplog {
     this.stats.incOpenOplogs();
   }
 
-  private static ChannelBufferUnsafeOutputStream createOutputStream(
-      final OverflowOplog previous, FileChannel channel) throws IOException {
+  private static OplogFile.FileChannelOutputStream createOutputStream(
+      final OverflowOplog previous, final OplogFile olf) throws IOException {
     final int bufSize = Integer.getInteger("WRITE_BUF_SIZE", 32768);
     if (previous != null) {
       synchronized (previous.crf) {
-        return new ChannelBufferUnsafeOutputStream(previous.crf.outputStream,
-            channel, bufSize, false /* limit new buffer allocations */);
+        return olf.new FileChannelOutputStream(previous.crf.outputStream,
+            bufSize, false /* limit new buffer allocations */);
       }
     } else {
-      return new ChannelBufferUnsafeOutputStream(channel, bufSize,
+      return olf.new FileChannelOutputStream(bufSize,
           false /* limit new buffer allocations */);
     }
   }
@@ -910,7 +911,7 @@ class OverflowOplog implements CompactableOplog {
       // Also it is only in case of synch writing, we are writing more
       // than what is actually needed, we will have to reset the pointer.
       // Also need to add in offset in writeBuf in case we are not flushing writeBuf
-      long curFileOffset = olf.channel.position() + olf.outputStream.position();
+      long curFileOffset = olf.outputStream.fileOffset();
       startPos = allocate(curFileOffset, getOpStateSize());
       if (startPos != -1) {
         if (startPos != curFileOffset) {
@@ -1055,7 +1056,7 @@ class OverflowOplog implements CompactableOplog {
     BytesAndBits bb = null;
     final ChannelBufferUnsafeOutputStream outputStream = this.crf.outputStream;
     ByteBuffer writeBuf = outputStream.getBuffer();
-    int curWriteBufPos = (int)outputStream.position();
+    int curWriteBufPos = outputStream.position();
     if (writePosition <= readPosition
         && (writePosition+curWriteBufPos) >= (readPosition+valueLength)) {
       int bufOffset = (int)(readPosition - writePosition);
@@ -1362,16 +1363,6 @@ class OverflowOplog implements CompactableOplog {
   // //////// Methods used during recovery //////////////
 
   // ////////////////////Inner Classes //////////////////////
-
-  private static class OplogFile {
-    public File f;
-    public RandomAccessFile raf;
-    public boolean RAFClosed;
-    public FileChannel channel;
-    public ChannelBufferUnsafeOutputStream outputStream;
-    public long currSize; // HWM
-    public long bytesFlushed;
-  }
 
   /**
    * Holds all the state for the current operation.

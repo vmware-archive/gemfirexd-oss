@@ -1299,7 +1299,7 @@ public final class Oplog implements CompactableOplog {
     if (this.crf.outputStream != null) {
       this.crf.outputStream.close();
     }
-    this.crf.outputStream = createOutputStream(prevOlf, this.crf.channel);
+    this.crf.outputStream = createOutputStream(prevOlf, this.crf);
 
     if (logger.infoEnabled()) {
       logger.info(LocalizedStrings.Oplog_CREATE_0_1_2,
@@ -1320,14 +1320,17 @@ public final class Oplog implements CompactableOplog {
     this.maxCrfSize += this.crf.currSize;
   }
 
-  private static ChannelBufferUnsafeDataOutputStream createOutputStream(
-      final OplogFile prevOlf, FileChannel channel) throws IOException {
+  private static OplogFile.FileChannelOutputStream createOutputStream(
+      final OplogFile prevOlf, final OplogFile olf) throws IOException {
     final int bufSize = Integer.getInteger("WRITE_BUF_SIZE", 32768);
-    if (prevOlf != null) {
-      return new ChannelBufferUnsafeDataOutputStream(prevOlf.outputStream,
-          channel, bufSize, false /* limit new buffer allocations */);
+    final OplogFile.FileChannelOutputStream outputStream;
+    if (prevOlf != null && (outputStream = prevOlf.outputStream) != null &&
+        outputStream.validBuffer()) {
+      prevOlf.outputStream = null;
+      return olf.new FileChannelOutputStream(outputStream,
+          bufSize, false /* limit new buffer allocations */);
     } else {
-      return new ChannelBufferUnsafeDataOutputStream(channel, bufSize,
+      return olf.new FileChannelOutputStream(bufSize,
           false /* limit new buffer allocations */);
     }
   }
@@ -1351,7 +1354,7 @@ public final class Oplog implements CompactableOplog {
     this.drf.RAFClosed = false;
     this.drf.channel = this.drf.raf.getChannel();
     this.oplogSet.drfCreate(this.oplogId);
-    this.drf.outputStream = createOutputStream(prevOlf, this.drf.channel);
+    this.drf.outputStream = createOutputStream(prevOlf, this.drf);
     if (logger.infoEnabled()) {
       logger.info(LocalizedStrings.Oplog_CREATE_0_1_2,
                   new Object[] {toString(),
@@ -3889,7 +3892,7 @@ public final class Oplog implements CompactableOplog {
 //                   new RuntimeException("STACK"));
 
       if (!this.crf.RAFClosed) {
-        final ChannelBufferUnsafeDataOutputStream stream = this.crf.outputStream;
+        final OplogFile.FileChannelOutputStream stream = this.crf.outputStream;
         try {
           if (stream != null) {
             stream.closeChannel();
@@ -3910,7 +3913,7 @@ public final class Oplog implements CompactableOplog {
     synchronized (this.lock/*drf*/) {
       unpreblow(this.drf, getMaxDrfSize());
       if (!this.drf.RAFClosed) {
-        final ChannelBufferUnsafeDataOutputStream stream = this.drf.outputStream;
+        final OplogFile.FileChannelOutputStream stream = this.drf.outputStream;
         try {
           if (stream != null) {
             stream.closeChannel();
@@ -4504,7 +4507,7 @@ public final class Oplog implements CompactableOplog {
           // I think at this point the drf no longer needs to be open
           synchronized (Oplog.this.lock/*drf*/) {
             if (!Oplog.this.drf.RAFClosed) {
-              final ChannelBufferUnsafeDataOutputStream stream = drf.outputStream;
+              final OplogFile.FileChannelOutputStream stream = drf.outputStream;
               try {
                 if (stream != null) {
                   stream.closeChannel();
@@ -6161,8 +6164,10 @@ public final class Oplog implements CompactableOplog {
 //          olf.bytesFlushed += flushed;
 //          bb.clear();
 //        }
-        olf.outputStream.flush();
-        olf.bytesFlushed = olf.outputStream.getBytesWritten();
+        final OplogFile.FileChannelOutputStream outputStream = olf.outputStream;
+        if (outputStream != null) {
+          outputStream.flush();
+        }
       }
       if (doSync) {
         if (dofsync && !DiskStoreImpl.DISABLE_SYNC_WRITES_FOR_TESTS) {
@@ -6241,7 +6246,7 @@ public final class Oplog implements CompactableOplog {
    */
   private long writeOpLogBytes(OplogFile olf, boolean async, boolean doFlushIfSync) throws IOException
   {
-    long startPos = -1L;
+    long startPos;
     synchronized (this.lock/*olf*/) {
       Assert.assertTrue(!this.doneAppending);
       if (this.closed) {
@@ -6257,7 +6262,7 @@ public final class Oplog implements CompactableOplog {
       // Also it is only in case of synch writing, we are writing more
       // than what is actually needed, we will have to reset the pointer.
       // Also need to add in offset in writeBuf in case we are not flushing writeBuf
-      startPos = olf.channel.position() + olf.outputStream.position();
+      startPos = olf.outputStream.fileOffset();
 //                 logger.info(LocalizedStrings.DEBUG, "writeOpLogBytes"
 //                             + " position=" + olf.channel.position()
 //                             + " writeBufPos=" + olf.writeBuf.position()
@@ -6279,6 +6284,9 @@ public final class Oplog implements CompactableOplog {
 //       // This fixes bug 40449.
 //       this.lastWritePos = startPos;
     }
+    logger.convertToLogWriter().info("SW: writing startPos=" + startPos +
+        " async=" + async + " doFlushIfSync=" + doFlushIfSync +
+        " for " + olf.f.getPath() + " with file size = " + olf.channel.size());
     return startPos;
   }
 
@@ -6373,7 +6381,10 @@ public final class Oplog implements CompactableOplog {
 //                           + " fp=" + myRAF.getFilePointer()
 //                           + " rp=" + readPosition
 //                           + " oplog#" + getOplogId());
-              throw new DiskAccessException(LocalizedStrings.Oplog_TRIED_TO_SEEK_TO_0_BUT_THE_FILE_LENGTH_IS_1_OPLOG_FILE_OBJECT_USED_FOR_READING_2.toLocalizedString(new Object[] {readPosition+valueLength, writePosition, this.crf.raf}), dr.getName());
+              throw new DiskAccessException(LocalizedStrings.Oplog_TRIED_TO_SEEK_TO_0_BUT_THE_FILE_LENGTH_IS_1_OPLOG_FILE_OBJECT_USED_FOR_READING_2.toLocalizedString(new Object[] {readPosition+valueLength,
+                  writePosition, "file=" + this.crf.f.getPath() + " size=" + myRAF.getChannel().size() +
+                  " flushed=" + this.crf.bytesFlushed + " fp=" + myRAF.getFilePointer() +
+                  " doneAppends=" + doneAppending}), dr.getName());
             }
             else if (readPosition < 0) {
               throw new DiskAccessException(LocalizedStrings.Oplog_CANNOT_FIND_RECORD_0_WHEN_READING_FROM_1.toLocalizedString(new Object[] {offsetInOplog, this.diskFile.getPath()}), dr.getName());
@@ -7563,15 +7574,51 @@ public final class Oplog implements CompactableOplog {
 
   // ////////////////////Inner Classes //////////////////////
 
-  private static class OplogFile {
+  static final class OplogFile {
     public File f;
     public RandomAccessFile raf;
     public volatile boolean RAFClosed = true;
     public FileChannel channel;
-    public ChannelBufferUnsafeDataOutputStream outputStream;
+    public FileChannelOutputStream outputStream;
     public long currSize;
     public long bytesFlushed;
     public boolean unpreblown;
+
+    final class FileChannelOutputStream
+        extends ChannelBufferUnsafeDataOutputStream {
+
+      public FileChannelOutputStream(int bufferSize,
+          boolean useUnsafeAllocation) {
+        super(OplogFile.this.channel, bufferSize, useUnsafeAllocation);
+      }
+
+      public FileChannelOutputStream(FileChannelOutputStream other,
+          int bufferSize, boolean useUnsafeAllocation) throws IOException {
+        super(other, OplogFile.this.channel, bufferSize, useUnsafeAllocation);
+      }
+
+      public final long fileOffset() throws IOException {
+        return OplogFile.this.channel.position() + position();
+      }
+
+      @Override
+      protected int writeBuffer(final ByteBuffer buffer) throws IOException {
+        int numWritten = super.writeBuffer(buffer);
+        if (numWritten > 0) {
+          bytesFlushed += numWritten;
+        }
+        return numWritten;
+      }
+
+      @Override
+      protected int writeBufferNonBlocking(final ByteBuffer buffer) throws IOException {
+        int numWritten = super.writeBufferNonBlocking(buffer);
+        if (numWritten > 0) {
+          bytesFlushed += numWritten;
+        }
+        return numWritten;
+      }
+    }
   }
 
   private static class KRFile {
