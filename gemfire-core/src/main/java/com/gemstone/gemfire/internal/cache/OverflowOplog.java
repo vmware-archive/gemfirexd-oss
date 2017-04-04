@@ -547,10 +547,9 @@ class OverflowOplog implements CompactableOplog {
 
   private void initOpState(DiskEntry entry,
                            ByteBuffer value,
-                           int valueLength,
                            byte userBits)
   {
-    this.opState.initialize(entry, value, valueLength, userBits);
+    this.opState.initialize(entry, value, userBits);
   }
 
   private void clearOpState() {
@@ -605,7 +604,7 @@ class OverflowOplog implements CompactableOplog {
       DiskEntry.ValueWrapper value, boolean async) {
     try {
       byte userBits = calcUserBits(value);
-      return basicModify(entry, value.buffer, value.size(), userBits, async);
+      return basicModify(entry, value.buffer, userBits, async);
     } catch (IOException ex) {
       throw new DiskAccessException(LocalizedStrings.Oplog_FAILED_WRITING_KEY_TO_0.toLocalizedString(this.diskFile.getPath()), ex, dr.getName());
     } catch (InterruptedException ie) {
@@ -615,9 +614,9 @@ class OverflowOplog implements CompactableOplog {
     }
   }
   public final boolean copyForwardForOverflowCompact(DiskEntry entry,
-      ByteBuffer value, int length, byte userBits) {
+      ByteBuffer value, byte userBits) {
     try {
-      return basicModify(entry, value, length, userBits, true);
+      return basicModify(entry, value, userBits, true);
     } catch (IOException ex) {
       throw new DiskAccessException(LocalizedStrings.Oplog_FAILED_WRITING_KEY_TO_0.toLocalizedString(this.diskFile.getPath()), ex, getParent().getName());
     } catch (InterruptedException ie) {
@@ -643,7 +642,6 @@ class OverflowOplog implements CompactableOplog {
    */
   private boolean basicModify(DiskEntry entry,
                               ByteBuffer value,
-                              int valueLength,
                               byte userBits, boolean async)
     throws IOException, InterruptedException
   {
@@ -651,7 +649,10 @@ class OverflowOplog implements CompactableOplog {
     long startPosForSynchOp = -1L;
     OverflowOplog emptyOplog = null;
     synchronized (this.crf) {
-      initOpState(entry, value, valueLength, userBits);
+      if (value.position() != 0) {
+        throw new IllegalStateException("expected zero position for buffer");
+      }
+      initOpState(entry, value, userBits);
       int adjustment = getOpStateSize();
       assert adjustment > 0;
       //       {
@@ -708,7 +709,7 @@ class OverflowOplog implements CompactableOplog {
           oldOplogId = (int)id.setOplogId(getOplogId());
           id.setOffsetInOplog(startPosForSynchOp);
           if (EntryBits.isNeedsValue(userBits)) {
-            id.setValueLength(valueLength);
+            id.setValueLength(value.limit());
           } else {
             id.setValueLength(0);
           }
@@ -848,8 +849,10 @@ class OverflowOplog implements CompactableOplog {
 //        } while (bb.hasRemaining());
         // update bytesFlushed after entire writeBuffer is flushed to fix bug 41201
 //        olf.bytesFlushed += flushed;
-        olf.outputStream.flush();
-        olf.bytesFlushed = olf.outputStream.getBytesWritten();
+        final OplogFile.FileChannelOutputStream outputStream = olf.outputStream;
+        if (outputStream != null) {
+          outputStream.flush();
+        }
 //             logger.info(LocalizedStrings.DEBUG, "DEBUG: flush bytesFlushed=" + olf.bytesFlushed
 //                        + " position=" + olf.channel.position()
 //                         + " oplog#" + getOplogId()
@@ -1377,7 +1380,6 @@ class OverflowOplog implements CompactableOplog {
     private int size;
     private boolean needsValue;
     private ByteBuffer value;
-    private int valueLength;
 
     public final int getSize() {
       return this.size;
@@ -1424,24 +1426,23 @@ class OverflowOplog implements CompactableOplog {
 //    }
     public void initialize(DiskEntry entry,
                            ByteBuffer value,
-                           int valueLength,
                            byte userBits)
     {
       this.userBits = userBits;
       this.value = value;
-      this.valueLength = valueLength;
 
       this.size = 0;
       this.needsValue = EntryBits.isNeedsValue(this.userBits);
       if (this.needsValue) {
-        this.size += this.valueLength;
+        this.size += this.value.limit();
       }
     }
     public long write() throws IOException {
       long bytesWritten = 0;
-      if (this.needsValue && this.valueLength > 0) {
+      int valueLength = value.limit();
+      if (this.needsValue && valueLength > 0) {
         getOLF().outputStream.write(this.value);
-        bytesWritten += this.valueLength;
+        bytesWritten += valueLength;
       }
       return bytesWritten;
     }
@@ -1577,7 +1578,7 @@ class OverflowOplog implements CompactableOplog {
             }
             // write it to the current oplog
             getOplogSet().copyForwardForOverflowCompact(de,
-                DiskEntry.Helper.wrapBytes(valueBytes), length, userBits);
+                DiskEntry.Helper.wrapBytes(valueBytes, length), userBits);
             // the did's oplogId will now be set to the current active oplog
             didCompact = true;
           }

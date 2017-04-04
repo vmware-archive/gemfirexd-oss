@@ -82,7 +82,7 @@ public class OverflowOplogSet implements OplogSet {
         }
       }
       // Create a new one and put it on the front of the list.
-      OverflowOplog oo = createOverflowOplog(value.size());
+      OverflowOplog oo = createOverflowOplog(value.buffer.limit());
       addOverflow(oo);
       this.lastOverflowWrite = oo;
       boolean didIt = oo.modify(dr, entry, value, async);
@@ -220,17 +220,17 @@ public class OverflowOplogSet implements OplogSet {
   
 
   void copyForwardForOverflowCompact(DiskEntry de,
-      ByteBuffer valueBytes, int length, byte userBits) {
+      ByteBuffer value, byte userBits) {
     synchronized (this.overflowMap) {
       if (this.lastOverflowWrite != null) {
-        if (this.lastOverflowWrite.copyForwardForOverflowCompact(de, valueBytes, length, userBits)) {
+        if (this.lastOverflowWrite.copyForwardForOverflowCompact(de, value, userBits)) {
           return;
         }
       }
-      OverflowOplog oo = createOverflowOplog(length);
+      OverflowOplog oo = createOverflowOplog(value.limit());
       this.lastOverflowWrite = oo;
       addOverflow(oo);
-      boolean didIt = oo.copyForwardForOverflowCompact(de, valueBytes, length, userBits);
+      boolean didIt = oo.copyForwardForOverflowCompact(de, value, userBits);
       assert didIt;
     }
   }

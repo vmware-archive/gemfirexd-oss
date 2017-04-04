@@ -165,10 +165,6 @@ public interface DiskEntry extends RegionEntry {
     public final boolean isSerializedObject;
     public final ByteBuffer buffer;
 
-    public int size() {
-      return buffer.limit();
-    }
-
     public static ValueWrapper create(Object value) {
       if (value == Token.INVALID) {
         // even though it is not serialized we say it is because
@@ -239,8 +235,15 @@ public interface DiskEntry extends RegionEntry {
    */
   public static class Helper {
 
+    public static final ByteBuffer NULL_BUFFER =
+        ByteBuffer.wrap(ClientSharedData.ZERO_ARRAY);
+
     public static ByteBuffer wrapBytes(byte[] b) {
-      return ByteBuffer.wrap(b != null ? b : ClientSharedData.ZERO_ARRAY);
+      return b != null ? ByteBuffer.wrap(b) : NULL_BUFFER;
+    }
+
+    public static ByteBuffer wrapBytes(byte[] b, int length) {
+      return b != null ? ByteBuffer.wrap(b, 0, length) : NULL_BUFFER;
     }
 
     /**

@@ -4050,21 +4050,14 @@ public final class Oplog implements CompactableOplog {
    * @param entry
    *          The DiskEntry object being operated upon
    * @param value
-   *          The byte array representing the value
+   *          The byte buffer representing the value
    * @param userBits
    * @throws IOException 
    */
   private void initOpState(byte opCode, DiskRegionView dr, DiskEntry entry,
       ByteBuffer value, byte userBits,
       boolean notToUseUserBits) throws IOException {
-    initOpState(opCode, dr, entry, value, value != null ? value.limit() : 0,
-        userBits, notToUseUserBits);
-  }
-  
-  private void initOpState(byte opCode, DiskRegionView dr, DiskEntry entry,
-      ByteBuffer value, int valueLength, byte userBits,
-      boolean notToUseUserBits) throws IOException {
-    this.opState.initialize(opCode, dr, entry, value, valueLength, userBits, notToUseUserBits);
+    this.opState.initialize(opCode, dr, entry, value, userBits, notToUseUserBits);
   }
 
   private void clearOpState() {
@@ -4095,7 +4088,7 @@ public final class Oplog implements CompactableOplog {
         // its the tombstone token
         userBits = EntryBits.setTombstone(userBits, true);
       } else {
-        if (value.size() == 0) {
+        if (value.buffer.limit() == 0) {
           throw new IllegalStateException("userBits==1 and value is zero length");
         }
         userBits = EntryBits.setSerialized(userBits, true);
@@ -4214,6 +4207,9 @@ public final class Oplog implements CompactableOplog {
     }
     synchronized (this.lock) { // TODO soplog perf analysis shows this as a contention point
       //synchronized (this.crf) {
+      if (value.position() != 0) {
+        throw new IllegalStateException("expected zero position for buffer");
+      }
       initOpState(OPLOG_NEW_ENTRY_0ID, dr, entry, value, userBits, false);
       // Asif : Check if the current data in ByteBuffer will cause a
       // potential increase in the size greater than the max allowed
@@ -5365,8 +5361,8 @@ public final class Oplog implements CompactableOplog {
           // pdx and tx will not use version
           userBits = EntryBits.setWithVersions(userBits, true);
         }
-        basicModify(region.getDiskRegion(), entry, value.buffer, value.size(),
-            userBits, async, false);
+        basicModify(region.getDiskRegion(), entry, value.buffer, userBits,
+            async, false);
       }
       catch (IOException ex) {
         exceptionOccured = true;
@@ -5431,9 +5427,9 @@ public final class Oplog implements CompactableOplog {
   }
 
   private final void copyForwardModifyForCompact(DiskRegionView dr, DiskEntry entry,
-      ByteBuffer value, int valueLength, byte userBits) {
+      ByteBuffer value, byte userBits) {
     if (getOplogSet().getChild() != this) {
-      getOplogSet().getChild().copyForwardModifyForCompact(dr, entry, value, valueLength, userBits);
+      getOplogSet().getChild().copyForwardModifyForCompact(dr, entry, value, userBits);
     }
     else {
       DiskId did = entry.getDiskId();
@@ -5442,7 +5438,7 @@ public final class Oplog implements CompactableOplog {
       try {
         // Compactor always says to do an async basicModify so that its writes
         // will be grouped. This is not a true async write; just a grouped one.
-        basicModify(dr, entry, value, valueLength, userBits, true, true);
+        basicModify(dr, entry, value, userBits, true, true);
       }
       catch (IOException ex) {
         exceptionOccured = true;
@@ -5475,7 +5471,6 @@ public final class Oplog implements CompactableOplog {
    */
   private void basicModify(DiskRegionView dr, DiskEntry entry,
                            ByteBuffer value,
-                           int valueLength,
                            byte userBits, boolean async,
                            boolean calledByCompactor)
     throws IOException, InterruptedException
@@ -5495,7 +5490,10 @@ public final class Oplog implements CompactableOplog {
       if (getOplogSet().getChild() != this) {
         useNextOplog = true;
       } else {
-        initOpState(OPLOG_MOD_ENTRY_1ID, dr, entry, value, valueLength, userBits, false);
+        if (value.position() != 0) {
+          throw new IllegalStateException("expected zero position for buffer");
+        }
+        initOpState(OPLOG_MOD_ENTRY_1ID, dr, entry, value, userBits, false);
         adjustment = getOpStateSize();
         assert adjustment > 0;
         long temp = (this.crf.currSize + adjustment);
@@ -5548,14 +5546,14 @@ public final class Oplog implements CompactableOplog {
                              + "> key=<" + entry.getKeyCopy() + ">"
                              + " valueOffset=" + startPosForSynchOp
                              + " userBits=" + userBits
-                             + " valueLen=" + valueLength
+                             + " valueLen=" + value.limit()
                              + " valueBytes=<" + bufferToString(value) + ">"
                              + " drId=" + dr.getId()
                              + " versionStamp=" + tag
                              + " oplog#" + getOplogId());
           }
           if (EntryBits.isNeedsValue(userBits)) {
-            id.setValueLength(valueLength);
+            id.setValueLength(value.limit());
           } else {
             id.setValueLength(0);
           }
@@ -5633,7 +5631,7 @@ public final class Oplog implements CompactableOplog {
         CacheObserverHolder.getInstance().afterSwitchingOplog();
       }
       Assert.assertTrue(getOplogSet().getChild() != this);
-      getOplogSet().getChild().basicModify(dr, entry, value, valueLength, userBits, async,
+      getOplogSet().getChild().basicModify(dr, entry, value, userBits, async,
                                          calledByCompactor);
     }
     else {
@@ -6012,7 +6010,8 @@ public final class Oplog implements CompactableOplog {
           this.firstRecord = false;
           // Ok now we can go ahead and find out its actual size
           // This is the only place to set notToUseUserBits=true
-          initOpState(OPLOG_DEL_ENTRY_1ID, dr, entry, null, (byte)0, true);
+          initOpState(OPLOG_DEL_ENTRY_1ID, dr, entry,
+              DiskEntry.Helper.NULL_BUFFER, (byte)0, true);
           int adjustment = getOpStateSize();
 
           this.drf.currSize += adjustment;
@@ -6284,9 +6283,6 @@ public final class Oplog implements CompactableOplog {
 //       // This fixes bug 40449.
 //       this.lastWritePos = startPos;
     }
-    logger.convertToLogWriter().info("SW: writing startPos=" + startPos +
-        " async=" + async + " doFlushIfSync=" + doFlushIfSync +
-        " for " + olf.f.getPath() + " with file size = " + olf.channel.size());
     return startPos;
   }
 
@@ -6302,6 +6298,13 @@ public final class Oplog implements CompactableOplog {
       if (this.crf.RAFClosed) {
         return false;
       } else {
+        final OplogFile.FileChannelOutputStream stream = crf.outputStream;
+        try {
+          if (stream != null) {
+            stream.flush();
+          }
+        } catch (IOException ignore) {
+        }
         try {
           this.crf.raf.close();
         } catch (IOException ignore) {
@@ -7170,7 +7173,7 @@ public final class Oplog implements CompactableOplog {
             }
             // write it to the current oplog
             getOplogSet().getChild().copyForwardModifyForCompact(dr, de,
-                DiskEntry.Helper.wrapBytes(valueBytes), length, userBits);
+                DiskEntry.Helper.wrapBytes(valueBytes, length), userBits);
             // the did's oplogId will now be set to the current active oplog
             didCompact = true;
           }
@@ -7587,14 +7590,18 @@ public final class Oplog implements CompactableOplog {
     final class FileChannelOutputStream
         extends ChannelBufferUnsafeDataOutputStream {
 
+      private final long baseFileOffset;
+
       public FileChannelOutputStream(int bufferSize,
-          boolean useUnsafeAllocation) {
+          boolean useUnsafeAllocation) throws IOException {
         super(OplogFile.this.channel, bufferSize, useUnsafeAllocation);
+        this.baseFileOffset = OplogFile.this.channel.position();
       }
 
       public FileChannelOutputStream(FileChannelOutputStream other,
           int bufferSize, boolean useUnsafeAllocation) throws IOException {
         super(other, OplogFile.this.channel, bufferSize, useUnsafeAllocation);
+        this.baseFileOffset = OplogFile.this.channel.position();
       }
 
       public final long fileOffset() throws IOException {
@@ -7943,7 +7950,6 @@ public final class Oplog implements CompactableOplog {
                            DiskRegionView dr,
                            DiskEntry entry,
                            ByteBuffer value,
-                           int valueLength,
                            byte userBits,
                            boolean notToUseUserBits) throws IOException
     {
@@ -7952,7 +7958,7 @@ public final class Oplog implements CompactableOplog {
       saveUserBits(notToUseUserBits, userBits);
       
       this.value = value;
-      this.valueLength = valueLength;
+      this.valueLength = value.limit();
       if (this.userBits == 1 && this.valueLength == 0) {
         throw new IllegalStateException("userBits==1 and valueLength is 0");
       }
