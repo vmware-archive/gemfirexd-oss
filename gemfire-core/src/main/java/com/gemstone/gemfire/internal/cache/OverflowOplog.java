@@ -1066,12 +1066,14 @@ class OverflowOplog implements CompactableOplog {
       ByteBuffer valueBuffer = UnsafeHolder.allocateDirectBuffer(valueLength);
       int oldPosition = writeBuf.position();
       int oldLimit = writeBuf.limit();
-      writeBuf.limit(curWriteBufPos);
+      writeBuf.rewind();
+      writeBuf.limit(Math.min(bufOffset + valueLength, curWriteBufPos));
       writeBuf.position(bufOffset);
       valueBuffer.put(writeBuf);
       valueBuffer.flip();
-      writeBuf.position(oldPosition);
+      writeBuf.rewind();
       writeBuf.limit(oldLimit);
+      writeBuf.position(oldPosition);
       bb = new BytesAndBits(valueBuffer, userBits);
     }
     return bb;

@@ -83,6 +83,9 @@ dependencies {
   testCompile "org.apache.derby:derbynet:${derbyVersion}"
   testRuntime "org.apache.derby:derbytools:${derbyVersion}"
   testRuntime "org.apache.derby:derbyclient:${derbyVersion}"
+  testRuntime "org.apache.thrift:libthrift:${thriftVersion}"
+  testRuntime "com.esotericsoftware:kryo-shaded:${kryoVersion}"
+  testRuntime "io.snappydata:snappy-spark-unsafe_${scalaBinaryVersion}:${snappySparkVersion}"
   testCompile 'oro:oro:2.0.8'
   testCompile 'dom4j:dom4j:1.6.1'
   // Embedded Apache Directory Server for LDAP tests

@@ -7604,8 +7604,10 @@ public final class Oplog implements CompactableOplog {
         this.baseFileOffset = OplogFile.this.channel.position();
       }
 
+      /** Returns the current file offset including the unflushed data. */
       public final long fileOffset() throws IOException {
-        return OplogFile.this.channel.position() + position();
+        return this.baseFileOffset + this.bytesWritten +
+            (this.addrPosition - this.baseAddress);
       }
 
       @Override
