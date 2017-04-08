@@ -46,6 +46,7 @@ import java.lang.reflect.Method;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketImpl;
+import java.nio.channels.SocketChannel;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -153,7 +154,7 @@ public abstract class NativeCalls {
       throw new UnsupportedOperationException(ex);
     }
 
-    // first try using SocketInputStream
+    // first try using SocketInputStream (that inherits FileInputStream)
     if (sockStream instanceof FileInputStream) {
       try {
         fd = ((FileInputStream)sockStream).getFD();
@@ -161,8 +162,23 @@ public abstract class NativeCalls {
         // go the fallback route
       }
     }
-    // else fallback to SocketImpl route
+    // else fallback to SocketChannelImpl and SocketImpl route
     try {
+      // try SocketChannelImpl first
+      if (fd == null) {
+        SocketChannel channel = sock.getChannel();
+        if (channel != null) {
+          try {
+            m = getAnyMethod(channel.getClass(), "getFDVal");
+            if (m != null) {
+              m.setAccessible(true);
+              return (Integer)m.invoke(channel);
+            }
+          } catch (Exception ignored) {
+            // continue to SocketImpl route
+          }
+        }
+      }
       if (fd == null) {
         try {
           // package private Socket.getImpl() to get SocketImpl
@@ -207,7 +223,7 @@ public abstract class NativeCalls {
           f.setAccessible(true);
           obj = f.get(fd);
           if (obj instanceof Integer) {
-            return ((Integer)obj).intValue();
+            return (Integer)obj;
           }
         }
       }

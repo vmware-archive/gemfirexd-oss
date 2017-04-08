@@ -52,6 +52,7 @@ import java.io.SyncFailedException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.FileChannel;
+import java.nio.channels.WritableByteChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -7611,8 +7612,9 @@ public final class Oplog implements CompactableOplog {
       }
 
       @Override
-      protected int writeBuffer(final ByteBuffer buffer) throws IOException {
-        int numWritten = super.writeBuffer(buffer);
+      protected int writeBuffer(final ByteBuffer buffer,
+          final WritableByteChannel channel) throws IOException {
+        int numWritten = super.writeBuffer(buffer, channel);
         if (numWritten > 0) {
           bytesFlushed += numWritten;
         }
@@ -7620,8 +7622,9 @@ public final class Oplog implements CompactableOplog {
       }
 
       @Override
-      protected int writeBufferNonBlocking(final ByteBuffer buffer) throws IOException {
-        int numWritten = super.writeBufferNonBlocking(buffer);
+      protected int writeBufferNonBlocking(final ByteBuffer buffer,
+          final WritableByteChannel channel) throws IOException {
+        int numWritten = super.writeBufferNonBlocking(buffer, channel);
         if (numWritten > 0) {
           bytesFlushed += numWritten;
         }

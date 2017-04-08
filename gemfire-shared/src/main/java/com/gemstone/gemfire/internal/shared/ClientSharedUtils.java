@@ -501,44 +501,50 @@ public abstract class ClientSharedUtils {
   }
 
   /**
+   * Set the keep-alive options on the socket from server-side properties.
+   *
+   * @see #setKeepAliveOptions
+   */
+  public static void setKeepAliveOptionsServer(Socket socket,
+      InputStream socketStream) throws SocketException {
+    final SystemProperties props = SystemProperties
+        .getServerInstance();
+    int defaultIdle = props.getInteger(SystemProperties.KEEPALIVE_IDLE,
+        SystemProperties.DEFAULT_KEEPALIVE_IDLE);
+    int defaultInterval = props.getInteger(SystemProperties.KEEPALIVE_INTVL,
+        SystemProperties.DEFAULT_KEEPALIVE_INTVL);
+    int defaultCount = props.getInteger(SystemProperties.KEEPALIVE_CNT,
+        SystemProperties.DEFAULT_KEEPALIVE_CNT);
+    ClientSharedUtils.setKeepAliveOptions(socket, socketStream,
+        defaultIdle, defaultInterval, defaultCount);
+  }
+
+  /**
    * Enable TCP KeepAlive settings for the socket. This will use the native OS
    * API to set per-socket configuration, if available, else will log warning
    * (only once) if one or more settings cannot be enabled.
-   * 
-   * @param sock
-   *          the underlying Java {@link Socket} to set the keep-alive
-   * @param sockStream
-   *          the InputStream of the socket (can be null); if non-null then it
-   *          is used to determine the underlying socket kernel handle else if
-   *          null then reflection on the socket itself is used
-   * @param keepIdle
-   *          keep-alive time between two transmissions on socket in idle
-   *          condition (in seconds)
-   * @param keepInterval
-   *          keep-alive duration between successive transmissions on socket if
-   *          no reply to packet sent after idle timeout (in seconds)
-   * @param keepCount
-   *          number of retransmissions to be sent before declaring the other
-   *          end to be dead
-   * 
-   * @throws SocketException
-   *           if the base keep-alive cannot be enabled on the socket
-   * 
-   * @see <a
-   *      href="http://tldp.org/HOWTO/html_single/TCP-Keepalive-HOWTO/#programming">
-   *      TCP Keepalive HOWTO</a>
-   * @see <a
-   *      href="http://docs.oracle.com/cd/E19082-01/819-2724/6n50b07lr/index.html">
-   *      TCP Tunable Parameters</a>
-   * @see <a
-   *      href="http://msdn.microsoft.com/en-us/library/ms741621%28VS.85%29.aspx">
-   *      WSAIoctl function</a>
-   * @see <a 
-   *      href="http://technet.microsoft.com/en-us/library/dd349797%28WS.10%29.aspx>
-   *      TCP/IP-Related Registry Entries</a>
-   * @see <a
-   *      href="http://msdn.microsoft.com/en-us/library/dd877220%28v=vs.85%29.aspx">
-   *      SIO_KEEPALIVE_VALS control code</a>
+   *
+   * @param sock         the underlying Java {@link Socket} to set the keep-alive
+   * @param sockStream   the InputStream of the socket (can be null); if non-null then it
+   *                     is used to determine the underlying socket kernel handle else if
+   *                     null then reflection on the socket itself is used
+   * @param keepIdle     keep-alive time between two transmissions on socket in idle
+   *                     condition (in seconds)
+   * @param keepInterval keep-alive duration between successive transmissions on socket if
+   *                     no reply to packet sent after idle timeout (in seconds)
+   * @param keepCount    number of retransmissions to be sent before declaring the other
+   *                     end to be dead
+   * @throws SocketException if the base keep-alive cannot be enabled on the socket
+   * @see <a href="http://tldp.org/HOWTO/html_single/TCP-Keepalive-HOWTO/#programming">
+   * TCP Keepalive HOWTO</a>
+   * @see <a href="http://docs.oracle.com/cd/E19082-01/819-2724/6n50b07lr/index.html">
+   * TCP Tunable Parameters</a>
+   * @see <a href="http://msdn.microsoft.com/en-us/library/ms741621%28VS.85%29.aspx">
+   * WSAIoctl function</a>
+   * @see <a href="http://technet.microsoft.com/en-us/library/dd349797%28WS.10%29.aspx>
+   * TCP/IP-Related Registry Entries</a>
+   * @see <a href="http://msdn.microsoft.com/en-us/library/dd877220%28v=vs.85%29.aspx">
+   * SIO_KEEPALIVE_VALS control code</a>
    */
   public static void setKeepAliveOptions(Socket sock, InputStream sockStream,
       int keepIdle, int keepInterval, int keepCount) throws SocketException {
@@ -552,19 +558,17 @@ public abstract class ClientSharedUtils {
     sock.setKeepAlive(true);
     // now the OS-specific settings using NativeCalls
     NativeCalls nc = NativeCalls.getInstance();
-    Map<TCPSocketOptions, Object> optValueMap =
-        new HashMap<TCPSocketOptions, Object>(4);
+    Map<TCPSocketOptions, Object> optValueMap = new HashMap<>(4);
     if (keepIdle >= 0) {
-      optValueMap.put(TCPSocketOptions.OPT_KEEPIDLE, Integer.valueOf(keepIdle));
+      optValueMap.put(TCPSocketOptions.OPT_KEEPIDLE, keepIdle);
     }
     if (keepInterval >= 0) {
-      optValueMap.put(TCPSocketOptions.OPT_KEEPINTVL,
-          Integer.valueOf(keepInterval));
+      optValueMap.put(TCPSocketOptions.OPT_KEEPINTVL, keepInterval);
     }
     if (keepCount >= 0) {
-      optValueMap.put(TCPSocketOptions.OPT_KEEPCNT, Integer.valueOf(keepCount));
+      optValueMap.put(TCPSocketOptions.OPT_KEEPCNT, keepCount);
     }
-    Map<TCPSocketOptions, Throwable> failed = null;
+    Map<TCPSocketOptions, Throwable> failed;
     try {
       failed = nc.setSocketOptions(sock, sockStream, optValueMap);
     } catch (UnsupportedOperationException e) {
@@ -597,8 +601,7 @@ public abstract class ClientSharedUtils {
                   // log as a warning
                   doLogWarning = 1;
                 }
-              }
-              else {
+              } else {
                 doLogWarning = 1;
               }
               break;
@@ -609,8 +612,7 @@ public abstract class ClientSharedUtils {
                   // KEEPINTVL is not critical to have so log as information
                   doLogWarning = 2;
                 }
-              }
-              else {
+              } else {
                 doLogWarning = 2;
               }
               break;
@@ -621,8 +623,7 @@ public abstract class ClientSharedUtils {
                   // KEEPCNT is not critical to have so log as information
                   doLogWarning = 2;
                 }
-              }
-              else {
+              } else {
                 doLogWarning = 2;
               }
               break;
@@ -630,8 +631,7 @@ public abstract class ClientSharedUtils {
           if (doLogWarning > 0) {
             if (doLogWarning == 1) {
               log.warning("Failed to set " + opt + " on socket: " + ex);
-            }
-            else if (doLogWarning == 2) {
+            } else {
               // just log as an information rather than warning
               if (log != DEFAULT_LOGGER) { // SNAP-255
                 log.info("Failed to set " + opt + " on socket: "
@@ -646,8 +646,7 @@ public abstract class ClientSharedUtils {
           }
         }
       }
-    }
-    else if (log != null && log.isLoggable(Level.FINE)) {
+    } else if (log != null && log.isLoggable(Level.FINE)) {
       log.fine("setKeepAliveOptions(): successful for " + sock);
     }
   }

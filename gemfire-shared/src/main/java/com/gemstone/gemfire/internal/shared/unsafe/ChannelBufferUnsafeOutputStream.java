@@ -39,7 +39,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.ClosedChannelException;
-import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 import javax.annotation.Nonnull;
 
@@ -153,13 +152,6 @@ public class ChannelBufferUnsafeOutputStream extends OutputStreamChannel {
     }
   }
 
-  protected final void putByte(byte b) throws IOException {
-    if (this.addrPosition >= this.addrLimit) {
-      flushBufferBlocking(this.buffer);
-    }
-    Platform.putByte(null, this.addrPosition++, b);
-  }
-
   /**
    * {@inheritDoc}
    */
@@ -202,6 +194,13 @@ public class ChannelBufferUnsafeOutputStream extends OutputStreamChannel {
   @Override
   public final void write(@Nonnull byte[] b) throws IOException {
     write_(b, 0, b.length);
+  }
+
+  protected final void putByte(byte b) throws IOException {
+    if (this.addrPosition >= this.addrLimit) {
+      flushBufferBlocking(this.buffer);
+    }
+    Platform.putByte(null, this.addrPosition++, b);
   }
 
   /**
@@ -303,7 +302,7 @@ public class ChannelBufferUnsafeOutputStream extends OutputStreamChannel {
     buffer.flip();
     try {
       do {
-        writeBuffer(buffer);
+        writeBuffer(buffer, this.channel);
       } while (buffer.hasRemaining());
     } finally {
       if (buffer.hasRemaining()) {

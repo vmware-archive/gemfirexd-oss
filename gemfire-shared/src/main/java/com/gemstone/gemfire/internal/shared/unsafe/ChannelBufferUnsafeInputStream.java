@@ -40,7 +40,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.ReadableByteChannel;
-
 import javax.annotation.Nonnull;
 
 import com.gemstone.gemfire.internal.shared.ChannelBufferInputStream;
@@ -73,20 +72,19 @@ public class ChannelBufferUnsafeInputStream extends InputStreamChannel {
   protected long addrPosition;
   protected long addrLimit;
 
-  public ChannelBufferUnsafeInputStream(ReadableByteChannel channel)
-      throws IOException {
+  public ChannelBufferUnsafeInputStream(ReadableByteChannel channel) {
     this(channel, ChannelBufferInputStream.DEFAULT_BUFFER_SIZE);
   }
 
   public ChannelBufferUnsafeInputStream(ReadableByteChannel channel,
-      int bufferSize) throws IOException {
+      int bufferSize) {
     super(channel);
     if (bufferSize <= 0) {
       throw new IllegalArgumentException("invalid bufferSize=" + bufferSize);
     }
     this.buffer = allocateBuffer(bufferSize);
-    // flip to force refill on first use
-    this.buffer.flip();
+    // force refill on first use
+    this.buffer.position(bufferSize);
 
     try {
       this.baseAddress = UnsafeHolder.getDirectBufferAddress(this.buffer);
@@ -221,6 +219,7 @@ public class ChannelBufferUnsafeInputStream extends InputStreamChannel {
   /**
    * {@inheritDoc}
    */
+  @Override
   public final int readInt() throws IOException {
     long addrPos = this.addrPosition;
     if ((this.addrLimit - addrPos) < 4) {
@@ -239,7 +238,7 @@ public class ChannelBufferUnsafeInputStream extends InputStreamChannel {
    * {@inheritDoc}
    */
   @Override
-  public final int available() throws IOException {
+  public final int available() {
     return (int)(this.addrLimit - this.addrPosition);
   }
 
@@ -268,7 +267,7 @@ public class ChannelBufferUnsafeInputStream extends InputStreamChannel {
    * {@inheritDoc}
    */
   @Override
-  public void close() throws IOException {
+  public void close() {
     this.buffer.clear();
     this.addrPosition = this.addrLimit = 0;
     UnsafeHolder.releaseDirectBuffer(this.buffer);
