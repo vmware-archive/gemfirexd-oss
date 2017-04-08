@@ -45,7 +45,6 @@ public final class MsgChannelStreamer extends ChannelBufferUnsafeDataOutputStrea
     implements BaseMsgStreamer, VersionedDataStream {
 
   private final DistributionMessage msg;
-  private final boolean hasSharedConnection;
   private final boolean directReply;
   private final ArrayList<Connection> connections;
   private final DMStats stats;
@@ -66,18 +65,16 @@ public final class MsgChannelStreamer extends ChannelBufferUnsafeDataOutputStrea
   };
 
   private MsgChannelStreamer(ArrayList<Connection> connections,
-      Connection firstConn, DistributionMessage msg,
-      boolean hasSharedConnection, boolean directReply, DMStats stats,
-      Version remoteVersion) throws SocketException {
+      Connection firstConn, DistributionMessage msg, boolean directReply,
+      DMStats stats, Version remoteVersion) throws SocketException {
     super(firstConn.getSocket().getChannel(),
         firstConn.owner.getConduit().tcpBufferSize);
     this.msg = msg;
-    this.hasSharedConnection = hasSharedConnection;
     this.directReply = directReply;
     this.connections = connections;
     // keep the connections in order sorted by localPort for consistent locking
     // of shared connections
-    if (hasSharedConnection && connections.size() > 1) {
+    if (connections.size() > 1) {
       connections.sort(localPortCompare);
     }
     this.stats = stats;
@@ -91,23 +88,19 @@ public final class MsgChannelStreamer extends ChannelBufferUnsafeDataOutputStrea
   }
 
   public static BaseMsgStreamer create(ArrayList<Connection> connections,
-      DistributionMessage msg, boolean directReply, DMStats stats)
-      throws SocketException {
+      final DistributionMessage msg, final boolean directReply,
+      DMStats stats) throws SocketException {
     // if all connections have the same version then use one MsgChannelStreamer
     Connection firstConn = connections.get(0);
     Version remoteVersion = firstConn.remoteVersion;
     boolean hasSameVersions = true;
     final int numConnections = connections.size();
-    boolean hasSharedConnection = false;
     // choose firstConn for locking using some criteria (e.g. min localPort)
     for (int i = 1; i < numConnections; i++) {
       Connection conn = connections.get(i);
       if (conn.getSocket().getLocalPort() < firstConn.getSocket()
           .getLocalPort()) {
         firstConn = conn;
-      }
-      if (!hasSharedConnection && conn.isSharedResource()) {
-        hasSharedConnection = true;
       }
       Version connVersion = conn.remoteVersion;
       if (remoteVersion == null) {
@@ -122,15 +115,15 @@ public final class MsgChannelStreamer extends ChannelBufferUnsafeDataOutputStrea
     }
     if (hasSameVersions) {
       return new MsgChannelStreamer(connections, firstConn, msg,
-          hasSharedConnection, directReply, stats, remoteVersion);
+          directReply, stats, remoteVersion);
     } else {
       // create list of streamers (separate even if there are common versions
       //   to keep things simple as this case itself is a rare one)
       ArrayList<BaseMsgStreamer> streamers = new ArrayList<>(numConnections);
       for (int i = 0; i < numConnections; i++) {
         Connection conn = connections.get(i);
-        streamers.add(new MsgChannelStreamer(singleConnection(conn), conn, msg,
-            conn.isSharedResource(), directReply, stats, conn.remoteVersion));
+        streamers.add(new MsgChannelStreamer(singleConnection(conn), conn,
+            msg, directReply, stats, conn.remoteVersion));
       }
       return new MsgStreamerList(streamers);
     }
@@ -161,10 +154,6 @@ public final class MsgChannelStreamer extends ChannelBufferUnsafeDataOutputStrea
   }
 
   private void acquireLocks() {
-    // lock only for shared connections
-    if (!this.hasSharedConnection) {
-      return;
-    }
     final ArrayList<Connection> connections = this.connections;
     final int numConnections = connections.size();
     for (int i = 0; i < numConnections; i++) {
@@ -173,10 +162,6 @@ public final class MsgChannelStreamer extends ChannelBufferUnsafeDataOutputStrea
   }
 
   private void releaseLocks() {
-    // lock only for shared connections
-    if (!this.hasSharedConnection) {
-      return;
-    }
     final ArrayList<Connection> connections = this.connections;
     final int numConnections = connections.size();
     for (int i = 0; i < numConnections; i++) {
