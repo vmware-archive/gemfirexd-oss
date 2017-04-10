@@ -757,7 +757,7 @@ public final class QueryKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
   public void clearOldest() {
 
     // build sorted map of idle objects
-    final Map<PooledObject<T>, K> map = new TreeMap<>();
+    final TreeMap<PooledObject<T>, K> map = new TreeMap<>();
 
     for (K k : poolMap.keySet()) {
       ObjectDeque<T> queue = poolMap.get(k);
@@ -902,7 +902,7 @@ public final class QueryKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
         if (evictionIterator == null || !evictionIterator.hasNext()) {
           if (evictionKeyIterator == null ||
               !evictionKeyIterator.hasNext()) {
-            List<K> keyCopy = new ArrayList<>();
+            ArrayList<K> keyCopy = new ArrayList<>();
             Lock readLock = keyLock.readLock();
             readLock.lock();
             try {
@@ -1373,7 +1373,7 @@ public final class QueryKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
    */
   @Override
   public Map<String, Integer> getNumWaitersByKey() {
-    Map<String, Integer> result = new HashMap<>();
+    HashMap<String, Integer> result = new HashMap<>();
 
     for (K key : poolMap.keySet()) {
       ObjectDeque<T> queue = poolMap.get(key);
@@ -1401,11 +1401,11 @@ public final class QueryKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
    */
   @Override
   public Map<String, List<DefaultPooledObjectInfo>> listAllObjects() {
-    Map<String, List<DefaultPooledObjectInfo>> result = new HashMap<>();
+    HashMap<String, List<DefaultPooledObjectInfo>> result = new HashMap<>();
     for (K key : poolMap.keySet()) {
       ObjectDeque<T> queue = poolMap.get(key);
       if (queue != null) {
-        List<DefaultPooledObjectInfo> list = new ArrayList<>();
+        ArrayList<DefaultPooledObjectInfo> list = new ArrayList<>();
         result.put(key.toString(), list);
         for (PooledObject<T> p : queue.getAllObjects().values()) {
           list.add(new DefaultPooledObjectInfo(p));
@@ -1416,17 +1416,23 @@ public final class QueryKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
   }
 
   /**
-   * Apply the given function on each object for a key both idle(waiting
+   * Apply the given function on each object for a key both idle (waiting
    * to be borrowed) and active (currently borrowed).
    */
-  public void forEachObject(K key, TObjectProcedure proc) {
-    ObjectDeque<T> queue = poolMap.get(key);
-    if (queue != null) {
-      for (PooledObject<T> p : queue.getAllObjects().values()) {
-        if (!proc.execute(p)) {
-          break;
+  public void foreachObject(K key, TObjectProcedure proc) {
+    Lock readLock = keyLock.readLock();
+    readLock.lock();
+    try {
+      ObjectDeque<T> queue = poolMap.get(key);
+      if (queue != null) {
+        for (PooledObject<T> p : queue.getAllObjects().values()) {
+          if (!proc.execute(p.getObject())) {
+            break;
+          }
         }
       }
+    } finally {
+      readLock.unlock();
     }
   }
 
@@ -1435,7 +1441,7 @@ public final class QueryKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
   /**
    * Maintains information on the per key queue for a given key.
    */
-  private class ObjectDeque<S> {
+  private final class ObjectDeque<S> {
 
     private final LinkedBlockingDeque<PooledObject<S>> idleObjects;
 
@@ -1449,7 +1455,7 @@ public final class QueryKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * The map is keyed on pooled instances, wrapped to ensure that
      * they work properly as keys.
      */
-    private final Map<IdentityWrapper<S>, PooledObject<S>> allObjects =
+    private final ConcurrentHashMap<IdentityWrapper<S>, PooledObject<S>> allObjects =
         new ConcurrentHashMap<>();
 
     /*
@@ -1466,7 +1472,7 @@ public final class QueryKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      * @param fairness true means client threads waiting to borrow / return instances
      *                 will be served as if waiting in a FIFO queue.
      */
-    public ObjectDeque(boolean fairness) {
+    ObjectDeque(boolean fairness) {
       idleObjects = new LinkedBlockingDeque<>(fairness);
     }
 
@@ -1475,7 +1481,7 @@ public final class QueryKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      *
      * @return The idle objects
      */
-    public LinkedBlockingDeque<PooledObject<S>> getIdleObjects() {
+    LinkedBlockingDeque<PooledObject<S>> getIdleObjects() {
       return idleObjects;
     }
 
@@ -1485,7 +1491,7 @@ public final class QueryKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      *
      * @return The number of objects created for this key
      */
-    public AtomicInteger getCreateCount() {
+    AtomicInteger getCreateCount() {
       return createCount;
     }
 
@@ -1494,7 +1500,7 @@ public final class QueryKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      *
      * @return The number of threads with a registered interest in this key
      */
-    public AtomicLong getNumInterested() {
+    AtomicLong getNumInterested() {
       return numInterested;
     }
 
@@ -1503,10 +1509,9 @@ public final class QueryKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
      *
      * @return All the objects
      */
-    public Map<IdentityWrapper<S>, PooledObject<S>> getAllObjects() {
+    ConcurrentHashMap<IdentityWrapper<S>, PooledObject<S>> getAllObjects() {
       return allObjects;
     }
-
   }
 
   //--- configuration attributes ---------------------------------------------
@@ -1527,7 +1532,7 @@ public final class QueryKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
    * in step with {@link #poolKeyList} using {@link #keyLock} to ensure any
    * changes to the list of current keys is made in a thread-safe manner.
    */
-  private final Map<K, ObjectDeque<T>> poolMap =
+  private final ConcurrentHashMap<K, ObjectDeque<T>> poolMap =
       new ConcurrentHashMap<>(); // @GuardedBy("keyLock") for write access (and some read access)
   /*
    * List of pool keys - used to control eviction order. The list of keys
@@ -1535,7 +1540,7 @@ public final class QueryKeyedObjectPool<K, T> extends BaseGenericObjectPool<T>
    * to ensure any changes to the list of current keys is made in a
    * thread-safe manner.
    */
-  private final List<K> poolKeyList = new ArrayList<>(); // @GuardedBy("keyLock")
+  private final ArrayList<K> poolKeyList = new ArrayList<>(); // @GuardedBy("keyLock")
   private final ReadWriteLock keyLock = new ReentrantReadWriteLock(true);
   /*
    * The combined count of the currently active objects for all keys and those

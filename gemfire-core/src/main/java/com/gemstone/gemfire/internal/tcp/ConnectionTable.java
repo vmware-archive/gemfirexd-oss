@@ -1124,7 +1124,7 @@ public final class ConnectionTable  {
       }
       // close all connections for the given stub
       if (this.connectionPool != null) {
-        this.connectionPool.forEachObject(connKey, c -> {
+        this.connectionPool.foreachObject(connKey, c -> {
           closeCon(reason, c);
           return true;
         });
@@ -1303,7 +1303,7 @@ public final class ConnectionTable  {
       HashMap result) {
 
     if (this.connectionPool != null) {
-      this.connectionPool.forEachObject(new ConnKey(member), c -> {
+      this.connectionPool.foreachObject(new ConnKey(member), c -> {
         final Connection conn = (Connection)c;
         if (!conn.isSharedResource() && conn.getOriginatedHere()
             && conn.getPreserveOrder()) {
