@@ -82,7 +82,7 @@ public class OverflowOplogSet implements OplogSet {
         }
       }
       // Create a new one and put it on the front of the list.
-      OverflowOplog oo = createOverflowOplog(value.buffer.limit());
+      OverflowOplog oo = createOverflowOplog(value.buffer.remaining());
       addOverflow(oo);
       this.lastOverflowWrite = oo;
       boolean didIt = oo.modify(dr, entry, value, async);
@@ -227,7 +227,7 @@ public class OverflowOplogSet implements OplogSet {
           return;
         }
       }
-      OverflowOplog oo = createOverflowOplog(value.limit());
+      OverflowOplog oo = createOverflowOplog(value.remaining());
       this.lastOverflowWrite = oo;
       addOverflow(oo);
       boolean didIt = oo.copyForwardForOverflowCompact(de, value, userBits);

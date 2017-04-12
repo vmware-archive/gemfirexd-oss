@@ -1562,7 +1562,7 @@ public final class Oplog implements CompactableOplog {
     if (bitOnly) {
       dr.endRead(start, this.stats.endRead(start, 1), 1);
     } else {
-      final int numRead = bb.getBuffer().limit();
+      final int numRead = bb.getBuffer().remaining();
       dr.endRead(start, this.stats.endRead(start, numRead), numRead);
     }
     return bb;
@@ -4089,7 +4089,7 @@ public final class Oplog implements CompactableOplog {
         // its the tombstone token
         userBits = EntryBits.setTombstone(userBits, true);
       } else {
-        if (value.buffer.limit() == 0) {
+        if (value.buffer.remaining() == 0) {
           throw new IllegalStateException("userBits==1 and value is zero length");
         }
         userBits = EntryBits.setSerialized(userBits, true);
@@ -4208,9 +4208,6 @@ public final class Oplog implements CompactableOplog {
     }
     synchronized (this.lock) { // TODO soplog perf analysis shows this as a contention point
       //synchronized (this.crf) {
-      if (value.position() != 0) {
-        throw new IllegalStateException("expected zero position for buffer");
-      }
       initOpState(OPLOG_NEW_ENTRY_0ID, dr, entry, value, userBits, false);
       // Asif : Check if the current data in ByteBuffer will cause a
       // potential increase in the size greater than the max allowed
@@ -4289,7 +4286,7 @@ public final class Oplog implements CompactableOplog {
 //                   + " oplog#" + getOplogId());
 //          }
         if (EntryBits.isNeedsValue(userBits)) {
-          id.setValueLength(value.limit());
+          id.setValueLength(value.remaining());
         } else {
           id.setValueLength(0);
         }
@@ -4321,7 +4318,7 @@ public final class Oplog implements CompactableOplog {
                              + "> key=<" + entry.getKeyCopy() + ">"
                              + " valueOffset=" + startPosForSynchOp
                              + " userBits=" + userBits
-                             + " valueLen=" + value.limit()
+                             + " valueLen=" + value.remaining()
                              + " valueBytes=<" + bufferToString(value) + ">"
                              + " drId=" + dr.getId()
                              + " versionTag=" + tag
@@ -5491,9 +5488,6 @@ public final class Oplog implements CompactableOplog {
       if (getOplogSet().getChild() != this) {
         useNextOplog = true;
       } else {
-        if (value.position() != 0) {
-          throw new IllegalStateException("expected zero position for buffer");
-        }
         initOpState(OPLOG_MOD_ENTRY_1ID, dr, entry, value, userBits, false);
         adjustment = getOpStateSize();
         assert adjustment > 0;
@@ -5547,14 +5541,14 @@ public final class Oplog implements CompactableOplog {
                              + "> key=<" + entry.getKeyCopy() + ">"
                              + " valueOffset=" + startPosForSynchOp
                              + " userBits=" + userBits
-                             + " valueLen=" + value.limit()
+                             + " valueLen=" + value.remaining()
                              + " valueBytes=<" + bufferToString(value) + ">"
                              + " drId=" + dr.getId()
                              + " versionStamp=" + tag
                              + " oplog#" + getOplogId());
           }
           if (EntryBits.isNeedsValue(userBits)) {
-            id.setValueLength(value.limit());
+            id.setValueLength(value.remaining());
           } else {
             id.setValueLength(0);
           }
@@ -7643,7 +7637,7 @@ public final class Oplog implements CompactableOplog {
   }
 
   public static String bufferToString(final ByteBuffer buffer) {
-    return bufferToString(buffer, buffer.limit());
+    return bufferToString(buffer, buffer.remaining());
   }
   public static String bufferToString(final ByteBuffer buffer, final int len) {
     if (buffer == null) return "null";
@@ -7759,7 +7753,9 @@ public final class Oplog implements CompactableOplog {
     private void write(OplogFile olf,
         ByteBuffer bytes) throws IOException {
       final int position = bytes.position();
-      olf.outputStream.write(bytes);
+      while (bytes.hasRemaining()) {
+        olf.outputStream.write(bytes);
+      }
       // rewind back just in case bytes is to be read again
       if (position == 0) bytes.rewind();
       else bytes.position(position);
@@ -7963,7 +7959,7 @@ public final class Oplog implements CompactableOplog {
       saveUserBits(notToUseUserBits, userBits);
       
       this.value = value;
-      this.valueLength = value.limit();
+      this.valueLength = value.remaining();
       if (this.userBits == 1 && this.valueLength == 0) {
         throw new IllegalStateException("userBits==1 and valueLength is 0");
       }
@@ -7988,7 +7984,7 @@ public final class Oplog implements CompactableOplog {
       if (needsKey) {
         Object key = entry.getKeyCopy();
         this.keyBytes = EntryEventImpl.serializeDirect(key, null);
-        this.size += (4 + this.keyBytes.limit());
+        this.size += (4 + this.keyBytes.remaining());
       } else {
         this.keyBytes = null;
       }
@@ -8150,7 +8146,7 @@ public final class Oplog implements CompactableOplog {
         }
         final ByteBuffer keyBytes = this.keyBytes;
         if (keyBytes != null) {
-          final int numKeyBytes = keyBytes.limit();
+          final int numKeyBytes = keyBytes.remaining();
           writeInt(olf, numKeyBytes);
           bytesWritten += 4;
           if (numKeyBytes > 0) {

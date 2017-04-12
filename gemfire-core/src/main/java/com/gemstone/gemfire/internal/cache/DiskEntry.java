@@ -214,7 +214,7 @@ public interface DiskEntry extends RegionEntry {
         else {
           Assert.assertTrue(!Token.isRemovedFromDisk(value));
           buffer = EntryEventImpl.serializeDirect(value, null);
-          if (buffer.limit() == 0) {
+          if (buffer.remaining() == 0) {
             throw new IllegalStateException("serializing <" + value +
                 "> produced empty byte array");
           }

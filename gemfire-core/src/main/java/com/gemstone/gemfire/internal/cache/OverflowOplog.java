@@ -59,7 +59,6 @@ import com.gemstone.gemfire.internal.cache.Oplog.OplogFile;
 import com.gemstone.gemfire.internal.cache.persistence.BytesAndBits;
 import com.gemstone.gemfire.internal.cache.persistence.DiskRegionView;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
-import com.gemstone.gemfire.internal.shared.unsafe.ChannelBufferUnsafeOutputStream;
 import com.gemstone.gemfire.internal.shared.unsafe.UnsafeHolder;
 
 /**
@@ -393,7 +392,7 @@ class OverflowOplog implements CompactableOplog {
     if (bitOnly) {
       dr.endRead(start, this.stats.endRead(start, 1), 1);
     } else {
-      final int numRead = bb.getBuffer().limit();
+      final int numRead = bb.getBuffer().remaining();
       dr.endRead(start, this.stats.endRead(start, numRead), numRead);
     }
     return bb;
@@ -649,9 +648,6 @@ class OverflowOplog implements CompactableOplog {
     long startPosForSynchOp = -1L;
     OverflowOplog emptyOplog = null;
     synchronized (this.crf) {
-      if (value.position() != 0) {
-        throw new IllegalStateException("expected zero position for buffer");
-      }
       initOpState(entry, value, userBits);
       int adjustment = getOpStateSize();
       assert adjustment > 0;
@@ -709,7 +705,7 @@ class OverflowOplog implements CompactableOplog {
           oldOplogId = (int)id.setOplogId(getOplogId());
           id.setOffsetInOplog(startPosForSynchOp);
           if (EntryBits.isNeedsValue(userBits)) {
-            id.setValueLength(value.limit());
+            id.setValueLength(value.remaining());
           } else {
             id.setValueLength(0);
           }
@@ -1057,7 +1053,7 @@ class OverflowOplog implements CompactableOplog {
   private BytesAndBits attemptWriteBufferGet(long writePosition, long readPosition,
                                              int valueLength, byte userBits) {
     BytesAndBits bb = null;
-    final ChannelBufferUnsafeOutputStream outputStream = this.crf.outputStream;
+    final OplogFile.FileChannelOutputStream outputStream = this.crf.outputStream;
     ByteBuffer writeBuf = outputStream.getBuffer();
     int curWriteBufPos = outputStream.position();
     if (writePosition <= readPosition
@@ -1436,14 +1432,18 @@ class OverflowOplog implements CompactableOplog {
       this.size = 0;
       this.needsValue = EntryBits.isNeedsValue(this.userBits);
       if (this.needsValue) {
-        this.size += this.value.limit();
+        this.size += this.value.remaining();
       }
     }
     public long write() throws IOException {
       long bytesWritten = 0;
-      int valueLength = value.limit();
+      final ByteBuffer value = this.value;
+      int valueLength = value.remaining();
       if (this.needsValue && valueLength > 0) {
-        getOLF().outputStream.write(this.value);
+        final OplogFile.FileChannelOutputStream stream = getOLF().outputStream;
+        do {
+          stream.write(value);
+        } while (value.hasRemaining());
         bytesWritten += valueLength;
       }
       return bytesWritten;
