@@ -4056,9 +4056,10 @@ public final class Oplog implements CompactableOplog {
    * @throws IOException 
    */
   private void initOpState(byte opCode, DiskRegionView dr, DiskEntry entry,
-      ByteBuffer value, byte userBits,
+      ByteBuffer value, int valueLength, byte userBits,
       boolean notToUseUserBits) throws IOException {
-    this.opState.initialize(opCode, dr, entry, value, userBits, notToUseUserBits);
+    this.opState.initialize(opCode, dr, entry, value, valueLength,
+        userBits, notToUseUserBits);
   }
 
   private void clearOpState() {
@@ -4208,7 +4209,11 @@ public final class Oplog implements CompactableOplog {
     }
     synchronized (this.lock) { // TODO soplog perf analysis shows this as a contention point
       //synchronized (this.crf) {
-      initOpState(OPLOG_NEW_ENTRY_0ID, dr, entry, value, userBits, false);
+      final int valueLength = value.remaining();
+      // can't use value buffer after handing it over to opState (except
+      //   logging or if useNextOplog=true when OpState ops are skipped here)
+      initOpState(OPLOG_NEW_ENTRY_0ID, dr, entry, value, valueLength,
+          userBits, false);
       // Asif : Check if the current data in ByteBuffer will cause a
       // potential increase in the size greater than the max allowed
       long temp = (getOpStateSize() + this.crf.currSize);
@@ -4286,7 +4291,7 @@ public final class Oplog implements CompactableOplog {
 //                   + " oplog#" + getOplogId());
 //          }
         if (EntryBits.isNeedsValue(userBits)) {
-          id.setValueLength(value.remaining());
+          id.setValueLength(valueLength);
         } else {
           id.setValueLength(0);
         }
@@ -4318,7 +4323,7 @@ public final class Oplog implements CompactableOplog {
                              + "> key=<" + entry.getKeyCopy() + ">"
                              + " valueOffset=" + startPosForSynchOp
                              + " userBits=" + userBits
-                             + " valueLen=" + value.remaining()
+                             + " valueLen=" + valueLength
                              + " valueBytes=<" + bufferToString(value) + ">"
                              + " drId=" + dr.getId()
                              + " versionTag=" + tag
@@ -5488,7 +5493,11 @@ public final class Oplog implements CompactableOplog {
       if (getOplogSet().getChild() != this) {
         useNextOplog = true;
       } else {
-        initOpState(OPLOG_MOD_ENTRY_1ID, dr, entry, value, userBits, false);
+        final int valueLength = value.remaining();
+        // can't use value buffer after handing it over to opState (except
+        //   logging or if useNextOplog=true when OpState ops are skipped here)
+        initOpState(OPLOG_MOD_ENTRY_1ID, dr, entry, value, valueLength,
+            userBits, false);
         adjustment = getOpStateSize();
         assert adjustment > 0;
         long temp = (this.crf.currSize + adjustment);
@@ -5541,14 +5550,14 @@ public final class Oplog implements CompactableOplog {
                              + "> key=<" + entry.getKeyCopy() + ">"
                              + " valueOffset=" + startPosForSynchOp
                              + " userBits=" + userBits
-                             + " valueLen=" + value.remaining()
+                             + " valueLen=" + valueLength
                              + " valueBytes=<" + bufferToString(value) + ">"
                              + " drId=" + dr.getId()
                              + " versionStamp=" + tag
                              + " oplog#" + getOplogId());
           }
           if (EntryBits.isNeedsValue(userBits)) {
-            id.setValueLength(value.remaining());
+            id.setValueLength(valueLength);
           } else {
             id.setValueLength(0);
           }
@@ -6006,7 +6015,7 @@ public final class Oplog implements CompactableOplog {
           // Ok now we can go ahead and find out its actual size
           // This is the only place to set notToUseUserBits=true
           initOpState(OPLOG_DEL_ENTRY_1ID, dr, entry,
-              DiskEntry.Helper.NULL_BUFFER, (byte)0, true);
+              DiskEntry.Helper.NULL_BUFFER, 0, (byte)0, true);
           int adjustment = getOpStateSize();
 
           this.drf.currSize += adjustment;
@@ -7636,12 +7645,14 @@ public final class Oplog implements CompactableOplog {
     int keyNum = 0;
   }
 
+  /**
+   * For write buffers only log before OpState is cleared else it can lead
+   * to a crash with direct ByteBuffers.
+   */
   public static String bufferToString(final ByteBuffer buffer) {
-    return bufferToString(buffer, buffer.remaining());
-  }
-  public static String bufferToString(final ByteBuffer buffer, final int len) {
     if (buffer == null) return "null";
     StringBuilder sb = new StringBuilder();
+    final int len = buffer.limit();
     for (int i = 0; i < len; i++) {
       sb.append(buffer.get(i)).append(", ");
     }
@@ -7951,6 +7962,7 @@ public final class Oplog implements CompactableOplog {
                            DiskRegionView dr,
                            DiskEntry entry,
                            ByteBuffer value,
+                           int valueLength,
                            byte userBits,
                            boolean notToUseUserBits) throws IOException
     {
@@ -7959,7 +7971,7 @@ public final class Oplog implements CompactableOplog {
       saveUserBits(notToUseUserBits, userBits);
       
       this.value = value;
-      this.valueLength = value.remaining();
+      this.valueLength = valueLength;
       if (this.userBits == 1 && this.valueLength == 0) {
         throw new IllegalStateException("userBits==1 and valueLength is 0");
       }
