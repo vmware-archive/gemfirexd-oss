@@ -460,8 +460,8 @@ subprojects {
   test {
     dependsOn "${subprojectBase}storeProduct"
     maxParallelForks = (2 * Runtime.getRuntime().availableProcessors())
-    minHeapSize = '768m'
-    maxHeapSize = '768m'
+    minHeapSize = '1g'
+    maxHeapSize = '1g'
 
     def single = System.getProperty('junit.single')
     if (single == null || single.length() == 0) {
@@ -567,8 +567,8 @@ subprojects {
   task wanTest(type:Test) {
     dependsOn "${subprojectBase}storeProduct"
     maxParallelForks = (int)Math.sqrt(Runtime.getRuntime().availableProcessors() + 1)
-    minHeapSize = '512m'
-    maxHeapSize = '512m'
+    minHeapSize = '1g'
+    maxHeapSize = '1g'
 
     def single = System.getProperty('wan.single')
     if (single == null || single.length() == 0) {
