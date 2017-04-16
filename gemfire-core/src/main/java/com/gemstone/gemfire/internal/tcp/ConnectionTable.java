@@ -46,7 +46,6 @@ import com.gemstone.gemfire.distributed.internal.membership.jgroup.JGroupMembers
 import org.apache.commons.pool2.KeyedPooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
-import org.apache.commons.pool2.impl.QueryKeyedObjectPool;
 
 /** <p>ConnectionTable holds all of the Connection objects in a conduit.
     Connections represent a pipe between two endpoints represented
