@@ -187,6 +187,13 @@ public final class Connection implements Runnable {
   /** Set to true when in message dispatch processing. */
   private boolean inDispatch;
 
+  /** Set to true when this connection is a pooled one. */
+  private final boolean pooled;
+
+  public boolean isPooled() {
+    return this.pooled;
+  }
+
   /** output stream/channel lock */
   final StoppableReentrantLock outLock;
 
@@ -547,6 +554,7 @@ public final class Connection implements Runnable {
       throw new IllegalArgumentException(LocalizedStrings.Connection_NULL_CONNECTIONTABLE.toLocalizedString());
     }
     this.isReceiver = true;
+    this.pooled = false;
     this.owner = t;
     this.outLock = new StoppableReentrantLock(t.getConduit().getCancelCriterion());
     this.logger = owner.getLogger();
@@ -994,6 +1002,7 @@ public final class Connection implements Runnable {
                                            final Stub key,
                                            final InternalDistributedMember remoteAddr,
                                            final boolean sharedResource,
+                                           final boolean pooled,
                                            final long startTime,
                                            final long ackTimeout,
                                            final long ackSATimeout)
@@ -1047,6 +1056,11 @@ public final class Connection implements Runnable {
           }
         } else if (!suspected && (startTime > 0) && (ackTimeout > 0)
             && (startTime + ackTimeout < now)) {
+          if (remoteAddr != null) {
+            t.getLogger().warning( LocalizedStrings.
+                    Connection_UNABLE_TO_FORM_A_TCPIP_CONNECTION_TO_0_IN_OVER_1_SECONDS,
+                new Object[] { remoteAddr, (ackTimeout)/1000 });
+          }
           mgr.suspectMember(remoteAddr, LocalizedStrings.Connection_UNABLE_TO_FORM_A_TCPIP_CONNECTION_IN_A_REASONABLE_AMOUNT_OF_TIME.toLocalizedString());
           suspected = true;
         }
@@ -1090,7 +1104,8 @@ public final class Connection implements Runnable {
         //create connection
         try {
           conn = null;
-          conn = new Connection(mgr, t, preserveOrder, key, remoteAddr, sharedResource);
+          conn = new Connection(mgr, t, preserveOrder, key, remoteAddr,
+              sharedResource, pooled);
         }
         catch (javax.net.ssl.SSLHandshakeException se) {
           // no need to retry if certificates were rejected
@@ -1231,7 +1246,8 @@ public final class Connection implements Runnable {
                      boolean preserveOrder,
                      Stub key,
                      InternalDistributedMember remoteAddr,
-                     boolean sharedResource)
+                     boolean sharedResource,
+                     boolean pooled)
     throws IOException, DistributedSystemDisconnectedException
   {    
     if (t == null) {
@@ -1244,6 +1260,7 @@ public final class Connection implements Runnable {
     Assert.assertTrue(this.logger != null);
     this.sharedResource = sharedResource;
     this.preserveOrder = preserveOrder;
+    this.pooled = pooled;
     setRemoteAddr(remoteAddr, key);
     this.conduitIdStr = this.owner.getConduit().getId().toString();
     this.handshakeRead = false;
@@ -1260,6 +1277,7 @@ public final class Connection implements Runnable {
     // connect to listening socket
 
     InetSocketAddress addr = new InetSocketAddress(remoteId.getInetAddress(), remoteId.getPort());
+    // use normal blocking channel for non-pooled connections
     if (useNIOStream()) {
       SocketChannel channel = SocketChannel.open();
       final Socket socket = channel.socket();
@@ -1275,21 +1293,27 @@ public final class Connection implements Runnable {
         // Non-blocking mode to write only as much as possible in one round.
         // MsgChannelStreamer will move to writing to other servers,
         // if remaining, for best performance.
-        channel.configureBlocking(false);
-        channel.connect(addr);
-        final long connectTimeNanos = connectTime * 1000000L;
-        long start = 0L;
-        while (!channel.finishConnect()) {
-          if (start == 0L && connectTimeNanos > 0) {
-            start = System.nanoTime();
+        if (pooled) {
+          channel.configureBlocking(false);
+          channel.connect(addr);
+          final long connectTimeNanos = connectTime * 1000000L;
+          long start = 0L;
+          while (!channel.finishConnect()) {
+            if (start == 0L && connectTimeNanos > 0) {
+              start = System.nanoTime();
+            }
+            LockSupport.parkNanos(channel, 100L);
+            if (connectTimeNanos > 0 &&
+                (System.nanoTime() - start) > connectTimeNanos) {
+              throw new ConnectException(LocalizedStrings
+                  .Connection_ATTEMPT_TO_CONNECT_TIMED_OUT_AFTER_0_MILLISECONDS
+                  .toLocalizedString(connectTime));
+            }
           }
-          LockSupport.parkNanos(channel, 100L);
-          if (connectTimeNanos > 0 &&
-              (System.nanoTime() - start) > connectTimeNanos) {
-            throw new ConnectException(LocalizedStrings
-                .Connection_ATTEMPT_TO_CONNECT_TIMED_OUT_AFTER_0_MILLISECONDS
-                .toLocalizedString(connectTime));
-          }
+        } else {
+          // configure as blocking channel for non-pooled connections
+          channel.configureBlocking(true);
+          socket.connect(addr, connectTime);
         }
       } catch (NullPointerException | IllegalStateException e) {
         // bug #44469: for some reason NIO throws runtime exceptions
@@ -1298,6 +1322,12 @@ public final class Connection implements Runnable {
             .Connection_ATTEMPT_TO_CONNECT_TIMED_OUT_AFTER_0_MILLISECONDS
             .toLocalizedString(connectTime));
         c.initCause(e);
+        // prevent a hot loop by sleeping a little bit
+        try {
+          Thread.sleep(100);
+        } catch (InterruptedException ie) {
+          Thread.currentThread().interrupt();
+        }
         throw c;
       } finally {
         this.owner.removeConnectingSocket(socket);

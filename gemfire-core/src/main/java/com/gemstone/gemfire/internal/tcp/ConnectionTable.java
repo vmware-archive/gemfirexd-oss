@@ -373,7 +373,7 @@ public final class ConnectionTable  {
         Connection newConn = Connection.createSender(owner.getMembershipManager(),
             ConnectionTable.this, true /* preserveOrder */, key.stub,
             owner.getMemberForStub(key.stub, false), false /* shared */,
-            key.startTime, key.ackTimeout, key.ackSATimeout);
+            true /* pooled */, key.startTime, key.ackTimeout, key.ackSATimeout);
         final LogWriterI18n logger = owner.getLogger();
         if (logger.fineEnabled()) {
           logger.fine("ConnectionTable: created a pooled ordered connection: " +
@@ -411,12 +411,12 @@ public final class ConnectionTable  {
     final int numConnections = Math.min(Math.max(numProcessors, 8), 32);
     this.connectionPool.setMaxTotalPerKey(numConnections);
     this.connectionPool.setMaxIdlePerKey(numConnections);
-    this.connectionPool.setMinIdlePerKey(2); // at least 2 connections per server
     this.connectionPool.setTestOnBorrow(true);
     this.connectionPool.setTestOnReturn(true);
     final int connectionTimeout = owner.idleConnectionTimeout;
     this.connectionPool.setTimeBetweenEvictionRunsMillis(connectionTimeout);
-    this.connectionPool.setSoftMinEvictableIdleTimeMillis(connectionTimeout * 5);
+    // default idle-timeout for a connection is 5 minutes
+    this.connectionPool.setMinEvictableIdleTimeMillis(connectionTimeout * 5);
   }
   
   private Executor createThreadPoolForIO(boolean conserveSockets) {
@@ -557,7 +557,7 @@ public final class ConnectionTable  {
     try {
       con = Connection.createSender(owner.getMembershipManager(), this, preserveOrder,
                                     id, this.owner.getMemberForStub(id, false),
-                                    sharedResource,
+                                    sharedResource, false /* pooled */,
                                     startTime, ackThreshold, ackSAThreshold);
       this.owner.stats.incSenders(sharedResource, preserveOrder);
     }
@@ -773,7 +773,7 @@ public final class ConnectionTable  {
     result = Connection.createSender(owner.getMembershipManager(), 
         this, true /* preserveOrder */, id,
         this.owner.getMemberForStub(id, false), false /* shared */,
-        startTime, ackTimeout, ackSATimeout);
+        false /* pooled */, startTime, ackTimeout, ackSATimeout);
     if (getLogger().fineEnabled()) {
       getLogger().fine("ConnectionTable: created an ordered connection:"+result);
     }
@@ -816,7 +816,7 @@ public final class ConnectionTable  {
   }
 
   public final void releasePooledConnection(Connection conn) {
-    if (this.connectionPool != null) {
+    if (conn.isPooled() && this.connectionPool != null) {
       this.connectionPool.returnObject(new ConnKey(conn.remoteId), conn);
     }
   }
