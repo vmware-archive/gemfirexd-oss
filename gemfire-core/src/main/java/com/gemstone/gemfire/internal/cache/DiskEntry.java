@@ -151,83 +151,7 @@ public interface DiskEntry extends RegionEntry {
    */
   public static final byte[] TOMBSTONE_BYTES = new byte[0];
 
-  ValueWrapper INVALID_VW = new ValueWrapper(
-      true, ByteBuffer.wrap(INVALID_BYTES));
-  ValueWrapper LOCAL_INVALID_VW = new ValueWrapper(
-      true, ByteBuffer.wrap(LOCAL_INVALID_BYTES));
-  ValueWrapper TOMBSTONE_VW = new ValueWrapper(
-      true, ByteBuffer.wrap(TOMBSTONE_BYTES));
-
   ///////////////////////  Inner Classes  //////////////////////
-
-  final class ValueWrapper {
-
-    public final boolean isSerializedObject;
-    public final ByteBuffer buffer;
-
-    public static ValueWrapper create(Object value) {
-      if (value == Token.INVALID) {
-        // even though it is not serialized we say it is because
-        // bytes will never be an empty array when it is serialized
-        // so that gives us a way to specify the invalid value
-        // given a byte array and a boolean flag.
-        return INVALID_VW;
-      }
-      else if (value == Token.LOCAL_INVALID) {
-        // even though it is not serialized we say it is because
-        // bytes will never be an empty array when it is serialized
-        // so that gives us a way to specify the local-invalid value
-        // given a byte array and a boolean flag.
-        return LOCAL_INVALID_VW;
-      }
-      else if (value == Token.TOMBSTONE) {
-        return TOMBSTONE_VW;
-      }
-      else {
-        ByteBuffer buffer;
-        boolean isSerializedObject = true;
-        if (value instanceof CachedDeserializable) {
-          byte[] bytes;
-          CachedDeserializable proxy = (CachedDeserializable)value;
-          if (proxy instanceof StoredObject) {
-            StoredObject ohproxy = (StoredObject) proxy;
-            isSerializedObject = ohproxy.isSerialized();
-            if (isSerializedObject) {
-              bytes = ohproxy.getSerializedValue();
-            } else {
-              //TODO:Asif: Speak to Darrel for cleaner way
-              if (ohproxy instanceof ByteSource) {
-                bytes = ((ByteSource)ohproxy).getRowBytes();
-              } else {
-                bytes = (byte[])ohproxy.getDeserializedForReading();
-              }
-            }
-          } else {
-            bytes = proxy.getSerializedValue();
-          }
-          buffer = Helper.wrapBytes(bytes);
-        }
-        else if (value instanceof byte[]) {
-          isSerializedObject = false;
-          buffer = ByteBuffer.wrap((byte[])value);
-        }
-        else {
-          Assert.assertTrue(!Token.isRemovedFromDisk(value));
-          buffer = EntryEventImpl.serializeDirect(value, null);
-          if (buffer.remaining() == 0) {
-            throw new IllegalStateException("serializing <" + value +
-                "> produced empty byte array");
-          }
-        }
-        return new ValueWrapper(isSerializedObject, buffer);
-      }
-    }
-
-    private ValueWrapper(boolean isSerializedObject, ByteBuffer buffer) {
-      this.isSerializedObject = isSerializedObject;
-      this.buffer = buffer;
-    }
-  }
 
   /**
    * A Helper class for performing functions common to all
@@ -682,6 +606,82 @@ public interface DiskEntry extends RegionEntry {
         }
         drv.incNumEntriesInVM(1L);
         incrementBucketStats(r, 1/*InVM*/, 0/*OnDisk*/, 0);
+      }
+    }
+
+    static final ValueWrapper INVALID_VW = new ValueWrapper(
+        true, ByteBuffer.wrap(INVALID_BYTES));
+    static final ValueWrapper LOCAL_INVALID_VW = new ValueWrapper(
+        true, ByteBuffer.wrap(LOCAL_INVALID_BYTES));
+    static final ValueWrapper TOMBSTONE_VW = new ValueWrapper(
+        true, ByteBuffer.wrap(TOMBSTONE_BYTES));
+
+    static class ValueWrapper {
+
+      public final boolean isSerializedObject;
+      public final ByteBuffer buffer;
+
+      public static ValueWrapper create(Object value) {
+        if (value == Token.INVALID) {
+          // even though it is not serialized we say it is because
+          // bytes will never be an empty array when it is serialized
+          // so that gives us a way to specify the invalid value
+          // given a byte array and a boolean flag.
+          return INVALID_VW;
+        }
+        else if (value == Token.LOCAL_INVALID) {
+          // even though it is not serialized we say it is because
+          // bytes will never be an empty array when it is serialized
+          // so that gives us a way to specify the local-invalid value
+          // given a byte array and a boolean flag.
+          return LOCAL_INVALID_VW;
+        }
+        else if (value == Token.TOMBSTONE) {
+          return TOMBSTONE_VW;
+        }
+        else {
+          ByteBuffer buffer;
+          boolean isSerializedObject = true;
+          if (value instanceof CachedDeserializable) {
+            byte[] bytes;
+            CachedDeserializable proxy = (CachedDeserializable)value;
+            if (proxy instanceof StoredObject) {
+              StoredObject ohproxy = (StoredObject) proxy;
+              isSerializedObject = ohproxy.isSerialized();
+              if (isSerializedObject) {
+                bytes = ohproxy.getSerializedValue();
+              } else {
+                //TODO:Asif: Speak to Darrel for cleaner way
+                if (ohproxy instanceof ByteSource) {
+                  bytes = ((ByteSource)ohproxy).getRowBytes();
+                } else {
+                  bytes = (byte[])ohproxy.getDeserializedForReading();
+                }
+              }
+            } else {
+              bytes = proxy.getSerializedValue();
+            }
+            buffer = Helper.wrapBytes(bytes);
+          }
+          else if (value instanceof byte[]) {
+            isSerializedObject = false;
+            buffer = ByteBuffer.wrap((byte[])value);
+          }
+          else {
+            Assert.assertTrue(!Token.isRemovedFromDisk(value));
+            buffer = EntryEventImpl.serializeDirect(value, null);
+            if (buffer.remaining() == 0) {
+              throw new IllegalStateException("serializing <" + value +
+                  "> produced empty byte array");
+            }
+          }
+          return new ValueWrapper(isSerializedObject, buffer);
+        }
+      }
+
+      private ValueWrapper(boolean isSerializedObject, ByteBuffer buffer) {
+        this.isSerializedObject = isSerializedObject;
+        this.buffer = buffer;
       }
     }
 

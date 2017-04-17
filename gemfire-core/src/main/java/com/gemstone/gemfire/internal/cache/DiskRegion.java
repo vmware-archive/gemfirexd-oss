@@ -404,7 +404,7 @@ public class DiskRegion extends AbstractDiskRegion {
    *         If <code>id</code> is less than zero
    */
   final void put(DiskEntry entry, LocalRegion region,
-      DiskEntry.ValueWrapper value, boolean async) throws  RegionClearedException {
+      DiskEntry.Helper.ValueWrapper value, boolean async) throws  RegionClearedException {
     getDiskStore().put(region, entry, value, async);
   }
 

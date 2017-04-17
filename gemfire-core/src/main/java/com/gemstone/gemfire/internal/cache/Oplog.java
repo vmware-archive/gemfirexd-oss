@@ -4076,17 +4076,17 @@ public final class Oplog implements CompactableOplog {
     return this.opState.getValueOffset();
   }
 
-  private byte calcUserBits(DiskEntry.ValueWrapper value) {
+  private byte calcUserBits(DiskEntry.Helper.ValueWrapper value) {
     byte userBits = 0x0;
   
     if (value.isSerializedObject) {
-      if (value == DiskEntry.INVALID_VW) {
+      if (value == DiskEntry.Helper.INVALID_VW) {
         // its the invalid token
         userBits = EntryBits.setInvalid(userBits, true);
-      } else if (value == DiskEntry.LOCAL_INVALID_VW) {
+      } else if (value == DiskEntry.Helper.LOCAL_INVALID_VW) {
         // its the local-invalid token
         userBits = EntryBits.setLocalInvalid(userBits, true);
-      } else if (value == DiskEntry.TOMBSTONE_VW) {
+      } else if (value == DiskEntry.Helper.TOMBSTONE_VW) {
         // its the tombstone token
         userBits = EntryBits.setTombstone(userBits, true);
       } else {
@@ -4130,7 +4130,7 @@ public final class Oplog implements CompactableOplog {
    *  
    */
   public final void create(LocalRegion region, DiskEntry entry,
-      DiskEntry.ValueWrapper value, boolean async) {
+      DiskEntry.Helper.ValueWrapper value, boolean async) {
 
     if (this != getOplogSet().getChild()) {
       getOplogSet().getChild().create(region, entry, value, async);
@@ -5344,7 +5344,7 @@ public final class Oplog implements CompactableOplog {
    * operations for different entries to proceed concurrently for asynch mode
    */
   public final void modify(LocalRegion region, DiskEntry entry,
-      DiskEntry.ValueWrapper value, boolean async) {
+      DiskEntry.Helper.ValueWrapper value, boolean async) {
 
     if (getOplogSet().getChild() != this) {
       getOplogSet().getChild().modify(region, entry, value, async);
@@ -6486,11 +6486,11 @@ public final class Oplog implements CompactableOplog {
     BytesAndBits bb = null;
     if (EntryBits.isAnyInvalid(userBits) || EntryBits.isTombstone(userBits) || bitOnly || valueLength == 0) {
       if (EntryBits.isInvalid(userBits)) {
-        bb = new BytesAndBits(DiskEntry.INVALID_VW.buffer, userBits);
+        bb = new BytesAndBits(DiskEntry.Helper.INVALID_VW.buffer, userBits);
       } else if (EntryBits.isTombstone(userBits)) {
-        bb = new BytesAndBits(DiskEntry.TOMBSTONE_VW.buffer, userBits);
+        bb = new BytesAndBits(DiskEntry.Helper.TOMBSTONE_VW.buffer, userBits);
       } else {
-        bb = new BytesAndBits(DiskEntry.LOCAL_INVALID_VW.buffer, userBits);
+        bb = new BytesAndBits(DiskEntry.Helper.LOCAL_INVALID_VW.buffer, userBits);
       }
     }
     else {

@@ -196,13 +196,13 @@ public class PersistentOplogSet implements OplogSet {
   
   @Override
   public void create(LocalRegion region, DiskEntry entry,
-      DiskEntry.ValueWrapper value, boolean async) {
+      DiskEntry.Helper.ValueWrapper value, boolean async) {
     getChild().create(region, entry, value, async);
   }
   
   @Override
   public void modify(LocalRegion region, DiskEntry entry,
-      DiskEntry.ValueWrapper value, boolean async) {
+      DiskEntry.Helper.ValueWrapper value, boolean async) {
     getChild().modify(region, entry, value, async);
   }
 

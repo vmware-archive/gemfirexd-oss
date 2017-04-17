@@ -73,7 +73,7 @@ public class OverflowOplogSet implements OplogSet {
   
   @Override
   public final void modify(LocalRegion lr, DiskEntry entry,
-      DiskEntry.ValueWrapper value, boolean async) {
+      DiskEntry.Helper.ValueWrapper value, boolean async) {
     DiskRegion dr = lr.getDiskRegion();
     synchronized (this.overflowMap) {
       if (this.lastOverflowWrite != null) {
@@ -253,7 +253,7 @@ public class OverflowOplogSet implements OplogSet {
   
   @Override
   public void create(LocalRegion region, DiskEntry entry,
-      DiskEntry.ValueWrapper value, boolean async) {
+      DiskEntry.Helper.ValueWrapper value, boolean async) {
     modify(region, entry, value, async);
   }
 

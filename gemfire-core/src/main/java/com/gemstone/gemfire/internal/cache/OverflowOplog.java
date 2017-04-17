@@ -555,17 +555,17 @@ class OverflowOplog implements CompactableOplog {
     return this.opState.getSize();
   }
 
-  private byte calcUserBits(DiskEntry.ValueWrapper value) {
+  private byte calcUserBits(DiskEntry.Helper.ValueWrapper value) {
     byte userBits = 0x0;
 
     if (value.isSerializedObject) {
-      if (value == DiskEntry.INVALID_VW) {
+      if (value == DiskEntry.Helper.INVALID_VW) {
         // its the invalid token
         userBits = EntryBits.setInvalid(userBits, true);
-      } else if (value == DiskEntry.LOCAL_INVALID_VW) {
+      } else if (value == DiskEntry.Helper.LOCAL_INVALID_VW) {
         // its the local-invalid token
         userBits = EntryBits.setLocalInvalid(userBits, true);
-      } else if (value == DiskEntry.TOMBSTONE_VW) {
+      } else if (value == DiskEntry.Helper.TOMBSTONE_VW) {
         // its the tombstone token
         userBits = EntryBits.setTombstone(userBits, true);
       } else {
@@ -593,7 +593,7 @@ class OverflowOplog implements CompactableOplog {
    * @return true if modify was done; false if this file did not have room
    */
   public final boolean modify(DiskRegion dr, DiskEntry entry,
-      DiskEntry.ValueWrapper value, boolean async) {
+      DiskEntry.Helper.ValueWrapper value, boolean async) {
     try {
       byte userBits = calcUserBits(value);
       return basicModify(entry, value.buffer, userBits, async);
@@ -1090,11 +1090,11 @@ class OverflowOplog implements CompactableOplog {
     BytesAndBits bb = null;
     if (EntryBits.isAnyInvalid(userBits) || EntryBits.isTombstone(userBits) || bitOnly || valueLength == 0) {
       if (EntryBits.isInvalid(userBits)) {
-        bb = new BytesAndBits(DiskEntry.INVALID_VW.buffer, userBits);
+        bb = new BytesAndBits(DiskEntry.Helper.INVALID_VW.buffer, userBits);
       } else if (EntryBits.isTombstone(userBits)) {
-        bb = new BytesAndBits(DiskEntry.TOMBSTONE_VW.buffer, userBits);
+        bb = new BytesAndBits(DiskEntry.Helper.TOMBSTONE_VW.buffer, userBits);
       } else {
-        bb = new BytesAndBits(DiskEntry.LOCAL_INVALID_VW.buffer, userBits);
+        bb = new BytesAndBits(DiskEntry.Helper.LOCAL_INVALID_VW.buffer, userBits);
       }
     }
     else {

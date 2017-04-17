@@ -2603,6 +2603,7 @@ public final class SnappyDataServiceImpl extends LocatorServiceImpl implements
           pstmt.clearParameters();
         } catch (Throwable t) {
           // ignore exceptions at this point
+          checkSystemFailure(t);
         }
         try {
           pstmt.clearBatch();

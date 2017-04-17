@@ -37,10 +37,10 @@ package com.gemstone.gemfire.internal.cache;
 public interface OplogSet {
 
   public void create(LocalRegion region, DiskEntry entry,
-      DiskEntry.ValueWrapper value, boolean async);
+      DiskEntry.Helper.ValueWrapper value, boolean async);
 
   public void modify(LocalRegion region, DiskEntry entry,
-      DiskEntry.ValueWrapper value, boolean async);
+      DiskEntry.Helper.ValueWrapper value, boolean async);
 
   public CompactableOplog getChild(long oplogId);
 

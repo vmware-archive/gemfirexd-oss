@@ -781,7 +781,7 @@ public class DiskStoreImpl implements DiskStore, ResourceListener<MemoryEvent> {
    * @throws IllegalArgumentException
    *           If <code>id</code> is less than zero
    */
-  final void put(LocalRegion region, DiskEntry entry, DiskEntry.ValueWrapper value,
+  final void put(LocalRegion region, DiskEntry entry, DiskEntry.Helper.ValueWrapper value,
       boolean async) throws RegionClearedException {
     DiskRegion dr = region.getDiskRegion();
     DiskId id = entry.getDiskId();
