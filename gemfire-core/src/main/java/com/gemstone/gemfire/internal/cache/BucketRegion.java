@@ -2557,11 +2557,11 @@ public class BucketRegion extends DistributedRegion implements Bucket {
 //     }
     long oldMemValue;
 
+    if (!this.reservedTable() && needAccounting()) {
+      callback.dropStorageMemory(getFullPath(), getIgnoreBytes());
+    }
     if(this.isDestroyed || this.isDestroyingDiskRegion) {
       //If this region is destroyed, mark the stat as destroyed.
-      if(!this.reservedTable() && needAccounting()){
-        callback.dropStorageMemory(getFullPath(), getIgnoreBytes());
-      }
       oldMemValue = this.bytesInMemory.getAndSet(BUCKET_DESTROYED);
             
     } else if(!this.isInitialized()) {

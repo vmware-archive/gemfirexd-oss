@@ -45,6 +45,10 @@ public final class DirectByteBufferDataInput
     this.version = version;
   }
 
+  public ByteBuffer getInternalBuffer() {
+    return this.buffer;
+  }
+
   @Override
   public Version getVersion() {
     return this.version;

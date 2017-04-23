@@ -37,7 +37,6 @@ import java.util.concurrent.atomic.LongAdder;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.LongBinaryOperator;
-import java.util.function.LongUnaryOperator;
 import java.util.regex.Pattern;
 
 import com.gemstone.gemfire.CancelCriterion;

@@ -311,10 +311,11 @@ public class DistributionDefinitionNode extends TableElementNode {
       throws StandardException {
     PartitionAttributesImpl pattrs = getPartitionAttributes(refTable
         .getFullTableNameAsRegionPath());
-    if (pattrs != null) {
+    if (pattrs != null &&
+        pattrs.getPartitionResolver() instanceof GfxdPartitionResolver) {
       GfxdPartitionResolver spr = (GfxdPartitionResolver)pattrs
           .getPartitionResolver();
-      if (spr != null && spr.isPartitioningKeyThePrimaryKey()) {
+      if (spr.isPartitioningKeyThePrimaryKey()) {
         String[] partitionColNames = spr.getColumnNames();
         String[] refColNames = fkeyConstraint.getReferencedColumnNames();
         if (refColNames == null || refColNames.length == 0) {
@@ -338,7 +339,7 @@ public class DistributionDefinitionNode extends TableElementNode {
       throws StandardException {
     GfxdPartitionResolver refRslvr = (GfxdPartitionResolver)refAttrs
         .getPartitionResolver();
-    this.policy = refRslvr.getDistributionDescriptor().getPolicy();
+    this.policy = refTD.getDistributionDescriptor().getPolicy();
     GfxdPartitionResolver rslvr = refRslvr.cloneForColocation(colNames,
         refColNames, refRslvr.getMasterTable(false /* immediate master*/));
     thisAttr.setPartitionResolver(rslvr);
@@ -536,8 +537,9 @@ public class DistributionDefinitionNode extends TableElementNode {
       if (pattrs.getRedundantCopies() == colocatePAttrs.getRedundantCopies()) {
         if (GemFireXDUtils.setEquals(this.serverGroups,
             checkDesc.getServerGroups())) {
-          if (checkRslvrs && pattrs.getPartitionResolver() != null
-              && colocatePAttrs.getPartitionResolver() != null) {
+          if (checkRslvrs &&
+              pattrs.getPartitionResolver() instanceof GfxdPartitionResolver &&
+              colocatePAttrs.getPartitionResolver() instanceof GfxdPartitionResolver) {
             GfxdPartitionResolver rslvr1 = (GfxdPartitionResolver)pattrs
                 .getPartitionResolver();
             GfxdPartitionResolver rslvr2 = (GfxdPartitionResolver)colocatePAttrs

@@ -994,8 +994,9 @@ class OverflowOplog implements CompactableOplog {
           //                        + " oplog#" + getOplogId());
           //               }
           this.stats.incOplogSeeks();
-          final ByteBuffer valueBuffer = UnsafeHolder.allocateDirectBuffer(
-              valueLength);
+          // should account faulted in values so use allocator here
+          final ByteBuffer valueBuffer = GemFireCacheImpl
+              .getCurrentBufferAllocator().allocate(valueLength);
           while (valueBuffer.hasRemaining()) {
             if (crfChannel.read(valueBuffer) <= 0) throw new EOFException();
           }
@@ -1054,7 +1055,9 @@ class OverflowOplog implements CompactableOplog {
     if (writePosition <= readPosition
         && (writePosition+curWriteBufPos) >= (readPosition+valueLength)) {
       int bufOffset = (int)(readPosition - writePosition);
-      ByteBuffer valueBuffer = UnsafeHolder.allocateDirectBuffer(valueLength);
+      // should account faulted in values so use allocator here
+      final ByteBuffer valueBuffer = GemFireCacheImpl
+          .getCurrentBufferAllocator().allocate(valueLength);
       int oldPosition = writeBuf.position();
       int oldLimit = writeBuf.limit();
       writeBuf.rewind();

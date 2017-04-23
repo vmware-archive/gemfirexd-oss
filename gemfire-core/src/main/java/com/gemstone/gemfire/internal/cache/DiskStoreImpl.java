@@ -88,6 +88,7 @@ import com.gemstone.gemfire.internal.cache.persistence.*;
 import com.gemstone.gemfire.internal.cache.snapshot.GFSnapshot;
 import com.gemstone.gemfire.internal.cache.snapshot.GFSnapshot.SnapshotWriter;
 import com.gemstone.gemfire.internal.cache.snapshot.SnapshotPacket.SnapshotRecord;
+import com.gemstone.gemfire.internal.cache.store.SerializedBufferData;
 import com.gemstone.gemfire.internal.cache.versions.RegionVersionVector;
 import com.gemstone.gemfire.internal.cache.versions.VersionSource;
 import com.gemstone.gemfire.internal.cache.versions.VersionStamp;
@@ -959,12 +960,14 @@ public class DiskStoreImpl implements DiskStore, ResourceListener<MemoryEvent> {
    */
   private static Object convertBytesAndBits(BytesAndBits bb, boolean asObject) {
     final ByteBuffer buffer = bb.getBuffer();
+    boolean isSerializedBuffer = false;
     Object value;
     if (EntryBits.isInvalid(bb.getBits())) {
       value = Token.INVALID;
     } else if (EntryBits.isSerialized(bb.getBits())) {
       value = DiskEntry.Helper
           .readSerializedValue(buffer, bb.getVersion(), asObject);
+      isSerializedBuffer = value instanceof SerializedBufferData;
     } else if (EntryBits.isLocalInvalid(bb.getBits())) {
       value = Token.LOCAL_INVALID;
     } else if (EntryBits.isTombstone(bb.getBits())) {
@@ -973,7 +976,10 @@ public class DiskStoreImpl implements DiskStore, ResourceListener<MemoryEvent> {
       value = DiskEntry.Helper.readRawValue(buffer);
     }
     // buffer will no longer be used so clean it up eagerly
-    UnsafeHolder.releaseIfDirectBuffer(buffer);
+    // skip for SerializedBufferData which will own buffer
+    if (!isSerializedBuffer) {
+      UnsafeHolder.releaseIfDirectBuffer(buffer);
+    }
     return value;
   }
 

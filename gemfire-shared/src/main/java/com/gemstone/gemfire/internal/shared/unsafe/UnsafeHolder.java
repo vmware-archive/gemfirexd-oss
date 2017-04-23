@@ -136,14 +136,14 @@ public abstract class UnsafeHolder {
   }
 
   @SuppressWarnings("serial")
-  static final class FreeMemory extends AtomicLong implements Runnable {
+  public static class FreeMemory extends AtomicLong implements Runnable {
 
-    FreeMemory(long address) {
+    protected FreeMemory(long address) {
       super(address);
     }
 
-    long tryFree() {
-      // try hard to ensure freeMemory call happens only and only once
+    protected long tryFree() {
+      // try hard to ensure freeMemory call happens only once
       final long address = get();
       return (address != 0 && compareAndSet(address, 0)) ? address : 0L;
     }
@@ -157,7 +157,14 @@ public abstract class UnsafeHolder {
     }
   }
 
-  private static int getAllocationSize(int size) {
+  public interface FreeMemoryFactory {
+    FreeMemory newFreeMemory(long address, int size);
+  }
+
+  private static final FreeMemoryFactory defaultFreeMemoryFactory =
+      (address, size) -> new FreeMemory(address);
+
+  public static int getAllocationSize(int size) {
     // round to word size
     size = ((size + 7) >>> 3) << 3;
     if (size > 0) return size;
@@ -165,17 +172,23 @@ public abstract class UnsafeHolder {
   }
 
   public static ByteBuffer allocateDirectBuffer(int size) {
+    return allocateDirectBuffer(size, defaultFreeMemoryFactory);
+  }
+
+  public static ByteBuffer allocateDirectBuffer(int size,
+      FreeMemoryFactory factory) {
     final int allocSize = getAllocationSize(size);
     final ByteBuffer buffer = allocateDirectBuffer(
-        Platform.allocateMemory(allocSize), allocSize);
+        Platform.allocateMemory(allocSize), allocSize, factory);
     buffer.limit(size);
     return buffer;
   }
 
-  private static ByteBuffer allocateDirectBuffer(long address, int size) {
+  private static ByteBuffer allocateDirectBuffer(long address, int size,
+      FreeMemoryFactory factory) {
     try {
       return (ByteBuffer)Wrapper.directBufferConstructor.newInstance(
-          size, address, null, new FreeMemory(address));
+          size, address, null, factory.newFreeMemory(address, size));
     } catch (Exception e) {
       Platform.throwException(e);
       throw new IllegalStateException("unreachable");
@@ -188,6 +201,11 @@ public abstract class UnsafeHolder {
 
   public static ByteBuffer reallocateDirectBuffer(ByteBuffer buffer,
       int newSize) {
+    return reallocateDirectBuffer(buffer, newSize, defaultFreeMemoryFactory);
+  }
+
+  public static ByteBuffer reallocateDirectBuffer(ByteBuffer buffer,
+      int newSize, FreeMemoryFactory factory) {
     sun.nio.ch.DirectBuffer directBuffer = (sun.nio.ch.DirectBuffer)buffer;
     final long address = directBuffer.address();
     long newAddress = 0L;
@@ -218,7 +236,8 @@ public abstract class UnsafeHolder {
       cleaner.clean();
       cleaner.clear();
     }
-    return allocateDirectBuffer(newAddress, newSize).order(buffer.order());
+    return allocateDirectBuffer(newAddress, newSize, factory)
+        .order(buffer.order());
   }
 
   public static void releaseIfDirectBuffer(ByteBuffer buffer) {

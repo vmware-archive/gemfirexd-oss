@@ -1989,7 +1989,10 @@ public interface DistributionConfig extends Config, ManagerLogWriter.LogConfig {
 
   /** The prefix used for Gemfire properties set through java system properties */
   public static final String GEMFIRE_PREFIX = "gemfire.";
-  
+
+  /** The prefix used for SnappyData properties set through java system properties */
+  public static final String SNAPPY_PREFIX = "snappydata.";
+
   /** For the "custom-" prefixed properties */
   public static final String USERDEFINED_PREFIX_NAME = "custom-";
   
@@ -2331,4 +2334,39 @@ public interface DistributionConfig extends Config, ManagerLogWriter.LogConfig {
    */
   public void setLockMemory(boolean value);
   public boolean isLockMemoryModifiable();
+
+
+  /**
+   * Returns the value of the <a
+   * href="../DistributedSystem.html#memory-size">"memory-size"</a>
+   * property.
+   *
+   * @since 7.5.1
+   */
+  String getMemorySize();
+
+  /**
+   * Sets the value of the <a
+   * href="../DistributedSystem.html#memory-size">"memory-size"</a>
+   * property.
+   *
+   * @since 7.5.1
+   */
+  void setMemorySize(String value);
+
+  /**
+   * The name of the "memory-size" property
+   *
+   * @since 7.5.1
+   */
+  String MEMORY_SIZE_NAME = "memory-size";
+
+  /**
+   * The default <a
+   * href="../DistributedSystem.html#memory-size">"memory-size"</a>
+   * value of <code>""</code>.
+   *
+   * @since 7.5.1
+   */
+  String DEFAULT_MEMORY_SIZE = "";
 }

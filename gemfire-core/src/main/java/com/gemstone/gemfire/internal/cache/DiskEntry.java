@@ -53,6 +53,7 @@ import com.gemstone.gemfire.internal.cache.lru.LRUEntry;
 import com.gemstone.gemfire.internal.cache.persistence.BytesAndBits;
 import com.gemstone.gemfire.internal.cache.persistence.DiskRecoveryStore;
 import com.gemstone.gemfire.internal.cache.persistence.DiskRegionView;
+import com.gemstone.gemfire.internal.cache.store.SerializedBufferData;
 import com.gemstone.gemfire.internal.cache.versions.VersionStamp;
 import com.gemstone.gemfire.internal.cache.versions.VersionTag;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
@@ -430,6 +431,7 @@ public interface DiskEntry extends RegionEntry {
               }
             }
             final ByteBuffer buffer = bb.getBuffer();
+            boolean isSerializedBuffer = false;
             // TODO: upgrade: also need to handle cases of GemFire internal
             // objects (e.g. gateway events, _PR objects) changing
             // serialization below via a versioned CachedDeserializable
@@ -440,6 +442,7 @@ public interface DiskEntry extends RegionEntry {
             }
             else if (EntryBits.isSerialized(bb.getBits())) {
               entry.value = readSerializedValue(buffer, version, true);
+              isSerializedBuffer = entry.value instanceof SerializedBufferData;
               entry.setSerialized(false);
               entry.setEagerDeserialize();
             }
@@ -447,8 +450,11 @@ public interface DiskEntry extends RegionEntry {
               entry.value = readRawValue(buffer);
               entry.setSerialized(false);
             }
-            // buffer will no longer be used so clean it up eagerly
-            UnsafeHolder.releaseIfDirectBuffer(buffer);
+            // buffer will no longer be used so clean it up eagerly;
+            // skip for SerializedBufferData which will own buffer
+            if (!isSerializedBuffer) {
+              UnsafeHolder.releaseIfDirectBuffer(buffer);
+            }
           }
           return true;
         }
@@ -1225,6 +1231,7 @@ public interface DiskEntry extends RegionEntry {
         if (value instanceof BytesAndBits) {
           BytesAndBits bb = (BytesAndBits)value;
           final ByteBuffer buffer = bb.getBuffer();
+          boolean isSerializedBuffer = false;
           final byte bits = bb.getBits();
           if (EntryBits.isInvalid(bits)) {
             value = Token.INVALID;
@@ -1234,11 +1241,15 @@ public interface DiskEntry extends RegionEntry {
             value = Token.TOMBSTONE;
           } else if (EntryBits.isSerialized(bits)) {
             value = readSerializedValue(buffer, bb.getVersion(), false);
+            isSerializedBuffer = value instanceof SerializedBufferData;
           } else {
             value = readRawValue(buffer);
           }
-          // buffer will no longer be used so clean it up eagerly
-          UnsafeHolder.releaseIfDirectBuffer(buffer);
+          // buffer will no longer be used so clean it up eagerly;
+          // skip for SerializedBufferData which will own buffer
+          if (!isSerializedBuffer) {
+            UnsafeHolder.releaseIfDirectBuffer(buffer);
+          }
         }
       }
       return value;

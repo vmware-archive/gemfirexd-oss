@@ -48,6 +48,7 @@ import com.gemstone.gemfire.internal.DirectByteBufferDataOutput;
 import com.gemstone.gemfire.internal.HeapDataOutputStream;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl.StaticSystemCallbacks;
+import com.gemstone.gemfire.internal.cache.store.SerializedBufferData;
 import com.gemstone.gemfire.internal.shared.Version;
 import com.gemstone.gemfire.pdx.internal.PdxInputStream;
 
@@ -104,12 +105,18 @@ public class BlobHelper {
   public static ByteBuffer serializeToDirectBuffer(Object obj, Version version)
       throws IOException {
     final long start = startSerialization();
-    // serialize into an expanding direct ByteBuffer
-    DirectByteBufferDataOutput out = new DirectByteBufferDataOutput(version);
-    DataSerializer.writeObject(obj, out);
-    ByteBuffer result = out.getByteBuffer();
-    result.flip();
-    endSerialization(start, result.limit());
+    // check for the special case of pre-serialized buffers
+    final ByteBuffer result;
+    if (obj instanceof SerializedBufferData) {
+      result = ((SerializedBufferData)obj).getSerializedBuffer();
+    } else {
+      // serialize into an expanding direct ByteBuffer
+      DirectByteBufferDataOutput out = new DirectByteBufferDataOutput(version);
+      DataSerializer.writeObject(obj, out);
+      result = out.getByteBuffer();
+      result.flip();
+    }
+    endSerialization(start, result.remaining());
     return result;
   }
 
@@ -189,7 +196,7 @@ public class BlobHelper {
       throws IOException, ClassNotFoundException {
     Object result;
     final long start = startDeserialization();
-    final int bufferSize = buffer.limit();
+    final int bufferSize = buffer.remaining();
     // no longer support pre-SQLF 1.1 format so callback is skipped
     // here which may need to be added if row format changes in future
     if (bufferSize > 0 && buffer.get(0) == DSCODE.PDX) {

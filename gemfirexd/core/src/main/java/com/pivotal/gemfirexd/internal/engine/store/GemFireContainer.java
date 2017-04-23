@@ -25,8 +25,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.concurrent.RunnableFuture;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -46,7 +44,6 @@ import com.gemstone.gemfire.internal.cache.*;
 import com.gemstone.gemfire.internal.cache.PartitionedRegion.RecoveryLock;
 import com.gemstone.gemfire.internal.cache.PartitionedRegion.SizeEntry;
 import com.gemstone.gemfire.internal.cache.PutAllPartialResultException.PutAllPartialResult;
-import com.gemstone.gemfire.internal.cache.control.HeapMemoryMonitor;
 import com.gemstone.gemfire.internal.cache.delta.Delta;
 import com.gemstone.gemfire.internal.cache.execute.InternalRegionFunctionContext;
 import com.gemstone.gemfire.internal.cache.lru.Sizeable;
@@ -196,6 +193,9 @@ public final class GemFireContainer extends AbstractGfxdLockable implements
   /** set if generate always as identity columns are defined in this table or 
    * table have no primary keys defined.*/
   private static final int HAS_AUTO_GENERATED_COLUMNS = 0x200;
+
+  /** set for object tables which is neither byte array store nor DVD array */
+  private static final int OBJECT_STORE = 0x400;
   
   /* ------ End Flags for the container --------- */
 
@@ -262,6 +262,8 @@ public final class GemFireContainer extends AbstractGfxdLockable implements
   private ExecRow templateRow;
 
   private ExtraTableInfo tableInfo;
+
+  private DistributionDescriptor distributionDesc;
 
   boolean hasLobs;
 
@@ -750,8 +752,13 @@ public final class GemFireContainer extends AbstractGfxdLockable implements
     refreshCachedInfo(td, distributionDesc, activation);
     // set the index maintenance listener
     if (!getSchemaName().equalsIgnoreCase(GfxdConstants.SYSTEM_SCHEMA_NAME)) {
-      indexManager = GfxdIndexManager.newIndexManager(dd, td, this,
-          lcc.getDatabase(), hasFk);
+      boolean objectStore = getRegionAttributes().getValueConstraint() != null;
+      if (objectStore) {
+        setFlag(OBJECT_STORE);
+      } else {
+        indexManager = GfxdIndexManager.newIndexManager(dd, td, this,
+            lcc.getDatabase(), hasFk);
+      }
       initialize(this.properties, indexManager, tran, cdl);
     }
     this.properties = null;
@@ -761,6 +768,7 @@ public final class GemFireContainer extends AbstractGfxdLockable implements
   public void refreshCachedInfo(TableDescriptor td,
       DistributionDescriptor distributionDesc, Activation activation)
       throws StandardException {
+    setDistributionDescriptor(distributionDesc);
     if (distributionDesc != null) {
       final RegionAttributes<?, ?> rattr = getRegionAttributes();
       final CacheLoader<?, ?> ldr = rattr.getCacheLoader();
@@ -771,10 +779,10 @@ public final class GemFireContainer extends AbstractGfxdLockable implements
       if (pattrs != null) {
         final PartitionResolver<?, ?> pr = rattr.getPartitionAttributes()
             .getPartitionResolver();
-        if (pr != null && pr instanceof GfxdPartitionResolver) {
+        if (pr instanceof GfxdPartitionResolver) {
           final GfxdPartitionResolver spr = (GfxdPartitionResolver)pr;
           spr.setTableDetails(td, this);
-          spr.setDistributionDescriptor(distributionDesc);
+          spr.updateDistributionDescriptor(distributionDesc);
           spr.setColumnInfo(td, activation);
         }
       }
@@ -784,6 +792,14 @@ public final class GemFireContainer extends AbstractGfxdLockable implements
 
   public void setIndexInitialized() {
     this.isIndexInitialized = true;
+  }
+
+  public void setDistributionDescriptor(DistributionDescriptor desc) {
+    this.distributionDesc = desc;
+  }
+
+  public final DistributionDescriptor getDistributionDescriptor() {
+    return this.distributionDesc;
   }
 
   private static void prepareContainerName(long containerId, Properties props,
@@ -4204,9 +4220,9 @@ public final class GemFireContainer extends AbstractGfxdLockable implements
   }
 
   private Object getRoutingObject(LocalRegion r, Object key, Object value) {
-    GfxdPartitionResolver pr = (GfxdPartitionResolver)r
+    InternalPartitionResolver<?, ?> pr = (InternalPartitionResolver<?, ?>)r
         .getPartitionAttributes().getPartitionResolver();
-    return pr.getRoutingObject(key, value, r);
+    return pr.getRoutingObject(key, value, null, r);
   }
 
   public VersionedObjectList doPutAllOfAllDeltas(MultipleKeyValueHolder mkvh,
@@ -4980,10 +4996,15 @@ public final class GemFireContainer extends AbstractGfxdLockable implements
     return (this.containerFlags & BYTEARRAY_STORE) != 0;
   }
 
+  public final boolean isObjectStore() {
+    return (this.containerFlags & OBJECT_STORE) != 0;
+  }
+
   private final boolean isCandidateForByteArrayStore() {
     return !GfxdConstants.SYSTEM_SCHEMA_NAME.equals(this.schemaName)
         // TODO: SW: why for session schema??
-        && !GfxdConstants.SESSION_SCHEMA_NAME.equals(this.schemaName);
+        && !GfxdConstants.SESSION_SCHEMA_NAME.equals(this.schemaName)
+        && getRegionAttributes().getValueConstraint() == null;
   }
 
   /**
@@ -5421,8 +5442,8 @@ public final class GemFireContainer extends AbstractGfxdLockable implements
         dataPolicy = attrs.getDataPolicy().toString();
         if (pattrs != null) {
           pattrsStr = pattrs.getStringForGFXD();
-          resolverStr = ((GfxdPartitionResolver)pattrs.getPartitionResolver())
-              .getDDLString();
+          resolverStr = ((InternalPartitionResolver<?, ?>)pattrs
+              .getPartitionResolver()).getDDLString();
         }
         expirationAttrs = attrs.getRegionIdleTimeout();
         if (expirationAttrs != null && expirationAttrs.getTimeout() != 0) {

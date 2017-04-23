@@ -190,6 +190,9 @@ import com.gemstone.gemfire.internal.cache.persistence.PersistentMemberID;
 import com.gemstone.gemfire.internal.cache.persistence.PersistentMemberManager;
 import com.gemstone.gemfire.internal.cache.persistence.query.TemporaryResultSetFactory;
 import com.gemstone.gemfire.internal.cache.snapshot.CacheSnapshotServiceImpl;
+import com.gemstone.gemfire.internal.cache.store.BufferAllocator;
+import com.gemstone.gemfire.internal.cache.store.DirectBufferAllocator;
+import com.gemstone.gemfire.internal.cache.store.HeapBufferAllocator;
 import com.gemstone.gemfire.internal.cache.tier.sockets.AcceptorImpl;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheClientNotifier;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheClientProxy;
@@ -212,6 +215,7 @@ import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.internal.jndi.JNDIInvoker;
 import com.gemstone.gemfire.internal.jta.TransactionManagerImpl;
 import com.gemstone.gemfire.internal.offheap.MemoryAllocator;
+import com.gemstone.gemfire.internal.offheap.OffHeapStorage;
 import com.gemstone.gemfire.internal.offheap.SimpleMemoryAllocatorImpl.ChunkType;
 import com.gemstone.gemfire.internal.shared.NativeCalls;
 import com.gemstone.gemfire.internal.shared.SystemProperties;
@@ -501,6 +505,8 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
   private final Object heapEvictorLock = new Object();
   
   private final Object offHeapEvictorLock = new Object();
+
+  private final BufferAllocator bufferAllocator;
 
   private ResourceEventsListener listener;
 
@@ -834,7 +840,18 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
       if(null != getOffHeapStore()) {
         getResourceManager().addResourceListener(ResourceType.OFFHEAP_MEMORY, getOffHeapEvictor());
       }
-      
+
+      // set the buffer allocator for the cache (off-heap or heap)
+      final long memorySize = OffHeapStorage.parseOffHeapMemorySize(
+          getSystem().getConfig().getMemorySize());
+      if (memorySize > 0) {
+        this.bufferAllocator = DirectBufferAllocator.instance()
+            .initialize(memorySize);
+      } else {
+        // the allocation sizes will be initialized from the heap size
+        this.bufferAllocator = HeapBufferAllocator.instance();
+      }
+
       recordedEventSweeper = EventTracker.startTrackerServices(this);
       tombstoneService = TombstoneService.initialize(this);
 
@@ -2048,7 +2065,9 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
       TypeRegistry.close();
       // do this late to prevent 43412
       TypeRegistry.setPdxSerializer(null);
-      
+
+      this.bufferAllocator.close();
+
       for (Iterator iter = cacheLifecycleListeners.iterator(); iter.hasNext();) {
         CacheLifecycleListener listener = (CacheLifecycleListener) iter.next();
         listener.cacheClosed(this);
@@ -5931,7 +5950,21 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
   public final MemoryAllocator getOffHeapStore() {
     return this.getSystem().getOffHeapStore();
   }
-  
+
+  public final BufferAllocator getBufferAllocator() {
+    return this.bufferAllocator;
+  }
+
+  public static BufferAllocator getCurrentBufferAllocator() {
+    final GemFireCacheImpl instance = getInstance();
+    if (instance != null) {
+      return instance.bufferAllocator;
+    } else {
+      // default to DirectBufferAllocator to avoid heap pressure
+      return DirectBufferAllocator.instance();
+    }
+  }
+
   public void setSkipFKChecksForGatewayEvents(boolean flag) {
     this.skipFKChecksForGatewayEvents = flag;
   }
