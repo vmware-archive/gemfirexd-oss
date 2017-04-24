@@ -19,6 +19,7 @@ package com.gemstone.gemfire.internal.cache.store;
 import java.io.Closeable;
 import java.nio.ByteBuffer;
 
+import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
 import com.gemstone.gemfire.internal.shared.unsafe.UnsafeHolder;
 
 /**
@@ -45,14 +46,41 @@ public abstract class BufferAllocator implements Closeable {
   }
 
   /**
-   * Get the base object of the ByteBuffer for raw reads by Unsafe API.
+   * Get the base object of the ByteBuffer for raw reads/writes by Unsafe API.
    */
   public abstract Object baseObject(ByteBuffer buffer);
 
   /**
-   * Get the base offset of the ByteBuffer for raw reads by Unsafe API.
+   * Get the base offset of the ByteBuffer for raw reads/writes by Unsafe API.
    */
   public abstract long baseOffset(ByteBuffer buffer);
+
+  /**
+   * Return the data as a heap byte array. Use of this should be minimal
+   * when no other option exists.
+   */
+  public byte[] toBytes(ByteBuffer buffer) {
+    final int bufferSize = buffer.remaining();
+    return ClientSharedUtils.toBytesCopy(buffer, bufferSize, bufferSize);
+  }
+
+  /**
+   * Return a ByteBuffer either copying from, or sharing the given heap bytes.
+   */
+  public abstract ByteBuffer fromBytes(byte[] bytes, int offset, int length);
+
+  /**
+   * Return a ByteBuffer either sharing data of given ByteBuffer
+   * if its type matches, or else copying from the given ByteBuffer.
+   */
+  public ByteBuffer transfer(ByteBuffer buffer) {
+    final int position = buffer.position();
+    final ByteBuffer newBuffer = allocate(buffer.limit() - position);
+    newBuffer.put(buffer);
+    buffer.position(position);
+    newBuffer.rewind();
+    return newBuffer;
+  }
 
   /**
    * Expand given ByteBuffer to new capacity.

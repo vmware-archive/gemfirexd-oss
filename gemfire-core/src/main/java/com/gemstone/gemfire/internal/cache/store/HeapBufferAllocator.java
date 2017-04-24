@@ -52,6 +52,35 @@ public final class HeapBufferAllocator extends BufferAllocator {
   }
 
   @Override
+  public byte[] toBytes(ByteBuffer buffer) {
+    if (buffer.position() == 0 && buffer.arrayOffset() == 0 &&
+        buffer.limit() == buffer.capacity()) {
+      return buffer.array();
+    } else {
+      return super.toBytes(buffer);
+    }
+  }
+
+  @Override
+  public ByteBuffer fromBytes(byte[] bytes, int offset, int length) {
+    return ByteBuffer.wrap(bytes, offset, length);
+  }
+
+  @Override
+  public ByteBuffer transfer(ByteBuffer buffer) {
+    if (buffer.hasArray()) {
+      return buffer;
+    } else {
+      ByteBuffer newBuffer = super.transfer(buffer);
+      // release the incoming direct buffer eagerly
+      if (buffer.isDirect()) {
+        DirectBufferAllocator.instance().release(buffer);
+      }
+      return newBuffer;
+    }
+  }
+
+  @Override
   public void release(ByteBuffer buffer) {
   }
 

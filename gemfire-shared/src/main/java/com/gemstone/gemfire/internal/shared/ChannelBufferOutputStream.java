@@ -56,6 +56,13 @@ public class ChannelBufferOutputStream extends OutputStreamChannel {
   }
 
   /**
+   * Get handle to the underlying ByteBuffer. Use with care.
+   */
+  public ByteBuffer getBuffer() {
+    return this.buffer;
+  }
+
+  /**
    * {@inheritDoc}
    */
   @Override

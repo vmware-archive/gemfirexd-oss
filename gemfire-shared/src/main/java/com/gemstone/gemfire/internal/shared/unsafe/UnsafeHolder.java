@@ -145,7 +145,7 @@ public abstract class UnsafeHolder {
     protected long tryFree() {
       // try hard to ensure freeMemory call happens only once
       final long address = get();
-      return (address != 0 && compareAndSet(address, 0)) ? address : 0L;
+      return (address != 0 && compareAndSet(address, 0L)) ? address : 0L;
     }
 
     @Override

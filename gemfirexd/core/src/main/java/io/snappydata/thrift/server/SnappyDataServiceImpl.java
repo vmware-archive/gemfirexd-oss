@@ -100,6 +100,7 @@ import io.snappydata.thrift.common.BufferedBlob;
 import io.snappydata.thrift.common.Converters;
 import io.snappydata.thrift.common.OptimizedElementArray;
 import io.snappydata.thrift.common.ThriftUtils;
+import io.snappydata.thrift.internal.ClientBlob;
 import io.snappydata.thrift.server.ConnectionHolder.ResultSetHolder;
 import io.snappydata.thrift.server.ConnectionHolder.StatementHolder;
 import org.apache.thrift.ProcessFunction;
@@ -2235,10 +2236,8 @@ public final class SnappyDataServiceImpl extends LocatorServiceImpl implements
                       SQLState.LOB_LOCATOR_INVALID);
                 }
               } else if (chunk.last) {
-                // set as a normal byte[]
-                pstmt.setBytes(paramPosition, chunk.getChunk());
-                // free any direct buffer immediately
-                ThriftUtils.releaseBlobChunk(chunk);
+                // set as a Blob
+                pstmt.setBlob(paramPosition, new ClientBlob(chunk.chunk, true));
                 break;
               } else {
                 blob = conn.createBlob();

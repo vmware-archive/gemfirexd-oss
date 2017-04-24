@@ -542,6 +542,10 @@ public class SQLParser
 
 
 	 properties.put(GfxdConstants.REGION_ATTRIBUTES_KEY, attrs);
+	 String encoderClass = distributionNode.getRowEncoderClass();
+	 if (encoderClass != null) {
+	   properties.put(GfxdConstants.TABLE_ROW_ENCODER_CLASS_KEY, encoderClass);
+	 }
 	 String schemaName = tableName.getSchemaName();
 	 if (schemaName == null || schemaName.length() == 0) {
 	   schemaName = getLanguageConnectionContext().
@@ -3007,6 +3011,7 @@ TOKEN [IGNORE_CASE] :
 |   <DECODE: "decode">
 |   <DESTROY: "destroy">
 |   <DISKDIR: "diskdir">
+|   <ENCODER: "encoder">
 |   <ENTRY: "entry">
 |   <EVICT: "evict">
 |   <EVICTACTION: "evictaction">
@@ -12173,7 +12178,7 @@ fabricTableAttribute(AttributesFactory afact,
 	(
 	regionTypeDefinition(afact, pafact, repPartPersFlags, tableName, distributionNode)
 |
-  regionConstraintDefinition(afact, tableName)
+  tableEncoderDefinition(distributionNode, tableName)
 |
     serverGroupDefinition(serverGroups)
 |
@@ -12227,23 +12232,15 @@ regionTypeDefinition(AttributesFactory afact,
     }
 }
 
-void regionConstraintDefinition(AttributesFactory afact,
+void tableEncoderDefinition(DistributionDefinitionNode distributionNode,
     TableName tableName) throws StandardException :
 {
-  String keyClassName, valueClassName;
+  String encoderClassName;
 }
 {
-  <KEY> <CONSTRAINT> keyClassName = string()
-  <VALUE> <CONSTRAINT> valueClassName = string()
+  <ENCODER> encoderClassName = string()
   {
-    try {
-      ClassPathLoader classLoader = ClassPathLoader.getLatest();
-      afact.setKeyConstraint(classLoader.forName(keyClassName));
-      afact.setValueConstraint(classLoader.forName(valueClassName));
-    } catch (Exception e) {
-      throw StandardException.newException(
-          SQLState.UNEXPECTED_EXCEPTION_FOR_KEY_VALUE_CONSTRAINT, e, tableName);
-    }
+    distributionNode.setRowEncoderClass(encoderClassName);
   }
 }
 
@@ -18001,6 +17998,7 @@ nonReservedKeyword()  :
 	|   tok = <DECODE>
 	|   tok = <DESTROY>
 	|   tok = <DISKDIR>
+	|   tok = <ENCODER>
 	|   tok = <ENTRY>
 	|   tok = <EVICT>
 	|   tok = <EVICTACTION>

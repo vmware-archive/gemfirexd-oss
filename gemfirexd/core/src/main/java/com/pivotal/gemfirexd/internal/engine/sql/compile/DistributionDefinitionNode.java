@@ -93,6 +93,8 @@ public class DistributionDefinitionNode extends TableElementNode {
 
   SortedSet<String> serverGroups;
 
+  private String rowEncoderClass;
+
   // status flags for canColocate method
   private static final int SUCCESS = 0;
 
@@ -154,6 +156,10 @@ public class DistributionDefinitionNode extends TableElementNode {
     this.customHashing = customHashing;
   }
 
+  public void setRowEncoderClass(String encoderClass) {
+    this.rowEncoderClass = encoderClass;
+  }
+
   public void addColumnReference(ColumnReference cr) {
     if (this.columns == null) {
       this.columns = new ArrayList<ColumnReference>();
@@ -175,6 +181,10 @@ public class DistributionDefinitionNode extends TableElementNode {
 
   public final boolean getCustomHashing() {
     return this.customHashing;
+  }
+
+  public String getRowEncoderClass() {
+    return this.rowEncoderClass;
   }
 
   public void setTableProperties(Properties props) {

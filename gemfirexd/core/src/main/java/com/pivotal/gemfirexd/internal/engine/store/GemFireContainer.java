@@ -14,6 +14,24 @@
  * permissions and limitations under the License. See accompanying
  * LICENSE file.
  */
+/*
+ * Changes for SnappyData distributed computational and data platform.
+ *
+ * Portions Copyright (c) 2017 SnappyData, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you
+ * may not use this file except in compliance with the License. You
+ * may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * permissions and limitations under the License. See accompanying
+ * LICENSE file.
+ */
 
 package com.pivotal.gemfirexd.internal.engine.store;
 
@@ -38,6 +56,7 @@ import com.gemstone.gemfire.cache.wan.GatewaySender;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.i18n.LogWriterI18n;
 import com.gemstone.gemfire.internal.Assert;
+import com.gemstone.gemfire.internal.ClassPathLoader;
 import com.gemstone.gemfire.internal.DSCODE;
 import com.gemstone.gemfire.internal.InternalDataSerializer;
 import com.gemstone.gemfire.internal.cache.*;
@@ -193,9 +212,6 @@ public final class GemFireContainer extends AbstractGfxdLockable implements
   /** set if generate always as identity columns are defined in this table or 
    * table have no primary keys defined.*/
   private static final int HAS_AUTO_GENERATED_COLUMNS = 0x200;
-
-  /** set for object tables which is neither byte array store nor DVD array */
-  private static final int OBJECT_STORE = 0x400;
   
   /* ------ End Flags for the container --------- */
 
@@ -264,6 +280,11 @@ public final class GemFireContainer extends AbstractGfxdLockable implements
   private ExtraTableInfo tableInfo;
 
   private DistributionDescriptor distributionDesc;
+
+  /**
+   * RowEncoder for object tables.
+   */
+  private final RowEncoder encoder;
 
   boolean hasLobs;
 
@@ -420,6 +441,7 @@ public final class GemFireContainer extends AbstractGfxdLockable implements
         }
       }
       this.globalIndexMap = null;
+      this.encoder = null;
       return;
     }
 
@@ -430,6 +452,19 @@ public final class GemFireContainer extends AbstractGfxdLockable implements
     }
     assert rootRegion != null: "Schema '" + schemaName + "' not found";
     this.properties = properties;
+    String rowEncoderClass = properties.getProperty(
+        GfxdConstants.TABLE_ROW_ENCODER_CLASS_KEY);
+    if (rowEncoderClass != null) {
+      try {
+        this.encoder = (RowEncoder)ClassPathLoader.getLatest()
+            .forName(rowEncoderClass).newInstance();
+      } catch (Exception e) {
+        throw StandardException.newException(
+            SQLState.UNEXPECTED_EXCEPTION_FOR_ROW_ENCODER, e, qualifiedName);
+      }
+    } else {
+      this.encoder = null;
+    }
     this.regionAttributes = (RegionAttributes<?, ?>)properties
         .get(GfxdConstants.REGION_ATTRIBUTES_KEY);
     this.indexInfo = null;
@@ -752,10 +787,7 @@ public final class GemFireContainer extends AbstractGfxdLockable implements
     refreshCachedInfo(td, distributionDesc, activation);
     // set the index maintenance listener
     if (!getSchemaName().equalsIgnoreCase(GfxdConstants.SYSTEM_SCHEMA_NAME)) {
-      boolean objectStore = getRegionAttributes().getValueConstraint() != null;
-      if (objectStore) {
-        setFlag(OBJECT_STORE);
-      } else {
+      if (!isObjectStore()) {
         indexManager = GfxdIndexManager.newIndexManager(dd, td, this,
             lcc.getDatabase(), hasFk);
       }
@@ -1171,7 +1203,9 @@ public final class GemFireContainer extends AbstractGfxdLockable implements
     this.singleSchema = null;
     ExtraTableInfo.newExtraTableInfo(dd, td, lcc.getContextManager(),
         this.schemaVersion, this, true);
-    this.tableInfo.initRowFormatter(this);
+    if (isByteArrayStore()) {
+      this.tableInfo.initRowFormatter(this);
+    }
   }
 
   /**
@@ -2505,6 +2539,10 @@ public final class GemFireContainer extends AbstractGfxdLockable implements
           regionKey = cKey;
         }
         val = getPrimaryKeyBytesAndValue(row, rf, cKey, primaryKeyColumns);
+      } else if (isObjectStore()) {
+        Map.Entry<Object, Object> entry = this.encoder.fromRow(row, this);
+        regionKey = entry.getKey();
+        val = entry.getValue();
       }
       else {
         // clone the row since this row will get reused by derby
@@ -3316,8 +3354,8 @@ public final class GemFireContainer extends AbstractGfxdLockable implements
       final StringBuilder insertString = new StringBuilder(
           "GemFireContainer: inserting multiple rows [");
       for (int i = 0; i < rows.size(); i++) {
-        insertString.append('(').append(newExecRow(rows.get(i), this.tableInfo, false))
-            .append(") ");
+        insertString.append('(').append(newExecRow(null, rows.get(i),
+            this.tableInfo, false)).append(") ");
       }
       SanityManager.DEBUG_PRINT(GfxdConstants.TRACE_CONGLOM_UPDATE,
           insertString.append("] [").append(tx).append("] in container: ")
@@ -4913,18 +4951,6 @@ public final class GemFireContainer extends AbstractGfxdLockable implements
   }
 
   /**
-   * Get a new template row with null DVDs for DVD[] storage.
-   */
-  public ExecRow newNullTemplateRow() {
-    if (isByteArrayStore()) {
-      return this.templateRow.getNewNullRow();
-    }
-    else {
-      return new ValueRow(this.templateRow.nColumns());
-    }
-  }
-
-  /**
    * Get a new template row with given valid columns and having given
    * RowFormatter for byte array store.
    */
@@ -4997,14 +5023,14 @@ public final class GemFireContainer extends AbstractGfxdLockable implements
   }
 
   public final boolean isObjectStore() {
-    return (this.containerFlags & OBJECT_STORE) != 0;
+    return this.encoder != null;
   }
 
   private final boolean isCandidateForByteArrayStore() {
     return !GfxdConstants.SYSTEM_SCHEMA_NAME.equals(this.schemaName)
         // TODO: SW: why for session schema??
         && !GfxdConstants.SESSION_SCHEMA_NAME.equals(this.schemaName)
-        && getRegionAttributes().getValueConstraint() == null;
+        && !isObjectStore();
   }
 
   /**
@@ -5145,8 +5171,9 @@ public final class GemFireContainer extends AbstractGfxdLockable implements
    * 
    * @return either an AbstractCompactExecRow or a ValueRow
    */
-  public final ExecRow newExecRow(final Object rawStoreRow,
-      final ExtraTableInfo tableInfo, boolean faultIn) {
+  public final ExecRow newExecRow(final RegionEntry entry,
+      final Object rawStoreRow, final ExtraTableInfo tableInfo,
+      boolean faultIn) {
     if (rawStoreRow != null) {
       if (isByteArrayStore()) {
         Class<?> rawStoreRowClass = rawStoreRow.getClass();
@@ -5168,6 +5195,8 @@ public final class GemFireContainer extends AbstractGfxdLockable implements
           throw new AssertionError("Unexpected raw store data . Object is "
               + rawStoreRow);
         }
+      } else if (isObjectStore()) {
+        return this.encoder.toRow(entry, rawStoreRow, this);
       }
       else {
         assert rawStoreRow instanceof DataValueDescriptor[]:

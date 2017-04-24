@@ -1406,13 +1406,18 @@ public abstract class ClientSharedUtils {
         buffer.arrayOffset() == 0 && buffer.remaining() == buffer.capacity()) {
       return buffer.array();
     } else {
-      final int numBytes = Math.min(bufferSize, length);
-      final byte[] bytes = new byte[numBytes];
-      final int initPosition = buffer.position();
-      buffer.get(bytes, 0, numBytes);
-      buffer.position(initPosition);
-      return bytes;
+      return toBytesCopy(buffer, bufferSize, length);
     }
+  }
+
+  public static byte[] toBytesCopy(ByteBuffer buffer, int bufferSize,
+      int length) {
+    final int numBytes = Math.min(bufferSize, length);
+    final byte[] bytes = new byte[numBytes];
+    final int initPosition = buffer.position();
+    buffer.get(bytes, 0, numBytes);
+    buffer.position(initPosition);
+    return bytes;
   }
 
   /**

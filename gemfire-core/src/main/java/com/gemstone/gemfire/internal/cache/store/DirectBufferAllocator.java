@@ -75,7 +75,7 @@ public final class DirectBufferAllocator extends BufferAllocator {
     final long maxMemory = this.maxMemory;
     if (maxMemory > 0) {
       long used;
-      while (maxMemory >= (used = this.reserved.get()) + requiredSize) {
+      while (maxMemory >= ((used = this.reserved.get()) + requiredSize)) {
         if (this.reserved.compareAndSet(used, used + requiredSize)) {
           return true;
         }
@@ -87,16 +87,24 @@ public final class DirectBufferAllocator extends BufferAllocator {
     }
   }
 
-  private boolean releasePendingReferences(long requiredSize) {
+  private boolean tryReleasePendingReferences(long requiredSpace) {
     final sun.misc.JavaLangRefAccess refAccess =
         sun.misc.SharedSecrets.getJavaLangRefAccess();
     // retry while helping enqueue pending Cleaner Reference objects
     while (refAccess.tryHandlePendingReference()) {
-      if (reserveMemory(requiredSize)) {
+      if (reserveMemory(requiredSpace)) {
         return true;
       }
     }
     return false;
+  }
+
+  private boolean releasePendingReferences(long requiredSpace) {
+    if (tryReleasePendingReferences(requiredSpace)) {
+      return true;
+    }
+    System.gc();
+    return tryReleasePendingReferences(requiredSpace);
   }
 
   private LowMemoryException lowMemoryException(String op) {
@@ -160,8 +168,26 @@ public final class DirectBufferAllocator extends BufferAllocator {
   }
 
   @Override
+  public ByteBuffer fromBytes(byte[] bytes, int offset, int length) {
+    final ByteBuffer buffer = allocate(length);
+    buffer.put(bytes, offset, length);
+    // move to the start
+    buffer.rewind();
+    return buffer;
+  }
+
+  @Override
+  public ByteBuffer transfer(ByteBuffer buffer) {
+    if (buffer.isDirect()) {
+      return buffer;
+    } else {
+      return super.transfer(buffer);
+    }
+  }
+
+  @Override
   public void release(ByteBuffer buffer) {
-    // reserved will be decremented via FreeBuffer
+    // reserved bytes will be decremented via FreeBuffer
     UnsafeHolder.releaseDirectBuffer(buffer);
   }
 

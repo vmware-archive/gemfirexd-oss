@@ -61,7 +61,7 @@ public final class ClientBlob extends ClientLobBase implements BufferedBlob {
   private int baseChunkSize;
   private long initOffset;
   private final boolean freeForStream;
-  private boolean skipCurrentChunkClean;
+  private boolean hasBufferOwnership = true;
 
   ClientBlob(ClientService service) {
     super(service);
@@ -104,12 +104,13 @@ public final class ClientBlob extends ClientLobBase implements BufferedBlob {
     this.length = (int)length;
   }
 
-  public ClientBlob(ByteBuffer buffer) {
+  public ClientBlob(ByteBuffer buffer, boolean transferOwnership) {
     super(null);
     this.currentChunk = new BlobChunk(buffer, true);
     this.streamedInput = false;
     this.length = buffer.remaining();
     this.freeForStream = false;
+    this.hasBufferOwnership = transferOwnership;
   }
 
   @Override
@@ -165,7 +166,7 @@ public final class ClientBlob extends ClientLobBase implements BufferedBlob {
   @Override
   protected void clear() {
     final BlobChunk chunk = this.currentChunk;
-    if (chunk != null && !this.skipCurrentChunkClean) {
+    if (chunk != null && this.hasBufferOwnership) {
       ThriftUtils.releaseBlobChunk(chunk);
     }
     this.currentChunk = null;
@@ -268,9 +269,14 @@ public final class ClientBlob extends ClientLobBase implements BufferedBlob {
   public ByteBuffer getAsBuffer() throws SQLException {
     BlobChunk chunk = this.currentChunk;
     if (chunk != null && chunk.last && chunk.offset == 0) {
-      // the first and only chunk whose ownership is handed over to caller
-      this.skipCurrentChunkClean = true;
-      return chunk.chunk;
+      if (this.hasBufferOwnership) {
+        // the first and only chunk whose ownership is handed over to caller
+        this.hasBufferOwnership = false;
+        return chunk.chunk;
+      } else {
+        // don't own the buffer so return a duplicate
+        return chunk.chunk.duplicate();
+      }
     } else {
       return ByteBuffer.wrap(getBytes(1, (int)length()));
     }

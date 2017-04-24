@@ -3855,12 +3855,12 @@ Guide.
            </msg>
             <msg>
                 <name>X0Z36.S</name>
-                <text>Exception occured in creating custom partition resolver for '{0}'.</text>
+                <text>Exception occurred in creating custom partition resolver for '{0}'.</text>
                 <arg>name</arg>
             </msg>
             <msg>
                 <name>X0Z37.S</name>
-                <text>Exception occured in creating key/value constraint for '{0}'.</text>
+                <text>Exception occurred in creating row encoder for '{0}'.</text>
                 <arg>name</arg>
             </msg>
 <!-- GemStone changes END -->
