@@ -324,7 +324,7 @@ public class DistributionConfigImpl
   private boolean lockMemory = DEFAULT_LOCK_MEMORY;
 
   /** "memory-size" with value of "" or "<size>[g|m]" */
-  protected String directMemorySize = DEFAULT_MEMORY_SIZE;
+  private String memorySize = DEFAULT_MEMORY_SIZE;
 
   //////////////////////  Constructors  //////////////////////
 
@@ -2195,11 +2195,16 @@ public class DistributionConfigImpl
 
   @Override
   public String getMemorySize() {
-    return this.directMemorySize;
+    return this.memorySize;
   }
 
   @Override
   public void setMemorySize(String value) {
-    this.directMemorySize = value;
+    checkMemorySize(value);
+    this.memorySize = value;
+  }
+
+  protected void checkMemorySize(String value) {
+    super.checkMemorySize(value);
   }
 }

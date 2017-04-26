@@ -1090,6 +1090,14 @@ public abstract class AbstractDistributionConfig
   protected void checkOffHeapMemorySize(String value) {
     _checkIfModifiable(OFF_HEAP_MEMORY_SIZE_NAME);
   }
+
+  public boolean isMemorySizeModifiable() {
+    return _modifiableDefault();
+  }
+
+  protected void checkMemorySize(String value) {
+    _checkIfModifiable(MEMORY_SIZE_NAME);
+  }
   
   public boolean isLockMemoryModifiable() {
     return _modifiableDefault();
@@ -1756,8 +1764,7 @@ public abstract class AbstractDistributionConfig
     } else if (attName.equalsIgnoreCase(LOCK_MEMORY_NAME)) {
       return this.isLockMemoryModifiable();
     } else if (attName.equalsIgnoreCase(MEMORY_SIZE_NAME)) {
-      // direct memory-size can always be modified to higher values
-      return true;
+      return this.isMemorySizeModifiable();
     } else {
       throw new InternalGemFireException(LocalizedStrings.AbstractDistributionConfig_UNHANDLED_ATTRIBUTE_NAME_0.toLocalizedString(attName));
     }
@@ -1944,6 +1951,8 @@ public abstract class AbstractDistributionConfig
     } else if (attName.equalsIgnoreCase(MEMORY_SIZE_NAME)) {
       return String.class;
     } else if (attName.startsWith(GFXD_USERDEFINED_PREFIX_NAME)) {
+      return String.class;
+    } else if (attName.equalsIgnoreCase(MEMORY_SIZE_NAME)) {
       return String.class;
     } else {
       throw new InternalGemFireException(LocalizedStrings.AbstractDistributionConfig_UNHANDLED_ATTRIBUTE_NAME_0.toLocalizedString(attName));
@@ -2290,8 +2299,8 @@ public abstract class AbstractDistributionConfig
 
     m.put(OFF_HEAP_MEMORY_SIZE_NAME, LocalizedStrings.AbstractDistributionConfig_OFF_HEAP_MEMORY_SIZE_0.toLocalizedString(DEFAULT_OFF_HEAP_MEMORY_SIZE));
     m.put(LOCK_MEMORY_NAME, LocalizedStrings.AbstractDistributionConfig_LOCK_MEMORY.toLocalizedString(DEFAULT_LOCK_MEMORY));
-    m.put(MEMORY_SIZE_NAME, LocalizedStrings.AbstractDistributionConfig_OFF_HEAP_MEMORY_SIZE_0.toLocalizedString(DEFAULT_MEMORY_SIZE));
-    
+    m.put(MEMORY_SIZE_NAME, LocalizedStrings.AbstractDistributionConfig_MEMORY_SIZE.toLocalizedString(DEFAULT_MEMORY_SIZE));
+
     dcAttDescriptions = Collections.unmodifiableMap(m);
    }
   }

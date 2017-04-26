@@ -2277,8 +2277,31 @@ public interface DistributionConfig extends Config, ManagerLogWriter.LogConfig {
   public void setOffHeapMemorySize(String value);
   /**
    * Returns true if the value of the <a 
-   * href="../DistributedSystem.html#off-heap-memory-size">"off-heap-memory-size"</a> 
+   * href="../DistributedSystem.html#memory-size">"memory-size"</a>
    * property can be modified. Some attributes can not be modified while the 
+   * system is running.
+   * @since SnappyData 0.9
+   */
+  public boolean isMemorySizeModifiable();
+
+  /**
+   * Returns the value of the <a
+   * href="../DistributedSystem.html#memory-size">"memory-size"</a>
+   * property.
+   * @since SnappyData 0.9
+   */
+  public String getMemorySize();
+  /**
+   * Sets the value of the <a
+   * href="../DistributedSystem.html#memory-size">"memory-size"</a>
+   * property.
+   * @since SnappyData 0.9
+   */
+  public void setMemorySize(String value);
+  /**
+   * Returns true if the value of the <a
+   * href="../DistributedSystem.html#off-heap-memory-size">"off-heap-memory-size"</a>
+   * property can be modified. Some attributes can not be modified while the
    * system is running.
    * @since 7.5
    */
@@ -2335,38 +2358,17 @@ public interface DistributionConfig extends Config, ManagerLogWriter.LogConfig {
   public void setLockMemory(boolean value);
   public boolean isLockMemoryModifiable();
 
-
   /**
-   * Returns the value of the <a
-   * href="../DistributedSystem.html#memory-size">"memory-size"</a>
-   * property.
-   *
-   * @since 7.5.1
+   * The name of the "memory-size" property. Total memory taken by SnappyData in off-heap mode.
+   * @since SnappyData 0.9 not used in rowstore
    */
-  String getMemorySize();
-
-  /**
-   * Sets the value of the <a
-   * href="../DistributedSystem.html#memory-size">"memory-size"</a>
-   * property.
-   *
-   * @since 7.5.1
-   */
-  void setMemorySize(String value);
-
-  /**
-   * The name of the "memory-size" property
-   *
-   * @since 7.5.1
-   */
-  String MEMORY_SIZE_NAME = "memory-size";
+  public static final String MEMORY_SIZE_NAME = "memory-size";
 
   /**
    * The default <a
    * href="../DistributedSystem.html#memory-size">"memory-size"</a>
    * value of <code>""</code>.
-   *
-   * @since 7.5.1
+   * @since SnappyData 0.9 not used in rowstore
    */
-  String DEFAULT_MEMORY_SIZE = "";
+  public static final String DEFAULT_MEMORY_SIZE = "";
 }
