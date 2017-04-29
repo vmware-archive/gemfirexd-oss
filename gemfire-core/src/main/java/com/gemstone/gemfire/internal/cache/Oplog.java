@@ -7735,7 +7735,7 @@ public final class Oplog implements CompactableOplog {
     private int valueLength;
     private int drIdLength; // 1..9
     private final byte[] drIdBytes = new byte[DiskInitFile.DR_ID_MAX_BYTES];
-    private ByteBuffer keyBytes;
+    private byte[] keyBytes;
     private final byte[] deltaIdBytes = new byte[8];
     private int deltaIdBytesLength;
     private long newEntryBase;
@@ -7884,7 +7884,7 @@ public final class Oplog implements CompactableOplog {
       this.size = 1;// for the opcode
       saveUserBits(notToUseUserBits, userBits);
 
-      this.keyBytes = DiskEntry.Helper.wrapBytes(keyBytes);
+      this.keyBytes = keyBytes;
       this.value = DiskEntry.Helper.wrapBytes(valueBytes);
       this.valueLength = valueBytes.length;
       if (this.userBits == 1 && this.valueLength == 0) {
@@ -7995,8 +7995,8 @@ public final class Oplog implements CompactableOplog {
 
       if (needsKey) {
         Object key = entry.getKeyCopy();
-        this.keyBytes = EntryEventImpl.serializeDirect(key, null);
-        this.size += (4 + this.keyBytes.remaining());
+        this.keyBytes = EntryEventImpl.serialize(key);
+        this.size += (4 + this.keyBytes.length);
       } else {
         this.keyBytes = null;
       }
@@ -8156,13 +8156,13 @@ public final class Oplog implements CompactableOplog {
             bytesWritten += this.valueLength;
           }
         }
-        final ByteBuffer keyBytes = this.keyBytes;
+        final byte[] keyBytes = this.keyBytes;
         if (keyBytes != null) {
-          final int numKeyBytes = keyBytes.remaining();
+          final int numKeyBytes = keyBytes.length;
           writeInt(olf, numKeyBytes);
           bytesWritten += 4;
           if (numKeyBytes > 0) {
-            write(olf, keyBytes);
+            write(olf, keyBytes, numKeyBytes);
             bytesWritten += numKeyBytes;
           }
         }
@@ -8183,10 +8183,7 @@ public final class Oplog implements CompactableOplog {
         UnsafeHolder.releaseIfDirectBuffer(this.value);
         this.value = null;
       }
-      if (this.keyBytes != null) {
-        UnsafeHolder.releaseIfDirectBuffer(this.keyBytes);
-        this.keyBytes = null;
-      }
+      this.keyBytes = null;
       this.notToUseUserBits = false;
       this.versionsBytes = null;
       this.lastModifiedTime = 0;

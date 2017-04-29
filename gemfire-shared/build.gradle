@@ -18,6 +18,7 @@
 dependencies {
   compile 'net.java.dev.jna:jna:4.2.2'
   compile 'commons-io:commons-io:2.5'
+  compile group: 'it.unimi.dsi', name: 'fastutil', version: '7.1.0'
   compile project(subprojectBase + 'gemfire-trove')
   provided "io.snappydata:snappy-spark-unsafe_${scalaBinaryVersion}:${snappySparkVersion}"
 }
