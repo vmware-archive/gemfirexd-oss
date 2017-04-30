@@ -199,11 +199,8 @@ public final class MsgChannelStreamer extends ChannelBufferUnsafeDataOutputStrea
 
   @Override
   public void close(LogWriterI18n logger) throws IOException {
-    // flush should already done
-    if (this.addrPosition != this.baseAddress) {
-      throw new InternalGemFireError(
-          "MsgChannelStreamer: close invoked without writeMessage/flush?");
-    }
+    // flush should already done in normal course but for exception
+    // cases discard whatever is left in the buffer
     this.addrPosition = this.addrLimit = 0;
     releaseBuffer();
   }

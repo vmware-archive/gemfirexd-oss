@@ -37,7 +37,7 @@ import com.gemstone.gemfire.internal.shared.unsafe.UnsafeHolder;
  * <p>
  * Note: this can be further optimized by using the Unsafe API rather than
  * going through ByteBuffer API (e.g. see ChannelBufferUnsafeDataOutputStream)
- * but won't have an effect for large byte array reads (like for column data)
+ * but won't have an effect for large byte array writes (like for column data)
  */
 public final class DirectByteBufferDataOutput extends ByteBufferOutput
     implements DataOutput, Closeable, VersionedDataStream {

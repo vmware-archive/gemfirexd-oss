@@ -59,6 +59,7 @@ import java.util.concurrent.locks.LockSupport;
 
 import com.gemstone.gemfire.CancelCriterion;
 import com.gemstone.gemfire.CancelException;
+import com.gemstone.gemfire.SerializationException;
 import com.gemstone.gemfire.SystemFailure;
 import com.gemstone.gemfire.cache.CacheClosedException;
 import com.gemstone.gemfire.distributed.DistributedSystemDisconnectedException;
@@ -4299,17 +4300,32 @@ public final class Connection implements Runnable {
           }
           return;
 
-        } catch (Exception e) {
+        } catch (Throwable t) {
+          Error err;
+          if (t instanceof Error && SystemFailure.isJVMFailureError(
+              err = (Error)t)) {
+            SystemFailure.initiateFailure(err);
+            // If this ever returns, rethrow the error. We're poisoned
+            // now, so don't let this thread continue.
+            throw err;
+          }
+          // Whenever you catch Error or Throwable, you must also
+          // check for fatal JVM error (see above).  However, there is
+          // _still_ a possibility that you are dealing with a cascading
+          // error condition, so you also need to check to see if the JVM
+          // is still usable:
+          SystemFailure.checkFailure();
+
           // bug 37101
           this.owner.getConduit().getCancelCriterion().checkCancelInProgress(null);
           if (!stopped && !isSocketClosed()) {
             logger.severe(LocalizedStrings
-                .Connection_0_EXCEPTION_IN_CHANNEL_READ, p2pReaderName(), e);
+                .Connection_0_EXCEPTION_IN_CHANNEL_READ, p2pReaderName(), t);
           }
           this.readerShuttingDown = true;
           try {
             requestClose(LocalizedStrings
-                .Connection_0_EXCEPTION_IN_CHANNEL_READ.toLocalizedString(e));
+                .Connection_0_EXCEPTION_IN_CHANNEL_READ.toLocalizedString(t));
           } catch (Exception ignored) {
           }
           return;
@@ -4584,11 +4600,23 @@ public final class Connection implements Runnable {
       // #49309
       if (!(t instanceof CancelException)) {
         final String reason = cancelCriterion.cancelInProgress();
+        Throwable cancelledEx = null;
         if (reason != null) {
-          final Throwable cancelledEx = cancelCriterion
-              .generateCancelledException(t);
+          cancelledEx = cancelCriterion.generateCancelledException(t);
           if (cancelledEx != null) {
             t = cancelledEx;
+          }
+        }
+        if (cancelledEx != null) {
+          t = cancelledEx;
+        } else {
+          // check if CancelException is wrapped inside
+          Throwable cause = t;
+          while ((cause = cause.getCause()) != null) {
+            if (cause instanceof CancelException) {
+              t = cause;
+              break;
+            }
           }
         }
       }
@@ -4602,10 +4630,22 @@ public final class Connection implements Runnable {
         throw (ThreadDeath)t;
       }
       if (t instanceof CancelException) {
-        if (!(t instanceof CacheClosedException)) {
-          // Just log a message if we had trouble deserializing
+        if (!inDispatch || !(t instanceof CacheClosedException)) {
+          // Just log a message if we had trouble processing
           // due to CacheClosedException; see bug 43543
           throw (CancelException)t;
+        }
+      } else if (!inDispatch) {
+        // connection must be closed if there was trouble during deserialization
+        // else there can be dangling data on the connection causing subsequent
+        // reads to fail and processing to hang on the sender side (SNAP-1488)
+        logger.severe(errorId, t);
+        if (t instanceof RuntimeException) {
+          throw (RuntimeException)t;
+        } else if (t instanceof Error) {
+          throw (Error)t;
+        } else {
+          throw new SerializationException(t.getMessage(), t);
         }
       }
       logger.severe(errorId, t);
@@ -4772,9 +4812,13 @@ public final class Connection implements Runnable {
     }
     // @todo darrel: add some stats
     boolean interrupted = false;
+    final boolean useNIOStream = useNIOStream();
     try {
       for (;;) {
         this.owner.getConduit().getCancelCriterion().checkCancelInProgress(null);
+        if (useNIOStream) {
+          break;
+        }
         try {
           this.senderSem.acquire();
           break;
@@ -4789,18 +4833,23 @@ public final class Connection implements Runnable {
       }
     }
     if (!this.connected) {
-      this.senderSem.release();
+      if (!useNIOStream) {
+        this.senderSem.release();
+      }
       this.owner.getConduit().getCancelCriterion().checkCancelInProgress(null); // bug 37101
       throw new ConnectionException(LocalizedStrings.Connection_CONNECTION_IS_CLOSED.toLocalizedString());
     }
   }
   public void releaseSendPermission(boolean isReaderThread) {
-    if (isReaderThread) {
+    if (isReaderThread || useNIOStream()) {
       return;
     }
     this.senderSem.release();
   }
   private void closeSenderSem() {
+    if (useNIOStream()) {
+      return;
+    }
     // All we need to do is increase the number of permits by one
     // just in case 1 or more guys are currently waiting to acquire.
     // One of them will get it and then find out the connection is closed
