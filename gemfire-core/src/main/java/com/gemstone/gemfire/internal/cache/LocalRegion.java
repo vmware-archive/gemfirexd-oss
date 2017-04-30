@@ -12616,7 +12616,11 @@ public class LocalRegion extends AbstractRegion
     }
   }
   void updateSizeOnClearRegion(int sizeBeforeClear) {
-    // Only needed by BucketRegion
+    if(!this.reservedTable() && needAccounting()) {
+      long ignoreBytes = this.isDestroyed() ? getIgnoreBytes() :
+              getIgnoreBytes() + regionOverHead;
+      callback.dropStorageMemory(getFullPath(), ignoreBytes);
+    }
   }
 
   /**
@@ -14330,6 +14334,7 @@ public class LocalRegion extends AbstractRegion
 
   protected StoreCallbacks callback = CallbackFactoryProvider.getStoreCallbacks();
   protected volatile boolean regionOverHeadAccounted = false;
+  protected volatile long regionOverHead = -1L;
   protected volatile long entryOverHead = -1L;
   protected volatile long diskIdOverHead = -1L;
 
@@ -14337,11 +14342,10 @@ public class LocalRegion extends AbstractRegion
     if (!this.reservedTable() && !regionOverHeadAccounted && needAccounting()) {
       synchronized (this) {
         if (!regionOverHeadAccounted) {
+          this.regionOverHead = ReflectionSingleObjectSizer.INSTANCE.sizeof(this);
           callback.acquireStorageMemory(getFullPath(),
-                  ReflectionSingleObjectSizer.INSTANCE.sizeof(this),
-                  null, true);
+                  regionOverHead, null, true);
           regionOverHeadAccounted = true;
-
         }
       }
     }
