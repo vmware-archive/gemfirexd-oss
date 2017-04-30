@@ -707,6 +707,14 @@ public final class ConnectionTable  {
     return result;
     }
 
+  private void checkClosing() {
+    owner.getCancelCriterion().checkCancelInProgress(null);
+    if (this.closed) {
+      throw new DistributedSystemDisconnectedException(LocalizedStrings
+          .ConnectionTable_CONNECTION_TABLE_IS_CLOSED.toLocalizedString());
+    }
+  }
+
   /**
    * Must be looking for an ordered connection that this thread owns
    * 
@@ -724,14 +732,12 @@ public final class ConnectionTable  {
       try {
         return this.connectionPool.borrowObject(
             new ConnKey(id, startTime, ackTimeout, ackSATimeout));
+      } catch (IOException | RuntimeException e) {
+        checkClosing();
+        throw e;
       } catch (Exception e) {
-        owner.getCancelCriterion().checkCancelInProgress(null);
-        if (this.closed) {
-          throw new DistributedSystemDisconnectedException(LocalizedStrings
-              .ConnectionTable_CONNECTION_TABLE_IS_CLOSED.toLocalizedString());
-        } else {
-          throw new IllegalStateException(e);
-        }
+        checkClosing();
+        throw new IllegalStateException(e);
       }
     }
 
