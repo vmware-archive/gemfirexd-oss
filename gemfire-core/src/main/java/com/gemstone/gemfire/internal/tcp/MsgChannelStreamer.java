@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import com.gemstone.gemfire.InternalGemFireError;
 import com.gemstone.gemfire.distributed.internal.DMStats;
 import com.gemstone.gemfire.distributed.internal.DistributionMessage;
 import com.gemstone.gemfire.i18n.LogWriterI18n;
@@ -35,6 +34,7 @@ import com.gemstone.gemfire.internal.VersionedDataStream;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.internal.shared.Version;
 import com.gemstone.gemfire.internal.shared.unsafe.ChannelBufferUnsafeDataOutputStream;
+import com.gemstone.gemfire.internal.util.concurrent.StoppableReentrantLock;
 import com.gemstone.gnu.trove.TIntArrayList;
 
 /**
@@ -47,6 +47,7 @@ public final class MsgChannelStreamer extends ChannelBufferUnsafeDataOutputStrea
   private final DistributionMessage msg;
   private final boolean directReply;
   private final ArrayList<Connection> connections;
+  private final StoppableReentrantLock[] locks;
   private final DMStats stats;
   private final Version remoteVersion;
 
@@ -72,9 +73,11 @@ public final class MsgChannelStreamer extends ChannelBufferUnsafeDataOutputStrea
     this.msg = msg;
     this.directReply = directReply;
     this.connections = connections;
+    final int numConnections = connections.size();
+    this.locks = new StoppableReentrantLock[numConnections];
     // keep the connections in order sorted by localPort for consistent locking
     // of shared connections
-    if (connections.size() > 1) {
+    if (numConnections > 1) {
       connections.sort(localPortCompare);
     }
     this.stats = stats;
@@ -157,15 +160,18 @@ public final class MsgChannelStreamer extends ChannelBufferUnsafeDataOutputStrea
     final ArrayList<Connection> connections = this.connections;
     final int numConnections = connections.size();
     for (int i = 0; i < numConnections; i++) {
-      connections.get(i).outLock.lock();
+      final StoppableReentrantLock lock = connections.get(i).outLock;
+      lock.lock();
+      // assign only after successful acquisition of the lock
+      this.locks[i] = lock;
     }
   }
 
   private void releaseLocks() {
-    final ArrayList<Connection> connections = this.connections;
-    final int numConnections = connections.size();
-    for (int i = 0; i < numConnections; i++) {
-      connections.get(i).outLock.unlock();
+    final int numLocks = this.locks.length;
+    for (int i = 0; i < numLocks; i++) {
+      this.locks[i].unlock();
+      this.locks[i] = null;
     }
   }
 
