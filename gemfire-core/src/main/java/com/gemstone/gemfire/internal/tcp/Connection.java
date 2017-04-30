@@ -4630,8 +4630,8 @@ public final class Connection implements Runnable {
         throw (ThreadDeath)t;
       }
       if (t instanceof CancelException) {
-        if (!(t instanceof CacheClosedException)) {
-          // Just log a message if we had trouble deserializing
+        if (!inDispatch || !(t instanceof CacheClosedException)) {
+          // Just log a message if we had trouble processing
           // due to CacheClosedException; see bug 43543
           throw (CancelException)t;
         }
