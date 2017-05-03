@@ -52,6 +52,8 @@ public final class DirectByteBufferDataOutput
   }
 
   public DirectByteBufferDataOutput(int initialSize, Version version) {
+    // this uses allocations and expansion via direct Unsafe API rather
+    // than ByteBuffer.allocateDirect for better efficiency esp in expansion
     this.buffer = UnsafeHolder.allocateDirectBuffer(initialSize)
         .order(ByteOrder.BIG_ENDIAN);
     this.version = version;
