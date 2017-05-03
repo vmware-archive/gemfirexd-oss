@@ -113,7 +113,7 @@ public class BlobHelper {
       // serialize into an expanding direct ByteBuffer
       DirectByteBufferDataOutput out = new DirectByteBufferDataOutput(version);
       DataSerializer.writeObject(obj, out);
-      result = out.getByteBuffer();
+      result = out.getBuffer();
       result.flip();
     }
     endSerialization(start, result.remaining());

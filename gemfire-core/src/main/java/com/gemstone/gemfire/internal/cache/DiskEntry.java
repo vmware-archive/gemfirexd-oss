@@ -37,6 +37,7 @@ package com.gemstone.gemfire.internal.cache;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.concurrent.locks.LockSupport;
 
 import com.gemstone.gemfire.cache.CacheClosedException;
 import com.gemstone.gemfire.cache.DiskAccessException;
@@ -66,7 +67,7 @@ import com.gemstone.gemfire.internal.offheap.annotations.Released;
 import com.gemstone.gemfire.internal.offheap.annotations.Retained;
 import com.gemstone.gemfire.internal.offheap.annotations.Unretained;
 import com.gemstone.gemfire.internal.shared.ClientSharedData;
-import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
+import com.gemstone.gemfire.internal.shared.OutputStreamChannel;
 import com.gemstone.gemfire.internal.shared.Version;
 import com.gemstone.gemfire.internal.shared.unsafe.UnsafeHolder;
 import com.gemstone.gemfire.internal.snappy.CallbackFactoryProvider;
@@ -160,15 +161,13 @@ public interface DiskEntry extends RegionEntry {
    */
   public static class Helper {
 
-    public static final ByteBuffer NULL_BUFFER =
-        ByteBuffer.wrap(ClientSharedData.ZERO_ARRAY);
-
-    public static ByteBuffer wrapBytes(byte[] b) {
-      return b != null ? ByteBuffer.wrap(b) : NULL_BUFFER;
+    public static ValueWrapper wrapBytes(byte[] b) {
+      return b != null ? new ValueWrapper(true, ByteBuffer.wrap(b)) : NULL_VW;
     }
 
-    public static ByteBuffer wrapBytes(byte[] b, int length) {
-      return b != null ? ByteBuffer.wrap(b, 0, length) : NULL_BUFFER;
+    public static ValueWrapper wrapBytes(byte[] b, int length) {
+      return b != null ? new ValueWrapper(true, ByteBuffer.wrap(b, 0, length))
+          : NULL_VW;
     }
 
     /**
@@ -430,30 +429,29 @@ public interface DiskEntry extends RegionEntry {
                 deserializeForTarget = false;
               }
             }
-            final ByteBuffer buffer = bb.getBuffer();
             boolean isSerializedBuffer = false;
             // TODO: upgrade: also need to handle cases of GemFire internal
             // objects (e.g. gateway events, _PR objects) changing
             // serialization below via a versioned CachedDeserializable
             if ((version == null && !deserializeForTarget)
                 || !CachedDeserializableFactory.preferObject()) {
-              entry.value = ClientSharedUtils.toBytes(buffer);
+              entry.value = bb.toBytes();
               entry.setSerialized(EntryBits.isSerialized(bb.getBits()));
             }
             else if (EntryBits.isSerialized(bb.getBits())) {
-              entry.value = readSerializedValue(buffer, version, true);
+              entry.value = readSerializedValue(bb, true);
               isSerializedBuffer = entry.value instanceof SerializedBufferData;
               entry.setSerialized(false);
               entry.setEagerDeserialize();
             }
             else {
-              entry.value = readRawValue(buffer);
+              entry.value = readRawValue(bb);
               entry.setSerialized(false);
             }
             // buffer will no longer be used so clean it up eagerly;
             // skip for SerializedBufferData which will own buffer
             if (!isSerializedBuffer) {
-              UnsafeHolder.releaseIfDirectBuffer(buffer);
+              bb.release();
             }
           }
           return true;
@@ -615,17 +613,28 @@ public interface DiskEntry extends RegionEntry {
       }
     }
 
-    static final ValueWrapper INVALID_VW = new ValueWrapper(
-        true, ByteBuffer.wrap(INVALID_BYTES));
-    static final ValueWrapper LOCAL_INVALID_VW = new ValueWrapper(
-        true, ByteBuffer.wrap(LOCAL_INVALID_BYTES));
-    static final ValueWrapper TOMBSTONE_VW = new ValueWrapper(
-        true, ByteBuffer.wrap(TOMBSTONE_BYTES));
+    public static final ByteBuffer NULL_BUFFER =
+        ByteBuffer.wrap(ClientSharedData.ZERO_ARRAY);
+    public static final ByteBuffer INVALID_BUFFER =
+        ByteBuffer.wrap(INVALID_BYTES);
+    public static final ByteBuffer LOCAL_INVALID_BUFFER =
+        ByteBuffer.wrap(LOCAL_INVALID_BYTES);
+    public static final ByteBuffer TOMBSTONE_BUFFER =
+        ByteBuffer.wrap(TOMBSTONE_BYTES);
+
+    public static final ValueWrapper NULL_VW = new ValueWrapper(
+        true, NULL_BUFFER);
+    public static final ValueWrapper INVALID_VW = new ValueWrapper(
+        true, INVALID_BUFFER);
+    public static final ValueWrapper LOCAL_INVALID_VW = new ValueWrapper(
+        true, LOCAL_INVALID_BUFFER);
+    public static final ValueWrapper TOMBSTONE_VW = new ValueWrapper(
+        true, TOMBSTONE_BUFFER);
 
     static class ValueWrapper {
 
       public final boolean isSerializedObject;
-      public final ByteBuffer buffer;
+      private ByteBuffer buffer;
 
       public static ValueWrapper create(Object value) {
         if (value == Token.INVALID) {
@@ -667,7 +676,7 @@ public interface DiskEntry extends RegionEntry {
             } else {
               bytes = proxy.getSerializedValue();
             }
-            buffer = Helper.wrapBytes(bytes);
+            return Helper.wrapBytes(bytes);
           }
           else if (value instanceof byte[]) {
             isSerializedObject = false;
@@ -686,8 +695,47 @@ public interface DiskEntry extends RegionEntry {
       }
 
       private ValueWrapper(boolean isSerializedObject, ByteBuffer buffer) {
+        // expect buffer position to be at the start to avoid complications
+        // in dealing with non-zero position everywhere
+        if (buffer.position() != 0) {
+          throw new IllegalStateException(
+              "Expected buffer position to be 0 but is = " + buffer.position());
+        }
         this.isSerializedObject = isSerializedObject;
         this.buffer = buffer;
+      }
+
+      public void write(OutputStreamChannel channel) throws IOException {
+        final ByteBuffer buffer = this.buffer;
+        // position is always expected to be zero
+        assert buffer.position() == 0;
+        while (buffer.hasRemaining()) {
+          if (channel.write(buffer) == 0) {
+            // async write; wait for a while before retrying
+            LockSupport.parkNanos(100L);
+          }
+        }
+        // rewind for further reads
+        buffer.rewind();
+      }
+
+      public int size() {
+        // position is always expected to be zero
+        assert this.buffer.position() == 0;
+        return this.buffer.limit();
+      }
+
+      public void release() {
+        final ByteBuffer buffer = this.buffer;
+        if (buffer != null && buffer.isDirect()) {
+          this.buffer = null;
+          UnsafeHolder.releaseDirectBuffer(buffer);
+        }
+      }
+
+      @Override
+      public String toString() {
+        return Oplog.bufferToString(this.buffer);
       }
     }
 
@@ -1230,7 +1278,6 @@ public interface DiskEntry extends RegionEntry {
         value = dr.getRaw(did); // fix bug 40192
         if (value instanceof BytesAndBits) {
           BytesAndBits bb = (BytesAndBits)value;
-          final ByteBuffer buffer = bb.getBuffer();
           boolean isSerializedBuffer = false;
           final byte bits = bb.getBits();
           if (EntryBits.isInvalid(bits)) {
@@ -1240,14 +1287,15 @@ public interface DiskEntry extends RegionEntry {
           } else if (EntryBits.isTombstone(bits)) {
             value = Token.TOMBSTONE;
           } else if (EntryBits.isSerialized(bits)) {
-            value = readSerializedValue(buffer, bb.getVersion(), false);
+            value = readSerializedValue(bb, false);
             isSerializedBuffer = value instanceof SerializedBufferData;
           } else {
-            value = readRawValue(buffer);
+            value = readRawValue(bb);
           }
           // buffer will no longer be used so clean it up eagerly;
           // skip for SerializedBufferData which will own buffer
           if (!isSerializedBuffer) {
+            bb.release();
             UnsafeHolder.releaseIfDirectBuffer(buffer);
           }
         }
@@ -1379,21 +1427,20 @@ public interface DiskEntry extends RegionEntry {
       }
     }
 
-    static Object readSerializedValue(ByteBuffer valueBuffer, Version version,
+    static Object readSerializedValue(BytesAndBits value,
         boolean forceDeserialize) {
       if (forceDeserialize || CachedDeserializableFactory.preferObject()) {
         // deserialize checking for product version change
-        return EntryEventImpl.deserializeBuffer(valueBuffer, version);
+        return value.deserialize();
       } else {
         // TODO: upgrades: is there a case where GemFire values are internal
         // ones that need to be upgraded transparently; probably messages
         // being persisted (gateway events?)
-        return CachedDeserializableFactory.create(
-            ClientSharedUtils.toBytes(valueBuffer));
+        return CachedDeserializableFactory.create(value.toBytes());
       }
     }
 
-    static Object readRawValue(ByteBuffer valueBuffer) {
+    static Object readRawValue(BytesAndBits value) {
       // no longer support pre SQLF 1.1 so no change for RowFormatter bytes
       /*
       final StaticSystemCallbacks sysCb;
@@ -1405,7 +1452,7 @@ public interface DiskEntry extends RegionEntry {
         return valueBuffer;
       }
       */
-      return ClientSharedUtils.toBytes(valueBuffer);
+      return value.toBytes();
     }
 
     public static void incrementBucketStats(Object owner,

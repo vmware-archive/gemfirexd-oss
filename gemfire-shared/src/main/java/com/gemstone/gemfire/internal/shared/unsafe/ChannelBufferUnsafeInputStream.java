@@ -62,7 +62,7 @@ import org.apache.spark.unsafe.Platform;
  */
 public class ChannelBufferUnsafeInputStream extends InputStreamChannel {
 
-  protected final ByteBuffer buffer;
+  protected ByteBuffer buffer;
   protected final long baseAddress;
   /**
    * Actual buffer position (+baseAddress) accounting is done by this. Buffer
@@ -268,8 +268,11 @@ public class ChannelBufferUnsafeInputStream extends InputStreamChannel {
    */
   @Override
   public void close() {
-    this.buffer.clear();
-    this.addrPosition = this.addrLimit = 0;
-    UnsafeHolder.releaseDirectBuffer(this.buffer);
+    final ByteBuffer buffer = this.buffer;
+    if (buffer != null) {
+      this.addrPosition = this.addrLimit = 0;
+      this.buffer = null;
+      UnsafeHolder.releaseDirectBuffer(buffer);
+    }
   }
 }

@@ -41,7 +41,6 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.InetAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
@@ -100,7 +99,6 @@ import com.gemstone.gemfire.internal.offheap.annotations.Released;
 import com.gemstone.gemfire.internal.offheap.annotations.Retained;
 import com.gemstone.gemfire.internal.shared.SystemProperties;
 import com.gemstone.gemfire.internal.shared.Version;
-import com.gemstone.gemfire.internal.shared.unsafe.UnsafeHolder;
 import com.gemstone.gnu.trove.THashMap;
 import com.gemstone.gnu.trove.THashSet;
 
@@ -124,6 +122,8 @@ public class DiskStoreImpl implements DiskStore, ResourceListener<MemoryEvent> {
       .getServerInstance();
   public static final boolean TRACE_RECOVERY = sysProps.getBoolean(
       "disk.TRACE_RECOVERY", false);
+  public static final boolean TRACE_READS = sysProps.getBoolean(
+      "disk.TRACE_READS", false);
   public static final boolean TRACE_WRITES = sysProps.getBoolean(
       "disk.TRACE_WRITES", false);
   public static final boolean KRF_DEBUG = sysProps.getBoolean(
@@ -916,7 +916,7 @@ public class DiskStoreImpl implements DiskStore, ResourceListener<MemoryEvent> {
           this.logger.info(LocalizedStrings.DEBUG,
               "DiskRegion: Tried " + count
                   + ", getBytesAndBitsWithoutLock returns wrong byte array: "
-                  + (bb != null ? Oplog.bufferToString(bb.getBuffer()) : "null"));
+                  + bb);
           ex = e;
         }
       } // while
@@ -959,26 +959,24 @@ public class DiskStoreImpl implements DiskStore, ResourceListener<MemoryEvent> {
    * (deserialize if necessary) or return the serialized blob.
    */
   private static Object convertBytesAndBits(BytesAndBits bb, boolean asObject) {
-    final ByteBuffer buffer = bb.getBuffer();
     boolean isSerializedBuffer = false;
     Object value;
     if (EntryBits.isInvalid(bb.getBits())) {
       value = Token.INVALID;
     } else if (EntryBits.isSerialized(bb.getBits())) {
-      value = DiskEntry.Helper
-          .readSerializedValue(buffer, bb.getVersion(), asObject);
+      value = DiskEntry.Helper.readSerializedValue(bb, asObject);
       isSerializedBuffer = value instanceof SerializedBufferData;
     } else if (EntryBits.isLocalInvalid(bb.getBits())) {
       value = Token.LOCAL_INVALID;
     } else if (EntryBits.isTombstone(bb.getBits())) {
       value = Token.TOMBSTONE;
     } else {
-      value = DiskEntry.Helper.readRawValue(buffer);
+      value = DiskEntry.Helper.readRawValue(bb);
     }
     // buffer will no longer be used so clean it up eagerly
     // skip for SerializedBufferData which will own buffer
     if (!isSerializedBuffer) {
-      UnsafeHolder.releaseIfDirectBuffer(buffer);
+      bb.release();
     }
     return value;
   }
@@ -1005,7 +1003,8 @@ public class DiskStoreImpl implements DiskStore, ResourceListener<MemoryEvent> {
   }
 
   // CLEAR_BB was added in reaction to bug 41306
-  private final BytesAndBits CLEAR_BB = new BytesAndBits(null, (byte) 0);
+  private final BytesAndBits CLEAR_BB = new BytesAndBits(
+      DiskEntry.Helper.NULL_BUFFER, (byte) 0);
 
   /**
    * Gets the Object from the OpLog . It can be invoked from OpLog , if by the

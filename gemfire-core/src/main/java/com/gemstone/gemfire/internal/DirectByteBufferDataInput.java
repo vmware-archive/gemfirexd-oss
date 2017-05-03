@@ -115,12 +115,12 @@ public final class DirectByteBufferDataInput
 
   @Override
   public float readFloat() throws IOException {
-    return this.buffer.getFloat();
+    return Float.intBitsToFloat(this.buffer.getInt());
   }
 
   @Override
   public double readDouble() throws IOException {
-    return this.buffer.getDouble();
+    return Double.longBitsToDouble(this.buffer.getLong());
   }
 
   @Override
@@ -131,7 +131,6 @@ public final class DirectByteBufferDataInput
   @Override
   @Nonnull
   public String readUTF() throws IOException {
-    // kryo's readString is not DataOutput UTF8 compatible
     return DataInputStream.readUTF(this);
   }
 }
