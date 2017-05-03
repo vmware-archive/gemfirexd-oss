@@ -36,7 +36,6 @@
 package com.gemstone.gemfire.internal.cache;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -82,7 +81,7 @@ public class OverflowOplogSet implements OplogSet {
         }
       }
       // Create a new one and put it on the front of the list.
-      OverflowOplog oo = createOverflowOplog(value.buffer.remaining());
+      OverflowOplog oo = createOverflowOplog(value.size());
       addOverflow(oo);
       this.lastOverflowWrite = oo;
       boolean didIt = oo.modify(dr, entry, value, async);
@@ -220,14 +219,14 @@ public class OverflowOplogSet implements OplogSet {
   
 
   void copyForwardForOverflowCompact(DiskEntry de,
-      ByteBuffer value, byte userBits) {
+      DiskEntry.Helper.ValueWrapper value, byte userBits) {
     synchronized (this.overflowMap) {
       if (this.lastOverflowWrite != null) {
         if (this.lastOverflowWrite.copyForwardForOverflowCompact(de, value, userBits)) {
           return;
         }
       }
-      OverflowOplog oo = createOverflowOplog(value.remaining());
+      OverflowOplog oo = createOverflowOplog(value.size());
       this.lastOverflowWrite = oo;
       addOverflow(oo);
       boolean didIt = oo.copyForwardForOverflowCompact(de, value, userBits);

@@ -18,7 +18,11 @@ package com.gemstone.gemfire.internal.cache.persistence;
 
 import java.nio.ByteBuffer;
 
+import com.gemstone.gemfire.internal.cache.EntryEventImpl;
+import com.gemstone.gemfire.internal.cache.Oplog;
+import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
 import com.gemstone.gemfire.internal.shared.Version;
+import com.gemstone.gemfire.internal.shared.unsafe.UnsafeHolder;
 
 /**
  * Used to fetch a record's raw bytes and user bits.
@@ -27,18 +31,21 @@ import com.gemstone.gemfire.internal.shared.Version;
  * @since prPersistSprint1
  */
 public class BytesAndBits {
-  private final ByteBuffer data;
+  private ByteBuffer data;
   private final byte userBits;
   private Version version;
 
   public BytesAndBits(ByteBuffer data, byte userBits) {
+    // expect buffer position to be at the start to avoid complications
+    // in dealing with non-zero position everywhere
+    if (data.position() != 0) {
+      throw new IllegalStateException(
+          "Expected buffer position to be 0 but is = " + data.position());
+    }
     this.data = data;
     this.userBits = userBits;
   }
 
-  public final ByteBuffer getBuffer() {
-    return this.data;
-  }
   public final byte getBits() {
     return this.userBits;
   }
@@ -49,5 +56,33 @@ public class BytesAndBits {
 
   public Version getVersion() {
     return this.version;
+  }
+
+  public int size() {
+    return this.data.limit();
+  }
+
+  public Object deserialize() {
+    Object result = EntryEventImpl.deserializeBuffer(this.data, this.version);
+    // rewind back to original position for further reads if required
+    this.data.rewind();
+    return result;
+  }
+
+  public byte[] toBytes() {
+    return ClientSharedUtils.toBytes(this.data);
+  }
+
+  public void release() {
+    final ByteBuffer data = this.data;
+    if (data != null && data.isDirect()) {
+      this.data = null;
+      UnsafeHolder.releaseDirectBuffer(data);
+    }
+  }
+
+  @Override
+  public String toString() {
+    return Oplog.bufferToString(this.data);
   }
 }

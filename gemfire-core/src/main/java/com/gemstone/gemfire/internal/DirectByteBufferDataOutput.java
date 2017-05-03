@@ -22,10 +22,10 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.io.UTFDataFormatException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 import javax.annotation.Nonnull;
 
-import com.esotericsoftware.kryo.KryoException;
-import com.esotericsoftware.kryo.io.ByteBufferOutput;
 import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
 import com.gemstone.gemfire.internal.shared.Version;
 import com.gemstone.gemfire.internal.shared.unsafe.ChannelBufferUnsafeDataOutputStream;
@@ -39,11 +39,12 @@ import com.gemstone.gemfire.internal.shared.unsafe.UnsafeHolder;
  * going through ByteBuffer API (e.g. see ChannelBufferUnsafeDataOutputStream)
  * but won't have an effect for large byte array writes (like for column data)
  */
-public final class DirectByteBufferDataOutput extends ByteBufferOutput
+public final class DirectByteBufferDataOutput
     implements DataOutput, Closeable, VersionedDataStream {
 
   private static final int INITIAL_SIZE = 1024;
 
+  private ByteBuffer buffer;
   private final Version version;
 
   public DirectByteBufferDataOutput(Version version) {
@@ -51,7 +52,8 @@ public final class DirectByteBufferDataOutput extends ByteBufferOutput
   }
 
   public DirectByteBufferDataOutput(int initialSize, Version version) {
-    super(initialSize, Integer.MAX_VALUE); // no max limit
+    this.buffer = UnsafeHolder.allocateDirectBuffer(initialSize)
+        .order(ByteOrder.BIG_ENDIAN);
     this.version = version;
   }
 
@@ -60,15 +62,76 @@ public final class DirectByteBufferDataOutput extends ByteBufferOutput
     return this.version;
   }
 
+  public ByteBuffer getBuffer() {
+    return this.buffer;
+  }
+
+  @Override
+  public void write(int b) throws IOException {
+    ensureCapacity(1);
+    this.buffer.put((byte)b);
+  }
+
+  @Override
+  public void write(@Nonnull byte[] b) throws IOException {
+    write(b, 0, b.length);
+  }
+
+  @Override
+  public void write(@Nonnull byte[] b, int off, int len) throws IOException {
+    ensureCapacity(len);
+    this.buffer.put(b, off, len);
+  }
+
+  @Override
+  public void writeBoolean(boolean v) throws IOException {
+    ensureCapacity(1);
+    this.buffer.put(v ? (byte)1 : 0);
+  }
+
+  @Override
+  public void writeByte(int v) throws IOException {
+    ensureCapacity(1);
+    this.buffer.put((byte)v);
+  }
+
+  @Override
+  public void writeShort(int v) throws IOException {
+    ensureCapacity(2);
+    this.buffer.putShort((short)v);
+  }
+
   @Override
   public void writeChar(int v) throws IOException {
-    super.writeChar((char)v);
+    writeShort(v);
+  }
+
+  @Override
+  public void writeInt(int v) throws IOException {
+    ensureCapacity(4);
+    this.buffer.putInt(v);
+  }
+
+  @Override
+  public void writeLong(long v) throws IOException {
+    ensureCapacity(8);
+    this.buffer.putLong(v);
+  }
+
+  @Override
+  public void writeFloat(float v) throws IOException {
+    ensureCapacity(4);
+    this.buffer.putInt(Float.floatToIntBits(v));
+  }
+
+  @Override
+  public void writeDouble(double v) throws IOException {
+    ensureCapacity(8);
+    this.buffer.putLong(Double.doubleToLongBits(v));
   }
 
   @Override
   public void writeUTF(@Nonnull String s) throws IOException {
-    // kryo's writeString is not DataOutput UTF8 compatible
-
     // first calculate the UTF encoded length
     final int strLen = s.length();
     final int utfLen = ClientSharedUtils.getUTFLength(s, strLen);
@@ -77,58 +140,59 @@ public final class DirectByteBufferDataOutput extends ByteBufferOutput
           + " bytes");
     }
     // make required space
-    require(utfLen + 2);
-    final ByteBuffer buffer = this.niobuffer;
+    ensureCapacity(utfLen + 2);
+    final ByteBuffer buffer = this.buffer;
     // write the length first
     buffer.putShort((short)utfLen);
-    position += 2;
     // now write as UTF data using unsafe API
     final long address = UnsafeHolder.getDirectBufferAddress(buffer);
+    final int position = buffer.position();
     ChannelBufferUnsafeDataOutputStream.writeUTFSegmentNoOverflow(s, 0, strLen,
-        address + position, UnsafeHolder.getUnsafe());
-    position += utfLen;
-    buffer.position(position);
+        utfLen, null, address + position);
+    buffer.position(position + utfLen);
   }
 
   @Override
   public void writeBytes(@Nonnull String s) throws IOException {
-    int len = s.length();
-    require(len);
-    for (int i = 0; i < len; i++) {
-      niobuffer.put((byte)s.charAt(i));
-      position++;
+    if (s.length() > 0) {
+      final byte[] bytes = s.getBytes(StandardCharsets.US_ASCII);
+      ensureCapacity(bytes.length);
+      this.buffer.put(bytes);
     }
   }
 
   @Override
   public void writeChars(@Nonnull String s) throws IOException {
     int len = s.length();
-    final int required = len << 1;
-    if (required < 0) {
-      throw new KryoException("Buffer overflow with required=" + required);
-    }
-    require(required);
-    for (int i = 0; i < len; i++) {
-      niobuffer.putShort((short)s.charAt(i));
-      position += 2;
+    if (len > 0) {
+      final int required = len << 1;
+      if (required < 0) {
+        throw new IOException("Buffer overflow with required=" + required);
+      }
+      ensureCapacity(required);
+      for (int i = 0; i < len; i++) {
+        this.buffer.putChar(s.charAt(i));
+      }
     }
   }
 
   @Override
-  protected boolean require(int required) throws KryoException {
-    if (capacity - position >= required) return false;
-    capacity = Math.max((int)Math.min((long)capacity << 1L,
-        Integer.MAX_VALUE), position + required);
-    niobuffer.rewind();
-    niobuffer.limit(position);
-    // reallocation will do full copy first time around since allocation is
-    // not using UnsafeHolder.allocateDirectBuffer but next time onwards it
-    // will use the efficient C realloc() call that avoids copying if possible
+  public void close() throws IOException {
+  }
+
+  protected void ensureCapacity(int required) {
+    final ByteBuffer buffer = this.buffer;
+    final int position = buffer.position();
+    if (buffer.limit() - position >= required) return;
+
+    final int newCapacity = Math.max((int)Math.min(
+        (long)buffer.capacity() << 1L, Integer.MAX_VALUE), position + required);
+    buffer.flip();
+    // use the efficient C realloc() call that avoids copying if possible
     ByteBuffer newBuffer = UnsafeHolder.reallocateDirectBuffer(
-        niobuffer, capacity);
+        buffer, newCapacity);
     // set the position of newBuffer
     newBuffer.position(position);
-    setBuffer(newBuffer, Integer.MAX_VALUE);
-    return true;
+    this.buffer = newBuffer;
   }
 }
