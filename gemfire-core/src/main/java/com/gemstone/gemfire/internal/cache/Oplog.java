@@ -1987,6 +1987,7 @@ public final class Oplog implements CompactableOplog {
     }
 
     FileInputStream fis;
+    ChannelBufferUnsafeDataInputStream dis = null;
     try {
       fis = new FileInputStream(f);
     } catch (FileNotFoundException ex) {
@@ -2012,10 +2013,9 @@ public final class Oplog implements CompactableOplog {
     final Version version = getProductVersionIfOld();
     final ByteArrayDataInput in = new ByteArrayDataInput();
     final long currentTime = getParent().getCache().cacheTimeMillis();
+    dis = new ChannelBufferUnsafeDataInputStream(fis.getChannel(),
+        LARGE_BUFFER_SIZE, false);
     try {
-      final ChannelBufferUnsafeDataInputStream dis =
-          new ChannelBufferUnsafeDataInputStream(fis.getChannel(),
-              LARGE_BUFFER_SIZE);
       readDiskStoreRecord(dis, f);
       readGemfireVersionRecord(dis, f);
       readTotalCountRecord(dis, f);
@@ -2143,6 +2143,10 @@ public final class Oplog implements CompactableOplog {
       setRecoverNewEntryId(oplogKeyIdHWM);
     } catch (IOException ex) {
       try {
+        if (dis != null) {
+          dis.close();
+          dis = null;
+        }
         fis.close();
         fis = null;
       } catch (IOException ignore) {
@@ -2170,6 +2174,10 @@ public final class Oplog implements CompactableOplog {
     }
     } finally {
       // fix for bug 42776
+      if (dis != null) {
+        dis.close();
+        dis = null;
+      }
       if (fis != null) {
         try {
           fis.close();
@@ -6130,7 +6138,7 @@ public final class Oplog implements CompactableOplog {
    * test hook
    */
   final ByteBuffer getWriteBuf() {
-    return this.crf.outputStream.getBuffer();
+    return this.crf.outputStream.getInternalBuffer();
   }
 //  private final void flushNoSync(OplogFile olf) throws IOException {
 //    flushAllNoSync(false); // @todo

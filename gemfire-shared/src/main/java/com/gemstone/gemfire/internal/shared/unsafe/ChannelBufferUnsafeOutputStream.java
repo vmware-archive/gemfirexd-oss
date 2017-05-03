@@ -82,12 +82,7 @@ public class ChannelBufferUnsafeOutputStream extends OutputStreamChannel {
   protected static final int MIN_BUFFER_SIZE = 10;
 
   public ChannelBufferUnsafeOutputStream(WritableByteChannel channel) {
-    this(channel, ChannelBufferOutputStream.DEFAULT_BUFFER_SIZE);
-  }
-
-  public ChannelBufferUnsafeOutputStream(WritableByteChannel channel,
-      int bufferSize) {
-    this(channel, bufferSize, true);
+    this(channel, ChannelBufferOutputStream.DEFAULT_BUFFER_SIZE, false);
   }
 
   public ChannelBufferUnsafeOutputStream(WritableByteChannel channel,
@@ -115,9 +110,11 @@ public class ChannelBufferUnsafeOutputStream extends OutputStreamChannel {
   }
 
   /**
-   * Get handle to the underlying ByteBuffer. Use with care.
+   * Get handle to the underlying ByteBuffer. ONLY TO BE USED BY TESTS.
    */
-  public ByteBuffer getBuffer() {
+  public ByteBuffer getInternalBuffer() {
+    // set the current position
+    this.buffer.position(position());
     return this.buffer;
   }
 

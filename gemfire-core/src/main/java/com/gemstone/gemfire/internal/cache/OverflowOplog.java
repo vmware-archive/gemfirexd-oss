@@ -35,7 +35,6 @@
 
 package com.gemstone.gemfire.internal.cache;
 
-import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InterruptedIOException;
@@ -55,11 +54,9 @@ import com.gemstone.gemfire.i18n.LogWriterI18n;
 import com.gemstone.gemfire.internal.Assert;
 import com.gemstone.gemfire.internal.cache.DiskStoreImpl.OplogCompactor;
 import com.gemstone.gemfire.internal.cache.Oplog.OplogDiskEntry;
-import com.gemstone.gemfire.internal.cache.Oplog.OplogFile;
 import com.gemstone.gemfire.internal.cache.persistence.BytesAndBits;
 import com.gemstone.gemfire.internal.cache.persistence.DiskRegionView;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
-import com.gemstone.gemfire.internal.shared.unsafe.UnsafeHolder;
 
 /**
  * An oplog used for overflow-only regions.
@@ -258,8 +255,7 @@ class OverflowOplog implements CompactableOplog {
     }
     this.crf.f = f;
     this.crf.raf = new RandomAccessFile(f, "rw");
-    this.crf.channel = this.crf.raf.getChannel();
-    this.crf.outputStream = createOutputStream(previous, this.crf);
+    this.crf.writeBuf = allocateWriteBuf(previous);
     preblow();
     if (logger.infoEnabled()) {
       logger.info(LocalizedStrings.Oplog_CREATE_0_1_2,
@@ -267,21 +263,27 @@ class OverflowOplog implements CompactableOplog {
                                 "crf",
                                 this.parent.getName()});
     }
+    this.crf.channel = this.crf.raf.getChannel();
 
     this.stats.incOpenOplogs();
   }
 
-  private static OplogFile.FileChannelOutputStream createOutputStream(
-      final OverflowOplog previous, final OplogFile olf) throws IOException {
-    final int bufSize = Integer.getInteger("WRITE_BUF_SIZE", 32768);
+  private static ByteBuffer allocateWriteBuf(OverflowOplog previous) {
+    ByteBuffer result = null;
     if (previous != null) {
-      synchronized (previous.crf) {
-        return olf.new FileChannelOutputStream(previous.crf.outputStream,
-            bufSize, false /* limit new buffer allocations */);
-      }
-    } else {
-      return olf.new FileChannelOutputStream(bufSize,
-          false /* limit new buffer allocations */);
+      result = previous.consumeWriteBuf();
+    }
+    if (result == null) {
+      result = ByteBuffer.allocateDirect(Integer.getInteger("WRITE_BUF_SIZE", 32768));
+    }
+    return result;
+  }
+
+  private ByteBuffer consumeWriteBuf() {
+    synchronized (this.crf) {
+      ByteBuffer result = this.crf.writeBuf;
+      this.crf.writeBuf = null;
+      return result;
     }
   }
 
@@ -476,7 +478,7 @@ class OverflowOplog implements CompactableOplog {
    */
   public void testClose() {
     try {
-      this.crf.outputStream.closeChannel();
+      this.crf.channel.close();
     } catch (IOException ignore) {
     }
     try {
@@ -493,7 +495,7 @@ class OverflowOplog implements CompactableOplog {
 //                   new RuntimeException("STACK"));
       if (!this.crf.RAFClosed) {
         try {
-          this.crf.outputStream.closeChannel();
+          this.crf.channel.close();
         } catch (IOException ignore) {
         }
         try {
@@ -652,7 +654,7 @@ class OverflowOplog implements CompactableOplog {
     synchronized (this.crf) {
       final int valueLength = value.size();
       // can't use ByteBuffer after handing it over to OpState
-      this.opState.initialize(entry, value, valueLength, userBits);
+      this.opState.initialize(value, valueLength, userBits);
       int adjustment = getOpStateSize();
       assert adjustment > 0;
       //       {
@@ -821,15 +823,15 @@ class OverflowOplog implements CompactableOplog {
         return;
       }
       try {
-//      ByteBuffer bb = olf.writeBuf;
+      ByteBuffer bb = olf.writeBuf;
 //       logger.info(LocalizedStrings.DEBUG, "DEBUG: flush "
 //                   + " oplog#" + getOplogId()
 //                   + " bb.position()=" + ((bb != null) ? bb.position() : "null")
 //                   + "crf);
-//      if (bb != null && bb.position() != 0) {
-//        bb.flip();
-//        int flushed = 0;
-//        do {
+      if (bb != null && bb.position() != 0) {
+        bb.flip();
+        int flushed = 0;
+        do {
 //           {
 //             byte[] toPrint = new byte[bb.remaining()];
 //             for (int i=0; i < bb.remaining(); i++) {
@@ -841,24 +843,20 @@ class OverflowOplog implements CompactableOplog {
 //                         + " oplog#" + getOplogId()
 //                         + "crf");
 //           }
-//          flushed += olf.channel.write(bb);
+          flushed += olf.channel.write(bb);
 //            logger.info(LocalizedStrings.DEBUG, "DEBUG: flush bytesFlushed=" + olf.bytesFlushed
 //                        + " position=" + olf.channel.position()
 //                        + " oplog#" + getOplogId()
 //                        + "crf");
-//        } while (bb.hasRemaining());
+        } while (bb.hasRemaining());
         // update bytesFlushed after entire writeBuffer is flushed to fix bug 41201
-//        olf.bytesFlushed += flushed;
-        final OplogFile.FileChannelOutputStream outputStream = olf.outputStream;
-        if (outputStream != null) {
-          outputStream.flush();
-        }
+        olf.bytesFlushed += flushed;
 //             logger.info(LocalizedStrings.DEBUG, "DEBUG: flush bytesFlushed=" + olf.bytesFlushed
 //                        + " position=" + olf.channel.position()
 //                         + " oplog#" + getOplogId()
 //                         + "crf");
-//        bb.clear();
-//      }
+        bb.clear();
+      }
       } catch (ClosedChannelException ignore) {
         // It is possible for a channel to be closed when our code does not
         // explicitly call channel.close (when we will set RAFclosed).
@@ -914,7 +912,7 @@ class OverflowOplog implements CompactableOplog {
       // Also it is only in case of synch writing, we are writing more
       // than what is actually needed, we will have to reset the pointer.
       // Also need to add in offset in writeBuf in case we are not flushing writeBuf
-      long curFileOffset = olf.outputStream.fileOffset();
+      long curFileOffset = olf.channel.position() + olf.writeBuf.position();
       startPos = allocate(curFileOffset, getOpStateSize());
       if (startPos != -1) {
         if (startPos != curFileOffset) {
@@ -978,7 +976,6 @@ class OverflowOplog implements CompactableOplog {
       final long readPosition = offsetInOplog;
       assert readPosition >= 0;
       RandomAccessFile myRAF = this.crf.raf;
-      FileChannel crfChannel = this.crf.channel;
       BytesAndBits bb = null;
       long writePosition = 0;
       if (!this.doneAppending) {
@@ -1003,13 +1000,9 @@ class OverflowOplog implements CompactableOplog {
           //                        + " oplog#" + getOplogId());
           //               }
           this.stats.incOplogSeeks();
-          // should account faulted in values so use allocator here
-          final ByteBuffer valueBuffer = GemFireCacheImpl
-              .getCurrentBufferAllocator().allocate(valueLength);
-          while (valueBuffer.hasRemaining()) {
-            if (crfChannel.read(valueBuffer) <= 0) throw new EOFException();
-          }
-          valueBuffer.flip();
+          byte[] valueBytes = new byte[valueLength];
+          myRAF.readFully(valueBytes);
+          ByteBuffer valueBuffer = ByteBuffer.wrap(valueBytes);
 //           if (EntryBits.isSerialized(userBits)) {
 //             try {
 //               com.gemstone.gemfire.internal.util.BlobHelper.deserializeBlob(valueBytes);
@@ -1060,25 +1053,19 @@ class OverflowOplog implements CompactableOplog {
   private BytesAndBits attemptWriteBufferGet(long writePosition, long readPosition,
                                              int valueLength, byte userBits) {
     BytesAndBits bb = null;
-    final OplogFile.FileChannelOutputStream outputStream = this.crf.outputStream;
-    ByteBuffer writeBuf = outputStream.getBuffer();
-    int curWriteBufPos = outputStream.position();
+    ByteBuffer writeBuf = this.crf.writeBuf;
+    int curWriteBufPos = writeBuf.position();
     if (writePosition <= readPosition
         && (writePosition+curWriteBufPos) >= (readPosition+valueLength)) {
       int bufOffset = (int)(readPosition - writePosition);
-      // should account faulted in values so use allocator here
-      final ByteBuffer valueBuffer = GemFireCacheImpl
-          .getCurrentBufferAllocator().allocate(valueLength);
-      int oldPosition = writeBuf.position();
+      byte[] valueBytes = new byte[valueLength];
       int oldLimit = writeBuf.limit();
-      writeBuf.rewind();
-      writeBuf.limit(Math.min(bufOffset + valueLength, curWriteBufPos));
+      writeBuf.limit(curWriteBufPos);
       writeBuf.position(bufOffset);
-      valueBuffer.put(writeBuf);
-      valueBuffer.flip();
-      writeBuf.rewind();
+      writeBuf.get(valueBytes);
+      writeBuf.position(curWriteBufPos);
       writeBuf.limit(oldLimit);
-      writeBuf.position(oldPosition);
+      ByteBuffer valueBuffer = ByteBuffer.wrap(valueBytes);
       if (DiskStoreImpl.TRACE_READS) {
         logger.info(LocalizedStrings.DEBUG,
             "TRACE_READS attemptWriteBufferGet readPosition=" + readPosition
@@ -1381,6 +1368,16 @@ class OverflowOplog implements CompactableOplog {
 
   // ////////////////////Inner Classes //////////////////////
 
+  private static class OplogFile {
+    public File f;
+    public RandomAccessFile raf;
+    public boolean RAFClosed;
+    public FileChannel channel;
+    public ByteBuffer writeBuf;
+    public long currSize; // HWM
+    public long bytesFlushed;
+  }
+
   /**
    * Holds all the state for the current operation.
    * Since an oplog can only have one operation in progress at any given
@@ -1409,18 +1406,21 @@ class OverflowOplog implements CompactableOplog {
       }
     }
 
-//    private final void write(byte[] bytes, int byteLength) throws IOException {
-//      int offset = 0;
-//      final int maxOffset = byteLength;
-//      ByteBuffer bb = getOLF().writeBuf;
-//      while (offset < maxOffset) {
-//
-//        int bytesThisTime = maxOffset - offset;
-//        boolean needsFlush = false;
-//        if (bytesThisTime > bb.remaining()) {
-//          needsFlush = true;
-//          bytesThisTime = bb.remaining();
-//        }
+    private void write(ByteBuffer buffer, final int byteLength) throws IOException {
+      if (buffer.position() != 0) {
+        throw new IllegalStateException(
+            "Expected buffer to be at 0 position but = " + buffer.position());
+      }
+      ByteBuffer bb = getOLF().writeBuf;
+      int bytesThisTime;
+      while ((bytesThisTime = buffer.remaining()) > 0) {
+        boolean needsFlush = false;
+        int availableSpace = bb.remaining();
+        if (bytesThisTime > availableSpace) {
+          needsFlush = true;
+          bytesThisTime = availableSpace;
+          buffer.limit(buffer.position() + bytesThisTime);
+        }
 //         logger.info(LocalizedStrings.DEBUG,
 //                     "DEBUG " + OverflowOplog.this.toString()
 //                     + " offset=" + offset
@@ -1431,15 +1431,18 @@ class OverflowOplog implements CompactableOplog {
 //                     + " bb.position()=" + bb.position()
 //                     + " bb.limit()=" + bb.limit()
 //                     + " bb.remaining()=" + bb.remaining());
-//        bb.put(bytes, offset, bytesThisTime);
-//        offset += bytesThisTime;
-//        if (needsFlush) {
-//          flush();
-//        }
-//      }
-//    }
-    public void initialize(DiskEntry entry,
-                           DiskEntry.Helper.ValueWrapper value,
+        bb.put(buffer);
+        if (needsFlush) {
+          flush();
+          // restore the limit to original
+          buffer.limit(byteLength);
+        }
+      }
+      // rewind the incoming buffer back to the start
+      buffer.rewind();
+    }
+
+    public void initialize(DiskEntry.Helper.ValueWrapper value,
                            int valueLength,
                            byte userBits)
     {
@@ -1455,7 +1458,7 @@ class OverflowOplog implements CompactableOplog {
     public long write() throws IOException {
       int valueLength = 0;
       if (this.needsValue && (valueLength = this.value.size()) > 0) {
-        this.value.write(getOLF().outputStream);
+        write(this.value.getInternalBuffer(), valueLength);
       }
       return valueLength;
     }

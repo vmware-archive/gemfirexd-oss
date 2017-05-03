@@ -47,11 +47,6 @@ public class ChannelBufferUnsafeDataOutputStream extends
   }
 
   public ChannelBufferUnsafeDataOutputStream(WritableByteChannel channel,
-      int bufferSize) {
-    super(channel, bufferSize);
-  }
-
-  public ChannelBufferUnsafeDataOutputStream(WritableByteChannel channel,
       int bufferSize, boolean useUnsafeAllocation) {
     super(channel, bufferSize, useUnsafeAllocation);
   }

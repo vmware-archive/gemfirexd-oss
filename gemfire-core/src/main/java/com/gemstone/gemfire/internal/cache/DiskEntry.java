@@ -711,12 +711,22 @@ public interface DiskEntry extends RegionEntry {
         assert buffer.position() == 0;
         while (buffer.hasRemaining()) {
           if (channel.write(buffer) == 0) {
-            // async write; wait for a while before retrying
+            // wait for a while before retrying
             LockSupport.parkNanos(100L);
           }
         }
         // rewind for further reads
         buffer.rewind();
+      }
+
+      /**
+       * Get the internal buffer of the data for temporary use.
+       * <p>
+       * USE WITH CARE ESPECIALLY NO EXPLICIT RELEASE WHICH SHOULD ONLY
+       * BE DONE USING THE {@link #release()} METHOD.
+       */
+      public ByteBuffer getInternalBuffer() {
+        return this.buffer;
       }
 
       public int size() {
