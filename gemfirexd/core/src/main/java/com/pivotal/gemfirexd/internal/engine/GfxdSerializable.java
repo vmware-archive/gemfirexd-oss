@@ -370,6 +370,4 @@ public interface GfxdSerializable extends GfxdDSFID {
 
   public final static byte LEAD_NODE_CONN_OP_CTX = 123;
 
-  public final static byte SNAPPY_REGION_STATS = 124;
-
 }
