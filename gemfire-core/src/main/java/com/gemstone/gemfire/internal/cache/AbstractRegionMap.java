@@ -49,17 +49,13 @@ import com.gemstone.gemfire.internal.cache.FilterRoutingInfo.FilterInfo;
 import com.gemstone.gemfire.internal.cache.delta.Delta;
 import com.gemstone.gemfire.internal.cache.ha.HAContainerWrapper;
 import com.gemstone.gemfire.internal.cache.ha.HARegionQueue;
+import com.gemstone.gemfire.internal.cache.locks.LockingPolicy;
 import com.gemstone.gemfire.internal.cache.locks.NonReentrantReadWriteLock;
 import com.gemstone.gemfire.internal.cache.lru.LRUEntry;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheClientNotifier;
 import com.gemstone.gemfire.internal.cache.tier.sockets.ClientProxyMembershipID;
 import com.gemstone.gemfire.internal.cache.tier.sockets.HAEventWrapper;
-import com.gemstone.gemfire.internal.cache.versions.ConcurrentCacheModificationException;
-import com.gemstone.gemfire.internal.cache.versions.RegionVersionVector;
-import com.gemstone.gemfire.internal.cache.versions.VersionHolder;
-import com.gemstone.gemfire.internal.cache.versions.VersionSource;
-import com.gemstone.gemfire.internal.cache.versions.VersionStamp;
-import com.gemstone.gemfire.internal.cache.versions.VersionTag;
+import com.gemstone.gemfire.internal.cache.versions.*;
 import com.gemstone.gemfire.internal.cache.wan.GatewaySenderEventImpl;
 import com.gemstone.gemfire.internal.concurrent.CustomEntryConcurrentHashMap;
 import com.gemstone.gemfire.internal.concurrent.CustomEntryConcurrentHashMap.HashEntry;
@@ -671,7 +667,7 @@ abstract class AbstractRegionMap implements RegionMap {
         int tombstones = 0;
         VersionSource myId = _getOwner().getVersionMember();
         if (localRvv != rvv) {
-          localRvv.recordGCVersions(rvv);
+          localRvv.recordGCVersions(rvv, null);
         }
         for (RegionEntry re : regionEntries()) {
           synchronized (re) {
@@ -981,6 +977,7 @@ abstract class AbstractRegionMap implements RegionMap {
       if (lastModifiedTime != 0) {
         newRe.setLastModified(lastModifiedTime);
       }
+      //TODO : Suranjan check here.
       RegionEntry oldRe = putEntryIfAbsent(key, newRe);
       LocalRegion owner = null;
       if (_isOwnerALocalRegion()) {
@@ -1094,6 +1091,7 @@ abstract class AbstractRegionMap implements RegionMap {
     LogWriterI18n logger = owner.getLogWriterI18n();
     
     if (newValue == Token.TOMBSTONE && !owner.getConcurrencyChecksEnabled()) {
+
       return false;
     }
 
@@ -1173,6 +1171,7 @@ abstract class AbstractRegionMap implements RegionMap {
       }
       synchronized (newRe) {
         try {
+          // TODO: Suranjan in case of GII do the put here..see if oldEntryMap needs to be checked.
           oldRe = putEntryIfAbsent(key, newRe);
           while (!done && oldRe != null) {
             synchronized (oldRe) {
@@ -1247,7 +1246,7 @@ abstract class AbstractRegionMap implements RegionMap {
                         log.info(LocalizedStrings.DEBUG, "initialImagePut: received base value for "
                             + "list of deltas; event: " + event);
                       }
-                     
+                     //TODO: Need to add oldEntry for each of the deltas that has been stored?
                       ListOfDeltas lod = ((ListOfDeltas)oldValue);
                       lod.sortAccordingToVersionNum(entryVersion != null
                           && owner.concurrencyChecksEnabled, key);
@@ -1673,6 +1672,7 @@ RETRY_LOOP:
           }
           try {
             synchronized (newRe) {
+              //TODO:MVCC this will get covered in destroyEntry
               RegionEntry oldRe = putEntryIfAbsent(event.getKey(), newRe);
               try { // bug #42228 - leaving "removed" entries in the cache
               while (!opCompleted && oldRe != null) {
@@ -1827,6 +1827,7 @@ RETRY_LOOP:
                 newRe.returnToPool();
                 continue RETRY_LOOP;
               }
+              //TODO: MVCC this case?
               re = (RegionEntry)_getMap().putIfAbsent(event.getKey(), newRe);
               if (re != null && re != tombstone) {
                 // concurrent change - try again
@@ -2232,7 +2233,8 @@ RETRY_LOOP:
       // TODO: merge: isn't this better done once before commit?
       //Map<AbstractIndex, Long> lockedIndexes = owner
       //    .acquireWriteLocksOnCompactRangeIndexes();
-      //try {
+      RegionEntry oldRe = null;
+      try {
       if (!re.isDestroyedOrRemoved()) {
         final int oldSize = owner.calculateRegionEntryValueSize(re);
         // Create an entry event only if the calling context is
@@ -2267,6 +2269,11 @@ RETRY_LOOP:
           cbEvent = null;
         }
 
+        oldRe = NonLocalRegionEntry.newEntryWithoutFaultIn(re, owner, true);
+        if (shouldCopyOldEntry(owner, null) /*&& re.getVersionStamp() != null && re.getVersionStamp()
+            .asVersionTag().getEntryVersion() > 0*/ ) {
+          owner.getCache().addOldEntry(oldRe, owner.getFullPath());
+        }
         txRemoveOldIndexEntry(Operation.DESTROY, re);
         boolean clearOccured = false;
         try {
@@ -2325,6 +2332,11 @@ RETRY_LOOP:
           cbEvent = null;
         }
 
+        oldRe = NonLocalRegionEntry.newEntryWithoutFaultIn(re, owner, true);
+        if (shouldCopyOldEntry(owner, null) /*&& re.getVersionStamp()!=null && re.getVersionStamp()
+            .asVersionTag().getEntryVersion()>0*/) {
+          owner.getCache().addOldEntry(oldRe, owner.getFullPath());
+        }
         try {
           EntryEventImpl txEvent = null;
           if (!isRegionReady) {
@@ -2409,9 +2421,9 @@ RETRY_LOOP:
         }
       */
       }
-      //} finally {
-      //  owner.releaseAcquiredWriteLocksOnIndexes(lockedIndexes);
-      //}
+      } finally {
+        //owner.releaseAcquiredWriteLocksOnIndexes(lockedIndexes);
+      }
     } catch (DiskAccessException dae) {
       owner.handleDiskAccessException(dae, true/* stop bridge servers*/);
       throw dae;
@@ -2732,7 +2744,8 @@ RETRY_LOOP:
                         + "'");
                   }
                   if (event.getVersionTag() != null && owner.getVersionVector() != null) {
-                    owner.getVersionVector().recordVersion((InternalDistributedMember) event.getDistributedMember(), event.getVersionTag());
+                    owner.getVersionVector().recordVersion((InternalDistributedMember) event.getDistributedMember(),
+                        event.getVersionTag(), event);
                   }
                 }
                 else { // previous value not invalid
@@ -3960,10 +3973,18 @@ RETRY_LOOP:
                   notifyIndex(re, owner, true);
                   try {
                     try {
+                      RegionEntry oldRe = null;
+                      if (shouldCopyOldEntry(owner, event) && re.getVersionStamp() != null && re
+                          .getVersionStamp().asVersionTag().getEntryVersion() > 0) {
+                        // we need to do the same for secondary as well.
+                        // need to set the version information.
+                        oldRe = NonLocalRegionEntry.newEntryWithoutFaultIn(re, event.getRegion(), true);
+                        // need to put old entry in oldEntryMap for MVCC
+                        owner.getCache().addOldEntry(oldRe, owner.getFullPath());
+                      }
                       if ((cacheWrite && event.getOperation().isUpdate()) // if there is a cacheWriter, type of event has already been set
                           || !re.isRemoved()
                           || replaceOnClient) {
-                        // update
                         updateEntry(event, requireOldValue, oldValueForDelta, re);
                       } else {
                         // create
@@ -4108,6 +4129,11 @@ RETRY_LOOP:
     } // finally
 
     return result;
+  }
+
+
+  private boolean shouldCopyOldEntry(LocalRegion owner, EntryEventImpl event) {
+    return owner.concurrencyChecksEnabled && !owner.isUsedForMetaRegion() ;
   }
 
   /**
@@ -4332,10 +4358,19 @@ RETRY_LOOP:
       boolean createdForDestroy, boolean removeRecoveredEntry)
       throws CacheWriterException, TimeoutException, EntryNotFoundException,
       RegionClearedException {
+    RegionEntry oldRe = null;
+    if (shouldCopyOldEntry(_getOwner(), event) /*&& re.getVersionStamp() != null && re.getVersionStamp()
+        .asVersionTag().getEntryVersion() > 0*/) {
+      // we need to do the same for secondary as well.
+      oldRe = NonLocalRegionEntry.newEntryWithoutFaultIn(re, event.getRegion(), true);
+      _getOwner().getCache().addOldEntry(oldRe, _getOwner().getFullPath());
+    }
     processVersionTag(re, event);
     final int oldSize = _getOwner().calculateRegionEntryValueSize(re);
+
     boolean retVal = re.destroy(event.getLocalRegion(), event, inTokenMode,
         cacheWrite, expectedOldValue, createdForDestroy, removeRecoveredEntry);
+    // we can add the old value to
     if (retVal) {
       EntryLogger.logDestroy(event);
       _getOwner().updateSizeOnRemove(event.getKey(), oldSize);
@@ -4367,6 +4402,7 @@ RETRY_LOOP:
     boolean isLockedForTXCacheMod = false;
     boolean opCompleted = false;
     boolean entryCreated = false;
+    RegionEntry oldRe = null;
     try {
       // create new EntryEventImpl in case pendingCallbacks is non-null
       if (pendingCallbacks != null) {
@@ -4489,6 +4525,13 @@ RETRY_LOOP:
       boolean clearOccured = false;
       boolean isCreate = false;
       try {
+        // Put the copy to into common place instead of all the running tx.
+        // as there is a race.
+        oldRe = NonLocalRegionEntry.newEntryWithoutFaultIn(re, owner, true);
+        if (shouldCopyOldEntry(owner, null) /*&& re.getVersionStamp() != null && re.getVersionStamp()
+            .asVersionTag().getEntryVersion() > 0*/) {
+          owner.getCache().addOldEntry(oldRe, owner.getFullPath());
+        }
         re.setValue(owner, re.prepareValueForCache(owner, newValue, !putOp.isCreate(), false));
         if (putOp.isCreate()) {
           isCreate = true;
@@ -4699,6 +4742,13 @@ RETRY_LOOP:
     if (cbEvent != null && owner.getConcurrencyChecksEnabled()
         && (!owner.getScope().isLocal() || owner.getDataPolicy()
             .withPersistence())) {
+      PartitionedRegion pr = null;
+      if (owner.isUsedForPartitionedRegionBucket()) {
+        pr = (PartitionedRegion)cbEvent.getRegion();
+        if (cbEvent != null) {
+          cbEvent.setRegion(owner);
+        }
+      }
       try {
         /* now we copy only commitTime from remote
         if (txEntryState != null && txEntryState.getRemoteVersionTag() != null) {
@@ -4735,6 +4785,11 @@ RETRY_LOOP:
         }
       } catch (ConcurrentCacheModificationException ignore) {
         // ignore this execption, however invoke callbacks for this operation
+      }
+      finally {
+        if (pr != null) {
+          cbEvent.setRegion(pr);
+        }
       }
     }
   }
@@ -5189,7 +5244,7 @@ RETRY_LOOP:
                 if (isScheduledTombstone) {
                   _getOwner().incTombstoneCount(-1);
                 }
-                _getOwner().getVersionVector().recordGCVersion(version.getMemberID(), version.getRegionVersion());
+                _getOwner().getVersionVector().recordGCVersion(version.getMemberID(), version.getRegionVersion(), null);
               }
             } catch (RegionClearedException e) {
               // if the region has been cleared we don't need to remove the tombstone

@@ -209,6 +209,8 @@ public interface GfxdSerializable extends GfxdDSFID {
 
   byte LEAD_NODE_CONN_OP_MSG = 57;
 
+  byte LEAD_NODE_GET_STATS = 58;
+    
   /**
    * Marker to indicate that tests can use an ID >= this. Note whenever adding a
    * new message increment this to be greater than the last one.

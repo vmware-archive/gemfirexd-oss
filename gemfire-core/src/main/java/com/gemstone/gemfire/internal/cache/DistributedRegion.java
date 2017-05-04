@@ -88,6 +88,7 @@ import com.gemstone.gemfire.internal.cache.execute.FunctionStats;
 import com.gemstone.gemfire.internal.cache.execute.LocalResultCollector;
 import com.gemstone.gemfire.internal.cache.execute.RegionFunctionContextImpl;
 import com.gemstone.gemfire.internal.cache.execute.ServerToClientFunctionResultSender;
+import com.gemstone.gemfire.internal.cache.locks.LockingPolicy;
 import com.gemstone.gemfire.internal.cache.lru.LRUEntry;
 import com.gemstone.gemfire.internal.cache.persistence.CreatePersistentRegionProcessor;
 import com.gemstone.gemfire.internal.cache.persistence.PersistenceAdvisor;
@@ -489,7 +490,7 @@ public class DistributedRegion extends LocalRegion implements
      * force shared data view so that we just do the virtual op, accruing things
      * in the put all operation for later
      */
-    if (tx != null) {
+    if (tx != null && !tx.isSnapshot()) {
       event.getPutAllOperation().addEntry(event);
     }
     else {

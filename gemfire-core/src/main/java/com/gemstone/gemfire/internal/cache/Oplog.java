@@ -4365,7 +4365,7 @@ public final class Oplog implements CompactableOplog {
         RegionVersionVector rvv = dr.getRegionVersionVector();
         final VersionStamp<?> version;
         if (rvv != null && (version = entry.getVersionStamp()) != null) {
-          rvv.recordVersion(version.getMemberID(), version.getRegionVersion());
+          rvv.recordVersion(version.getMemberID(), version.getRegionVersion(), null);
         }
 
         // getKeyCopy() is a potentially expensive operation in GemFireXD so
@@ -5643,7 +5643,7 @@ public final class Oplog implements CompactableOplog {
             if(version.getMemberID() == null) {
               version.setMemberID(dr.getDiskStoreID());
             }
-            rvv.recordVersion(version.getMemberID(), version.getRegionVersion());
+            rvv.recordVersion(version.getMemberID(), version.getRegionVersion(), null);
           }
           clearOpState();
         }
@@ -5717,7 +5717,7 @@ public final class Oplog implements CompactableOplog {
           //unit the version vector accurately represents what is in this oplog
           RegionVersionVector rvv = dr.getRegionVersionVector();
           if(rvv != null) {
-            rvv.recordVersion(tag.getMemberID(), tag.getRegionVersion());
+            rvv.recordVersion(tag.getMemberID(), tag.getRegionVersion(), null);
           }
           clearOpState();
         }
@@ -5951,7 +5951,7 @@ public final class Oplog implements CompactableOplog {
           //We'll update the RVV of the disk region while holding the lock on the oplog,
           //to make sure we don't switch oplogs while we're in the middle of this.
           if (sourceRVV != null) {
-            dr.getRegionVersionVector().recordVersions(sourceRVV);
+            dr.getRegionVersionVector().recordVersions(sourceRVV,  null);
           } else {
             // it's original EndGII, not to write duplicate rvv if its trusted
             if (dr.getRVVTrusted()) {

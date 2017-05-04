@@ -42,6 +42,8 @@ import com.gemstone.gemfire.internal.cache.versions.VersionSource;
 import com.gemstone.gemfire.internal.cache.versions.VersionStamp;
 import com.gemstone.gemfire.internal.cache.versions.VersionTag;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
+import com.gemstone.gemfire.internal.offheap.OffHeapHelper;
+import com.gemstone.gemfire.internal.offheap.annotations.Released;
 import com.gemstone.gemfire.internal.shared.Version;
 
 public class NonLocalRegionEntry implements RegionEntry, VersionStamp {
@@ -50,6 +52,7 @@ public class NonLocalRegionEntry implements RegionEntry, VersionStamp {
   protected Object key;
   protected Object value;
   private VersionTag<?> versionTag;
+  protected long creationTime;
 
   /**
    * Create one of these in the local case so that we have a snapshot of the
@@ -72,6 +75,37 @@ public class NonLocalRegionEntry implements RegionEntry, VersionStamp {
     if (stamp != null) {
       this.versionTag = stamp.asVersionTag();
     }
+    this.creationTime = System.currentTimeMillis();
+  }
+
+  protected NonLocalRegionEntry(RegionEntry re, LocalRegion br,
+      boolean allowTombstones, boolean faultInValue) {
+    this.key = re.getKeyCopy();
+    // client get() operations need to see tombstone values
+    if (allowTombstones && re.isTombstone()) {
+      this.value = Token.TOMBSTONE;
+    } else {
+      @Released Object v = null;
+      if (faultInValue) {
+        v = re.getValue(br);
+      } else {
+        v = re.getValueOffHeapOrDiskWithoutFaultIn(br);
+      }
+      try {
+        this.value = OffHeapHelper.getHeapForm(v);  // OFFHEAP: copy into heap cd
+      } finally {
+        OffHeapHelper.release(v);
+      }
+    }
+    Assert.assertTrue(this.value != Token.NOT_AVAILABLE,
+        "getEntry did not fault value in from disk");
+    this.lastModified = re.getLastModified();
+    this.isRemoved = re.isRemoved();
+    VersionStamp<?> stamp = re.getVersionStamp();
+    if (stamp != null) {
+      this.versionTag = stamp.asVersionTag();
+    }
+    this.creationTime = System.currentTimeMillis();
   }
 
   /* If below is enabled then use the factory methods below to work correctly
@@ -109,6 +143,7 @@ public class NonLocalRegionEntry implements RegionEntry, VersionStamp {
     this.isRemoved = Token.isRemoved(value);
     // TODO need to get version information from transaction entries
     this.versionTag = versionTag;
+    this.creationTime = System.currentTimeMillis();
   }
 
   @Override
@@ -134,6 +169,17 @@ public class NonLocalRegionEntry implements RegionEntry, VersionStamp {
     }
     else {
       return sysCb.newNonLocalRegionEntry(re, region, allowTombstones);
+    }
+  }
+
+  public static NonLocalRegionEntry newEntryWithoutFaultIn(RegionEntry re,
+      LocalRegion region, boolean allowTombstones) {
+    final StaticSystemCallbacks sysCb = FactoryStatics.systemCallbacks;
+    if (sysCb == null) {
+      return new NonLocalRegionEntry(re, region, allowTombstones, false);
+    }
+    else {
+      return sysCb.newNonLocalRegionEntry(re, region, allowTombstones, false);
     }
   }
 
@@ -183,6 +229,7 @@ public class NonLocalRegionEntry implements RegionEntry, VersionStamp {
     out.writeLong(this.lastModified);
     out.writeBoolean(this.isRemoved);
     DataSerializer.writeObject(this.versionTag, out);
+    DataSerializer.writeLong(this.creationTime, out);
   }
 
   public void fromData(DataInput in) throws IOException,
@@ -192,6 +239,11 @@ public class NonLocalRegionEntry implements RegionEntry, VersionStamp {
     this.lastModified = in.readLong();
     this.isRemoved = in.readBoolean();
     this.versionTag = (VersionTag)DataSerializer.readObject(in);
+    this.creationTime = in.readLong();
+  }
+
+  public long getCreationTime() {
+    return this.creationTime;
   }
 
   public long getLastModified() {
@@ -236,7 +288,7 @@ public class NonLocalRegionEntry implements RegionEntry, VersionStamp {
   }
   
   public boolean isTombstone() {
-    return false;
+    return this.value == Token.TOMBSTONE;
   }
 
   public boolean fillInValue(LocalRegion r,
@@ -598,9 +650,12 @@ public class NonLocalRegionEntry implements RegionEntry, VersionStamp {
 
   @Override
   public boolean isUpdateInProgress() {
-    throw new UnsupportedOperationException(LocalizedStrings
+    // In case of Snapshot we will return this only for read operations:
+    // so update in progress should be false
+    return false;
+    /*throw new UnsupportedOperationException(LocalizedStrings
         .PartitionedRegion_NOT_APPROPRIATE_FOR_PARTITIONEDREGIONNONLOCALREGIONENTRY
-            .toLocalizedString());
+            .toLocalizedString());*/
   }
 
   @Override
