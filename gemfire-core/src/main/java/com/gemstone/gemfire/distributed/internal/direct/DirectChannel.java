@@ -404,7 +404,7 @@ public final class DirectChannel {
     final boolean orderedMsg = msg.orderedDelivery(threadOwnsResources)
         || ((tssFlags & ConnectionTable.SHOULD_DOMINO_TSS_MASK) != 0);
 
-    final ArrayList<Connection> cons = new ArrayList<>(destinations.length);
+    ArrayList<Connection> allCons = null;
     final boolean useNIOStream = getConduit().useNIOStream();
     try {
     do {
@@ -421,8 +421,14 @@ public final class DirectChannel {
         retryInfo = null;
         retry = true;
       }
+      final ArrayList<Connection> cons = new ArrayList<>(destinations.length);
       ConnectExceptions ce = getConnections(mgr, msg, destinations, orderedMsg,
             retry, ackTimeout, ackSDTimeout, threadOwnsResources, cons);
+      if (allCons == null) {
+        allCons = cons;
+      } else {
+        allCons.addAll(cons);
+      }
       if (directReply && msg.getProcessorId() > 0) { // no longer a direct-reply message?
         directReply = false;
       }
@@ -570,8 +576,8 @@ public final class DirectChannel {
         Connection con = (Connection)it.next();
         con.setInUse(false, 0, 0, 0, null);
       }
-      if (useNIOStream) {
-        for (Connection con : cons) {
+      if (useNIOStream && allCons != null) {
+        for (Connection con : allCons) {
           this.conduit.releasePooledConnection(con);
         }
       }

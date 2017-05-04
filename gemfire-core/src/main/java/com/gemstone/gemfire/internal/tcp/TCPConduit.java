@@ -986,6 +986,7 @@ public class TCPConduit implements Runnable {
     for (;;) {
       stopper.checkCancelInProgress(null);
       boolean interrupted = Thread.interrupted();
+      boolean returningCon = false;
       try {
       // If this is the second time through this loop, we had
       // problems.  Tear down the connection so that it gets
@@ -1063,7 +1064,10 @@ public class TCPConduit implements Runnable {
               getLogger().fine("got an old connection for " + memberAddress
                 + ": " + conn + "@" + conn.hashCode());
             }
-            conn.closeOldConnection("closing old connection"); 
+            conn.closeOldConnection("closing old connection");
+            if (useNIOStream()) {
+              releasePooledConnection(conn);
+            }
             conn = null;
             retryForOldConnection = true;
             debugRetry = true;
@@ -1163,9 +1167,14 @@ public class TCPConduit implements Runnable {
               + " memberAddress=" + memberAddress);
       }
       }
+      returningCon = true;
       return conn;
       }
       finally {
+        // need to return unused connections to pool
+        if (!returningCon && conn != null && useNIOStream()) {
+          releasePooledConnection(conn);
+        }
         if (interrupted) {
           Thread.currentThread().interrupt();
         }
