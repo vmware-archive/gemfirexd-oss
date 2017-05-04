@@ -2698,7 +2698,7 @@ public class BucketRegion extends DistributedRegion implements Bucket {
   }
 
   @Override
-  void updateSizeOnRemove(Object key, int oldSize) {
+  void updateSizeOnRemove(Object key, Object value, int oldSize) {
 //     if (cache.getLogger().infoEnabled()) {
 //       cache.getLogger().info("updateSizeOnRemove (" + this
 //                              + " key=" + key
@@ -2721,7 +2721,7 @@ public class BucketRegion extends DistributedRegion implements Bucket {
 //     this.debugMap.remove(key);
     this.partitionedRegion.getPrStats().incDataStoreEntryCount(-1);
     updateBucket2Size(oldSize, 0, SizeOp.DESTROY);
-    freePoolMemory(oldSize + indexOverhead, true);
+    freePoolMemory(oldSize + indexOverhead, value, true);
   }
 
   @Override

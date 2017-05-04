@@ -20,13 +20,17 @@ import java.lang.management.ManagementFactory;
 import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Consumer;
 
+import com.gemstone.gemfire.SystemFailure;
 import com.gemstone.gemfire.cache.LowMemoryException;
 import com.gemstone.gemfire.distributed.DistributedMember;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.internal.shared.unsafe.UnsafeHolder;
+import com.gemstone.gemfire.internal.snappy.CallbackFactoryProvider;
+import com.gemstone.gemfire.internal.snappy.StoreCallbacks;
+import org.apache.spark.unsafe.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,28 +45,43 @@ public final class DirectBufferAllocator extends BufferAllocator {
   private static final UnsafeHolder.FreeMemoryFactory freeBufferFactory =
       FreeBuffer::new;
 
+  private static final UnsafeHolder.FreeMemoryFactory freeStoreBufferFactory =
+      FreeStoreBuffer::new;
+
+  /**
+   * Overhead of allocation on off-heap memory is kept fixed at 8 even though
+   * actual overhead will be dependent on the malloc implementation.
+   */
+  public static final int DIRECT_OBJECT_OVERHEAD = 8;
+
+  /**
+   * The default owner of direct buffers tracked in UMM.
+   */
+  public static final String DIRECT_OBJECT_OWNER = "SNAPPYDATA_DIRECT_OBJECTS";
+
+  /**
+   * The owner of direct buffers that are stored in Regions and tracked in UMM.
+   */
+  public static final String DIRECT_STORE_OBJECT_OWNER =
+      "SNAPPYDATA_DIRECT_STORE_OBJECTS";
+
   public static DirectBufferAllocator instance() {
     return instance;
   }
 
   private Logger logger = initLogger();
-  private volatile long maxMemory;
-  private final AtomicLong reserved = new AtomicLong(0L);
 
   private DirectBufferAllocator() {
-    this.maxMemory = defaultMaxMemory();
-    this.maxMemory = Math.max(sun.misc.VM.maxDirectMemory(), this.maxMemory);
   }
 
-  private long defaultMaxMemory() {
+  public static long defaultMaxMemory() {
     // set default maxMemory as 80% of available RAM
     return (((((com.sun.management.OperatingSystemMXBean)
         ManagementFactory.getOperatingSystemMXBean())
         .getTotalPhysicalMemorySize() << 2) / 5 + 7) >>> 3) << 3;
   }
 
-  public DirectBufferAllocator initialize(long maxMemory) {
-    this.maxMemory = maxMemory;
+  public DirectBufferAllocator initialize() {
     this.logger = initLogger();
     return this;
   }
@@ -71,60 +90,51 @@ public final class DirectBufferAllocator extends BufferAllocator {
     return LoggerFactory.getLogger(getClass().getName());
   }
 
-  private boolean reserveMemory(long requiredSize) {
-    final long maxMemory = this.maxMemory;
-    if (maxMemory > 0) {
-      long used;
-      while (maxMemory >= ((used = this.reserved.get()) + requiredSize)) {
-        if (this.reserved.compareAndSet(used, used + requiredSize)) {
-          return true;
-        }
-      }
-      return false;
-    } else {
-      // allow unlimited acquisitions
-      return true;
-    }
+  private boolean reserveMemory(String objectName, long requiredSize,
+      boolean shouldEvict) {
+    // always allocate with a fixed owner
+    final long occupiedSize = requiredSize + DIRECT_OBJECT_OVERHEAD;
+    return CallbackFactoryProvider.getStoreCallbacks().acquireStorageMemory(
+        objectName, occupiedSize, null, shouldEvict, true);
   }
 
-  private boolean tryReleasePendingReferences(long requiredSpace) {
-    final sun.misc.JavaLangRefAccess refAccess =
-        sun.misc.SharedSecrets.getJavaLangRefAccess();
-    // retry while helping enqueue pending Cleaner Reference objects
-    while (refAccess.tryHandlePendingReference()) {
-      if (reserveMemory(requiredSpace)) {
-        return true;
-      }
-    }
-    return false;
+  private boolean tryEvictData(String objectName, long requiredSpace) {
+    UnsafeHolder.releasePendingReferences();
+    return reserveMemory(objectName, requiredSpace, true);
   }
 
-  private boolean releasePendingReferences(long requiredSpace) {
-    if (tryReleasePendingReferences(requiredSpace)) {
-      return true;
-    }
-    System.gc();
-    return tryReleasePendingReferences(requiredSpace);
-  }
-
-  private LowMemoryException lowMemoryException(String op) {
+  public LowMemoryException lowMemoryException(String op, int required) {
     Set<DistributedMember> m = Collections.singleton(
         GemFireCacheImpl.getExisting().getMyId());
+    StoreCallbacks callbacks = CallbackFactoryProvider.getStoreCallbacks();
     LowMemoryException lowMemory = new LowMemoryException(LocalizedStrings
         .ResourceManager_LOW_MEMORY_FOR_0_FUNCEXEC_MEMBERS_1
-        .toLocalizedString("DirectBufferAllocator." + op + " (maxMemory=" +
-            this.maxMemory + ')', m), m);
+        .toLocalizedString("DirectBufferAllocator." + op + " (" +
+            "maxStorage=" + callbacks.getStoragePoolSize(true) +
+            " used=" + callbacks.getStoragePoolUsedMemory(true) +
+            " required=" + required + ')', m), m);
     logger.warn(lowMemory.toString());
     return lowMemory;
   }
 
   @Override
   public ByteBuffer allocate(int size) {
+    return allocate(DIRECT_OBJECT_OWNER, size, freeBufferFactory);
+  }
+
+  @Override
+  public ByteBuffer allocateForStorage(int size) {
+    return allocate(DIRECT_STORE_OBJECT_OWNER, size, freeStoreBufferFactory);
+  }
+
+  private ByteBuffer allocate(String objectName, int size,
+      UnsafeHolder.FreeMemoryFactory factory) {
     final int allocSize = UnsafeHolder.getAllocationSize(size);
-    if (reserveMemory(allocSize) || releasePendingReferences(allocSize)) {
-      return UnsafeHolder.allocateDirectBuffer(allocSize, freeBufferFactory);
+    if (reserveMemory(objectName, allocSize, false) ||
+        tryEvictData(objectName, allocSize)) {
+      return UnsafeHolder.allocateDirectBuffer(allocSize, factory);
     } else {
-      throw lowMemoryException("allocate");
+      throw lowMemoryException("allocate", allocSize);
     }
   }
 
@@ -146,30 +156,42 @@ public final class DirectBufferAllocator extends BufferAllocator {
   }
 
   @Override
-  public ByteBuffer expand(ByteBuffer buffer, long cursor, long startPosition,
-      int required) {
-    final int currentUsed = BufferAllocator.checkBufferSize(
-        cursor - startPosition);
+  public ByteBuffer expand(ByteBuffer buffer, int required) {
+    assert required > 0 : "expand: unexpected required = " + required;
+
+    final int currentUsed = buffer.capacity();
     final int newLength = UnsafeHolder.getAllocationSize(
         BufferAllocator.expandedSize(currentUsed, required));
     final int delta = newLength - currentUsed;
-    if (reserveMemory(delta) || releasePendingReferences(delta)) {
-      ByteBuffer newBuffer = UnsafeHolder.reallocateDirectBuffer(buffer,
-          newLength, freeBufferFactory);
-      // FreeBuffer will decrement the old memory whether reallocate is invoked
-      // or Cleaner.clean() is invoked in tryFree, so add back currentUsed.
-      // There is slight race condition here that can cause reserved to exceed
-      // the maxMemory but we will live with that instead of complicating this.
-      this.reserved.addAndGet(currentUsed);
-      return newBuffer;
+    // store is never the owner here rather will happen in changeOwnerToStorage
+    final String objectName = DIRECT_OBJECT_OWNER;
+    // TODO: SW: this delta reserve is incorrect since original owner may not
+    // be DIRECT_OBJECT_OWNER but outsider like UnsafeHolder or allocateDirect
+    if (reserveMemory(objectName, delta, false) ||
+        tryEvictData(objectName, delta)) {
+      return UnsafeHolder.reallocateDirectBuffer(buffer, newLength, freeBufferFactory);
     } else {
-      throw lowMemoryException("expand");
+      throw lowMemoryException("expand", delta);
+    }
+  }
+
+  public void changeOwnerToStorage(ByteBuffer buffer, int capacity,
+      Consumer<Boolean> changeOwner) {
+    try {
+      UnsafeHolder.changeDirectBufferCleaner(buffer, capacity,
+          FreeBuffer.class, FreeStoreBuffer.class,
+          freeStoreBufferFactory, changeOwner);
+    } catch (Exception e) {
+      throw new IllegalStateException("Failed to change the owner of " +
+          buffer + " to storage.", e);
     }
   }
 
   @Override
-  public ByteBuffer fromBytes(byte[] bytes, int offset, int length) {
-    final ByteBuffer buffer = allocate(length);
+  public ByteBuffer fromBytes(byte[] bytes, int offset, int length,
+      boolean forStorage) {
+    final ByteBuffer buffer = forStorage ? allocateForStorage(length)
+        : allocate(length);
     buffer.put(bytes, offset, length);
     // move to the start
     buffer.rewind();
@@ -198,47 +220,78 @@ public final class DirectBufferAllocator extends BufferAllocator {
 
   @Override
   public void close() {
-    // reset maxMemory to default
-    this.maxMemory = defaultMaxMemory();
-    // check that all memory should have been released else try to release
-    if (this.reserved.get() == 0L) {
-      return;
-    }
-    final sun.misc.JavaLangRefAccess refAccess =
-        sun.misc.SharedSecrets.getJavaLangRefAccess();
-    // retry while helping enqueue pending Cleaner Reference objects
-    while (refAccess.tryHandlePendingReference()) {
-      if (this.reserved.get() == 0L) {
-        return;
+    // check that all memory has been released else try to release
+    long allocated = CallbackFactoryProvider.getStoreCallbacks()
+        .getOffHeapMemory(DIRECT_STORE_OBJECT_OWNER);
+    if (allocated > 0) {
+      UnsafeHolder.releasePendingReferences();
+      allocated = CallbackFactoryProvider.getStoreCallbacks()
+          .getOffHeapMemory(DIRECT_STORE_OBJECT_OWNER);
+      if (allocated > 0) {
+        // TODO: this needs to be observed since its quite possible that
+        // unreleased references will remain especially in cache close
+        // unless an explicit GC is invoked
+        logger.warn("Unreleased memory " + allocated + " bytes in close.");
       }
-    }
-    final long used = this.reserved.get();
-    if (used != 0) {
-      logger.warn("Unreleased memory " + used + " bytes in close.");
-      this.reserved.set(0);
     }
   }
 
   @SuppressWarnings("serial")
-  static final class FreeBuffer extends UnsafeHolder.FreeMemory {
+  static abstract class FreeBufferBase extends UnsafeHolder.FreeMemory {
 
-    private final int size;
+    protected final int size;
 
-    FreeBuffer(long address, int size) {
+    FreeBufferBase(long address, int size) {
       super(address);
       this.size = size;
     }
 
+    protected abstract String objectName();
+
     @Override
-    protected long tryFree() {
-      final long address = super.tryFree();
-      if (address != 0L) {
-        // decrement the size
-        DirectBufferAllocator.instance().reserved.addAndGet(-this.size);
-        return address;
-      } else {
-        return 0L;
+    public final void run() {
+      final long address = tryFree();
+      if (address != 0) {
+        Platform.freeMemory(address);
+        try {
+          // decrement the size from pool
+          CallbackFactoryProvider.getStoreCallbacks().releaseStorageMemory(
+              objectName(), this.size + DIRECT_OBJECT_OVERHEAD, true);
+        } catch (Throwable t) {
+          // ignore exceptions
+          SystemFailure.checkFailure();
+          try {
+            DirectBufferAllocator.instance().logger.error(
+                "FreeBuffer unexpected exception", t);
+          } catch (Throwable ignored) {
+            // ignore if even logging failed
+          }
+        }
       }
+    }
+  }
+
+  @SuppressWarnings("serial")
+  static final class FreeBuffer extends FreeBufferBase {
+
+    FreeBuffer(long address, int size) {
+      super(address, size);
+    }
+
+    protected String objectName() {
+      return DIRECT_OBJECT_OWNER;
+    }
+  }
+
+  @SuppressWarnings("serial")
+  static final class FreeStoreBuffer extends FreeBufferBase {
+
+    FreeStoreBuffer(long address, int size) {
+      super(address, size);
+    }
+
+    protected String objectName() {
+      return DIRECT_STORE_OBJECT_OWNER;
     }
   }
 }

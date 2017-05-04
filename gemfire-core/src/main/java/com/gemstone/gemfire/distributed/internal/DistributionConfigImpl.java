@@ -439,7 +439,7 @@ public class DistributionConfigImpl
     
     this.lockMemory = other.getLockMemory();
 
-    this.directMemorySize = other.getMemorySize();
+    this.memorySize = other.getMemorySize();
   }
 
   /**

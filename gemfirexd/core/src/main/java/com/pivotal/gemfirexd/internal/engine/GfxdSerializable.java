@@ -321,4 +321,8 @@ public interface GfxdSerializable extends GfxdDSFID {
   byte SNAPPY_REGION_STATS_RESULT = 112;
 
   byte LEAD_NODE_CONN_OP_CTX = 113;
+
+  byte COLUMN_FORMAT_KEY = 114;
+
+  byte COLUMN_FORMAT_VALUE = 115;
 }

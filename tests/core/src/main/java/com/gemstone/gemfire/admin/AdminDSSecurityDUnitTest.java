@@ -1257,15 +1257,6 @@ public class AdminDSSecurityDUnitTest extends AdminDUnitTestCase {
         }
 
         @Override
-        public String getMemorySize() {
-          return null;
-        }
-
-        @Override
-        public void setMemorySize(String value) {
-        }
-
-        @Override
         public boolean getJmxManagerSSLRequireAuthentication() {
           return false;
         }

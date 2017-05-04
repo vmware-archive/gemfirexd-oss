@@ -43,6 +43,7 @@ import java.io.IOException;
 import com.gemstone.gemfire.internal.DSFIDFactory;
 import com.gemstone.gemfire.internal.DataSerializableFixedID;
 import com.gemstone.gemfire.internal.shared.Version;
+import com.gemstone.gemfire.internal.snappy.CallbackFactoryProvider;
 import com.pivotal.gemfirexd.internal.engine.access.GemFireTransaction;
 import com.pivotal.gemfirexd.internal.engine.access.index.ContainsUniqueKeyExecutorMessage;
 import com.pivotal.gemfirexd.internal.engine.access.index.GfxdIndexManager;
@@ -209,6 +210,9 @@ public abstract class GfxdDataSerializable implements GfxdSerializable {
     // ProjectionRow is registered without creating an instance since it
     // requires GemFireCacheImpl instance in RawValue statics
     DSFIDFactory.registerGemFireXDClass(PROJECTION_ROW, ProjectionRow.class);
+
+    // register SnappyData specific types
+    CallbackFactoryProvider.getStoreCallbacks().registerTypes();
 
     typesRegistered = true;
     return true;

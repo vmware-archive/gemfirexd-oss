@@ -39,6 +39,7 @@ import com.gemstone.gemfire.internal.cache.lru.LRUStatistics;
 import com.gemstone.gemfire.internal.cache.lru.MemLRUCapacityController;
 import com.gemstone.gemfire.internal.cache.lru.NewLIFOClockHand;
 import com.gemstone.gemfire.internal.cache.lru.NewLRUClockHand;
+import com.gemstone.gemfire.internal.cache.store.SerializedDiskBuffer;
 import com.gemstone.gemfire.internal.cache.versions.RegionVersionVector;
 import com.gemstone.gemfire.internal.cache.versions.VersionSource;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
@@ -503,7 +504,7 @@ public abstract class AbstractLRURegionMap extends AbstractRegionMap {
           	  if(!region.getBucketAdvisor().isPrimary()){       	
               try {
                 bytesEvicted = ((AbstractLRURegionMap)region.entries)
-                    .centralizedLruUpdateCallback();
+                    .centralizedLruUpdateCallback(false);
                 if (bytesEvicted == 0) {
                   iter.remove();
                 } else {
@@ -645,8 +646,8 @@ public abstract class AbstractLRURegionMap extends AbstractRegionMap {
     return monitorStateIsEviction && this.sizeInVM() > 0;
   }
   
-  public final int centralizedLruUpdateCallback() {
-    int evictedBytes = 0;
+  public final long centralizedLruUpdateCallback(boolean includeOffHeapBytes) {
+    long evictedBytes = 0;
     if (getCallbackDisabled()) {
       return evictedBytes;
     }
@@ -662,8 +663,22 @@ public abstract class AbstractLRURegionMap extends AbstractRegionMap {
       while (mustEvict() && evictedBytes == 0) {
         LRUEntry removalEntry = (LRUEntry)_getLruList().getLRUEntry();
         if (removalEntry != null) {
+          // TODO: SW: replace instanceof with a virtual call "isOffHeapEntry"
+          // (former is 3-4X slower in tests, >25ns vs 7-8ns)
+          // get the off-heap size from value before eviction
+          int offHeapSize = 0;
+          if (includeOffHeapBytes && !(removalEntry instanceof OffHeapRegionEntry)) {
+            // add off-heap size to the MSB of evictedBytes
+            Object value = removalEntry._getValue();
+            if (value instanceof SerializedDiskBuffer) {
+              offHeapSize = ((SerializedDiskBuffer)value).getOffHeapSizeInBytes();
+            }
+          }
           evictedBytes = evictEntry(removalEntry, stats);
           if (evictedBytes != 0) {
+            if (offHeapSize != 0) {
+              evictedBytes |= ((long)offHeapSize) << 32L;
+            }
             Object owner = _getOwnerObject();
             if (owner instanceof BucketRegion) {
               ((BucketRegion)owner).incEvictions(1);

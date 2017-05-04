@@ -25,6 +25,11 @@ public final class HeapBufferAllocator extends BufferAllocator {
   }
 
   @Override
+  public ByteBuffer allocateForStorage(int size) {
+    return ByteBuffer.allocate(size);
+  }
+
+  @Override
   public void clearPostAllocate(ByteBuffer buffer) {
     // JVM clears the allocated area
   }
@@ -40,11 +45,11 @@ public final class HeapBufferAllocator extends BufferAllocator {
   }
 
   @Override
-  public ByteBuffer expand(ByteBuffer buffer, long cursor, long startPosition,
-      int required) {
+  public ByteBuffer expand(ByteBuffer buffer, int required) {
+    assert required > 0 : "expand: unexpected required = " + required;
+
     final byte[] bytes = buffer.array();
-    final int currentUsed = BufferAllocator.checkBufferSize(
-        cursor - startPosition);
+    final int currentUsed = buffer.capacity();
     final int newLength = BufferAllocator.expandedSize(currentUsed, required);
     final byte[] newBytes = new byte[newLength];
     System.arraycopy(bytes, buffer.arrayOffset(), newBytes, 0, currentUsed);
@@ -62,7 +67,8 @@ public final class HeapBufferAllocator extends BufferAllocator {
   }
 
   @Override
-  public ByteBuffer fromBytes(byte[] bytes, int offset, int length) {
+  public ByteBuffer fromBytes(byte[] bytes, int offset, int length,
+      boolean forStorage) {
     return ByteBuffer.wrap(bytes, offset, length);
   }
 

@@ -39,6 +39,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.EnumMap;
+import java.util.concurrent.locks.LockSupport;
 
 import com.gemstone.gemfire.internal.shared.ClientSharedData;
 import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
@@ -199,13 +200,13 @@ public abstract class ThriftUtils {
           } else if (numWrittenBytes == 0) {
             // sleep a bit before retrying
             // TODO: this should use selector signal
-            Thread.sleep(1);
+            LockSupport.parkNanos(100L);
           } else {
             throw new EOFException("Socket channel closed in write.");
           }
         }
         buffer.flip();
-      } catch (IOException | InterruptedException e) {
+      } catch (IOException e) {
         throw new TTransportException(e instanceof EOFException
             ? TTransportException.END_OF_FILE : TTransportException.UNKNOWN);
       }

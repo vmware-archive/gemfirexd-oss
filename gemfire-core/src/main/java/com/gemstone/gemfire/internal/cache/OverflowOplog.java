@@ -56,6 +56,7 @@ import com.gemstone.gemfire.internal.cache.DiskStoreImpl.OplogCompactor;
 import com.gemstone.gemfire.internal.cache.Oplog.OplogDiskEntry;
 import com.gemstone.gemfire.internal.cache.persistence.BytesAndBits;
 import com.gemstone.gemfire.internal.cache.persistence.DiskRegionView;
+import com.gemstone.gemfire.internal.cache.store.SerializedDiskBuffer;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 
 /**
@@ -617,7 +618,7 @@ class OverflowOplog implements CompactableOplog {
     }
   }
   public final boolean copyForwardForOverflowCompact(DiskEntry entry,
-      DiskEntry.Helper.ValueWrapper value, byte userBits) {
+      SerializedDiskBuffer value, byte userBits) {
     try {
       return basicModify(entry, value, userBits, true);
     } catch (IOException ex) {
@@ -644,7 +645,7 @@ class OverflowOplog implements CompactableOplog {
    * @throws InterruptedException
    */
   private boolean basicModify(DiskEntry entry,
-                              DiskEntry.Helper.ValueWrapper value,
+                              SerializedDiskBuffer value,
                               byte userBits, boolean async)
     throws IOException, InterruptedException
   {
@@ -1390,7 +1391,7 @@ class OverflowOplog implements CompactableOplog {
      */
     private int size;
     private boolean needsValue;
-    private DiskEntry.Helper.ValueWrapper value;
+    private SerializedDiskBuffer value;
 
     public final int getSize() {
       return this.size;
@@ -1442,7 +1443,7 @@ class OverflowOplog implements CompactableOplog {
       buffer.rewind();
     }
 
-    public void initialize(DiskEntry.Helper.ValueWrapper value,
+    public void initialize(SerializedDiskBuffer value,
                            int valueLength,
                            byte userBits)
     {

@@ -844,11 +844,10 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
       }
 
       // set the buffer allocator for the cache (off-heap or heap)
-      final long memorySize = OffHeapStorage.parseOffHeapMemorySize(
+      this.memorySize = OffHeapStorage.parseOffHeapMemorySize(
           getSystem().getConfig().getMemorySize());
-      if (memorySize > 0) {
-        this.bufferAllocator = DirectBufferAllocator.instance()
-            .initialize(memorySize);
+      if (this.memorySize > 0) {
+        this.bufferAllocator = DirectBufferAllocator.instance().initialize();
       } else {
         // the allocation sizes will be initialized from the heap size
         this.bufferAllocator = HeapBufferAllocator.instance();
@@ -906,9 +905,6 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
               PropertyResolver.NO_SYSTEM_PROPERTIES_OVERRIDE, null);
         }
       }
-
-      this.memorySize =
-              OffHeapStorage.parseOffHeapMemorySize(getDistributedSystem().getConfig().getMemorySize());
     } // synchronized
   }
 
@@ -5955,10 +5951,18 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
     return this.getSystem().getOffHeapStore();
   }
 
+  /**
+   * All ByteBuffer allocations, particularly for off-heap, must use this
+   * or {@link #getCurrentBufferAllocator()}.
+   */
   public final BufferAllocator getBufferAllocator() {
     return this.bufferAllocator;
   }
 
+  /**
+   * All ByteBuffer allocations, particularly for off-heap, must use this
+   * or {@link #getBufferAllocator()}.
+   */
   public static BufferAllocator getCurrentBufferAllocator() {
     final GemFireCacheImpl instance = getInstance();
     if (instance != null) {
@@ -6003,5 +6007,10 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
 
   public long getMemorySize(){
     return this.memorySize;
+  }
+
+  public static boolean hasOffHeap() {
+    final GemFireCacheImpl cache = GemFireCacheImpl.getInstance();
+    return cache != null && cache.memorySize > 0L;
   }
 }

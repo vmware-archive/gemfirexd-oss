@@ -48,7 +48,7 @@ import com.gemstone.gemfire.internal.DirectByteBufferDataOutput;
 import com.gemstone.gemfire.internal.HeapDataOutputStream;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl.StaticSystemCallbacks;
-import com.gemstone.gemfire.internal.cache.store.SerializedBufferData;
+import com.gemstone.gemfire.internal.cache.store.SerializedDiskBuffer;
 import com.gemstone.gemfire.internal.shared.Version;
 import com.gemstone.gemfire.pdx.internal.PdxInputStream;
 
@@ -100,23 +100,20 @@ public class BlobHelper {
   }
 
   /**
-   * This method serializes the object into a direct ByteBuffer.
+   * Serialize the object as a {@link SerializedDiskBuffer} normally holding
+   * a direct ByteBuffer.
    */
-  public static ByteBuffer serializeToDirectBuffer(Object obj, Version version)
+  public static SerializedDiskBuffer serializeToBuffer(Object obj, Version version)
       throws IOException {
     final long start = startSerialization();
-    // check for the special case of pre-serialized buffers
-    final ByteBuffer result;
-    if (obj instanceof SerializedBufferData) {
-      result = ((SerializedBufferData)obj).getSerializedBuffer();
-    } else {
+    // check for the special case of pre-serialized buffers with valid refCount
+    SerializedDiskBuffer result;
+    if (!(obj instanceof SerializedDiskBuffer) ||
+        !(result = (SerializedDiskBuffer)obj).retain()) {
       // serialize into an expanding direct ByteBuffer
-      DirectByteBufferDataOutput out = new DirectByteBufferDataOutput(version);
-      DataSerializer.writeObject(obj, out);
-      result = out.getBuffer();
-      result.flip();
+      result = new DirectByteBufferDataOutput(version).serialize(obj);
     }
-    endSerialization(start, result.remaining());
+    endSerialization(start, result.size());
     return result;
   }
 

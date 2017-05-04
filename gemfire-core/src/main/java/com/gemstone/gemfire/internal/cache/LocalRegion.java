@@ -11764,7 +11764,7 @@ public class LocalRegion extends AbstractRegion
             long unusedMemory = memoryTracker.freeMemory();
             if (unusedMemory > 0) {
               callback.releaseStorageMemory(
-                  memoryTracker.getFirstAllocationObject(), unusedMemory);
+                  memoryTracker.getFirstAllocationObject(), unusedMemory, false);
             }
           }
         }
@@ -12643,13 +12643,13 @@ public class LocalRegion extends AbstractRegion
     // Only needed by BucketRegion
   }
 
-  void updateSizeOnRemove(Object key, int oldSize) {
-    // Only needed by BucketRegion
-  }
-
   int updateSizeOnEvict(Object key, int oldSize) {
     // Only needed by BucketRegion
     return 0;
+  }
+
+  void updateSizeOnRemove(Object key, Object value, int oldSize) {
+    // Only needed by BucketRegion
   }
   public void updateSizeOnFaultIn(Object key, int newSize, int bytesOnDisk) {
     // Only needed by BucketRegion
@@ -14344,7 +14344,7 @@ public class LocalRegion extends AbstractRegion
         if (!regionOverHeadAccounted) {
           this.regionOverHead = ReflectionSingleObjectSizer.INSTANCE.sizeof(this);
           callback.acquireStorageMemory(getFullPath(),
-                  regionOverHead, null, true);
+                  regionOverHead, null, true, false);
           regionOverHeadAccounted = true;
         }
       }
@@ -14422,7 +14422,7 @@ public class LocalRegion extends AbstractRegion
 
       if (MAX_VALUE_BEFORE_ACQUIRE == 1) {
         if (!callback.acquireStorageMemory(getFullPath(),
-                (size), null, shouldEvict)) {
+                (size), null, shouldEvict, false)) {
           throwLowMemoryException(size);
         }
       } else {
@@ -14430,7 +14430,7 @@ public class LocalRegion extends AbstractRegion
         long currValue = prevValue + size;
         if (currValue >= MAX_VALUE_BEFORE_ACQUIRE) {
           if (!callback.acquireStorageMemory(getFullPath(),
-                  MAX_VALUE_BEFORE_ACQUIRE, null, shouldEvict)) {
+                  MAX_VALUE_BEFORE_ACQUIRE, null, shouldEvict, false)) {
             throwLowMemoryException(size);
           }
         }
@@ -14439,17 +14439,21 @@ public class LocalRegion extends AbstractRegion
   }
 
   public void acquirePoolMemory(long oldSize, long newSize, boolean withEntryOverHead,
-      UMMMemoryTracker buffer, boolean shouldEvict) throws LowMemoryException {
+      Object oldValue, Object newValue, UMMMemoryTracker buffer,
+      boolean shouldEvict) throws LowMemoryException {
     if (!this.reservedTable() && needAccounting()) {
-      long size = 0L;
+      long size;
       if (withEntryOverHead) {
         size = (newSize - oldSize) + Math.max(0L, entryOverHead);
       } else {
         size = (newSize - oldSize);
       }
       if (!callback.acquireStorageMemory(getFullPath(),
-          size, buffer, shouldEvict)) {
+          size, buffer, shouldEvict, false)) {
         throwLowMemoryException(size);
+      }
+      if (cache.getMemorySize() > 0 && (newValue != null || oldValue != null)) {
+        callback.accountOffHeapStoreValue(newValue, oldValue);
       }
     }
   }
@@ -14459,12 +14463,16 @@ public class LocalRegion extends AbstractRegion
     throw new LowMemoryException("Could not obtain memory of size " + size, sm);
   }
 
-  public void freePoolMemory(long oldSize, boolean withEntryOverHead) {
+  public void freePoolMemory(long oldSize, Object oldValue,
+      boolean withEntryOverHead) {
     if (!this.reservedTable() && needAccounting()) {
       if (withEntryOverHead) {
-        callback.releaseStorageMemory(getFullPath(), oldSize + Math.max(0L, entryOverHead));
+        callback.releaseStorageMemory(getFullPath(), oldSize + Math.max(0L, entryOverHead), false);
       } else {
-        callback.releaseStorageMemory(getFullPath(), oldSize);
+        callback.releaseStorageMemory(getFullPath(), oldSize, false);
+      }
+      if (oldValue != null && cache.getMemorySize() > 0) {
+        callback.accountOffHeapStoreValue(null, oldValue);
       }
     }
   }

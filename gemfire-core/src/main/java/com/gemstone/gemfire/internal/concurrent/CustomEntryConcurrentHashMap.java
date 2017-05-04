@@ -69,14 +69,15 @@ import java.util.concurrent.RejectedExecutionException;
 import com.gemstone.gemfire.CancelException;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.internal.cache.*;
-import com.gemstone.gemfire.internal.cache.control.HeapMemoryMonitor;
 import com.gemstone.gemfire.internal.cache.locks.NonReentrantReadWriteLock;
+import com.gemstone.gemfire.internal.cache.store.SerializedDiskBuffer;
 import com.gemstone.gemfire.internal.cache.wan.GatewaySenderEventImpl;
 import com.gemstone.gemfire.internal.offheap.OffHeapRegionEntryHelper;
 import com.gemstone.gemfire.internal.size.ReflectionSingleObjectSizer;
 import com.gemstone.gemfire.internal.size.SingleObjectSizer;
 
 import com.gemstone.gemfire.internal.snappy.CallbackFactoryProvider;
+import com.gemstone.gemfire.internal.snappy.StoreCallbacks;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -902,7 +903,8 @@ RETRYLOOP:
 
     final void postMemAccount(String path){
       CallbackFactoryProvider.getStoreCallbacks().acquireStorageMemory(path,
-              this.table.length * ReflectionSingleObjectSizer.REFERENCE_SIZE, null, true);
+              this.table.length * ReflectionSingleObjectSizer.REFERENCE_SIZE,
+          null, true, false);
     }
 
 // End GemStone additions
@@ -918,8 +920,10 @@ RETRYLOOP:
       // monotonically. Not throwing any exception if memory could not be allocated from
       // memory manager as this is the last step of a region operation.
       if (LocalRegion.regionPath.get() != null){
-        CallbackFactoryProvider.getStoreCallbacks().acquireStorageMemory(LocalRegion.regionPath.get(),
-            oldCapacity * ReflectionSingleObjectSizer.REFERENCE_SIZE, null, true);
+        CallbackFactoryProvider.getStoreCallbacks().acquireStorageMemory(
+            LocalRegion.regionPath.get(),
+            oldCapacity * ReflectionSingleObjectSizer.REFERENCE_SIZE,
+            null, true, false);
         LocalRegion.regionPath.remove();
       }
 
@@ -1136,7 +1140,10 @@ RETRYLOOP:
             // see if we have a map with off-heap region entries
             for (HashEntry<K, V> he : tab) {
               if (he != null) {
-                collectEntries = he instanceof OffHeapRegionEntry;
+                collectEntries = (GemFireCacheImpl.hasOffHeap()
+                    && he instanceof AbstractRegionEntry
+                    && ((AbstractRegionEntry)he)._getValue() instanceof SerializedDiskBuffer)
+                    || he instanceof OffHeapRegionEntry;
                 if (collectEntries) {
                   clearedEntries = new ArrayList<HashEntry<?, ?>>();
                 }
@@ -1956,7 +1963,8 @@ RETRYLOOP:
     ArrayList<HashEntry<?,?>> entries = null;
     final BucketRegionIndexCleaner cleaner = BucketRegion.getIndexCleaner();
     final boolean isOffHeapEnabled = LocalRegion.getAndClearOffHeapEnabled();
-    if(cleaner != null || isOffHeapEnabled) {
+    final boolean hasNewOffHeap = GemFireCacheImpl.hasOffHeap();
+    if(cleaner != null || hasNewOffHeap || isOffHeapEnabled) {
       entries = new ArrayList<HashEntry<?,?>>();
     }
     final CacheObserver observer = CacheObserverHolder.getInstance();
@@ -1968,14 +1976,21 @@ RETRYLOOP:
     } finally {
       if (entries != null) {
         final ArrayList<HashEntry<?,?>> clearedEntries = entries;
-        
+        final boolean newOffHeap = hasNewOffHeap && entries.size() > 0 &&
+            ((AbstractRegionEntry)entries.get(0))._getValue() instanceof SerializedDiskBuffer;
         final Runnable runnable = new Runnable() {
           public void run() {
+            final StoreCallbacks callbacks = CallbackFactoryProvider.getStoreCallbacks();
             ArrayList<RegionEntry> regionEntries =  cleaner != null?
                 new ArrayList<RegionEntry>() : null;
             for (HashEntry<?,?> he: clearedEntries) {
               for (HashEntry<?, ?> p = he; p != null; p = p.getNextEntry()) {
                 synchronized (p) {
+                  if (newOffHeap) {
+                    callbacks.accountOffHeapStoreValue(
+                        null, ((AbstractRegionEntry)p)._getValue());
+                    continue;
+                  }
                   if(cleaner != null) {
                     regionEntries.add((RegionEntry)p); 
                   }else {

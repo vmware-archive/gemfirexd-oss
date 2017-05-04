@@ -16,8 +16,6 @@
  */
 package com.gemstone.gemfire.internal.cache;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -27,16 +25,14 @@ import com.gemstone.gemfire.internal.cache.lru.HeapEvictor;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 
 /**
- * 
  * Takes delta to be evicted and tries to evict the least no of LRU entry which
  * would make evictedBytes more than or equal to the delta
- * 
+ *
  * @author Suranjan, Amardeep, Swapnil, Yogesh
  * @since 6.0
- * 
  */
 public class RegionEvictorTask implements Callable<Object> {
-  
+
   private static final int EVICTION_BURST_PAUSE_TIME_MILLIS;
 
   public static int TEST_EVICTION_BURST_PAUSE_TIME_MILLIS = Integer.MAX_VALUE;
@@ -51,23 +47,25 @@ public class RegionEvictorTask implements Callable<Object> {
   public static void setLastTaskCompletionTime(long v) {
     lastTaskCompletionTime = v;
   }
+
   public static long getLastTaskCompletionTime() {
     return lastTaskCompletionTime;
   }
 
-  private List<LocalRegion> regionSet;
+  private final List<LocalRegion> regionSet;
 
   private final HeapEvictor evictor;
 
-  private final long bytesToEvictPerTask ; 
-  
-  public RegionEvictorTask(List<LocalRegion> regionSet, HeapEvictor evictor, long bytesToEvictPerTask) {
+  private final long bytesToEvictPerTask;
+
+  public RegionEvictorTask(List<LocalRegion> regionSet, HeapEvictor evictor,
+      long bytesToEvictPerTask) {
     this.evictor = evictor;
     this.regionSet = regionSet;
     this.bytesToEvictPerTask = bytesToEvictPerTask;
   }
 
-  
+
   public List<LocalRegion> getRegionList() {
     synchronized (this.regionSet) {
       return this.regionSet;
@@ -83,13 +81,13 @@ public class RegionEvictorTask implements Callable<Object> {
   }
 
   public Object call() throws Exception {
-    getGemFireCache().getCachePerfStats().incEvictorJobsStarted();
-    long bytesEvicted = 0;
+    final CachePerfStats stats = getGemFireCache().getCachePerfStats();
+    stats.incEvictorJobsStarted();
+    long bytesEvicted;
     long totalBytesEvicted = 0;
+    final long start = CachePerfStats.getStatTime();
     try {
       while (true) {
-        getGemFireCache().getCachePerfStats();
-        final long start = CachePerfStats.getStatTime();
         synchronized (this.regionSet) {
           if (this.regionSet.isEmpty()) {
             lastTaskCompletionTime = System.currentTimeMillis();
@@ -101,7 +99,7 @@ public class RegionEvictorTask implements Callable<Object> {
             LocalRegion region = iter.next();
             try {
               bytesEvicted = ((AbstractLRURegionMap)region.entries)
-                  .centralizedLruUpdateCallback();
+                  .centralizedLruUpdateCallback(false);
               if (bytesEvicted == 0) {
                 iter.remove();
               }
@@ -117,17 +115,17 @@ public class RegionEvictorTask implements Callable<Object> {
               region.cache.getCancelCriterion().checkCancelInProgress(e);
               region.cache.getLoggerI18n().warning(
                   LocalizedStrings.Eviction_EVICTOR_TASK_EXCEPTION,
-                  new Object[] { e.getMessage() }, e);
-            } finally {
-              getGemFireCache().getCachePerfStats();
-              long end = CachePerfStats.getStatTime();
-              getGemFireCache().getCachePerfStats().incEvictWorkTime(end-start);
+                  new Object[]{e.getMessage()}, e);
             }
           }
         }
       }
     } finally {
-      getGemFireCache().getCachePerfStats().incEvictorJobsCompleted();
+      if (start != 0L) {
+        long end = CachePerfStats.getStatTime();
+        stats.incEvictWorkTime(end - start);
+      }
+      stats.incEvictorJobsCompleted();
     }
   }
 

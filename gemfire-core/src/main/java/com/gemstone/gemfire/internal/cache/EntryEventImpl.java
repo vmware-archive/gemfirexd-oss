@@ -74,6 +74,7 @@ import com.gemstone.gemfire.internal.cache.delta.Delta;
 import com.gemstone.gemfire.internal.cache.locks.LockingPolicy;
 import com.gemstone.gemfire.internal.cache.partitioned.PartitionMessage;
 import com.gemstone.gemfire.internal.cache.partitioned.PutMessage;
+import com.gemstone.gemfire.internal.cache.store.SerializedDiskBuffer;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheServerHelper;
 import com.gemstone.gemfire.internal.cache.tier.sockets.ClientProxyMembershipID;
 import com.gemstone.gemfire.internal.cache.wan.GatewaySenderEventCallbackArgument;
@@ -1820,6 +1821,7 @@ public class EntryEventImpl extends KeyInfo implements
         owner.acquirePoolMemory(oldSize,
                 event.getNewValueBucketSize(),
                 true,
+                null, null,
                 this.memoryTracker,
                 true);
       } else {
@@ -1834,6 +1836,7 @@ public class EntryEventImpl extends KeyInfo implements
         owner.acquirePoolMemory(0,
                 event.getNewValueBucketSize() + indexOverhead,
                 true,
+                null, null,
                 this.memoryTracker,
                 true);
       } else {
@@ -1917,7 +1920,6 @@ public class EntryEventImpl extends KeyInfo implements
       basicSetNewValue(v);
       // OFFHEAP todo: should deltas be stored offheap? If so we need to call prepareValueForCache here.
     }
-    
     Object preparedV = reentry.prepareValueForCache(this.region, v, this.hasDelta(), 
         this.getTransactionId() == null);
     if (preparedV != v) {
@@ -1938,6 +1940,10 @@ public class EntryEventImpl extends KeyInfo implements
       owner.calculateEntryOverhead(reentry);
       LocalRegion.regionPath.set(region.getFullPath());
       acquireMemory(owner, this, oldValueSize, this.op.isUpdate(), isTombstone);
+      Object oldValue = reentry._getValue();
+      if (region.cache.getMemorySize() > 0 && oldValue != null && v != null) {
+        region.callback.accountOffHeapStoreValue(v, oldValue);
+      }
     }
 
 
@@ -2416,7 +2422,7 @@ public class EntryEventImpl extends KeyInfo implements
    *
    * @throws IllegalArgumentException If <code>obj</code> should not be serialized
    */
-  public static ByteBuffer serializeDirect(Object obj, Version version) {
+  public static SerializedDiskBuffer serializeBuffer(Object obj, Version version) {
     if (obj == null || obj == Token.NOT_AVAILABLE
         || Token.isInvalidOrRemoved(obj)) {
       throw new IllegalArgumentException(LocalizedStrings
@@ -2424,7 +2430,7 @@ public class EntryEventImpl extends KeyInfo implements
           .toLocalizedString(obj));
     }
     try {
-      return BlobHelper.serializeToDirectBuffer(obj, version);
+      return BlobHelper.serializeToBuffer(obj, version);
     } catch (IOException e) {
       throw new SerializationException(LocalizedStrings
           .EntryEventImpl_AN_IOEXCEPTION_WAS_THROWN_WHILE_SERIALIZING

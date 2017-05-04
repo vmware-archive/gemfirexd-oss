@@ -475,9 +475,10 @@ public abstract class AbstractRegionEntry extends ExclusiveSharedSynchronizer
   @Released
   protected void setValue(RegionEntryContext context, @Unretained Object value, boolean recentlyUsed) {
     _setValue(value);
-    if (value != null && context != null && (this instanceof OffHeapRegionEntry) 
-        && context instanceof LocalRegion && ((LocalRegion)context).isThisRegionBeingClosedOrDestroyed()) {
-      ((OffHeapRegionEntry)this).release();
+    if (value != null && context != null && context instanceof LocalRegion
+        && ((LocalRegion)context).isThisRegionBeingClosedOrDestroyed()
+        && (this instanceof OffHeapRegionEntry)) {
+      this.release();
       ((LocalRegion)context).checkReadiness();
     }
     if (recentlyUsed) {

@@ -31,7 +31,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.gemstone.gemfire.DataSerializer;
-import com.gemstone.gemfire.LogWriter;
 import com.gemstone.gemfire.cache.DataPolicy;
 import com.gemstone.gemfire.cache.EntryNotFoundException;
 import com.gemstone.gemfire.cache.Operation;
@@ -1341,7 +1340,7 @@ public final class DistributedPutAllOperation extends AbstractUpdateOperation {
                long unusedMemory = memoryTracker.freeMemory();
                if (unusedMemory > 0) {
                  CallbackFactoryProvider.getStoreCallbacks().releaseStorageMemory(
-                     memoryTracker.getFirstAllocationObject(), unusedMemory);
+                     memoryTracker.getFirstAllocationObject(), unusedMemory, false);
                }
              }
            }

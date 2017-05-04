@@ -1047,6 +1047,19 @@ public abstract class ClientSharedUtils {
         && byteBuffer.remaining() == byteBuffer.capacity();
   }
 
+  public static String toString(final ByteBuffer buffer) {
+    if (buffer != null) {
+      StringBuilder sb = new StringBuilder();
+      final int len = buffer.limit();
+      for (int i = 0; i < len; i++) {
+        sb.append(buffer.get(i)).append(", ");
+      }
+      return sb.toString();
+    } else {
+      return "null";
+    }
+  }
+
   /**
    * Convert a ByteBuffer to a string appending to given {@link StringBuilder}
    * with a hexidecimal format. The string may be converted back to a byte array

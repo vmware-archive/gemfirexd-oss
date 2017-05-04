@@ -110,6 +110,7 @@ import com.gemstone.gemfire.internal.cache.persistence.BytesAndBits;
 import com.gemstone.gemfire.internal.cache.persistence.DiskRecoveryStore;
 import com.gemstone.gemfire.internal.cache.persistence.DiskRegionView;
 import com.gemstone.gemfire.internal.cache.persistence.DiskStoreID;
+import com.gemstone.gemfire.internal.cache.store.SerializedDiskBuffer;
 import com.gemstone.gemfire.internal.cache.versions.CompactVersionHolder;
 import com.gemstone.gemfire.internal.cache.versions.RegionVersionHolder;
 import com.gemstone.gemfire.internal.cache.versions.RegionVersionVector;
@@ -130,7 +131,6 @@ import com.gemstone.gemfire.internal.shared.UnsupportedGFXDVersionException;
 import com.gemstone.gemfire.internal.shared.Version;
 import com.gemstone.gemfire.internal.shared.unsafe.ChannelBufferUnsafeDataInputStream;
 import com.gemstone.gemfire.internal.shared.unsafe.ChannelBufferUnsafeDataOutputStream;
-import com.gemstone.gemfire.internal.shared.unsafe.UnsafeHolder;
 import com.gemstone.gemfire.internal.util.IOUtils;
 import com.gemstone.gemfire.internal.util.TransformUtils;
 import com.gemstone.gemfire.pdx.internal.PdxWriterImpl;
@@ -4073,7 +4073,7 @@ public final class Oplog implements CompactableOplog {
    * @throws IOException 
    */
   private void initOpState(byte opCode, DiskRegionView dr, DiskEntry entry,
-      DiskEntry.Helper.ValueWrapper value, int valueLength, byte userBits,
+      SerializedDiskBuffer value, int valueLength, byte userBits,
       boolean notToUseUserBits) throws IOException {
     this.opState.initialize(opCode, dr, entry, value, valueLength,
         userBits, notToUseUserBits);
@@ -4213,7 +4213,7 @@ public final class Oplog implements CompactableOplog {
    * @throws InterruptedException
    */
   private void basicCreate(DiskRegion dr, DiskEntry entry,
-      DiskEntry.Helper.ValueWrapper value, byte userBits, boolean async)
+      SerializedDiskBuffer value, byte userBits, boolean async)
       throws IOException, InterruptedException
   {
     DiskId id = entry.getDiskId();
@@ -4323,7 +4323,7 @@ public final class Oplog implements CompactableOplog {
         }
         if (this.logger.finerEnabled()) {
           this.logger
-            .finer("Oplog::basicCreate:Release dByteBuffer with data for Disk ID = "
+            .finer("Oplog::basicCreate:Release ByteBuffer with data for Disk ID = "
                    + id.toString());
         }
         // Asif: As such for any put or get operation , a synch is taken
@@ -5448,7 +5448,7 @@ public final class Oplog implements CompactableOplog {
   }
 
   private final void copyForwardModifyForCompact(DiskRegionView dr, DiskEntry entry,
-      DiskEntry.Helper.ValueWrapper value, byte userBits) {
+      SerializedDiskBuffer value, byte userBits) {
     if (getOplogSet().getChild() != this) {
       getOplogSet().getChild().copyForwardModifyForCompact(dr, entry, value, userBits);
     }
@@ -5491,7 +5491,7 @@ public final class Oplog implements CompactableOplog {
    * @throws InterruptedException
    */
   private void basicModify(DiskRegionView dr, DiskEntry entry,
-                           DiskEntry.Helper.ValueWrapper value,
+                           SerializedDiskBuffer value,
                            byte userBits, boolean async,
                            boolean calledByCompactor)
     throws IOException, InterruptedException
@@ -7635,6 +7635,10 @@ public final class Oplog implements CompactableOplog {
 
       /** Returns the current file offset including the unflushed data. */
       public final long fileOffset() throws IOException {
+        long offset = OplogFile.this.channel.position();
+        if (offset != this.baseFileOffset + this.bytesWritten) {
+          System.out.println("SW: offset=" + offset + " calculated=" + (this.baseFileOffset + this.bytesWritten));
+        }
         return this.baseFileOffset + this.bytesWritten +
             (this.addrPosition - this.baseAddress);
       }
@@ -7674,14 +7678,12 @@ public final class Oplog implements CompactableOplog {
    * For write buffers only log before OpState is cleared else it can lead
    * to a crash with direct ByteBuffers.
    */
-  public static String bufferToString(final ByteBuffer buffer) {
-    if (buffer == null) return "null";
-    StringBuilder sb = new StringBuilder();
-    final int len = buffer.limit();
-    for (int i = 0; i < len; i++) {
-      sb.append(buffer.get(i)).append(", ");
+  public static String bufferToString(final SerializedDiskBuffer buffer) {
+    if (buffer != null) {
+      return buffer.toString();
+    } else {
+      return "null";
     }
-    return sb.toString();
   }
 
   private static String baToString(byte[] ba) {
@@ -7756,7 +7758,7 @@ public final class Oplog implements CompactableOplog {
      */
     private int size;
     private boolean needsValue;
-    private DiskEntry.Helper.ValueWrapper value;
+    private SerializedDiskBuffer value;
     private int valueLength;
     private int drIdLength; // 1..9
     private final byte[] drIdBytes = new byte[DiskInitFile.DR_ID_MAX_BYTES];
@@ -7975,7 +7977,7 @@ public final class Oplog implements CompactableOplog {
     public void initialize(byte opCode,
                            DiskRegionView dr,
                            DiskEntry entry,
-                           DiskEntry.Helper.ValueWrapper value,
+                           SerializedDiskBuffer value,
                            int valueLength,
                            byte userBits,
                            boolean notToUseUserBits) throws IOException

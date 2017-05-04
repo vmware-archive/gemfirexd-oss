@@ -47,6 +47,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.gemstone.gemfire.cache.DiskAccessException;
+import com.gemstone.gemfire.internal.cache.store.SerializedDiskBuffer;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 
 public class OverflowOplogSet implements OplogSet {
@@ -219,7 +220,7 @@ public class OverflowOplogSet implements OplogSet {
   
 
   void copyForwardForOverflowCompact(DiskEntry de,
-      DiskEntry.Helper.ValueWrapper value, byte userBits) {
+      SerializedDiskBuffer value, byte userBits) {
     synchronized (this.overflowMap) {
       if (this.lastOverflowWrite != null) {
         if (this.lastOverflowWrite.copyForwardForOverflowCompact(de, value, userBits)) {

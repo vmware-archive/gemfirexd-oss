@@ -4855,8 +4855,8 @@ public class DistributedRegion extends LocalRegion implements
   }
 
   @Override
-  void updateSizeOnRemove(Object key, int oldSize) {
-    freePoolMemory(oldSize, true);
+  void updateSizeOnRemove(Object key, Object value, int oldSize) {
+    freePoolMemory(oldSize, value, true);
   }
 
   @Override

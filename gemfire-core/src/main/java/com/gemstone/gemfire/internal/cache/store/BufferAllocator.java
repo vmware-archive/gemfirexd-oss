@@ -33,6 +33,11 @@ public abstract class BufferAllocator implements Closeable {
   public abstract ByteBuffer allocate(int size);
 
   /**
+   * Allocate a new ByteBuffer of given size for storage in a Region.
+   */
+  public abstract ByteBuffer allocateForStorage(int size);
+
+  /**
    * Clears the memory to be zeros immediately after allocation.
    */
   public abstract void clearPostAllocate(ByteBuffer buffer);
@@ -56,6 +61,13 @@ public abstract class BufferAllocator implements Closeable {
   public abstract long baseOffset(ByteBuffer buffer);
 
   /**
+   * Expand given ByteBuffer to new capacity.
+   *
+   * @return the new expanded ByteBuffer
+   */
+  public abstract ByteBuffer expand(ByteBuffer buffer, int required);
+
+  /**
    * Return the data as a heap byte array. Use of this should be minimal
    * when no other option exists.
    */
@@ -67,7 +79,8 @@ public abstract class BufferAllocator implements Closeable {
   /**
    * Return a ByteBuffer either copying from, or sharing the given heap bytes.
    */
-  public abstract ByteBuffer fromBytes(byte[] bytes, int offset, int length);
+  public abstract ByteBuffer fromBytes(byte[] bytes, int offset, int length,
+      boolean forStorage);
 
   /**
    * Return a ByteBuffer either sharing data of given ByteBuffer
@@ -81,14 +94,6 @@ public abstract class BufferAllocator implements Closeable {
     newBuffer.rewind();
     return newBuffer;
   }
-
-  /**
-   * Expand given ByteBuffer to new capacity.
-   *
-   * @return the new expanded ByteBuffer
-   */
-  public abstract ByteBuffer expand(ByteBuffer buffer, long cursor,
-      long startPosition, int required);
 
   /**
    * For direct ByteBuffers the release method is preferred to eagerly release
@@ -117,15 +122,6 @@ public abstract class BufferAllocator implements Closeable {
     } else {
       throw new IndexOutOfBoundsException("Cannot allocate more than " +
           newLength + " bytes but required " + minRequired);
-    }
-  }
-
-  static int checkBufferSize(long size) {
-    if (size >= 0 && size < Integer.MAX_VALUE) {
-      return (int)size;
-    } else {
-      throw new IndexOutOfBoundsException("Invalid size/index = " + size +
-          ". Max allowed = " + (Integer.MAX_VALUE - 1) + '.');
     }
   }
 }

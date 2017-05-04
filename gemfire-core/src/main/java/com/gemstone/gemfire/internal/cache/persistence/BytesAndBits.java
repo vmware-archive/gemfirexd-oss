@@ -19,7 +19,6 @@ package com.gemstone.gemfire.internal.cache.persistence;
 import java.nio.ByteBuffer;
 
 import com.gemstone.gemfire.internal.cache.EntryEventImpl;
-import com.gemstone.gemfire.internal.cache.Oplog;
 import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
 import com.gemstone.gemfire.internal.shared.Version;
 import com.gemstone.gemfire.internal.shared.unsafe.UnsafeHolder;
@@ -83,6 +82,6 @@ public class BytesAndBits {
 
   @Override
   public String toString() {
-    return Oplog.bufferToString(this.data);
+    return ClientSharedUtils.toString(this.data);
   }
 }

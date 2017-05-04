@@ -6464,7 +6464,7 @@ public final class GemFireContainer extends AbstractGfxdLockable implements
           // Only acquire memory while initial index creation. Rest all index accounting will be done by
           // region put/delete
           baseRegion.acquirePoolMemory(0, sum - intialAccounting
-                  , false, null, false);
+                  , false, null, null, null, false);
           intialAccounting = sum;
           sizeAccountedByIndex.set(sum);
         }
@@ -6492,8 +6492,8 @@ public final class GemFireContainer extends AbstractGfxdLockable implements
     if (doAccounting()) {
       long memoryToBeFreed = currenrOverhead * totalRows;
       // Free all memory by index + (index overhead * row count)
-      getBaseRegion().freePoolMemory(memoryToBeFreed + sizeAccountedByIndex.get()
-              , false);
+      getBaseRegion().freePoolMemory(memoryToBeFreed + sizeAccountedByIndex.get(),
+          null, false);
       if (!baseRegion.isDestroyed) {
         baseRegion.setIndexOverhead(-1 * currenrOverhead);
         // mark (index overhead * row count) as ignore bytes in local region , which will be ignored by
@@ -6507,7 +6507,7 @@ public final class GemFireContainer extends AbstractGfxdLockable implements
     LocalRegion baseRegion = getBaseRegion();
     if (doAccounting()) {
       getBaseRegion().acquirePoolMemory(0, numBytes
-              , false, null, false);
+              , false, null, null, null, false);
       sizeAccountedByIndex.addAndGet(numBytes);
     }
   }

@@ -35,7 +35,6 @@
 
 package com.gemstone.gemfire.internal.shared.unsafe;
 
-import java.io.FileDescriptor;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -44,6 +43,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Consumer;
 
 import com.gemstone.gemfire.internal.shared.ChannelBufferFramedInputStream;
 import com.gemstone.gemfire.internal.shared.ChannelBufferFramedOutputStream;
@@ -66,11 +66,13 @@ public abstract class UnsafeHolder {
 
     static final sun.misc.Unsafe unsafe;
     static final Constructor<?> directBufferConstructor;
+    static final Field cleanerField;
     static final Field cleanerRunnableField;
 
     static {
       sun.misc.Unsafe v;
       Constructor<?> dbConstructor;
+      Field cleaner;
       Field runnableField = null;
       try {
         // try using "theUnsafe" field
@@ -80,9 +82,11 @@ public abstract class UnsafeHolder {
 
         // get the constructor of DirectByteBuffer that accepts a Runnable
         Class<?> cls = Class.forName("java.nio.DirectByteBuffer");
-        dbConstructor = cls.getDeclaredConstructor(
-            Integer.TYPE, Long.TYPE, FileDescriptor.class, Runnable.class);
+        dbConstructor = cls.getDeclaredConstructor(Long.TYPE, Integer.TYPE);
         dbConstructor.setAccessible(true);
+
+        cleaner = cls.getDeclaredField("cleaner");
+        cleaner.setAccessible(true);
 
         // search for the Runnable field in Cleaner
         Class<?> runnableClass = Runnable.class;
@@ -104,8 +108,13 @@ public abstract class UnsafeHolder {
       if (v == null) {
         throw new ExceptionInInitializerError("theUnsafe not found");
       }
+      if (runnableField == null) {
+        throw new ExceptionInInitializerError(
+            "DirectByteBuffer cleaner thunk runnable field not found");
+      }
       unsafe = v;
       directBufferConstructor = dbConstructor;
+      cleanerField = cleaner;
       cleanerRunnableField = runnableField;
     }
 
@@ -142,7 +151,7 @@ public abstract class UnsafeHolder {
       super(address);
     }
 
-    protected long tryFree() {
+    protected final long tryFree() {
       // try hard to ensure freeMemory call happens only once
       final long address = get();
       return (address != 0 && compareAndSet(address, 0L)) ? address : 0L;
@@ -187,8 +196,12 @@ public abstract class UnsafeHolder {
   private static ByteBuffer allocateDirectBuffer(long address, int size,
       FreeMemoryFactory factory) {
     try {
-      return (ByteBuffer)Wrapper.directBufferConstructor.newInstance(
-          size, address, null, factory.newFreeMemory(address, size));
+      ByteBuffer buffer = (ByteBuffer)Wrapper.directBufferConstructor
+          .newInstance(address, size);
+      sun.misc.Cleaner cleaner = sun.misc.Cleaner.create(buffer,
+          factory.newFreeMemory(address, size));
+      Wrapper.cleanerField.set(buffer, cleaner);
+      return buffer;
     } catch (Exception e) {
       Platform.throwException(e);
       throw new IllegalStateException("unreachable");
@@ -212,11 +225,10 @@ public abstract class UnsafeHolder {
 
     newSize = getAllocationSize(newSize);
     final sun.misc.Cleaner cleaner = directBuffer.cleaner();
-    final Field runnableField = Wrapper.cleanerRunnableField;
-    if (cleaner != null && runnableField != null) {
+    if (cleaner != null) {
       // reset the runnable to not free the memory and clean it up
       try {
-        Object freeMemory = runnableField.get(cleaner);
+        Object freeMemory = Wrapper.cleanerRunnableField.get(cleaner);
         // use the efficient realloc call if possible
         if ((freeMemory instanceof FreeMemory) &&
             ((FreeMemory)freeMemory).tryFree() != 0L) {
@@ -231,13 +243,46 @@ public abstract class UnsafeHolder {
       Platform.copyMemory(null, address, null, newAddress,
           Math.min(newSize, buffer.limit()));
     }
-    // clean only after copying is done if required
+    // clean only after copying is done
     if (cleaner != null) {
       cleaner.clean();
       cleaner.clear();
     }
     return allocateDirectBuffer(newAddress, newSize, factory)
         .order(buffer.order());
+  }
+
+  /**
+   * Change the runnable field of Cleaner using given factory. The "to"
+   * argument specifies that target Runnable type that factory will produce.
+   * If the existing Runnable already matches "to" then its a no-op.
+   * <p>
+   * The provided {@link Consumer} is used to apply any action before actually
+   * changing the runnable field with the boolean argument indicating whether
+   * the current field matches "from" or if it is something else.
+   */
+  public static void changeDirectBufferCleaner(
+      ByteBuffer buffer, int size, Class<?> from, Class<?> to,
+      FreeMemoryFactory factory, final Consumer<Boolean> changeOwner)
+      throws IllegalAccessException {
+    sun.nio.ch.DirectBuffer directBuffer = (sun.nio.ch.DirectBuffer)buffer;
+    final sun.misc.Cleaner cleaner = directBuffer.cleaner();
+    if (cleaner != null) {
+      // change the runnable
+      final Field runnableField = Wrapper.cleanerRunnableField;
+      Object runnable = runnableField.get(cleaner);
+      // skip if it already matches the target Runnable type
+      if (!to.isInstance(runnable)) {
+        if (changeOwner != null) {
+          changeOwner.accept(from.isInstance(runnable));
+        }
+        Runnable newFree = factory.newFreeMemory(directBuffer.address(), size);
+        runnableField.set(cleaner, newFree);
+      }
+    } else {
+      throw new IllegalAccessException(
+          "ByteBuffer without a Cleaner cannot be marked for storage");
+    }
   }
 
   public static void releaseIfDirectBuffer(ByteBuffer buffer) {
@@ -252,6 +297,14 @@ public abstract class UnsafeHolder {
       cleaner.clean();
       cleaner.clear();
     }
+  }
+
+  public static void releasePendingReferences() {
+    final sun.misc.JavaLangRefAccess refAccess =
+        sun.misc.SharedSecrets.getJavaLangRefAccess();
+    // retry while helping enqueue pending Cleaner Reference objects
+    // noinspection StatementWithEmptyBody
+    while (refAccess.tryHandlePendingReference()) ;
   }
 
   public static sun.misc.Unsafe getUnsafe() {

@@ -26,20 +26,25 @@ import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.Nonnull;
 
+import com.gemstone.gemfire.DataSerializer;
+import com.gemstone.gemfire.internal.cache.DiskId;
+import com.gemstone.gemfire.internal.cache.store.DirectBufferAllocator;
+import com.gemstone.gemfire.internal.cache.store.SerializedDiskBuffer;
 import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
+import com.gemstone.gemfire.internal.shared.OutputStreamChannel;
 import com.gemstone.gemfire.internal.shared.Version;
 import com.gemstone.gemfire.internal.shared.unsafe.ChannelBufferUnsafeDataOutputStream;
 import com.gemstone.gemfire.internal.shared.unsafe.UnsafeHolder;
 
 /**
- * Implements {@link DataOutput} writing to a direct ByteBuffer
- * expanding it as required.
+ * A {@link SerializedDiskBuffer} that implements {@link DataOutput} writing
+ * to a direct ByteBuffer expanding it as required.
  * <p>
  * Note: this can be further optimized by using the Unsafe API rather than
  * going through ByteBuffer API (e.g. see ChannelBufferUnsafeDataOutputStream)
  * but won't have an effect for large byte array writes (like for column data)
  */
-public final class DirectByteBufferDataOutput
+public final class DirectByteBufferDataOutput extends SerializedDiskBuffer
     implements DataOutput, Closeable, VersionedDataStream {
 
   private static final int INITIAL_SIZE = 1024;
@@ -54,9 +59,61 @@ public final class DirectByteBufferDataOutput
   public DirectByteBufferDataOutput(int initialSize, Version version) {
     // this uses allocations and expansion via direct Unsafe API rather
     // than ByteBuffer.allocateDirect for better efficiency esp in expansion
-    this.buffer = UnsafeHolder.allocateDirectBuffer(initialSize)
+    this.buffer = DirectBufferAllocator.instance().allocate(initialSize)
         .order(ByteOrder.BIG_ENDIAN);
     this.version = version;
+  }
+
+  /**
+   * Initialize the buffer serializing the given object to a direct buffer
+   * and setting the reference count to 1. Normally there should be only
+   * one calling thread that will {@link #release()} this when done.
+   */
+  public DirectByteBufferDataOutput serialize(Object obj) throws IOException {
+    this.buffer.rewind();
+    DataSerializer.writeObject(obj, this);
+    this.buffer.flip();
+    return this;
+  }
+
+  @Override
+  protected synchronized void releaseBuffer() {
+    final ByteBuffer buffer = this.buffer;
+    this.buffer = null;
+    UnsafeHolder.releaseIfDirectBuffer(buffer);
+  }
+
+  @Override
+  public void setDiskId(DiskId id) {
+  }
+
+  @Override
+  public synchronized void write(
+      OutputStreamChannel channel) throws IOException {
+    final ByteBuffer buffer = this.buffer;
+    if (buffer != null) {
+      write(channel, this.buffer);
+    } else {
+      channel.write(DSCODE.NULL);
+    }
+  }
+
+  @Override
+  public int size() {
+    // deliberately not synchronized since size() should always be protected
+    // with a retain call if required and not lead to indeterminate results
+    // due to an unexpected intervening release
+    final ByteBuffer buffer = this.buffer;
+    if (buffer != null) {
+      return buffer.limit();
+    } else {
+      return 0;
+    }
+  }
+
+  @Override
+  public int getOffHeapSizeInBytes() {
+    return 0; // will not be stored in region
   }
 
   @Override
