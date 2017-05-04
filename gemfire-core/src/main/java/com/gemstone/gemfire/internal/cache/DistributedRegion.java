@@ -1327,7 +1327,7 @@ public class DistributedRegion extends LocalRegion implements
       boolean recoverFromDisk, PersistentMemberID persistentId) throws TimeoutException
   {
     LogWriterI18n logger = getSystem().getLogWriter().convertToLogWriterI18n();
-    if (logger.infoEnabled()) {
+    if (logger.infoEnabled() && !LocalRegion.isMetaTable(getFullPath())) {
       logger.info(LocalizedStrings.DistributedRegion_INITIALIZING_REGION_0, this.getName());
     }
   
@@ -1491,7 +1491,9 @@ public class DistributedRegion extends LocalRegion implements
       else {
         if(!isDestroyed()) {
           if(recoverFromDisk) {
-            logger.info(LocalizedStrings.DistributedRegion_INITIALIZED_FROM_DISK, new Object[] {this.getFullPath(), persistentId, getPersistentID()});
+            if (!LocalRegion.isMetaTable(getFullPath())) {
+              logger.info(LocalizedStrings.DistributedRegion_INITIALIZED_FROM_DISK, new Object[]{this.getFullPath(), persistentId, getPersistentID()});
+            }
             if(persistentId != null) {
               RegionLogger.logRecovery(this.getFullPath(), persistentId,
                   getDistributionManager().getDistributionManagerId());
@@ -1504,7 +1506,9 @@ public class DistributedRegion extends LocalRegion implements
               RegionLogger.logPersistence(this.getFullPath(),
                   getDistributionManager().getDistributionManagerId(),
                   getPersistentID());
-              logger.info(LocalizedStrings.DistributedRegion_NEW_PERSISTENT_REGION_CREATED, new Object[] {this.getFullPath(), getPersistentID()});
+              if (!LocalRegion.isMetaTable(getFullPath())) {
+                logger.info(LocalizedStrings.DistributedRegion_NEW_PERSISTENT_REGION_CREATED, new Object[]{this.getFullPath(), getPersistentID()});
+              }
             }
           }
           
