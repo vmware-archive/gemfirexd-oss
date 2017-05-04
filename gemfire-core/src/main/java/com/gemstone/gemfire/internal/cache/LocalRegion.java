@@ -967,7 +967,7 @@ public class LocalRegion extends AbstractRegion
       // copy the versions that we have recovered from disk into
       // the version vector.
       this.versionVector.recordVersions(diskVector
-          .getCloneForTransmission());
+          .getCloneForTransmission(), null);
     } else if (!dataPolicy.withStorage()) {
       // version vectors are currently only necessary in empty regions for
       // tracking canonical member IDs
@@ -1749,7 +1749,7 @@ public class LocalRegion extends AbstractRegion
   public final InternalDataView getDataView() {
     if (this.supportsTX) {
       final TXStateInterface tx = TXManagerImpl.getCurrentTXState();
-      if (tx != null) {
+      if (tx != null ) {
         // NORMAL/PRELOADED regions are now supported in the new TX model mixed
         // with PRs just like replicated regions
         /*
@@ -1819,6 +1819,7 @@ public class LocalRegion extends AbstractRegion
           re = this.entries.getOperationalEntryInVM(key);
         }
       }
+
       //skip updating the stats if the value is null
       // TODO - We need to clean up the callers of the this class so that we can
       // update the statistics here, where it would make more sense.
@@ -6189,7 +6190,7 @@ public class LocalRegion extends AbstractRegion
     //like it's not doing the right thing if the current member is the member
     //we just recovered.
     //We need to update the RVV in memory
-    this.versionVector.recordGCVersion(member, gcVersion);
+    this.versionVector.recordGCVersion(member, gcVersion, null);
     
     //We also need to update the RVV that represents what we have persisted on disk
     DiskRegion dr = this.getDiskRegion();
@@ -6211,7 +6212,7 @@ public class LocalRegion extends AbstractRegion
   
   @Override
   public void recordRecoveredVersionTag(VersionTag tag) {
-    this.versionVector.recordVersion(tag.getMemberID(), tag.getRegionVersion());
+    this.versionVector.recordVersion(tag.getMemberID(), tag.getRegionVersion(), null);
     DiskRegion dr = this.getDiskRegion();
     //We also need to update the RVV that represents what we have persisted on disk
     if(dr != null) {
@@ -6276,7 +6277,7 @@ public class LocalRegion extends AbstractRegion
         id = myId;
       }
       //Make sure the version is applied to the regions RVV
-      rvv.recordVersion(id, stamp.getRegionVersion());
+      rvv.recordVersion(id, stamp.getRegionVersion(), null);
       
     }
   }
@@ -6320,7 +6321,7 @@ public class LocalRegion extends AbstractRegion
           "LR.basicInvalidate: this cache has already seen this event " + event);
       }
       if (this.concurrencyChecksEnabled && event.getVersionTag() != null && !event.getVersionTag().isRecorded()) {
-        getVersionVector().recordVersion((InternalDistributedMember) event.getDistributedMember(), event.getVersionTag());
+        getVersionVector().recordVersion((InternalDistributedMember) event.getDistributedMember(), event.getVersionTag(), event);
       }
       return;
     }
@@ -7040,7 +7041,8 @@ public class LocalRegion extends AbstractRegion
           + event);
       }
       if (this.concurrencyChecksEnabled && event.getVersionTag() != null && !event.getVersionTag().isRecorded()) {
-        getVersionVector().recordVersion((InternalDistributedMember) event.getDistributedMember(), event.getVersionTag());
+        getVersionVector().recordVersion((InternalDistributedMember) event.getDistributedMember(),
+            event.getVersionTag(), event);
       }
       return;
     }
@@ -7671,7 +7673,7 @@ public class LocalRegion extends AbstractRegion
    * @since 5.7
    */
   public void syncPutAll(final TXStateInterface tx, Runnable r, EventID eventID) {
-    if (this.eventTracker != null && tx == null) {
+    if (this.eventTracker != null && (tx == null || tx.isSnapshot())) {
       this.eventTracker.syncPutAll(r, eventID);
     }
     else {
@@ -7850,7 +7852,8 @@ public class LocalRegion extends AbstractRegion
             // recent
             this.parentRegion.updateStats();
           }
-  
+
+          getCache().removeRegionFromOldEntryMap(this.getFullPath());
         
           try {
             eventSet = callbackEvents ? new HashSet() : null;
@@ -8102,7 +8105,8 @@ public class LocalRegion extends AbstractRegion
           + event);
       }
       if (this.concurrencyChecksEnabled && event.getVersionTag() != null && !event.getVersionTag().isRecorded()) {
-        getVersionVector().recordVersion((InternalDistributedMember) event.getDistributedMember(), event.getVersionTag());
+        getVersionVector().recordVersion((InternalDistributedMember) event.getDistributedMember(),
+            event.getVersionTag(), event);
       }
       // Bug 49449: When client retried and returned with hasSeenEvent for both LR and DR, the server should still 
       // notifyGatewayHubs even the event could be duplicated in gateway queues1 
@@ -8132,6 +8136,7 @@ public class LocalRegion extends AbstractRegion
     }
     tx = discoverJTA();
     event.setTXState(tx);
+
     return tx;
   }
 
@@ -10316,7 +10321,6 @@ public class LocalRegion extends AbstractRegion
     final TXStateInterface tx = context.getTXState();
     final StaticSystemCallbacks sysCb;
     if (tx != null) {
-//      getLogWriterI18n().fine("DEBUG: getJTAEnlistedTX for " + getName() + ".  ignoreJTA="+ignoreJTA + "; tx=" + tx);
       if (!ignoreJTA && tx.getProxy().isJCA()) {
         cache.getTxManager().setTXState(null);
         tx.rollback(null);
@@ -11179,7 +11183,7 @@ public class LocalRegion extends AbstractRegion
         // generate a new version for the operation
         VersionTag tag = VersionTag.create(getVersionMember());
         tag.setVersionTimeStamp(cacheTimeMillis());
-        tag.setRegionVersion(myVector.getNextVersionWhileLocked());
+        tag.setRegionVersion(myVector.getNextVersionWhileLocked(null));
         if (log.fineEnabled() || RegionVersionVector.DEBUG) {
           log.info(LocalizedStrings.DEBUG, "recording version tag for clear: " + tag);
         }
@@ -11190,7 +11194,7 @@ public class LocalRegion extends AbstractRegion
           if (log.fineEnabled()) {
             log.fine("recording version tag for clear: " + tag);
           }
-          myVector.recordVersion(tag.getMemberID(), tag); // clear() events always have the ID in the tag
+          myVector.recordVersion(tag.getMemberID(), tag, null); // clear() events always have the ID in the tag
         }
       }
     }

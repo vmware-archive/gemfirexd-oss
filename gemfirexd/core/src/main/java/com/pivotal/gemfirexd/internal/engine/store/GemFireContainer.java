@@ -4125,7 +4125,7 @@ public final class GemFireContainer extends AbstractGfxdLockable implements
               changedRow[column] = dvd;
             }
             if (origDVD != null
-                && dtd.getTypeId().getTypeFormatId() == StoredFormatIds.SQL_CHAR_ID
+                && dtd.getDVDTypeFormatId() == StoredFormatIds.SQL_CHAR_ID
                 && origDVD.getString() != null) {
               // See #46933
               ((SQLChar)origDVD).normalize(dtd, origDVD);
@@ -5038,6 +5038,10 @@ public final class GemFireContainer extends AbstractGfxdLockable implements
    */
   public final boolean isPartitioned() {
     return this.regionAttributes.getDataPolicy().withPartitioning();
+  }
+
+  public final boolean isRowBuffer() {
+    return isPartitioned() && ((PartitionedRegion)this.region).needsBatching();
   }
 
   public final boolean isOffHeap() {

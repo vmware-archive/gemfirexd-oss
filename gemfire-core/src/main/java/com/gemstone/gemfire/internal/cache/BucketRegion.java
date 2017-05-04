@@ -53,6 +53,7 @@ import com.gemstone.gemfire.internal.cache.FilterRoutingInfo.FilterInfo;
 import com.gemstone.gemfire.internal.cache.control.MemoryEvent;
 import com.gemstone.gemfire.internal.cache.delta.Delta;
 import com.gemstone.gemfire.internal.cache.locks.ExclusiveSharedLockObject;
+import com.gemstone.gemfire.internal.cache.locks.LockingPolicy;
 import com.gemstone.gemfire.internal.cache.locks.LockingPolicy.ReadEntryUnderLock;
 import com.gemstone.gemfire.internal.cache.partitioned.*;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheClientNotifier;
@@ -634,8 +635,13 @@ public class BucketRegion extends DistributedRegion implements Bucket {
       setBatchUUID(event);
     }
 
-    return getDataView(event).putEntry(event, ifNew, ifOld, null, false,
-        cacheWrite, lastModified, overwriteDestroyed);
+    if (event.getTXState() != null && event.getTXState().isSnapshot()) {
+      return getSharedDataView().putEntry(event, ifNew, ifOld, null, false,
+          cacheWrite, lastModified, overwriteDestroyed);
+    } else {
+      return getDataView(event).putEntry(event, ifNew, ifOld, null, false,
+          cacheWrite, lastModified, overwriteDestroyed);
+    }
   }
 
   // Entry (Put/Create) rules
@@ -740,10 +746,11 @@ public class BucketRegion extends DistributedRegion implements Bucket {
     // TODO: with forceFlush, ideally we should merge with an existing
     // ColumnBatch if the current size to be flushed is small like < 1000
     // (and split if total size has become too large)
+    boolean success = true;
     boolean doFlush = false;
     if (forceFlush) {
       doFlush = getRegionSize() >= getPartitionedRegion()
-          .getColumnMinDeltaRows();
+              .getColumnMinDeltaRows();
     }
     if (!doFlush) {
       doFlush = checkForColumnBatchCreation();
@@ -756,26 +763,57 @@ public class BucketRegion extends DistributedRegion implements Bucket {
       // need to flush the region
       if (getCache().getLoggerI18n().fineEnabled()) {
         getCache().getLoggerI18n().fine("createAndInsertColumnBatch: " +
-            "Creating the column batch for bucket " + this.getId()
-            + ", and batchID " + this.batchUUID);
+                "Creating the column batch for bucket " + this.getId()
+                + ", and batchID " + this.batchUUID);
       }
-      Set keysToDestroy = null;
-
+      getCache().getCacheTransactionManager().begin(IsolationLevel.SNAPSHOT, null);
       try {
-        keysToDestroy = createColumnBatchAndPutInColumnTable();
+        if (getCache().getLoggerI18n().fineEnabled()) {
+          getCache().getLoggerI18n().info(LocalizedStrings.DEBUG, "createAndInsertCachedBatch: " +
+                  "The snapshot after creating cached batch is " + getTXState().getLocalTXState().getCurrentSnapshot() +
+                  " the current rvv is " + getVersionVector());
+        }
+
+
+        //Check if shutdown hook is set
+        if (null != getCache().getRvvSnapshotTestHook()) {
+          getCache().notifyRvvTestHook();
+          getCache().waitOnRvvSnapshotTestHook();
+        }
+
+        Set keysToDestroy = createColumnBatchAndPutInColumnTable();
+
+
+        if (getCache().getCacheTransactionManager().testRollBack) {
+          throw new Exception("Test Dummy Exception");
+        }
+        destroyAllEntries(keysToDestroy);
+        //Check if shutdown hook is set
+        if (null != getCache().getRvvSnapshotTestHook()) {
+          getCache().notifyRvvTestHook();
+          getCache().waitOnRvvSnapshotTestHook();
+        }
+        // create new batchUUID
+        generateAndSetBatchIDIfNULL(true);
+
+        if (null != getCache().getRvvSnapshotTestHook()) {
+          getCache().notifyRvvTestHook();
+        }
+        success = true;
       } catch (Exception lme) {
         getCache().getLoggerI18n().warning(lme);
         // Returning from here as we dont want to clean the row buffer data.
-        return false;
+        success = false;
+      } finally {
+        if (success) {
+          getCache().getCacheTransactionManager().commit();
+        } else {
+          getCache().getCacheTransactionManager().rollback();
+        }
       }
-
-      destroyAllEntries(keysToDestroy);
-      // create new batchUUID
-      generateAndSetBatchIDIfNULL(true);
-      return true;
-    } else {
-      return false;
     }
+
+    return success;
   }
 
   //TODO: Suranjan. it will change for tx operations, setting of batchID will be from commitPhase1
@@ -852,7 +890,6 @@ public class BucketRegion extends DistributedRegion implements Bucket {
   // This destroy is under a lock which makes sure that there is no put into the region
   // No need to take the lock on key
   private void destroyAllEntries(Set keysToDestroy) {
-
     for(Object key : keysToDestroy) {
       if (getCache().getLoggerI18n().fineEnabled()) {
         getCache()
@@ -868,7 +905,6 @@ public class BucketRegion extends DistributedRegion implements Bucket {
       event.setKey(key);
       event.setBucketId(this.getId());
       event.setBatchUUID(this.batchUUID); // to make sure that lock is not nexessary
-
 
       if (getTXState() != null) {
         getTXState().destroyExistingEntry(event, true, null);
@@ -913,8 +949,6 @@ public class BucketRegion extends DistributedRegion implements Bucket {
                     + this.eventSeqNum.get() + ". was it a tx operation? " + event.hasTX());
           }  
         }
-        
-        
       } else {
         // Can there be a race here? Like one thread has done put in primary but
         // its update comes later
@@ -3188,4 +3222,5 @@ public class BucketRegion extends DistributedRegion implements Bucket {
      return ServerPingMessage.send(cache, hostingservers);
     
   }
+
 }

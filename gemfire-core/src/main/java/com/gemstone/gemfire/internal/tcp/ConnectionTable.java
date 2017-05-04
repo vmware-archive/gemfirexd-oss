@@ -407,8 +407,9 @@ public final class ConnectionTable  {
     };
     this.connectionPool = new QueryKeyedObjectPool<>(connectionFactory);
     final int numProcessors = Runtime.getRuntime().availableProcessors();
-    // max 32 and min 8 connections limit per server
-    final int numConnections = Math.min(Math.max(numProcessors, 8), 32);
+    final int numConnections = Math.max(DistributionManager.MAX_PR_THREADS_SET,
+        // default of 16-32 connections limit per server
+        Math.min(Math.max(numProcessors, 16), 32));
     this.connectionPool.setMaxTotalPerKey(numConnections);
     this.connectionPool.setMaxIdlePerKey(numConnections);
     this.connectionPool.setTestOnBorrow(true);
