@@ -41,8 +41,8 @@ import com.gemstone.gemfire.internal.cache.EventID;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.internal.cache.wan.AbstractGatewaySender;
-import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
+import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.distributed.GfxdMessage;
 import com.pivotal.gemfirexd.internal.engine.distributed.utils.GemFireXDUtils;
 import com.pivotal.gemfirexd.internal.engine.jdbc.GemFireXDRuntimeException;
@@ -162,6 +162,8 @@ public abstract class AbstractDBSynchronizerMessage extends GfxdMessage {
       final LocalRegion rgn = this.event.getRegion();
       if (rgn != null) {
         rgn.waitOnInitialization();
+      } else {
+        Misc.checkIfCacheClosing(null);
       }
       if (GemFireXDUtils.TraceDBSynchronizer) {
         SanityManager.DEBUG_PRINT(GfxdConstants.TRACE_DB_SYNCHRONIZER,
@@ -220,9 +222,9 @@ public abstract class AbstractDBSynchronizerMessage extends GfxdMessage {
     final GemFireCacheImpl cache = Misc.getGemFireCacheNoThrow();
     final LocalRegion rgn = cache != null
         ? cache.getRegionByPathForProcessing(regionName) : null;
-    if (rgn != null) {
-      this.initializeEvent(rgn, eventID, member);
-    }
+    // initialize event even if Region is null so that child classes can
+    // proceed with their fromData
+    this.initializeEvent(rgn, eventID, member);
   }
 
   public final void applyOperation() throws StandardException {
