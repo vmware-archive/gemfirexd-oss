@@ -40,9 +40,7 @@ public final class MsgChannelDestreamer
 
   MsgChannelDestreamer(Connection conn, SocketChannel channel,
       int bufferSize) {
-    // keep outside the limit of VM.maxDirectMemory() since there can be many
-    // P2P channel reader threads
-    super(channel, bufferSize, true);
+    super(channel, bufferSize, false);
     this.conn = conn;
   }
 

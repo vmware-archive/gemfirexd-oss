@@ -151,9 +151,9 @@ public final class SSLSocketChannel
    */
   protected void startHandshake() throws IOException {
     if (this.useDirectBuffers) {
-      this.netReadBuffer = UnsafeHolder.allocateDirectBuffer(netReadBufferSize());
-      this.netWriteBuffer = UnsafeHolder.allocateDirectBuffer(netWriteBufferSize());
-      this.appReadBuffer = UnsafeHolder.allocateDirectBuffer(applicationBufferSize());
+      this.netReadBuffer = ByteBuffer.allocateDirect(netReadBufferSize());
+      this.netWriteBuffer = ByteBuffer.allocateDirect(netWriteBufferSize());
+      this.appReadBuffer = ByteBuffer.allocateDirect(applicationBufferSize());
     } else {
       this.netReadBuffer = ByteBuffer.allocate(netReadBufferSize());
       this.netWriteBuffer = ByteBuffer.allocate(netWriteBufferSize());

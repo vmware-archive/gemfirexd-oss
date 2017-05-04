@@ -239,14 +239,11 @@ public abstract class UnsafeHolder {
     return Wrapper.unsafe;
   }
 
-  // below methods are used by thrift connections which can be large in number
-  // hence use unsafeAllocation=true to keep outside of VM.maxDirectMemory()
-
   @SuppressWarnings("resource")
   public static InputStreamChannel newChannelBufferInputStream(
       ReadableByteChannel channel, int bufferSize) throws IOException {
     return (hasUnsafe
-        ? new ChannelBufferUnsafeInputStream(channel, bufferSize, true)
+        ? new ChannelBufferUnsafeInputStream(channel, bufferSize, false)
         : new ChannelBufferInputStream(channel, bufferSize));
   }
 
@@ -254,7 +251,7 @@ public abstract class UnsafeHolder {
   public static OutputStreamChannel newChannelBufferOutputStream(
       WritableByteChannel channel, int bufferSize) throws IOException {
     return (hasUnsafe
-        ? new ChannelBufferUnsafeOutputStream(channel, bufferSize, true)
+        ? new ChannelBufferUnsafeOutputStream(channel, bufferSize, false)
         : new ChannelBufferOutputStream(channel, bufferSize));
   }
 
@@ -262,7 +259,7 @@ public abstract class UnsafeHolder {
   public static InputStreamChannel newChannelBufferFramedInputStream(
       ReadableByteChannel channel, int bufferSize) throws IOException {
     return (hasUnsafe
-        ? new ChannelBufferUnsafeFramedInputStream(channel, bufferSize, true)
+        ? new ChannelBufferUnsafeFramedInputStream(channel, bufferSize, false)
         : new ChannelBufferFramedInputStream(channel, bufferSize));
   }
 
@@ -270,7 +267,7 @@ public abstract class UnsafeHolder {
   public static OutputStreamChannel newChannelBufferFramedOutputStream(
       WritableByteChannel channel, int bufferSize) throws IOException {
     return (hasUnsafe
-        ? new ChannelBufferUnsafeFramedOutputStream(channel, bufferSize, true)
+        ? new ChannelBufferUnsafeFramedOutputStream(channel, bufferSize, false)
         : new ChannelBufferFramedOutputStream(channel, bufferSize));
   }
 
