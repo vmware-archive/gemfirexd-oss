@@ -42,6 +42,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectStreamClass;
+import java.lang.management.LockInfo;
+import java.lang.management.MonitorInfo;
+import java.lang.management.ThreadInfo;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
@@ -67,7 +70,6 @@ import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 
-import com.gemstone.gemfire.internal.shared.unsafe.UnsafeHolder;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.spark.unsafe.Platform;
@@ -666,6 +668,68 @@ public abstract class ClientSharedUtils {
   public static void getStackTrace(final Throwable t, StringBuilder sb,
       String lineSep) {
     t.printStackTrace(new StringPrintWriter(sb, lineSep));
+  }
+
+  public static void dumpThreadStack(final ThreadInfo tInfo,
+      final StringBuilder msg, final String lineSeparator) {
+    msg.append('"').append(tInfo.getThreadName()).append('"').append(" Id=")
+        .append(tInfo.getThreadId()).append(' ')
+        .append(tInfo.getThreadState());
+    if (tInfo.getLockName() != null) {
+      msg.append(" on ").append(tInfo.getLockName());
+    }
+    if (tInfo.getLockOwnerName() != null) {
+      msg.append(" owned by \"").append(tInfo.getLockOwnerName())
+          .append("\" Id=").append(tInfo.getLockOwnerId());
+    }
+    if (tInfo.isSuspended()) {
+      msg.append(" (suspended)");
+    }
+    if (tInfo.isInNative()) {
+      msg.append(" (in native)");
+    }
+    msg.append(lineSeparator);
+    final StackTraceElement[] stackTrace = tInfo.getStackTrace();
+    for (int index = 0; index < stackTrace.length; ++index) {
+      msg.append("\tat ").append(stackTrace[index].toString())
+          .append(lineSeparator);
+      if (index == 0 && tInfo.getLockInfo() != null) {
+        final Thread.State ts = tInfo.getThreadState();
+        switch (ts) {
+          case BLOCKED:
+            msg.append("\t-  blocked on ").append(tInfo.getLockInfo())
+                .append(lineSeparator);
+            break;
+          case WAITING:
+            msg.append("\t-  waiting on ").append(tInfo.getLockInfo())
+                .append(lineSeparator);
+            break;
+          case TIMED_WAITING:
+            msg.append("\t-  waiting on ").append(tInfo.getLockInfo())
+                .append(lineSeparator);
+            break;
+          default:
+        }
+      }
+
+      for (MonitorInfo mi : tInfo.getLockedMonitors()) {
+        if (mi.getLockedStackDepth() == index) {
+          msg.append("\t-  locked ").append(mi)
+              .append(lineSeparator);
+        }
+      }
+    }
+
+    final LockInfo[] locks = tInfo.getLockedSynchronizers();
+    if (locks.length > 0) {
+      msg.append(lineSeparator)
+          .append("\tNumber of locked synchronizers = ").append(locks.length)
+          .append(lineSeparator);
+      for (LockInfo li : locks) {
+        msg.append("\t- ").append(li).append(lineSeparator);
+      }
+    }
+    msg.append(lineSeparator);
   }
 
   public static Object[] getZeroLenObjectArray() {
@@ -1638,7 +1702,7 @@ public abstract class ClientSharedUtils {
     if (newLength <= buffer.capacity()) {
       return buffer;
     }
-    ByteBuffer newBuffer = useDirectBuffer ? UnsafeHolder.allocateDirectBuffer(
+    ByteBuffer newBuffer = useDirectBuffer ? ByteBuffer.allocateDirect(
         newLength) : ByteBuffer.allocate(newLength);
     newBuffer.order(buffer.order());
     buffer.flip();
