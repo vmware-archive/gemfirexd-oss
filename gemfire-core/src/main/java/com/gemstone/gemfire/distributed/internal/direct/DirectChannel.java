@@ -404,6 +404,7 @@ public final class DirectChannel {
     final boolean orderedMsg = msg.orderedDelivery(threadOwnsResources)
         || ((tssFlags & ConnectionTable.SHOULD_DOMINO_TSS_MASK) != 0);
 
+    final ArrayList<Connection> cons = new ArrayList<>(destinations.length);
     final boolean useNIOStream = getConduit().useNIOStream();
     try {
     do {
@@ -420,7 +421,6 @@ public final class DirectChannel {
         retryInfo = null;
         retry = true;
       }
-      final ArrayList<Connection> cons = new ArrayList<>(destinations.length);
       ConnectExceptions ce = getConnections(mgr, msg, destinations, orderedMsg,
             retry, ackTimeout, ackSDTimeout, threadOwnsResources, cons);
       if (directReply && msg.getProcessorId() > 0) { // no longer a direct-reply message?
@@ -569,7 +569,9 @@ public final class DirectChannel {
       for (Iterator it=totalSentCons.iterator(); it.hasNext();) {
         Connection con = (Connection)it.next();
         con.setInUse(false, 0, 0, 0, null);
-        if (useNIOStream) {
+      }
+      if (useNIOStream) {
+        for (Connection con : cons) {
           this.conduit.releasePooledConnection(con);
         }
       }
@@ -667,7 +669,8 @@ public final class DirectChannel {
         //but this is not worth doing and isShunned is not public.
         // SO the assert has been deadcoded.
         if (ce == null) ce = new ConnectExceptions();
-        ce.addFailure(destination, new MissingStubException(LocalizedStrings.DirectChannel_NO_STUB_0.toLocalizedString()));
+        ce.addFailure(destination, new MissingStubException(
+            LocalizedStrings.DirectChannel_NO_STUB_0.toLocalizedString(destination)));
       }
       else {
         try {
