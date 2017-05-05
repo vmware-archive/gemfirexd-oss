@@ -670,7 +670,7 @@ public interface DiskEntry extends RegionEntry {
             } else {
               bytes = proxy.getSerializedValue();
             }
-            return Helper.wrapBytes(bytes);
+            buffer = ByteBuffer.wrap(bytes);
           }
           else if (value instanceof byte[]) {
             isSerializedObject = false;
