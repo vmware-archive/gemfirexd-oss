@@ -18,10 +18,12 @@ package com.gemstone.gemfire.internal.concurrent;
 
 import java.lang.reflect.Field;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 
+import com.gemstone.gemfire.CancelCriterion;
 import com.gemstone.gnu.trove.TObjectProcedure;
 import org.apache.commons.pool2.KeyedPooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
@@ -54,6 +56,11 @@ public final class QueryKeyedObjectPool<K, T>
   private final ReadWriteLock globalKeyLock;
 
   /**
+   * Check for cancellation with this in borrowObject.
+   */
+  private final CancelCriterion cancelCriterion;
+
+  /**
    * The "allObjects" field from ObjectDequeue class obtained using reflection.
    */
   private volatile Field allObjectsField;
@@ -62,24 +69,27 @@ public final class QueryKeyedObjectPool<K, T>
    * Create a new <code>QueryKeyedObjectPool</code> using defaults from
    * {@link GenericKeyedObjectPoolConfig}.
    *
-   * @param factory the factory to be used to create entries
+   * @param factory         the factory to be used to create entries
+   * @param cancelCriterion to check for cancellation of borrowObject
    */
-  public QueryKeyedObjectPool(KeyedPooledObjectFactory<K, T> factory) {
-    this(factory, new GenericKeyedObjectPoolConfig());
+  public QueryKeyedObjectPool(KeyedPooledObjectFactory<K, T> factory,
+      CancelCriterion cancelCriterion) {
+    this(factory, new GenericKeyedObjectPoolConfig(), cancelCriterion);
   }
 
   /**
    * Create a new <code>QueryKeyedObjectPool</code> using a specific
    * configuration.
    *
-   * @param factory the factory to be used to create entries
-   * @param config  The configuration to use for this pool instance. The
-   *                configuration is used by value. Subsequent changes to
-   *                the configuration object will not be reflected in the
-   *                pool.
+   * @param factory         the factory to be used to create entries
+   * @param config          The configuration to use for this pool instance.
+   *                        The configuration is used by value. Subsequent
+   *                        changes to the configuration object will not be
+   *                        reflected in the pool.
+   * @param cancelCriterion to check for cancellation of borrowObject
    */
   public QueryKeyedObjectPool(KeyedPooledObjectFactory<K, T> factory,
-      GenericKeyedObjectPoolConfig config) {
+      GenericKeyedObjectPoolConfig config, CancelCriterion cancelCriterion) {
     super(factory, config);
 
     try {
@@ -91,6 +101,8 @@ public final class QueryKeyedObjectPool<K, T>
       f = superClass.getDeclaredField("keyLock");
       f.setAccessible(true);
       this.globalKeyLock = (ReadWriteLock)f.get(this);
+
+      this.cancelCriterion = cancelCriterion;
     } catch (Exception e) {
       throw new IllegalStateException(
           "Failed to initialize QueryKeyedObjectPool", e);
@@ -113,6 +125,41 @@ public final class QueryKeyedObjectPool<K, T>
       return (Map<?, ?>)allObjects.get(deque);
     } catch (Exception e) {
       throw new IllegalStateException("Failed to read pool queue", e);
+    }
+  }
+
+  @Override
+  public T borrowObject(K key, long borrowMaxWaitMillis) throws Exception {
+    // An issue with GenericKeyedObjectPool: it increments the createdCount
+    // first, then checks if it exceeds maxTotalPerKey. It can happen due to
+    // concurrency then that one of the threads goes into a wait due to that
+    // even though connections have not actually been created yet. The creates
+    // could all fail due to remote node going down, but then those threads
+    // that started to wait will still keep waiting (SNAP-1508, SNAP-1509).
+    // Hence this override does it with smaller timeout in a loop.
+    if (borrowMaxWaitMillis < 0) {
+      borrowMaxWaitMillis = Integer.MAX_VALUE;
+    }
+    // retries at max 1 second intervals
+    final long loopWaitMillis = Math.min(1000L, borrowMaxWaitMillis);
+    long startTime = 0L;
+    while (true) {
+      try {
+        return super.borrowObject(key, loopWaitMillis);
+      } catch (NoSuchElementException nse) {
+        // check for cancellation
+        this.cancelCriterion.checkCancelInProgress(nse);
+        // retry till borrowMaxWaitMillis
+        long currentTime = System.currentTimeMillis();
+        if (startTime == 0L) {
+          // first time assume it failed after loopWaitMillis to
+          // optimistically avoid a currentTimeMillis call in first loop
+          startTime = currentTime - loopWaitMillis;
+        }
+        if ((currentTime - startTime) >= borrowMaxWaitMillis) {
+          throw nse;
+        }
+      }
     }
   }
 

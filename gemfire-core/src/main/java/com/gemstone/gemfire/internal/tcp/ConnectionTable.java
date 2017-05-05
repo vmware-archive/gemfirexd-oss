@@ -379,7 +379,7 @@ public final class ConnectionTable  {
           logger.fine("ConnectionTable: created a pooled ordered connection: " +
               newConn);
         }
-        owner.stats.incSenders(false/*shared*/, true /* preserveOrder */);
+        owner.stats.incSenders(false/* shared */, true /* preserveOrder */);
         return new DefaultPooledObject<>(newConn);
       }
 
@@ -405,7 +405,8 @@ public final class ConnectionTable  {
           PooledObject<Connection> p) throws Exception {
       }
     };
-    this.connectionPool = new QueryKeyedObjectPool<>(connectionFactory);
+    this.connectionPool = new QueryKeyedObjectPool<>(connectionFactory,
+        c.getCancelCriterion());
     final int numProcessors = Runtime.getRuntime().availableProcessors();
     final int numConnections = Math.max(DistributionManager.MAX_PR_THREADS_SET,
         // default limit of 16-32 connections per server
@@ -1130,6 +1131,7 @@ public final class ConnectionTable  {
       }
       // close all connections for the given stub
       if (this.connectionPool != null) {
+        this.connectionPool.clear(connKey);
         this.connectionPool.foreachObject(connKey, c -> {
           closeCon(reason, c);
           return true;
