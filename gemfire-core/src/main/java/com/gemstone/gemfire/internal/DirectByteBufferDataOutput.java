@@ -121,7 +121,8 @@ public final class DirectByteBufferDataOutput extends SerializedDiskBuffer
     return this.version;
   }
 
-  public ByteBuffer getBuffer() {
+  @Override
+  public ByteBuffer getInternalBuffer() {
     return this.buffer;
   }
 
@@ -237,6 +238,11 @@ public final class DirectByteBufferDataOutput extends SerializedDiskBuffer
 
   @Override
   public void close() throws IOException {
+  }
+
+  @Override
+  public String toString() {
+    return ClientSharedUtils.toString(this.buffer);
   }
 
   protected void ensureCapacity(int required) {

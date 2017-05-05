@@ -87,7 +87,6 @@ import com.gemstone.gemfire.internal.cache.persistence.*;
 import com.gemstone.gemfire.internal.cache.snapshot.GFSnapshot;
 import com.gemstone.gemfire.internal.cache.snapshot.GFSnapshot.SnapshotWriter;
 import com.gemstone.gemfire.internal.cache.snapshot.SnapshotPacket.SnapshotRecord;
-import com.gemstone.gemfire.internal.cache.store.SerializedDiskBuffer;
 import com.gemstone.gemfire.internal.cache.versions.RegionVersionVector;
 import com.gemstone.gemfire.internal.cache.versions.VersionSource;
 import com.gemstone.gemfire.internal.cache.versions.VersionStamp;
@@ -97,7 +96,6 @@ import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.internal.offheap.OffHeapHelper;
 import com.gemstone.gemfire.internal.offheap.annotations.Released;
 import com.gemstone.gemfire.internal.offheap.annotations.Retained;
-import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
 import com.gemstone.gemfire.internal.shared.SystemProperties;
 import com.gemstone.gemfire.internal.shared.Version;
 import com.gemstone.gnu.trove.THashMap;
@@ -959,13 +957,11 @@ public class DiskStoreImpl implements DiskStore, ResourceListener<MemoryEvent> {
    * (deserialize if necessary) or return the serialized blob.
    */
   private static Object convertBytesAndBits(BytesAndBits bb, boolean asObject) {
-    boolean isSerializedBuffer = false;
     Object value;
     if (EntryBits.isInvalid(bb.getBits())) {
       value = Token.INVALID;
     } else if (EntryBits.isSerialized(bb.getBits())) {
       value = DiskEntry.Helper.readSerializedValue(bb, asObject);
-      isSerializedBuffer = value instanceof SerializedDiskBuffer;
     } else if (EntryBits.isLocalInvalid(bb.getBits())) {
       value = Token.LOCAL_INVALID;
     } else if (EntryBits.isTombstone(bb.getBits())) {
@@ -974,10 +970,7 @@ public class DiskStoreImpl implements DiskStore, ResourceListener<MemoryEvent> {
       value = DiskEntry.Helper.readRawValue(bb);
     }
     // buffer will no longer be used so clean it up eagerly
-    // skip for SerializedDiskBuffer which will own buffer
-    if (!isSerializedBuffer) {
-      bb.release();
-    }
+    bb.release();
     return value;
   }
 

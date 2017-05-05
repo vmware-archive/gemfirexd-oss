@@ -19,6 +19,7 @@ package com.gemstone.gemfire.internal.cache.persistence;
 import java.nio.ByteBuffer;
 
 import com.gemstone.gemfire.internal.cache.EntryEventImpl;
+import com.gemstone.gemfire.internal.cache.store.SerializedDiskBuffer;
 import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
 import com.gemstone.gemfire.internal.shared.Version;
 import com.gemstone.gemfire.internal.shared.unsafe.UnsafeHolder;
@@ -65,6 +66,10 @@ public class BytesAndBits {
     Object result = EntryEventImpl.deserializeBuffer(this.data, this.version);
     // rewind back to original position for further reads if required
     this.data.rewind();
+    // if result is a SerializedDiskBuffer then ownership of data has been lost
+    if (result instanceof SerializedDiskBuffer) {
+      this.data = null;
+    }
     return result;
   }
 

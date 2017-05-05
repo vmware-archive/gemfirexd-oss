@@ -21,22 +21,23 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import com.gemstone.gemfire.internal.cache.DiskId;
+import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
 import com.gemstone.gemfire.internal.shared.OutputStreamChannel;
 
 /**
  * A {@link SerializedDiskBuffer} to wrap heap bytes.
  */
-public final class WrappedBuffer extends SerializedDiskBuffer {
+public final class WrappedBytes extends SerializedDiskBuffer {
 
   private final byte[] buffer;
   private final int offset;
   private final int length;
 
-  public WrappedBuffer(byte[] buffer) {
+  public WrappedBytes(byte[] buffer) {
     this(buffer, 0, buffer.length);
   }
 
-  public WrappedBuffer(byte[] buffer, int offset, int length) {
+  public WrappedBytes(byte[] buffer, int offset, int length) {
     this.buffer = buffer;
     this.offset = offset;
     this.length = length;
@@ -61,7 +62,7 @@ public final class WrappedBuffer extends SerializedDiskBuffer {
 
   @Override
   public void write(OutputStreamChannel channel) throws IOException {
-    write(channel, ByteBuffer.wrap(this.buffer, this.offset, this.length));
+    write(channel, getInternalBuffer());
   }
 
   @Override
@@ -72,5 +73,15 @@ public final class WrappedBuffer extends SerializedDiskBuffer {
   @Override
   public int getOffHeapSizeInBytes() {
     return 0;
+  }
+
+  @Override
+  public ByteBuffer getInternalBuffer() {
+    return ByteBuffer.wrap(this.buffer, this.offset, this.length);
+  }
+
+  @Override
+  public String toString() {
+    return ClientSharedUtils.toString(getInternalBuffer());
   }
 }

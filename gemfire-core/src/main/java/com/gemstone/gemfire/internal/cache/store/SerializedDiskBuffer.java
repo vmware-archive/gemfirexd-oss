@@ -140,6 +140,14 @@ public abstract class SerializedDiskBuffer {
    */
   public abstract int getOffHeapSizeInBytes();
 
+  /**
+   * Get the internal data as a ByteBuffer for temporary use.
+   * <p>
+   * USE WITH CARE ESPECIALLY NO EXPLICIT RELEASE WHICH SHOULD ONLY
+   * BE DONE USING THE {@link #release()} METHOD.
+   */
+  public abstract ByteBuffer getInternalBuffer();
+
   protected final void write(OutputStreamChannel channel,
       ByteBuffer buffer) throws IOException {
     final int position = buffer.position();
