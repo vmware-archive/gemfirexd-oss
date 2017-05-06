@@ -169,7 +169,8 @@ public abstract class NativeCalls {
         SocketChannel channel = sock.getChannel();
         if (channel != null) {
           try {
-            m = getAnyMethod(channel.getClass(), "getFDVal");
+            m = ClientSharedUtils.getAnyMethod(channel.getClass(),
+                "getFDVal", null);
             if (m != null) {
               m.setAccessible(true);
               return (Integer)m.invoke(channel);
@@ -185,7 +186,8 @@ public abstract class NativeCalls {
           m = ClientSharedUtils.getAnyMethod(sock.getClass(), "getImpl", null);
         } catch (Exception ex) {
           try {
-            m = ClientSharedUtils.getAnyMethod(sock.getClass(), "getPlainSocketImpl", null);
+            m = ClientSharedUtils.getAnyMethod(sock.getClass(),
+                "getPlainSocketImpl", null);
           } catch (Exception e) {
             // try forcing the InputStream route
             m = null;
