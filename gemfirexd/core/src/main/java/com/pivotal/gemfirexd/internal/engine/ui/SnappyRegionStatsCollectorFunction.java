@@ -44,7 +44,11 @@ public class SnappyRegionStatsCollectorFunction implements Function, Declarable 
 
   public static String ID = "SnappyRegionStatsCollectorFunction";
 
-  public static final ObjectSizer sizer = ObjectSizer.getInstance(false);
+  public static final ObjectSizer sizer = ObjectSizer.getInstance(true);
+
+  static {
+    sizer.setForInternalUse(true);
+  }
 
   @Override
   public void init(Properties props) {

@@ -625,6 +625,11 @@ public final class GfxdTXEntryState extends TXEntryState implements
   }
 
   @Override
+  public boolean isOffHeap() {
+    return false;
+  }
+
+  @Override
   protected final void setCallbackArgument(Object callbackArgument) {
     // we cannot set a thread-local type of callbackArgument in the TXState
     // since it will be reused (#44074)

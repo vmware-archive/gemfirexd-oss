@@ -64,8 +64,8 @@ public abstract class AbstractDiskRegionEntry
     }
     if (value != null && context != null && context instanceof LocalRegion
         && ((LocalRegion)context).isThisRegionBeingClosedOrDestroyed()
-        && (this instanceof OffHeapRegionEntry)) {
-      this.release();
+        && isOffHeap()) {
+      release();
       ((LocalRegion)context).checkReadiness();
     }
   }

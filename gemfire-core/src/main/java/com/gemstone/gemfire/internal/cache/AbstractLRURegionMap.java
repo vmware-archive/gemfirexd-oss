@@ -663,11 +663,9 @@ public abstract class AbstractLRURegionMap extends AbstractRegionMap {
       while (mustEvict() && evictedBytes == 0) {
         LRUEntry removalEntry = (LRUEntry)_getLruList().getLRUEntry();
         if (removalEntry != null) {
-          // TODO: SW: replace instanceof with a virtual call "isOffHeapEntry"
-          // (former is 3-4X slower in tests, >25ns vs 7-8ns)
           // get the off-heap size from value before eviction
           int offHeapSize = 0;
-          if (includeOffHeapBytes && !(removalEntry instanceof OffHeapRegionEntry)) {
+          if (includeOffHeapBytes && !removalEntry.isOffHeap()) {
             // add off-heap size to the MSB of evictedBytes
             Object value = removalEntry._getValue();
             if (value instanceof SerializedDiskBuffer) {

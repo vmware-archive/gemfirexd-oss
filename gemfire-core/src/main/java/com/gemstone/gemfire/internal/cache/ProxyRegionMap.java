@@ -847,6 +847,11 @@ public final class ProxyRegionMap implements RegionMap {
     }
 
     @Override
+    public boolean isOffHeap() {
+      return false;
+    }
+
+    @Override
     public boolean isDestroyedOrRemoved() {
       throw new UnsupportedOperationException(LocalizedStrings.ProxyRegionMap_NO_ENTRY_SUPPORT_ON_REGIONS_WITH_DATAPOLICY_0.toLocalizedString(DataPolicy.EMPTY));      
     }

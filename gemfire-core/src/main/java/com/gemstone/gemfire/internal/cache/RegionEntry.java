@@ -539,7 +539,12 @@ public interface RegionEntry extends ExclusiveSharedLockObject {
    * @see Token#isInvalidOrRemoved(Object)
    */
   public boolean isInvalidOrRemoved();
-  
+
+  /**
+   * Returns true if the RegionEntry is for storing an off-heap value
+   */
+  public boolean isOffHeap();
+
   /**
    * Sets the entry value to null.
    */
