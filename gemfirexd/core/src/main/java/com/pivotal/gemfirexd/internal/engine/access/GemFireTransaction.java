@@ -1009,7 +1009,8 @@ public final class GemFireTransaction extends RawTransaction implements
     if (container != null) {
       if (GemFireXDUtils.TraceConglom
           || (container.isApplicationTableOrGlobalIndex() && !"SYSSTAT"
-              .equalsIgnoreCase(container.getSchemaName()))) {
+              .equalsIgnoreCase(container.getSchemaName())
+          && !Misc.isSnappyHiveMetaTable((container.getSchemaName())))) {
         SanityManager.DEBUG_PRINT("info:" + GfxdConstants.TRACE_CONGLOM,
             "GemFireTransaction TX " + (GemFireXDUtils.TraceConglom ? toString()
                 : Long.toString(this.myId)) + ": created conglomerate with id "
