@@ -714,6 +714,11 @@ public class NonLocalRegionEntry implements RegionEntry, VersionStamp {
   }
 
   @Override
+  public boolean isOffHeap() {
+    return false;
+  }
+
+  @Override
   public void returnToPool() {
     // TODO Auto-generated method stub
     

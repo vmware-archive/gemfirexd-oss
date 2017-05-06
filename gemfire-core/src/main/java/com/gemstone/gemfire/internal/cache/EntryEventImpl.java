@@ -1998,7 +1998,7 @@ public class EntryEventImpl extends KeyInfo implements
       success = true;
     }
     } finally {
-      if (!success && reentry instanceof OffHeapRegionEntry && v instanceof Chunk) {
+      if (!success && reentry.isOffHeap() && v instanceof Chunk) {
         OffHeapRegionEntryHelper.releaseEntry((OffHeapRegionEntry)reentry, (Chunk)v);
       }
       LocalRegion.regionPath.remove();

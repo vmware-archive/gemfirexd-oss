@@ -8671,6 +8671,10 @@ public final class Oplog implements CompactableOplog {
       return false;
     }
     @Override
+    public boolean isOffHeap() {
+      return false;
+    }
+    @Override
     public void setValueToNull() {
       // TODO Auto-generated method stub
     }

@@ -497,7 +497,7 @@ abstract class AbstractRegionMap implements RegionMap {
 
   public final RegionEntry putEntryIfAbsent(Object key, RegionEntry re) {
     RegionEntry value = (RegionEntry)_getMap().putIfAbsent(key, re);
-    if (value == null && (re instanceof OffHeapRegionEntry)
+    if (value == null && re.isOffHeap()
         && _isOwnerALocalRegion() && _getOwner().isThisRegionBeingClosedOrDestroyed()) {
       // prevent orphan during concurrent destroy (#48068)
       if (_getMap().remove(key, re)) {
@@ -999,7 +999,7 @@ abstract class AbstractRegionMap implements RegionMap {
            * throw an exception.
            */
           else {
-            if (newRe instanceof OffHeapRegionEntry) {
+            if (newRe.isOffHeap()) {
               ((OffHeapRegionEntry) newRe).release();
             }
 
@@ -3324,7 +3324,7 @@ RETRY_LOOP:
     retVal = getEntryFactory().createEntry((RegionEntryContext) ownerRegion, key, value);
     RegionEntry oldRe = putEntryIfAbsent(key, retVal);
     if (oldRe != null) {
-      if (retVal instanceof OffHeapRegionEntry) {
+      if (retVal.isOffHeap()) {
         ((OffHeapRegionEntry) retVal).release();
       }
       return oldRe;

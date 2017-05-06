@@ -462,6 +462,10 @@ public class ValidatingDiskRegion extends DiskRegion implements DiskRecoveryStor
       return false;
     }
     @Override
+    public boolean isOffHeap() {
+      return false;
+    }
+    @Override
     public void setValueToNull() {
       // TODO Auto-generated method stub
     }

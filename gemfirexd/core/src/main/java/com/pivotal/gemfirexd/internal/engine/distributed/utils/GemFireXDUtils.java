@@ -1429,7 +1429,7 @@ public final class GemFireXDUtils {
     lockPolicy.releaseLock(entry, mode, txId, false, dataRegion);
     //}
     if(dataRegion.getEnableOffHeapMemory() && entryRemoved) {
-      if (entry instanceof OffHeapRegionEntry) {
+      if (entry.isOffHeap()) {
         ((OffHeapRegionEntry)entry).release();
       }
     }
