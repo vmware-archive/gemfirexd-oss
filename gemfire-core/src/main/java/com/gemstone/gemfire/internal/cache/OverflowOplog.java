@@ -358,7 +358,7 @@ class OverflowOplog implements CompactableOplog {
 
     if (DiskStoreImpl.TRACE_READS) {
       logger.info(LocalizedStrings.DEBUG,
-          "TRACE_READS Overflow getBytesAndBits: id=<" + abs(id.getKeyId())
+          "TRACE_READS Overflow getBytesAndBits: "
               + " valueOffset=" + offset
               + " userBits=" + id.getUserBits()
               + " valueLen=" + id.getValueLength()
