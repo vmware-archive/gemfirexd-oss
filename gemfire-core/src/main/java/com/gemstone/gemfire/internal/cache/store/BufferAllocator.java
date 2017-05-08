@@ -30,7 +30,7 @@ public abstract class BufferAllocator implements Closeable {
   /**
    * Allocate a new ByteBuffer of given size.
    */
-  public abstract ByteBuffer allocate(int size);
+  public abstract ByteBuffer allocate(int size, String owner);
 
   /**
    * Allocate a new ByteBuffer of given size for storage in a Region.
@@ -65,7 +65,8 @@ public abstract class BufferAllocator implements Closeable {
    *
    * @return the new expanded ByteBuffer
    */
-  public abstract ByteBuffer expand(ByteBuffer buffer, int required);
+  public abstract ByteBuffer expand(ByteBuffer buffer, int required,
+      String owner);
 
   /**
    * Return the data as a heap byte array. Use of this should be minimal
@@ -79,19 +80,20 @@ public abstract class BufferAllocator implements Closeable {
   /**
    * Return a ByteBuffer either copying from, or sharing the given heap bytes.
    */
-  public abstract ByteBuffer fromBytes(byte[] bytes, int offset, int length,
-      boolean forStorage);
+  public abstract ByteBuffer fromBytesToStorage(byte[] bytes, int offset,
+      int length);
 
   /**
    * Return a ByteBuffer either sharing data of given ByteBuffer
    * if its type matches, or else copying from the given ByteBuffer.
    */
-  public ByteBuffer transfer(ByteBuffer buffer) {
+  public ByteBuffer transfer(ByteBuffer buffer, String owner) {
     final int position = buffer.position();
-    final ByteBuffer newBuffer = allocate(buffer.limit() - position);
+    final ByteBuffer newBuffer = allocate(buffer.limit(), owner);
+    buffer.rewind();
     newBuffer.put(buffer);
     buffer.position(position);
-    newBuffer.rewind();
+    newBuffer.position(position);
     return newBuffer;
   }
 
@@ -114,7 +116,7 @@ public abstract class BufferAllocator implements Closeable {
 
   static int expandedSize(int currentUsed, int required) {
     final long minRequired = (long)currentUsed + required;
-    // double the size
+    // increase the size by 50%
     final int newLength = (int)Math.min(Math.max((currentUsed * 3) >>> 1L,
         minRequired), Integer.MAX_VALUE - 1);
     if (newLength >= minRequired) {

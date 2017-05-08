@@ -16,6 +16,8 @@
  */
 package com.gemstone.gemfire.internal.cache;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -25,14 +27,16 @@ import com.gemstone.gemfire.internal.cache.lru.HeapEvictor;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 
 /**
+ * 
  * Takes delta to be evicted and tries to evict the least no of LRU entry which
  * would make evictedBytes more than or equal to the delta
- *
+ * 
  * @author Suranjan, Amardeep, Swapnil, Yogesh
  * @since 6.0
+ * 
  */
 public class RegionEvictorTask implements Callable<Object> {
-
+  
   private static final int EVICTION_BURST_PAUSE_TIME_MILLIS;
 
   public static int TEST_EVICTION_BURST_PAUSE_TIME_MILLIS = Integer.MAX_VALUE;
@@ -47,25 +51,23 @@ public class RegionEvictorTask implements Callable<Object> {
   public static void setLastTaskCompletionTime(long v) {
     lastTaskCompletionTime = v;
   }
-
   public static long getLastTaskCompletionTime() {
     return lastTaskCompletionTime;
   }
 
-  private final List<LocalRegion> regionSet;
+  private List<LocalRegion> regionSet;
 
   private final HeapEvictor evictor;
 
-  private final long bytesToEvictPerTask;
-
-  public RegionEvictorTask(List<LocalRegion> regionSet, HeapEvictor evictor,
-      long bytesToEvictPerTask) {
+  private final long bytesToEvictPerTask ; 
+  
+  public RegionEvictorTask(List<LocalRegion> regionSet, HeapEvictor evictor, long bytesToEvictPerTask) {
     this.evictor = evictor;
     this.regionSet = regionSet;
     this.bytesToEvictPerTask = bytesToEvictPerTask;
   }
 
-
+  
   public List<LocalRegion> getRegionList() {
     synchronized (this.regionSet) {
       return this.regionSet;

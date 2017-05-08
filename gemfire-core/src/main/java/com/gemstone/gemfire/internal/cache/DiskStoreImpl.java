@@ -996,7 +996,7 @@ public class DiskStoreImpl implements DiskStore, ResourceListener<MemoryEvent> {
   }
 
   // CLEAR_BB was added in reaction to bug 41306
-  private final BytesAndBits CLEAR_BB = new BytesAndBits(
+  static final BytesAndBits CLEAR_BB = new BytesAndBits(
       DiskEntry.Helper.NULL_BUFFER, (byte) 0);
 
   /**

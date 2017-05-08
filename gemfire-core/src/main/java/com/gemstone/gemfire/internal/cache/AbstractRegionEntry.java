@@ -66,6 +66,7 @@ import com.gemstone.gemfire.internal.cache.locks.LockingPolicy;
 import com.gemstone.gemfire.internal.cache.locks.QueuedSynchronizer;
 import com.gemstone.gemfire.internal.cache.lru.Sizeable;
 import com.gemstone.gemfire.internal.cache.persistence.DiskStoreID;
+import com.gemstone.gemfire.internal.cache.store.SerializedDiskBuffer;
 import com.gemstone.gemfire.internal.cache.versions.ConcurrentCacheModificationException;
 import com.gemstone.gemfire.internal.cache.versions.RegionVersionVector;
 import com.gemstone.gemfire.internal.cache.versions.VersionSource;
@@ -99,7 +100,6 @@ import com.gemstone.gemfire.pdx.PdxSerializationException;
 import com.gemstone.gemfire.pdx.PdxSerializer;
 import com.gemstone.gemfire.pdx.internal.ConvertableToBytes;
 import com.gemstone.gemfire.pdx.internal.PdxInstanceImpl;
-import com.gemstone.gemfire.pdx.internal.unsafe.UnsafeWrapper;
 
 /**
  * Abstract implementation class of RegionEntry interface.
@@ -1411,6 +1411,16 @@ public abstract class AbstractRegionEntry extends ExclusiveSharedSynchronizer
       }
       else {
         break;
+      }
+    }
+
+    // release old SerializedDiskBuffer explicitly for eager cleanup
+    if (!isOffHeap()) {
+      Object oldVal = getValueField();
+      if (oldVal != val && oldVal instanceof SerializedDiskBuffer) {
+        setValueField(val);
+        ((SerializedDiskBuffer)oldVal).release();
+        return;
       }
     }
 

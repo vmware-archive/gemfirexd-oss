@@ -32,7 +32,6 @@ import java.io.Reader;
 import java.io.StringBufferInputStream;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.net.URL;
@@ -190,7 +189,6 @@ import com.gemstone.gemfire.internal.cache.xmlcache.PropertyResolver;
 import com.gemstone.gemfire.internal.concurrent.AI;
 import com.gemstone.gemfire.internal.concurrent.CFactory;
 import com.gemstone.gemfire.internal.concurrent.CM;
-import com.gemstone.gemfire.internal.concurrent.CustomEntryConcurrentHashMap;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.internal.jndi.JNDIInvoker;
 import com.gemstone.gemfire.internal.jta.TransactionManagerImpl;
@@ -6328,8 +6326,8 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
     if (instance != null) {
       return instance.bufferAllocator;
     } else {
-      // default to DirectBufferAllocator to avoid heap pressure
-      return DirectBufferAllocator.instance();
+      // default to HeapBufferAllocator while cache is booting or closing
+      return HeapBufferAllocator.instance();
     }
   }
 
@@ -6369,7 +6367,7 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
     return this.memorySize;
   }
 
-  public static boolean hasOffHeap() {
+  public static boolean hasNewOffHeap() {
     final GemFireCacheImpl cache = GemFireCacheImpl.getInstance();
     return cache != null && cache.memorySize > 0L;
   }

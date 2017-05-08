@@ -64,11 +64,12 @@ public class BytesAndBits {
 
   public Object deserialize() {
     Object result = EntryEventImpl.deserializeBuffer(this.data, this.version);
-    // rewind back to original position for further reads if required
-    this.data.rewind();
     // if result is a SerializedDiskBuffer then ownership of data has been lost
     if (result instanceof SerializedDiskBuffer) {
       this.data = null;
+    } else {
+      // rewind back to original position for further reads if required
+      this.data.rewind();
     }
     return result;
   }

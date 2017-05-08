@@ -292,12 +292,18 @@ public interface DiskEntry extends RegionEntry {
       }
     }
 
-    public static Object getHeapValueOnDisk(final DiskId did,
+    public static Object getHeapValueOnDisk(final DiskId id,
         final DiskRegionView dr) {
       dr.acquireReadLock();
       try {
-        synchronized (did) {
-          return dr.getDiskStore().getSerializedDataWithoutLock(dr, did, false);
+        synchronized (id) {
+          final BytesAndBits bb = dr.getDiskStore().getBytesAndBitsWithoutLock(
+              dr, id, false, false);
+          if (bb != DiskStoreImpl.CLEAR_BB) {
+            return DiskStoreImpl.convertBytesAndBitsIntoObject(bb);
+          } else {
+            return Token.REMOVED_PHASE1;
+          }
         }
       } finally {
         dr.releaseReadLock();
@@ -709,11 +715,12 @@ public interface DiskEntry extends RegionEntry {
         this.buffer.write(channel);
       }
 
-      /**
+       /**
        * Get the internal data as a ByteBuffer for temporary use.
        * <p>
-       * USE WITH CARE ESPECIALLY NO EXPLICIT RELEASE WHICH SHOULD ONLY
-       * BE DONE USING THE {@link #release()} METHOD.
+       * USE WITH CARE ESPECIALLY TO ENSURE NO RELEASE HAPPENS WHILE USING
+       * THE BUFFER SO CALLER MUST ENSURE AT LEAST ONE REFERENCE COUNT
+       * AND NO EXPLICIT RELEASE OF THE RETURNED BUFFER (IF A DIRECT ONE).
        */
       public ByteBuffer getInternalBuffer() {
         return this.buffer.getInternalBuffer();
@@ -1375,12 +1382,8 @@ public interface DiskEntry extends RegionEntry {
       int recoveredValueSize = BucketRegion.calcMemSize(preparedValue);
 
       if (!LocalRegion.isMetaTable(dr.getName())) {
-        StoreCallbacks callbacks = CallbackFactoryProvider.getStoreCallbacks();
-        callbacks.acquireStorageMemory(dr.getName(), recoveredValueSize, null,
-                false, false);
-        if (GemFireCacheImpl.hasOffHeap()) {
-          callbacks.accountOffHeapStoreValue(value, null);
-        }
+        CallbackFactoryProvider.getStoreCallbacks().acquireStorageMemory(
+            dr.getName(), recoveredValueSize, null, false, false);
       }
       region.updateSizeOnFaultIn(entry.getKey(), recoveredValueSize, bytesOnDisk);
       //did.setValueSerializedSize(0);
@@ -1472,7 +1475,6 @@ public interface DiskEntry extends RegionEntry {
       }
       DiskRegion dr = region.getDiskRegion();
       final int oldSize = region.calculateRegionEntryValueSize(entry);
-      final Object oldValue = entry._getValue();
       int diskIDOverhead =  0;
 //      dr.getOwner().getCache().getLogger().info("DEBUG: overflowing entry with key " + entry.getKey());
       //Asif:Get diskID . If it is null, it implies it is
@@ -1482,6 +1484,11 @@ public interface DiskEntry extends RegionEntry {
       if (did == null) {
         ((AbstractDiskLRURegionEntry)entry).setDelayedDiskId(region);
         did = entry.getDiskId();
+        final Object oldValue;
+        if (GemFireCacheImpl.hasNewOffHeap() &&
+            (oldValue = entry._getValue()) instanceof SerializedDiskBuffer) {
+          ((SerializedDiskBuffer)oldValue).setDiskId(did, dr);
+        }
         // add DiskId overhead to change
         diskIDOverhead += region.calculateDiskIdOverhead(did);
       }
@@ -1543,11 +1550,10 @@ public interface DiskEntry extends RegionEntry {
           valueLength = getValueLength(did);
         }
 
-        region.freePoolMemory(oldSize, oldValue, false);
+        region.freePoolMemory(oldSize, false);
         if (diskIDOverhead > 0) {
           //Account positive memory increase for eviction thread.
-          region.acquirePoolMemory(0, diskIDOverhead, false,
-              null, null, null, false);
+          region.acquirePoolMemory(0, diskIDOverhead, false, null, false);
         }
 
         incrementBucketStats(region, -1/*InVM*/, 1/*OnDisk*/, valueLength);

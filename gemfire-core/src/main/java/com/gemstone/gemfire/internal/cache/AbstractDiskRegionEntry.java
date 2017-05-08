@@ -18,6 +18,7 @@ package com.gemstone.gemfire.internal.cache;
 
 import com.gemstone.gemfire.cache.hdfs.internal.AbstractBucketRegionQueue;
 import com.gemstone.gemfire.cache.query.internal.IndexUpdater;
+import com.gemstone.gemfire.internal.cache.persistence.DiskRegionView;
 import com.gemstone.gemfire.internal.cache.store.SerializedDiskBuffer;
 import com.gemstone.gemfire.internal.cache.wan.GatewaySenderEventImpl;
 import com.gemstone.gemfire.internal.cache.wan.serial.SerialGatewaySenderQueue;
@@ -48,6 +49,7 @@ public abstract class AbstractDiskRegionEntry
   public  void setValue(RegionEntryContext context, Object v) throws RegionClearedException {
     Helper.update(this, (LocalRegion) context, v);
     setRecentlyUsed(); // fix for bug #42284 - entry just put into the cache is evicted
+    initDiskIdForOffHeap(context, v);
   }
 
   /**
@@ -58,10 +60,7 @@ public abstract class AbstractDiskRegionEntry
   @Override
   public void setValueWithContext(RegionEntryContext context, Object value) {
     _setValue(value);
-    // copy DiskId to value if required
-    if (value instanceof SerializedDiskBuffer) {
-      ((SerializedDiskBuffer)value).setDiskId(getDiskId());
-    }
+    initDiskIdForOffHeap(context, value);
     if (value != null && context != null && context instanceof LocalRegion
         && ((LocalRegion)context).isThisRegionBeingClosedOrDestroyed()
         && isOffHeap()) {
@@ -69,6 +68,22 @@ public abstract class AbstractDiskRegionEntry
       ((LocalRegion)context).checkReadiness();
     }
   }
+
+  protected final void initDiskIdForOffHeap(RegionEntryContext context,
+      Object value) {
+    // copy DiskId to value if required
+    if (GemFireCacheImpl.hasNewOffHeap() &&
+        value instanceof SerializedDiskBuffer) {
+      DiskRegionView dr;
+      if (context instanceof LocalRegion) {
+        dr = ((LocalRegion)context).getDiskRegionView();
+      } else {
+        dr = (DiskRegionView)context;
+      }
+      ((SerializedDiskBuffer)value).setDiskId(getDiskId(), dr);
+    }
+  }
+
   @Override
   public void handleValueOverflow(RegionEntryContext context) {
     if (context instanceof AbstractBucketRegionQueue || context instanceof SerialGatewaySenderQueue.SerialGatewaySenderQueueMetaRegion) {

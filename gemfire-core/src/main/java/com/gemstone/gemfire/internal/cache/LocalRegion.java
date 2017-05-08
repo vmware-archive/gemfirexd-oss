@@ -12647,13 +12647,13 @@ public class LocalRegion extends AbstractRegion
     // Only needed by BucketRegion
   }
 
+  void updateSizeOnRemove(Object key, int oldSize) {
+    // Only needed by BucketRegion
+  }
+
   int updateSizeOnEvict(Object key, int oldSize) {
     // Only needed by BucketRegion
     return 0;
-  }
-
-  void updateSizeOnRemove(Object key, Object value, int oldSize) {
-    // Only needed by BucketRegion
   }
   public void updateSizeOnFaultIn(Object key, int newSize, int bytesOnDisk) {
     // Only needed by BucketRegion
@@ -14443,10 +14443,9 @@ public class LocalRegion extends AbstractRegion
   }
 
   public void acquirePoolMemory(long oldSize, long newSize, boolean withEntryOverHead,
-      Object oldValue, Object newValue, UMMMemoryTracker buffer,
-      boolean shouldEvict) throws LowMemoryException {
+      UMMMemoryTracker buffer, boolean shouldEvict) throws LowMemoryException {
     if (!this.reservedTable() && needAccounting()) {
-      long size;
+      long size = 0L;
       if (withEntryOverHead) {
         size = (newSize - oldSize) + Math.max(0L, entryOverHead);
       } else {
@@ -14456,9 +14455,6 @@ public class LocalRegion extends AbstractRegion
           size, buffer, shouldEvict, false)) {
         throwLowMemoryException(size);
       }
-      if (cache.getMemorySize() > 0 && (newValue != null || oldValue != null)) {
-        callback.accountOffHeapStoreValue(newValue, oldValue);
-      }
     }
   }
 
@@ -14467,16 +14463,13 @@ public class LocalRegion extends AbstractRegion
     throw new LowMemoryException("Could not obtain memory of size " + size, sm);
   }
 
-  public void freePoolMemory(long oldSize, Object oldValue,
-      boolean withEntryOverHead) {
+  public void freePoolMemory(long oldSize, boolean withEntryOverHead) {
     if (!this.reservedTable() && needAccounting()) {
       if (withEntryOverHead) {
-        callback.releaseStorageMemory(getFullPath(), oldSize + Math.max(0L, entryOverHead), false);
+        callback.releaseStorageMemory(getFullPath(),
+            oldSize + Math.max(0L, entryOverHead), false);
       } else {
         callback.releaseStorageMemory(getFullPath(), oldSize, false);
-      }
-      if (oldValue != null && cache.getMemorySize() > 0) {
-        callback.accountOffHeapStoreValue(null, oldValue);
       }
     }
   }

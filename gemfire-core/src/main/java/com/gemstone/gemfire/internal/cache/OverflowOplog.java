@@ -1457,6 +1457,8 @@ class OverflowOplog implements CompactableOplog {
     public long write() throws IOException {
       int valueLength = 0;
       if (this.needsValue && (valueLength = this.value.size()) > 0) {
+        // using internal buffer here is fine since it will have reference
+        // count of at least 1
         write(this.value.getInternalBuffer(), valueLength);
       }
       return valueLength;

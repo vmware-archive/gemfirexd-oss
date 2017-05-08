@@ -6449,9 +6449,9 @@ public final class GemFireContainer extends AbstractGfxdLockable implements
     }
     LocalRegion baseRegion = getBaseRegion();
     final String baseTableContainerName = baseRegion.getFullPath();
-    List<GemFireContainer> indexes = new ArrayList();
+    List<GemFireContainer> indexes = new ArrayList<>();
     indexes.add(this);
-    final LinkedHashMap<String, Object[]> retEstimates = new LinkedHashMap();
+    final LinkedHashMap<String, Object[]> retEstimates = new LinkedHashMap<>();
     long sum = 0L;
     long totalOverhead = 0L;
     try {
@@ -6467,8 +6467,8 @@ public final class GemFireContainer extends AbstractGfxdLockable implements
         if (askMemoryManager) {
           // Only acquire memory while initial index creation. Rest all index accounting will be done by
           // region put/delete
-          baseRegion.acquirePoolMemory(0, sum - intialAccounting
-                  , false, null, null, null, false);
+          baseRegion.acquirePoolMemory(0, sum - intialAccounting,
+              false, null, false);
           intialAccounting = sum;
           sizeAccountedByIndex.set(sum);
         }
@@ -6481,12 +6481,11 @@ public final class GemFireContainer extends AbstractGfxdLockable implements
         adjustAccountedMemory(totalOverhead);
         currenrOverhead = (int) totalOverhead;
       }
-    } catch (StandardException e) {
-      e.printStackTrace();
-    } catch (IllegalAccessException e) {
-      e.printStackTrace();
-    } catch (InterruptedException e) {
-      e.printStackTrace();
+    } catch (StandardException | IllegalAccessException e) {
+      throw new GemFireXDRuntimeException(e);
+    } catch (InterruptedException ie) {
+      Misc.checkIfCacheClosing(ie);
+      Thread.currentThread().interrupt();
     }
   }
 
@@ -6496,8 +6495,7 @@ public final class GemFireContainer extends AbstractGfxdLockable implements
     if (doAccounting()) {
       long memoryToBeFreed = currenrOverhead * totalRows;
       // Free all memory by index + (index overhead * row count)
-      getBaseRegion().freePoolMemory(memoryToBeFreed + sizeAccountedByIndex.get(),
-          null, false);
+      getBaseRegion().freePoolMemory(memoryToBeFreed + sizeAccountedByIndex.get(), false);
       if (!baseRegion.isDestroyed) {
         baseRegion.setIndexOverhead(-1 * currenrOverhead);
         // mark (index overhead * row count) as ignore bytes in local region , which will be ignored by
@@ -6510,8 +6508,8 @@ public final class GemFireContainer extends AbstractGfxdLockable implements
   public void accountSnapshotEntry(int numBytes) {
     LocalRegion baseRegion = getBaseRegion();
     if (doAccounting()) {
-      getBaseRegion().acquirePoolMemory(0, numBytes
-              , false, null, null, null, false);
+      getBaseRegion().acquirePoolMemory(0, numBytes,
+          false, null, false);
       sizeAccountedByIndex.addAndGet(numBytes);
     }
   }

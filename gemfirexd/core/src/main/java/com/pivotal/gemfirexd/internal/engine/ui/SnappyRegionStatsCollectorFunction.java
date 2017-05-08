@@ -206,9 +206,11 @@ public class SnappyRegionStatsCollectorFunction implements Function, Declarable 
       }
       tableStats.setTotalSize(size);
     } else {
-      PartitionedRegionDataStore datastore = ((PartitionedRegion)lr).getDataStore();
+      PartitionedRegion pr = (PartitionedRegion)lr;
+      PartitionedRegionDataStore datastore = pr.getDataStore();
       long sizeInMemory = 0L;
       long sizeOfRegion = 0L;
+      long offHeapBytes = 0L;
       long entryOverhead = 0L;
       long entryCount = 0L;
       if (datastore != null) {
@@ -227,13 +229,14 @@ public class SnappyRegionStatsCollectorFunction implements Function, Declarable 
           sizeOfRegion += constantOverhead + br.getTotalBytes();
           entryCount += br.entryCount();
         }
+        offHeapBytes = pr.getPrStats().getOffHeapSizeInBytes();
       }
       if (entryOverhead > 0) {
         entryOverhead *= entryCount;
       }
 
-      tableStats.setSizeInMemory(sizeInMemory + entryOverhead);
-      tableStats.setTotalSize(sizeOfRegion + entryOverhead);
+      tableStats.setSizeInMemory(sizeInMemory + offHeapBytes + entryOverhead);
+      tableStats.setTotalSize(sizeOfRegion + offHeapBytes + entryOverhead);
     }
     return tableStats;
   }

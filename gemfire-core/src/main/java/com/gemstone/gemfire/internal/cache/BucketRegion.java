@@ -2591,9 +2591,10 @@ public class BucketRegion extends DistributedRegion implements Bucket {
 //     }
     long oldMemValue;
 
+
     if (!this.reservedTable() && needAccounting()) {
-      long ignoreBytes = (this.isDestroyed || this.isDestroyingDiskRegion)
-          ? getIgnoreBytes() : getIgnoreBytes() + regionOverHead;
+      long ignoreBytes = (this.isDestroyed || this.isDestroyingDiskRegion) ? getIgnoreBytes() :
+              getIgnoreBytes() + regionOverHead;
       callback.dropStorageMemory(getFullPath(), ignoreBytes);
     }
     if(this.isDestroyed || this.isDestroyingDiskRegion) {
@@ -2732,7 +2733,7 @@ public class BucketRegion extends DistributedRegion implements Bucket {
   }
 
   @Override
-  void updateSizeOnRemove(Object key, Object value, int oldSize) {
+  void updateSizeOnRemove(Object key, int oldSize) {
 //     if (cache.getLogger().infoEnabled()) {
 //       cache.getLogger().info("updateSizeOnRemove (" + this
 //                              + " key=" + key
@@ -2755,7 +2756,7 @@ public class BucketRegion extends DistributedRegion implements Bucket {
 //     this.debugMap.remove(key);
     this.partitionedRegion.getPrStats().incDataStoreEntryCount(-1);
     updateBucket2Size(oldSize, 0, SizeOp.DESTROY);
-    freePoolMemory(oldSize + indexOverhead, value, true);
+    freePoolMemory(oldSize + indexOverhead, true);
   }
 
   @Override

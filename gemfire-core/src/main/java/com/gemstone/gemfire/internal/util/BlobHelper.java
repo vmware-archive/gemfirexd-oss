@@ -43,8 +43,8 @@ import com.gemstone.gemfire.distributed.internal.DMStats;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.internal.ByteArrayDataInput;
 import com.gemstone.gemfire.internal.DSCODE;
-import com.gemstone.gemfire.internal.DirectByteBufferDataInput;
-import com.gemstone.gemfire.internal.DirectByteBufferDataOutput;
+import com.gemstone.gemfire.internal.ByteBufferDataInput;
+import com.gemstone.gemfire.internal.ByteBufferDataOutput;
 import com.gemstone.gemfire.internal.HeapDataOutputStream;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl.StaticSystemCallbacks;
@@ -111,7 +111,7 @@ public class BlobHelper {
     if (!(obj instanceof SerializedDiskBuffer) ||
         !(result = (SerializedDiskBuffer)obj).retain()) {
       // serialize into an expanding direct ByteBuffer
-      result = new DirectByteBufferDataOutput(version).serialize(obj);
+      result = new ByteBufferDataOutput(version).serialize(obj);
     }
     endSerialization(start, result.size());
     return result;
@@ -207,7 +207,7 @@ public class BlobHelper {
       // if we have a nested pdx then we want to make a copy
       // when a PdxInstance is created so that the byte[] will
       // just have the pdx bytes and not the outer objects bytes.
-      final DirectByteBufferDataInput in = new DirectByteBufferDataInput(
+      final ByteBufferDataInput in = new ByteBufferDataInput(
           buffer, version);
       result = DataSerializer.readObject(in);
     }

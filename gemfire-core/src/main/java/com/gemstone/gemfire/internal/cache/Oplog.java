@@ -6429,7 +6429,7 @@ public final class Oplog implements CompactableOplog {
               this.stats.incOplogSeeks();
               // should account faulted in values so use allocator here
               final ByteBuffer valueBuffer = GemFireCacheImpl
-                  .getCurrentBufferAllocator().allocate(valueLength);
+                  .getCurrentBufferAllocator().allocate(valueLength, "OPLOG");
               while (valueBuffer.hasRemaining()) {
                 if (crfChannel.read(valueBuffer) <= 0) throw new EOFException();
               }

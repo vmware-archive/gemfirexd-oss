@@ -20,7 +20,7 @@ public final class HeapBufferAllocator extends BufferAllocator {
   }
 
   @Override
-  public ByteBuffer allocate(int size) {
+  public ByteBuffer allocate(int size, String owner) {
     return ByteBuffer.allocate(size);
   }
 
@@ -45,7 +45,7 @@ public final class HeapBufferAllocator extends BufferAllocator {
   }
 
   @Override
-  public ByteBuffer expand(ByteBuffer buffer, int required) {
+  public ByteBuffer expand(ByteBuffer buffer, int required, String owner) {
     assert required > 0 : "expand: unexpected required = " + required;
 
     final byte[] bytes = buffer.array();
@@ -67,17 +67,16 @@ public final class HeapBufferAllocator extends BufferAllocator {
   }
 
   @Override
-  public ByteBuffer fromBytes(byte[] bytes, int offset, int length,
-      boolean forStorage) {
+  public ByteBuffer fromBytesToStorage(byte[] bytes, int offset, int length) {
     return ByteBuffer.wrap(bytes, offset, length);
   }
 
   @Override
-  public ByteBuffer transfer(ByteBuffer buffer) {
+  public ByteBuffer transfer(ByteBuffer buffer, String owner) {
     if (buffer.hasArray()) {
       return buffer;
     } else {
-      ByteBuffer newBuffer = super.transfer(buffer);
+      ByteBuffer newBuffer = super.transfer(buffer, owner);
       // release the incoming direct buffer eagerly
       if (buffer.isDirect()) {
         DirectBufferAllocator.instance().release(buffer);

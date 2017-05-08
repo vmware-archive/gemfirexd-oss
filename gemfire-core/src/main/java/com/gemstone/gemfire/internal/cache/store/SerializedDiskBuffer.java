@@ -21,6 +21,7 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.locks.LockSupport;
 
 import com.gemstone.gemfire.internal.cache.DiskId;
+import com.gemstone.gemfire.internal.cache.persistence.DiskRegionView;
 import com.gemstone.gemfire.internal.concurrent.unsafe.UnsafeAtomicIntegerFieldUpdater;
 import com.gemstone.gemfire.internal.shared.OutputStreamChannel;
 
@@ -116,7 +117,7 @@ public abstract class SerializedDiskBuffer {
   /**
    * For buffers which are stored in region, set its DiskId.
    */
-  public abstract void setDiskId(DiskId id);
+  public abstract void setDiskId(DiskId id, DiskRegionView dr);
 
   /**
    * Write the underlying data in the buffer fully to the channel.
@@ -137,14 +138,18 @@ public abstract class SerializedDiskBuffer {
    * For direct ByteBuffers, returns the size (in bytes) of the used data in
    * the object including off-heap object overhead. Only required to be
    * implemented for structures that will be stored in region.
+   * <p>
+   * This must exactly match the sizes as recorded during creation by
+   * the {@link BufferAllocator} if it has been used for this buffer.
    */
   public abstract int getOffHeapSizeInBytes();
 
   /**
    * Get the internal data as a ByteBuffer for temporary use.
    * <p>
-   * USE WITH CARE ESPECIALLY NO EXPLICIT RELEASE WHICH SHOULD ONLY
-   * BE DONE USING THE {@link #release()} METHOD.
+   * USE WITH CARE ESPECIALLY TO ENSURE NO RELEASE HAPPENS WHILE USING
+   * THE BUFFER SO CALLER MUST ENSURE AT LEAST ONE {@link #retain()}
+   * AND NO EXPLICIT RELEASE OF THE RETURNED BUFFER (IF A DIRECT ONE).
    */
   public abstract ByteBuffer getInternalBuffer();
 

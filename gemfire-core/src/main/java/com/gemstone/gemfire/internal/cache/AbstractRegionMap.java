@@ -908,7 +908,7 @@ abstract class AbstractRegionMap implements RegionMap {
          int valueSize  = _getOwner().calculateRegionEntryValueSize(re);
         _getOwner().calculateEntryOverhead(re);
         //Always take the value size from recovery thread.
-        _getOwner().acquirePoolMemory(0, 0, true, null, null, null, false);
+        _getOwner().acquirePoolMemory(0, 0, true, null, false);
         _getOwner().updateSizeOnCreate(re.getRawKey(), valueSize);
       }
       // Since lru was not being done during recovery call it now.
@@ -945,7 +945,7 @@ abstract class AbstractRegionMap implements RegionMap {
 
     if (newRe instanceof AbstractOplogDiskRegionEntry) {
       AbstractOplogDiskRegionEntry newDe = (AbstractOplogDiskRegionEntry)newRe;
-      newDe.setDiskId(oldRe);
+      newDe.setDiskIdForRegion(oldRe);
       _getOwner().getDiskRegion().replaceIncompatibleEntry((DiskEntry) oldRe, newDe);
     }
     _getMap().put(newRe.getKey(), newRe);
@@ -1218,8 +1218,8 @@ abstract class AbstractRegionMap implements RegionMap {
                 final LogWriterI18n log = owner.getLogWriterI18n();
                 VersionStamp stamp = null;
                 VersionTag lastDeltaVersionTag = null;
-                oldValue = oldRe.getValueInVM(owner); // OFFHEAP: ListOfDeltas
                 if (indexUpdater != null) {
+                  oldValue = oldRe.getValueInVM(owner); // OFFHEAP: ListOfDeltas
                   if (log.fineEnabled() || InitialImageOperation.TRACE_GII_FINER) {
                     log.info(LocalizedStrings.DEBUG, "ARM::initialImagePut:oldRe = "+ oldRe + "; old value = "+ oldValue);
                   }
@@ -1269,8 +1269,7 @@ abstract class AbstractRegionMap implements RegionMap {
                       int newSize = owner.calculateRegionEntryValueSize(oldRe);
                       //Can safely accquire memory here. If fails this block removes the current entry from map.
                       LocalRegion.regionPath.set(owner.getFullPath());
-                      owner.acquirePoolMemory(newSize, oldSize, false,
-                          oldValue, newValue, null, true);
+                      owner.acquirePoolMemory(newSize, oldSize, false, null, true);
                       owner.updateSizeOnPut(key, oldSize, newSize);
                       EntryLogger.logInitialImagePut(_getOwnerObject(), key,
                           newValue);
@@ -1333,12 +1332,10 @@ abstract class AbstractRegionMap implements RegionMap {
                       owner.calculateEntryOverhead(newRe);
                       LocalRegion.regionPath.set(owner.getFullPath());
                       if(!oldIsTombstone) {
-                        owner.acquirePoolMemory(newSize, oldSize, false,
-                            oldValue, newValue, null, true);
+                        owner.acquirePoolMemory(newSize, oldSize, false, null, true);
                         owner.updateSizeOnPut(key, oldSize, newSize);
                       } else {
-                        owner.acquirePoolMemory(0, newSize, true,
-                            null, newValue, null, true);
+                        owner.acquirePoolMemory(0, newSize, true, null, true);
                         owner.updateSizeOnCreate(key, newSize);
                       }
                       EntryLogger.logInitialImagePut(_getOwnerObject(), key, newValue);
@@ -1406,8 +1403,7 @@ abstract class AbstractRegionMap implements RegionMap {
                   owner.calculateEntryOverhead(newRe);
                   LocalRegion.regionPath.set(owner.getFullPath());
                   //System.out.println("Put "+newRe);
-                  owner.acquirePoolMemory(0, newSize, true,
-                      null, newValue, null, true);
+                  owner.acquirePoolMemory(0, newSize, true, null, true);
                   owner.updateSizeOnCreate(key, newSize);
                   EntryLogger.logInitialImagePut(_getOwnerObject(), key, newValue);
                   lruEntryCreate(newRe);
@@ -2241,7 +2237,6 @@ RETRY_LOOP:
       try {
       if (!re.isDestroyedOrRemoved()) {
         final int oldSize = owner.calculateRegionEntryValueSize(re);
-        final Object value = re._getValue();
         // Create an entry event only if the calling context is
         // a receipt of a TXCommitMessage AND there are callbacks installed
         // for this region
@@ -2298,7 +2293,7 @@ RETRY_LOOP:
           if (EntryLogger.isEnabled()) {
             EntryLogger.logTXDestroy(_getOwnerObject(), key);
           }
-          owner.updateSizeOnRemove(key, value, oldSize);
+          owner.updateSizeOnRemove(key, oldSize);
         }
         catch (RegionClearedException rce) {
           clearOccured = true;
@@ -2354,7 +2349,6 @@ RETRY_LOOP:
           processAndGenerateTXVersionTag(owner, (txEvent != null) ? txEvent : cbEvent, re, txr);
 
           int oldSize = 0;
-          Object oldValue = null;
           if (cbEvent != null && owner.getConcurrencyChecksEnabled()
               && (versionTag = cbEvent.getVersionTag()) != null) {
             if (re.isTombstone()) {
@@ -2364,7 +2358,6 @@ RETRY_LOOP:
             }
             else {
               oldSize = owner.calculateRegionEntryValueSize(re);
-              oldValue = re._getValue();
               re.makeTombstone(owner, versionTag);
             }
           }
@@ -2374,14 +2367,13 @@ RETRY_LOOP:
             }
             else {
               oldSize = owner.calculateRegionEntryValueSize(re);
-              oldValue = re._getValue();
             }
             re.setValue(owner, Token.DESTROYED);
           }
           if (EntryLogger.isEnabled()) {
             EntryLogger.logTXDestroy(_getOwnerObject(), key);
           }
-          owner.updateSizeOnRemove(key, oldValue, oldSize);
+          owner.updateSizeOnRemove(key, oldSize);
           owner.txApplyDestroyPart2(re, key, inTokenMode,
               false /* Clear Conflicting with the operation */);
           lruEntryDestroy(re);
@@ -4375,14 +4367,13 @@ RETRY_LOOP:
     }
     processVersionTag(re, event);
     final int oldSize = _getOwner().calculateRegionEntryValueSize(re);
-    final Object oldValue = re._getValue();
 
     boolean retVal = re.destroy(event.getLocalRegion(), event, inTokenMode,
         cacheWrite, expectedOldValue, createdForDestroy, removeRecoveredEntry);
     // we can add the old value to
     if (retVal) {
       EntryLogger.logDestroy(event);
-      _getOwner().updateSizeOnRemove(event.getKey(), oldValue, oldSize);
+      _getOwner().updateSizeOnRemove(event.getKey(), oldSize);
     }
     return retVal;
   }

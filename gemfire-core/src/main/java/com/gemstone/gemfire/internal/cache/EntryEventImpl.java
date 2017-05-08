@@ -1821,7 +1821,6 @@ public class EntryEventImpl extends KeyInfo implements
         owner.acquirePoolMemory(oldSize,
                 event.getNewValueBucketSize(),
                 true,
-                null, null,
                 this.memoryTracker,
                 true);
       } else {
@@ -1836,7 +1835,6 @@ public class EntryEventImpl extends KeyInfo implements
         owner.acquirePoolMemory(0,
                 event.getNewValueBucketSize() + indexOverhead,
                 true,
-                null, null,
                 this.memoryTracker,
                 true);
       } else {
@@ -1920,6 +1918,7 @@ public class EntryEventImpl extends KeyInfo implements
       basicSetNewValue(v);
       // OFFHEAP todo: should deltas be stored offheap? If so we need to call prepareValueForCache here.
     }
+    
     Object preparedV = reentry.prepareValueForCache(this.region, v, this.hasDelta(), 
         this.getTransactionId() == null);
     if (preparedV != v) {
@@ -1940,10 +1939,6 @@ public class EntryEventImpl extends KeyInfo implements
       owner.calculateEntryOverhead(reentry);
       LocalRegion.regionPath.set(region.getFullPath());
       acquireMemory(owner, this, oldValueSize, this.op.isUpdate(), isTombstone);
-      Object oldValue = reentry._getValue();
-      if (region.cache.getMemorySize() > 0 && oldValue != null && v != null) {
-        region.callback.accountOffHeapStoreValue(v, oldValue);
-      }
     }
 
 
@@ -2419,6 +2414,9 @@ public class EntryEventImpl extends KeyInfo implements
 
   /**
    * Serialize an object into a direct <code>ByteBuffer</code>.
+   * If the object is itself a <code>SerializedDiskBuffer</code> then it would
+   * have been retained once on return so caller can safely release the
+   * result exactly once.
    *
    * @throws IllegalArgumentException If <code>obj</code> should not be serialized
    */

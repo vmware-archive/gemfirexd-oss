@@ -77,7 +77,6 @@ import com.gemstone.gemfire.internal.size.ReflectionSingleObjectSizer;
 import com.gemstone.gemfire.internal.size.SingleObjectSizer;
 
 import com.gemstone.gemfire.internal.snappy.CallbackFactoryProvider;
-import com.gemstone.gemfire.internal.snappy.StoreCallbacks;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -901,9 +900,9 @@ RETRYLOOP:
       return null;
     }
 
-    final void postMemAccount(String path){
+    final void postMemAccount(String path) {
       CallbackFactoryProvider.getStoreCallbacks().acquireStorageMemory(path,
-              this.table.length * ReflectionSingleObjectSizer.REFERENCE_SIZE,
+          this.table.length * ReflectionSingleObjectSizer.REFERENCE_SIZE,
           null, true, false);
     }
 
@@ -1136,14 +1135,25 @@ RETRYLOOP:
           final HashEntry<K, V>[] tab = this.table;
           // GemStone changes BEGIN
           boolean collectEntries = clearedEntries != null;
+          // clear in-line for new off-heap
+          if (GemFireCacheImpl.hasNewOffHeap()) {
+            for (HashEntry<K, V> he : tab) {
+              for (HashEntry<K, V> p = he; p != null; p = p.getNextEntry()) {
+                if (p instanceof AbstractRegionEntry) {
+                  AbstractRegionEntry re = (AbstractRegionEntry)p;
+                  Object val = re._getValue();
+                  if (val instanceof SerializedDiskBuffer) {
+                    ((SerializedDiskBuffer)val).release();
+                  }
+                }
+              }
+            }
+          }
           if (!collectEntries) {
             // see if we have a map with off-heap region entries
             for (HashEntry<K, V> he : tab) {
               if (he != null) {
-                collectEntries = (GemFireCacheImpl.hasOffHeap()
-                    && he instanceof AbstractRegionEntry
-                    && ((AbstractRegionEntry)he)._getValue() instanceof SerializedDiskBuffer)
-                    || he instanceof OffHeapRegionEntry;
+                collectEntries = he instanceof OffHeapRegionEntry;
                 if (collectEntries) {
                   clearedEntries = new ArrayList<HashEntry<?, ?>>();
                 }
@@ -1963,8 +1973,7 @@ RETRYLOOP:
     ArrayList<HashEntry<?,?>> entries = null;
     final BucketRegionIndexCleaner cleaner = BucketRegion.getIndexCleaner();
     final boolean isOffHeapEnabled = LocalRegion.getAndClearOffHeapEnabled();
-    final boolean hasNewOffHeap = GemFireCacheImpl.hasOffHeap();
-    if(cleaner != null || hasNewOffHeap || isOffHeapEnabled) {
+    if(cleaner != null || isOffHeapEnabled) {
       entries = new ArrayList<HashEntry<?,?>>();
     }
     final CacheObserver observer = CacheObserverHolder.getInstance();
@@ -1976,21 +1985,13 @@ RETRYLOOP:
     } finally {
       if (entries != null) {
         final ArrayList<HashEntry<?,?>> clearedEntries = entries;
-        final boolean newOffHeap = hasNewOffHeap && entries.size() > 0 &&
-            ((AbstractRegionEntry)entries.get(0))._getValue() instanceof SerializedDiskBuffer;
         final Runnable runnable = new Runnable() {
           public void run() {
-            final StoreCallbacks callbacks = CallbackFactoryProvider.getStoreCallbacks();
             ArrayList<RegionEntry> regionEntries =  cleaner != null?
                 new ArrayList<RegionEntry>() : null;
             for (HashEntry<?,?> he: clearedEntries) {
               for (HashEntry<?, ?> p = he; p != null; p = p.getNextEntry()) {
                 synchronized (p) {
-                  if (newOffHeap) {
-                    callbacks.accountOffHeapStoreValue(
-                        null, ((AbstractRegionEntry)p)._getValue());
-                    continue;
-                  }
                   if(cleaner != null) {
                     regionEntries.add((RegionEntry)p); 
                   }else {

@@ -144,10 +144,6 @@ public abstract class CallbackFactoryProvider {
     public long getOffHeapMemory(String objectName) {
       return 0L;
     }
-
-    @Override
-    public void accountOffHeapStoreValue(Object newValue, Object oldValue) {
-    }
   };
 
   public static void setStoreCallbacks(StoreCallbacks cb) {

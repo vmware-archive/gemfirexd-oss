@@ -157,6 +157,10 @@ public abstract class UnsafeHolder {
       return (address != 0 && compareAndSet(address, 0L)) ? address : 0L;
     }
 
+    protected String objectName() {
+      return "MEMORY";
+    }
+
     @Override
     public void run() {
       final long address = tryFree();
@@ -170,7 +174,7 @@ public abstract class UnsafeHolder {
     FreeMemory newFreeMemory(long address, int size);
   }
 
-  private static final FreeMemoryFactory defaultFreeMemoryFactory =
+  public static final FreeMemoryFactory defaultFreeMemoryFactory =
       (address, size) -> new FreeMemory(address);
 
   public static int getAllocationSize(int size) {
@@ -213,12 +217,7 @@ public abstract class UnsafeHolder {
   }
 
   public static ByteBuffer reallocateDirectBuffer(ByteBuffer buffer,
-      int newSize) {
-    return reallocateDirectBuffer(buffer, newSize, defaultFreeMemoryFactory);
-  }
-
-  public static ByteBuffer reallocateDirectBuffer(ByteBuffer buffer,
-      int newSize, FreeMemoryFactory factory) {
+      int newSize, Class<?> expectedClass, FreeMemoryFactory factory) {
     sun.nio.ch.DirectBuffer directBuffer = (sun.nio.ch.DirectBuffer)buffer;
     final long address = directBuffer.address();
     long newAddress = 0L;
@@ -229,6 +228,12 @@ public abstract class UnsafeHolder {
       // reset the runnable to not free the memory and clean it up
       try {
         Object freeMemory = Wrapper.cleanerRunnableField.get(cleaner);
+        if (expectedClass != null && (freeMemory == null ||
+            !expectedClass.isInstance(freeMemory))) {
+          throw new IllegalStateException("Expected class to be " +
+              expectedClass.getName() + " in reallocate but was " +
+              (freeMemory != null ? freeMemory.getClass().getName() : "null"));
+        }
         // use the efficient realloc call if possible
         if ((freeMemory instanceof FreeMemory) &&
             ((FreeMemory)freeMemory).tryFree() != 0L) {
@@ -239,6 +244,10 @@ public abstract class UnsafeHolder {
       }
     }
     if (newAddress == 0L) {
+      if (expectedClass != null) {
+        throw new IllegalStateException("Expected class to be " +
+            expectedClass.getName() + " in reallocate but was non-runnable");
+      }
       newAddress = Platform.allocateMemory(newSize);
       Platform.copyMemory(null, address, null, newAddress,
           Math.min(newSize, buffer.limit()));
@@ -262,9 +271,9 @@ public abstract class UnsafeHolder {
    * the current field matches "from" or if it is something else.
    */
   public static void changeDirectBufferCleaner(
-      ByteBuffer buffer, int size, Class<?> from, Class<?> to,
-      FreeMemoryFactory factory, final Consumer<Boolean> changeOwner)
-      throws IllegalAccessException {
+      ByteBuffer buffer, int size, Class<? extends FreeMemory> from,
+      Class<? extends FreeMemory> to, FreeMemoryFactory factory,
+      final Consumer<String> changeOwner) throws IllegalAccessException {
     sun.nio.ch.DirectBuffer directBuffer = (sun.nio.ch.DirectBuffer)buffer;
     final sun.misc.Cleaner cleaner = directBuffer.cleaner();
     if (cleaner != null) {
@@ -274,7 +283,11 @@ public abstract class UnsafeHolder {
       // skip if it already matches the target Runnable type
       if (!to.isInstance(runnable)) {
         if (changeOwner != null) {
-          changeOwner.accept(from.isInstance(runnable));
+          if (from.isInstance(runnable)) {
+            changeOwner.accept(((FreeMemory)runnable).objectName());
+          } else {
+            changeOwner.accept(null);
+          }
         }
         Runnable newFree = factory.newFreeMemory(directBuffer.address(), size);
         runnableField.set(cleaner, newFree);

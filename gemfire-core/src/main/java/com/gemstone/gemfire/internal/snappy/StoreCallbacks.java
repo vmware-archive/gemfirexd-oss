@@ -88,10 +88,4 @@ public interface StoreCallbacks {
    * Get the number of bytes used for off-heap storage for given object name.
    */
   long getOffHeapMemory(String objectName);
-
-  /**
-   * Do any additional accounting required when an off-heap value is put
-   * into a region or removed.
-   */
-  void accountOffHeapStoreValue(Object newValue, Object oldValue);
 }
