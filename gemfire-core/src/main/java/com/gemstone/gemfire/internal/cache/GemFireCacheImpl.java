@@ -199,6 +199,7 @@ import com.gemstone.gemfire.internal.shared.NativeCalls;
 import com.gemstone.gemfire.internal.shared.SystemProperties;
 import com.gemstone.gemfire.internal.shared.Version;
 import com.gemstone.gemfire.internal.snappy.CallbackFactoryProvider;
+import com.gemstone.gemfire.internal.snappy.StoreCallbacks;
 import com.gemstone.gemfire.internal.tcp.ConnectionTable;
 import com.gemstone.gemfire.internal.util.ArrayUtils;
 import com.gemstone.gemfire.internal.util.concurrent.FutureResult;
@@ -1054,16 +1055,6 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
         getResourceManager().addResourceListener(ResourceType.OFFHEAP_MEMORY, getOffHeapEvictor());
       }
 
-      // set the buffer allocator for the cache (off-heap or heap)
-      this.memorySize = OffHeapStorage.parseOffHeapMemorySize(
-          getSystem().getConfig().getMemorySize());
-      if (this.memorySize > 0) {
-        this.bufferAllocator = DirectBufferAllocator.instance().initialize();
-      } else {
-        // the allocation sizes will be initialized from the heap size
-        this.bufferAllocator = HeapBufferAllocator.instance();
-      }
-
       recordedEventSweeper = EventTracker.startTrackerServices(this);
       tombstoneService = TombstoneService.initialize(this);
 
@@ -1076,6 +1067,24 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
       }
       GemFireCacheImpl.instance = this;
       GemFireCacheImpl.pdxInstance = this;
+
+      // set the buffer allocator for the cache (off-heap or heap)
+      long memorySize = OffHeapStorage.parseOffHeapMemorySize(
+          getSystem().getConfig().getMemorySize());
+      if (memorySize == 0) {
+        // check in callbacks
+        StoreCallbacks callbacks = CallbackFactoryProvider.getStoreCallbacks();
+        memorySize = callbacks.getExecutionPoolSize(true) +
+            callbacks.getStoragePoolSize(true);
+      }
+      this.memorySize = memorySize;
+      if (memorySize > 0) {
+        this.bufferAllocator = DirectBufferAllocator.instance().initialize();
+      } else {
+        // the allocation sizes will be initialized from the heap size
+        this.bufferAllocator = HeapBufferAllocator.instance();
+      }
+
       TypeRegistry.init();
       basicSetPdxSerializer(this.cacheConfig.getPdxSerializer());
       TypeRegistry.open();
