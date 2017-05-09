@@ -648,6 +648,7 @@ public abstract class AbstractLRURegionMap extends AbstractRegionMap {
   
   public final long centralizedLruUpdateCallback(boolean includeOffHeapBytes) {
     long evictedBytes = 0;
+    int offHeapSize = 0;
     if (getCallbackDisabled()) {
       return evictedBytes;
     }
@@ -660,22 +661,25 @@ public abstract class AbstractLRURegionMap extends AbstractRegionMap {
     }
     LRUStatistics stats = _getLruList().stats();
     try {
-      while (mustEvict() && evictedBytes == 0) {
+      while (mustEvict() && (evictedBytes == 0 ||
+          (includeOffHeapBytes && offHeapSize == 0))) {
         LRUEntry removalEntry = (LRUEntry)_getLruList().getLRUEntry();
         if (removalEntry != null) {
-          // get the off-heap size from value before eviction
-          int offHeapSize = 0;
+          // get the handle to off-heap entry before eviction
+          SerializedDiskBuffer buffer = null;
           if (includeOffHeapBytes && !removalEntry.isOffHeap()) {
             // add off-heap size to the MSB of evictedBytes
             Object value = removalEntry._getValue();
             if (value instanceof SerializedDiskBuffer) {
-              offHeapSize = ((SerializedDiskBuffer)value).getOffHeapSizeInBytes();
+              buffer = (SerializedDiskBuffer)value;
             }
           }
-          evictedBytes = evictEntry(removalEntry, stats);
-          if (evictedBytes != 0) {
-            if (offHeapSize != 0) {
-              evictedBytes |= ((long)offHeapSize) << 32L;
+          int evicted = evictEntry(removalEntry, stats);
+          evictedBytes += evicted;
+          if (evicted != 0) {
+            // check if off-heap entry was evicted
+            if (buffer != null && buffer.refCount() <= 0) {
+              offHeapSize += buffer.getOffHeapSizeInBytes();
             }
             Object owner = _getOwnerObject();
             if (owner instanceof BucketRegion) {
@@ -703,7 +707,7 @@ public abstract class AbstractLRURegionMap extends AbstractRegionMap {
       debugLogging("callback complete");
     // If in transaction context (either local or message)
     // reset the tx thread local
-    return evictedBytes;
+    return (evictedBytes | (((long)offHeapSize) << 32L));
   }
   
  

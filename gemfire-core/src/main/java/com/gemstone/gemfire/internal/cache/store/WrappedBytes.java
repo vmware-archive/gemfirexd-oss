@@ -45,6 +45,11 @@ public final class WrappedBytes extends SerializedDiskBuffer {
   }
 
   @Override
+  public int refCount() {
+    return 0;
+  }
+
+  @Override
   public boolean retain() {
     return true;
   }

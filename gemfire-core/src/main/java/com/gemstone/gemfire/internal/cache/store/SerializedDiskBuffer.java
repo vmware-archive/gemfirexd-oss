@@ -66,6 +66,13 @@ public abstract class SerializedDiskBuffer {
       SerializedDiskBuffer.class, "refCount");
 
   /**
+   * Get the current reference count for this object.
+   */
+  public int refCount() {
+    return refCountUpdate.get(this);
+  }
+
+  /**
    * Explicitly mark the buffer to be retained so it is not released until
    * a corresponding {@link #release()} has been invoked.
    *
