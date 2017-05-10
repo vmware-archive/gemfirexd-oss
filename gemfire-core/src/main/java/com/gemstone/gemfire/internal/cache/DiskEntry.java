@@ -70,7 +70,6 @@ import com.gemstone.gemfire.internal.shared.ClientSharedData;
 import com.gemstone.gemfire.internal.shared.OutputStreamChannel;
 import com.gemstone.gemfire.internal.shared.Version;
 import com.gemstone.gemfire.internal.snappy.CallbackFactoryProvider;
-import com.gemstone.gemfire.internal.snappy.StoreCallbacks;
 import com.gemstone.gemfire.internal.util.BlobHelper;
 
 /**
