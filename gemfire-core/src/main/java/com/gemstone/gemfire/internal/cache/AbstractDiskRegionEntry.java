@@ -69,6 +69,10 @@ public abstract class AbstractDiskRegionEntry
     }
   }
 
+  /**
+   * Set the RegionEntry DiskId into SerializedDiskBuffer value, if present,
+   * so that the value can access data from disk when required independently.
+   */
   protected final void initDiskIdForOffHeap(RegionEntryContext context,
       Object value) {
     // copy DiskId to value if required

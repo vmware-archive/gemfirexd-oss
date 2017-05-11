@@ -52,7 +52,7 @@ public abstract class AbstractOplogDiskRegionEntry
   ////////////////////////// instance methods /////////////////////////
   /////////////////////////////////////////////////////////////////////
 
-  public abstract void setDiskId(RegionEntry oldRe);
+  protected abstract void setDiskId(RegionEntry oldRe);
 
   public final void setDiskIdForRegion(RegionEntry oldRe) {
     setDiskId(oldRe);

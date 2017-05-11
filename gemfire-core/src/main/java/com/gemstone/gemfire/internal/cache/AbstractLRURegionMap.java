@@ -645,7 +645,12 @@ public abstract class AbstractLRURegionMap extends AbstractRegionMap {
     
     return monitorStateIsEviction && this.sizeInVM() > 0;
   }
-  
+
+  /**
+   * Evict an entry as per LRU and return a long value having heap bytes
+   * evicted in the LSB integer, and the (new SerializedDiskBuffer) off-heap
+   * evicted bytes in the MSB integer if "includeOffHeapBytes" is true.
+   */
   public final long centralizedLruUpdateCallback(boolean includeOffHeapBytes) {
     long evictedBytes = 0;
     int offHeapSize = 0;
@@ -705,8 +710,9 @@ public abstract class AbstractLRURegionMap extends AbstractRegionMap {
     }
     if (debug)
       debugLogging("callback complete");
-    // If in transaction context (either local or message)
-    // reset the tx thread local
+    // Return the heap evicted bytes and (SerializedDiskBuffer) off-heap
+    // evicted bytes ORed. If "includeOffHeapBytes" parameter is false
+    // then latter is zero.
     return (evictedBytes | (((long)offHeapSize) << 32L));
   }
   

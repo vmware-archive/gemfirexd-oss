@@ -291,7 +291,7 @@ public interface DiskEntry extends RegionEntry {
       }
     }
 
-    public static Object getHeapValueOnDisk(final DiskId id,
+    public static Object getValueOnDisk(final DiskId id,
         final DiskRegionView dr) {
       dr.acquireReadLock();
       try {
