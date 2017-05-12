@@ -18,6 +18,7 @@ package com.gemstone.gemfire.internal.shared;
 
 import java.nio.ByteBuffer;
 
+import com.gemstone.gemfire.internal.shared.unsafe.DirectBufferAllocator;
 import org.apache.spark.unsafe.Platform;
 
 /**

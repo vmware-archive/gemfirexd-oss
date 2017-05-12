@@ -44,7 +44,6 @@ import javax.annotation.Nonnull;
 
 import com.gemstone.gemfire.internal.shared.ChannelBufferOutputStream;
 import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
-import com.gemstone.gemfire.internal.shared.DirectBufferAllocator;
 import com.gemstone.gemfire.internal.shared.OutputStreamChannel;
 import org.apache.spark.unsafe.Platform;
 

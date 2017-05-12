@@ -15,11 +15,11 @@
  * LICENSE file.
  */
 
-package com.gemstone.gemfire.internal.shared;
+package com.gemstone.gemfire.internal.shared.unsafe;
 
 import java.nio.ByteBuffer;
 
-import com.gemstone.gemfire.internal.shared.unsafe.UnsafeHolder;
+import com.gemstone.gemfire.internal.shared.BufferAllocator;
 
 /**
  * Generic implementation of {@link BufferAllocator} for direct ByteBuffers

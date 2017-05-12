@@ -58,7 +58,7 @@ import com.gemstone.gemfire.internal.cache.persistence.BytesAndBits;
 import com.gemstone.gemfire.internal.cache.persistence.DiskRegionView;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
-import com.gemstone.gemfire.internal.shared.DirectBufferAllocator;
+import com.gemstone.gemfire.internal.shared.unsafe.DirectBufferAllocator;
 
 /**
  * An oplog used for overflow-only regions.

@@ -55,7 +55,7 @@ import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLHandshakeException;
 
 import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
-import com.gemstone.gemfire.internal.shared.DirectBufferAllocator;
+import com.gemstone.gemfire.internal.shared.unsafe.DirectBufferAllocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
