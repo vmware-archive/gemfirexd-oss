@@ -834,8 +834,8 @@ public final class Oplog implements CompactableOplog {
                              + n + "_" + oplogId);
     this.idxkrf = new OplogIndex(this);
     try {
-      createDrf(prevOplog.drf);
-      createCrf(prevOplog.crf);
+      createDrf(prevOplog);
+      createCrf(prevOplog);
       // open krf for offline compaction
       if (getParent().isOfflineCompacting()) {
         krfFileCreate();
@@ -1284,7 +1284,7 @@ public final class Oplog implements CompactableOplog {
    * 
    * @throws IOException
    */
-  private void createCrf(OplogFile prevOlf) throws IOException
+  private void createCrf(Oplog prevOplog) throws IOException
   {
     File f = new File(this.diskFile.getPath() + CRF_FILE_EXT);
     if (logger.fineEnabled()) {
@@ -1300,7 +1300,7 @@ public final class Oplog implements CompactableOplog {
     if (this.crf.outputStream != null) {
       this.crf.outputStream.close();
     }
-    this.crf.outputStream = createOutputStream(prevOlf, this.crf);
+    this.crf.outputStream = createOutputStream(prevOplog, prevOplog.crf, this.crf);
 
     if (logger.infoEnabled()) {
       logger.info(LocalizedStrings.Oplog_CREATE_0_1_2,
@@ -1322,18 +1322,17 @@ public final class Oplog implements CompactableOplog {
   }
 
   private static OplogFile.FileChannelOutputStream createOutputStream(
-      final OplogFile prevOlf, final OplogFile olf) throws IOException {
-    final int bufSize = Integer.getInteger("WRITE_BUF_SIZE", 32768);
-    final OplogFile.FileChannelOutputStream outputStream;
-    if (prevOlf != null && (outputStream = prevOlf.outputStream) != null &&
-        outputStream.validBuffer()) {
-      prevOlf.outputStream = null;
-      return olf.new FileChannelOutputStream(outputStream,
-          bufSize, false /* limit new buffer allocations */);
-    } else {
-      return olf.new FileChannelOutputStream(bufSize,
-          false /* limit new buffer allocations */);
+      final Oplog prevOplog, final OplogFile prevOlf, final OplogFile olf)
+      throws IOException {
+    if (prevOlf != null) {
+      synchronized (prevOplog.crf) {
+        // release the old stream buffer
+        prevOlf.outputStream.close();
+        prevOlf.outputStream = null;
+      }
     }
+    final int bufSize = Integer.getInteger("WRITE_BUF_SIZE", 32768);
+    return olf.new FileChannelOutputStream(bufSize);
   }
 
   /**
@@ -1341,7 +1340,7 @@ public final class Oplog implements CompactableOplog {
    * 
    * @throws IOException
    */
-  private void createDrf(OplogFile prevOlf) throws IOException
+  private void createDrf(Oplog prevOplog) throws IOException
   {
     String drfFilePath = this.diskFile.getPath() + DRF_FILE_EXT;
     File f = new File(drfFilePath);
@@ -1355,7 +1354,7 @@ public final class Oplog implements CompactableOplog {
     this.drf.RAFClosed = false;
     this.drf.channel = this.drf.raf.getChannel();
     this.oplogSet.drfCreate(this.oplogId);
-    this.drf.outputStream = createOutputStream(prevOlf, this.drf);
+    this.drf.outputStream = createOutputStream(prevOplog, prevOplog.drf, this.drf);
     if (logger.infoEnabled()) {
       logger.info(LocalizedStrings.Oplog_CREATE_0_1_2,
                   new Object[] {toString(),
@@ -2014,7 +2013,7 @@ public final class Oplog implements CompactableOplog {
     final ByteArrayDataInput in = new ByteArrayDataInput();
     final long currentTime = getParent().getCache().cacheTimeMillis();
     dis = new ChannelBufferUnsafeDataInputStream(fis.getChannel(),
-        LARGE_BUFFER_SIZE, false);
+        LARGE_BUFFER_SIZE);
     try {
       readDiskStoreRecord(dis, f);
       readGemfireVersionRecord(dis, f);
@@ -7621,15 +7620,8 @@ public final class Oplog implements CompactableOplog {
 
       private final long baseFileOffset;
 
-      public FileChannelOutputStream(int bufferSize,
-          boolean useUnsafeAllocation) throws IOException {
-        super(OplogFile.this.channel, bufferSize, useUnsafeAllocation);
-        this.baseFileOffset = OplogFile.this.channel.position();
-      }
-
-      public FileChannelOutputStream(FileChannelOutputStream other,
-          int bufferSize, boolean useUnsafeAllocation) throws IOException {
-        super(other, OplogFile.this.channel, bufferSize, useUnsafeAllocation);
+      public FileChannelOutputStream(int bufferSize) throws IOException {
+        super(OplogFile.this.channel, bufferSize);
         this.baseFileOffset = OplogFile.this.channel.position();
       }
 

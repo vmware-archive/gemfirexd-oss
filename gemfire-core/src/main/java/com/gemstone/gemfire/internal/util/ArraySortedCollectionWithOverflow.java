@@ -481,7 +481,7 @@ public class ArraySortedCollectionWithOverflow extends
     OverflowData(final FileInputStream fis, final int size,
         final long startPos, final long endPos, final int bufSize)
         throws IOException {
-      super(fis.getChannel(), bufSize, false);
+      super(fis.getChannel(), bufSize);
       this.currentPos = startPos;
       this.endPos = endPos;
       this.size = size;

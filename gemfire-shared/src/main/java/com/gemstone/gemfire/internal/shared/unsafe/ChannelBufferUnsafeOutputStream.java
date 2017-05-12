@@ -92,23 +92,6 @@ public class ChannelBufferUnsafeOutputStream extends OutputStreamChannel {
     resetBufferPositions();
   }
 
-  public ChannelBufferUnsafeOutputStream(
-      ChannelBufferUnsafeOutputStream other, WritableByteChannel channel,
-      int bufferSize) throws IOException {
-    super(channel);
-    final ByteBuffer buffer = other.buffer;
-    if (buffer != null) {
-      other.flush();
-      other.buffer = null;
-      buffer.clear();
-      this.buffer = buffer;
-      this.baseAddress = other.baseAddress;
-    } else {
-      this.baseAddress = allocateBuffer(bufferSize);
-    }
-    resetBufferPositions();
-  }
-
   /**
    * Get handle to the underlying ByteBuffer. ONLY TO BE USED BY TESTS.
    */

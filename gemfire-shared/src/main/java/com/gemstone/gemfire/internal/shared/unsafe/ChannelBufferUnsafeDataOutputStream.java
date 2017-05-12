@@ -51,12 +51,6 @@ public class ChannelBufferUnsafeDataOutputStream extends
     super(channel, bufferSize);
   }
 
-  public ChannelBufferUnsafeDataOutputStream(
-      ChannelBufferUnsafeOutputStream other, WritableByteChannel channel,
-      int bufferSize) throws IOException {
-    super(other, channel, bufferSize);
-  }
-
   /**
    * {@inheritDoc}
    */
