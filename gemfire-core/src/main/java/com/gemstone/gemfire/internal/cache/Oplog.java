@@ -1300,7 +1300,8 @@ public final class Oplog implements CompactableOplog {
     if (this.crf.outputStream != null) {
       this.crf.outputStream.close();
     }
-    this.crf.outputStream = createOutputStream(prevOplog, prevOplog.crf, this.crf);
+    this.crf.outputStream = createOutputStream(prevOplog,
+        prevOplog != null ? prevOplog.crf : null, this.crf);
 
     if (logger.infoEnabled()) {
       logger.info(LocalizedStrings.Oplog_CREATE_0_1_2,
@@ -1354,7 +1355,8 @@ public final class Oplog implements CompactableOplog {
     this.drf.RAFClosed = false;
     this.drf.channel = this.drf.raf.getChannel();
     this.oplogSet.drfCreate(this.oplogId);
-    this.drf.outputStream = createOutputStream(prevOplog, prevOplog.drf, this.drf);
+    this.drf.outputStream = createOutputStream(prevOplog,
+        prevOplog != null ? prevOplog.drf : null, this.drf);
     if (logger.infoEnabled()) {
       logger.info(LocalizedStrings.Oplog_CREATE_0_1_2,
                   new Object[] {toString(),
