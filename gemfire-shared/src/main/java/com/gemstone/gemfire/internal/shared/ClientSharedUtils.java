@@ -1758,17 +1758,20 @@ public abstract class ClientSharedUtils {
 
   /**
    * Allocate new ByteBuffer if capacity of given ByteBuffer has exceeded.
+   * The passed ByteBuffer may no longer be usable after this call.
    */
   public static ByteBuffer ensureCapacity(ByteBuffer buffer,
-      int newLength, boolean useDirectBuffer) {
+      int newLength, boolean useDirectBuffer, String owner) {
     if (newLength <= buffer.capacity()) {
       return buffer;
     }
-    ByteBuffer newBuffer = useDirectBuffer ? ByteBuffer.allocateDirect(
-        newLength) : ByteBuffer.allocate(newLength);
+    BufferAllocator allocator = useDirectBuffer ? DirectBufferAllocator.instance()
+        : HeapBufferAllocator.instance();
+    ByteBuffer newBuffer = allocator.allocate(newLength, owner);
     newBuffer.order(buffer.order());
     buffer.flip();
     newBuffer.put(buffer);
+    allocator.release(buffer);
     return newBuffer;
   }
 

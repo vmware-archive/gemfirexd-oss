@@ -58,6 +58,7 @@ import com.gemstone.gemfire.internal.cache.persistence.BytesAndBits;
 import com.gemstone.gemfire.internal.cache.persistence.DiskRegionView;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
+import com.gemstone.gemfire.internal.shared.DirectBufferAllocator;
 
 /**
  * An oplog used for overflow-only regions.
@@ -275,7 +276,8 @@ class OverflowOplog implements CompactableOplog {
       result = previous.consumeWriteBuf();
     }
     if (result == null) {
-      result = ByteBuffer.allocateDirect(Integer.getInteger("WRITE_BUF_SIZE", 32768));
+      result = DirectBufferAllocator.instance().allocate(
+          Integer.getInteger("WRITE_BUF_SIZE", 32768), "OVERFLOWOPLOG");
     }
     return result;
   }

@@ -43,6 +43,7 @@ import java.util.concurrent.locks.LockSupport;
 
 import com.gemstone.gemfire.internal.shared.ClientSharedData;
 import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
+import com.gemstone.gemfire.internal.shared.DirectBufferAllocator;
 import com.gemstone.gemfire.internal.shared.SystemProperties;
 import com.gemstone.gemfire.internal.shared.unsafe.UnsafeHolder;
 import com.pivotal.gemfirexd.Attribute;
@@ -160,9 +161,15 @@ public abstract class ThriftUtils {
       return ByteBuffer.wrap(buffer);
     }
 
-    // use Unsafe for allocation which does not have the smallish limit used
-    // by ByteBuffer.allocateDirect -- see sun.misc.VM.maxDirectMemory()
-    ByteBuffer buffer = UnsafeHolder.allocateDirectBuffer(length);
+    // this might be too big for ByteBuffer.allocateDirect -- see
+    // sun.misc.VM.maxDirectMemory()
+    ByteBuffer buffer;
+    try {
+      buffer = DirectBufferAllocator.instance().allocate(length, "THRIFT");
+    } catch (OutOfMemoryError | RuntimeException ignored) {
+      // fallback to heap buffer
+      buffer = ByteBuffer.allocate(length);
+    }
     buffer.limit(length);
     try {
       while (length > 0) {

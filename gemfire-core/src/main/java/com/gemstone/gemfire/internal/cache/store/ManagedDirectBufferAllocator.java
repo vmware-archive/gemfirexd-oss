@@ -27,6 +27,8 @@ import com.gemstone.gemfire.cache.LowMemoryException;
 import com.gemstone.gemfire.distributed.DistributedMember;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
+import com.gemstone.gemfire.internal.shared.BufferAllocator;
+import com.gemstone.gemfire.internal.shared.DirectBufferAllocator;
 import com.gemstone.gemfire.internal.shared.unsafe.UnsafeHolder;
 import com.gemstone.gemfire.internal.snappy.CallbackFactoryProvider;
 import com.gemstone.gemfire.internal.snappy.StoreCallbacks;
@@ -35,12 +37,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Direct ByteBuffer implementation of {@link BufferAllocator}.
+ * Direct ByteBuffer implementation of {@link BufferAllocator} that integrates
+ * with the SnappyData's UnifiedMemoryManager.
  */
-public final class DirectBufferAllocator extends BufferAllocator {
+public final class ManagedDirectBufferAllocator extends DirectBufferAllocator {
 
-  private static final DirectBufferAllocator instance =
-      new DirectBufferAllocator();
+  private static final ManagedDirectBufferAllocator instance =
+      new ManagedDirectBufferAllocator();
 
   private static final UnsafeHolder.FreeMemoryFactory freeStoreBufferFactory =
       FreeStoreBuffer::new;
@@ -57,13 +60,13 @@ public final class DirectBufferAllocator extends BufferAllocator {
   public static final String DIRECT_STORE_OBJECT_OWNER =
       "SNAPPYDATA_DIRECT_STORE_OBJECTS";
 
-  public static DirectBufferAllocator instance() {
+  public static ManagedDirectBufferAllocator instance() {
     return instance;
   }
 
   private Logger logger = initLogger();
 
-  private DirectBufferAllocator() {
+  private ManagedDirectBufferAllocator() {
   }
 
   public static long defaultMaxMemory() {
@@ -73,8 +76,9 @@ public final class DirectBufferAllocator extends BufferAllocator {
         .getTotalPhysicalMemorySize() << 2) / 5 + 7) >>> 3) << 3;
   }
 
-  public DirectBufferAllocator initialize() {
+  public ManagedDirectBufferAllocator initialize() {
     this.logger = initLogger();
+    DirectBufferAllocator.setInstance(this);
     return this;
   }
 
@@ -99,7 +103,7 @@ public final class DirectBufferAllocator extends BufferAllocator {
     StoreCallbacks callbacks = CallbackFactoryProvider.getStoreCallbacks();
     LowMemoryException lowMemory = new LowMemoryException(LocalizedStrings
         .ResourceManager_LOW_MEMORY_FOR_0_FUNCEXEC_MEMBERS_1
-        .toLocalizedString("DirectBufferAllocator." + op + " (" +
+        .toLocalizedString("ManagedDirectBufferAllocator." + op + " (" +
             "maxStorage=" + callbacks.getStoragePoolSize(true) +
             " used=" + callbacks.getStoragePoolUsedMemory(true) +
             " required=" + required + ')', m), m);
@@ -136,23 +140,6 @@ public final class DirectBufferAllocator extends BufferAllocator {
   }
 
   @Override
-  public void clearPostAllocate(ByteBuffer buffer) {
-    // clear till the capacity and not limit since former will be a factor
-    // of 8 and hence more efficient in Unsafe.setMemory
-    clearBuffer(buffer, 0, buffer.capacity());
-  }
-
-  @Override
-  public Object baseObject(ByteBuffer buffer) {
-    return null;
-  }
-
-  @Override
-  public long baseOffset(ByteBuffer buffer) {
-    return UnsafeHolder.getDirectBufferAddress(buffer);
-  }
-
-  @Override
   public ByteBuffer expand(ByteBuffer buffer, int required, String owner) {
     assert required > 0 : "expand: unexpected required = " + required;
 
@@ -160,7 +147,7 @@ public final class DirectBufferAllocator extends BufferAllocator {
     final int newLength = UnsafeHolder.getAllocationSize(
         BufferAllocator.expandedSize(currentUsed, required));
     final int delta = newLength - currentUsed;
-    // expect original owner to be DirectBufferAllocator
+    // expect original owner to be ManagedDirectBufferAllocator
     if (reserveMemory(owner, delta, false) ||
         tryEvictData(owner, delta)) {
       try {
@@ -190,35 +177,6 @@ public final class DirectBufferAllocator extends BufferAllocator {
   }
 
   @Override
-  public ByteBuffer fromBytesToStorage(byte[] bytes, int offset, int length) {
-    final ByteBuffer buffer = allocateForStorage(length);
-    buffer.put(bytes, offset, length);
-    // move to the start
-    buffer.rewind();
-    return buffer;
-  }
-
-  @Override
-  public ByteBuffer transfer(ByteBuffer buffer, String owner) {
-    if (buffer.isDirect()) {
-      return buffer;
-    } else {
-      return super.transfer(buffer, owner);
-    }
-  }
-
-  @Override
-  public void release(ByteBuffer buffer) {
-    // reserved bytes will be decremented via FreeBuffer
-    UnsafeHolder.releaseDirectBuffer(buffer);
-  }
-
-  @Override
-  public boolean isDirect() {
-    return true;
-  }
-
-  @Override
   public void close() {
     // check that all memory has been released else try to release
     long allocated = CallbackFactoryProvider.getStoreCallbacks()
@@ -234,6 +192,7 @@ public final class DirectBufferAllocator extends BufferAllocator {
         logger.warn("Unreleased memory " + allocated + " bytes in close.");
       }
     }
+    DirectBufferAllocator.resetInstance();
   }
 
   @SuppressWarnings("serial")
@@ -262,7 +221,7 @@ public final class DirectBufferAllocator extends BufferAllocator {
           // ignore exceptions
           SystemFailure.checkFailure();
           try {
-            DirectBufferAllocator.instance().logger.error(
+            ManagedDirectBufferAllocator.instance().logger.error(
                 "FreeBuffer unexpected exception", t);
           } catch (Throwable ignored) {
             // ignore if even logging failed

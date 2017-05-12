@@ -14,12 +14,11 @@
  * permissions and limitations under the License. See accompanying
  * LICENSE file.
  */
-package com.gemstone.gemfire.internal.cache.store;
+package com.gemstone.gemfire.internal.shared;
 
 import java.io.Closeable;
 import java.nio.ByteBuffer;
 
-import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
 import com.gemstone.gemfire.internal.shared.unsafe.UnsafeHolder;
 
 /**
@@ -114,7 +113,7 @@ public abstract class BufferAllocator implements Closeable {
   @Override
   public abstract void close();
 
-  static int expandedSize(int currentUsed, int required) {
+  public static int expandedSize(int currentUsed, int required) {
     final long minRequired = (long)currentUsed + required;
     // increase the size by 50%
     final int newLength = (int)Math.min(Math.max((currentUsed * 3) >>> 1L,

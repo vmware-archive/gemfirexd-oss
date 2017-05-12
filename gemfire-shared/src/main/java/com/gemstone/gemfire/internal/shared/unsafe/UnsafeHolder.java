@@ -145,7 +145,7 @@ public abstract class UnsafeHolder {
   }
 
   @SuppressWarnings("serial")
-  public static class FreeMemory extends AtomicLong implements Runnable {
+  public static abstract class FreeMemory extends AtomicLong implements Runnable {
 
     protected FreeMemory(long address) {
       super(address);
@@ -157,9 +157,7 @@ public abstract class UnsafeHolder {
       return (address != 0 && compareAndSet(address, 0L)) ? address : 0L;
     }
 
-    protected String objectName() {
-      return "MEMORY";
-    }
+    protected abstract String objectName();
 
     @Override
     public void run() {
@@ -174,18 +172,11 @@ public abstract class UnsafeHolder {
     FreeMemory newFreeMemory(long address, int size);
   }
 
-  public static final FreeMemoryFactory defaultFreeMemoryFactory =
-      (address, size) -> new FreeMemory(address);
-
   public static int getAllocationSize(int size) {
     // round to word size
     size = ((size + 7) >>> 3) << 3;
     if (size > 0) return size;
     else throw new BufferOverflowException();
-  }
-
-  public static ByteBuffer allocateDirectBuffer(int size) {
-    return allocateDirectBuffer(size, defaultFreeMemoryFactory);
   }
 
   public static ByteBuffer allocateDirectBuffer(int size,
@@ -298,13 +289,17 @@ public abstract class UnsafeHolder {
     }
   }
 
+  /**
+   * Release explicitly if the passed ByteBuffer is a direct one. Avoid using
+   * this directly rather use BufferAllocator.allocate/release where possible.
+   */
   public static void releaseIfDirectBuffer(ByteBuffer buffer) {
     if (buffer != null && buffer.isDirect()) {
       releaseDirectBuffer(buffer);
     }
   }
 
-  public static void releaseDirectBuffer(ByteBuffer buffer) {
+  static void releaseDirectBuffer(ByteBuffer buffer) {
     sun.misc.Cleaner cleaner = ((sun.nio.ch.DirectBuffer)buffer).cleaner();
     if (cleaner != null) {
       cleaner.clean();
@@ -337,7 +332,7 @@ public abstract class UnsafeHolder {
   public static InputStreamChannel newChannelBufferInputStream(
       ReadableByteChannel channel, int bufferSize) throws IOException {
     return (hasUnsafe
-        ? new ChannelBufferUnsafeInputStream(channel, bufferSize, false)
+        ? new ChannelBufferUnsafeInputStream(channel, bufferSize)
         : new ChannelBufferInputStream(channel, bufferSize));
   }
 
@@ -345,7 +340,7 @@ public abstract class UnsafeHolder {
   public static OutputStreamChannel newChannelBufferOutputStream(
       WritableByteChannel channel, int bufferSize) throws IOException {
     return (hasUnsafe
-        ? new ChannelBufferUnsafeOutputStream(channel, bufferSize, false)
+        ? new ChannelBufferUnsafeOutputStream(channel, bufferSize)
         : new ChannelBufferOutputStream(channel, bufferSize));
   }
 
@@ -353,7 +348,7 @@ public abstract class UnsafeHolder {
   public static InputStreamChannel newChannelBufferFramedInputStream(
       ReadableByteChannel channel, int bufferSize) throws IOException {
     return (hasUnsafe
-        ? new ChannelBufferUnsafeFramedInputStream(channel, bufferSize, false)
+        ? new ChannelBufferUnsafeFramedInputStream(channel, bufferSize)
         : new ChannelBufferFramedInputStream(channel, bufferSize));
   }
 
@@ -361,7 +356,7 @@ public abstract class UnsafeHolder {
   public static OutputStreamChannel newChannelBufferFramedOutputStream(
       WritableByteChannel channel, int bufferSize) throws IOException {
     return (hasUnsafe
-        ? new ChannelBufferUnsafeFramedOutputStream(channel, bufferSize, false)
+        ? new ChannelBufferUnsafeFramedOutputStream(channel, bufferSize)
         : new ChannelBufferFramedOutputStream(channel, bufferSize));
   }
 

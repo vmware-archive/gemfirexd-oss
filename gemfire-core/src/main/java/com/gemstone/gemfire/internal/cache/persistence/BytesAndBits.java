@@ -21,8 +21,8 @@ import java.nio.ByteBuffer;
 import com.gemstone.gemfire.internal.cache.EntryEventImpl;
 import com.gemstone.gemfire.internal.cache.store.SerializedDiskBuffer;
 import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
+import com.gemstone.gemfire.internal.shared.DirectBufferAllocator;
 import com.gemstone.gemfire.internal.shared.Version;
-import com.gemstone.gemfire.internal.shared.unsafe.UnsafeHolder;
 
 /**
  * Used to fetch a record's raw bytes and user bits.
@@ -82,7 +82,7 @@ public class BytesAndBits {
     final ByteBuffer data = this.data;
     if (data != null && data.isDirect()) {
       this.data = null;
-      UnsafeHolder.releaseDirectBuffer(data);
+      DirectBufferAllocator.instance().release(data);
     }
   }
 

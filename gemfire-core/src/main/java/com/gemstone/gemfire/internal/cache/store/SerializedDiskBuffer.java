@@ -23,6 +23,7 @@ import java.util.concurrent.locks.LockSupport;
 import com.gemstone.gemfire.internal.cache.DiskId;
 import com.gemstone.gemfire.internal.cache.persistence.DiskRegionView;
 import com.gemstone.gemfire.internal.concurrent.unsafe.UnsafeAtomicIntegerFieldUpdater;
+import com.gemstone.gemfire.internal.shared.BufferAllocator;
 import com.gemstone.gemfire.internal.shared.OutputStreamChannel;
 
 /**
@@ -166,7 +167,7 @@ public abstract class SerializedDiskBuffer {
     while (buffer.hasRemaining()) {
       if (channel.write(buffer) == 0) {
         // wait for a bit before retrying
-        LockSupport.parkNanos(100L);
+        LockSupport.parkNanos(50L);
       }
     }
     // rewind back just in case bytes is to be read again

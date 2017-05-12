@@ -165,9 +165,9 @@ import com.gemstone.gemfire.internal.cache.persistence.PersistentMemberID;
 import com.gemstone.gemfire.internal.cache.persistence.PersistentMemberManager;
 import com.gemstone.gemfire.internal.cache.persistence.query.TemporaryResultSetFactory;
 import com.gemstone.gemfire.internal.cache.snapshot.CacheSnapshotServiceImpl;
-import com.gemstone.gemfire.internal.cache.store.BufferAllocator;
-import com.gemstone.gemfire.internal.cache.store.DirectBufferAllocator;
-import com.gemstone.gemfire.internal.cache.store.HeapBufferAllocator;
+import com.gemstone.gemfire.internal.cache.store.ManagedDirectBufferAllocator;
+import com.gemstone.gemfire.internal.shared.BufferAllocator;
+import com.gemstone.gemfire.internal.shared.HeapBufferAllocator;
 import com.gemstone.gemfire.internal.cache.tier.sockets.AcceptorImpl;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheClientNotifier;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheClientProxy;
@@ -1081,7 +1081,7 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
       }
       this.memorySize = memorySize;
       if (memorySize > 0) {
-        this.bufferAllocator = DirectBufferAllocator.instance().initialize();
+        this.bufferAllocator = ManagedDirectBufferAllocator.instance().initialize();
       } else {
         // the allocation sizes will be initialized from the heap size
         this.bufferAllocator = HeapBufferAllocator.instance();

@@ -44,6 +44,7 @@ import javax.annotation.Nonnull;
 
 import com.gemstone.gemfire.internal.shared.ChannelBufferInputStream;
 import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
+import com.gemstone.gemfire.internal.shared.DirectBufferAllocator;
 import com.gemstone.gemfire.internal.shared.InputStreamChannel;
 import org.apache.spark.unsafe.Platform;
 
@@ -73,16 +74,16 @@ public class ChannelBufferUnsafeInputStream extends InputStreamChannel {
   protected long addrLimit;
 
   public ChannelBufferUnsafeInputStream(ReadableByteChannel channel) {
-    this(channel, ChannelBufferInputStream.DEFAULT_BUFFER_SIZE, false);
+    this(channel, ChannelBufferInputStream.DEFAULT_BUFFER_SIZE);
   }
 
   public ChannelBufferUnsafeInputStream(ReadableByteChannel channel,
-      int bufferSize, boolean useUnsafeAllocation) {
+      int bufferSize) {
     super(channel);
     if (bufferSize <= 0) {
       throw new IllegalArgumentException("invalid bufferSize=" + bufferSize);
     }
-    this.buffer = allocateBuffer(bufferSize, useUnsafeAllocation);
+    this.buffer = allocateBuffer(bufferSize);
     // force refill on first use
     this.buffer.position(bufferSize);
 
@@ -100,13 +101,10 @@ public class ChannelBufferUnsafeInputStream extends InputStreamChannel {
     this.addrLimit = this.baseAddress + this.buffer.limit();
   }
 
-  protected ByteBuffer allocateBuffer(int bufferSize,
-      boolean useUnsafeAllocation) {
-    ByteBuffer buffer = useUnsafeAllocation
-        // use Unsafe allocation which does not have the smallish limit used
-        // by ByteBuffer.allocateDirect -- see sun.misc.VM.maxDirectMemory()
-        ? UnsafeHolder.allocateDirectBuffer(bufferSize)
-        : ByteBuffer.allocateDirect(bufferSize);
+  protected ByteBuffer allocateBuffer(int bufferSize) {
+    // use allocator which will restrict total allocated size
+    ByteBuffer buffer = DirectBufferAllocator.instance().allocate(
+        bufferSize, "CHANNELINPUT");
     // set the order to native explicitly to skip any byte order conversions
     buffer.order(ByteOrder.nativeOrder());
     return buffer;
@@ -276,7 +274,7 @@ public class ChannelBufferUnsafeInputStream extends InputStreamChannel {
     if (buffer != null) {
       this.addrPosition = this.addrLimit = 0;
       this.buffer = null;
-      UnsafeHolder.releaseDirectBuffer(buffer);
+      DirectBufferAllocator.instance().release(buffer);
     }
   }
 }
