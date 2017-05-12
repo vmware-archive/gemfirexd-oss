@@ -132,6 +132,12 @@ public abstract class ClientSharedUtils {
         }
       });
 
+  /**
+   * The default wait to use when waiting to read/write a channel
+   * (when there is no selector to signal)
+   */
+  public static final long PARK_NANOS_FOR_READ_WRITE = 50L;
+
   public static boolean isUsingThrift(boolean defaultValue) {
     return SystemProperties.getClientInstance().getBoolean(
         USE_THRIFT_AS_DEFAULT_PROP, defaultValue);

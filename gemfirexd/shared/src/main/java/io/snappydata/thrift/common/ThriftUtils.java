@@ -207,7 +207,7 @@ public abstract class ThriftUtils {
           } else if (numWrittenBytes == 0) {
             // sleep a bit before retrying
             // TODO: this should use selector signal
-            LockSupport.parkNanos(50L);
+            LockSupport.parkNanos(ClientSharedUtils.PARK_NANOS_FOR_READ_WRITE);
           } else {
             throw new EOFException("Socket channel closed in write.");
           }
