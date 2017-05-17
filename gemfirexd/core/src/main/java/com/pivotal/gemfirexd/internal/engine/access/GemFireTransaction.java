@@ -3609,7 +3609,7 @@ public final class GemFireTransaction extends RawTransaction implements
     setActiveState();
   }
 
-  public final void resetActiveTXState() {
+  public final void resetActiveTXState(final boolean clearIsolationLevel) {
     assert this.txManager != null: "unexpected null TXManagerImpl";
 
     if (GemFireXDUtils.TraceTran || GemFireXDUtils.TraceQuery) {
@@ -3619,6 +3619,9 @@ public final class GemFireTransaction extends RawTransaction implements
               + TXManagerImpl.getCurrentTXState());
     }
     setTXState(TXStateProxy.TX_NOT_SET);
+    if (clearIsolationLevel) {
+      this.isolationLevel = IsolationLevel.NONE;
+    }
     // force a volatile write
     setActiveState();
   }
