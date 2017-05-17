@@ -212,9 +212,8 @@ public class SelectQueryInfo extends DMLQueryInfo {
     }
     else {
       if (policy != DistributionDescriptor.REPLICATE) {
-        resolver = (GfxdPartitionResolver)((PartitionedRegion)this.getRegion())
-            .getPartitionResolver();
-        if (resolver.isPartitioningKeyThePrimaryKey()) {
+        resolver = GemFireXDUtils.getResolver(getRegion());
+        if (resolver != null && resolver.isPartitioningKeyThePrimaryKey()) {
           this.routingFromGlobalIndex = false;
         }
       }

@@ -57,6 +57,16 @@ public interface InternalPartitionResolver<K, V> extends
       Region<?, ?> region);
 
   /**
+   * Return the number of partitioning columns in the table.
+   */
+  int getPartitioningColumnsCount();
+
+  /**
+   * Get the master table (i.e. the root in collocation chain).
+   */
+  String getMasterTable(boolean rootMaster);
+
+  /**
    * Get the string for display (e.g. used in DDL).
    */
   String getDDLString();
