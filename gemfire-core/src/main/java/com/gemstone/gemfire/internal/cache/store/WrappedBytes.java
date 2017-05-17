@@ -59,6 +59,11 @@ public final class WrappedBytes extends SerializedDiskBuffer {
   }
 
   @Override
+  public boolean needsRelease() {
+    return false;
+  }
+
+  @Override
   protected void releaseBuffer() {
   }
 

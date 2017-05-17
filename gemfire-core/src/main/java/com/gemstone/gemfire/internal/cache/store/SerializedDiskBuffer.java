@@ -121,6 +121,10 @@ public abstract class SerializedDiskBuffer {
     }
   }
 
+  public boolean needsRelease() {
+    return true;
+  }
+
   protected abstract void releaseBuffer();
 
   /**

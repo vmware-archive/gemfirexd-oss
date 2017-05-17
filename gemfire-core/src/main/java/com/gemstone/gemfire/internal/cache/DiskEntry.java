@@ -687,7 +687,7 @@ public interface DiskEntry extends RegionEntry {
             } else {
               bytes = proxy.getSerializedValue();
             }
-            buffer = bytes != null ? new WrappedBytes(bytes) : null;
+            buffer = bytes != null ? new WrappedBytes(bytes) : NULL_VW.buffer;
           }
           else if (value instanceof byte[]) {
             isSerializedObject = false;
@@ -731,7 +731,7 @@ public interface DiskEntry extends RegionEntry {
 
       public void release() {
         final SerializedDiskBuffer buffer = this.buffer;
-        if (buffer != null) {
+        if (buffer != null && buffer.needsRelease()) {
           this.buffer = null;
           buffer.release();
         }
