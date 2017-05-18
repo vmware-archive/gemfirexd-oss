@@ -2128,9 +2128,6 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
       }
 
       isClosing = true;
-      // Added to reset the memory manager to handle cases where only cache is closed.
-      // Right now mostly in DUNITs
-      CallbackFactoryProvider.getStoreCallbacks().resetMemoryManager();
 
       if (systemFailureCause != null) {
         this.forcedDisconnect = systemFailureCause instanceof ForcedDisconnectException;
@@ -2434,6 +2431,10 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
       TypeRegistry.setPdxSerializer(null);
 
       this.bufferAllocator.close();
+
+      // Added to reset the memory manager to handle cases where only cache is closed.
+      // Right now mostly in DUNITs
+      CallbackFactoryProvider.getStoreCallbacks().resetMemoryManager();
 
       for (Iterator iter = cacheLifecycleListeners.iterator(); iter.hasNext();) {
         CacheLifecycleListener listener = (CacheLifecycleListener) iter.next();
