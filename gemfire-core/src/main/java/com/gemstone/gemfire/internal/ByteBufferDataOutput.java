@@ -70,8 +70,8 @@ public final class ByteBufferDataOutput extends SerializedDiskBuffer
   }
 
   /**
-   * Initialize the buffer serializing the given object to a direct buffer
-   * and setting the reference count to 1. Normally there should be only
+   * Initialize the buffer serializing the given object to a byte buffer
+   * (with initial reference count as 1). Normally there should be only
    * one calling thread that will {@link #release()} this when done.
    */
   public ByteBufferDataOutput serialize(Object obj) throws IOException {
@@ -97,7 +97,8 @@ public final class ByteBufferDataOutput extends SerializedDiskBuffer
       OutputStreamChannel channel) throws IOException {
     final ByteBuffer buffer = this.buffer;
     if (buffer != null) {
-      write(channel, this.buffer);
+      write(channel, buffer);
+      buffer.rewind();
     } else {
       channel.write(DSCODE.NULL);
     }
@@ -128,7 +129,7 @@ public final class ByteBufferDataOutput extends SerializedDiskBuffer
 
   @Override
   public ByteBuffer getInternalBuffer() {
-    return this.buffer;
+    return this.buffer.duplicate();
   }
 
   @Override
@@ -185,14 +186,12 @@ public final class ByteBufferDataOutput extends SerializedDiskBuffer
 
   @Override
   public void writeFloat(float v) throws IOException {
-    ensureCapacity(4);
-    this.buffer.putInt(Float.floatToIntBits(v));
+    writeInt(Float.floatToIntBits(v));
   }
 
   @Override
   public void writeDouble(double v) throws IOException {
-    ensureCapacity(8);
-    this.buffer.putLong(Double.doubleToLongBits(v));
+    writeLong(Double.doubleToLongBits(v));
   }
 
   @Override

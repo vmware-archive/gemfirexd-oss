@@ -129,13 +129,15 @@ public final class ManagedDirectBufferAllocator extends DirectBufferAllocator {
 
   private ByteBuffer allocate(String objectName, int size,
       UnsafeHolder.FreeMemoryFactory factory) {
-    final int allocSize = UnsafeHolder.getAllocationSize(size);
-    final int totalSize = allocSize + DIRECT_OBJECT_OVERHEAD;
+    // calculate total size required as per allocation size (aligned to 8 bytes)
+    // and the direct object overhead
+    final int totalSize = UnsafeHolder.getAllocationSize(size) +
+        DIRECT_OBJECT_OVERHEAD;
     if (reserveMemory(objectName, totalSize, false) ||
         tryEvictData(objectName, totalSize)) {
-      return UnsafeHolder.allocateDirectBuffer(allocSize, factory);
+      return UnsafeHolder.allocateDirectBuffer(size, factory);
     } else {
-      throw lowMemoryException("allocate", allocSize);
+      throw lowMemoryException("allocate", size);
     }
   }
 

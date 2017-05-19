@@ -84,6 +84,7 @@ public class DirectBufferAllocator extends BufferAllocator {
       final ByteBuffer newBuffer = ByteBuffer.allocateDirect(newLength);
       newBuffer.put(buffer);
       UnsafeHolder.releaseDirectBuffer(buffer);
+      newBuffer.rewind(); // position at start as per the contract of expand
       return newBuffer;
     } else {
       buffer.limit(newLength);

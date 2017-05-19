@@ -60,7 +60,8 @@ public abstract class BufferAllocator implements Closeable {
   public abstract long baseOffset(ByteBuffer buffer);
 
   /**
-   * Expand given ByteBuffer to new capacity.
+   * Expand given ByteBuffer to new capacity. The new buffer is positioned
+   * at the start and caller has to reposition if required.
    *
    * @return the new expanded ByteBuffer
    */

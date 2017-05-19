@@ -813,7 +813,7 @@ class AlterTableConstantAction extends DDLSingleTableConstantAction
     // init methods in AlterTableNode
     final GemFireContainer gfc = GemFireContainer.getGemFireContainer(td,
         (GemFireTransaction)tc);
-		if (this.mutator != null && !this.truncateTable) {
+    if (this.mutator != null && !this.truncateTable) {
       CacheLoader<?, ?> ldr = attrs.getCacheLoader();
       if (ldr != null) {
         GfxdCacheLoader gfxdldr = (GfxdCacheLoader)ldr;

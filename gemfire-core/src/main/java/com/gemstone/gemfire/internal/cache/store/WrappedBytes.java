@@ -73,7 +73,7 @@ public final class WrappedBytes extends SerializedDiskBuffer {
 
   @Override
   public void write(OutputStreamChannel channel) throws IOException {
-    write(channel, getInternalBuffer());
+    channel.write(this.buffer, this.offset, this.length);
   }
 
   @Override

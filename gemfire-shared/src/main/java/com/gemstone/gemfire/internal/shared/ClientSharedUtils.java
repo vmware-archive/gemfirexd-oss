@@ -1167,6 +1167,11 @@ public abstract class ClientSharedUtils {
       StringBuilder sb = new StringBuilder();
       final int len = buffer.limit();
       for (int i = 0; i < len; i++) {
+        // terminate with ... for large number of bytes
+        if (i > 128 * 1024) {
+          sb.append(" ...");
+          break;
+        }
         sb.append(buffer.get(i)).append(", ");
       }
       return sb.toString();
@@ -1530,8 +1535,7 @@ public abstract class ClientSharedUtils {
   }
 
   public static byte[] toBytes(ByteBuffer buffer, int bufferSize, int length) {
-    if (length >= bufferSize && buffer.hasArray() && buffer.position() == 0 &&
-        buffer.arrayOffset() == 0 && buffer.remaining() == buffer.capacity()) {
+    if (length >= bufferSize && wrapsFullArray(buffer)) {
       return buffer.array();
     } else {
       return toBytesCopy(buffer, bufferSize, length);
