@@ -46,7 +46,7 @@ public final class ByteBufferDataInput
   }
 
   public ByteBuffer getInternalBuffer() {
-    return this.buffer.duplicate();
+    return this.buffer;
   }
 
   @Override
