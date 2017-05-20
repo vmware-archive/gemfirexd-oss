@@ -30,8 +30,8 @@ import com.gemstone.gemfire.DataSerializer;
 import com.gemstone.gemfire.internal.cache.DiskId;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.persistence.DiskRegionView;
-import com.gemstone.gemfire.internal.shared.BufferAllocator;
 import com.gemstone.gemfire.internal.cache.store.SerializedDiskBuffer;
+import com.gemstone.gemfire.internal.shared.BufferAllocator;
 import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
 import com.gemstone.gemfire.internal.shared.OutputStreamChannel;
 import com.gemstone.gemfire.internal.shared.Version;
@@ -82,6 +82,17 @@ public final class ByteBufferDataOutput extends SerializedDiskBuffer
   }
 
   @Override
+  public ByteBuffer getBufferRetain() {
+    return retain() ? this.buffer.duplicate() : null;
+  }
+
+  @Override
+  public boolean needsRelease() {
+    final ByteBuffer buffer = this.buffer;
+    return buffer != null && buffer.isDirect();
+  }
+
+  @Override
   protected synchronized void releaseBuffer() {
     final ByteBuffer buffer = this.buffer;
     this.buffer = null;
@@ -125,11 +136,6 @@ public final class ByteBufferDataOutput extends SerializedDiskBuffer
   @Override
   public Version getVersion() {
     return this.version;
-  }
-
-  @Override
-  public ByteBuffer getInternalBuffer() {
-    return this.buffer.duplicate();
   }
 
   @Override

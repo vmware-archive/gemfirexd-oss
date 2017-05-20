@@ -198,6 +198,7 @@ import com.gemstone.gemfire.internal.offheap.SimpleMemoryAllocatorImpl.ChunkType
 import com.gemstone.gemfire.internal.shared.NativeCalls;
 import com.gemstone.gemfire.internal.shared.SystemProperties;
 import com.gemstone.gemfire.internal.shared.Version;
+import com.gemstone.gemfire.internal.shared.unsafe.DirectBufferAllocator;
 import com.gemstone.gemfire.internal.snappy.CallbackFactoryProvider;
 import com.gemstone.gemfire.internal.snappy.StoreCallbacks;
 import com.gemstone.gemfire.internal.tcp.ConnectionTable;
@@ -6338,8 +6339,9 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
     if (instance != null) {
       return instance.bufferAllocator;
     } else {
-      // default to HeapBufferAllocator while cache is booting or closing
-      return HeapBufferAllocator.instance();
+      // use the allocator as per the setting in StoreCallbacks
+      return CallbackFactoryProvider.getStoreCallbacks().hasOffHeap()
+          ? DirectBufferAllocator.instance() : HeapBufferAllocator.instance();
     }
   }
 

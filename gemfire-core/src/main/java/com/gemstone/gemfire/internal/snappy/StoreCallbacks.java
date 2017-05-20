@@ -88,4 +88,9 @@ public interface StoreCallbacks {
    * Get the number of bytes used for off-heap storage for given object name.
    */
   long getOffHeapMemory(String objectName);
+
+  /**
+   * Returns true if system has off-heap configuration.
+   */
+  boolean hasOffHeap();
 }

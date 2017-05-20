@@ -24,6 +24,7 @@ import com.gemstone.gemfire.internal.cache.DiskId;
 import com.gemstone.gemfire.internal.cache.persistence.DiskRegionView;
 import com.gemstone.gemfire.internal.concurrent.unsafe.UnsafeAtomicIntegerFieldUpdater;
 import com.gemstone.gemfire.internal.shared.BufferAllocator;
+import com.gemstone.gemfire.internal.shared.ByteBufferReference;
 import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
 import com.gemstone.gemfire.internal.shared.OutputStreamChannel;
 
@@ -56,7 +57,7 @@ import com.gemstone.gemfire.internal.shared.OutputStreamChannel;
  * release the underlying buffer due to more {@link #release()}s.</li>
  * </ul>
  */
-public abstract class SerializedDiskBuffer {
+public abstract class SerializedDiskBuffer extends ByteBufferReference {
 
   /**
    * Reference count for {@link #retain()} and {@link #release()}.
@@ -70,6 +71,7 @@ public abstract class SerializedDiskBuffer {
   /**
    * Get the current reference count for this object.
    */
+  @Override
   public int refCount() {
     return refCountUpdate.get(this);
   }
@@ -81,6 +83,7 @@ public abstract class SerializedDiskBuffer {
    * @return True if the retain was on a valid buffer else false if the
    * underlying data has already been released (and will lead to empty writes).
    */
+  @Override
   public boolean retain() {
     while (true) {
       final int refCount = refCountUpdate.get(this);
@@ -104,6 +107,7 @@ public abstract class SerializedDiskBuffer {
    * Typically this means using NIO DirectByteBuffers for data which will
    * release automatically in the GC cycles when no references remain.
    */
+  @Override
   public void release() {
     while (true) {
       final int refCount = refCountUpdate.get(this);
@@ -121,10 +125,6 @@ public abstract class SerializedDiskBuffer {
     }
   }
 
-  public boolean needsRelease() {
-    return true;
-  }
-
   protected abstract void releaseBuffer();
 
   /**
@@ -140,14 +140,6 @@ public abstract class SerializedDiskBuffer {
   public abstract void write(OutputStreamChannel channel) throws IOException;
 
   /**
-   * Size of the underlying data. If there are some callers who are doing
-   * explicit retain/release calls, then callers of this should also use
-   * the same consistently to ensure data does not get released prematurely
-   * and the result is consistent with data in {@link #write}.
-   */
-  public abstract int size();
-
-  /**
    * For direct ByteBuffers, returns the size (in bytes) of the used data in
    * the object including off-heap object overhead. Only required to be
    * implemented for structures that will be stored in region.
@@ -156,15 +148,6 @@ public abstract class SerializedDiskBuffer {
    * the {@link BufferAllocator} if it has been used for this buffer.
    */
   public abstract int getOffHeapSizeInBytes();
-
-  /**
-   * Get the internal data as a ByteBuffer for temporary use.
-   * <p>
-   * USE WITH CARE ESPECIALLY TO ENSURE NO RELEASE HAPPENS WHILE USING
-   * THE BUFFER SO CALLER MUST ENSURE AT LEAST ONE {@link #retain()}
-   * AND NO EXPLICIT RELEASE OF THE RETURNED BUFFER (IF A DIRECT ONE).
-   */
-  public abstract ByteBuffer getInternalBuffer();
 
   protected final void write(OutputStreamChannel channel,
       ByteBuffer buffer) throws IOException {

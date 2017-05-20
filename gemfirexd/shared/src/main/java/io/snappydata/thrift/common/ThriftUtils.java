@@ -43,8 +43,8 @@ import java.util.concurrent.locks.LockSupport;
 
 import com.gemstone.gemfire.internal.shared.ClientSharedData;
 import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
-import com.gemstone.gemfire.internal.shared.unsafe.DirectBufferAllocator;
 import com.gemstone.gemfire.internal.shared.SystemProperties;
+import com.gemstone.gemfire.internal.shared.unsafe.DirectBufferAllocator;
 import com.gemstone.gemfire.internal.shared.unsafe.UnsafeHolder;
 import com.pivotal.gemfirexd.Attribute;
 import com.pivotal.gemfirexd.internal.shared.common.SharedUtils;
@@ -127,14 +127,6 @@ public abstract class ThriftUtils {
 
   public static EnumMap<TransactionAttribute, Boolean> newTransactionFlags() {
     return new EnumMap<>(TransactionAttribute.class);
-  }
-
-  public static ByteBuffer copyBuffer(ByteBuffer buffer) {
-    final int numBytes = buffer.remaining();
-    final byte[] bytes = new byte[numBytes];
-    buffer.get(bytes, 0, numBytes);
-    buffer.flip();
-    return ByteBuffer.wrap(bytes);
   }
 
   public static byte[] toBytes(ByteBuffer buffer) {

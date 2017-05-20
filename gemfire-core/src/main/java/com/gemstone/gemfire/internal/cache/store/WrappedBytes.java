@@ -55,6 +55,11 @@ public final class WrappedBytes extends SerializedDiskBuffer {
   }
 
   @Override
+  public ByteBuffer getBufferRetain() {
+    return ByteBuffer.wrap(this.buffer, this.offset, this.length);
+  }
+
+  @Override
   public void release() {
   }
 
@@ -87,12 +92,7 @@ public final class WrappedBytes extends SerializedDiskBuffer {
   }
 
   @Override
-  public ByteBuffer getInternalBuffer() {
-    return ByteBuffer.wrap(this.buffer, this.offset, this.length);
-  }
-
-  @Override
   public String toString() {
-    return ClientSharedUtils.toString(getInternalBuffer());
+    return ClientSharedUtils.toString(getBufferRetain());
   }
 }

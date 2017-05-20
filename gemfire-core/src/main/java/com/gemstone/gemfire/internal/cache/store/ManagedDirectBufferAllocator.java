@@ -180,6 +180,7 @@ public final class ManagedDirectBufferAllocator extends DirectBufferAllocator {
 
   @Override
   public void close() {
+    UnsafeHolder.releasePendingReferences();
     // check that all memory has been released else try to release
     long allocated = CallbackFactoryProvider.getStoreCallbacks()
         .getOffHeapMemory(DIRECT_STORE_OBJECT_OWNER);
@@ -191,7 +192,7 @@ public final class ManagedDirectBufferAllocator extends DirectBufferAllocator {
         // TODO: this needs to be observed since its quite possible that
         // unreleased references will remain especially in cache close
         // unless an explicit GC is invoked
-        logger.warn("Unreleased memory " + allocated + " bytes in close.");
+        logger.info("Unreleased memory " + allocated + " bytes in close.");
       }
     }
     DirectBufferAllocator.resetInstance();

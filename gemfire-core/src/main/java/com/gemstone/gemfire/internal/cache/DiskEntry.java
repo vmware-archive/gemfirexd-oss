@@ -714,15 +714,12 @@ public interface DiskEntry extends RegionEntry {
         this.buffer.write(channel);
       }
 
-       /**
-       * Get the internal data as a ByteBuffer for temporary use.
-       * <p>
-       * USE WITH CARE ESPECIALLY TO ENSURE NO RELEASE HAPPENS WHILE USING
-       * THE BUFFER SO CALLER MUST ENSURE AT LEAST ONE REFERENCE COUNT
-       * AND NO EXPLICIT RELEASE OF THE RETURNED BUFFER (IF A DIRECT ONE).
+      /**
+       * Get the data as a ByteBuffer with a retain() invoked on it. Callers
+       * should normally invoked {@link #release()} when done for eager release.
        */
-      public ByteBuffer getInternalBuffer() {
-        return this.buffer.getInternalBuffer();
+      public ByteBuffer getBufferRetain() {
+        return this.buffer.getBufferRetain();
       }
 
       public int size() {

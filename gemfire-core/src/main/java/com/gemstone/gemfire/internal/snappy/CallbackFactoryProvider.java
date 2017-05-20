@@ -144,6 +144,11 @@ public abstract class CallbackFactoryProvider {
     public long getOffHeapMemory(String objectName) {
       return 0L;
     }
+
+    @Override
+    public boolean hasOffHeap() {
+      return false;
+    }
   };
 
   public static void setStoreCallbacks(StoreCallbacks cb) {

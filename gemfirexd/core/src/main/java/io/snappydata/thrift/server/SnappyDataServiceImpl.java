@@ -628,12 +628,12 @@ public final class SnappyDataServiceImpl extends LocatorServiceImpl implements
         : ResultSet.CLOSE_CURSORS_AT_COMMIT;
   }
 
-  private static ByteBuffer getAsBuffer(Blob blob, int length)
+  private static BlobChunk getAsLastChunk(Blob blob, int length)
       throws SQLException {
     if (blob instanceof BufferedBlob) {
-      return ((BufferedBlob)blob).getAsBuffer();
+      return ((BufferedBlob)blob).getAsLastChunk();
     } else {
-      return ByteBuffer.wrap(blob.getBytes(1, length));
+      return new BlobChunk(ByteBuffer.wrap(blob.getBytes(1, length)), true);
     }
   }
 
@@ -664,8 +664,7 @@ public final class SnappyDataServiceImpl extends LocatorServiceImpl implements
       }
       chunk.setLobId(lobId);
     } else {
-      chunk.chunk = getAsBuffer(blob, (int)length);
-      chunk.setLast(true);
+      chunk = getAsLastChunk(blob, (int)length);
       blob.free();
     }
     return chunk;
@@ -3133,8 +3132,7 @@ public final class SnappyDataServiceImpl extends LocatorServiceImpl implements
           chunk.chunk = ByteBuffer.wrap(blob.getBytes(offset + 1, chunkSize));
           chunk.setLast(false);
         } else {
-          chunk.chunk = getAsBuffer(blob, (int)length);
-          chunk.setLast(true);
+          chunk = getAsLastChunk(blob, (int)length);
           if (freeLobAtEnd) {
             conn.removeLOBMapping(lobId);
             blob.free();
