@@ -176,7 +176,7 @@ public final class ClientBlob extends ClientLobBase implements BufferedBlob {
     final BlobChunk chunk = this.currentChunk;
     if (chunk != null && this.hasBufferOwnership) {
       this.currentChunk = null;
-      chunk.releaseChunk();
+      chunk.releaseBuffer();
     }
     // don't need to do anything to close MemInputStream yet
     this.dataStream = null;
@@ -238,18 +238,18 @@ public final class ClientBlob extends ClientLobBase implements BufferedBlob {
             SQLState.LANG_STREAMING_COLUMN_I_O_EXCEPTION, ioe, "java.sql.Blob");
       }
     } else if ((chunk = this.currentChunk) != null) {
-      ByteBuffer buffer = chunk.getChunkRetain();
+      ByteBuffer buffer = chunk.getBufferRetain();
       // check if it lies outside the current chunk
       if (chunk.lobId != snappydataConstants.INVALID_ID &&
           (offset < chunk.offset ||
               (offset + length) > (chunk.offset + buffer.remaining()))) {
         // fetch new chunk
         try {
-          chunk.releaseChunk();
+          chunk.releaseBuffer();
           this.currentChunk = chunk = service.getBlobChunk(
               getLobSource(true, "Blob.readBytes"), chunk.lobId, offset,
               Math.max(baseChunkSize, length), false);
-          buffer = chunk.getChunkRetain();
+          buffer = chunk.getBufferRetain();
         } catch (SnappyException se) {
           throw ThriftExceptionUtil.newSQLException(se);
         }
@@ -262,10 +262,10 @@ public final class ClientBlob extends ClientLobBase implements BufferedBlob {
       if (length > 0) {
         buffer.get(b, boffset, length);
         buffer.position(bpos);
-        chunk.releaseChunk();
+        chunk.releaseBuffer();
         return length;
       } else {
-        chunk.releaseChunk();
+        chunk.releaseBuffer();
         return -1; // end of data
       }
     } else {

@@ -27,6 +27,7 @@ import java.nio.charset.StandardCharsets;
 import javax.annotation.Nonnull;
 
 import com.gemstone.gemfire.DataSerializer;
+import com.gemstone.gemfire.internal.cache.DiskEntry;
 import com.gemstone.gemfire.internal.cache.DiskId;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.persistence.DiskRegionView;
@@ -83,7 +84,7 @@ public final class ByteBufferDataOutput extends SerializedDiskBuffer
 
   @Override
   public ByteBuffer getBufferRetain() {
-    return retain() ? this.buffer.duplicate() : null;
+    return retain() ? this.buffer.duplicate() : DiskEntry.Helper.NULL_BUFFER;
   }
 
   @Override

@@ -3431,16 +3431,22 @@ public final class GemFireContainer extends AbstractGfxdLockable implements
             // storing in serialized form
             // [sumedh] row has already been cloned for putAll case
             final DataValueDescriptor[] row = (DataValueDescriptor[])val;
-            for (int i = 0; i < row.length; i++) {
-              // also invoke setRegionContext() here that will turn DVD into
-              // its final shape to avoid any state changes during reads that
-              // have potential race conditions
-              row[i].setRegionContext(this.region);
+            if (isObjectStore()) {
+              Map.Entry<Object, Object> entry = this.encoder.fromRow(row, this);
+              regionKey = entry.getKey();
+              val = entry.getValue();
+            } else {
+              for (int i = 0; i < row.length; i++) {
+                // also invoke setRegionContext() here that will turn DVD into
+                // its final shape to avoid any state changes during reads that
+                // have potential race conditions
+                row[i].setRegionContext(this.region);
+              }
+              if ((regionKey = getGeneratedKey(primaryKeyColumns)) == null) {
+                regionKey = getPrimaryKeyDVDs(primaryKeyColumns, row);
+              }
+              val = row;
             }
-            if ((regionKey = getGeneratedKey(primaryKeyColumns)) == null) {
-              regionKey = getPrimaryKeyDVDs(primaryKeyColumns, row);
-            }
-            val = row;
             final Object routingObject = GemFireXDUtils
                 .getRoutingObjectFromGlobalIndex(this.region, regionKey, val);
             // marking skipListener as false.

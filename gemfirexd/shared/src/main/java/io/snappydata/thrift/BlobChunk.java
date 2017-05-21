@@ -65,7 +65,7 @@ public class BlobChunk implements org.apache.thrift.TBase<BlobChunk, BlobChunk._
     }
   }
 
-  public ByteBuffer getChunkRetain() {
+  public ByteBuffer getBufferRetain() {
     final ByteBufferReference reference = this.chunkReference;
     if (reference != null) {
       return reference.getBufferRetain();
@@ -74,7 +74,7 @@ public class BlobChunk implements org.apache.thrift.TBase<BlobChunk, BlobChunk._
     }
   }
 
-  public void releaseChunk() {
+  public void releaseBuffer() {
     final ByteBufferReference reference = this.chunkReference;
     if (reference != null && reference.needsRelease()) {
       reference.release();
@@ -220,11 +220,11 @@ public class BlobChunk implements org.apache.thrift.TBase<BlobChunk, BlobChunk._
   }
 
   public byte[] getChunk() {
-    ByteBuffer chunk = getChunkRetain();
+    ByteBuffer chunk = getBufferRetain();
     if (!TBaseHelper.wrapsFullArray(chunk)) {
       // replace with byte array wrapper
       this.chunk = chunk = ByteBuffer.wrap(ThriftUtils.toBytes(chunk));
-      releaseChunk();
+      releaseBuffer();
     }
     return chunk.array();
   }
@@ -446,8 +446,8 @@ public class BlobChunk implements org.apache.thrift.TBase<BlobChunk, BlobChunk._
     if (that == null)
       return false;
 
-    final ByteBuffer thisChunk = getChunkRetain();
-    final ByteBuffer thatChunk = that.getChunkRetain();
+    final ByteBuffer thisChunk = getBufferRetain();
+    final ByteBuffer thatChunk = that.getBufferRetain();
     boolean this_present_chunk = thisChunk != null;
     boolean that_present_chunk = thatChunk != null;
     if (this_present_chunk || that_present_chunk) {
@@ -500,7 +500,7 @@ public class BlobChunk implements org.apache.thrift.TBase<BlobChunk, BlobChunk._
   public int hashCode() {
     List<Object> list = new ArrayList<Object>();
 
-    ByteBuffer chunk = getChunkRetain();
+    ByteBuffer chunk = getBufferRetain();
     boolean present_chunk = chunk != null;
     list.add(present_chunk);
     if (present_chunk)
@@ -527,7 +527,7 @@ public class BlobChunk implements org.apache.thrift.TBase<BlobChunk, BlobChunk._
       list.add(totalLength);
 
     int hash = list.hashCode();
-    releaseChunk();
+    releaseBuffer();
     return hash;
   }
 
@@ -539,8 +539,8 @@ public class BlobChunk implements org.apache.thrift.TBase<BlobChunk, BlobChunk._
 
     int lastComparison = 0;
 
-    ByteBuffer thisChunk = getChunkRetain();
-    ByteBuffer otherChunk = other.getChunkRetain();
+    ByteBuffer thisChunk = getBufferRetain();
+    ByteBuffer otherChunk = other.getBufferRetain();
     lastComparison = Boolean.valueOf(thisChunk != null).compareTo(otherChunk != null);
     if (lastComparison != 0) {
       return lastComparison;
@@ -753,14 +753,14 @@ public class BlobChunk implements org.apache.thrift.TBase<BlobChunk, BlobChunk._
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      final ByteBuffer chunk = struct.getChunkRetain();
+      final ByteBuffer chunk = struct.getBufferRetain();
       if (chunk != null) {
         try {
           oprot.writeFieldBegin(CHUNK_FIELD_DESC);
           oprot.writeBinary(chunk);
           oprot.writeFieldEnd();
         } finally {
-          struct.releaseChunk();
+          struct.releaseBuffer();
         }
       }
       oprot.writeFieldBegin(LAST_FIELD_DESC);
@@ -798,11 +798,11 @@ public class BlobChunk implements org.apache.thrift.TBase<BlobChunk, BlobChunk._
     @Override
     public void write(org.apache.thrift.protocol.TProtocol prot, BlobChunk struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
-      final ByteBuffer chunk = struct.getChunkRetain();
+      final ByteBuffer chunk = struct.getBufferRetain();
       try {
         oprot.writeBinary(chunk);
       } finally {
-        struct.releaseChunk();
+        struct.releaseBuffer();
       }
       oprot.writeBool(struct.last);
       BitSet optionals = new BitSet();

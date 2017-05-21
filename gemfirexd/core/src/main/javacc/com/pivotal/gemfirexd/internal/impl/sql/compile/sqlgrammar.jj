@@ -12355,7 +12355,7 @@ partitioningClause(DistributionDefinitionNode distributionNode,
       repPartPersFlags[1] = true;
       try {
         return (PartitionResolver)ClassPathLoader.getLatest().forName(
-            resolverClass).newInstance();
+            resolverClass).getConstructor(TableName.class).newInstance(tableName);
       } catch (Exception e) {
         throw StandardException.newException(
             SQLState.UNEXPECTED_EXCEPTION_FOR_PARTITION_RESOLVER, e, tableName);

@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Vector;
 
 import com.gemstone.gemfire.cache.Region;
-import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gnu.trove.TIntArrayList;
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
 import com.pivotal.gemfirexd.internal.engine.ddl.resolver.GfxdPartitionResolver;
@@ -82,6 +81,7 @@ public class SelectQueryInfo extends DMLQueryInfo {
   protected GroupByQueryInfo groupbyQI;
 
   private RowFormatter rowFormatter;
+  private boolean objectStore;
 
   // column indexes for projection
   private int[] projectionFixedColumns;
@@ -779,6 +779,7 @@ public class SelectQueryInfo extends DMLQueryInfo {
         if (projectionRequired) {
           assert this.projQueryInfo.length > 0: "no projection columns";
           this.rowFormatter = container.getRowFormatter(this.projQueryInfo);
+          this.objectStore = container.isObjectStore();
           final TIntArrayList fixedCols = new TIntArrayList();
           final TIntArrayList varCols = new TIntArrayList();
           final TIntArrayList lobCols = new TIntArrayList();
@@ -803,10 +804,12 @@ public class SelectQueryInfo extends DMLQueryInfo {
         }
         else {
           this.rowFormatter = container.getCurrentRowFormatter();
+          this.objectStore = container.isObjectStore();
         }
       }
       else {
         this.rowFormatter = container.getCurrentRowFormatter();
+        this.objectStore = container.isObjectStore();
       }
     }
   }
@@ -940,6 +943,10 @@ public class SelectQueryInfo extends DMLQueryInfo {
 
   public final RowFormatter getRowFormatter() {
     return this.rowFormatter;
+  }
+
+  public final boolean isObjectStore() {
+    return this.objectStore;
   }
 
   public final boolean isProjectionRequired() {
