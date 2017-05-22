@@ -587,6 +587,9 @@ public class CreateTableNode extends DDLStatementNode
                   this.distributionDesc = tableElementList
                       .validateAndResolveDistributionPolicy();
 		}
+		if (resolver != null) {
+		  resolver.updateDistributionDescriptor(this.distributionDesc);
+		}
 		//validateWanServerGroups();
 		//validateAsycnEventListenerServerGroups();
 // GemStone changes END
