@@ -93,4 +93,9 @@ public interface StoreCallbacks {
    * Returns true if system has off-heap configuration.
    */
   boolean hasOffHeap();
+
+  /**
+   * Log the used memory breakdown as maintained by the MemoryManager.
+   */
+  void logMemoryStats();
 }

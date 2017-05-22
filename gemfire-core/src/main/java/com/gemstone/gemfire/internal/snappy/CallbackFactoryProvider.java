@@ -149,6 +149,10 @@ public abstract class CallbackFactoryProvider {
     public boolean hasOffHeap() {
       return false;
     }
+
+    @Override
+    public void logMemoryStats() {
+    }
   };
 
   public static void setStoreCallbacks(StoreCallbacks cb) {
