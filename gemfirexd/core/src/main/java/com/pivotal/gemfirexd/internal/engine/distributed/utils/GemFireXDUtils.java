@@ -389,6 +389,9 @@ public final class GemFireXDUtils {
       GemFireContainer container, boolean doClone) throws StandardException {
     if (container.isByteArrayStore()) {
       return new CompactCompositeRegionKey(dvd, container.getExtraTableInfo());
+    } else if (container.isObjectStore()) {
+      return container.getRowEncoder().fromRowToKey(
+          new DataValueDescriptor[] { dvd }, container);
     }
     return (doClone ? dvd.getClone() : dvd);
   }
@@ -399,6 +402,8 @@ public final class GemFireXDUtils {
     if (container.isByteArrayStore()) {
       return new CompactCompositeRegionKey(compositeKeys,
           container.getExtraTableInfo());
+    } else if (container.isObjectStore()) {
+      return container.getRowEncoder().fromRowToKey(compositeKeys, container);
     }
     else {
       if (compositeKeys.length == 1) {

@@ -2540,7 +2540,7 @@ public final class GemFireContainer extends AbstractGfxdLockable implements
         }
         val = getPrimaryKeyBytesAndValue(row, rf, cKey, primaryKeyColumns);
       } else if (isObjectStore()) {
-        Map.Entry<Object, Object> entry = this.encoder.fromRow(row, this);
+        Map.Entry<RegionKey, Object> entry = this.encoder.fromRow(row, this);
         regionKey = entry.getKey();
         val = entry.getValue();
       }
@@ -3432,7 +3432,7 @@ public final class GemFireContainer extends AbstractGfxdLockable implements
             // [sumedh] row has already been cloned for putAll case
             final DataValueDescriptor[] row = (DataValueDescriptor[])val;
             if (isObjectStore()) {
-              Map.Entry<Object, Object> entry = this.encoder.fromRow(row, this);
+              Map.Entry<RegionKey, Object> entry = this.encoder.fromRow(row, this);
               regionKey = entry.getKey();
               val = entry.getValue();
             } else {
@@ -5030,6 +5030,10 @@ public final class GemFireContainer extends AbstractGfxdLockable implements
 
   public final boolean isObjectStore() {
     return this.encoder != null;
+  }
+
+  public final RowEncoder getRowEncoder() {
+    return this.encoder;
   }
 
   private final boolean isCandidateForByteArrayStore() {

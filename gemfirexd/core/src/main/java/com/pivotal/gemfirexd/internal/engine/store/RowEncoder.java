@@ -33,8 +33,13 @@ public interface RowEncoder {
   ExecRow toRow(RegionEntry entry, Object value, GemFireContainer container);
 
   /**
-   * Decode the key-value from an {@link ExecRow} as encoded by {@link #toRow}.
+   * Decode the key-value from a row as encoded by {@link #toRow}.
    */
-  Map.Entry<Object, Object> fromRow(DataValueDescriptor[] row,
+  Map.Entry<RegionKey, Object> fromRow(DataValueDescriptor[] row,
       GemFireContainer container);
+
+  /**
+   * Decode the key from key columns as encoded by {@link #toRow}.
+   */
+  RegionKey fromRowToKey(DataValueDescriptor[] key, GemFireContainer container);
 }
