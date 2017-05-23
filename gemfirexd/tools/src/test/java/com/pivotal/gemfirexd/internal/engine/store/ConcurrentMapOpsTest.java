@@ -542,7 +542,7 @@ public class ConcurrentMapOpsTest extends JdbcTestBase {
 
     // check the ratio of qualified vs unqualified and if its too large then it
     // indicates some other problem
-    if (requalifySuccess.intValue() < (requalifyFailed.intValue() * 2)) {
+    if (requalifySuccess.intValue() < requalifyFailed.intValue()) {
       fail("Too many requalifications failed: qualifiedRows="
           + requalifySuccess.intValue() + ", requalifyFailed="
           + requalifyFailed.intValue());
@@ -550,7 +550,7 @@ public class ConcurrentMapOpsTest extends JdbcTestBase {
     // we also should be doing some requalify skips
     if (this.isolationLevel == Connection.TRANSACTION_NONE
         && (requalifySkipped.intValue() < ((requalifySuccess.intValue()
-            + requalifyFailed.intValue()) / 10000))) {
+            + requalifyFailed.intValue()) / 20000))) {
       fail("Not enough requalifications skipped: requalifySkipped="
           + requalifySkipped.intValue() + ", requalifySuccess="
           + requalifySuccess.intValue() + ", requalifyFailed="
