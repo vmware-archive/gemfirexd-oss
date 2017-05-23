@@ -43,7 +43,7 @@ import com.pivotal.gemfirexd.internal.shared.common.sanity.SanityManager;
 import com.pivotal.gemfirexd.jdbc.JdbcTestBase;
 import org.apache.derbyTesting.junit.JDBC;
 
-public class ConcurrentMapOpsTest extends JdbcTestBase {
+public class ConcurrentMapOpsTest extends ConcurrentMapOpsHolder {
 
   public ConcurrentMapOpsTest(String name) {
     super(name);
@@ -121,90 +121,26 @@ public class ConcurrentMapOpsTest extends JdbcTestBase {
     removeExpectedExceptions(new Object[] { "Statistics sampler", "X0Z02" });
   }
 
-  @SuppressWarnings("unused")
-  private volatile int intJDKCounter;
-  @SuppressWarnings("unused")
-  private volatile long longJDKCounter;
-  @SuppressWarnings("unused")
-  private volatile LongRef refJDKCounter;
-  @SuppressWarnings("unused")
-  private volatile int intUnsafeCounter;
-  @SuppressWarnings("unused")
-  private volatile long longUnsafeCounter;
-  @SuppressWarnings("unused")
-  private volatile LongRef refUnsafeCounter;
   private volatile LongRef refCounter;
-
-  public static class LongRef {
-    long v;
-
-    public LongRef(long v) {
-      this.v = v;
-    }
-
-    public final long getLong() {
-      return this.v;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (o instanceof LongRef) {
-        LongRef lr = (LongRef)o;
-        return (this.v == lr.v);
-      }
-      else {
-        return false;
-      }
-    }
-
-    @Override
-    public int hashCode() {
-      int hi = (int)(this.v >>> 32);
-      int lo = (int)(this.v & 0xFFFFFFFF);
-      return (hi ^ lo);
-    }
-
-    @Override
-    public String toString() {
-      return "LongRef=" + this.v;
-    }
-  }
 
   /** compare raw numbers for atomic ops using JDK vs unsafe wrapper classes */
   public void testCompareAtomicOps() {
 
-    final AtomicIntegerFieldUpdater<ConcurrentMapOpsTest> intJDKCounter =
-        AtomicIntegerFieldUpdater.newUpdater(ConcurrentMapOpsTest.class,
-            "intJDKCounter");
-    final AtomicLongFieldUpdater<ConcurrentMapOpsTest> longJDKCounter =
-        AtomicLongFieldUpdater.newUpdater(ConcurrentMapOpsTest.class,
-            "longJDKCounter");
-    final AtomicReferenceFieldUpdater<ConcurrentMapOpsTest, LongRef>
-        refJDKCounter = AtomicReferenceFieldUpdater.newUpdater(
-            ConcurrentMapOpsTest.class, LongRef.class, "refJDKCounter");
-
-    final AtomicIntegerFieldUpdater<ConcurrentMapOpsTest> intUnsafeCounter =
-        AtomicUpdaterFactory.newIntegerFieldUpdater(ConcurrentMapOpsTest.class,
-            "intUnsafeCounter");
-    final AtomicLongFieldUpdater<ConcurrentMapOpsTest> longUnsafeCounter =
-        AtomicUpdaterFactory.newLongFieldUpdater(ConcurrentMapOpsTest.class,
-            "longUnsafeCounter");
-    final AtomicReferenceFieldUpdater<ConcurrentMapOpsTest, LongRef>
-        refUnsafeCounter = AtomicUpdaterFactory.newReferenceFieldUpdater(
-            ConcurrentMapOpsTest.class, LongRef.class, "refUnsafeCounter");
-
     // some warmups
-    runAtomicOps(1, 50000, intJDKCounter, longJDKCounter, refJDKCounter,
-        intUnsafeCounter, longUnsafeCounter, refUnsafeCounter);
+    runAtomicOps(1, 50000, intJDKCounterUpdate, longJDKCounterUpdate,
+        refJDKCounterUpdate, intUnsafeCounterUpdate, longUnsafeCounterUpdate,
+        refUnsafeCounterUpdate);
 
     // timed runs with single threads to see the raw overheads with no
     // concurrency (as we would expect in most usual cases)
-    runAtomicOps(1, 50000000, intJDKCounter, longJDKCounter, refJDKCounter,
-        intUnsafeCounter, longUnsafeCounter, refUnsafeCounter);
+    runAtomicOps(1, 50000000, intJDKCounterUpdate, longJDKCounterUpdate,
+        refJDKCounterUpdate, intUnsafeCounterUpdate, longUnsafeCounterUpdate,
+        refUnsafeCounterUpdate);
 
     // now with concurrency
-    runAtomicOps(5, 2000000, intJDKCounter, longJDKCounter, refJDKCounter,
-        intUnsafeCounter, longUnsafeCounter, refUnsafeCounter);
+    runAtomicOps(5, 2000000, intJDKCounterUpdate, longJDKCounterUpdate,
+        refJDKCounterUpdate, intUnsafeCounterUpdate, longUnsafeCounterUpdate,
+        refUnsafeCounterUpdate);
   }
 
   public void runOpsWithCSLM(final int runtimeInMillis) throws Throwable {
@@ -703,12 +639,12 @@ public class ConcurrentMapOpsTest extends JdbcTestBase {
   }
 
   private void runAtomicOps(final int numThreads, final int numRuns,
-      final AtomicIntegerFieldUpdater<ConcurrentMapOpsTest> intJDKCounter,
-      final AtomicLongFieldUpdater<ConcurrentMapOpsTest> longJDKCounter,
-      final AtomicReferenceFieldUpdater<ConcurrentMapOpsTest, LongRef> refJDKCounter,
-      final AtomicIntegerFieldUpdater<ConcurrentMapOpsTest> intUnsafeCounter,
-      final AtomicLongFieldUpdater<ConcurrentMapOpsTest> longUnsafeCounter,
-      final AtomicReferenceFieldUpdater<ConcurrentMapOpsTest, LongRef> refUnsafeCounter) {
+      final AtomicIntegerFieldUpdater<ConcurrentMapOpsHolder> intJDKCounter,
+      final AtomicLongFieldUpdater<ConcurrentMapOpsHolder> longJDKCounter,
+      final AtomicReferenceFieldUpdater<ConcurrentMapOpsHolder, LongRef> refJDKCounter,
+      final AtomicIntegerFieldUpdater<ConcurrentMapOpsHolder> intUnsafeCounter,
+      final AtomicLongFieldUpdater<ConcurrentMapOpsHolder> longUnsafeCounter,
+      final AtomicReferenceFieldUpdater<ConcurrentMapOpsHolder, LongRef> refUnsafeCounter) {
 
     final AtomicInteger atomicIntCounter = new AtomicInteger();
     final AtomicLong atomicLongCounter = new AtomicLong();
@@ -951,5 +887,80 @@ public class ConcurrentMapOpsTest extends JdbcTestBase {
     }
     System.gc();
     System.runFinalization();
+  }
+}
+
+abstract class ConcurrentMapOpsHolder extends JdbcTestBase {
+
+  @SuppressWarnings("unused")
+  volatile int intJDKCounter;
+  @SuppressWarnings("unused")
+  volatile long longJDKCounter;
+  @SuppressWarnings("unused")
+  volatile LongRef refJDKCounter;
+
+  @SuppressWarnings("unused")
+  volatile int intUnsafeCounter;
+  @SuppressWarnings("unused")
+  volatile long longUnsafeCounter;
+  @SuppressWarnings("unused")
+  volatile LongRef refUnsafeCounter;
+
+  static final AtomicIntegerFieldUpdater<ConcurrentMapOpsHolder>
+      intJDKCounterUpdate = AtomicIntegerFieldUpdater.newUpdater(
+      ConcurrentMapOpsHolder.class, "intJDKCounter");
+  static final AtomicLongFieldUpdater<ConcurrentMapOpsHolder>
+      longJDKCounterUpdate = AtomicLongFieldUpdater.newUpdater(
+      ConcurrentMapOpsHolder.class, "longJDKCounter");
+  static final AtomicReferenceFieldUpdater<ConcurrentMapOpsHolder, LongRef>
+      refJDKCounterUpdate = AtomicReferenceFieldUpdater.newUpdater(
+      ConcurrentMapOpsHolder.class, LongRef.class, "refJDKCounter");
+
+  static final AtomicIntegerFieldUpdater<ConcurrentMapOpsHolder>
+      intUnsafeCounterUpdate = AtomicUpdaterFactory.newIntegerFieldUpdater(
+      ConcurrentMapOpsHolder.class, "intUnsafeCounter");
+  static final AtomicLongFieldUpdater<ConcurrentMapOpsHolder>
+      longUnsafeCounterUpdate = AtomicUpdaterFactory.newLongFieldUpdater(
+      ConcurrentMapOpsHolder.class, "longUnsafeCounter");
+  static final AtomicReferenceFieldUpdater<ConcurrentMapOpsHolder, LongRef>
+      refUnsafeCounterUpdate = AtomicUpdaterFactory.newReferenceFieldUpdater(
+      ConcurrentMapOpsHolder.class, LongRef.class, "refUnsafeCounter");
+
+  public static class LongRef {
+    long v;
+
+    public LongRef(long v) {
+      this.v = v;
+    }
+
+    public final long getLong() {
+      return this.v;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (o instanceof LongRef) {
+        LongRef lr = (LongRef)o;
+        return (this.v == lr.v);
+      } else {
+        return false;
+      }
+    }
+
+    @Override
+    public int hashCode() {
+      int hi = (int)(this.v >>> 32);
+      int lo = (int)(this.v & 0xFFFFFFFF);
+      return (hi ^ lo);
+    }
+
+    @Override
+    public String toString() {
+      return "LongRef=" + this.v;
+    }
+  }
+
+  public ConcurrentMapOpsHolder(String name) {
+    super(name);
   }
 }
