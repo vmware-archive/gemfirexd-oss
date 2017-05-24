@@ -2425,8 +2425,11 @@ public class GfxdSystemProcedures extends SystemProcedures {
     int uniqId = Integer.parseInt(st.nextToken());
     TXId txId1 = TXId.valueOf(memberId, uniqId);
     TXStateInterface txState = Misc.getGemFireCache().getCacheTransactionManager().getHostedTXState(txId1);
-    Misc.getGemFireCache().getCacheTransactionManager().masqueradeAs(txState);
-    Misc.getGemFireCache().getCacheTransactionManager().commit();
+    LanguageConnectionContext lcc = ConnectionUtil.getCurrentLCC();
+    GemFireTransaction tc = (GemFireTransaction)lcc.getTransactionExecute();
+    tc.clearActiveTXState(false, true);
+    Misc.getGemFireCacheNoThrow().getCacheTransactionManager().masqueradeAs(txState);
+    Misc.getGemFireCacheNoThrow().getCacheTransactionManager().commit();
   }
 
   public static void GET_SNAPSHOT_TXID(String[] txid) throws SQLException {
