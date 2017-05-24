@@ -2433,9 +2433,9 @@ public class GfxdSystemProcedures extends SystemProcedures {
   }
 
   public static void GET_SNAPSHOT_TXID(String[] txid) throws SQLException {
+    LanguageConnectionContext lcc = ConnectionUtil.getCurrentLCC();
+    GemFireTransaction tc = (GemFireTransaction)lcc.getTransactionExecute();
     if (GemFireXDUtils.TraceExecution) {
-      LanguageConnectionContext lcc = ConnectionUtil.getCurrentLCC();
-      GemFireTransaction tc = (GemFireTransaction)lcc.getTransactionExecute();
       SanityManager.DEBUG_PRINT(GfxdConstants.TRACE_EXECUTION,
           "in procedure GET_SNAPSHOT_TXID() SURANJAN for conn " + tc.getConnectionID() + " tc id" + tc.getTransactionIdString()
       + " TxManager " + TXManagerImpl.getCurrentTXId());
@@ -2451,6 +2451,7 @@ public class GfxdSystemProcedures extends SystemProcedures {
     } else {
       txid[0] = "null";
     }
+    tc.clearActiveTXState(false, true);
     TXManagerImpl.snapshotTxState.set(null);
   }
 
