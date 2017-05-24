@@ -1383,7 +1383,7 @@ public interface DiskEntry extends RegionEntry {
 
       if (!LocalRegion.isMetaTable(dr.getName())) {
         boolean acquired = CallbackFactoryProvider.getStoreCallbacks().acquireStorageMemory(
-            dr.getName(), recoveredValueSize, null, false, false);
+            dr.getName(), recoveredValueSize, null, true, false);
 
         if (!acquired) {
           Set<DistributedMember> sm = Collections.singleton(GemFireCacheImpl.getExisting().getMyId());
