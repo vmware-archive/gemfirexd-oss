@@ -109,7 +109,7 @@ public class BlobHelper {
     // check for the special case of pre-serialized buffers with valid refCount
     SerializedDiskBuffer result;
     if (!(obj instanceof SerializedDiskBuffer) ||
-        !(result = (SerializedDiskBuffer)obj).retain()) {
+        (result = ((SerializedDiskBuffer)obj).getDiskBufferRetain()) == null) {
       // serialize into an expanding direct ByteBuffer
       result = new ByteBufferDataOutput(version).serialize(obj);
     }

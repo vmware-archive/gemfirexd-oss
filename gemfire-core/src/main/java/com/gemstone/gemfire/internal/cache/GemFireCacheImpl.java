@@ -748,12 +748,11 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
                     break;
                   }
                 }
-                long now = System.currentTimeMillis();
                 if (!entryFoundInTxState) {
                   if (getLoggerI18n().fineEnabled()) {
                     getLoggerI18n().info(LocalizedStrings.DEBUG,
                         "OldEntriesCleanerThread : Removing the entry " + re + " entry update in progress : " +
-                            ((NonLocalRegionEntry)re).isUpdateInProgress());
+                            re.isUpdateInProgress());
                   }
                   oldEntriesQueue.remove(re);
                 }
