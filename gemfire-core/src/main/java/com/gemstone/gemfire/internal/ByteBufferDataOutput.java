@@ -46,7 +46,7 @@ import com.gemstone.gemfire.internal.shared.unsafe.ChannelBufferUnsafeDataOutput
  * going through ByteBuffer API (e.g. see ChannelBufferUnsafeDataOutputStream)
  * but won't have an effect for large byte array writes (like for column data)
  */
-public final class ByteBufferDataOutput extends SerializedDiskBuffer
+public class ByteBufferDataOutput extends SerializedDiskBuffer
     implements DataOutput, Closeable, VersionedDataStream {
 
   private static final int INITIAL_SIZE = 1024;
@@ -55,7 +55,7 @@ public final class ByteBufferDataOutput extends SerializedDiskBuffer
   private ByteBuffer buffer;
   private final Version version;
 
-  private static final String BUFFER_OWNER = "DATAOUTPUT";
+  protected static String BUFFER_OWNER = "DATAOUTPUT";
 
   public ByteBufferDataOutput(Version version) {
     this(INITIAL_SIZE, version);
@@ -67,6 +67,13 @@ public final class ByteBufferDataOutput extends SerializedDiskBuffer
     this.allocator = GemFireCacheImpl.getCurrentBufferAllocator();
     this.buffer = allocator.allocate(initialSize, BUFFER_OWNER)
         .order(ByteOrder.BIG_ENDIAN);
+    this.version = version;
+  }
+
+  public ByteBufferDataOutput(int initialSize, BufferAllocator allocator, Version version) {
+    this.allocator = allocator;
+    this.buffer = allocator.allocate(initialSize, BUFFER_OWNER)
+            .order(ByteOrder.BIG_ENDIAN);
     this.version = version;
   }
 
@@ -267,5 +274,9 @@ public final class ByteBufferDataOutput extends SerializedDiskBuffer
     // set the position of newBuffer
     newBuffer.position(position);
     this.buffer = newBuffer;
+  }
+
+  public byte[] toBytes() {
+    return ClientSharedUtils.toBytes(getBufferRetain());
   }
 }

@@ -18,7 +18,9 @@ package com.gemstone.gemfire.internal.cache.store;
 
 import java.lang.management.ManagementFactory;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -47,6 +49,13 @@ public final class ManagedDirectBufferAllocator extends DirectBufferAllocator {
 
   private static final UnsafeHolder.FreeMemoryFactory freeStoreBufferFactory =
       FreeStoreBuffer::new;
+
+  public static final String CACHED_DATA_FRAME_RESULTOUTPUT_OWNER =
+          "CACHED_DATA_FRAME_RESULTOUTPUT";
+
+  public static final List<String> nonEvictingOwners = new ArrayList() {{
+    add("CACHED_DATA_FRAME_RESULTOUTPUT_OWNER");
+  }};
 
   /**
    * Overhead of allocation on off-heap memory is kept fixed at 8 even though
@@ -94,7 +103,12 @@ public final class ManagedDirectBufferAllocator extends DirectBufferAllocator {
 
   private boolean tryEvictData(String objectName, long requiredSpace) {
     UnsafeHolder.releasePendingReferences();
-    return reserveMemory(objectName, requiredSpace, true);
+
+    if (nonEvictingOwners.contains(objectName)) {
+      return reserveMemory(objectName, requiredSpace, false);
+    } else {
+      return reserveMemory(objectName, requiredSpace, true);
+    }
   }
 
   public LowMemoryException lowMemoryException(String op, int required) {
