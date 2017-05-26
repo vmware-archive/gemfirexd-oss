@@ -297,7 +297,7 @@ public class utilMain implements java.security.PrivilegedAction {
          		try {
            			ijResult result = ijParser.showConnectionsMethod(true);
  					displayResult(out,result,connEnv[currCE].getConnection(),
- 					    -1 /* GemStoneAddition */, true);
+					    -1 /* GemStoneAddition */, true);
          		} catch (SQLException ex) {
            			handleSQLException(out,ex);
          		}
@@ -603,7 +603,8 @@ public class utilMain implements java.security.PrivilegedAction {
   	}
 
 	private long /* GemStone change: void */ displayResult(LocalizedOutput out, ijResult result, Connection conn,
-	    long beginTime /* GemStoneAddition */, boolean displayCount /* GemStoneAddition */) throws SQLException {
+	    long beginTime /* GemStoneAddition */,
+	    boolean displayCount /* GemStoneAddition */) throws SQLException {
 	  final StopWatch timer = SharedUtils.newTimer(beginTime);
 		// display the result, if appropriate.
 		if (result!=null) {
