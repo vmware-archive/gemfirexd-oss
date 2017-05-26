@@ -51,11 +51,11 @@ public class ByteBufferDataOutput extends SerializedDiskBuffer
 
   private static final int INITIAL_SIZE = 1024;
 
-  private final BufferAllocator allocator;
-  private ByteBuffer buffer;
-  private final Version version;
+  protected final BufferAllocator allocator;
+  protected ByteBuffer buffer;
+  protected final Version version;
 
-  protected static String BUFFER_OWNER = "DATAOUTPUT";
+  private String BUFFER_OWNER = "DATAOUTPUT";
 
   public ByteBufferDataOutput(Version version) {
     this(INITIAL_SIZE, version);
@@ -70,11 +70,20 @@ public class ByteBufferDataOutput extends SerializedDiskBuffer
     this.version = version;
   }
 
-  public ByteBufferDataOutput(int initialSize, BufferAllocator allocator, Version version) {
+  /**
+   * This constructor can be used to give non-default buffer owner.
+   * Kind of hack, to avoid large scale refactoring to pass shoulEvict
+   * flag to UMM.
+   */
+  public ByteBufferDataOutput(int initialSize,
+                              BufferAllocator allocator,
+                              Version version,
+                              String bufferOwner) {
     this.allocator = allocator;
-    this.buffer = allocator.allocate(initialSize, BUFFER_OWNER)
+    this.buffer = allocator.allocate(initialSize, bufferOwner)
             .order(ByteOrder.BIG_ENDIAN);
     this.version = version;
+    this.BUFFER_OWNER = bufferOwner;
   }
 
   /**
