@@ -125,6 +125,10 @@ public abstract class SerializedDiskBuffer extends ByteBufferReference {
     }
   }
 
+  public SerializedDiskBuffer getDiskBufferRetain() {
+    return retain() ? this : null;
+  }
+
   protected abstract void releaseBuffer();
 
   /**
