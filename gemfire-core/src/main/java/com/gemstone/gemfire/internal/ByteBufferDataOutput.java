@@ -46,28 +46,19 @@ import com.gemstone.gemfire.internal.shared.unsafe.ChannelBufferUnsafeDataOutput
  * going through ByteBuffer API (e.g. see ChannelBufferUnsafeDataOutputStream)
  * but won't have an effect for large byte array writes (like for column data)
  */
-public class ByteBufferDataOutput extends SerializedDiskBuffer
+public final class ByteBufferDataOutput extends SerializedDiskBuffer
     implements DataOutput, Closeable, VersionedDataStream {
 
   private static final int INITIAL_SIZE = 1024;
 
-  protected final BufferAllocator allocator;
-  protected ByteBuffer buffer;
-  protected final Version version;
+  private final BufferAllocator allocator;
+  private ByteBuffer buffer;
+  private final Version version;
 
   private String BUFFER_OWNER = "DATAOUTPUT";
 
   public ByteBufferDataOutput(Version version) {
     this(INITIAL_SIZE, version);
-  }
-
-  public ByteBufferDataOutput(int initialSize, Version version) {
-    // this uses allocations and expansion via BufferAllocator that has both
-    // better efficiency for direct buffer (in expand) and applies system limits
-    this.allocator = GemFireCacheImpl.getCurrentBufferAllocator();
-    this.buffer = allocator.allocate(initialSize, BUFFER_OWNER)
-        .order(ByteOrder.BIG_ENDIAN);
-    this.version = version;
   }
 
   /**
@@ -84,6 +75,15 @@ public class ByteBufferDataOutput extends SerializedDiskBuffer
             .order(ByteOrder.BIG_ENDIAN);
     this.version = version;
     this.BUFFER_OWNER = bufferOwner;
+  }
+
+  public ByteBufferDataOutput(int initialSize, Version version) {
+    // this uses allocations and expansion via BufferAllocator that has both
+    // better efficiency for direct buffer (in expand) and applies system limits
+    this.allocator = GemFireCacheImpl.getCurrentBufferAllocator();
+    this.buffer = allocator.allocate(initialSize, BUFFER_OWNER)
+        .order(ByteOrder.BIG_ENDIAN);
+    this.version = version;
   }
 
   /**
@@ -283,9 +283,5 @@ public class ByteBufferDataOutput extends SerializedDiskBuffer
     // set the position of newBuffer
     newBuffer.position(position);
     this.buffer = newBuffer;
-  }
-
-  public byte[] toBytes() {
-    return ClientSharedUtils.toBytes(getBufferRetain());
   }
 }

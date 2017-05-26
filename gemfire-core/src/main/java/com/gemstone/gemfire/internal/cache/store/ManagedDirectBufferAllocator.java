@@ -50,13 +50,6 @@ public final class ManagedDirectBufferAllocator extends DirectBufferAllocator {
   private static final UnsafeHolder.FreeMemoryFactory freeStoreBufferFactory =
       FreeStoreBuffer::new;
 
-  public static final String CACHED_DATA_FRAME_RESULTOUTPUT_OWNER =
-          "CACHED_DATA_FRAME_RESULTOUTPUT";
-
-  public static final List<String> nonEvictingOwners = new ArrayList() {{
-    add("CACHED_DATA_FRAME_RESULTOUTPUT_OWNER");
-  }};
-
   /**
    * Overhead of allocation on off-heap memory is kept fixed at 8 even though
    * actual overhead will be dependent on the malloc implementation.
@@ -68,6 +61,13 @@ public final class ManagedDirectBufferAllocator extends DirectBufferAllocator {
    */
   public static final String DIRECT_STORE_OBJECT_OWNER =
       "SNAPPYDATA_DIRECT_STORE_OBJECTS";
+
+  public static final String CACHED_DATA_FRAME_RESULTOUTPUT_OWNER =
+          "CACHED_DATA_FRAME_RESULTOUTPUT";
+
+  public static final List<String> nonEvictingOwners = new ArrayList() {{
+    add("CACHED_DATA_FRAME_RESULTOUTPUT_OWNER");
+  }};
 
   public static ManagedDirectBufferAllocator instance() {
     return instance;
@@ -103,12 +103,7 @@ public final class ManagedDirectBufferAllocator extends DirectBufferAllocator {
 
   private boolean tryEvictData(String objectName, long requiredSpace) {
     UnsafeHolder.releasePendingReferences();
-
-    if (nonEvictingOwners.contains(objectName)) {
-      return reserveMemory(objectName, requiredSpace, false);
-    } else {
-      return reserveMemory(objectName, requiredSpace, true);
-    }
+    return reserveMemory(objectName, requiredSpace, true);
   }
 
   public LowMemoryException lowMemoryException(String op, int required) {

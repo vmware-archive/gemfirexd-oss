@@ -1383,13 +1383,14 @@ public interface DiskEntry extends RegionEntry {
 
       if (!LocalRegion.isMetaTable(dr.getName())) {
         boolean acquired = CallbackFactoryProvider.getStoreCallbacks().acquireStorageMemory(
-            dr.getName(), recoveredValueSize, null, true, false);
+                dr.getName(), recoveredValueSize, null, true, false);
 
         if (!acquired) {
           Set<DistributedMember> sm = Collections.singleton(GemFireCacheImpl.getExisting().getMyId());
           throw new LowMemoryException("Could not obtain memory of size " + recoveredValueSize, sm);
         }
       }
+
       region.updateSizeOnFaultIn(entry.getKey(), recoveredValueSize, bytesOnDisk);
       //did.setValueSerializedSize(0);
       // I think the following assertion is true but need to run
