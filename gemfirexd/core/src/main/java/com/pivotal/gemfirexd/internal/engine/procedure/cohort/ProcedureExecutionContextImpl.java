@@ -200,9 +200,10 @@ public final class ProcedureExecutionContextImpl implements ProcedureExecutionCo
    */
   @Override
   public void checkQueryCancelled() throws SQLException {
-    if (this.activation != null) {
+    final Activation act = this.activation;
+    if (act != null && act.isQueryCancelled()) {
       try {
-        this.activation.checkCancellationFlag();
+        act.checkCancellationFlag();
       } catch (StandardException se) {
         throw Util.generateCsSQLException(se);
       }

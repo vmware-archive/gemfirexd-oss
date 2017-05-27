@@ -29,10 +29,10 @@ import com.gemstone.gemfire.internal.cache.control.InternalResourceManager;
 import com.gemstone.gemfire.internal.cache.control.MemoryMonitorJUnitTest;
 import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.execute.CallbackStatement;
-import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserver;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverAdapter;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
+import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.sql.GeneralizedStatement;
 import com.pivotal.gemfirexd.internal.engine.sql.conn.GfxdHeapThresholdListener;
 import com.pivotal.gemfirexd.internal.iapi.error.StandardException;
@@ -44,8 +44,7 @@ import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedStatement;
 import com.pivotal.gemfirexd.internal.impl.sql.GenericPreparedStatement;
 import com.pivotal.gemfirexd.internal.impl.sql.compile.StatementNode;
 import com.pivotal.gemfirexd.internal.shared.common.sanity.SanityManager;
-
-import dunit.DistributedTestCase;
+import io.snappydata.test.dunit.DistributedTestBase;
 
 public class HeapThresholdHelper {
 
@@ -120,20 +119,20 @@ public class HeapThresholdHelper {
 
         String failmsg = "Expected StandardException indicating statement cancelled due to low resources";
         setFailedStatus(queryStr, failmsg);
-        DistributedTestCase.fail(failmsg);
+        DistributedTestBase.fail(failmsg);
       } catch (SQLException e) {
         if (!"XCL54".equals(e.getSQLState())) {
           String failmsg = "got unexpected exception " + e.getSQLState() + " "
               + SanityManager.getStackTrace(e);
           setFailedStatus(queryStr, failmsg);
-          DistributedTestCase.fail(failmsg, e);
+          DistributedTestBase.fail(failmsg, e);
         }
         // else if query got canceled, lets check it haven't prematurely.
         else if (minRowsExpected != -1 && numRowsFetched < minRowsExpected) {
           String failmsg = "Expected " + minRowsExpected + " rows and got "
               + numRowsFetched + " rows before query is canceled";
           setFailedStatus(queryStr, failmsg);
-          DistributedTestCase.fail(failmsg);
+          DistributedTestBase.fail(failmsg);
         }
       } finally {
         if (setLocalObserver) {
@@ -591,7 +590,6 @@ public class HeapThresholdHelper {
       resMgr.getHeapMonitor().updateStateAndSendEvent(92);
       gfCache.getLoggerI18n().fine(
           MemoryMonitorJUnitTest.removeExpectedAbove);
-
     }
     else {
 

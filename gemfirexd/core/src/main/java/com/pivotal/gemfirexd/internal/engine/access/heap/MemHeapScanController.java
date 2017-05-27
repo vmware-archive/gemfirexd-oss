@@ -431,6 +431,7 @@ public class MemHeapScanController implements MemScanController, RowCountable,
         this.entryIterator = gfContainer.getEntrySetIteratorForFunctionContext(
             rfc, this.tran, this.txState, this.openMode, primaryOnly);
         this.bucketSet = rfc.getLocalBucketSet(region);
+
       }
       else {
         // [sumedh] If we support MultiRegionFunctionContext in future then
@@ -674,6 +675,10 @@ public class MemHeapScanController implements MemScanController, RowCountable,
     }
   }
 
+  public void setAddRegionAndKey(){
+    this.addRegionAndKey = true;
+  }
+
   @Override
   public ExecRow fetchRow(ExecRow destRow) throws StandardException {
     throw new AssertionError("should not be called");
@@ -774,10 +779,6 @@ public class MemHeapScanController implements MemScanController, RowCountable,
 
     // check whether this query needs to be cancelled due to
     // timeout or low memory
-    final Activation act = this.activation;
-    if (act != null && act.isQueryCancelled()) {
-      act.checkCancellationFlag();
-    }
     final Iterator<?> entryIterator = this.entryIterator;
     final PREntriesIterator<?> prEntryIterator = this.prEntryIterator;
 

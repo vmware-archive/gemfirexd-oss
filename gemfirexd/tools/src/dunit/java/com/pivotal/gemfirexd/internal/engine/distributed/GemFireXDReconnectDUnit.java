@@ -36,9 +36,9 @@ import com.pivotal.gemfirexd.FabricServiceManager;
 import com.pivotal.gemfirexd.internal.engine.fabricservice.FabricServiceImpl;
 import com.pivotal.gemfirexd.internal.iapi.error.ShutdownException;
 
-import dunit.AsyncInvocation;
-import dunit.SerializableCallable;
-import dunit.VM;
+import io.snappydata.test.dunit.AsyncInvocation;
+import io.snappydata.test.dunit.SerializableCallable;
+import io.snappydata.test.dunit.VM;
 
 import java.util.ArrayList;
 import java.util.List;

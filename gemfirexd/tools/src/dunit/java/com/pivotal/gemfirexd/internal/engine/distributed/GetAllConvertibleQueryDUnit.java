@@ -28,7 +28,6 @@ import java.util.Properties;
 import java.util.Set;
 
 import com.gemstone.gemfire.cache.CacheException;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserver;
@@ -43,7 +42,7 @@ import com.pivotal.gemfirexd.internal.iapi.sql.conn.LanguageConnectionContext;
 import com.pivotal.gemfirexd.internal.impl.sql.GenericPreparedStatement;
 import com.pivotal.gemfirexd.jdbc.GfxdCallbacksTest;
 
-import dunit.SerializableRunnable;
+import io.snappydata.test.dunit.SerializableRunnable;
 
 /**
  * Tests for GetAllConvertible Queries
@@ -174,7 +173,7 @@ public class GetAllConvertibleQueryDUnit extends DistributedSQLTestBase {
     startVMs(1, 3);
 
     Properties props = new Properties();
-    props.setProperty("log-level", getDUnitLogLevel());
+    props.setProperty("log-level", getLogLevel());
     int clientPort = startNetworkServer(1, null, null);
     Connection conn = TestUtil.getNetConnection(clientPort, null, props);
     Statement s = conn.createStatement();
@@ -222,28 +221,28 @@ public class GetAllConvertibleQueryDUnit extends DistributedSQLTestBase {
       }
     };
 
-    SerializableRunnable getAllObsSet = new CacheSerializableRunnable(
+    SerializableRunnable getAllObsSet = new SerializableRunnable(
         "Set GetAll Observer") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         GemFireXDQueryObserverHolder.setInstance(getAllObserver);
       }
     };
 
-    SerializableRunnable getAllObsReset = new CacheSerializableRunnable(
+    SerializableRunnable getAllObsReset = new SerializableRunnable(
         "Reset GetAll Observer") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         GemFireXDQueryObserverHolder
             .setInstance(new GemFireXDQueryObserverAdapter() {
             });
       }
     };
 
-    SerializableRunnable getAllObsVerify = new CacheSerializableRunnable(
+    SerializableRunnable getAllObsVerify = new SerializableRunnable(
         "Verify GetAll Observer") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         assertTrue(remoteCallbackInvoked[0]);
         assertTrue(remoteCallbackInvoked[1]);
         assertTrue(remoteCallbackInvoked[2]);
@@ -536,7 +535,7 @@ public class GetAllConvertibleQueryDUnit extends DistributedSQLTestBase {
     // Start one client and three servers
     startVMs(1, 3);
     Properties props = new Properties();
-    props.setProperty("log-level", getDUnitLogLevel());
+    props.setProperty("log-level", getLogLevel());
     Connection conn = TestUtil.getConnection(props);
     Statement s = conn.createStatement();
     s.execute("create table t1 ( id int primary key, " + "name varchar(10))");

@@ -17,12 +17,12 @@
 
 package com.pivotal.gemfirexd;
 
-import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
-
 import java.sql.SQLException;
-import java.util.Collection;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
+
+import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
 
 /**
  * Base interface defining common peer services provided by {@link FabricServer}
@@ -186,7 +186,7 @@ public interface FabricService {
    * Get a collection of all the {@link NetworkInterface}s started so far using
    * {@link #startNetworkServer(String, int, Properties)}.
    */
-  Collection<NetworkInterface> getAllNetworkServers();
+  List<NetworkInterface> getAllNetworkServers();
 
   /**
    * Disconnect current virtual machine from distributed system. This should be

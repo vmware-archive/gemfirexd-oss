@@ -18,9 +18,11 @@ package com.pivotal.gemfirexd;
 
 import java.io.*;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.UnknownHostException;
 import java.security.AccessController;
 import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -32,7 +34,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import com.gemstone.gemfire.LogWriter;
+import com.gemstone.gemfire.GemFireTestCase;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.RegionAttributes;
 import com.gemstone.gemfire.cache.hdfs.internal.HDFSStoreImpl;
@@ -41,14 +43,13 @@ import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.distributed.internal.DistributionManager;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.internal.AvailablePort;
-import com.gemstone.gemfire.internal.LogWriterImpl;
 import com.gemstone.gemfire.internal.NanoTimer;
-import com.gemstone.gemfire.internal.PureLogWriter;
 import com.gemstone.gemfire.internal.SocketCreator;
 import com.gemstone.gemfire.internal.cache.CacheServerLauncher;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.internal.cache.PartitionAttributesImpl;
+import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.UserSpecifiedRegionAttributes;
 import com.gemstone.gemfire.internal.cache.locks.ExclusiveSharedSynchronizer;
 import com.gemstone.gemfire.internal.cache.xmlcache.CacheCreation;
@@ -94,8 +95,11 @@ import com.pivotal.gemfirexd.internal.iapi.types.DataValueFactory;
 import com.pivotal.gemfirexd.internal.iapi.util.StringUtil;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedConnection;
 import com.pivotal.gemfirexd.internal.impl.store.access.sort.Scan;
+import io.snappydata.test.dunit.DistributedTestBase.InitializeRun;
 import junit.framework.TestCase;
 import org.apache.derbyTesting.junit.TestConfiguration;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -149,7 +153,8 @@ public class TestUtil extends TestCase {
 
   public static Connection jdbcConn = null;
 
-  private static LogWriter logger = null;
+  public static final Logger globalLogger = LogManager.getLogger(TestUtil.class);
+  public final Logger logger = LogManager.getLogger(getClass());
 
   private static Map<String, Integer> expectedExceptions =
     new HashMap<String, Integer>();
@@ -169,6 +174,8 @@ public class TestUtil extends TestCase {
   public static String bootUserPassword = null;
 
   public static String currentUserPassword = null;
+
+  private static final Set<String> initSysProperties;
 
   public static boolean isTransactional = false;
 
@@ -197,6 +204,11 @@ public class TestUtil extends TestCase {
   }
 
   private static boolean oldDMVerbose = false;
+
+  static {
+    InitializeRun.setUp();
+    initSysProperties = System.getProperties().stringPropertyNames();
+  }
 
   public static final void reduceLogLevel(String logLevel) {
     if (logLevel != null) {
@@ -237,6 +249,7 @@ public class TestUtil extends TestCase {
     // delete persistent DataDictionary files
     deleteDir(new File("datadictionary"));
     deleteDir(new File("globalIndex"));
+    //noinspection ResultOfMethodCallIgnored
     TestConfiguration.odbcIni.delete();
     deletePersistentFiles = false;
     skipDefaultPartitioned = false;
@@ -432,16 +445,17 @@ public class TestUtil extends TestCase {
   }
 
   public static String getResourcesDir() {
-    String testDir = System.getProperty("gemfiretest.sourceDir");
-    if (testDir != null && testDir.length() > 0) {
-      return testDir;
-    } else {
-      // for IDEA runs
-      return "../src/test/resources";
-    }
+    return GemFireTestCase.getResourcesDir();
   }
 
-  public static Properties doCommonSetup(Properties props) {
+  public static String getProcessOutput(final Process p,
+      final int expectedExitValue, final int maxWaitMillis,
+      final int[] exitValue) throws IOException, InterruptedException {
+    return GemFireTestCase.getProcessOutput(p, expectedExitValue,
+        maxWaitMillis, exitValue);
+  }
+
+  public static Properties doMinimalSetup(Properties props) {
     if (props == null) {
       props = new Properties();
     }
@@ -454,30 +468,36 @@ public class TestUtil extends TestCase {
       if (skipSPSPrecompile != null
           && "false".equalsIgnoreCase(skipSPSPrecompile.toString())) {
         FabricDatabase.SKIP_SPS_PRECOMPILE = false;
-      }
-      else {
+      } else {
         FabricDatabase.SKIP_SPS_PRECOMPILE = true;
       }
     }
+
     if (currentTestClass != null && currentTest != null) {
       String testName = getTestName();
-      if (setPropertyIfAbsent(props, DistributionConfig.LOG_FILE_NAME, testName
-          + ".log")) {
+      if (setPropertyIfAbsent(props, DistributionConfig.LOG_FILE_NAME,
+          testName + ".log")) {
         // if no log-file property then also set the system property for
         // GemFireXD log-file that will also get used for JDBC clients
-        setPropertyIfAbsent(null, GfxdConstants.GFXD_LOG_FILE, testName
-            + ".log");
+        setPropertyIfAbsent(null, GfxdConstants.GFXD_LOG_FILE,
+            testName + ".log");
       }
       setPropertyIfAbsent(props,
-          DistributionConfig.STATISTIC_ARCHIVE_FILE_NAME, testName + ".gfs");
+          DistributionConfig.STATISTIC_ARCHIVE_FILE_NAME,
+          testName + ".gfs");
       // also set the client driver properties
-      setPropertyIfAbsent(null, GfxdConstants.GFXD_CLIENT_LOG_FILE, testName
-          + "-client.log");
+      setPropertyIfAbsent(null, GfxdConstants.GFXD_CLIENT_LOG_FILE,
+          testName + "-client.log");
     }
 
     // set mcast port to zero if not set
     setPropertyIfAbsent(props, "mcast-port", "0");
+    return props;
+  }
 
+  public static Properties doCommonSetup(Properties props) {
+
+    props = doMinimalSetup(props);
     // set default partitioned policy if not set
     if (!skipDefaultPartitioned) {
       setPropertyIfAbsent(props, Attribute.TABLE_DEFAULT_PARTITIONED, "true");
@@ -514,7 +534,7 @@ public class TestUtil extends TestCase {
           String.valueOf(TEST_DEFAULT_INITIAL_CAPACITY));
     }
 
-    final Random rand = AvailablePort.rand;
+    final Random rand = PartitionedRegion.rand;
     if (currentUserName != null) {
       if (!props.containsKey(Attribute.USERNAME_ALT_ATTR)) {
         setPropertyIfAbsent(props, Attribute.USERNAME_ATTR, currentUserName);
@@ -571,11 +591,11 @@ public class TestUtil extends TestCase {
       conn.setAutoCommit(false);
       conn.setTransactionIsolation(Connection.TRANSACTION_NONE);
 //    }
-    LogWriter logger = TestUtil.getLogger();
+    Logger logger = getLogger();
     if (logger != null) {
       logger.info("TestUtil.getConnection::Autocommit is " + conn.getAutoCommit());
     }
-    
+
     // Read the flag for deleting persistent files only during boot up
     if (jdbcConn == null || jdbcConn.isClosed()) {
       jdbcConn = conn;
@@ -757,6 +777,17 @@ public class TestUtil extends TestCase {
     }
   }
 
+  public static void loadDerbyDriver() throws Exception {
+    Driver autoDriver = (Driver)Class.forName(
+        "org.apache.derby.jdbc.AutoloadedDriver40").newInstance();
+    Class<?> autoDriverBaseClass = Class.forName(
+        "org.apache.derby.jdbc.AutoloadedDriver");
+    Method m = autoDriverBaseClass.getDeclaredMethod("registerMe",
+        autoDriverBaseClass);
+    m.setAccessible(true);
+    m.invoke(null, autoDriver);
+  }
+
   public static void shutDown() throws SQLException {
     shutDown(null);
   }
@@ -783,10 +814,12 @@ public class TestUtil extends TestCase {
       while (propNames.hasMoreElements()) {
         final Object prop = propNames.nextElement();
         final String key = prop.toString();
-        if (key.startsWith(DistributionConfig.GEMFIRE_PREFIX)
-            || (key.startsWith(GfxdConstants.GFXD_PREFIX) && !key
-                .startsWith("gemfirexd.debug"))
-            || key.startsWith(GfxdConstants.GFXD_CLIENT_PREFIX)) {
+        if (!key.startsWith("gemfire.DUnitLauncher")
+            && !initSysProperties.contains(key)
+            && (key.startsWith(DistributionConfig.GEMFIRE_PREFIX)
+            || key.startsWith(GfxdConstants.GFXD_PREFIX)
+            || key.startsWith(GfxdConstants.GFXD_CLIENT_PREFIX)
+            || key.startsWith("javax.net.ssl."))) {
           keysToRemove.add(key);
         }
       }
@@ -847,6 +880,9 @@ public class TestUtil extends TestCase {
       if (service != null) {
         service.stop(shutdownProperties);
         getLogger().info("Fabric Server shutdown status " + service.status());
+      } else if (GemFireStore.getBootingInstance() != null) {
+        DriverManager.getConnection(getProtocol() + ";shutdown=true",
+            shutdownProperties);
       }
 
     } catch (SQLException se) {
@@ -1365,20 +1401,11 @@ public class TestUtil extends TestCase {
   }
 
   /**
-   * Get a {@link LogWriter} object that can be used for both dunit and junit
+   * Get a {@link Logger} object that can be used for both dunit and junit
    * tests.
    */
-  public static LogWriter getLogger() {
-    if (logger == null) {
-      try {
-        // try to load hydra logger by reflection
-        Class<?> c = Class.forName("hydra.Log");
-        logger = (LogWriter)c.getMethod("getLogWriter").invoke(null);
-      } catch (Exception ex) {
-        logger = new PureLogWriter(LogWriterImpl.CONFIG_LEVEL);
-      }
-    }
-    return logger;
+  public static Logger getLogger() {
+    return globalLogger;
   }
 
   public static void fail(String message) {
@@ -1996,7 +2023,7 @@ public class TestUtil extends TestCase {
 
   public static boolean stopNetServer() {
     if (netServer != null) {
-      com.gemstone.gemfire.LogWriter logger = null;
+      Logger logger = null;
       try {
         logger = getLogger();
         netServer.stop();

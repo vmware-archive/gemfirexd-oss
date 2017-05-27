@@ -264,6 +264,12 @@ public final class TransactionResourceImpl
 		this.queryHDFS = getPropertyValue(
 		    Attribute.QUERY_HDFS,
 		    GfxdConstants.GFXD_QUERY_HDFS, info, false);
+		this.routeQuery = getPropertyValue(
+				Attribute.ROUTE_QUERY,
+				GfxdConstants.GFXD_ROUTE_QUERY, info, false);
+		this.defaultPersistent = getPropertyValue(
+				Attribute.DEFAULT_PERSISTENT, GfxdConstants.GFXD_PREFIX
+						+ Attribute.DEFAULT_PERSISTENT, info, false);
 		this.enableBulkFkChecks = PropertyUtil.getBooleanProperty(
 		    Attribute.ENABLE_BULK_FK_CHECKS,
 		    GfxdConstants.GFXD_ENABLE_BULK_FK_CHECKS, info, true, null);
@@ -330,7 +336,11 @@ public final class TransactionResourceImpl
 	private final boolean enableTimeStats;
 	
 	private final boolean queryHDFS;
-	
+
+	private final boolean routeQuery;
+
+	private final boolean defaultPersistent;
+
 	private final boolean skipConstraintChecks;
 	
 	private final boolean enableBulkFkChecks;
@@ -389,6 +399,8 @@ public final class TransactionResourceImpl
 		}
 		this.lcc.setTXFlags(this.txFlags);
 		this.lcc.setQueryHDFS(this.queryHDFS);
+		this.lcc.setQueryRouting(this.routeQuery);
+		this.lcc.setDefaultPersistent(this.defaultPersistent);
 		this.lcc.setEnableBulkFkChecks(this.enableBulkFkChecks);
 		this.lcc.setSkipConstraintChecks(this.skipConstraintChecks);
 		this.lcc.setDefaultQueryTimeOut(this.queryTimeOut);
@@ -563,12 +575,7 @@ public final class TransactionResourceImpl
 				code has cleaned up sufficiently. Not passing them through would mean
 				that all cleanupOnError methods would require knowledge of Utils.
 			 */
-			if (thrownException.getCause() != null &&
-			    (thrownException.getCause() instanceof SQLException ||
-			        thrownException.getCause() instanceof StandardException)) {
-			  thrownException = thrownException.getCause();
-			}
-			if (thrownException instanceof SQLException) {			  
+			if (thrownException instanceof SQLException) {
 			  if(this.lcc != null) {
 			    ((GemFireTransaction)this.lcc.getTransactionExecute()).release();
 			  }
@@ -722,6 +729,14 @@ public final class TransactionResourceImpl
 		if (thrownException instanceof GemFireXDRuntimeException
 		    && thrownException.getCause() != null) {
 		  thrownException = thrownException.getCause();
+		}
+		Throwable cause = thrownException.getCause();
+		if (cause != null &&
+		    ((cause instanceof SQLException) &&
+		    ((SQLException)cause).getSQLState() != null) ||
+		    ((cause instanceof StandardException) &&
+		    ((StandardException)cause).getSQLState() != null)) {
+		  thrownException = cause;
 		}
 		DerbyIOException dioe;
 		if (thrownException instanceof DerbyIOException && (dioe =

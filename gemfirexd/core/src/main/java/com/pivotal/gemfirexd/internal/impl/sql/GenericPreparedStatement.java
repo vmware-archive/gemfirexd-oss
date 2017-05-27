@@ -41,6 +41,7 @@
 package com.pivotal.gemfirexd.internal.impl.sql;
 
 // GemStone changes BEGIN
+import com.gemstone.gemfire.LogWriter;
 import com.gemstone.gemfire.cache.execute.FunctionContext;
 import com.gemstone.gemfire.internal.cache.AbstractRegion;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
@@ -65,6 +66,8 @@ import com.pivotal.gemfirexd.internal.engine.management.GfxdResourceEvent;
 import com.pivotal.gemfirexd.internal.catalog.Dependable;
 import com.pivotal.gemfirexd.internal.catalog.DependableFinder;
 import com.pivotal.gemfirexd.internal.catalog.UUID;
+import com.pivotal.gemfirexd.internal.engine.sql.execute.SnappyActivation;
+import com.pivotal.gemfirexd.internal.engine.sql.execute.SnappySelectResultSet;
 import com.pivotal.gemfirexd.internal.iapi.error.StandardException;
 import com.pivotal.gemfirexd.internal.iapi.reference.SQLState;
 import com.pivotal.gemfirexd.internal.iapi.services.cache.Cacheable;
@@ -167,6 +170,7 @@ public class GenericPreparedStatement
         private boolean queryHDFS = false;
         private boolean hasQueryHDFS = false;
         private boolean isCallableStatement;
+        private ArrayList<com.pivotal.gemfirexd.internal.impl.sql.compile.Token> dynamicTokenList;
 // GemStone changes END
 
 	//If the query node for this statement references SESSION schema tables, mark it so in the boolean below
@@ -652,7 +656,7 @@ recompileOutOfDatePlan:
 
 // GemStone changes BEGIN
 			if (popStmntCntxt) {
-			  lccToUse.popStatementContext(statementContext, null);
+				lccToUse.popStatementContext(statementContext, null);
 			}
 // GemStone changes END
 
@@ -1569,6 +1573,7 @@ recompileOutOfDatePlan:
 		clone.activationClass = getActivationClass();
 		clone.resultDesc = resultDesc;
 		clone.paramTypeDescriptors = paramTypeDescriptors;
+		clone.dynamicTokenList = dynamicTokenList;
 
 		clone.executionConstants = executionConstants;
 		clone.UUIDString = UUIDString;
@@ -1865,6 +1870,14 @@ recompileOutOfDatePlan:
 
         public boolean isCallableStatement() {
           return this.isCallableStatement;
+        }
+
+        public void setDynamicTokenList(ArrayList<com.pivotal.gemfirexd.internal.impl.sql.compile.Token> tokenList) {
+          this.dynamicTokenList = tokenList;
+        }
+
+        public ArrayList<com.pivotal.gemfirexd.internal.impl.sql.compile.Token> getDynamicTokenList() {
+          return this.dynamicTokenList;
         }
 // GemStone changes END
 

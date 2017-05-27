@@ -7063,7 +7063,7 @@ public class LocalRegion extends AbstractRegion
    * @return false if ifNew is true and there is an existing key, or ifOld is
    *         true and there is no existing entry; otherwise return true.
    */
-  final boolean basicUpdate(final EntryEventImpl event, 
+  boolean basicUpdate(final EntryEventImpl event,
                             final boolean ifNew,
                             final boolean ifOld,
                             final long lastModified,

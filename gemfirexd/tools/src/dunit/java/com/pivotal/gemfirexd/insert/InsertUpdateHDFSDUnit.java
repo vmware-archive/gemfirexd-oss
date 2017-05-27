@@ -16,8 +16,6 @@
  */
 package com.pivotal.gemfirexd.insert;
 
-import hydra.Log;
-
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -28,9 +26,6 @@ import java.sql.Statement;
 import java.util.Properties;
 import java.util.Random;
 
-import util.TestException;
-
-import com.gemstone.gemfire.LogWriter;
 import com.gemstone.gemfire.cache.CacheException;
 import com.gemstone.gemfire.cache.DataPolicy;
 import com.gemstone.gemfire.cache.EntryNotFoundException;
@@ -38,7 +33,6 @@ import com.gemstone.gemfire.cache.PartitionAttributes;
 import com.gemstone.gemfire.cache.PartitionAttributesFactory;
 import com.gemstone.gemfire.cache.Scope;
 import com.gemstone.gemfire.cache.execute.FunctionException;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.xmlcache.RegionAttributesCreation;
 import com.pivotal.gemfirexd.Attribute;
@@ -48,6 +42,8 @@ import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.ddl.resolver.GfxdPartitionByExpressionResolver;
 import com.pivotal.gemfirexd.internal.engine.ddl.resolver.GfxdPartitionResolver;
 import com.pivotal.gemfirexd.internal.engine.distributed.FunctionExecutionException;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.util.TestException;
 
 /**
  * Copied from InsertUpdateForeignKey
@@ -497,8 +493,7 @@ public class InsertUpdateHDFSDUnit extends DistributedSQLTestBase {
     assertEquals("Should update one row", 1, numUpdate);
     rs = s.executeQuery("select * from trade.customers where since=1");
     while (rs.next()) {
-      LogWriter logger = Log.getLogWriter();
-      logger.info("XXXX col1 : " + rs.getInt(1) + " #2 : "
+      getLogWriter().info("XXXX col1 : " + rs.getInt(1) + " #2 : "
           + rs.getString(2).trim() + " #3 : " + rs.getInt(3) + " #4 "
           + rs.getString(4) + " #5 : " + rs.getInt(5));
       throw new TestException("Should not return any rows");
@@ -726,10 +721,10 @@ public class InsertUpdateHDFSDUnit extends DistributedSQLTestBase {
     startServerVMs(1, 0, null);
     Thread.sleep(5000);
     // now insert hook on server VM1 on customer partitoned region.
-    CacheSerializableRunnable cacheCloser = new CacheSerializableRunnable(
+    SerializableRunnable cacheCloser = new SerializableRunnable(
         "CacheCloser") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           PartitionedRegion pr = (PartitionedRegion)Misc
               .getRegionForTable("APP.CUSTOMERS", true);

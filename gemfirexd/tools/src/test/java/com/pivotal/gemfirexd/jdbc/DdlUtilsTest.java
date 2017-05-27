@@ -30,15 +30,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.TreeSet;
 
-import org.apache.commons.dbcp.BasicDataSource;
-import org.apache.ddlutils.PlatformUtils;
-import org.apache.ddlutils.task.DatabaseToDdlTask;
-import org.apache.ddlutils.task.DdlToDatabaseTask;
-import org.apache.ddlutils.task.WriteDataToDatabaseCommand;
-import org.apache.ddlutils.task.WriteDataToFileCommand;
-import org.apache.ddlutils.task.WriteSchemaToDatabaseCommand;
-import org.apache.ddlutils.task.WriteSchemaToFileCommand;
-
 import com.gemstone.gemfire.cache.DiskStore;
 import com.gemstone.gemfire.cache.PartitionAttributes;
 import com.gemstone.gemfire.cache.Region;
@@ -51,6 +42,17 @@ import com.pivotal.gemfirexd.internal.engine.ddl.resolver.GfxdPartitionByExpress
 import com.pivotal.gemfirexd.internal.engine.distributed.utils.GemFireXDUtils;
 import com.pivotal.gemfirexd.internal.engine.store.GemFireContainer;
 import com.pivotal.gemfirexd.tools.internal.GfxdDdlUtils;
+import io.snappydata.test.dunit.DistributedTestBase;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.dunit.VM;
+import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.ddlutils.PlatformUtils;
+import org.apache.ddlutils.task.DatabaseToDdlTask;
+import org.apache.ddlutils.task.DdlToDatabaseTask;
+import org.apache.ddlutils.task.WriteDataToDatabaseCommand;
+import org.apache.ddlutils.task.WriteDataToFileCommand;
+import org.apache.ddlutils.task.WriteSchemaToDatabaseCommand;
+import org.apache.ddlutils.task.WriteSchemaToFileCommand;
 
 /**
  * Unit tests for DdlUtils with GemFireXD.
@@ -175,7 +177,7 @@ public class DdlUtilsTest extends JdbcTestBase {
   public static void runImportExportTest(final Connection conn,
       final Connection netConn, final String clientUrl, final String userName,
       final String password, final int numEntries, final int rowSize,
-      final dunit.VM vm1) throws Throwable {
+      final VM vm1) throws Throwable {
 
     final String schemaFileName = "TestSchema.xml";
     final String schemaGFXDile = "TestSchema.sql";
@@ -649,8 +651,7 @@ public class DdlUtilsTest extends JdbcTestBase {
       ((DiskStoreImpl)Misc.getGemFireCache().findDiskStore("DS1")).destroy();
     }
     else {
-      dunit.DistributedTestCase
-          .invokeInEveryVM(new dunit.SerializableRunnable() {
+      DistributedTestBase.invokeInEveryVM(new SerializableRunnable() {
         @Override
         public void run() {
           GemFireCacheImpl cache = GemFireCacheImpl.getInstance();

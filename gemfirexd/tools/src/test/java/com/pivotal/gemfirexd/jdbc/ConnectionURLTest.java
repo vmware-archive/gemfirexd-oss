@@ -228,7 +228,8 @@ public class ConnectionURLTest extends JdbcTestBase {
       DriverManager.getConnection(url, props);
       fail("exception is expected!");
     } catch (SQLException ex) {
-      if (!"XJ040".equals(ex.getSQLState())) {
+      if (!"XJ040".equals(ex.getSQLState()) &&
+          !"XJ004".equals(ex.getSQLState())) {
         throw ex;
       }
       // pass, expected

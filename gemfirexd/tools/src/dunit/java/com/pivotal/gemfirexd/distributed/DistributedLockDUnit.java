@@ -23,15 +23,11 @@ import java.util.Set;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import util.TestException;
-
 import com.gemstone.gemfire.cache.CacheException;
 import com.gemstone.gemfire.cache.execute.Function;
 import com.gemstone.gemfire.cache.execute.FunctionContext;
 import com.gemstone.gemfire.cache.execute.FunctionService;
 import com.gemstone.gemfire.cache.execute.ResultCollector;
-import com.gemstone.gemfire.cache.execute.ResultSender;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.distributed.DistributedMember;
 import com.gemstone.gemfire.distributed.internal.DistributionStats;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
@@ -40,18 +36,18 @@ import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.execute.InternalRegionFunctionContext;
 import com.gemstone.gnu.trove.TIntObjectHashMap;
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
-import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.GfxdDataSerializable;
+import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.distributed.GfxdListResultCollector;
 import com.pivotal.gemfirexd.internal.engine.distributed.message.RegionExecutorMessage;
 import com.pivotal.gemfirexd.internal.engine.distributed.utils.GemFireXDUtils;
 import com.pivotal.gemfirexd.internal.engine.locks.GfxdDRWLockService;
-
-import dunit.AsyncInvocation;
-import dunit.SerializableCallable;
-import dunit.SerializableRunnable;
-import dunit.VM;
-import dunit.impl.DUnitBB;
+import io.snappydata.test.dunit.AsyncInvocation;
+import io.snappydata.test.dunit.SerializableCallable;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.dunit.VM;
+import io.snappydata.test.dunit.standalone.DUnitBB;
+import io.snappydata.test.util.TestException;
 
 /**
  * Tests different scenarios for distributed read-write locks including testing
@@ -78,7 +74,7 @@ public class DistributedLockDUnit extends DistributedSQLTestBase {
     return "config";
   }
 
-  static class AcquireReleaseLock extends CacheSerializableRunnable {
+  static class AcquireReleaseLock extends SerializableRunnable {
 
     private final Object[] lockObjects;
 
@@ -106,7 +102,7 @@ public class DistributedLockDUnit extends DistributedSQLTestBase {
     }
 
     @Override
-    public void run2() throws CacheException {
+    public void run() throws CacheException {
       final GfxdDRWLockService lockService = Misc.getMemStore()
           .getDDLLockService();
       final Object owner = lockService.newCurrentOwner();
@@ -133,7 +129,7 @@ public class DistributedLockDUnit extends DistributedSQLTestBase {
           throw new CacheException("failed to obtain the lock") {
           };
         }
-        getLogWriter().info(this.toString() + " acquired the "
+        getGlobalLogger().info(this.toString() + " acquired the "
             + (this.readLock ? "read" : "write") + " lock on object "
             + lockObject + "; sleeping for " + this.sleepTimeMillis + "ms");
         try {
@@ -142,8 +138,8 @@ public class DistributedLockDUnit extends DistributedSQLTestBase {
           Thread.currentThread().interrupt();
           throw new TestException("unexpected interrupt", ie);
         }
-        getLogWriter().info(this.toString() + (this.readLock ? " read" :
-          " write") + " lock on object " + lockObject + "; sleep complete");
+        getGlobalLogger().info(this.toString() + (this.readLock ? " read" :
+            " write") + " lock on object " + lockObject + "; sleep complete");
       }
       for (Object lockObject : this.lockObjects) {
         if (this.readLock) {
@@ -297,8 +293,8 @@ public class DistributedLockDUnit extends DistributedSQLTestBase {
   public void vmTearDown() throws Exception {
     // clear the BB vars
     final DUnitBB bb = DUnitBB.getBB();
-    bb.getSharedMap().remove(NumReadLocks);
-    bb.getSharedMap().remove(NumReadUnlocks);
+    bb.remove(NumReadLocks);
+    bb.remove(NumReadUnlocks);
     super.vmTearDown();
   }
 
@@ -309,7 +305,7 @@ public class DistributedLockDUnit extends DistributedSQLTestBase {
     final Object lockObject = "Testing";
 
     // first obtain the read lock on a couple of VMs
-    final CacheSerializableRunnable getReadLock = new AcquireReleaseLock(
+    final SerializableRunnable getReadLock = new AcquireReleaseLock(
         "get and release read lock", 10000, 5000, true, 0, lockObject);
     final VM client1 = this.clientVMs.get(1);
     final VM server1 = this.serverVMs.get(1);
@@ -321,7 +317,7 @@ public class DistributedLockDUnit extends DistributedSQLTestBase {
     final AsyncInvocation server1Async = server1.invokeAsync(getReadLock);
 
     // now try to obtain write locks
-    final CacheSerializableRunnable getWriteLock = new AcquireReleaseLock(
+    final SerializableRunnable getWriteLock = new AcquireReleaseLock(
         "get and release write lock", 20000, 5000, false, 2, lockObject);
     final VM client2 = this.clientVMs.get(2);
     final VM server2 = this.serverVMs.get(0);
@@ -346,9 +342,9 @@ public class DistributedLockDUnit extends DistributedSQLTestBase {
     final Object lockObject = "Testing";
 
     // first obtain the read lock on a couple of VMs
-    final CacheSerializableRunnable getReadLock1 = new AcquireReleaseLock(
+    final SerializableRunnable getReadLock1 = new AcquireReleaseLock(
         "get and release read lock", 10000, 15000, true, 0, lockObject);
-    final CacheSerializableRunnable getReadLock2 = new AcquireReleaseLock(
+    final SerializableRunnable getReadLock2 = new AcquireReleaseLock(
         "get and release read lock", 10000, 5000, true, 0, lockObject);
     final VM client1 = this.clientVMs.get(1);
     final VM server1 = this.serverVMs.get(1);
@@ -360,7 +356,7 @@ public class DistributedLockDUnit extends DistributedSQLTestBase {
     final AsyncInvocation server1Async = server1.invokeAsync(getReadLock2);
 
     // now try to obtain write locks
-    final CacheSerializableRunnable getWriteLock = new AcquireReleaseLock(
+    final SerializableRunnable getWriteLock = new AcquireReleaseLock(
         "get and release write lock", 25000, 5000, false, 2, lockObject);
     final VM client2 = this.clientVMs.get(2);
     final VM server2 = this.serverVMs.get(0);
@@ -386,10 +382,10 @@ public class DistributedLockDUnit extends DistributedSQLTestBase {
     final Object lockObject2 = "Testing2";
 
     // first obtain the read lock on a couple of VMs
-    final CacheSerializableRunnable getReadLock1 = new AcquireReleaseLock(
+    final SerializableRunnable getReadLock1 = new AcquireReleaseLock(
         "get and release read lock12", -1, 5000, true, 0, lockObject1,
         lockObject2);
-    final CacheSerializableRunnable getReadLock2 = new AcquireReleaseLock(
+    final SerializableRunnable getReadLock2 = new AcquireReleaseLock(
         "get and release read lock21", -1, 9000, true, 0, lockObject2,
         lockObject1);
     final VM client1 = this.clientVMs.get(1);
@@ -402,9 +398,9 @@ public class DistributedLockDUnit extends DistributedSQLTestBase {
     final AsyncInvocation server1Async = server1.invokeAsync(getReadLock2);
 
     // now try to obtain write locks
-    final CacheSerializableRunnable getWriteLock1 = new AcquireReleaseLock(
+    final SerializableRunnable getWriteLock1 = new AcquireReleaseLock(
         "get and release write lock1", -1, 10000, false, 0, lockObject1);
-    final CacheSerializableRunnable getWriteLock2 = new AcquireReleaseLock(
+    final SerializableRunnable getWriteLock2 = new AcquireReleaseLock(
         "get and release write lock2", -1, 5000, false, 0, lockObject2);
     final VM client2 = this.clientVMs.get(2);
     final VM server2 = this.serverVMs.get(1);
@@ -616,14 +612,14 @@ public class DistributedLockDUnit extends DistributedSQLTestBase {
             lastKey = currentKey;
           }
           else {
-            getLogWriter().info("Failed due to duplicate value. Keys: "
+            getGlobalLogger().info("Failed due to duplicate value. Keys: "
                 + Arrays.toString(array));
             throw new TestException("unexpected duplicate " + key + " for VM: "
                 + vm + ", oldVM: " + oldVM);
           }
         }
         else {
-          getLogWriter().info("Failed due to decrease in value. Keys: "
+          getGlobalLogger().info("Failed due to decrease in value. Keys: "
               + Arrays.toString(array));
           throw new TestException("unexpected decrease in value=" + key
               + " currentValue=" + currentKey + " lastValue=" + lastKey

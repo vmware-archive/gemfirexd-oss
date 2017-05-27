@@ -46,6 +46,7 @@ import java.security.AccessController;
 import java.security.PrivilegedExceptionAction;
 
 import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
+import com.pivotal.gemfirexd.Attribute;
 import com.pivotal.gemfirexd.internal.iapi.services.info.JVMInfo;
 import com.pivotal.gemfirexd.internal.iapi.services.info.ProductGenusNames;
 import com.pivotal.gemfirexd.internal.iapi.services.info.ProductVersionHolder;
@@ -112,6 +113,10 @@ public class Configuration {
     public static final String jdbcDerbyNETProtocol = ClientSharedUtils
         .USE_THRIFT_AS_DEFAULT ? com.pivotal.gemfirexd.Attribute.DRDA_PROTOCOL
             : com.pivotal.gemfirexd.Attribute.DNC_PROTOCOL;
+
+    public static final String jdbcSnappyNETProtocol = ClientSharedUtils
+        .USE_THRIFT_AS_DEFAULT ? Attribute.SNAPPY_DRDA_PROTOCOL
+        : Attribute.SNAPPY_DNC_PROTOCOL;
 
     /* (original code)
     public final static String jdbcDerbyNETProtocol = "jdbc:derby://";

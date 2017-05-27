@@ -53,7 +53,9 @@ package	com.pivotal.gemfirexd.internal.impl.sql.compile;
 
 
 
+import com.gemstone.gemfire.internal.lang.StringUtils;
 import com.pivotal.gemfirexd.internal.catalog.types.DefaultInfoImpl;
+import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.sql.compile.DistributionDefinitionNode;
 import com.pivotal.gemfirexd.internal.iapi.error.StandardException;
 import com.pivotal.gemfirexd.internal.iapi.reference.ClassName;
@@ -1090,8 +1092,13 @@ public abstract class ResultSetNode extends QueryTreeNode
 		for (int i=0; i<resultColumns.size(); i++)
 		{
 			ResultColumn rc = (ResultColumn) resultColumns.elementAt(i);
-			if (rc.isNameGenerated())
-				rc.setName(Integer.toString(i+1));
+			if (rc.isNameGenerated()) {
+				if (Misc.getMemStore().isSnappyStore()) {
+					rc.setName("_c" + Integer.toString(i));
+				} else {
+					rc.setName(Integer.toString(i + 1));
+				}
+			}
 		}
 	}
 

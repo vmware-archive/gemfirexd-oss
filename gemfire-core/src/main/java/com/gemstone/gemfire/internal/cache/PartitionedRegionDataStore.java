@@ -89,6 +89,7 @@ import com.gemstone.gemfire.internal.util.concurrent.StoppableReentrantReadWrite
 import com.gemstone.gemfire.internal.util.concurrent.StoppableReentrantReadWriteLock.StoppableReadLock;
 import com.gemstone.gemfire.internal.util.concurrent.StoppableReentrantReadWriteLock.StoppableWriteLock;
 import com.gemstone.gnu.trove.THashSet;
+import com.gemstone.gnu.trove.TIntArrayList;
 import com.gemstone.org.jgroups.util.StringId;
 
 /**
@@ -3122,6 +3123,17 @@ public final class PartitionedRegionDataStore implements HasCachePerfStats
     for (BucketRegion bucket : localBucket2RegionMap.values()) {
       if (bucket.getBucketAdvisor().isPrimary()) {
         bucketIds.add(Integer.valueOf(bucket.getId()));
+      }
+    }
+    return bucketIds;
+  }
+
+  @SuppressWarnings("unchecked")
+  public TIntArrayList getAllLocalPrimaryBucketIdArray() {
+    TIntArrayList bucketIds = new TIntArrayList();
+    for (BucketRegion bucket : localBucket2RegionMap.values()) {
+      if (bucket.getBucketAdvisor().isPrimary()) {
+        bucketIds.add(bucket.getId());
       }
     }
     return bucketIds;

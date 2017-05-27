@@ -40,6 +40,7 @@
 
 package com.pivotal.gemfirexd.internal.impl.services.stream;
 // GemStone changes BEGIN
+import com.gemstone.gemfire.distributed.internal.DistributionConfigImpl;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.internal.ManagerLogWriter;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
@@ -410,15 +411,21 @@ implements InfoStreams, ModuleControl, java.security.PrivilegedAction
   public FileOutputStream fileStream;
 
   public static String getGFXDLogFile() {
-		// if slf4 bridge is being used, don't create a file here
-		if (PropertyUtil.getSystemBoolean(
-				InternalDistributedSystem.ENABLE_SLF4J_LOG_BRIDGE, true)) {
-			return null;
-		}
     String logFile = PropertyUtil
         .getSystemProperty(GfxdConstants.GFXD_LOG_FILE);
     if (logFile != null && logFile.length() == 0) {
       logFile = null;
+    }
+    // if slf4 bridge is being used, don't create a file here
+    // but promote GFXD property to GemFire system property so that
+    // GemFire layer can create appropriate file
+    if (PropertyUtil.getSystemBoolean(
+	InternalDistributedSystem.ENABLE_SLF4J_LOG_BRIDGE, true)) {
+      if (logFile != null) {
+	PropertyUtil.setSystemProperty(DistributionConfigImpl.GEMFIRE_PREFIX +
+	    DistributionConfigImpl.LOG_FILE_NAME, logFile);
+      }
+      return null;
     }
     return logFile;
   }

@@ -40,8 +40,8 @@ import com.pivotal.gemfirexd.internal.iapi.sql.Activation;
 import com.pivotal.gemfirexd.internal.iapi.types.SQLInteger;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedStatement;
 
-import dunit.SerializableRunnable;
-import dunit.VM;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.dunit.VM;
 
 /**
  * Tests whether the statementID , connectionID etc are being passed correctly

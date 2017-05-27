@@ -17,6 +17,8 @@
 
 package com.gemstone.gemfire.internal.shared;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -60,7 +62,7 @@ public abstract class ClientSharedUtils {
   }
 
   /** The name of java.util.logging.Logger for GemFireXD. */
-  public static final String LOGGER_NAME = "gemfirexd";
+  public static final String LOGGER_NAME = "snappystore";
 
   /** Optional system property to enable GemFire usage of link-local addresses */
   public static final String USE_LINK_LOCAL_ADDRESSES_PROPERTY =
@@ -531,8 +533,10 @@ public abstract class ClientSharedUtils {
             }
             else if (doLogWarning == 2) {
               // just log as an information rather than warning
-              log.info("Failed to set " + opt + " on socket: "
-                  + ex.getMessage());
+              if (log != DEFAULT_LOGGER) { // SNAP-255
+                log.info("Failed to set " + opt + " on socket: "
+                    + ex.getMessage());
+              }
             }
             if (log.isLoggable(Level.FINE)) {
               LogRecord lr = new LogRecord(Level.FINE, "Exception trace:");
@@ -1092,7 +1096,7 @@ public abstract class ClientSharedUtils {
     if (logFile != null) {
       props.setProperty("log4j.appender.file.file", logFile);
     }
-    // lastly override with any user provided properties file
+    // override with any user provided properties file
     in = ClientSharedUtils.class.getResourceAsStream("/log4j.properties");
     if (in != null) {
       Properties setProps = new Properties();
@@ -1102,6 +1106,21 @@ public abstract class ClientSharedUtils {
         in.close();
       }
       props.putAll(setProps);
+    }
+    // lastly override with user provided properties file in "conf/"
+    String snappyDir = NativeCalls.getInstance().getEnvironment("SNAPPY_HOME");
+    if (snappyDir != null) {
+      File confFile = new File(snappyDir + "/conf", "log4j.properties");
+      if (confFile.canRead()) {
+        Properties setProps = new Properties();
+        in = new FileInputStream(confFile);
+        try {
+          setProps.load(in);
+        } finally {
+          in.close();
+        }
+        props.putAll(setProps);
+      }
     }
     LogManager.resetConfiguration();
     PropertyConfigurator.configure(props);

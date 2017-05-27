@@ -60,7 +60,6 @@ import com.pivotal.gemfirexd.internal.impl.sql.compile.*;
 import com.pivotal.gemfirexd.internal.impl.sql.execute.JoinResultSet;
 import com.pivotal.gemfirexd.internal.shared.common.sanity.SanityManager;
 import com.pivotal.gemfirexd.jdbc.JdbcTestBase;
-import hydra.HydraRuntimeException;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 import org.junit.Assert;
@@ -3091,11 +3090,6 @@ public class ColocatedQueriesTest extends JdbcTestBase {
 
   
   public void testBug42659() throws Exception {
-    try {
-      hydra.Log.getLogWriter();
-    } catch (HydraRuntimeException hre) {
-      hydra.Log.createLogWriter("ColocatedQueriesTest", "fine");
-    }
     Statement derbyStmt = null;
     try {
     SelectQueryInfo.setTestFlagIgnoreSingleVMCriteria(true);
@@ -4047,11 +4041,6 @@ public class ColocatedQueriesTest extends JdbcTestBase {
     System.clearProperty(GfxdConstants.GFXD_DISABLE_STATEMENT_MATCHING);
     String derbyDbUrl= null;
     Connection derbyConn = null;;  
-    try {
-      hydra.Log.getLogWriter();
-    } catch (HydraRuntimeException hre) {
-      hydra.Log.createLogWriter("ColocatedQueriesTest", "fine");
-    }
     Statement derbyStmt = null;
     Statement s = null;
     try {
@@ -4180,12 +4169,12 @@ public class ColocatedQueriesTest extends JdbcTestBase {
 
     // create the schema
     String useCase3Script = TestUtil.getResourcesDir()
-        + "/lib/UseCase3Data/schema.sql";
+        + "/lib/useCase3Data/schema.sql";
     GemFireXDUtils.executeSQLScripts(conn, new String[] { useCase3Script }, false,
         getLogger(), null, null, false);
 
     String useCase3DataScript = TestUtil.getResourcesDir()
-    + "/lib/UseCase3Data/importAll.sql";
+    + "/lib/useCase3Data/importAll.sql";
 
     GemFireXDUtils.executeSQLScripts(conn, new String[] { useCase3DataScript }, false,
         getLogger(), "<path_prefix>", TestUtil.getResourcesDir(), false);
@@ -4338,7 +4327,7 @@ public class ColocatedQueriesTest extends JdbcTestBase {
     assertEquals(equijoinCols.toString(), 0, equijoinCols.size());
 
     String useCase3ScriptDrop = TestUtil.getResourcesDir()
-          + "/lib/UseCase3Data/schemaDrop.sql";
+          + "/lib/useCase3Data/schemaDrop.sql";
     
     GemFireXDUtils.executeSQLScripts(conn, new String[] { useCase3ScriptDrop }, false,
             getLogger(), null, null, false);

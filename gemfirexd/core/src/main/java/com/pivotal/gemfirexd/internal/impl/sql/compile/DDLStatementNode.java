@@ -45,6 +45,7 @@ package	com.pivotal.gemfirexd.internal.impl.sql.compile;
 
 
 
+import com.gemstone.gemfire.internal.snappy.StoreCallbacks;
 import com.pivotal.gemfirexd.internal.catalog.UUID;
 import com.pivotal.gemfirexd.internal.engine.ddl.GfxdAlterTableNode;
 import com.pivotal.gemfirexd.internal.iapi.error.StandardException;
@@ -353,6 +354,9 @@ public abstract class DDLStatementNode extends StatementNode
 			break;
 
 		case TableDescriptor.BASE_TABLE_TYPE:
+			// GemStone changes BEGIN
+		case TableDescriptor.COLUMN_TABLE_TYPE:
+			// GemStone changes END
 			/* need to IX lock table if we are a reader in DDL datadictionary
 			 * cache mode, otherwise we may interfere with another DDL thread
 			 * that is in execution phase; beetle 4343, also see $WS/docs/

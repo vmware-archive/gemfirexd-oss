@@ -26,7 +26,6 @@ import java.util.HashSet;
 import java.util.Properties;
 
 import com.gemstone.gemfire.cache.CacheException;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserver;
@@ -34,7 +33,7 @@ import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverAdapter;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
 
-import dunit.SerializableRunnable;
+import io.snappydata.test.dunit.SerializableRunnable;
 
 /**
  * Non Collocated Join Functional Test.
@@ -90,8 +89,8 @@ public class NCJBatching2DUnit extends DistributedSQLTestBase {
     }
   };
   
-  class NcjPullResultsetTestCacheSerializableRunnable extends
-      CacheSerializableRunnable {
+  class NcjPullResultsetTestSerializableRunnable extends
+      SerializableRunnable {
     private int verifyCount = 0;
 
     public SerializableRunnable setVerifyCount(int param) {
@@ -99,35 +98,35 @@ public class NCJBatching2DUnit extends DistributedSQLTestBase {
       return this;
     }
 
-    public NcjPullResultsetTestCacheSerializableRunnable(String name) {
+    public NcjPullResultsetTestSerializableRunnable(String name) {
       super(name);
     }
 
     @Override
-    public void run2() throws CacheException {
+    public void run() throws CacheException {
       assertTrue("remoteCallbackInvokeCount=" + remoteCallbackInvokeCount
           + " ,verifyCount=" + verifyCount,
           remoteCallbackInvokeCount == this.verifyCount);
     }
   }
 
-  NcjPullResultsetTestCacheSerializableRunnable ncjPullResultSetOpenCoreObserverVerify = new NcjPullResultsetTestCacheSerializableRunnable(
+  NcjPullResultsetTestSerializableRunnable ncjPullResultSetOpenCoreObserverVerify = new NcjPullResultsetTestSerializableRunnable(
       "Verify ncjPullResultSetOpenCoreObserver");
 
-  SerializableRunnable ncjPullResultSetOpenCoreObserverSet = new CacheSerializableRunnable(
+  SerializableRunnable ncjPullResultSetOpenCoreObserverSet = new SerializableRunnable(
       "Set ncjPullResultSetOpenCoreObserver") {
     @Override
-    public void run2() throws CacheException {
+    public void run() throws CacheException {
       remoteCallbackInvokeCount = 0;
       GemFireXDQueryObserverHolder
           .setInstance(ncjPullResultSetOpenCoreObserver);
     }
   };
 
-  SerializableRunnable ncjPullResultSetOpenCoreObserverReset = new CacheSerializableRunnable(
+  SerializableRunnable ncjPullResultSetOpenCoreObserverReset = new SerializableRunnable(
       "Reset ncjPullResultSetOpenCoreObserver") {
     @Override
-    public void run2() throws CacheException {
+    public void run() throws CacheException {
       remoteCallbackInvokeCount = 0;
       GemFireXDQueryObserverHolder
           .setInstance(new GemFireXDQueryObserverAdapter() {

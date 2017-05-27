@@ -1315,7 +1315,7 @@ public final class TypeId
                 {
                         // cmp not allowed, indexing not allowed
                         case StoredFormatIds.BLOB_TYPE_ID:
-                        case StoredFormatIds.CLOB_TYPE_ID:
+                        // case StoredFormatIds.CLOB_TYPE_ID:
                         case StoredFormatIds.JSON_TYPE_ID:
 // GemStone changes BEGIN
                         // allow ordering on LONGVARCHAR column type

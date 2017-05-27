@@ -36,8 +36,8 @@ import com.pivotal.gemfirexd.internal.iapi.sql.Activation;
 import com.pivotal.gemfirexd.internal.iapi.sql.conn.LanguageConnectionContext;
 import com.pivotal.gemfirexd.internal.iapi.sql.depend.DependencyManager;
 
-import dunit.AsyncInvocation;
-import dunit.SerializableRunnable;
+import io.snappydata.test.dunit.AsyncInvocation;
+import io.snappydata.test.dunit.SerializableRunnable;
 
 @SuppressWarnings("serial")
 public class StatementMatchingDUnit extends DistributedSQLTestBase {

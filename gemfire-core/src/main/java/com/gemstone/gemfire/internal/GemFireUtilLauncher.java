@@ -68,7 +68,7 @@ public class GemFireUtilLauncher {
     m.put(SCRIPT_NAME, new CommandEntry(SystemAdmin.class, LocalizedStrings
             .GemFireUtilLauncher_SystemAdmin_Usage.toLocalizedString(), false));
     m.put("agent", new CommandEntry(AgentLauncher.class, LocalizedStrings
-            .GemFireUtilLauncher_Agent_Usage.toLocalizedString(), false));
+        .GemFireUtilLauncher_Agent_Usage.toString(new Object[] { SCRIPT_NAME }), false));
     return m;
   }
 
@@ -78,7 +78,7 @@ public class GemFireUtilLauncher {
    **/
   protected GemFireUtilLauncher() {}
 
-  protected class CommandEntry {
+  public static class CommandEntry {
     public final Class<?> clazz;
     public final String usage;
     public final boolean preserveArgv1;

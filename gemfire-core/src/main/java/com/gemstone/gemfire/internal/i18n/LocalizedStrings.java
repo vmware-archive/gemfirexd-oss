@@ -1704,8 +1704,7 @@ public class LocalizedStrings extends ParentLocalizedStrings {
   public static final StringId GatewayImpl_GATEWAY_SOCKET_READ_TIMEOUT_DISABLED = new StringIdImpl(5124, "Setting the socket read timeout on a gateway is currently disabled. Please contact VMware support for assistance.");
   public static final StringId EXECUTE_FUNCTION_NO_HAS_RESULT_RECEIVED_EXCEPTION = new StringIdImpl(5125, "Function execution without result encountered an Exception on server.");
   public static final StringId ConnectionFactoryImpl_POOL_0_IS_NOT_AVAILABLE = new StringIdImpl(5126, "Pool {0} is not available");
-  public static final StringId GemFireUtilLauncher_Agent_Usage = new StringIdImpl(
-      5127, "Starts/stops a GemFire JMX Agent, or provides status of a running one");
+  public static final StringId GemFireUtilLauncher_Agent_Usage = new StringIdImpl(5127, "Starts/stops a {0} JMX Agent, or provides status of a running one");
   public static final StringId CreateRegionProcessor_CANNOT_CREATE_REGION_0_WITH_OFF_HEAP_EQUALS_1_BECAUSE_ANOTHER_CACHE_2_HAS_SAME_THE_REGION_WITH_OFF_HEAP_EQUALS_3 = new StringIdImpl(5128, "Cannot create region {0} with off-heap={1} because another cache ({2}) has the same region with off-heap={3}.");
   
   public static final StringId ConnectionTable_OUT_OF_FILE_DESCRIPTORS_USING_SHARED_CONNECTION = new StringIdImpl(5129, "This process is out of file descriptors.\nThis will hamper communications and slow down the system.\nAny conserve-sockets setting is now being ignored.\nPlease consider raising the descriptor limit.\nThis alert is only issued once per process.");
@@ -1946,7 +1945,7 @@ public class LocalizedStrings extends ParentLocalizedStrings {
 
   public static final StringId TCPConduit_EXCEPTION_PARSING_TCPPORTRANGESTART = new StringIdImpl(5434, "Exception parsing membership-port-range start port.");
   public static final StringId TCPConduit_EXCEPTION_PARSING_TCPPORTRANGEEND = new StringIdImpl(5435, "Exception parsing membership-port-range end port.");
-  public static final StringId TCPConduit_UNABLE_TO_FIND_FREE_PORT = new StringIdImpl(5436, "Unable to find a free port in the membership-port-range");
+  public static final StringId TCPConduit_UNABLE_TO_FIND_FREE_PORT = new StringIdImpl(5436, "Unable to find a free port in the membership-port-range {0}-{1}");
   public static final StringId AbstractDistributionConfig_COULD_NOT_SET_0_TO_1_BECAUSE_ITS_DIFF_CAN_NOT_BE_LESS_THAN_2 = new StringIdImpl(5437, "Could not set \"{0}\" to \"{1}\" because a minimum of \"{2}\" values are required in the range.");
 
   public static final StringId Snapshot_INVALID_EXPORT_FILE = new StringIdImpl(5438, "File is invalid or is a directory: {0}");

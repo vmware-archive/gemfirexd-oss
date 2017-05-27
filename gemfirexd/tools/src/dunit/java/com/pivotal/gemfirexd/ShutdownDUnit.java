@@ -20,7 +20,7 @@ import java.util.Arrays;
 
 import com.pivotal.gemfirexd.tools.GfxdSystemAdmin;
 
-import dunit.VM;
+import io.snappydata.test.dunit.VM;
 
 /**
  * Tests proper shutdown of a GemFireXD cluster.

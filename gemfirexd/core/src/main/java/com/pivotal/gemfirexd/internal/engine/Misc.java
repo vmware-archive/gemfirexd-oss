@@ -531,8 +531,10 @@ public abstract class Misc {
           Element fieldElement = doc.createElement("field");
           fieldElement.setAttribute("name", colName);
           if (addTypeInfo && !ignoreTypeInfo) {
-            fieldElement.setAttribute("type", rs.getObject(index).getClass()
-                .getName());
+            Object result = rs.getObject(index);
+            if (result != null) {
+              fieldElement.setAttribute("type", result.getClass().getName());
+            }
           }
           String valStr = rs.getString(index);
           if (valStr == null) {

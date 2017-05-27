@@ -33,8 +33,8 @@ import com.pivotal.gemfirexd.internal.engine.ddl.wan.GfxdGatewayEventListener;
 import com.pivotal.gemfirexd.internal.engine.jdbc.GemFireXDRuntimeException;
 import com.pivotal.gemfirexd.internal.engine.store.GemFireStore;
 
-import dunit.SerializableCallable;
-import dunit.SerializableRunnable;
+import io.snappydata.test.dunit.SerializableCallable;
+import io.snappydata.test.dunit.SerializableRunnable;
 
 
 import com.pivotal.gemfirexd.callbacks.AsyncEventListener;

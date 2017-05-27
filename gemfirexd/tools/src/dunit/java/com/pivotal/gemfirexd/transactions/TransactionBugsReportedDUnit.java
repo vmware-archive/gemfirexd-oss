@@ -30,7 +30,7 @@ import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.jdbc.transactions.TransactionTest;
 
-import dunit.SerializableRunnable;
+import io.snappydata.test.dunit.SerializableRunnable;
 
 @SuppressWarnings("serial")
 public class TransactionBugsReportedDUnit extends DistributedSQLTestBase {

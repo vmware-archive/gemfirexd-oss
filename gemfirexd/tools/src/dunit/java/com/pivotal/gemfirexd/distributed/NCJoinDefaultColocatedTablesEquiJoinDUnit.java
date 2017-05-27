@@ -22,7 +22,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
-import dunit.SerializableRunnable;
+import io.snappydata.test.dunit.SerializableRunnable;
 
 @SuppressWarnings("serial")
 public class NCJoinDefaultColocatedTablesEquiJoinDUnit extends DefaultColocatedTablesEquiJoinDUnit {

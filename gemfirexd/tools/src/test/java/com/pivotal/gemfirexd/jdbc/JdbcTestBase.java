@@ -23,10 +23,7 @@ import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.sql.CallableStatement;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.MessageFormat;
 import java.util.Map;
 import java.util.TreeMap;
@@ -46,13 +43,12 @@ import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverAdapter;
 import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.distributed.utils.GemFireXDUtils;
 import com.pivotal.gemfirexd.internal.engine.jdbc.GemFireXDRuntimeException;
+import com.pivotal.gemfirexd.internal.engine.store.GemFireStore;
 import com.pivotal.gemfirexd.internal.iapi.sql.conn.LanguageConnectionContext;
 import com.pivotal.gemfirexd.internal.impl.sql.compile.DropTableNode;
 import com.pivotal.gemfirexd.internal.impl.sql.compile.StatementNode;
-import hydra.HydraRuntimeException;
-import memscale.OffHeapHelper;
+import io.snappydata.test.memscale.OffHeapHelper;
 import org.apache.derbyTesting.junit.JDBC;
-import org.w3c.dom.Element;
 
 public class JdbcTestBase extends TestUtil implements UnitTest {
 
@@ -72,6 +68,9 @@ public class JdbcTestBase extends TestUtil implements UnitTest {
 
   @Override
   protected void setUp() throws Exception {
+    if (GemFireStore.getBootingInstance() != null) {
+      shutDown();
+    }
     //Uncommeting it would make all gemfirexd tests run with offheap
     //System.setProperty("gemfire."+DistributionConfig.OFF_HEAP_MEMORY_SIZE_NAME, "1G");
     //System.setProperty("gemfirexd.TEST_FLAG_OFFHEAP_ENABLE","true");
@@ -82,53 +81,52 @@ public class JdbcTestBase extends TestUtil implements UnitTest {
     loadDriver();
     loadNetDriver();
   }
-  
+
   protected static Map<String, Long> getAllOplogFiles() {
     String currDir = System.getProperty("user.dir");
     File cdir = new File(currDir);
-    
+
     File[] files = FileUtil.listFiles(cdir);
+
     Map<String, Long> results = new TreeMap<String, Long>();
-    for(File file : files) {
+    for (File file : files) {
       long length = file.length();
       //Don't count .lk files
-      if(file.getName().endsWith(".lk")) {
+      if (file.getName().endsWith(".lk")) {
         continue;
       }
       //crf files are truncated before backing up, so the file length may change
       //we do want to validate krf and idxkrf file length.
-      if(file.getName().endsWith(".crf") || file.getName().endsWith(".drf")) {
+      if (file.getName().endsWith(".crf") || file.getName().endsWith(".drf")) {
         length = 0;
       }
-      
+
       if (file.getName().matches(".*GFXD-DEFAULT-DISKSTORE.*")) {
         results.put(file.getPath(), length);
       }
     }
-    
+
     return results;
   }
 
   protected static void clearAllOplogFiles() {
     String currDir = System.getProperty("user.dir");
     File cdir = new File(currDir);
-    String[] files = cdir.list();
-    if (files != null) {
-      for(String file : files) {
-        if (file.matches(".*GFXD-DEFAULT-DISKSTORE.*")) {
-          File f = new File(file);
-          f.delete();
-        }
-        else if(file.matches("datadictionary")) {
-          File f = new File(file);
-          if (f.isDirectory()) {
-            deleteDir(f);
-          }
+
+    File[] files = FileUtil.listFiles(cdir);
+
+    for (File file : files) {
+      if (file.getName().matches(".*GFXD-DEFAULT-DISKSTORE.*")) {
+        //noinspection ResultOfMethodCallIgnored
+        file.delete();
+      } else if (file.getName().matches("datadictionary")) {
+        if (file.isDirectory()) {
+          deleteDir(file);
         }
       }
     }
   }
-  
+
   protected void doOffHeapValidations() throws Exception {
     SimpleMemoryAllocatorImpl sma = null;
     try {
@@ -144,20 +142,12 @@ public class JdbcTestBase extends TestUtil implements UnitTest {
   }
   
   protected void doEndOffHeapValidations() throws Exception {
-    
-    try {
-      hydra.Log.getLogWriter();
-    }
-    catch (HydraRuntimeException hre) {
-      hydra.Log.createLogWriter(""+this.getName(), "fine");
-    }
     OffHeapHelper.waitForWanQueuesToDrain();
     OffHeapHelper.verifyOffHeapMemoryConsistency(true);
     OffHeapHelper.closeAllRegions();
     OffHeapHelper.verifyOffHeapMemoryConsistency(true);
   }
-  
-  
+
   @Override
   protected void tearDown() throws Exception {
     try {
@@ -184,7 +174,7 @@ public class JdbcTestBase extends TestUtil implements UnitTest {
   /**
    * get the value from a data cell as an int.
    *
-   * @param datavalue
+   * @param dataValue
    *          the data cell, internally known to be an instance of
    *          datavaluedescriptor[]
    * @param index

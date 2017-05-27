@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.pivotal.gemfirexd.TestUtil;
 import junit.framework.AssertionFailedError;
 
 // GemStone changes BEGIN
@@ -408,9 +409,11 @@ public abstract class BaseJDBCTestCase
         
         JDBC.cleanup(conn);
         conn = null;
+// GemStone changes BEGIN
+        TestUtil.setCurrentTestClass(null);
+        TestUtil.currentTest = null;
     }
 
-// GemStone changes BEGIN
     protected static void preTearDown() {
       // currently many tests fail where connection close and lock release
       // does not happen properly (#41295) so explicitly release all the read
@@ -448,6 +451,10 @@ public abstract class BaseJDBCTestCase
      */
     public Connection openDefaultConnection()
         throws SQLException {
+// GemStone changes BEGIN
+        TestUtil.setCurrentTestClass(getClass());
+        TestUtil.currentTest = getName();
+// GemStone changes END
         Connection conn =  getTestConfiguration().openDefaultConnection();
         initializeConnection(conn);
         return conn;
@@ -470,6 +477,10 @@ public abstract class BaseJDBCTestCase
     public Connection openDefaultConnection(String user, String password)
     throws SQLException
     {
+// GemStone changes BEGIN
+        TestUtil.setCurrentTestClass(getClass());
+        TestUtil.currentTest = getName();
+// GemStone changes END
         Connection conn =  getTestConfiguration().openDefaultConnection(user,
                 password);
         initializeConnection(conn);
@@ -524,6 +535,10 @@ public abstract class BaseJDBCTestCase
      */
     public Connection openConnection(String databaseName)
         throws SQLException {
+// GemStone changes BEGIN
+        TestUtil.setCurrentTestClass(getClass());
+        TestUtil.currentTest = getName();
+// GemStone changes END
         Connection conn =  getTestConfiguration().openConnection(databaseName);
         initializeConnection(conn);
         return conn;

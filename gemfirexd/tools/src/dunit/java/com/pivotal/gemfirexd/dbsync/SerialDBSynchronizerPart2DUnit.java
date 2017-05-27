@@ -32,14 +32,10 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.derby.drda.NetworkServerControl;
-import org.apache.derby.iapi.error.ShutdownException;
-import org.apache.derbyTesting.junit.JDBC;
-
 import com.gemstone.gemfire.cache.CacheException;
 import com.gemstone.gemfire.cache.wan.GatewaySender;
-import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
+import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.wan.AbstractGatewaySender;
 import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.callbacks.AsyncEventHelper;
@@ -51,11 +47,13 @@ import com.pivotal.gemfirexd.internal.engine.jdbc.GemFireXDRuntimeException;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedConnection;
 import com.pivotal.gemfirexd.jdbc.GfxdCallbacksTest;
 import com.pivotal.gemfirexd.tools.GfxdSystemAdmin;
-
-import dunit.AsyncInvocation;
-import dunit.SerializableCallable;
-import dunit.SerializableRunnable;
-import dunit.VM;
+import io.snappydata.test.dunit.AsyncInvocation;
+import io.snappydata.test.dunit.SerializableCallable;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.dunit.VM;
+import org.apache.derby.drda.NetworkServerControl;
+import org.apache.derby.iapi.error.ShutdownException;
+import org.apache.derbyTesting.junit.JDBC;
 
 @SuppressWarnings("serial")
 public class SerialDBSynchronizerPart2DUnit extends DBSynchronizerTestBase {
@@ -64,8 +62,8 @@ public class SerialDBSynchronizerPart2DUnit extends DBSynchronizerTestBase {
     super(name);
   }
 
-  public void testOracle_UseCase1_2() throws Throwable {
-    final int isolationLevel = AvailablePort.rand.nextBoolean()
+  public void DISABLED_testOracle_UseCase1_2() throws Throwable {
+    final int isolationLevel = PartitionedRegion.rand.nextBoolean()
         ? Connection.TRANSACTION_READ_COMMITTED
         : Connection.TRANSACTION_NONE;
     startVMs(1, 2, 0, "CHANNELDATAGRP", null);
@@ -508,7 +506,7 @@ public class SerialDBSynchronizerPart2DUnit extends DBSynchronizerTestBase {
         Arrays.asList(new String[] { "-locators=" + getDUnitLocatorString(),
             "-transformation=" + transformation, "-keysize=" + keySize }),
         dbUser, dbPasswd);
-    final String dbFile1 = "db1.props";
+    final File dbFile1 = new File(".", "db1.props");
     // create an external properties file
     Properties dbProps = new Properties();
     dbProps.setProperty("user", dbUser);
@@ -519,7 +517,7 @@ public class SerialDBSynchronizerPart2DUnit extends DBSynchronizerTestBase {
     dbProps.store(out, "Generated file -- do not change manually");
     out.flush();
     out.close();
-    final String dbFile2 = "ora2.props";
+    final File dbFile2 = new File(".", "ora2.props");
     out = new FileOutputStream(dbFile2);
     dbProps.remove("Password");
     dbProps.setProperty("Secret", encryptedPassword2);
@@ -663,8 +661,8 @@ public class SerialDBSynchronizerPart2DUnit extends DBSynchronizerTestBase {
           stmt.execute("DROP ASYNCEVENTLISTENER SECL_BO_DATA_STATUS_HIST_SYNC");
           stmt.execute("create asynceventlistener SECL_BO_DATA_STATUS_HIST_SYNC"
               + "(listenerclass 'com.pivotal.gemfirexd.callbacks.DBSynchronizer' "
-              + "initparams 'file=" + dbFile1 + "' ENABLEPERSISTENCE true "
-              + "MANUALSTART true ALERTTHRESHOLD 2000) "
+              + "initparams 'file=" + dbFile1.getAbsolutePath()
+              + "' ENABLEPERSISTENCE true MANUALSTART true ALERTTHRESHOLD 2000) "
               + "SERVER GROUPS(CHANNELDATAGRP)");
           stmt.execute("ALTER TABLE gemfire.SECL_BO_DATA_STATUS_HIST "
               + "SET  asynceventlistener(SECL_BO_DATA_STATUS_HIST_SYNC)");
@@ -702,8 +700,8 @@ public class SerialDBSynchronizerPart2DUnit extends DBSynchronizerTestBase {
           stmt.execute("DROP ASYNCEVENTLISTENER SECL_BO_DATA_STATUS_HIST_SYNC");
           stmt.execute("create asynceventlistener SECL_BO_DATA_STATUS_HIST_SYNC"
               + "(listenerclass 'com.pivotal.gemfirexd.callbacks.DBSynchronizer' "
-              + "initparams 'file=" + dbFile2 + "' ENABLEPERSISTENCE true "
-              + "MANUALSTART true ALERTTHRESHOLD 2000) "
+              + "initparams 'file=" + dbFile2.getAbsolutePath()
+              + "' ENABLEPERSISTENCE true MANUALSTART true ALERTTHRESHOLD 2000) "
               + "SERVER GROUPS(CHANNELDATAGRP)");
           stmt.execute("ALTER TABLE gemfire.SECL_BO_DATA_STATUS_HIST "
               + "SET  asynceventlistener(SECL_BO_DATA_STATUS_HIST_SYNC)");
@@ -752,8 +750,10 @@ public class SerialDBSynchronizerPart2DUnit extends DBSynchronizerTestBase {
         // ignore
       }
 
-      new File(dbFile1).delete();
-      new File(dbFile2).delete();
+      //noinspection ResultOfMethodCallIgnored
+      dbFile1.delete();
+      //noinspection ResultOfMethodCallIgnored
+      dbFile2.delete();
     }
     conn.commit();
     stmt.close();

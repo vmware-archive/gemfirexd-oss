@@ -30,19 +30,18 @@ import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
-import org.apache.derbyTesting.junit.JDBC;
-
-import com.gemstone.gemfire.internal.AvailablePort;
+import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.concurrent.AtomicUpdaterFactory;
-import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserver;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverAdapter;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
+import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.iapi.reference.Property;
 import com.pivotal.gemfirexd.internal.iapi.sql.Activation;
 import com.pivotal.gemfirexd.internal.iapi.sql.execute.ExecRow;
 import com.pivotal.gemfirexd.internal.shared.common.sanity.SanityManager;
 import com.pivotal.gemfirexd.jdbc.JdbcTestBase;
+import org.apache.derbyTesting.junit.JDBC;
 
 public class ConcurrentMapOpsTest extends JdbcTestBase {
 
@@ -172,7 +171,7 @@ public class ConcurrentMapOpsTest extends JdbcTestBase {
   }
 
   /** compare raw numbers for atomic ops using JDK vs unsafe wrapper classes */
-  public void SW_testCompareAtomicOps() {
+  public void testCompareAtomicOps() {
 
     final AtomicIntegerFieldUpdater<ConcurrentMapOpsTest> intJDKCounter =
         AtomicIntegerFieldUpdater.newUpdater(ConcurrentMapOpsTest.class,
@@ -651,7 +650,7 @@ public class ConcurrentMapOpsTest extends JdbcTestBase {
   }
 
   private static int getRowIdxOffset(int myOffset, int numThreads) {
-    int rnd = AvailablePort.rand.nextInt(300000);
+    int rnd = PartitionedRegion.rand.nextInt(300000);
     return (rnd / numThreads) * numThreads + myOffset;
   }
 

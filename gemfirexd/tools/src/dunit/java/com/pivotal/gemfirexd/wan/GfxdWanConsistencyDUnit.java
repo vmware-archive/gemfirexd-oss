@@ -17,19 +17,15 @@
 package com.pivotal.gemfirexd.wan;
 
 import java.sql.Connection;
-
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Random;
 
-import junit.framework.Assert;
-
 import com.gemstone.gemfire.cache.CacheException;
 import com.gemstone.gemfire.cache.EntryExistsException;
 import com.gemstone.gemfire.cache.EntryNotFoundException;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.i18n.LogWriterI18n;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.versions.ConcurrentCacheModificationException;
@@ -42,6 +38,8 @@ import com.pivotal.gemfirexd.callbacks.impl.GatewayEvent;
 import com.pivotal.gemfirexd.callbacks.impl.GatewayEvent.GatewayEventType;
 import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.distributed.FunctionExecutionException;
+import io.snappydata.test.dunit.SerializableRunnable;
+import junit.framework.Assert;
 
 @SuppressWarnings("serial")
 public class GfxdWanConsistencyDUnit extends GfxdWanTestBase {
@@ -448,12 +446,12 @@ public class GfxdWanConsistencyDUnit extends GfxdWanTestBase {
     final String value = columnValue;
     final boolean skipInsert = skipInsertFlag;
     final boolean skipUpdate = skipUpdateFlag;
-    CacheSerializableRunnable senderConf = new CacheSerializableRunnable(
+    SerializableRunnable senderConf = new SerializableRunnable(
         "Set Custom Resolver") {
       private static final long serialVersionUID = 1L;
 
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         GatewayConflictResolver resolver = new GatewayConflictResolver() {
           @Override
           public void onEvent(GatewayEvent event, GatewayConflictHelper helper) {
@@ -732,10 +730,10 @@ public class GfxdWanConsistencyDUnit extends GfxdWanTestBase {
   
 
   public Runnable doInsertsIntoParentChildTables() {
-    CacheSerializableRunnable runnable = new CacheSerializableRunnable(
+    SerializableRunnable runnable = new SerializableRunnable(
         "doInsertsIntoParentChildTables") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           Connection conn = TestUtil.getConnection();
           Statement st = conn.createStatement();
@@ -756,10 +754,10 @@ public class GfxdWanConsistencyDUnit extends GfxdWanTestBase {
   }
   
   public Runnable doDeletes() {
-    CacheSerializableRunnable runnable = new CacheSerializableRunnable(
+    SerializableRunnable runnable = new SerializableRunnable(
         "doDeletes") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           Connection conn = TestUtil.getConnection();
           Statement st = conn.createStatement();
@@ -776,10 +774,10 @@ public class GfxdWanConsistencyDUnit extends GfxdWanTestBase {
   }
   
   public Runnable doRandomDMLOpsOnParentChildTables() {
-    CacheSerializableRunnable runnable = new CacheSerializableRunnable(
+    SerializableRunnable runnable = new SerializableRunnable(
         "doRandomDMLOpsOnParentChildTables") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           Connection conn = TestUtil.getConnection();
           Statement st = conn.createStatement();
@@ -847,10 +845,10 @@ public class GfxdWanConsistencyDUnit extends GfxdWanTestBase {
   }
   
   public Runnable doUpdate() {
-    CacheSerializableRunnable runnable = new CacheSerializableRunnable(
+    SerializableRunnable runnable = new SerializableRunnable(
         "doUpdate") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           Connection conn = TestUtil.getConnection();
           Statement st = conn.createStatement();
@@ -865,10 +863,10 @@ public class GfxdWanConsistencyDUnit extends GfxdWanTestBase {
     return runnable;
   }
   public Runnable doDelete() {
-    CacheSerializableRunnable runnable = new CacheSerializableRunnable(
+    SerializableRunnable runnable = new SerializableRunnable(
         "doUpdate") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           Connection conn = TestUtil.getConnection();
           Statement st = conn.createStatement();
@@ -884,10 +882,10 @@ public class GfxdWanConsistencyDUnit extends GfxdWanTestBase {
   }
 
   public Runnable doInserts() {
-    CacheSerializableRunnable runnable = new CacheSerializableRunnable(
+    SerializableRunnable runnable = new SerializableRunnable(
         "doInsertsIntoUnrelatedTables") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           Connection conn = TestUtil.getConnection();
           Statement st = conn.createStatement();
@@ -908,10 +906,10 @@ public class GfxdWanConsistencyDUnit extends GfxdWanTestBase {
   }
   
   public Runnable doInsertsIntoUnrelatedTables() {
-    CacheSerializableRunnable runnable = new CacheSerializableRunnable(
+    SerializableRunnable runnable = new SerializableRunnable(
         "doInsertsIntoUnrelatedTables") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           Connection conn = TestUtil.getConnection();
           Statement st = conn.createStatement();

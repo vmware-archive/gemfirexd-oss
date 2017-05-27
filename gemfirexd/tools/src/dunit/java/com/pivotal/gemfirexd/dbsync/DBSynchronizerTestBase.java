@@ -39,7 +39,6 @@ import com.gemstone.gemfire.cache.asyncqueue.AsyncEventQueue;
 import com.gemstone.gemfire.cache.asyncqueue.internal.AsyncEventQueueFactoryImpl;
 import com.gemstone.gemfire.cache.asyncqueue.internal.AsyncEventQueueImpl;
 import com.gemstone.gemfire.cache.wan.GatewaySender;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.RegionQueue;
@@ -55,8 +54,8 @@ import com.pivotal.gemfirexd.internal.engine.ddl.wan.GfxdGatewayEventListener;
 import com.pivotal.gemfirexd.internal.engine.jdbc.GemFireXDRuntimeException;
 import com.pivotal.gemfirexd.internal.iapi.services.sanity.SanityManager;
 
-import dunit.SerializableCallable;
-import dunit.SerializableRunnable;
+import io.snappydata.test.dunit.SerializableCallable;
+import io.snappydata.test.dunit.SerializableRunnable;
 
 @SuppressWarnings("serial")
 public class DBSynchronizerTestBase extends DistributedSQLTestBase{
@@ -175,7 +174,7 @@ public class DBSynchronizerTestBase extends DistributedSQLTestBase{
 
   public static NetworkServerControl startNetworkServer(final int netPort)
       throws Exception {
-    getLogWriter().info(
+    getGlobalLogger().info(
         "Starting a Derby Network Server on "
             + InetAddress.getLocalHost().getHostName() + ":" + netPort);
     NetworkServerControl server = new NetworkServerControl(
@@ -251,12 +250,12 @@ public class DBSynchronizerTestBase extends DistributedSQLTestBase{
 
 
 
-  static CacheSerializableRunnable getExecutorToCheckListenerAttached(
+  static SerializableRunnable getExecutorToCheckListenerAttached(
       final String hubID) {
-    CacheSerializableRunnable checkListenerAttached = new CacheSerializableRunnable(
+    SerializableRunnable checkListenerAttached = new SerializableRunnable(
         "Verify if listener attached") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         AsyncEventQueueImpl asyncQueue = (AsyncEventQueueImpl)Misc
             .getGemFireCache().getAsyncEventQueue(hubID);
         assertNotNull(asyncQueue);
@@ -266,12 +265,12 @@ public class DBSynchronizerTestBase extends DistributedSQLTestBase{
     return checkListenerAttached;
   }
 
-  static CacheSerializableRunnable getExecutorToCheckListenerNotAttached(
+  static SerializableRunnable getExecutorToCheckListenerNotAttached(
       final String hubID) {
-    CacheSerializableRunnable checkListenerNotAttached = new CacheSerializableRunnable(
+    SerializableRunnable checkListenerNotAttached = new SerializableRunnable(
         "Verify listener not  attached") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         GemFireCacheImpl cache = Misc.getGemFireCache();
         AsyncEventQueue asyncQueue = cache.getAsyncEventQueue(hubID);
         assertNull(asyncQueue);
@@ -288,10 +287,10 @@ public class DBSynchronizerTestBase extends DistributedSQLTestBase{
       final Integer maxQueueMem, final String diskStoreName,
       final Integer alertHreshold, final String initParamtr,
       final Boolean isParallel) {
-    CacheSerializableRunnable wbclConfigurator = new CacheSerializableRunnable(
+    SerializableRunnable wbclConfigurator = new SerializableRunnable(
         "WBCL Configurator") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           Connection conn = TestUtil.jdbcConn;
           Statement st = conn.createStatement();
@@ -347,10 +346,10 @@ public class DBSynchronizerTestBase extends DistributedSQLTestBase{
       final Boolean batchConflation, final Boolean enablePersistence,
       final Integer mqm, final String diskStoreName,
       final Integer alertHreshold, final String initParamStr) {
-    CacheSerializableRunnable wbclConfigVerifier = new CacheSerializableRunnable(
+    SerializableRunnable wbclConfigVerifier = new SerializableRunnable(
         "WBCL Configuration Verifier") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
 
         AsyncEventQueueImpl asyncQueue = (AsyncEventQueueImpl)Misc
             .getGemFireCache().getAsyncEventQueue(ID);
@@ -500,10 +499,10 @@ public class DBSynchronizerTestBase extends DistributedSQLTestBase{
   }
   
   public static Runnable doBatchInsert() {
-    CacheSerializableRunnable senderConf = new CacheSerializableRunnable(
+    SerializableRunnable senderConf = new SerializableRunnable(
         "Sender Configurator") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           Connection conn = TestUtil.jdbcConn;
           conn.setAutoCommit(false);
@@ -521,10 +520,10 @@ public class DBSynchronizerTestBase extends DistributedSQLTestBase{
   }
   
   public static Runnable doBatchUpdate() {
-    CacheSerializableRunnable senderConf = new CacheSerializableRunnable(
+    SerializableRunnable senderConf = new SerializableRunnable(
         "Sender Configurator") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           Connection conn = TestUtil.jdbcConn;
           conn.setAutoCommit(false);
@@ -542,10 +541,10 @@ public class DBSynchronizerTestBase extends DistributedSQLTestBase{
   }
   
   public static Runnable doBatchDelete() {
-    CacheSerializableRunnable senderConf = new CacheSerializableRunnable(
+    SerializableRunnable senderConf = new SerializableRunnable(
         "Sender Configurator") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           Connection conn = TestUtil.jdbcConn;
           conn.setAutoCommit(false);
@@ -564,10 +563,10 @@ public class DBSynchronizerTestBase extends DistributedSQLTestBase{
 
   public static Runnable startAsyncEventListener(final String id) {
 
-    CacheSerializableRunnable startWBCL = new CacheSerializableRunnable(
+    SerializableRunnable startWBCL = new SerializableRunnable(
         "Start WBCL") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           Connection conn = TestUtil.jdbcConn;
           CallableStatement cs = conn
@@ -586,10 +585,10 @@ public class DBSynchronizerTestBase extends DistributedSQLTestBase{
 
   public static Runnable stopAsyncEventListener(final String id) {
 
-    CacheSerializableRunnable stopWBCL = new CacheSerializableRunnable(
+    SerializableRunnable stopWBCL = new SerializableRunnable(
         "Start WBCL") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           Connection conn = TestUtil.jdbcConn;
           CallableStatement cs = conn
@@ -607,10 +606,10 @@ public class DBSynchronizerTestBase extends DistributedSQLTestBase{
 
   static Runnable dropAsyncEventListener(final String id) {
 
-    CacheSerializableRunnable removeWBCL = new CacheSerializableRunnable(
+    SerializableRunnable removeWBCL = new SerializableRunnable(
         "Remove WBCL") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           Connection conn = TestUtil.jdbcConn;
           conn.createStatement().execute("DROP ASYNCEVENTLISTENER " + id);
