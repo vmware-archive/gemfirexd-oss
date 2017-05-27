@@ -50,7 +50,9 @@ import com.pivotal.gemfirexd.internal.shared.common.sanity.SanityManager;
 import com.pivotal.gemfirexd.internal.tools.JDBCDisplayUtil;
 import scala.tools.jline.console.ConsoleReader;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 import java.util.Hashtable;
 import java.util.Properties;
@@ -67,6 +69,7 @@ import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
+import java.util.regex.Pattern;
 
 /**
 	This class is utilities specific to the two ij Main's.
@@ -90,6 +93,7 @@ public class utilMain implements java.security.PrivilegedAction {
 	private LocalizedOutput out = null;
 	private Properties connAttributeDefaults;
 	private Hashtable ignoreErrors;
+	private static final Pattern pattern = Pattern.compile("gemfirexd|gfxd", Pattern.CASE_INSENSITIVE);
 	/**
 	 * True if to display the error code when
 	 * displaying a SQLException.
@@ -116,6 +120,10 @@ public class utilMain implements java.security.PrivilegedAction {
 	// GemStone changes BEGIN
 	private final String basePath;
 
+	private final Map<String, String> params;
+
+	private final int numTimesToRun;
+
 	private static String basePrompt = "gfxd";
 
 	public static void setBasePrompt(String prompt) {
@@ -132,7 +140,7 @@ public class utilMain implements java.security.PrivilegedAction {
 	utilMain(int numConnections, LocalizedOutput out)
 		throws ijFatalException
 	{
-		this(numConnections, out, (Hashtable)null, null);
+		this(numConnections, out, (Hashtable)null, null, null, 1);
 	}
 
 	/**
@@ -146,9 +154,11 @@ public class utilMain implements java.security.PrivilegedAction {
 	 *							ignore.  Otherwise, an ijFatalException is
 	 *							thrown.  ignoreErrors is used for stress
 	 *							tests.
-	 * @param basePath TODO
+	 * @param basePath base path set with -path command.
+	 * @param numTimesToRun number of times a command is to be repeated.
 	 */
-	public utilMain(int numConnections, LocalizedOutput out, Hashtable ignoreErrors, String basePath)
+	public utilMain(int numConnections, LocalizedOutput out, Hashtable ignoreErrors, String basePath,
+			Map<String, String> params, int numTimesToRun)
 		throws ijFatalException
 	{
 		/* init the parser; give it no input to start with.
@@ -161,6 +171,8 @@ public class utilMain implements java.security.PrivilegedAction {
 		this.out = out;
 		this.ignoreErrors = ignoreErrors;
 		this.basePath = basePath;
+		this.params = params;
+		this.numTimesToRun = numTimesToRun;
 		
 		showErrorCode = 
 			Boolean.valueOf(
@@ -176,7 +188,7 @@ public class utilMain implements java.security.PrivilegedAction {
 
 		for (int ictr = 0; ictr < numConnections; ictr++)
 		{
-		    commandGrabber[ictr] = new StatementFinder(langUtil.getNewInput(System.in), out, basePath);
+		    commandGrabber[ictr] = new StatementFinder(langUtil.getNewInput(System.in), out, basePath, params);
 			connEnv[ictr] = new ConnectionEnv(ictr, (numConnections > 1), (numConnections == 1));
 		}
 
@@ -255,13 +267,12 @@ public class utilMain implements java.security.PrivilegedAction {
 				version = "?";
 			}
 			*/
-
-   			out.println(langUtil.getTextMessage("IJ_IjVers30C199", GemFireXDVersion.getGemFireXDVersion()));
-        // GemStone changes END
-			for (int i=connEnv.length-1;i>=0;i--) { // print out any initial warnings...
+			out.println(convertGfxdMessageToSnappy(langUtil.getTextMessage("IJ_IjVers30C199", GemFireXDVersion.getGemFireXDVersion())));
+			// GemStone changes END
+			for (int i = connEnv.length - 1; i >= 0; i--) { // print out any initial warnings...
 				Connection c = connEnv[i].getConnection();
-				if (c!=null) {
-					JDBCDisplayUtil.ShowWarnings(out,c);
+				if (c != null) {
+					JDBCDisplayUtil.ShowWarnings(out, c);
 				}
 			}
 			firstRun = false;
@@ -270,8 +281,12 @@ public class utilMain implements java.security.PrivilegedAction {
       		//accordingly. 
     		boolean showNoCountForSelect = Boolean.valueOf(util.getSystemProperty("gfxd.showNoCountForSelect")).booleanValue(); // GemStone change ij ==> gfxd
       		JDBCDisplayUtil.showSelectCount = !showNoCountForSelect;
+			// GemStone changes BEGIN
+			boolean showNoRowsForSelect = Boolean.valueOf(util.getSystemProperty("gfxd.showNoRowsForSelect")).booleanValue();
+			JDBCDisplayUtil.showSelectRows = !showNoRowsForSelect;
+			// GemStone changes END
 
-      		//check if the property is set to not show initial connections and accordingly set the
+			//check if the property is set to not show initial connections and accordingly set the
       		//static variable.
     		boolean showNoConnectionsAtStart = Boolean.valueOf(util.getSystemProperty("gfxd.showNoConnectionsAtStart")).booleanValue(); // GemStone change ij ==> gfxd
 
@@ -289,7 +304,7 @@ public class utilMain implements java.security.PrivilegedAction {
 		runScriptGuts();
 		cleanupGo(in);
 	}
-	
+
 	/**
 	 * Support to run a script. Performs minimal setup
 	 * to set the passed in connection into the existing
@@ -310,6 +325,9 @@ public class utilMain implements java.security.PrivilegedAction {
 	         else {
 	           JDBCDisplayUtil.showSelectCount = false;
 	         }
+
+						boolean showNoRowsForSelect = Boolean.valueOf(util.getSystemProperty("gfxd.showNoRowsForSelect")).booleanValue(); // GemStone change ij ==> gfxd
+						JDBCDisplayUtil.showSelectRows = !showNoRowsForSelect;
 
 		// GemStone changes END
 		connEnv[0].addSession(conn, (String) null);
@@ -504,12 +522,6 @@ public class utilMain implements java.security.PrivilegedAction {
 		}
 		if (reader == null) {
 		  out.println();
-		} else {
-			try {
-				reader.getTerminal().restore();
-			} catch (Exception e) {
-				// restoration failed!
-			}
 		}
 // GemStone changes END
         return scriptErrorCount;
@@ -724,6 +736,18 @@ public class utilMain implements java.security.PrivilegedAction {
         
 	    RedirectedLocalizedOutput redirected = null;
 	    try {
+				int repeatCommand = numTimesToRun;
+				boolean reportRunNum = false;
+				final String c = command.trim().toLowerCase();
+				if (c.startsWith("set") || c.startsWith("elapsed")) {
+					repeatCommand = 1;
+				} else if (repeatCommand > 1) {
+					reportRunNum = true;
+				}
+
+				int runNumber = 0;
+			do { // repeatCommand
+
 			boolean	elapsedTimeOn = ijParser.getElapsedTimeState();
 			long	beginTime = 0;
 			long	endTime;
@@ -745,15 +769,24 @@ public class utilMain implements java.security.PrivilegedAction {
 			/* Print the elapsed time if appropriate */
 			if (elapsedTimeOn) {
 // GemStone changes BEGIN
-				out.println(langUtil.getTextMessage("IJ_ElapTime0Mil_4",
+				if (reportRunNum) {
+					out.println("Run - " + runNumber + " " + langUtil.getTextMessage("IJ_ElapTime0Mil_4",
 				    langUtil.getNumberAsString(endTime)));
+				}	else {
+						out.println(langUtil.getTextMessage("IJ_ElapTime0Mil_4",
+								langUtil.getNumberAsString(endTime)));
+				}
 				/* (original code)
 				endTime = System.currentTimeMillis();
 				out.println(langUtil.getTextMessage("IJ_ElapTime0Mil_4", 
 				langUtil.getNumberAsString(endTime - beginTime)));
 				*/
 // GemStone changes END
+			} else if (reportRunNum) {
+				out.println("Run - " + runNumber + " completed ");
 			}
+
+			} while ( ++runNumber < repeatCommand);
             return true;
 
 	    } catch (SQLException e) {
@@ -863,7 +896,7 @@ public class utilMain implements java.security.PrivilegedAction {
 			throw new ijFatalException(fatalException);
 		}
 		if (syntaxErrorOccurred)
-			out.println(langUtil.getTextMessage("IJ_SuggestHelp"));
+			out.println(convertGfxdMessageToSnappy(langUtil.getTextMessage("IJ_SuggestHelp")));
 	}
 
 	/**
@@ -898,7 +931,7 @@ public class utilMain implements java.security.PrivilegedAction {
 		// if the file was opened, move to use it for input.
 		oldGrabbers.push(commandGrabber[currCE]);
 	    commandGrabber[currCE] = 
-                new StatementFinder(langUtil.getNewInput(new BufferedInputStream(newFile, BUFFEREDFILESIZE)), null, basePath);
+                new StatementFinder(langUtil.getNewInput(new BufferedInputStream(newFile, BUFFEREDFILESIZE)), null, basePath, params);
 		fileInput = true;
 	}
 
@@ -907,7 +940,7 @@ public class utilMain implements java.security.PrivilegedAction {
 		if (is==null) throw ijException.resourceNotFound();
 		oldGrabbers.push(commandGrabber[currCE]);
 	    commandGrabber[currCE] = 
-                new StatementFinder(langUtil.getNewEncodedInput(new BufferedInputStream(is, BUFFEREDFILESIZE), "UTF8"), null, basePath);
+                new StatementFinder(langUtil.getNewEncodedInput(new BufferedInputStream(is, BUFFEREDFILESIZE), "UTF8"), null, basePath, params);
 		fileInput = true;
 	}
 
@@ -995,9 +1028,9 @@ public class utilMain implements java.security.PrivilegedAction {
 	      else if (remaining.length() >= peerConnect.length()
 	          && remaining.substring(0, peerConnect.length())
 	             .equalsIgnoreCase(peerConnect)) {
-	        out.println(LocalizedResource.getMessage(
+	        out.println(convertGfxdMessageToSnappy(LocalizedResource.getMessage(
 	            "GFXD_ConnectHelpText_Peer",
-	            LocalizedResource.getMessage("GFXD_Usage")));
+	            LocalizedResource.getMessage("GFXD_Usage"))));
 	        return true;
 	      }
 	      else if (remaining.length() >= hostsConnect.length()
@@ -1015,8 +1048,23 @@ public class utilMain implements java.security.PrivilegedAction {
                     .getMessage("GFXD_ConnectHelpText_Peer", ""), LocalizedResource
                     .getMessage("GFXD_ConnectHelpText_Hosts", "")));
 	    return true;
+	  } else if (command != null) {
+	    String cmd = command.trim().length() > 3 ? command.trim().substring(0, 4) : command;
+	    if(cmd.equalsIgnoreCase("run ")) {
+	      out.println(LocalizedResource.getMessage("IJ_ExceRunnComm",
+		  command + "\n" + LocalizedResource.getMessage("IJ_RunUsage")));
+	      return true;
+	    }
 	  }
 	  return false;
+	}
+
+	public static String convertGfxdMessageToSnappy(String message) {
+		if (getPrompt(true, "").contains("snappy")) {
+			return pattern.matcher(message).replaceAll("SnappyData");
+		} else {
+			return message;
+		}
 	}
 
 // GemStone changes END

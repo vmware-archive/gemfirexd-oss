@@ -28,6 +28,7 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.regex.Pattern;
 
+import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -1734,7 +1735,8 @@ public class SelectsToGetTest extends JdbcTestBase {
     p.setProperty(com.pivotal.gemfirexd.Attribute.ENABLE_TIMESTATS, "false");
     p.setProperty(DistributionConfig.STATISTIC_ARCHIVE_FILE_NAME, "client-" + 1 + ".gfs");
     
-    p.put(AvailablePort.rand.nextBoolean() ? com.pivotal.gemfirexd.Attribute.USERNAME_ATTR
+    p.put(PartitionedRegion.rand.nextBoolean()
+        ? com.pivotal.gemfirexd.Attribute.USERNAME_ATTR
         : com.pivotal.gemfirexd.Attribute.USERNAME_ALT_ATTR, "Soubhik");
     p.put(com.pivotal.gemfirexd.Attribute.PASSWORD_ATTR, "Soubhik");
     

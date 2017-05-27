@@ -88,8 +88,8 @@ public class AdminOnDsDUnitTest extends DistributedTestCase {
       try {
         // start a distributed system with the same bind address
         myDS = DistributedSystem.connect(p);
-        DistributedSystemDUnitTest.checkEnableAdministrationOnly(true, true);
-        DistributedSystemDUnitTest.checkEnableAdministrationOnly(false, true);
+        DistributedSystemFactoryTest.checkEnableAdministrationOnly(true, true);
+        DistributedSystemFactoryTest.checkEnableAdministrationOnly(false, true);
   
         DistributedSystemConfig config =  
           AdminDistributedSystemFactory.defineDistributedSystem(myDS, null); 

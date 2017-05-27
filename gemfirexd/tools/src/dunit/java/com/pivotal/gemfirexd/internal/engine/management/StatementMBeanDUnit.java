@@ -43,7 +43,7 @@ import com.pivotal.gemfirexd.internal.engine.management.impl.StatementMBean;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedStatement;
 import com.pivotal.gemfirexd.internal.impl.sql.StatementStats;
 
-import dunit.VM;
+import io.snappydata.test.dunit.VM;
 
 public class StatementMBeanDUnit extends GfxdManagementTestBase {
   static final  String QNNumTimesCompiled = "QNNumTimesCompiled";

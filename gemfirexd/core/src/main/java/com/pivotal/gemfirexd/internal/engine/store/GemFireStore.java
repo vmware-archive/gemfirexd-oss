@@ -30,33 +30,15 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.gemstone.gemfire.CancelCriterion;
-import com.gemstone.gemfire.GemFireException;
-import com.gemstone.gemfire.LogWriter;
-import com.gemstone.gemfire.StatisticDescriptor;
-import com.gemstone.gemfire.Statistics;
-import com.gemstone.gemfire.StatisticsFactory;
-import com.gemstone.gemfire.StatisticsType;
-import com.gemstone.gemfire.StatisticsTypeFactory;
+import com.gemstone.gemfire.*;
 import com.gemstone.gemfire.admin.AdminException;
 import com.gemstone.gemfire.admin.jmx.Agent;
 import com.gemstone.gemfire.admin.jmx.AgentConfig;
 import com.gemstone.gemfire.admin.jmx.AgentFactory;
-import com.gemstone.gemfire.cache.AttributesFactory;
-import com.gemstone.gemfire.cache.CacheClosedException;
-import com.gemstone.gemfire.cache.CacheExistsException;
-import com.gemstone.gemfire.cache.CacheFactory;
-import com.gemstone.gemfire.cache.DataPolicy;
-import com.gemstone.gemfire.cache.DiskAccessException;
-import com.gemstone.gemfire.cache.DiskStoreFactory;
-import com.gemstone.gemfire.cache.PartitionAttributesFactory;
-import com.gemstone.gemfire.cache.Region;
-import com.gemstone.gemfire.cache.RegionAttributes;
-import com.gemstone.gemfire.cache.RegionExistsException;
-import com.gemstone.gemfire.cache.Scope;
+import com.gemstone.gemfire.cache.*;
 import com.gemstone.gemfire.cache.execute.FunctionService;
 import com.gemstone.gemfire.cache.util.ObjectSizer;
-import com.gemstone.gemfire.distributed.DistributedSystem;
+import com.gemstone.gemfire.distributed.DistributedMember;
 import com.gemstone.gemfire.distributed.internal.DM;
 import com.gemstone.gemfire.distributed.internal.DistributionAdvisee;
 import com.gemstone.gemfire.distributed.internal.DistributionAdvisor;
@@ -70,19 +52,7 @@ import com.gemstone.gemfire.internal.GemFireLevel;
 import com.gemstone.gemfire.internal.HostStatSampler.StatsSamplerCallback;
 import com.gemstone.gemfire.internal.LogWriterImpl;
 import com.gemstone.gemfire.internal.StatisticsTypeFactoryImpl;
-import com.gemstone.gemfire.internal.cache.AbstractRegion;
-import com.gemstone.gemfire.internal.cache.BucketRegion;
-import com.gemstone.gemfire.internal.cache.CacheServerLauncher;
-import com.gemstone.gemfire.internal.cache.ColocationHelper;
-import com.gemstone.gemfire.internal.cache.DiskStoreImpl;
-import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
-import com.gemstone.gemfire.internal.cache.InternalRegionArguments;
-import com.gemstone.gemfire.internal.cache.LocalRegion;
-import com.gemstone.gemfire.internal.cache.PartitionRegionConfig;
-import com.gemstone.gemfire.internal.cache.PartitionedRegion;
-import com.gemstone.gemfire.internal.cache.PartitionedRegionDataStore;
-import com.gemstone.gemfire.internal.cache.PartitionedRegionException;
-import com.gemstone.gemfire.internal.cache.PartitionedRegionHelper;
+import com.gemstone.gemfire.internal.cache.*;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
 import com.gemstone.gemfire.internal.shared.FinalizeObject;
@@ -95,13 +65,13 @@ import com.pivotal.gemfirexd.FabricService;
 import com.pivotal.gemfirexd.FabricServiceManager;
 import com.pivotal.gemfirexd.NetworkInterface;
 import com.pivotal.gemfirexd.internal.GemFireXDVersion;
+import com.pivotal.gemfirexd.internal.catalog.ExternalCatalog;
 import com.pivotal.gemfirexd.internal.catalog.UUID;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryTimeStatistics;
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
 import com.pivotal.gemfirexd.internal.engine.GfxdDataSerializable;
 import com.pivotal.gemfirexd.internal.engine.Misc;
-import com.pivotal.gemfirexd.internal.engine.SigThreadDumpHandler;
 import com.pivotal.gemfirexd.internal.engine.access.GemFireTransaction;
 import com.pivotal.gemfirexd.internal.engine.access.MemConglomerate;
 import com.pivotal.gemfirexd.internal.engine.access.PropertyConglomerate;
@@ -170,6 +140,7 @@ import com.pivotal.gemfirexd.internal.jdbc.InternalDriver;
 import com.pivotal.gemfirexd.internal.shared.common.ResolverUtils;
 import com.pivotal.gemfirexd.internal.shared.common.SharedUtils;
 import com.pivotal.gemfirexd.internal.shared.common.sanity.SanityManager;
+import com.pivotal.gemfirexd.internal.snappy.CallbackFactoryProvider;
 
 /**
  * The underlying store implementation that provides methods to create container
@@ -369,6 +340,12 @@ public final class GemFireStore implements AccessFactory, ModuleControl,
   
   private final IndexPersistenceStats indexPersistenceStats;
 
+  /**
+   * Not keeping as volatile as the expectation is that this field
+   * should be set as soon as the first embedded connection is created
+   * and will not change ever.
+   */
+  private ExternalCatalog externalCatalog;
   /**
    *************************************************************************
    * Public Methods implementing AccessFactory Interface
@@ -743,12 +720,14 @@ public final class GemFireStore implements AccessFactory, ModuleControl,
     float evictionOffHeapPercent = -1.0f;
 
     // install the GemFireXD specific thread dump signal (URG) handler
+    /*
     try {
       SigThreadDumpHandler.install();
     } catch (Throwable t) {
       SanityManager.DEBUG_PRINT("fine:TRACE",
           "Failed to install thread dump signal handler: " + t.getCause());
     }
+    */
 
     // first clear any residual statics from a previous unclean run
     clearStatics(true);
@@ -768,15 +747,6 @@ public final class GemFireStore implements AccessFactory, ModuleControl,
 
     // set the flag to indicate a GemFireXD system
     GemFireCacheImpl.setGFXDSystem(true);
-
-
-
-    // set the gemfirePropertyFile
-    if (DistributedSystem.PROPERTY_FILE == null) {
-      DistributedSystem.PROPERTY_FILE = PropertyUtil.isSQLFire
-          ? com.pivotal.gemfirexd.Property.SQLF_PROPERTIES_FILE
-          : com.pivotal.gemfirexd.Property.PROPERTIES_FILE;
-    }
 
     ResolverUtils.reset();
     if (PropertyUtil.getSystemBoolean(
@@ -1260,6 +1230,7 @@ public final class GemFireStore implements AccessFactory, ModuleControl,
 
       this.isShutdownAll = false;
 
+      startExecutor();
     } catch (RuntimeException ex) {
 //      (new ManagerLogWriter(LogWriterImpl.FINE_LEVEL, System.out)).fine("GemFireStore caught unexpected exception", ex);
       if (GemFireXDUtils.TraceFabricServiceBoot) {
@@ -1294,6 +1265,26 @@ public final class GemFireStore implements AccessFactory, ModuleControl,
           == ContainerHandle.MODE_FORUPDATE);
       SanityManager.ASSERT(TransactionController.OPENMODE_FOR_LOCK_ONLY
           == ContainerHandle.MODE_OPEN_FOR_LOCK_ONLY);
+    }
+  }
+
+  /**
+   * Start executor if any of the accessor is a driver.
+   */
+  private void startExecutor() {
+    if (this.getMyVMKind() == VMKind.LOCATOR) {
+      return;
+    }
+    Set<DistributedMember> servers = this.getDistributionAdvisor().
+            adviseOperationNodes(CallbackFactoryProvider.getClusterCallbacks().
+                    getLeaderGroup());
+    for (DistributedMember server : servers) {
+      final GfxdDistributionAdvisor.GfxdProfile other = GemFireXDUtils
+          .getGfxdProfile(server);
+      if (other.hasSparkURL() && !server.equals(this.getMyId())) {
+        CallbackFactoryProvider.getClusterCallbacks().
+            launchExecutor(other.getSparkDriverURL(), other.getDistributedMember());
+      }
     }
   }
 
@@ -1918,6 +1909,12 @@ public final class GemFireStore implements AccessFactory, ModuleControl,
       return;
     }
 
+    if (this.externalCatalog != null) {
+      this.externalCatalog.stop();
+    }
+    // stop spark executor if it is running
+    CallbackFactoryProvider.getClusterCallbacks().stopExecutor();
+
     // stop the management service
     GfxdManagementService.handleEvent(GfxdResourceEvent.FABRIC_DB__STOP, this);
 
@@ -2113,6 +2110,7 @@ public final class GemFireStore implements AccessFactory, ModuleControl,
       GemFireCacheImpl.setGFXDSystem(false);
       selfMemId = null;
       GlobalIndexCacheWithLocalRegion.setCacheToNull();
+      this.externalCatalog = null;
     }
   }
 
@@ -2235,6 +2233,59 @@ public final class GemFireStore implements AccessFactory, ModuleControl,
 
   public IndexPersistenceStats getIndexPersistenceStats() {
     return indexPersistenceStats;
+  }
+
+  // The first access of this will instantiate the snappy catalog
+	public void initExternalCatalog() {
+    try {
+      if (this.externalCatalog == null) {
+        synchronized (this) {
+          if (this.externalCatalog == null) {
+            // Instantiate using reflection
+            try {
+              this.externalCatalog = (ExternalCatalog)Class.forName(
+                  "io.snappydata.impl.SnappyHiveCatalog").newInstance();
+            } catch (InstantiationException | IllegalAccessException
+                | ClassNotFoundException e) {
+              throw new IllegalStateException(
+                  "could not instantiate the snappy catalog", e);
+            }
+          }
+        }
+      }
+      if (this.externalCatalog == null) {
+        throw new IllegalStateException(
+            "could not instantiate snappy catalog");
+      }
+    } catch(Throwable ex) {
+      throw new RuntimeException(ex);
+    }
+	}
+
+  public ExternalCatalog getExternalCatalog() {
+    return this.externalCatalog;
+  }
+
+  public void setDBName(String dbname) {
+    // set only once
+    if (this.databaseName == null) {
+      this.databaseName = dbname;
+      if (this.databaseName.equalsIgnoreCase("snappydata")) {
+        this.snappyStore = true;
+        this.database.setdisableStatementOptimizationToGenericPlan();
+      }
+    }
+  }
+
+  private String databaseName;
+  private boolean snappyStore;
+
+  public boolean isSnappyStore() {
+    return this.snappyStore;
+  }
+
+  public String getDatabaseName() {
+    return this.databaseName;
   }
 
   /**

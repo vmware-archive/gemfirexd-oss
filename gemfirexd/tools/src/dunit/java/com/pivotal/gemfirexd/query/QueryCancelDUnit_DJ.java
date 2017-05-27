@@ -21,7 +21,6 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.Properties;
 
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserver;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverAdapter;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
@@ -30,7 +29,7 @@ import com.pivotal.gemfirexd.internal.iapi.sql.Activation;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedStatement;
 import com.pivotal.gemfirexd.internal.impl.sql.GenericActivationHolder;
 
-import dunit.SerializableRunnable;
+import io.snappydata.test.dunit.SerializableRunnable;
 
 /**
  * Query cancellation tests for distributed join queries
@@ -111,11 +110,11 @@ public class QueryCancelDUnit_DJ extends QueryCancelTestHelper {
     }
 
     final String key = testName;
-    CacheSerializableRunnable csr1 = new CacheSerializableRunnable(
+    SerializableRunnable csr1 = new SerializableRunnable(
         testName) {
 
       @Override
-      public void run2() {
+      public void run() {
         GemFireXDQueryObserver old = GemFireXDQueryObserverHolder
             .setInstance(new GemFireXDQueryObserverAdapter() {
               private boolean flag = false;
@@ -257,10 +256,10 @@ public class QueryCancelDUnit_DJ extends QueryCancelTestHelper {
     }
 
     final String key = testName;
-    CacheSerializableRunnable csr1 = new CacheSerializableRunnable(testName) {
+    SerializableRunnable csr1 = new SerializableRunnable(testName) {
 
       @Override
-      public void run2() {
+      public void run() {
         GemFireXDQueryObserver old = GemFireXDQueryObserverHolder
             .setInstance(new GemFireXDQueryObserverAdapter() {
               private boolean flag = false;

@@ -57,10 +57,12 @@ import java.util.Hashtable;
 import java.util.Set;
 import java.lang.reflect.Array;
 
+import com.gemstone.gemfire.LogWriter;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.PartitionedRegionDataStore;
 import com.pivotal.gemfirexd.internal.engine.Misc;
+import com.pivotal.gemfirexd.internal.engine.store.GemFireStore;
 import com.pivotal.gemfirexd.internal.iapi.error.PublicAPI;
 import com.pivotal.gemfirexd.internal.iapi.error.StandardException;
 import com.pivotal.gemfirexd.internal.iapi.jdbc.EngineConnection;
@@ -971,7 +973,8 @@ class DRDAStatement
 				  */
 // GemStone changes END
 				else
-					addResultSet(rs,withHoldCursor);
+					addResultSet(rs, withHoldCursor);
+
 				hasResultSet = true;
 			}
 			// For normal selects we are done, but procedures might
@@ -2051,6 +2054,12 @@ class DRDAStatement
   }
 
   public void checkBucketsStillHosted() throws SQLException {
+	  // skipping this check as snappy is using local bucket execution (single-hop)for
+	  // both embedded and thin client mode. to retain local execution for thin client mode
+	  // the lcc and orther settings are not clear during the end of the statement.
+
+	 if (isCallableStatement() && Misc.getMemStore().isSnappyStore())
+		  return;
     if (SanityManager.TraceSingleHop) {
       SanityManager.DEBUG_PRINT(SanityManager.TRACE_SINGLE_HOP,
           "DRDAStatement::checkBucketStillHosted called");

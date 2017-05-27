@@ -1016,7 +1016,7 @@ public final class GenericActivationHolder implements Activation
     return this.ac.estimateMemoryUsage();
   }
 
-  public boolean isQueryCancelled() {
+  public final boolean isQueryCancelled() {
     return this.ac.isQueryCancelled();
   }
   

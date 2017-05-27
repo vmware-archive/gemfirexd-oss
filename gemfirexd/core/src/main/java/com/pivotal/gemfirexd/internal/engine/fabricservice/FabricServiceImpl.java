@@ -25,17 +25,8 @@ import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
-
-import org.apache.thrift.transport.TTransportException;
 
 import com.gemstone.gemfire.CancelCriterion;
 import com.gemstone.gemfire.cache.client.internal.BridgeServerLoadMessage;
@@ -95,6 +86,7 @@ import com.pivotal.gemfirexd.thrift.common.SocketParameters;
 import com.pivotal.gemfirexd.thrift.common.ThriftExceptionUtil;
 import com.pivotal.gemfirexd.thrift.common.ThriftUtils;
 import com.pivotal.gemfirexd.thrift.server.GfxdThriftServer;
+import org.apache.thrift.transport.TTransportException;
 
 /**
  * Base implementation of the fabric service startup.
@@ -287,6 +279,10 @@ public abstract class FabricServiceImpl implements FabricService {
 
       // safe as only 1 thread is expected to come in.
       final String protocol = getProtocol();
+      // we dont  want query routing to happen from these connections
+      if (!startupProps.contains(Attribute.ROUTE_QUERY)) {
+        startupProps.setProperty(Attribute.ROUTE_QUERY, "false");
+      }
       DriverManager.getDriver(protocol);
 
       jdbcConn = new AutoloadedDriver().connect(protocol, startupProps);
@@ -615,8 +611,7 @@ public abstract class FabricServiceImpl implements FabricService {
 
   /**
    * This method invoked from GemFire to end notify waiting for another JVM to
-   * initialize for disk GII after a previous call to
-   * {@link #notifyWaiting(String)}.
+   * initialize for disk GII after a previous call to {@link #notifyWaiting}.
    * 
    * NOTE: It is deliberately not synchronized since it can be invoked by a
    * thread other than the booting thread itself which may be stuck waiting for
@@ -841,7 +836,7 @@ public abstract class FabricServiceImpl implements FabricService {
   }
 
   @Override
-  public Collection<NetworkInterface> getAllNetworkServers() {
+  public List<NetworkInterface> getAllNetworkServers() {
     synchronized (this.allnetservers) {
       return new ArrayList<NetworkInterface>(this.allnetservers);
     }

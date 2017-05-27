@@ -836,7 +836,10 @@ type, name /* fixes bug 42343 */);
   public void incPartitionMessagesSent() {
     this.stats.incInt(partitionMessagesSentId, 1);
   }
-  
+  public int getPartitionMessagesSent() {
+    return this.stats.getInt(partitionMessagesSentId);
+  }
+
   // ------------------------------------------------------------------------
   // datastore stats
   // ------------------------------------------------------------------------

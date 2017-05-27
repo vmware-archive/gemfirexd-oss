@@ -23,9 +23,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.concurrent.CyclicBarrier;
 
-import util.TestException;
-
 import com.pivotal.gemfirexd.TestUtil;
+import io.snappydata.test.util.TestException;
 
 @SuppressWarnings("serial")
 public class TransactionRRDUnit extends TransactionDUnit {

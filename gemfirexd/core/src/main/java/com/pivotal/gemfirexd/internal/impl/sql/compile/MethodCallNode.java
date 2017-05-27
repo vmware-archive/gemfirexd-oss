@@ -366,7 +366,7 @@ abstract class MethodCallNode extends JavaValueNode
                     if (signature[parm] != null) {
                         String type = signature[parm].getSQLType().getTypeId().getSQLTypeName();
                         if (type.equals("CLOB") || type.equals("NCLOB")) {
-                            throw StandardException.newException(SQLState.LOB_AS_METHOD_ARGUMENT_OR_RECEIVER);
+                         //   throw StandardException.newException(SQLState.LOB_AS_METHOD_ARGUMENT_OR_RECEIVER);
                         }
                     }
 				}

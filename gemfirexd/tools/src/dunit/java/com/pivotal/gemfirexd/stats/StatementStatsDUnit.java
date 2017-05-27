@@ -24,26 +24,24 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Properties;
 
-import util.TestException;
-
 import com.gemstone.gemfire.Statistics;
 import com.gemstone.gemfire.StatisticsType;
 import com.gemstone.gemfire.cache.CacheException;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.pivotal.gemfirexd.Attribute;
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.execute.CallbackStatement;
-import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverAdapter;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
+import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedStatement;
 import com.pivotal.gemfirexd.internal.impl.sql.StatementStats;
 import com.pivotal.gemfirexd.internal.shared.common.sanity.SanityManager;
-
-import dunit.VM;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.dunit.VM;
+import io.snappydata.test.util.TestException;
 
 /**
  * Test class for Statement stats. Added tests for checking enable/disable of
@@ -156,10 +154,10 @@ public class StatementStatsDUnit extends DistributedSQLTestBase {
     serverVM.invoke(this.getClass(), "checkUniqueStatistics"); 
 
     final Statement stmt = conn.createStatement();
-    CacheSerializableRunnable setObserver1 = new CacheSerializableRunnable(
+    SerializableRunnable setObserver1 = new SerializableRunnable(
         "set a stats observer1") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         ob1 = new StatementStatsObserver();
         GemFireXDQueryObserverHolder.setInstance(ob1);
       }
@@ -171,10 +169,10 @@ public class StatementStatsDUnit extends DistributedSQLTestBase {
 
     stmt.execute("create schema trade");
 
-    CacheSerializableRunnable checkStats1 = new CacheSerializableRunnable(
+    SerializableRunnable checkStats1 = new SerializableRunnable(
         "check observer1") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
           // schema does not get invalidated so will be optimized only once
           checkDDLStatistics(ob1, numTimesSampled, enableStats);
       }
@@ -184,10 +182,10 @@ public class StatementStatsDUnit extends DistributedSQLTestBase {
     serverExecute(1, checkStats1);
 
     // set the second observer
-    CacheSerializableRunnable setObserver2 = new CacheSerializableRunnable(
+    SerializableRunnable setObserver2 = new SerializableRunnable(
         "set a stats observer2") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         ob2 = new StatementStatsObserver();
         GemFireXDQueryObserverHolder.setInstance(ob2);
       }
@@ -199,10 +197,10 @@ public class StatementStatsDUnit extends DistributedSQLTestBase {
         + "cust_name varchar(100), since date, addr varchar(100), tid int, "
         + "primary key (cid))");
 
-    CacheSerializableRunnable checkStats2 = new CacheSerializableRunnable(
+    SerializableRunnable checkStats2 = new SerializableRunnable(
         "check observer2") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         final Statistics s1 = ob1.getStatistics();
         final Statistics s2 = ob2.getStatistics();
           if (enableStats) {
@@ -613,8 +611,6 @@ public class StatementStatsDUnit extends DistributedSQLTestBase {
   /**
    * Check relevant statistics for a DDL statement.
    * @param enableStats TODO
-   * @param s
-   *          Statistics
    */
   private void checkDDLStatistics(StatementStatsObserver ob,
       int numTimesSampled, boolean enableStats) {
@@ -734,11 +730,11 @@ public class StatementStatsDUnit extends DistributedSQLTestBase {
       final Statistics[] stats = dsys.findStatisticsByType(st);
       assertTrue(stats.length >= 1);
       for(Statistics _s : stats) {
-        getLogWriter().info("Searching statistics for " + query
+        getGlobalLogger().info("Searching statistics for " + query
             + " and looking into " + _s.getTextId());
         if(query.equals(_s.getTextId())) {
           s = _s;
-          getLogWriter().info("Got statistics for " + s.getTextId());
+          getGlobalLogger().info("Got statistics for " + s.getTextId());
           break;
         }
       }
@@ -838,7 +834,7 @@ public class StatementStatsDUnit extends DistributedSQLTestBase {
       for(Statistics _s : stats) {
         if(query.equals(_s.getTextId())) {
           s = _s;
-          getLogWriter().info("Got statistics for " + s.getTextId());
+          getGlobalLogger().info("Got statistics for " + s.getTextId());
           break;
         }
       }
@@ -975,7 +971,7 @@ public class StatementStatsDUnit extends DistributedSQLTestBase {
       for(Statistics _s : stats) {
         if(_s.getTextId().startsWith(query)) {
           s = _s;
-          getLogWriter().info("Got statistics for " + s.getTextId());
+          getGlobalLogger().info("Got statistics for " + s.getTextId());
           break;
         }
       }

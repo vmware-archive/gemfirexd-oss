@@ -23,13 +23,12 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.util.HashMap;
 
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
-
-import com.gemstone.gemfire.internal.AvailablePort;
+import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.internal.shared.common.sanity.SanityManager;
 import com.pivotal.gemfirexd.jdbc.JdbcTestBase;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
 
 public class CustomerUsecasesTest extends JdbcTestBase {
 
@@ -125,7 +124,7 @@ public class CustomerUsecasesTest extends JdbcTestBase {
         ps.setInt(4, i);
         ps.setInt(5, 1);
         ps.execute();
-        int t = AvailablePort.rand.nextInt(100) + 2;
+        int t = PartitionedRegion.rand.nextInt(100) + 2;
         checker.put(Integer.valueOf(i), Integer.valueOf(t));
         for (; t > 1; t--) {
           ps.setInt(1, i * 1000 + t);

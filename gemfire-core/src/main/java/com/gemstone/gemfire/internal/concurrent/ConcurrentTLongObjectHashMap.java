@@ -28,13 +28,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.gemstone.gemfire.internal.size.SingleObjectSizer;
-import com.gemstone.gnu.trove.HashingStats;
-import com.gemstone.gnu.trove.PrimeFinder;
-import com.gemstone.gnu.trove.THash;
-import com.gemstone.gnu.trove.TLongHashingStrategy;
-import com.gemstone.gnu.trove.TLongObjectProcedure;
-import com.gemstone.gnu.trove.TLongProcedure;
-import com.gemstone.gnu.trove.TObjectProcedure;
+import com.gemstone.gnu.trove.*;
 
 /**
  * A concurrent version of Trove's <tt>TLongObjectHashMap</tt>.
@@ -47,7 +41,7 @@ import com.gemstone.gnu.trove.TObjectProcedure;
  */
 @SuppressWarnings("serial")
 public final class ConcurrentTLongObjectHashMap<T> extends THashParameters
-    implements Map<Long, T>, TLongHashingStrategy {
+    implements Map<Long, T> {
 
   public static final int DEFAULT_CONCURRENCY = 16;
 
@@ -60,22 +54,22 @@ public final class ConcurrentTLongObjectHashMap<T> extends THashParameters
 
   public ConcurrentTLongObjectHashMap() {
     this(DEFAULT_CONCURRENCY, THash.DEFAULT_INITIAL_CAPACITY,
-        THash.DEFAULT_LOAD_FACTOR, null, null);
+        THash.DEFAULT_LOAD_FACTOR, null);
   }
 
   public ConcurrentTLongObjectHashMap(int concurrency) {
     this(concurrency, THash.DEFAULT_INITIAL_CAPACITY,
-        THash.DEFAULT_LOAD_FACTOR, null, null);
+        THash.DEFAULT_LOAD_FACTOR, null);
   }
 
   public ConcurrentTLongObjectHashMap(int concurrency, int initialCapacity) {
-    this(concurrency, initialCapacity, THash.DEFAULT_LOAD_FACTOR, null, null);
+    this(concurrency, initialCapacity, THash.DEFAULT_LOAD_FACTOR, null);
   }
 
   @SuppressWarnings("unchecked")
   public ConcurrentTLongObjectHashMap(int concurrency, int initialCapacity,
-      float loadFactor, TLongHashingStrategy strategy, HashingStats stats) {
-    super(loadFactor, null, strategy, stats);
+      float loadFactor, HashingStats stats) {
+    super(loadFactor, null, stats);
 
     if (concurrency <= 0 || !(loadFactor > 0) || initialCapacity < 0) {
       throw new IllegalArgumentException();
@@ -104,7 +98,7 @@ public final class ConcurrentTLongObjectHashMap<T> extends THashParameters
   public T get(Object key) {
     if (key != null) {
       long k = (Long)key;
-      final int hash = computeHashCode(k, this.hashingStrategy);
+      final int hash = ConcurrentTLongObjectHashSegment.computeHashCode(k);
       return (T)segmentFor(hash).get(k, hash);
     }
     else {
@@ -114,7 +108,7 @@ public final class ConcurrentTLongObjectHashMap<T> extends THashParameters
 
   @SuppressWarnings("unchecked")
   public T getPrimitive(long key) {
-    final int hash = computeHashCode(key, this.hashingStrategy);
+    final int hash = ConcurrentTLongObjectHashSegment.computeHashCode(key);
     return (T)segmentFor(hash).get(key, hash);
   }
 
@@ -126,7 +120,7 @@ public final class ConcurrentTLongObjectHashMap<T> extends THashParameters
   public T put(Long key, T value) {
     if (key != null) {
       long k = key;
-      final int hash = computeHashCode(k, this.hashingStrategy);
+      final int hash = ConcurrentTLongObjectHashSegment.computeHashCode(k);
       return (T)segmentFor(hash).put(k, value, hash);
     }
     else {
@@ -141,7 +135,7 @@ public final class ConcurrentTLongObjectHashMap<T> extends THashParameters
    * @see #put(Long, Object)
    */
   public Object putPrimitive(long key, T value) {
-    final int hash = computeHashCode(key, this.hashingStrategy);
+    final int hash = ConcurrentTLongObjectHashSegment.computeHashCode(key);
     return segmentFor(hash).put(key, value, hash);
   }
 
@@ -172,7 +166,7 @@ public final class ConcurrentTLongObjectHashMap<T> extends THashParameters
    *           if the specified key is null
    */
   public Object putIfAbsent(long key, T value) {
-    final int hash = computeHashCode(key, this.hashingStrategy);
+    final int hash = ConcurrentTLongObjectHashSegment.computeHashCode(key);
     return segmentFor(hash).putIfAbsent(key, value, hash);
   }
 
@@ -184,7 +178,7 @@ public final class ConcurrentTLongObjectHashMap<T> extends THashParameters
   public T remove(Object key) {
     if (key != null) {
       long k = (Long)key;
-      final int hash = computeHashCode(k, this.hashingStrategy);
+      final int hash = ConcurrentTLongObjectHashSegment.computeHashCode(k);
       return (T)segmentFor(hash).remove(k, hash);
     }
     else {
@@ -193,7 +187,7 @@ public final class ConcurrentTLongObjectHashMap<T> extends THashParameters
   }
 
   public Object removePrimitive(long key) {
-    final int hash = computeHashCode(key, this.hashingStrategy);
+    final int hash = ConcurrentTLongObjectHashSegment.computeHashCode(key);
     return segmentFor(hash).remove(key, hash);
   }
 
@@ -249,7 +243,7 @@ public final class ConcurrentTLongObjectHashMap<T> extends THashParameters
   public boolean containsKey(Object key) {
     if (key != null) {
       long k = (Long)key;
-      final int hash = computeHashCode(k, this.hashingStrategy);
+      final int hash = ConcurrentTLongObjectHashSegment.computeHashCode(k);
       return segmentFor(hash).contains(k, hash);
     }
     else {
@@ -258,7 +252,7 @@ public final class ConcurrentTLongObjectHashMap<T> extends THashParameters
   }
 
   public boolean containsKeyPrimitive(long key) {
-    final int hash = computeHashCode(key, this.hashingStrategy);
+    final int hash = ConcurrentTLongObjectHashSegment.computeHashCode(key);
     return segmentFor(hash).contains(key, hash);
   }
 
@@ -662,7 +656,7 @@ public final class ConcurrentTLongObjectHashMap<T> extends THashParameters
       int hash;
       if (this.currentObj != null) {
         final long key = this.currentKey;
-        hash = computeHashCode(key, hashingStrategy);
+        hash = ConcurrentTLongObjectHashSegment.computeHashCode(key);
         this.seg.remove(key, hash);
       }
       else {

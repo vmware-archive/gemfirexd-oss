@@ -39,9 +39,9 @@ import com.pivotal.gemfirexd.thrift.internal.ClientConnection;
 public class ClientDriver extends ClientDRDADriver {
 
   private final static String SUBPROTOCOL = "(drda:|thrift:)?";
-  private final static Pattern PROTOCOL_PATTERN = Pattern.compile(URL_PREFIX +
+  private final static Pattern PROTOCOL_PATTERN = Pattern.compile(URL_PREFIX_REGEX +
       SUBPROTOCOL + "//.*", Pattern.CASE_INSENSITIVE);
-  private final static Pattern URL_PATTERN = Pattern.compile(URL_PREFIX +
+  private final static Pattern URL_PATTERN = Pattern.compile(URL_PREFIX_REGEX +
       SUBPROTOCOL + URL_SUFFIX_REGEX, Pattern.CASE_INSENSITIVE);
 
   static {
@@ -77,7 +77,7 @@ public class ClientDriver extends ClientDRDADriver {
 
   @Override
   protected boolean useThriftProtocol(Matcher m) {
-    String drdaGroup = m.group(1);
+    String drdaGroup = m.group(2);
     return drdaGroup == null || drdaGroup.length() == 0
         ? ClientSharedUtils.USE_THRIFT_AS_DEFAULT
         : "thrift:".equalsIgnoreCase(drdaGroup);

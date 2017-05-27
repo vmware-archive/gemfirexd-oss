@@ -12,7 +12,7 @@ task createVersionPropertiesFile(dependsOn: 'processResources') {
 
   doLast {
     def props = [
-      "Product-Name"      : PRODUCT_NAME_FULL,
+      "Product-Name"      : PRODUCT_NAME,
       "Product-Version"   : version,
       "Build-Id"          : System.env.USER + ' ' + buildNumber,
       "Build-Date"        : buildDate,
@@ -36,3 +36,5 @@ javadoc {
   include 'com/pivotal/gemfirexd/*.java'
 }
 javadoc.dependsOn.clear()
+
+archivesBaseName = 'gemfirexd-shared'

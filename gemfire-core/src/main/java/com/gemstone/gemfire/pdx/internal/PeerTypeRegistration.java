@@ -485,7 +485,9 @@ public class PeerTypeRegistration implements TypeRegistration {
     if(!typeRegistryInUse || this.idToType == null) {
       return;
     }
-    checkAllowed(!cache.getGatewayHubs().isEmpty(), true, !cache.listDiskStores().isEmpty());
+    checkAllowed(!cache.getGatewayHubs().isEmpty(),
+        !gatewaySender.isNonWanDispatcher(),
+        !cache.listDiskStores().isEmpty());
   }
 
   public void creatingPersistentRegion() {

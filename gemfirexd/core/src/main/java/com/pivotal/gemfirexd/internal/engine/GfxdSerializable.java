@@ -333,5 +333,10 @@ public interface GfxdSerializable extends GfxdDSFID {
   
   public final static byte GFXD_SPARK_TASK_RESULT = 108;
 
-  
+  /** classId for {@link com.pivotal.gemfirexd.internal.snappy.LeadNodeExecutionContext}*/
+  public final static byte LEAD_NODE_EXN_CTX = 109;
+
+  public final static byte LEAD_NODE_EXN_MSG = 119;
+
+  public final static byte SNAPPY_RESULT_HOLDER = 120;
 }

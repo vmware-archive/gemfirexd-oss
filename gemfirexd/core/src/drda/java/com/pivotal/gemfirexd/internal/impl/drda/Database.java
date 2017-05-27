@@ -88,6 +88,7 @@ class Database
         protected boolean disableStreaming = false;
         protected boolean skipListeners = false;
         protected boolean queryHDFS = false;
+        protected boolean routeQuery = false;
         protected boolean skipConstraintChecks = false;
         protected boolean syncCommits = false;
         protected boolean disableTXBatching = false;
@@ -252,6 +253,7 @@ class Database
 	    }
 	    if (lcc != null) {
 	      lcc.setQueryHDFS(this.queryHDFS);
+        lcc.setQueryRouting(this.routeQuery);
 	      if (this.skipConstraintChecks
 	          && SanityManager.TraceClientStatementHA) {
 	        SanityManager.DEBUG_PRINT(SanityManager.TRACE_CLIENT_HA,
@@ -421,9 +423,16 @@ class Database
 // GemStone changes END
         // Contract between network server and embedded engine
         // is that any connection returned implements EngineConnection.
-        EngineConnection conn = (EngineConnection)
-            NetworkServerControlImpl.getDriver().connect(com.pivotal.gemfirexd.Attribute.PROTOCOL
-                                                         + attrString, p);
+//        EngineConnection conn = (EngineConnection)
+//            NetworkServerControlImpl.getDriver().connect(com.pivotal.gemfirexd.Attribute.PROTOCOL
+//                                                         + attrString, p);
+// GemStone changes BEGIN
+    boolean isStoreSnappy = Misc.getMemStore().isSnappyStore();
+    String protocol = isStoreSnappy ? com.pivotal.gemfirexd.Attribute.SNAPPY_PROTOCOL : com.pivotal.gemfirexd.Attribute.PROTOCOL;
+
+		EngineConnection conn = (EngineConnection)
+				NetworkServerControlImpl.getDriver().connect(protocol
+						+ attrString, p);
             /* (original code)
         EngineConnection conn = (EngineConnection)
             NetworkServerControlImpl.getDriver().connect(Attribute.PROTOCOL
@@ -456,9 +465,12 @@ class Database
         try {
             // Contract between network server and embedded engine
             // is that any connection returned implements EngineConnection.
-            EngineConnection conn = (EngineConnection)
+					boolean isStoreSnappy = Misc.getMemStore().isSnappyStore();
+          String protocol = isStoreSnappy ? com.pivotal.gemfirexd.Attribute.SNAPPY_PROTOCOL : com.pivotal.gemfirexd.Attribute.PROTOCOL;
+
+					EngineConnection conn = (EngineConnection)
 // GemStone changes BEGIN
-                NetworkServerControlImpl.getDriver().connect(com.pivotal.gemfirexd.Attribute.PROTOCOL
+                NetworkServerControlImpl.getDriver().connect(protocol
                     + attrString, new Properties());
                 /* NetworkServerControlImpl.getDriver().connect(Attribute.PROTOCOL
                     + shortDbName + attrString, new Properties()); */
@@ -688,6 +700,8 @@ class Database
         syncCommits = false;
         disableTXBatching = false;
         skipLocks = false;
+        // TODO: KN what to do for routeQuery property in reset
+        // Leaving it to its previous state for now looks ok.
 // GemStone changes END
     }
 

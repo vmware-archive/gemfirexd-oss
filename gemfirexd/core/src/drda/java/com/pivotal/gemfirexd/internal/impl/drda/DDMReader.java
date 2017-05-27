@@ -1289,7 +1289,12 @@ class DDMReader
 
     do {
       // determine if a continuation header needs to be read after the data
-      if (dssIsContinued)
+      if (dssIsContinued
+          // GemStone addition
+          // fix for SNAP-213 -- don't read continuation header if the
+          // remaining data in buffer is more than desired length since
+          // all the desired data will be read from current buffer itself
+          && desiredLength > dssLength)
         readHeader = true;
       else
         readHeader = false;
@@ -1308,7 +1313,7 @@ class DDMReader
 	  copySize = (int) Math.min(dssLength,desiredLength); //note: has already been adjusted for headers
 
     }
-    while (readHeader == true && desiredLength > 0);
+    while (readHeader && desiredLength > 0);
 
     return baos.toByteArray();
   }

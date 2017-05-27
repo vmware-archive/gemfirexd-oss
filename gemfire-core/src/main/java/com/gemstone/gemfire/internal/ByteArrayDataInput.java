@@ -83,6 +83,10 @@ public final class ByteArrayDataInput extends DataInputStreamBase implements
     this.version = version;
   }
 
+  public byte[] array() {
+    return this.bytes;
+  }
+
   /**
    * {@inheritDoc}
    */

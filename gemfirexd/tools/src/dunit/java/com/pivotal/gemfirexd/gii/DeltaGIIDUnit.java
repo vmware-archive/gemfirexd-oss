@@ -28,7 +28,6 @@ import java.util.Map;
 
 import com.gemstone.gemfire.DataSerializer;
 import com.gemstone.gemfire.cache.Cache;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.internal.HeapDataOutputStream;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.InitialImageOperation;
@@ -40,10 +39,8 @@ import com.gemstone.gemfire.internal.shared.Version;
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.internal.engine.Misc;
-
-import dunit.DistributedTestCase;
-import dunit.SerializableCallable;
-import dunit.SerializableRunnable;
+import io.snappydata.test.dunit.SerializableCallable;
+import io.snappydata.test.dunit.SerializableRunnable;
 
 public class DeltaGIIDUnit  extends DistributedSQLTestBase {
   private final static String DISKSTORE = "DeltaGIIDUnit";
@@ -68,10 +65,10 @@ public class DeltaGIIDUnit  extends DistributedSQLTestBase {
   }
 
   public void createDiskStore(boolean useClient, int vmNum) throws Exception {
-    CacheSerializableRunnable csr = getDiskStoreCreator(DISKSTORE);
+    SerializableRunnable csr = getDiskStoreCreator(DISKSTORE);
     if (useClient) {
       if (vmNum == 1) {
-        csr.run2();
+        csr.run();
       }
       else {
         clientExecute(vmNum, csr);
@@ -343,7 +340,7 @@ public class DeltaGIIDUnit  extends DistributedSQLTestBase {
         }
       };
 
-      DistributedTestCase.waitForCriterion(ev, 30000, 200, true);
+      waitForCriterion(ev, 30000, 200, true);
       if (callback == null || !callback.isRunning) {
         fail("GII tesk hook is not started yet");
       }

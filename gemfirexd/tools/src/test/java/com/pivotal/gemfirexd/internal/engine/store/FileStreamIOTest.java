@@ -28,12 +28,8 @@ import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Properties;
 
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
-
 import com.gemstone.gemfire.cache.Region;
-import com.gemstone.gemfire.internal.AvailablePort;
+import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverAdapter;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
@@ -59,6 +55,9 @@ import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedResultSet;
 import com.pivotal.gemfirexd.internal.impl.sql.execute.CountAggregator;
 import com.pivotal.gemfirexd.internal.impl.sql.execute.ValueRow;
 import com.pivotal.gemfirexd.internal.shared.common.sanity.SanityManager;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
 
 public class FileStreamIOTest extends TestCase {
 
@@ -331,7 +330,7 @@ public class FileStreamIOTest extends TestCase {
         ps.setTimestamp(10, java.sql.Timestamp
             .valueOf("2011-02-28 11:59:59.99999"));
         ps.setString(11, "This is char fixed width upto 254 ...  ঋ এ ঐ ও ");
-        int begin = AvailablePort.rand.nextInt(vstr.length()-1);
+        int begin = PartitionedRegion.rand.nextInt(vstr.length()-1);
         ps
             .setString(
                 12, vstr.substring(begin, vstr.length()));
@@ -475,7 +474,7 @@ public class FileStreamIOTest extends TestCase {
         final int numItems = 500000;
         final int maxId2 = 10;
         for (int i = 1; i <= numItems; i++) {
-          int rnd = AvailablePort.rand.nextInt(numItems);
+          int rnd = PartitionedRegion.rand.nextInt(numItems);
           ps.setString(1, "strkey-" + rnd);
           ps.setString(2, prefix + rnd);
           ps.setInt(3, i % maxId2);

@@ -27,8 +27,7 @@ import java.util.Properties;
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.internal.engine.ddl.catalog.GfxdSystemProcedures;
-import dunit.impl.DUnitBB;
-import hydra.blackboard.SharedMap;
+import io.snappydata.test.dunit.standalone.DUnitBB;
 import org.junit.Ignore;
 
 /**
@@ -45,7 +44,7 @@ public abstract class QueryCancelTestHelper extends DistributedSQLTestBase {
   }
 
   /**
-   * Checks the value in {@link DUnitBB#getSharedMap()} for the given key (test).
+   * Checks the value in {@link DUnitBB} for the given key (test).
    * If it equals expectedNumOfServers, return true. In this test, this is
    * basically used to check whether required data/query nodes are at a point
    * where query can be cancelled. All servers increment the value in DUnitBB map
@@ -59,8 +58,8 @@ public abstract class QueryCancelTestHelper extends DistributedSQLTestBase {
    */
   public static boolean serversReadyForCancellation(String key,
       Integer expectedNumOfServers) {
-    Integer value = (Integer)DUnitBB.getBB().getSharedMap().get(key);
-    getLogWriter().info(
+    Integer value = (Integer)DUnitBB.getBB().get(key);
+    getGlobalLogger().info(
         " serversReadyForCancellation: value in BB map for key: " + key
             + " value is " + value);
     if ((value != null) && value.equals(expectedNumOfServers)) {
@@ -70,7 +69,7 @@ public abstract class QueryCancelTestHelper extends DistributedSQLTestBase {
   }
 
   /**
-   * Increments the value in {@link DUnitBB#getSharedMap()} for a given key
+   * Increments the value in {@link DUnitBB} for a given key
    * (test). Do nothing, if it already equals expectedMaxValue.</br>
    * 
    * </p>In this test, data or query nodes increment this value in some observer
@@ -79,24 +78,24 @@ public abstract class QueryCancelTestHelper extends DistributedSQLTestBase {
    */
   public static synchronized void incrementValueInBBMap(String key,
       int expectedMaxValue) {
-    SharedMap shMap = DUnitBB.getBB().getSharedMap();
+    DUnitBB bb = DUnitBB.getBB();
     try {
-      DUnitBB.getBB().getSharedLock().lock();
-      Integer v = (Integer) shMap.get(key);
+      bb.acquireSharedLock();
+      Integer v = (Integer)bb.get(key);
       if (v == null) {
-        getLogWriter().info(
+        getGlobalLogger().info(
             "incrementValueInBBMap: putting value=" + 1 + " for key=" + key);
-        shMap.put(key, 1);
+        bb.put(key, 1);
       } else if (v.equals(expectedMaxValue)) {
         return;
       } else {
-        getLogWriter().info(
+        getGlobalLogger().info(
             "incrementValueInBBMap: putting value=" + (v + 1) + " for key="
                 + key);
-        shMap.put(key, v + 1);
+        bb.put(key, v + 1);
       }
     } finally {
-      DUnitBB.getBB().getSharedLock().unlock();
+      bb.releaseSharedLock();
     }
   }
 
@@ -106,12 +105,12 @@ public abstract class QueryCancelTestHelper extends DistributedSQLTestBase {
    */
   public static void putStatementUUIDinBBMap(String testKey, long connId,
       long stmtId, long execId) {
-    SharedMap shMap = DUnitBB.getBB().getSharedMap();
-    shMap.put(testKey + "_stmtUUID", connId + "-" + stmtId + "-" + execId);
+    DUnitBB bb = DUnitBB.getBB();
+    bb.put(testKey + "_stmtUUID", connId + "-" + stmtId + "-" + execId);
   }
 
   public static String getStatementUUIDfromBBMap(String testKey) {
-    return (String)DUnitBB.getBB().getSharedMap().get(testKey + "_stmtUUID");
+    return (String)DUnitBB.getBB().get(testKey + "_stmtUUID");
   }
 
   /**

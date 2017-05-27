@@ -23,30 +23,19 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.dbcp.BasicDataSource;
-import org.apache.ddlutils.model.Database;
-import org.apache.ddlutils.platform.gemfirexd.GemFireXDPeerPlatform;
-import org.apache.ddlutils.platform.gemfirexd.GemFireXDPlatform;
-import org.apache.ddlutils.task.DatabaseTaskBase;
-import org.apache.ddlutils.task.DatabaseToDdlTask;
-import org.apache.ddlutils.task.DdlToDatabaseTask;
-import org.apache.ddlutils.task.ReplayFailedDMLsCommand;
-import org.apache.ddlutils.task.ReplayFailedDMLsTask;
-import org.apache.ddlutils.task.VerbosityLevel;
-import org.apache.ddlutils.task.WriteDataToDatabaseCommand;
-import org.apache.ddlutils.task.WriteDataToFileCommand;
-import org.apache.ddlutils.task.WriteDtdToFileCommand;
-import org.apache.ddlutils.task.WriteSchemaSqlToFileCommand;
-import org.apache.ddlutils.task.WriteSchemaToDatabaseCommand;
-import org.apache.ddlutils.task.WriteSchemaToFileCommand;
-import org.apache.tools.ant.types.FileSet;
 
 import com.gemstone.gemfire.internal.GemFireTerminateError;
 import com.pivotal.gemfirexd.Attribute;
 import com.pivotal.gemfirexd.internal.iapi.tools.i18n.LocalizedResource;
+import com.pivotal.gemfirexd.tools.internal.ToolsBase.ProcessCommand;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.ddlutils.platform.gemfirexd.GemFireXDPeerPlatform;
+import org.apache.ddlutils.platform.gemfirexd.GemFireXDPlatform;
+import org.apache.ddlutils.task.*;
+import org.apache.tools.ant.types.FileSet;
 
 /**
  * Command-line launcher class for some of the tools shipped with DdlUtils

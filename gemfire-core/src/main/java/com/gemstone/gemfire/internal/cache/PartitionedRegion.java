@@ -157,7 +157,6 @@ import com.gemstone.gemfire.i18n.LogWriterI18n;
 import com.gemstone.gemfire.internal.Assert;
 import com.gemstone.gemfire.internal.DebugLogWriter;
 import com.gemstone.gemfire.internal.LogWriterImpl;
-import com.gemstone.gemfire.internal.NanoTimer;
 import com.gemstone.gemfire.internal.SetUtils;
 import com.gemstone.gemfire.internal.cache.BucketAdvisor.ServerBucketProfile;
 import com.gemstone.gemfire.internal.cache.CacheDistributionAdvisor.CacheProfile;
@@ -254,6 +253,7 @@ import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.internal.offheap.SimpleMemoryAllocatorImpl.Chunk;
 import com.gemstone.gemfire.internal.offheap.annotations.Unretained;
 import com.gemstone.gemfire.internal.sequencelog.RegionLogger;
+import com.gemstone.gemfire.internal.snappy.StoreCallbacks;
 import com.gemstone.gemfire.internal.util.TransformUtils;
 import com.gemstone.gemfire.internal.util.concurrent.FutureResult;
 import com.gemstone.gemfire.internal.util.concurrent.StoppableCountDownLatch;
@@ -275,7 +275,7 @@ public class PartitionedRegion extends LocalRegion implements
   CacheDistributionAdvisee, QueryExecutor {
 
   public static final Random rand = new Random(Long.getLong(
-      "gemfire.PartitionedRegionRandomSeed", NanoTimer.getTime()).longValue());
+      "gemfire.PartitionedRegionRandomSeed", System.nanoTime()).longValue());
   
   private static final AtomicInteger SERIAL_NUMBER_GENERATOR = new AtomicInteger();
   
@@ -2369,6 +2369,7 @@ public class PartitionedRegion extends LocalRegion implements
     final long startTime = PartitionedRegionStats.startTime();
     // build all the msgs by bucketid
     THashMap prMsgMap = putallO.createPRMessages();
+
     final PutAllPartialResult partialKeys = new PutAllPartialResult(
         putallO.putAllDataSize);
 
@@ -2475,6 +2476,7 @@ public class PartitionedRegion extends LocalRegion implements
         }
       }
     }
+
     } finally {
       for (PutAllPRMessage.PutAllResponse resp : responses) {
         PutAllPRMessage.PRMsgResponseContext ctx = resp.getContextObject();
@@ -2485,6 +2487,22 @@ public class PartitionedRegion extends LocalRegion implements
           }
         }
       }
+    }
+  }
+
+
+  public boolean needsBatching() {
+    // Find all the child region and see if they anyone of them has name ending
+    // with _SHADOW_
+    if (this.getName().toUpperCase().endsWith(StoreCallbacks.SHADOW_TABLE_SUFFIX)) {
+      return false;
+    } else {
+      boolean needsBatching = false;
+      List<PartitionedRegion> childRegions = ColocationHelper.getColocatedChildRegions(this);
+      for (PartitionedRegion pr : childRegions) {
+        needsBatching |= pr.getName().toUpperCase().endsWith(StoreCallbacks.SHADOW_TABLE_SUFFIX);
+      }
+      return needsBatching;
     }
   }
 
@@ -7166,6 +7184,8 @@ public class PartitionedRegion extends LocalRegion implements
               this.currentEntry = val;
             }
             if (this.currentEntry != null) {
+              // check if
+
               this.moveNext = false;
               return true;
             }
@@ -7262,15 +7282,15 @@ public class PartitionedRegion extends LocalRegion implements
           "PRLocalScanIterator::remove: unexpected call");
     }
 
-    public int getBucketId() {
+    public final int getBucketId() {
       return this.currentBucketId;
     }
 
-    public BucketRegion getBucket() {
+    public final BucketRegion getBucket() {
       return this.currentBucketRegion;
     }
 
-    public BucketRegion getHostedBucketRegion() {
+    public final BucketRegion getHostedBucketRegion() {
       return this.currentBucketRegion;
     }
 

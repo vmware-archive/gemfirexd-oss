@@ -784,7 +784,8 @@ public class SocketCreator  implements com.gemstone.org.jgroups.util.SockCreator
           startingPort = 0;
         } else {
           throw new SystemConnectException(
-              LocalizedStrings.TCPConduit_UNABLE_TO_FIND_FREE_PORT.toLocalizedString());
+              LocalizedStrings.TCPConduit_UNABLE_TO_FIND_FREE_PORT
+                  .toLocalizedString(tcpPortRange[0], tcpPortRange[1]));
         }
       }
       try {

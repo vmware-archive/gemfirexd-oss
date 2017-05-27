@@ -43,7 +43,7 @@ import com.pivotal.gemfirexd.internal.engine.store.GemFireContainer;
 import com.pivotal.gemfirexd.internal.engine.store.GemFireStore;
 import com.pivotal.gemfirexd.internal.iapi.types.RowLocation;
 
-import dunit.VM;
+import io.snappydata.test.dunit.VM;
 
 /**
  * @author kneeraj
@@ -64,7 +64,7 @@ public class IndexPersistenceDUnit extends DistributedSQLTestBase {
 
   public static void setSystemProperty(String key, String value) {
     //Misc.getCacheLogWriter().info("setting system propert: " + key + " to " + value);
-    getLogWriter().info("setting system property: " + key + " to " + value);
+    getGlobalLogger().info("setting system property: " + key + " to " + value);
     System.setProperty(key, value);
     if (value != null && value.equals("false")) {
       System.clearProperty(key);
@@ -82,20 +82,20 @@ public class IndexPersistenceDUnit extends DistributedSQLTestBase {
 
   public static void checkProperIndex(String tNamePath, String idxName,
       int indexSize) {
-    getLogWriter().info("checkProperIndex called with tNamePath: " + tNamePath + ", index name: " + idxName );
+    getGlobalLogger().info("checkProperIndex called with tNamePath: " + tNamePath + ", index name: " + idxName);
     GfxdIndexManager im = (GfxdIndexManager)((LocalRegion)Misc.getRegion(tNamePath, true, false)).getIndexUpdater();
     ConcurrentSkipListMap<Object, Object> indexMap = null;
     List<GemFireContainer> indexContainers = im.getIndexContainers();
     for(GemFireContainer c : indexContainers) {
-      getLogWriter().info("indexcontainer name: " + c.getName() + ", qualified table name: " + c.getQualifiedTableName());
+      getGlobalLogger().info("indexcontainer name: " + c.getName() + ", qualified table name: " + c.getQualifiedTableName());
       if (c.getName().toString().contains(idxName)) {
-        getLogWriter().info("indexcontainer name: " + c.getName() + " matched with index name: " + idxName);
+        getGlobalLogger().info("indexcontainer name: " + c.getName() + " matched with index name: " + idxName);
         Misc.getCacheLogWriter().info("indexcontainer name: " + c.getName() + " matched with index name: " + idxName);
         indexMap = c.getSkipListMap();
         break;
       }
       else {
-        getLogWriter().info("indexcontainer name: " + c.getName() + " did not match with index name: " + idxName);
+        getGlobalLogger().info("indexcontainer name: " + c.getName() + " did not match with index name: " + idxName);
       }
     }
     assertNotNull(indexMap);
@@ -125,14 +125,14 @@ public class IndexPersistenceDUnit extends DistributedSQLTestBase {
     }
     Collection<DiskStoreImpl> dsImpls = cache.listDiskStores();
     assert dsImpls != null && dsImpls.size() > 0;
-    getLogWriter().info("Disk Stores are: " + dsImpls);
+    getGlobalLogger().info("Disk Stores are: " + dsImpls);
     boolean compacted = false;
     for (DiskStoreImpl dsi : dsImpls) {
       if (dsi.getName().equals(GfxdConstants.GFXD_DD_DISKSTORE_NAME)) {
         continue;
       }
       compacted = dsi.forceCompaction();
-      getLogWriter().info(
+      getGlobalLogger().info(
           "compaction happened=" + compacted
               + " in some oplogs in disk store: " + dsi.getName());
     }
@@ -145,13 +145,13 @@ public class IndexPersistenceDUnit extends DistributedSQLTestBase {
     }
     Collection<DiskStoreImpl> dsImpls = cache.listDiskStores();
     assert dsImpls != null && dsImpls.size() > 0;
-    getLogWriter().info("Disk Stores are: " + dsImpls);
+    getGlobalLogger().info("Disk Stores are: " + dsImpls);
     for (DiskStoreImpl dsi : dsImpls) {
       if (dsi.getName().equals(GfxdConstants.GFXD_DD_DISKSTORE_NAME)) {
         continue;
       }
       dsi.forceRoll(true);
-      getLogWriter().info(
+      getGlobalLogger().info(
           "force roll called on disk store: " + dsi.getName());
     }
   }
@@ -163,14 +163,14 @@ public class IndexPersistenceDUnit extends DistributedSQLTestBase {
     }
     Collection<DiskStoreImpl> dsImpls = cache.listDiskStores();
     assert dsImpls != null && dsImpls.size() > 0;
-    getLogWriter().info("Disk Stores are: " + dsImpls);
+    getGlobalLogger().info("Disk Stores are: " + dsImpls);
     for (DiskStoreImpl dsi : dsImpls) {
       if (dsi.getName().equals(GfxdConstants.GFXD_DD_DISKSTORE_NAME)) {
         continue;
       }
       Oplog currOplog = dsi.getPersistentOplogSet(null).getChild();
       dsi.TEST_oplogCompact(currOplog);
-      getLogWriter().info(
+      getGlobalLogger().info(
           "force roll called on disk store: " + dsi.getName());
     }
   }
@@ -182,13 +182,13 @@ public class IndexPersistenceDUnit extends DistributedSQLTestBase {
     }
     Collection<DiskStoreImpl> dsImpls = cache.listDiskStores();
     assert dsImpls != null && dsImpls.size() > 0;
-    getLogWriter().info("Disk Stores are: " + dsImpls);
+    getGlobalLogger().info("Disk Stores are: " + dsImpls);
     for (DiskStoreImpl dsi : dsImpls) {
       if (dsi.getName().equals(GfxdConstants.GFXD_DD_DISKSTORE_NAME)) {
         continue;
       }
       dsi.TEST_oplogCompact(null);
-      getLogWriter().info(
+      getGlobalLogger().info(
           "force roll called on disk store: " + dsi.getName());
     }
   }
@@ -200,12 +200,12 @@ public class IndexPersistenceDUnit extends DistributedSQLTestBase {
     }
     Collection<DiskStoreImpl> dsImpls = cache.listDiskStores();
     assert dsImpls != null && dsImpls.size() > 0;
-    getLogWriter().info("testOplogCompacted::Disk Stores are: " + dsImpls);
+    getGlobalLogger().info("testOplogCompacted::Disk Stores are: " + dsImpls);
     for (DiskStoreImpl dsi : dsImpls) {
       if (dsi.getName().equals(GfxdConstants.GFXD_DD_DISKSTORE_NAME)) {
         continue;
       }
-      getLogWriter().info(
+      getGlobalLogger().info(
           "testOplogCompacted::is test oplog compacted called on: "
               + dsi.getName());
       return dsi.isTestOplogCompacted();
@@ -317,15 +317,15 @@ public class IndexPersistenceDUnit extends DistributedSQLTestBase {
   public static void setTestNewIndexFlag(Boolean expected, String regionPath) {
     LocalRegion r = (LocalRegion)Misc.getRegion(regionPath, false, false);
     GfxdIndexManager sqlim = (GfxdIndexManager)r.getIndexUpdater();
-    getLogWriter().info(
+    getGlobalLogger().info(
         "setTestNewIndexFlag called with args " + expected + " and "
             + regionPath + " and indexupdater = " + sqlim + " test flag: "
             + DiskStoreImpl.TEST_NEW_CONTAINER);
     List<GemFireContainer> list = sqlim.getAllIndexes();
-    getLogWriter().info(
+    getGlobalLogger().info(
         "list of index containers are: " + Arrays.toString(list.toArray()));
     if (expected) {
-      getLogWriter().info(
+      getGlobalLogger().info(
           "new index list is: " + r.getDiskStore().TEST_NEW_CONTAINER_LIST);
       assertNotNull(r.getDiskStore().TEST_NEW_CONTAINER_LIST);
     }
@@ -499,11 +499,11 @@ public class IndexPersistenceDUnit extends DistributedSQLTestBase {
     try {
       File currDir = new File(".");
       File[] files = currDir.listFiles();
-      getLogWriter().info("current dir is: " + currDir.getCanonicalPath());
+      getGlobalLogger().info("current dir is: " + currDir.getCanonicalPath());
 
       for (File f : files) {
         if (f.getAbsolutePath().contains("BACKUPGFXD-DEFAULT-DISKSTORE")) {
-          getLogWriter().info("deleting file: " + f + " from dir: " + currDir);
+          getGlobalLogger().info("deleting file: " + f + " from dir: " + currDir);
           f.delete();
         }
         if (f.isDirectory()) {
@@ -511,7 +511,7 @@ public class IndexPersistenceDUnit extends DistributedSQLTestBase {
           File[] newFiles = newDir.listFiles();
           for (File nf : newFiles) {
             if (nf.getAbsolutePath().contains("BACKUPGFXD-DEFAULT-DISKSTORE")) {
-              getLogWriter().info(
+              getGlobalLogger().info(
                   "deleting file: " + nf + " from dir: " + newDir);
               nf.delete();
             }
@@ -520,7 +520,7 @@ public class IndexPersistenceDUnit extends DistributedSQLTestBase {
       }
       for (File f : files) {
         if (f.getAbsolutePath().contains("GFXD-DD-DISKSTORE")) {
-          getLogWriter().info("deleting file: " + f + " from dir: " + currDir);
+          getGlobalLogger().info("deleting file: " + f + " from dir: " + currDir);
           f.delete();
         }
         if (f.isDirectory()) {
@@ -528,7 +528,7 @@ public class IndexPersistenceDUnit extends DistributedSQLTestBase {
           File[] newFiles = newDir.listFiles();
           for (File nf : newFiles) {
             if (nf.getAbsolutePath().contains("GFXD-DD-DISKSTORE")) {
-              getLogWriter().info(
+              getGlobalLogger().info(
                   "deleting file: " + nf + " from dir: " + newDir);
               nf.delete();
             }

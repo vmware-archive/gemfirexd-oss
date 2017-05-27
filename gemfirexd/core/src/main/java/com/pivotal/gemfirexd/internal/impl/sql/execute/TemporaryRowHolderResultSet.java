@@ -76,7 +76,7 @@ import com.pivotal.gemfirexd.internal.impl.sql.execute.PlanUtils.Context;
  * interface.
  *
  */
-public class TemporaryRowHolderResultSet implements CursorResultSet, NoPutResultSet, Cloneable
+public final class TemporaryRowHolderResultSet implements CursorResultSet, NoPutResultSet, Cloneable
 {
 	private ExecRow[] 				rowArray;
 	private int						numRowsOut;

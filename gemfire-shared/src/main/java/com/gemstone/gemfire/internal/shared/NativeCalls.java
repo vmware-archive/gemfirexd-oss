@@ -337,6 +337,13 @@ public abstract class NativeCalls {
   public abstract void setEnvironment(String name, String value);
 
   /**
+   * Set the current working directory to the given path.
+   *
+   * @param path new working directory (preferably a full absolute path)
+   */
+  public abstract void setCurrentWorkingDirectory(String path);
+
+  /**
    * Get the process ID of the current process.
    */
   public abstract int getProcessId();
@@ -630,6 +637,15 @@ public abstract class NativeCalls {
           javaEnv.remove(name);
         }
       }
+    }
+
+    /**
+     * @see NativeCalls#setCurrentWorkingDirectory(String)
+     */
+    @Override
+    public void setCurrentWorkingDirectory(String path) {
+      // only set the java property for generic case
+      System.setProperty("user.dir", path);
     }
 
     /**

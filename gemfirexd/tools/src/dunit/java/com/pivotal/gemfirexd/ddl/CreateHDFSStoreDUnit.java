@@ -30,12 +30,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
-import org.apache.derbyTesting.junit.JDBC;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.LocatedFileStatus;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.fs.RemoteIterator;
-
 import com.gemstone.gemfire.cache.DataPolicy;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.RegionAttributes;
@@ -52,9 +46,13 @@ import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.ddl.DDLConflatable;
-
-import dunit.SerializableCallable;
-import dunit.SerializableRunnable;
+import io.snappydata.test.dunit.SerializableCallable;
+import io.snappydata.test.dunit.SerializableRunnable;
+import org.apache.derbyTesting.junit.JDBC;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.LocatedFileStatus;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.RemoteIterator;
 
 /**
  * 
@@ -185,43 +183,52 @@ public class CreateHDFSStoreDUnit extends DistributedSQLTestBase {
 
   public void testRestart() throws Exception {
     // Start one client a two servers
-    startVMs(1, 1);        
+    startVMs(1, 2);
+
+    final File homeDirFile = new File(".", "myhdfs");
+    final String homeDir = homeDirFile.getAbsolutePath();
 
     Connection conn = TestUtil.getConnection();
     Statement st = conn.createStatement();
     ResultSet rs = null;
-    
-    checkDirExistence("./myhdfs");
-    st.execute("create hdfsstore myhdfs namenode 'localhost' homedir './myhdfs' ");
-    st.execute("create table mytable (id int generated always as identity, item char(25)) PARTITION BY COLUMN (ID) PERSISTENT HDFSSTORE (myhdfs);");
-    
+
+    checkDirExistence(homeDir);
+    st.execute("create hdfsstore myhdfs namenode 'localhost' homedir '" +
+        homeDir + "'");
+    st.execute("create table mytable (id int generated always as identity, " +
+        "item char(25)) PARTITION BY COLUMN (ID) PERSISTENT HDFSSTORE (myhdfs);");
+
     // put as update
     st.execute("insert into mytable values (default, 'widget');");
-    
+
     //shutdown and restart
-    stopAllVMs();    
-    restartVMNums(-1);
+    stopAllVMs();
+    restartVMNums(-1, -2);
     restartVMNums(1);
-    
+
     conn = TestUtil.getConnection();
     st = conn.createStatement();
     st.execute("insert into mytable values (default, 'widget1');");
     st.execute("drop table mytable");
     st.execute("drop hdfsstore myhdfs"); 
-    delete(new File("./myhdfs"));
+    delete(homeDirFile);
   }
-  
+
   public void testPutDML() throws Exception {
     
     // Start one client a two servers
-    startVMs(1, 2);        
+    startVMs(1, 2);
+
+    final File homeDirFile = new File(".", "myhdfs");
+    final String homeDir = homeDirFile.getAbsolutePath();
 
     Connection conn = TestUtil.getConnection();
     Statement st = conn.createStatement();
     ResultSet rs = null;
     
-    checkDirExistence("./myhdfs");
-    st.execute("create hdfsstore myhdfs namenode 'localhost' homedir './myhdfs' BatchTimeInterval 100 milliseconds ");
+    checkDirExistence(homeDir);
+    st.execute("create hdfsstore myhdfs namenode 'localhost' homedir '" +
+        homeDir + "' BatchTimeInterval 100 milliseconds ");
     st.execute("create table app.m1 (col1 int primary key , col2 int) hdfsstore (myhdfs)");
     
     // check impact on GfxdIndexManager
@@ -293,7 +300,7 @@ public class CreateHDFSStoreDUnit extends DistributedSQLTestBase {
     
     st.execute("drop table app.m1");
     st.execute("drop hdfsstore myhdfs"); 
-    delete(new File("./myhdfs"));
+    delete(homeDirFile);
   }
   
   public void testBug52073() throws Exception {
@@ -336,14 +343,18 @@ public class CreateHDFSStoreDUnit extends DistributedSQLTestBase {
   public void testPutDMLSubSelect() throws Exception {
     
     // Start one client a two servers
-    startVMs(1, 2);        
+    startVMs(1, 2);
+
+    final File homeDirFile = new File(".", "myhdfs");
+    final String homeDir = homeDirFile.getAbsolutePath();
 
     Connection conn = TestUtil.getConnection();
     Statement st = conn.createStatement();
     ResultSet rs = null;
     
-    checkDirExistence("./myhdfs");
-    st.execute("create hdfsstore myhdfs namenode 'localhost' homedir './myhdfs' BatchTimeInterval 100 milliseconds ");
+    checkDirExistence(homeDir);
+    st.execute("create hdfsstore myhdfs namenode 'localhost' homedir '" +
+        homeDir + "' BatchTimeInterval 100 milliseconds ");
     st.execute("create table app.m1 (col1 int primary key , col2 int) hdfsstore (myhdfs)");
     
     // check impact on GfxdIndexManager
@@ -416,7 +427,7 @@ public class CreateHDFSStoreDUnit extends DistributedSQLTestBase {
     
     st.execute("drop table app.m1");
     st.execute("drop hdfsstore myhdfs"); 
-    delete(new File("./myhdfs"));
+    delete(homeDirFile);
   }
   
   public void testPutDMLSubSelectReplicated() throws Exception {
@@ -438,14 +449,18 @@ public class CreateHDFSStoreDUnit extends DistributedSQLTestBase {
   public void testTruncateTableHDFS() throws Exception {
     
     // Start one client a two servers
-    startVMs(1, 2);      
-    
+    startVMs(1, 2);
+
+    final File homeDirFile = new File(".", "myhdfs");
+    final String homeDir = homeDirFile.getAbsolutePath();
+
     Connection conn = TestUtil.getConnection();
     Statement st = conn.createStatement();
     ResultSet rs = null;
        
-    checkDirExistence("./myhdfs");
-    st.execute("create hdfsstore myhdfs namenode 'localhost' homedir './myhdfs' BatchTimeInterval 100 milliseconds");
+    checkDirExistence(homeDir);
+    st.execute("create hdfsstore myhdfs namenode 'localhost' homedir '" +
+        homeDir + "' BatchTimeInterval 100 milliseconds");
     st.execute("create table app.t1 (col1 int primary key, col2 int) hdfsstore (myhdfs)");
     
     PreparedStatement ps = conn.prepareStatement("insert into app.t1 values (?, ?)");
@@ -492,14 +507,14 @@ public class CreateHDFSStoreDUnit extends DistributedSQLTestBase {
     
     st.execute("drop table app.t1");
     st.execute("drop hdfsstore myhdfs");
-    delete(new File("./myhdfs"));
+    delete(homeDirFile);
   }
   
   public void testDistributionOfHDFSStoreCreate() throws Exception {
     
     // Start one client a two servers
     startVMs(1, 2);
-    
+
     checkDirExistence("./gemfire");
     clientSQLExecute(1, "create hdfsstore TEST namenode 'localhost'");
     
@@ -609,14 +624,18 @@ public class CreateHDFSStoreDUnit extends DistributedSQLTestBase {
   public void testPersistentAttributesForAccessor() throws Exception {
     
     startVMs(1, 2);
-    
+
+    final File homeDirFile = new File(".", "teststore");
+    final String homeDir = homeDirFile.getAbsolutePath();
+
     Connection conn = TestUtil.getConnection();
     Statement s = conn.createStatement();
     s.execute("create schema trade");
     
-    checkDirExistence("./teststore");
-    s.execute("create hdfsstore teststore namenode 'localhost' homedir './teststore'");
-    
+    checkDirExistence(homeDir);
+    s.execute("create hdfsstore teststore namenode 'localhost' homedir '" +
+        homeDir + "'");
+
     clientExecute(1, verifyNoHDFSStoreExistence("TESTSTORE"));
     serverExecute(1, verifyHDFSStoreExistence("TESTSTORE"));
     serverExecute(2, verifyHDFSStoreExistence("TESTSTORE"));
@@ -740,7 +759,7 @@ public class CreateHDFSStoreDUnit extends DistributedSQLTestBase {
 //      s.execute("drop table trade.customers2");
     }*/
     s.execute("drop hdfsstore teststore");
-    delete(new File("./teststore"));
+    delete(homeDirFile);
   } 
 
   public void testDDLPersistenceFromClientOnMultipleServers() throws Exception {
@@ -748,9 +767,13 @@ public class CreateHDFSStoreDUnit extends DistributedSQLTestBase {
     // Start one client a two servers
     startVMs(1, 2);
 
+    final File homeDirFile = new File(".", "myhdfsfromclient");
+    final String homeDir = homeDirFile.getAbsolutePath();
+
     clientSQLExecute(1, "create schema emp");
-    checkDirExistence("./myhdfsfromclient");
-    clientSQLExecute(1, "create hdfsstore test namenode 'localhost' homedir './myhdfsfromclient'");
+    checkDirExistence(homeDir);
+    clientSQLExecute(1, "create hdfsstore test namenode 'localhost' homedir '" +
+        homeDir + "'");
     clientSQLExecute(1, "create table emp.mytab1 (col1 int primary key, col2 int) persistent hdfsstore (test)");
     shutDownAll();
     startVMs(2, 3);
@@ -783,17 +806,21 @@ public class CreateHDFSStoreDUnit extends DistributedSQLTestBase {
         "select NAME from SYS.SYSHDFSSTORES WHERE NAME = 'TEST' ",
         TestUtil.getResourcesDir() + "/lib/checkHDFSStore.xml", "empty");
 
-    delete(new File("./myhdfsfromclient"));
+    delete(homeDirFile);
   }
   
  public void testDDLPersistenceFromClientOnSingleServer() throws Exception {
     
-    // Start one client and two servers
+    // Start one client and one server
     startVMs(1, 1);
 
+   final File homeDirFile = new File(".", "myhdfsfromclient");
+   final String homeDir = homeDirFile.getAbsolutePath();
+
     clientSQLExecute(1, "create schema emp");
-    checkDirExistence("./myhdfsfromclient");
-    clientSQLExecute(1, "create hdfsstore test namenode 'localhost' homedir './myhdfsfromclient'");
+    checkDirExistence(homeDir);
+    clientSQLExecute(1, "create hdfsstore test namenode 'localhost' homedir '" +
+        homeDir + "'");
     clientSQLExecute(1, "create table emp.mytab1 (col1 int primary key, col2 int) persistent hdfsstore (test)");
     serverSQLExecute(1, "create alias a1 for 'b1'");
     clientSQLExecute(1, "create table emp.mytab2 (col1 int primary key, col2 int) persistent hdfsstore (test)");
@@ -810,9 +837,9 @@ public class CreateHDFSStoreDUnit extends DistributedSQLTestBase {
     serverExecute(1, verifyDDLPersistence("TEST"));
     serverSQLExecute(1, "drop table emp.mytab2 ");
     clientSQLExecute(1, "drop hdfsstore test ");
-    delete(new File("./myhdfsfromclient"));
+    delete(homeDirFile);
   }
- 
+
  public void testDDLPersistenceFromClientWithNoServer() throws Exception {
    startVMs(1, 0);
    boolean exceptionthrown = false;
@@ -823,15 +850,20 @@ public class CreateHDFSStoreDUnit extends DistributedSQLTestBase {
    }
    assertTrue ("The command should have failed as there is no server", exceptionthrown);
  }
+
   public void testBulkDMLInsertsForHDFSQueue() throws Exception {
     
     // Start one client a two servers
     startVMs(1, 2);
 
+    final File homeDirFile = new File(".", "myhdfsfromclient");
+    final String homeDir = homeDirFile.getAbsolutePath();
+
     clientSQLExecute(1, "create schema emp");
     
-    checkDirExistence("./myhdfsfromclient");
-    clientSQLExecute(1, "create hdfsstore clienttest namenode 'localhost' homedir './myhdfsfromclient'");
+    checkDirExistence(homeDir);
+    clientSQLExecute(1, "create hdfsstore clienttest namenode 'localhost' homedir '" +
+        homeDir + "'");
     clientSQLExecute(1, "create table emp.mytab1 (col1 int primary key, col2 int) persistent hdfsstore (clienttest)");
     
     clientSQLExecute(1, "Insert into emp.mytab1 values(1,1)");
@@ -841,19 +873,24 @@ public class CreateHDFSStoreDUnit extends DistributedSQLTestBase {
     clientExecute(1, execute());
     clientSQLExecute(1, "drop table emp.mytab1");
     clientSQLExecute(1, "drop hdfsstore clienttest");
+    delete(homeDirFile);
   }
 
   public void testEstimateSize() throws Exception {
     // Start one client a two servers
-    startVMs(1, 2);        
+    startVMs(1, 2);
+
+    final File homeDirFile = new File(".", "myhdfs");
+    final String homeDir = homeDirFile.getAbsolutePath();
 
     Connection conn = TestUtil.getConnection();
     Statement st = conn.createStatement();
     ResultSet rs = null;
     
-    checkDirExistence("./myhdfs");
+    checkDirExistence(homeDir);
     st.execute("create schema hdfs");
-    st.execute("create hdfsstore myhdfs namenode 'localhost' homedir './myhdfs'  BatchTimeInterval 100 milliseconds");
+    st.execute("create hdfsstore myhdfs namenode 'localhost' homedir '" +
+        homeDir + "'  BatchTimeInterval 100 milliseconds");
     st.execute("create table hdfs.m1 (col1 int primary key , col2 int) hdfsstore (myhdfs)");
     
     // check impact on GfxdIndexManager
@@ -886,7 +923,7 @@ public class CreateHDFSStoreDUnit extends DistributedSQLTestBase {
     assertEquals(1, count);
     st.execute("drop table hdfs.m1");
     st.execute("drop hdfsstore myhdfs"); 
-    delete(new File("./myhdfs"));
+    delete(homeDirFile);
   }
 
   /**
@@ -920,15 +957,18 @@ public class CreateHDFSStoreDUnit extends DistributedSQLTestBase {
 
     startVMs(1, 2);
 
+    final File homeDirFile = new File(".", "myhdfs");
+    final String homeDir = homeDirFile.getAbsolutePath();
+
     Connection conn = TestUtil.getConnection();
     Statement st = conn.createStatement();
     ResultSet rs = null;
-    final String homedir = "./myhdfs";
-    checkDirExistence(homedir);
-    assertEquals(0, getNumberOfMajorCompactedFiles(homedir));
+    checkDirExistence(homeDir);
+    assertEquals(0, getNumberOfMajorCompactedFiles(homeDir));
 
     st.execute("create schema hdfs");
-    st.execute("create hdfsstore myhdfs namenode 'localhost' homedir '"+homedir+"' BatchTimeInterval 1000 milliseconds ");
+    st.execute("create hdfsstore myhdfs namenode 'localhost' homedir '" +
+        homeDir + "' BatchTimeInterval 1000 milliseconds ");
     st.execute("create table hdfs.m1 (col1 int primary key , col2 int) partition"
         + " by primary key buckets 2 persistent hdfsstore (myhdfs)");
 
@@ -947,7 +987,7 @@ public class CreateHDFSStoreDUnit extends DistributedSQLTestBase {
 
     if (compactBeforeShutdown) {
       st.execute("call SYS.HDFS_FORCE_COMPACTION('hdfs.m1', 0)");
-      assertEquals(2, getNumberOfMajorCompactedFiles(homedir)); // one per bucket
+      assertEquals(2, getNumberOfMajorCompactedFiles(homeDir)); // one per bucket
     }
 
     //shutdown and restart
@@ -971,11 +1011,11 @@ public class CreateHDFSStoreDUnit extends DistributedSQLTestBase {
     waitForCriterion(new WaitCriterion() {
       @Override
       public boolean done() {
-        return getNumberOfMajorCompactedFiles(homedir) == 2; // one per bucket
+        return getNumberOfMajorCompactedFiles(homeDir) == 2; // one per bucket
       }
       @Override
       public String description() {
-        return "expected 2 major compacted files, found "+getNumberOfMajorCompactedFiles(homedir);
+        return "expected 2 major compacted files, found "+getNumberOfMajorCompactedFiles(homeDir);
       }
     }, 30*1000, 1000, true);
 
@@ -997,21 +1037,24 @@ public class CreateHDFSStoreDUnit extends DistributedSQLTestBase {
     assertEquals(1, count);
     st.execute("drop table hdfs.m1");
     st.execute("drop hdfsstore myhdfs");
-    delete(new File("./myhdfs"));
+    delete(homeDirFile);
   }
-
 
   public void testCount() throws Exception {
     // Start one client a three servers
     startVMs(1, 3);
 
+    final File homeDirFile = new File(".", "myhdfs");
+    final String homeDir = homeDirFile.getAbsolutePath();
+
     Connection conn = TestUtil.getConnection();
     Statement st = conn.createStatement();
     ResultSet rs = null;
     
-    checkDirExistence("./myhdfs");
+    checkDirExistence(homeDir);
     st.execute("create schema hdfs");
-    st.execute("create hdfsstore myhdfs namenode 'localhost' homedir './myhdfs'  BatchTimeInterval 100 milliseconds");
+    st.execute("create hdfsstore myhdfs namenode 'localhost' homedir '" +
+        homeDir + "'  BatchTimeInterval 100 milliseconds");
     st.execute("create table hdfs.m1 (col1 int primary key , col2 int) partition by primary key redundancy 1 hdfsstore (myhdfs)");
     
     for (int i=0; i<300; i++) {
@@ -1063,7 +1106,7 @@ public class CreateHDFSStoreDUnit extends DistributedSQLTestBase {
     
     st.execute("drop table hdfs.m1");
     st.execute("drop hdfsstore myhdfs"); 
-    delete(new File("./myhdfs"));
+    delete(homeDirFile);
   }
 
   public void testForceCompact() throws Exception {
@@ -1076,16 +1119,19 @@ public class CreateHDFSStoreDUnit extends DistributedSQLTestBase {
 
   private void doForceCompact(final boolean isSynchronous) throws Exception {
     // Start one client a two servers
-    startVMs(1, 2);        
+    startVMs(1, 2);
+
+    final File homeDirFile = new File(".", "myhdfs");
+    final String homeDir = homeDirFile.getAbsolutePath();
 
     Connection conn = TestUtil.getConnection();
     Statement st = conn.createStatement();
-    final String homedir = "./myhdfs";
-    
-    checkDirExistence(homedir);
-    assertEquals(0, getNumberOfMajorCompactedFiles(homedir));
+
+    checkDirExistence(homeDir);
+    assertEquals(0, getNumberOfMajorCompactedFiles(homeDir));
     st.execute("create schema hdfs");
-    st.execute("create hdfsstore myhdfs namenode 'localhost' homedir '"+homedir+"' BatchTimeInterval 1000 milliseconds");
+    st.execute("create hdfsstore myhdfs namenode 'localhost' homedir '" +
+        homeDir + "' BatchTimeInterval 1000 milliseconds");
     st.execute("create table hdfs.m1 (col1 int primary key , col2 int) partition" +
     		" by primary key buckets 2 hdfsstore (myhdfs)");
 
@@ -1098,7 +1144,7 @@ public class CreateHDFSStoreDUnit extends DistributedSQLTestBase {
         st.execute("CALL SYS.WAIT_FOR_SENDER_QUEUE_FLUSH('" + qname + "', 1, 0)");
       }
     }
-    assertEquals(0, getNumberOfMajorCompactedFiles(homedir));
+    assertEquals(0, getNumberOfMajorCompactedFiles(homeDir));
 
     assertTrue(st.execute("values SYS.HDFS_LAST_MAJOR_COMPACTION('hdfs.m1')"));
     ResultSet rs = st.getResultSet();
@@ -1117,19 +1163,19 @@ public class CreateHDFSStoreDUnit extends DistributedSQLTestBase {
       waitForCriterion(new WaitCriterion() {
         @Override
         public boolean done() {
-          return getNumberOfMajorCompactedFiles(homedir) == 2; // one per bucket
+          return getNumberOfMajorCompactedFiles(homeDir) == 2; // one per bucket
         }
         @Override
         public String description() {
-          return "expected 2 major compacted files, found "+getNumberOfMajorCompactedFiles(homedir);
+          return "expected 2 major compacted files, found "+getNumberOfMajorCompactedFiles(homeDir);
         }
       }, 30*1000, 1000, true);
     }
-    assertEquals(2, getNumberOfMajorCompactedFiles(homedir));
+    assertEquals(2, getNumberOfMajorCompactedFiles(homeDir));
 
     st.execute("drop table hdfs.m1");
     st.execute("drop hdfsstore myhdfs"); 
-    delete(new File("./myhdfs"));
+    delete(homeDirFile);
   }
 
   public void testFlushQueue() throws Exception {
@@ -1148,15 +1194,18 @@ public class CreateHDFSStoreDUnit extends DistributedSQLTestBase {
     // Start one client a two servers
     startVMs(1, 2);
 
+    final File homeDirFile = new File(".", "myhdfs");
+    final String homeDir = homeDirFile.getAbsolutePath();
+
     Connection conn = TestUtil.getConnection();
     Statement st = conn.createStatement();
-    final String homedir = "./myhdfs";
-    
-    checkDirExistence(homedir);
+
+    checkDirExistence(homeDir);
     st.execute("create schema hdfs");
-    st.execute("create hdfsstore myhdfs namenode 'localhost' homedir '"+homedir+"' BatchTimeInterval 300000 milliseconds");
+    st.execute("create hdfsstore myhdfs namenode 'localhost' homedir '" +
+        homeDir + "' BatchTimeInterval 300000 milliseconds");
     st.execute("create table hdfs.m1 (col1 int primary key , col2 int) partition" +
-                " by primary key buckets 2 hdfsstore (myhdfs) " + (wo ? "writeonly" : ""));
+        " by primary key buckets 2 hdfsstore (myhdfs) " + (wo ? "writeonly" : ""));
 
     // create queued entries
     for (int i=1; i<=120; i++) {
@@ -1204,20 +1253,22 @@ public class CreateHDFSStoreDUnit extends DistributedSQLTestBase {
     }
     st.execute("drop table hdfs.m1");
     st.execute("drop hdfsstore myhdfs"); 
-    delete(new File("./myhdfs"));
+    delete(homeDirFile);
   }
   
   public void testForceFileRollover() throws Exception {
     // Start one client and two servers
     startVMs(1, 2);
 
-    final String homedir = "./myhdfs";
-    
-    checkDirExistence(homedir);
+    final File homeDirFile = new File(".", "myhdfs");
+    final String homeDir = homeDirFile.getAbsolutePath();
+
+    checkDirExistence(homeDir);
     clientSQLExecute(1, "create schema hdfs");
-    clientSQLExecute(1, "create hdfsstore myhdfs namenode 'localhost' homedir '"+homedir+"' BatchTimeInterval 1 milliseconds");
+    clientSQLExecute(1, "create hdfsstore myhdfs namenode 'localhost' homedir '" +
+        homeDir + "' BatchTimeInterval 1 milliseconds");
     clientSQLExecute(1, "create table hdfs.m1 (col1 int primary key , col2 int) partition" +
-                " by primary key hdfsstore (myhdfs) writeonly buckets 73");
+        " by primary key hdfsstore (myhdfs) writeonly buckets 73");
 
     for (int i=1; i<=200; i++) {
       clientSQLExecute(1, "insert into hdfs.m1 values("+i+", "+i*10+")");
@@ -1259,7 +1310,7 @@ public class CreateHDFSStoreDUnit extends DistributedSQLTestBase {
     clientSQLExecute(1, "drop table hdfs.m2");
     clientSQLExecute(1, "drop table hdfs.m1");
     clientSQLExecute(1, "drop hdfsstore myhdfs"); 
-    delete(new File("./myhdfs"));
+    delete(homeDirFile);
   }
   
   public void testBug48928() throws Exception {
@@ -1308,7 +1359,10 @@ public class CreateHDFSStoreDUnit extends DistributedSQLTestBase {
   public void testPeerClientWithUniqueConstraint() throws Exception {
 
     // Start one client and two servers
-    startVMs(0, 2);        
+    startVMs(0, 2);
+
+    final File homeDirFile = new File(".", "myhdfs");
+    final String homeDir = homeDirFile.getAbsolutePath();
 
     Properties props = new Properties();
     props.setProperty("host-data", "false");
@@ -1318,8 +1372,9 @@ public class CreateHDFSStoreDUnit extends DistributedSQLTestBase {
     Statement st = conn.createStatement();
     ResultSet rs = null;
     
-    checkDirExistence("./myhdfs");
-    st.execute("create hdfsstore myhdfs namenode 'localhost' homedir './myhdfs' ");
+    checkDirExistence(homeDir);
+    st.execute("create hdfsstore myhdfs namenode 'localhost' homedir '" +
+        homeDir + "'");
     st.execute("create table app.m1 (col1 int, col2 int, col3 int, primary key (col1, col2, col3), constraint cus_uq unique (col1, col2)) persistent hdfsstore (myhdfs) partition by (col1)");
 
     //Test violating the unique constraint
@@ -1339,7 +1394,7 @@ public class CreateHDFSStoreDUnit extends DistributedSQLTestBase {
     
     st.execute("drop table app.m1");
     st.execute("drop hdfsstore myhdfs"); 
-    delete(new File("./myhdfs"));
+    delete(homeDirFile);
   }
 
   private void runBug48928(final Connection conn, final Connection conn2)
@@ -1552,27 +1607,6 @@ public class CreateHDFSStoreDUnit extends DistributedSQLTestBase {
     assertEquals(expectedSize, arr.length);
     for (int i = 0; i < expectedSize; i++) {
       assertEquals(i, ((Integer) arr[i]).intValue());
-    }
-  }
-  
-  private void delete(File file) {
-    if (!file.exists()) {
-      return;
-    }
-    if (file.isDirectory()) {
-      if (file.list().length == 0) {
-        file.delete();
-      }
-      else {
-        File[] files = file.listFiles();
-        for (File f : files) {
-          delete(f);
-        }        
-        file.delete();        
-      }
-    }
-    else {
-      file.delete();
     }
   }
 

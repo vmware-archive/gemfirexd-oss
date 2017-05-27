@@ -38,36 +38,12 @@
 
 package com.pivotal.gemfirexd.jdbc;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.SQLWarning;
-import java.sql.Statement;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.UUID;
 
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
-
-import org.apache.derbyTesting.functionTests.tests.derbynet.SqlExceptionTest;
-
-import com.gemstone.gemfire.cache.Cache;
-import com.gemstone.gemfire.cache.CacheFactory;
-import com.gemstone.gemfire.cache.DataPolicy;
-import com.gemstone.gemfire.cache.EntryExistsException;
-import com.gemstone.gemfire.cache.EvictionAction;
-import com.gemstone.gemfire.cache.EvictionAttributes;
-import com.gemstone.gemfire.cache.PartitionAttributes;
-import com.gemstone.gemfire.cache.PartitionResolver;
-import com.gemstone.gemfire.cache.Region;
-import com.gemstone.gemfire.cache.RegionAttributes;
-import com.gemstone.gemfire.cache.Scope;
-import com.gemstone.gemfire.cache.TimeoutException;
+import com.gemstone.gemfire.cache.*;
 import com.gemstone.gemfire.cache.util.ObjectSizer;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
@@ -98,6 +74,10 @@ import com.pivotal.gemfirexd.internal.iapi.store.access.conglomerate.Conglomerat
 import com.pivotal.gemfirexd.internal.iapi.types.DataValueDescriptor;
 import com.pivotal.gemfirexd.internal.iapi.types.RowLocation;
 import com.pivotal.gemfirexd.internal.iapi.types.SQLInteger;
+import io.snappydata.test.dunit.VM;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
+import org.apache.derbyTesting.functionTests.tests.derbynet.SqlExceptionTest;
 
 @SuppressWarnings("serial")
 public class CreateTableTest extends JdbcTestBase {
@@ -3128,7 +3108,7 @@ public class CreateTableTest extends JdbcTestBase {
     }
 
     // check for auto-generated results
-    dunit.VM vm;
+    VM vm;
     if (numServers > 0) {
       vm = dunitTest.getServerVM(1);
       Object[] result = (Object[])vm.invoke(CreateTableTest.class,
@@ -3637,7 +3617,7 @@ public class CreateTableTest extends JdbcTestBase {
   }
   
   public void testMemScaleDDL() throws Exception {
-    System.setProperty("gemfire.off-heap-memory-size", "128m");
+    System.setProperty("gemfire.off-heap-memory-size", "500m");
     Properties props = new Properties();
     int mcastPort = AvailablePort.getRandomAvailablePort(AvailablePort.JGROUPS);
     props.put("mcast-port", String.valueOf(mcastPort));    
