@@ -37,6 +37,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 
+import io.snappydata.test.dunit.AvailablePortHelper;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -59,7 +60,6 @@ import com.gemstone.gemfire.cache.hdfs.internal.hoplog.DDLHoplogOrganizer.DDLHop
 import com.gemstone.gemfire.cache.hdfs.internal.hoplog.mapreduce.GFInputFormat;
 import com.gemstone.gemfire.cache.hdfs.internal.hoplog.mapreduce.HDFSSplitIterator;
 import com.gemstone.gemfire.internal.AvailablePort;
-import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.FileUtil;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.LocalRegion;

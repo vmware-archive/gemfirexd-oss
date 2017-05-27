@@ -29,7 +29,7 @@ import com.pivotal.gemfirexd.internal.engine.distributed.metadata.SelectQueryInf
 import com.pivotal.gemfirexd.internal.iapi.types.SQLInteger;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedStatement;
 
-import dunit.VM;
+import io.snappydata.test.dunit.VM;
 
 /**
  * Tests the nodes pruning behaviour of distributed queries in presence of

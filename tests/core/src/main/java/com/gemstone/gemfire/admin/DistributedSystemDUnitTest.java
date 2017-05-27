@@ -220,27 +220,6 @@ public class DistributedSystemDUnitTest extends AdminDUnitTestCase {
     return vmCount;
   }
 
-  public static void checkEnableAdministrationOnly(boolean v, boolean expectException) {
-    boolean origIsDedicatedAdminVM = DistributionManager.isDedicatedAdminVM;
-    if (expectException) {
-      try {
-        AdminDistributedSystemFactory.setEnableAdministrationOnly(v);
-        fail("expected IllegalStateException");
-      } catch (IllegalStateException expected) {
-        assertEquals(origIsDedicatedAdminVM, DistributionManager.isDedicatedAdminVM);
-      } finally {
-        DistributionManager.isDedicatedAdminVM = origIsDedicatedAdminVM;
-      }
-    } else {
-      try {
-        AdminDistributedSystemFactory.setEnableAdministrationOnly(v);
-        assertEquals(v, DistributionManager.isDedicatedAdminVM);
-      } finally {
-        DistributionManager.isDedicatedAdminVM = origIsDedicatedAdminVM;
-      }
-    }
-  }
-  
   public void testGetSystemMemberApplications() throws Throwable {
     //disconnectAllFromDS();
 
@@ -251,8 +230,8 @@ public class DistributedSystemDUnitTest extends AdminDUnitTestCase {
       // ends up failing because if does not find any existing systems
       // in DistributedSystem.
       // So Darrel & Kirk decided to disable this part of the test if JMX
-      checkEnableAdministrationOnly(true, true);
-      checkEnableAdministrationOnly(false, true);
+      DistributedSystemFactoryTest.checkEnableAdministrationOnly(true, true);
+      DistributedSystemFactoryTest.checkEnableAdministrationOnly(false, true);
     }
     // make all VMs connect to ds...
     for (int i = 0; i < Host.getHostCount(); i++) {

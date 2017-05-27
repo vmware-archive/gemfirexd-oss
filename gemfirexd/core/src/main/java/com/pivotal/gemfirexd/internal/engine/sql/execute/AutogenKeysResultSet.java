@@ -1070,8 +1070,9 @@ public final class AutogenKeysResultSet implements ResultSet, NoPutResultSet {
 
   @Override
   public void checkCancellationFlag() throws StandardException {
-    if (this.activation != null) {
-      this.activation.checkCancellationFlag();
+    final Activation act = this.activation;
+    if (act != null && act.isQueryCancelled()) {
+      act.checkCancellationFlag();
     }
   }
   

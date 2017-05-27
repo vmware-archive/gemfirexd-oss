@@ -73,10 +73,10 @@ public final class GfxdHelpFormatter extends HelpFormatter {
      * Defaults to case-insensitive alphabetical sorting by option key providing
      * the required options at the start.
      */
-    this.optionComparator = new Comparator<Object>() {
+    this.optionComparator = new Comparator<Option>() {
 
       @Override
-      public int compare(Object o1, Object o2) {
+      public int compare(Option o1, Option o2) {
         final GfxdOption opt1 = (GfxdOption)o1;
         final GfxdOption opt2 = (GfxdOption)o2;
 
@@ -144,12 +144,12 @@ public final class GfxdHelpFormatter extends HelpFormatter {
         .append(' ');
 
     // create a list for processed option groups
-    final ArrayList<Object> processedGroups = new ArrayList<Object>();
+    final ArrayList<Object> processedGroups = new ArrayList<>();
 
     // temp variable
     Option option;
 
-    ArrayList<Object> optList = new ArrayList<Object>(options.getOptions());
+    ArrayList<Option> optList = new ArrayList<>(options.getOptions());
     Collections.sort(optList, getOptionComparator());
     // iterate over the options
     for (Iterator<?> i = optList.iterator(); i.hasNext();) {
@@ -211,7 +211,7 @@ public final class GfxdHelpFormatter extends HelpFormatter {
       buff.append('[');
     }
 
-    ArrayList<Object> optList = new ArrayList<Object>(group.getOptions());
+    ArrayList<Option> optList = new ArrayList<>(group.getOptions());
     Collections.sort(optList, getOptionComparator());
     // for each option in the OptionGroup
     for (Iterator<?> i = optList.iterator(); i.hasNext();) {
@@ -304,12 +304,12 @@ public final class GfxdHelpFormatter extends HelpFormatter {
     // sort options ascending
     int max = 0;
     StringBuilder optBuf;
-    ArrayList<Object> prefixList = new ArrayList<Object>();
-    List<?> optList;
+    ArrayList<Object> prefixList = new ArrayList<>();
+    List<Option> optList;
     try {
       Method helpOptions = options.getClass().getDeclaredMethod("helpOptions");
       helpOptions.setAccessible(true);
-      optList = (List<?>)helpOptions.invoke(options);
+      optList = (List<Option>)helpOptions.invoke(options);
     } catch (Exception e) {
       throw new InternalGemFireError(e);
     }
@@ -321,7 +321,7 @@ public final class GfxdHelpFormatter extends HelpFormatter {
       optBuf = new StringBuilder(8);
 
       if (option.getOpt() == null) {
-        optBuf.append(lpad).append("   " + getLongOptPrefix())
+        optBuf.append(lpad).append("   ").append(getLongOptPrefix())
             .append(option.getLongOpt());
       }
       else {

@@ -101,8 +101,8 @@ public class OffHeapTest extends JdbcTestBase {
   @Override
   public void setUp() throws Exception {
     super.setUp();   
-    System.setProperty("gemfire.OFF_HEAP_TOTAL_SIZE", "100M");
-    System.setProperty("gemfire."+DistributionConfig.OFF_HEAP_MEMORY_SIZE_NAME, "50M");
+    System.setProperty("gemfire.OFF_HEAP_TOTAL_SIZE", "500m");
+    System.setProperty("gemfire."+DistributionConfig.OFF_HEAP_MEMORY_SIZE_NAME, "500m");
     System.setProperty(GfxdManagementService.DISABLE_MANAGEMENT_PROPERTY,"true");
     
     LocalRegion.ISSUE_CALLBACKS_TO_CACHE_OBSERVER = true;
@@ -2160,14 +2160,6 @@ public class OffHeapTest extends JdbcTestBase {
         rmcd.waitTillAllClear();
       }
     } finally {
-      try {
-        DriverManager.getConnection("jdbc:derby:;shutdown=true");
-      } catch (SQLException sqle) {
-        if (sqle.getMessage().indexOf("shutdown") == -1) {
-          sqle.printStackTrace();
-          throw sqle;
-        }
-      }
       GemFireXDQueryObserverHolder.clearInstance();
     }
 
@@ -2299,14 +2291,6 @@ public class OffHeapTest extends JdbcTestBase {
       }
 
     } finally {
-      try {
-        DriverManager.getConnection("jdbc:derby:;shutdown=true");
-      } catch (SQLException sqle) {
-        if (sqle.getMessage().indexOf("shutdown") == -1) {
-          sqle.printStackTrace();
-          throw sqle;
-        }
-      }
       GemFireXDQueryObserverHolder.clearInstance();
     }
 
@@ -2408,14 +2392,6 @@ public class OffHeapTest extends JdbcTestBase {
       }
 
     } finally {
-      try {
-        DriverManager.getConnection("jdbc:derby:;shutdown=true");
-      } catch (SQLException sqle) {
-        if (sqle.getMessage().indexOf("shutdown") == -1) {
-          sqle.printStackTrace();
-          throw sqle;
-        }
-      }
       GemFireXDQueryObserverHolder.clearInstance();
     }
 
@@ -2522,14 +2498,6 @@ public class OffHeapTest extends JdbcTestBase {
       }
 
     } finally {
-      try {
-        DriverManager.getConnection("jdbc:derby:;shutdown=true");
-      } catch (SQLException sqle) {
-        if (sqle.getMessage().indexOf("shutdown") == -1) {
-          sqle.printStackTrace();
-          throw sqle;
-        }
-      }
       GemFireXDQueryObserverHolder.clearInstance();
     }
 
@@ -2700,14 +2668,6 @@ public class OffHeapTest extends JdbcTestBase {
       System.setProperty("gemfire.partitionedRegionRetryTimeout", "");
       LocalRegion.ISSUE_CALLBACKS_TO_CACHE_OBSERVER = false;
       CacheObserverHolder.setInstance(null);
-      try {
-        DriverManager.getConnection("jdbc:derby:;shutdown=true");
-      } catch (SQLException sqle) {
-        if (sqle.getMessage().indexOf("shutdown") == -1) {
-          sqle.printStackTrace();
-          throw sqle;
-        }
-      }
       GemFireXDQueryObserverHolder.clearInstance();
     }
   }
@@ -3003,14 +2963,6 @@ public class OffHeapTest extends JdbcTestBase {
       }
 
     } finally {
-      try {
-        DriverManager.getConnection("jdbc:derby:;shutdown=true");
-      } catch (SQLException sqle) {
-        if (sqle.getMessage().indexOf("shutdown") == -1) {
-          sqle.printStackTrace();
-          throw sqle;
-        }
-      }
       GemFireXDQueryObserverHolder.clearInstance();
     }
 
@@ -3145,14 +3097,6 @@ public class OffHeapTest extends JdbcTestBase {
       }
       assertFalse(fail[0]);
     } finally {
-      try {
-        DriverManager.getConnection("jdbc:derby:;shutdown=true");
-      } catch (SQLException sqle) {
-        if (sqle.getMessage().indexOf("shutdown") == -1) {
-          sqle.printStackTrace();
-          throw sqle;
-        }
-      }
       GemFireXDQueryObserverHolder.clearInstance();
     }
 
@@ -3226,14 +3170,6 @@ public class OffHeapTest extends JdbcTestBase {
       }
 
     } finally {
-      try {
-        DriverManager.getConnection("jdbc:derby:;shutdown=true");
-      } catch (SQLException sqle) {
-        if (sqle.getMessage().indexOf("shutdown") == -1) {
-          sqle.printStackTrace();
-          throw sqle;
-        }
-      }
       GemFireXDQueryObserverHolder.clearInstance();
     }
 
@@ -3306,14 +3242,6 @@ public class OffHeapTest extends JdbcTestBase {
       }
 
     } finally {
-      try {
-        DriverManager.getConnection("jdbc:derby:;shutdown=true");
-      } catch (SQLException sqle) {
-        if (sqle.getMessage().indexOf("shutdown") == -1) {
-          sqle.printStackTrace();
-          throw sqle;
-        }
-      }
       GemFireXDQueryObserverHolder.clearInstance();
     }
 
@@ -3372,14 +3300,6 @@ public class OffHeapTest extends JdbcTestBase {
       }
 
     } finally {
-      try {
-        DriverManager.getConnection("jdbc:derby:;shutdown=true");
-      } catch (SQLException sqle) {
-        if (sqle.getMessage().indexOf("shutdown") == -1) {
-          sqle.printStackTrace();
-          throw sqle;
-        }
-      }
       GemFireXDQueryObserverHolder.clearInstance();
     }
 
@@ -3571,14 +3491,6 @@ public class OffHeapTest extends JdbcTestBase {
       }
 
     } finally {
-      try {
-        DriverManager.getConnection("jdbc:derby:;shutdown=true");
-      } catch (SQLException sqle) {
-        if (sqle.getMessage().indexOf("shutdown") == -1) {
-          sqle.printStackTrace();
-          throw sqle;
-        }
-      }
       GemFireXDQueryObserverHolder.clearInstance();
     }
 
@@ -3764,14 +3676,6 @@ public class OffHeapTest extends JdbcTestBase {
       }
 
     } finally {
-      try {
-        DriverManager.getConnection("jdbc:derby:;shutdown=true");
-      } catch (SQLException sqle) {
-        if (sqle.getMessage().indexOf("shutdown") == -1) {
-          sqle.printStackTrace();
-          throw sqle;
-        }
-      }
       GemFireXDQueryObserverHolder.clearInstance();
     }
 
@@ -4304,14 +4208,6 @@ public class OffHeapTest extends JdbcTestBase {
         rmcd.waitTillAllClear();
       }
     } finally {
-      try {
-        DriverManager.getConnection("jdbc:derby:;shutdown=true");
-      } catch (SQLException sqle) {
-        if (sqle.getMessage().indexOf("shutdown") == -1) {
-          sqle.printStackTrace();
-          throw sqle;
-        }
-      }
       GemFireXDQueryObserverHolder.clearInstance();
     }
 
@@ -4387,14 +4283,6 @@ public class OffHeapTest extends JdbcTestBase {
       }
 
     } finally {
-      try {
-        DriverManager.getConnection("jdbc:derby:;shutdown=true");
-      } catch (SQLException sqle) {
-        if (sqle.getMessage().indexOf("shutdown") == -1) {
-          sqle.printStackTrace();
-          throw sqle;
-        }
-      }
       GemFireXDQueryObserverHolder.clearInstance();
     }
 
@@ -4481,14 +4369,6 @@ public class OffHeapTest extends JdbcTestBase {
       }
 
     } finally {
-      try {
-        DriverManager.getConnection("jdbc:derby:;shutdown=true");
-      } catch (SQLException sqle) {
-        if (sqle.getMessage().indexOf("shutdown") == -1) {
-          sqle.printStackTrace();
-          throw sqle;
-        }
-      }
       GemFireXDQueryObserverHolder.clearInstance();
     }
 
@@ -4593,14 +4473,6 @@ public class OffHeapTest extends JdbcTestBase {
       }
 
     } finally {
-      try {
-        DriverManager.getConnection("jdbc:derby:;shutdown=true");
-      } catch (SQLException sqle) {
-        if (sqle.getMessage().indexOf("shutdown") == -1) {
-          sqle.printStackTrace();
-          throw sqle;
-        }
-      }
       GemFireXDQueryObserverHolder.clearInstance();
     }
 
@@ -4689,14 +4561,6 @@ public class OffHeapTest extends JdbcTestBase {
       }
 
     } finally {
-      try {
-        DriverManager.getConnection("jdbc:derby:;shutdown=true");
-      } catch (SQLException sqle) {
-        if (sqle.getMessage().indexOf("shutdown") == -1) {
-          sqle.printStackTrace();
-          throw sqle;
-        }
-      }
       GemFireXDQueryObserverHolder.clearInstance();
     }
   }
@@ -4828,14 +4692,6 @@ public class OffHeapTest extends JdbcTestBase {
       }
 
     } finally {
-      try {
-        DriverManager.getConnection("jdbc:derby:;shutdown=true");
-      } catch (SQLException sqle) {
-        if (sqle.getMessage().indexOf("shutdown") == -1) {
-          sqle.printStackTrace();
-          throw sqle;
-        }
-      }
       GemFireXDQueryObserverHolder.clearInstance();
     }
 
@@ -4915,14 +4771,6 @@ public class OffHeapTest extends JdbcTestBase {
       }
 
     } finally {
-      try {
-        DriverManager.getConnection("jdbc:derby:;shutdown=true");
-      } catch (SQLException sqle) {
-        if (sqle.getMessage().indexOf("shutdown") == -1) {
-          sqle.printStackTrace();
-          throw sqle;
-        }
-      }
       GemFireXDQueryObserverHolder.clearInstance();
     }
 
@@ -4970,13 +4818,7 @@ public class OffHeapTest extends JdbcTestBase {
           s.execute("drop table if exists portfoliov1");
           rmcd.waitTillAllClear();
         }
-
-        DriverManager.getConnection("jdbc:derby:;shutdown=true");
       } catch (SQLException sqle) {
-        if (sqle.getMessage().indexOf("shutdown") == -1) {
-          sqle.printStackTrace();
-          throw sqle;
-        }
       }
     }
   }
@@ -5141,14 +4983,6 @@ public class OffHeapTest extends JdbcTestBase {
         rmcd.waitTillAllClear();
       }
     } finally {
-      try {
-        DriverManager.getConnection("jdbc:derby:;shutdown=true");
-      } catch (SQLException sqle) {
-        if (sqle.getMessage().indexOf("shutdown") == -1) {
-          sqle.printStackTrace();
-          throw sqle;
-        }
-      }
       GemFireXDQueryObserverHolder.clearInstance();
     }
 

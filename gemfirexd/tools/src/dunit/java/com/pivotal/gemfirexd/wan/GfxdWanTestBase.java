@@ -26,15 +26,15 @@ import java.util.Properties;
 import java.util.concurrent.Callable;
 
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
-import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.SocketCreator;
 import com.pivotal.gemfirexd.Attribute;
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.FabricLocator;
 import com.pivotal.gemfirexd.FabricServiceManager;
 import com.pivotal.gemfirexd.TestUtil;
-import dunit.AsyncInvocation;
-import dunit.VM;
+import io.snappydata.test.dunit.AsyncInvocation;
+import io.snappydata.test.dunit.AvailablePortHelper;
+import io.snappydata.test.dunit.VM;
 
 public class GfxdWanTestBase extends DistributedSQLTestBase{
   
@@ -159,12 +159,12 @@ public class GfxdWanTestBase extends DistributedSQLTestBase{
       for(int i = start; i <=end; i++) {
         VM serverVM = serverVMs.get(i);
         getLogWriter().info("Adding expected exceptions to site " + site + ", VM=" +i + 
-            ", VMDir=" + serverVM.getSystem().getSystemDirectory() + "/" + serverVM.getPid());
+            ", VMDir=" + serverVM.getWorkingDirectory().getAbsolutePath());
         super.addExpectedException(serverVM, exceptionClasses);
       }
     }
   }
-  
+
   public void addExpectedException(String[] sites, Object[] exceptionClasses) throws Exception {
     VM[] vms = getServerVMs(sites);
     for(int i = 0; i < vms.length; i++) {

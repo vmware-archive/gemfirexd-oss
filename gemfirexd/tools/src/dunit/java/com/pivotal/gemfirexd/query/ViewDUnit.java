@@ -44,9 +44,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import io.snappydata.test.dunit.SerializableRunnable;
 import org.apache.derbyTesting.junit.JDBC;
 
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.ToursDBUtil;
@@ -452,10 +452,10 @@ public class ViewDUnit extends DistributedSQLTestBase {
     st.execute("insert into test values(1,1,1), (2,2,2), (3,3,3), (4,4,4), (5,5,5)");
     
     //observer1: make sure that the region size optimization is triggered
-    CacheSerializableRunnable csr1 = new CacheSerializableRunnable(
+    SerializableRunnable csr1 = new SerializableRunnable(
         "set observer") {
       @Override
-      public void run2() {
+      public void run() {
         GemFireXDQueryObserver old = GemFireXDQueryObserverHolder
             .setInstance(new GemFireXDQueryObserverAdapter() {
               private static final long serialVersionUID = 1L;
@@ -530,10 +530,10 @@ public class ViewDUnit extends DistributedSQLTestBase {
     
 
     // observer2: make sure that the region size optimization is *not* triggered
-    CacheSerializableRunnable csr2 = new CacheSerializableRunnable(
+    SerializableRunnable csr2 = new SerializableRunnable(
         "set observer") {
       @Override
-      public void run2() {
+      public void run() {
         GemFireXDQueryObserver old = GemFireXDQueryObserverHolder
             .setInstance(new GemFireXDQueryObserverAdapter() {
               private static final long serialVersionUID = 1L;

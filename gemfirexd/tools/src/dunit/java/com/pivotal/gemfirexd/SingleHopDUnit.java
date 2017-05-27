@@ -34,7 +34,7 @@ import com.gemstone.gemfire.internal.SocketCreator;
 import com.gemstone.gnu.trove.THashMap;
 import com.pivotal.gemfirexd.internal.client.am.SingleHopPreparedStatement;
 
-import dunit.SerializableRunnable;
+import io.snappydata.test.dunit.SerializableRunnable;
 
 /**
  * 

@@ -20,7 +20,7 @@
 package com.pivotal.gemfirexd.internal.engine.distributed;
 
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
-import dunit.SerializableRunnable;
+import io.snappydata.test.dunit.SerializableRunnable;
 
 /**
  * Tests whether the statementID , connectionID etc are being passed correctly

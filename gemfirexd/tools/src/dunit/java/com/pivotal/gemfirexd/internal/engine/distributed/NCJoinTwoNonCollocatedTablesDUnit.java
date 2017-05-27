@@ -29,8 +29,7 @@ import java.util.Properties;
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
-
-import dunit.SerializableRunnable;
+import io.snappydata.test.dunit.SerializableRunnable;
 
 /**
  * Non Collocated Join Functional Test.
@@ -1169,7 +1168,7 @@ public class NCJoinTwoNonCollocatedTablesDUnit extends DistributedSQLTestBase {
           + " where A.SID > ? " + "and B.SID < ? ";
 
       Properties props = new Properties();
-      props.setProperty("log-level", getDUnitLogLevel());
+      props.setProperty("log-level", getLogLevel());
       int clientPort = startNetworkServer(1, null, null);
       Connection conn = TestUtil.getNetConnection(clientPort, null, props);
       PreparedStatement s1 = conn.prepareStatement(query);

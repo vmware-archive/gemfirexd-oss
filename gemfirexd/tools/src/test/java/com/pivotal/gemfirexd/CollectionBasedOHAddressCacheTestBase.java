@@ -45,7 +45,7 @@ public abstract class CollectionBasedOHAddressCacheTestBase extends TestCase {
     Properties props = new Properties();
     props.setProperty("locators", "");
     props.setProperty("mcast-port", "0");
-    props.setProperty("off-heap-memory-size", "1g");
+    props.setProperty("off-heap-memory-size", "500m");
     GemFireCacheImpl result = (GemFireCacheImpl) new CacheFactory(props).create();
     return result;
   }
@@ -102,6 +102,7 @@ public abstract class CollectionBasedOHAddressCacheTestBase extends TestCase {
       assertEquals(startOHObjects, getStats().getObjects());
     } finally {
       closeCache(gfc);
+      SimpleMemoryAllocatorImpl.freeOffHeapMemory();
     }
   }
   public void testBulkAddRelease() {
@@ -123,6 +124,7 @@ public abstract class CollectionBasedOHAddressCacheTestBase extends TestCase {
       assertEquals(startOHObjects, getStats().getObjects());
     } finally {
       closeCache(gfc);
+      SimpleMemoryAllocatorImpl.freeOffHeapMemory();
     }
   }
   
@@ -154,6 +156,7 @@ public abstract class CollectionBasedOHAddressCacheTestBase extends TestCase {
       }
     } finally {
       closeCache(gfc);
+      SimpleMemoryAllocatorImpl.freeOffHeapMemory();
     }
   }
   
@@ -184,6 +187,7 @@ public abstract class CollectionBasedOHAddressCacheTestBase extends TestCase {
       }
     } finally {
       closeCache(gfc);
+      SimpleMemoryAllocatorImpl.freeOffHeapMemory();
     }
   }
 
@@ -216,6 +220,7 @@ public abstract class CollectionBasedOHAddressCacheTestBase extends TestCase {
       }
     } finally {
       closeCache(gfc);
+      SimpleMemoryAllocatorImpl.freeOffHeapMemory();
     }
   }
 

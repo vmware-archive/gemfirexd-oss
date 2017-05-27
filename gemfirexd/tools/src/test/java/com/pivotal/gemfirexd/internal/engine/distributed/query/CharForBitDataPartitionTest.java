@@ -27,12 +27,11 @@ import java.util.Vector;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.jdbc.JdbcTestBase;
-import hydra.Log;
+import io.snappydata.test.util.TestException;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
-import util.TestException;
 
-public class CharForBitDataPartitionTest extends JdbcTestBase{
+public class CharForBitDataPartitionTest extends JdbcTestBase {
 
   private static volatile Connection derbyConn = null;
   
@@ -45,7 +44,6 @@ public class CharForBitDataPartitionTest extends JdbcTestBase{
   
   public CharForBitDataPartitionTest(String name) {
     super(name);
-    hydra.Log.createLogWriter("CharForBitDataPartitionTest", "fine");
   }
 
   public static void main(String[] args) {
@@ -175,17 +173,17 @@ public class CharForBitDataPartitionTest extends JdbcTestBase{
     }
 
     if (aStr.length() != 0) {
-      Log.getLogWriter().info(
+      logger.info(
           "ResultSet from GemFireXD is " + vectorToString(gfxdV));
-      Log.getLogWriter().info(
+      logger.info(
           "ResultSet from Derby is " + vectorToString(derbyV));
-      Log.getLogWriter().info("ResultSet difference is " + aStr.toString());
+      logger.info("ResultSet difference is " + aStr.toString());
       throw new TestException(aStr.toString());
 
     }
 
     if (gfxdV.size() == derbyV.size()) {
-      Log.getLogWriter().info("verified that results are correct");
+      logger.info("verified that results are correct");
     }
     else if (gfxdV.size() < derbyV.size()) {
       throw new TestException("There are more data in Derby ResultSet");

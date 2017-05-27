@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.Properties;
 
 import com.gemstone.gemfire.DeltaTestImpl;
+import com.gemstone.gemfire.DeltaTestImpl.TestObject1;
 import com.gemstone.gemfire.InvalidDeltaException;
 import com.gemstone.gemfire.LogWriter;
 import com.gemstone.gemfire.cache.AttributesFactory;
@@ -53,7 +54,6 @@ import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.Assert;
 import com.gemstone.gemfire.internal.AvailablePort;
-import com.gemstone.gemfire.internal.cache.PartitionedRegionLocalMaxMemoryDUnitTest.TestObject1;
 import com.gemstone.gemfire.internal.cache.ha.HARegionQueue;
 import com.gemstone.gemfire.internal.cache.lru.EnableLRU;
 import com.gemstone.gemfire.internal.cache.tier.sockets.CacheServerTestUtil;

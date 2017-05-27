@@ -4176,10 +4176,17 @@ class DRDAConnThread extends Thread {
 					    .DISABLE_TX_BATCHING) == allowUpdHN) {
 					  database.disableTXBatching = true;
 					}
-                                        if ((allowUpdHN & CodePoint.QUERY_HDFS) 
-                                            == allowUpdHN) {
-                                          database.queryHDFS = true;
-                                        } 
+          if ((allowUpdHN & CodePoint.QUERY_HDFS)
+             == allowUpdHN) {
+             // Since queryHDFS wont be used in snappydata so
+             // using this bit in the byte for query routing information
+             if (!Misc.getMemStore().isSnappyStore()) {
+               database.queryHDFS = true;
+             }
+             else {
+               database.routeQuery = true;
+             }
+          }
 					database.rdbAllowUpdates = (allowUpd
 					    & 0x0f) == (CodePoint.TRUE & 0x0f);
 					// KN: TODO implement these two properly so that this knows

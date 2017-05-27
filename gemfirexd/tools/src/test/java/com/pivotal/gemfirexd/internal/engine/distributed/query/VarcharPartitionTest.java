@@ -43,42 +43,44 @@ public class VarcharPartitionTest extends JdbcTestBase{
   
   public VarcharPartitionTest(String name) {
     super(name);
-    hydra.Log.createLogWriter("VarcharPartitionTest", "fine");
   }
 
   public static void main(String[] args) {
     TestRunner.run(new TestSuite(VarcharPartitionTest.class));
   }
-  
+
   public static ResultSet executeQueryOnDerby(String sql) throws Exception {
     if (derbyConn == null) {
       String derbyDbUrl = "jdbc:derby:newDB;create=true;";
       if (TestUtil.currentUserName != null) {
         derbyDbUrl += ("user=" + TestUtil.currentUserName + ";password="
             + TestUtil.currentUserPassword + ';');
-      }      
+      }
+      // for some reason auto-load of Derby driver fails in full suite
+      loadDerbyDriver();
       derbyConn = DriverManager.getConnection(derbyDbUrl);
     }
     ResultSet rs = null;
     rs = derbyConn.createStatement().executeQuery(sql);
     return rs;
-
   }
-  
+
   public static int executeUpdateOnDerby(String sql) throws Exception {
     if (derbyConn == null) {
       String derbyDbUrl = "jdbc:derby:newDB;create=true;";
       if (TestUtil.currentUserName != null) {
         derbyDbUrl += ("user=" + TestUtil.currentUserName + ";password="
             + TestUtil.currentUserPassword + ';');
-      }      
+      }
+      // for some reason auto-load of Derby driver fails in full suite
+      loadDerbyDriver();
       derbyConn = DriverManager.getConnection(derbyDbUrl);
     }
     int ret = 0;
     ret = derbyConn.createStatement().executeUpdate(sql);
     return ret;
   }
-  
+
   public static ResultSet executeQueryOnGfxd(String sql) throws Exception {
     if (gfxdConn == null) {
       Properties props = new Properties();

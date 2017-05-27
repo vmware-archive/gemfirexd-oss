@@ -260,20 +260,22 @@ public class SharedLibrary {
         }
         return retVal;
     }
-    
-    public static final void logInitMessage(int logLevel, String msg, Throwable t) {
 
+    public static void logInitMessage(int logLevel, String msg, Throwable t) {
       final GemFireCacheImpl cache = GemFireCacheImpl.getInstance();
       final GemFireCacheImpl.StaticSystemCallbacks sysCb;
       final LogWriter logger = cache != null ? cache.getLogger() : null;
 
       if (logger != null) {
-        logger.info(msg);
+        logger.info(msg, t);
       } else if (cache != null
           && (sysCb = GemFireCacheImpl.getInternalProductCallbacks()) != null) {
-        sysCb.log(LogWriterImpl.levelToString(logLevel), msg);
+        sysCb.log(LogWriterImpl.levelToString(logLevel), msg, t);
       } else {
         System.out.println("NanoTimer::" + msg);
+        if (t != null) {
+          t.printStackTrace();
+        }
       }
     }
 

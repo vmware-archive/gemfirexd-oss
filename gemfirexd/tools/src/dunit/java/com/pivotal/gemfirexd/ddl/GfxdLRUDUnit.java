@@ -30,7 +30,7 @@ import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.internal.engine.Misc;
 
-import dunit.VM;
+import io.snappydata.test.dunit.VM;
 
 @SuppressWarnings("serial")
 public class GfxdLRUDUnit extends DistributedSQLTestBase {
@@ -299,7 +299,7 @@ public class GfxdLRUDUnit extends DistributedSQLTestBase {
     servervm.invoke(GfxdLRUDUnit.class, "assertHeapPercentage", new Object[] {Float.valueOf(evictionHeapPercentage)});
     PreparedStatement ps = conn.prepareStatement("insert into trade.bigcustomers values(?, ?)");
     
-    insertNBigElements2(200, ps, 0);
+    insertNBigElements2(300, ps, 0);
     final Statement s = conn.createStatement();
 
     servervm.invoke(GfxdLRUDUnit.class, "logVMHeapSizeAndCurrentHeapSize");
@@ -314,7 +314,7 @@ public class GfxdLRUDUnit extends DistributedSQLTestBase {
             cnt = rs.getInt(1);
           }
           TestUtil.getLogger().info("cnt: " + cnt);
-          return (cnt < 200);
+          return (cnt < 300);
         } catch (SQLException sqle) {
           fail("unexpected exception " + sqle, sqle);
           return false;
@@ -326,7 +326,7 @@ public class GfxdLRUDUnit extends DistributedSQLTestBase {
         return "waiting for LRU destroy";
       }
     };
-    waitForCriterion(waitCond, 60000, 500, true);
+    waitForCriterion(waitCond, 120000, 500, true);
   }
 
   public void testPRLRUHeapPercDestroy_1() throws Exception {
@@ -377,7 +377,7 @@ public class GfxdLRUDUnit extends DistributedSQLTestBase {
         return "waiting for LRU destroy";
       }
     };
-    waitForCriterion(waitCond, 60000, 500, true);
+    waitForCriterion(waitCond, 120000, 500, true);
   }
 
   public void testPRLRUHeapPercOverflow() throws Exception {

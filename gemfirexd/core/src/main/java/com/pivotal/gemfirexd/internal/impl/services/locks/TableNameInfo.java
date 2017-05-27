@@ -150,14 +150,20 @@ public class TableNameInfo {
 				type = "S";
 				break;
 
-			default: 
+			//GemStone changes BEGIN
+			case TableDescriptor.COLUMN_TABLE_TYPE:
+				type = "C";
+				break;
+			//GemStone changes END
+
+			default:
 				if (SanityManager.DEBUG)
 					SanityManager.THROWASSERT("Illegal table type " +
 						  td.getName() + " " + td.getTableType());
 				type = "?";
 				break;
 			}
-		} else if (conglomId.longValue() > 20)
+		} else if (conglomId.longValue() > 20) // Does COLUMN TABLE need to be handled here as well?
 		{
 			type = "T";
 		} else {

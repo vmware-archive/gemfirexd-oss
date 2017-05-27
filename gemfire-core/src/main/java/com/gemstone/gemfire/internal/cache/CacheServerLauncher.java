@@ -742,7 +742,7 @@ public class CacheServerLauncher  {
     else {
       if (stat.state == WAITING) {
         stat.dsMsg = null;
-      } else if (stat.state != STANDBY) {
+      } else {
         stat.state = RUNNING;
       }
     }
@@ -872,6 +872,7 @@ public class CacheServerLauncher  {
           if (ids != null) {
             ids.disconnect();
           }
+          serverConnector.interrupt();
           s.state = SHUTDOWN;
           writeStatus(s);
           System.exit(0);
@@ -1555,7 +1556,7 @@ public class CacheServerLauncher  {
   }
 
   protected boolean checkStatusForWait(Status status) {
-    return (status.state == STARTING || status.state == WAITING || status.state == STANDBY);
+    return (status.state == STARTING || status.state == WAITING);
   }
 
   /**

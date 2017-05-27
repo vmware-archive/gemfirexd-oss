@@ -539,18 +539,18 @@ public final class RegionEntryUtils {
 
   public static AbstractCompactExecRow fillRowWithoutFaultIn(
       final GemFireContainer baseContainer, final LocalRegion region,
-      final RegionEntry entry, final AbstractCompactExecRow row) throws StandardException {
+      final RegionEntry entry, final AbstractCompactExecRow row)
+      throws StandardException {
 
     final Object value = getValueWithoutFaultInOrOffHeapEntry(region,
         (RowLocation) entry);
     if (value != null) {
       final Class<?> valClass = value.getClass();
       if (valClass == byte[].class) {
-        fillRowUsingByteArray(baseContainer, region, entry, row, (byte[])value);
+        fillRowUsingByteArray(baseContainer, row, (byte[])value);
       }
       else if (valClass == byte[][].class) {
-        fillRowUsingByteArrayArray(baseContainer, region, entry, row,
-            (byte[][])value);
+        fillRowUsingByteArrayArray(baseContainer, row, (byte[][])value);
       }
       else if (value == Token.NOT_AVAILABLE
           && Misc.getMemStoreBooting().isHadoopGfxdLonerMode()) {
@@ -603,28 +603,24 @@ public final class RegionEntryUtils {
   }
 
   private static void fillRowUsingByteArray(
-      final GemFireContainer baseContainer, final LocalRegion region,
-      final RegionEntry entry, final AbstractCompactExecRow row, byte[] value) {
-    final byte[] rowBytes = (byte[]) value;
-
-    final RowFormatter rf = baseContainer.getRowFormatter(rowBytes);
+      final GemFireContainer baseContainer,
+      final AbstractCompactExecRow row, final byte[] value) {
+    final RowFormatter rf = baseContainer.getRowFormatter(value);
     if (!rf.hasLobs()) {
-      row.setRowArray(rowBytes, rf);
+      row.setRowArray(value, rf);
     } else {
-      row.setRowArray(rf.createByteArraysWithDefaultLobs(rowBytes), rf);
+      row.setRowArray(rf.createByteArraysWithDefaultLobs(value), rf);
     }
   }
 
   private static void fillRowUsingByteArrayArray(
-      final GemFireContainer baseContainer, final LocalRegion region,
-      final RegionEntry entry, final AbstractCompactExecRow row, byte[][] value) {
-
-    final byte[][] rowBytes = (byte[][]) value;
-    final RowFormatter rf = baseContainer.getRowFormatter(rowBytes[0]);
+      final GemFireContainer baseContainer,
+      final AbstractCompactExecRow row, final byte[][] value) {
+    final RowFormatter rf = baseContainer.getRowFormatter(value[0]);
     if (rf.hasLobs()) {
-      row.setRowArray(rowBytes, rf);
+      row.setRowArray(value, rf);
     } else {
-      row.setRowArray(rowBytes[0], rf);
+      row.setRowArray(value[0], rf);
     }
   }
 
@@ -1524,8 +1520,8 @@ public final class RegionEntryUtils {
     }
 
     @Override
-    public void log(String traceFlag, String logLine) {
-      SanityManager.DEBUG_PRINT(traceFlag, logLine);
+    public void log(String traceFlag, String logLine, Throwable t) {
+      SanityManager.DEBUG_PRINT(traceFlag, logLine, t);
     }
 
     @Override
