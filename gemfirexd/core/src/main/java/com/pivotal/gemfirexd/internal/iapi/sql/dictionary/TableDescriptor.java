@@ -124,6 +124,9 @@ public class TableDescriptor extends TupleDescriptor
 	public static final int GLOBAL_TEMPORARY_TABLE_TYPE = 3;
 	public static final int SYNONYM_TYPE = 4;
 	public static final int VTI_TYPE = 5;
+	// GemStone Changes BEGIN
+	public static final int COLUMN_TABLE_TYPE = 6;
+	// GemStone Changes END
 
 	public static final char	ROW_LOCK_GRANULARITY = 'R';
 	public static final char	TABLE_LOCK_GRANULARITY = 'T';

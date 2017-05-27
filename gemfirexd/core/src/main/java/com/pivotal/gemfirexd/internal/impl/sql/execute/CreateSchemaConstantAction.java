@@ -55,6 +55,7 @@ package com.pivotal.gemfirexd.internal.impl.sql.execute;
  */
 
 // GemStone changes BEGIN
+import com.gemstone.gemfire.internal.snappy.StoreCallbacks;
 import com.pivotal.gemfirexd.internal.catalog.UUID;
 import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
@@ -177,9 +178,13 @@ class CreateSchemaConstantAction extends DDLConstantAction
 
 		//if the schema descriptor is an in-memory schema, we donot throw schema already exists exception for it.
 		//This is to handle in-memory SESSION schema for temp tables
+		// Special case INTERNAL schema
 		if ((sd != null) && (sd.getUUID() != null))
 		{
-			throw StandardException.newException(SQLState.LANG_OBJECT_ALREADY_EXISTS, "Schema" , schemaName);
+			if (!schemaName.equalsIgnoreCase(StoreCallbacks.INTERNAL_SCHEMA_NAME))
+				throw StandardException.newException(SQLState.LANG_OBJECT_ALREADY_EXISTS, "Schema" , schemaName);
+
+			return;
 		}
 
 		UUID tmpSchemaId = dd.getUUIDFactory().createUUID();

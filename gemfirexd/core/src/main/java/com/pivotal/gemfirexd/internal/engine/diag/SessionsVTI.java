@@ -313,6 +313,8 @@ public class SessionsVTI extends GfxdVTITemplate {
 
       public boolean queryHDFS;
 
+      public boolean routeQuery;
+
       public boolean skipConstraintChecks;
 
       public boolean syncCommits;

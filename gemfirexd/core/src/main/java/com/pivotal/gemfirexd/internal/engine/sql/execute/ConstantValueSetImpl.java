@@ -276,7 +276,11 @@ public final class ConstantValueSetImpl implements ConstantValueSet {
         if (this.paramTypes[i].getTypeId().isBooleanTypeId()) {
           // check if the token can be stored in a boolean in which case it is
           // compatible
-          SQLBoolean.getBoolean(tokenImages[i]);
+          try {
+            SQLBoolean.getBoolean(tokenImages[i]);
+          } catch (StandardException se) {
+            return i;
+          }
         }
         else {
           return i;

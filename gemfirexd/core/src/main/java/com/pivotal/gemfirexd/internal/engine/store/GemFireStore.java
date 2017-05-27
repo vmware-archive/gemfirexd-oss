@@ -56,6 +56,7 @@ import com.gemstone.gemfire.cache.RegionExistsException;
 import com.gemstone.gemfire.cache.Scope;
 import com.gemstone.gemfire.cache.execute.FunctionService;
 import com.gemstone.gemfire.cache.util.ObjectSizer;
+import com.gemstone.gemfire.distributed.DistributedMember;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.DM;
 import com.gemstone.gemfire.distributed.internal.DistributionAdvisee;
@@ -95,6 +96,7 @@ import com.pivotal.gemfirexd.FabricService;
 import com.pivotal.gemfirexd.FabricServiceManager;
 import com.pivotal.gemfirexd.NetworkInterface;
 import com.pivotal.gemfirexd.internal.GemFireXDVersion;
+import com.pivotal.gemfirexd.internal.catalog.ExternalCatalog;
 import com.pivotal.gemfirexd.internal.catalog.UUID;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryTimeStatistics;
@@ -170,6 +172,8 @@ import com.pivotal.gemfirexd.internal.jdbc.InternalDriver;
 import com.pivotal.gemfirexd.internal.shared.common.ResolverUtils;
 import com.pivotal.gemfirexd.internal.shared.common.SharedUtils;
 import com.pivotal.gemfirexd.internal.shared.common.sanity.SanityManager;
+import com.pivotal.gemfirexd.internal.snappy.CallbackFactoryProvider;
+import com.pivotal.gemfirexd.internal.snappy.ClusterCallbacks;
 
 /**
  * The underlying store implementation that provides methods to create container
@@ -369,6 +373,12 @@ public final class GemFireStore implements AccessFactory, ModuleControl,
   
   private final IndexPersistenceStats indexPersistenceStats;
 
+  /**
+   * Not keeping as volatile as the expectation is that this field
+   * should be set as soon as the first embedded connection is created
+   * and will not change ever.
+   */
+  private ExternalCatalog externalCatalog;
   /**
    *************************************************************************
    * Public Methods implementing AccessFactory Interface
@@ -743,12 +753,14 @@ public final class GemFireStore implements AccessFactory, ModuleControl,
     float evictionOffHeapPercent = -1.0f;
 
     // install the GemFireXD specific thread dump signal (URG) handler
+    /*
     try {
       SigThreadDumpHandler.install();
     } catch (Throwable t) {
       SanityManager.DEBUG_PRINT("fine:TRACE",
           "Failed to install thread dump signal handler: " + t.getCause());
     }
+    */
 
     // first clear any residual statics from a previous unclean run
     clearStatics(true);
@@ -1260,6 +1272,7 @@ public final class GemFireStore implements AccessFactory, ModuleControl,
 
       this.isShutdownAll = false;
 
+      startExecutor();
     } catch (RuntimeException ex) {
 //      (new ManagerLogWriter(LogWriterImpl.FINE_LEVEL, System.out)).fine("GemFireStore caught unexpected exception", ex);
       if (GemFireXDUtils.TraceFabricServiceBoot) {
@@ -1294,6 +1307,26 @@ public final class GemFireStore implements AccessFactory, ModuleControl,
           == ContainerHandle.MODE_FORUPDATE);
       SanityManager.ASSERT(TransactionController.OPENMODE_FOR_LOCK_ONLY
           == ContainerHandle.MODE_OPEN_FOR_LOCK_ONLY);
+    }
+  }
+
+  /**
+   * Start executor if any of the accessor is a driver.
+   */
+  private void startExecutor() {
+    if (this.getMyVMKind() == VMKind.LOCATOR) {
+      return;
+    }
+    Set<DistributedMember> servers = this.getDistributionAdvisor().
+            adviseOperationNodes(CallbackFactoryProvider.getClusterCallbacks().
+                    getLeaderGroup());
+    for (DistributedMember server : servers) {
+      final GfxdDistributionAdvisor.GfxdProfile other = GemFireXDUtils
+          .getGfxdProfile(server);
+      if (other.hasSparkURL() && !server.equals(this.getMyId())) {
+        CallbackFactoryProvider.getClusterCallbacks().
+            launchExecutor(other.getSparkDriverURL(), other.getDistributedMember());
+      }
     }
   }
 
@@ -1918,6 +1951,12 @@ public final class GemFireStore implements AccessFactory, ModuleControl,
       return;
     }
 
+    if (this.externalCatalog != null) {
+      this.externalCatalog.stop();
+    }
+    // stop spark executor if it is running
+    CallbackFactoryProvider.getClusterCallbacks().stopExecutor();
+
     // stop the management service
     GfxdManagementService.handleEvent(GfxdResourceEvent.FABRIC_DB__STOP, this);
 
@@ -2113,6 +2152,7 @@ public final class GemFireStore implements AccessFactory, ModuleControl,
       GemFireCacheImpl.setGFXDSystem(false);
       selfMemId = null;
       GlobalIndexCacheWithLocalRegion.setCacheToNull();
+      this.externalCatalog = null;
     }
   }
 
@@ -2235,6 +2275,59 @@ public final class GemFireStore implements AccessFactory, ModuleControl,
 
   public IndexPersistenceStats getIndexPersistenceStats() {
     return indexPersistenceStats;
+  }
+
+  // The first access of this will instantiate the snappy catalog
+	public void initExternalCatalog() {
+    try {
+      if (this.externalCatalog == null) {
+        synchronized (this) {
+          if (this.externalCatalog == null) {
+            // Instantiate using reflection
+            try {
+              this.externalCatalog = (ExternalCatalog)Class.forName(
+                  "io.snappydata.impl.SnappyHiveCatalog").newInstance();
+            } catch (InstantiationException | IllegalAccessException
+                | ClassNotFoundException e) {
+              throw new IllegalStateException(
+                  "could not instantiate the snappy catalog", e);
+            }
+          }
+        }
+      }
+      if (this.externalCatalog == null) {
+        throw new IllegalStateException(
+            "could not instantiate snappy catalog");
+      }
+    } catch(Throwable ex) {
+      throw new RuntimeException(ex);
+    }
+	}
+
+  public ExternalCatalog getExternalCatalog() {
+    return this.externalCatalog;
+  }
+
+  public void setDBName(String dbname) {
+    // set only once
+    if (this.databaseName == null) {
+      this.databaseName = dbname;
+      if (this.databaseName.equalsIgnoreCase("snappydata")) {
+        this.snappyStore = true;
+        this.database.setdisableStatementOptimizationToGenericPlan();
+      }
+    }
+  }
+
+  private String databaseName;
+  private boolean snappyStore;
+
+  public boolean isSnappyStore() {
+    return this.snappyStore;
+  }
+
+  public String getDatabaseName() {
+    return this.databaseName;
   }
 
   /**

@@ -431,6 +431,7 @@ public class MemHeapScanController implements MemScanController, RowCountable,
         this.entryIterator = gfContainer.getEntrySetIteratorForFunctionContext(
             rfc, this.tran, this.txState, this.openMode, primaryOnly);
         this.bucketSet = rfc.getLocalBucketSet(region);
+
       }
       else {
         // [sumedh] If we support MultiRegionFunctionContext in future then
@@ -672,6 +673,10 @@ public class MemHeapScanController implements MemScanController, RowCountable,
       destRow.addRegionAndKey(null, this.currentRowLocation.getKeyCopy(),
           !this.gfContainer.isPartitioned());
     }
+  }
+
+  public void setAddRegionAndKey(){
+    this.addRegionAndKey = true;
   }
 
   @Override

@@ -475,6 +475,22 @@ public final class FabricDatabase implements ModuleControl,
             logger, null, null, false);
       }
 
+      // Initialize the catalog
+      if (this.memStore.isSnappyStore() && this.memStore.getMyVMKind() == GemFireStore.VMKind.DATASTORE) {
+        // Take write lock on data dictionary. Because of this all the servers will will initiate their
+        // hive client one by one. This is important as we have downgraded the ISOLATION LEVEL from
+        // SERIALIZABLE to REPEATABLE READ
+        boolean writeLockTaken = false;
+        try {
+          writeLockTaken = this.dd.lockForWriting(tc, false);
+          this.memStore.initExternalCatalog();
+        }
+        finally {
+          if (writeLockTaken) {
+            this.dd.unlockAfterWriting(tc, false);
+          }
+        }
+      }
     } catch (Throwable t) {
       try {
         LogWriter logger = Misc.getCacheLogWriter();
@@ -532,6 +548,7 @@ public final class FabricDatabase implements ModuleControl,
     lcc.setIsConnectionForRemote(true);
     lcc.setIsConnectionForRemoteDDL(false);
     lcc.setSkipLocks(true);
+    lcc.setQueryRouting(false);
     tc.resetActiveTXState();
     // for admin VM types do not compile here
     final GemFireStore.VMKind vmKind = this.memStore.getMyVMKind();
@@ -1018,6 +1035,7 @@ public final class FabricDatabase implements ModuleControl,
         lcc.setContextObject(conflatable.getAdditionalArgs());
         lcc.setSkipRegionInitialization(skipRegionInitialization);
         lcc.setDroppedFKConstraints(conflatable.getDroppedFKConstraints());
+        lcc.setDefaultPersistent(conflatable.defaultPersistent());
         tc.setDDLId(conflatable.getId());
         stmt.execute(sqlText);
         GfxdMessage.logWarnings(stmt, sqlText,
@@ -1029,6 +1047,7 @@ public final class FabricDatabase implements ModuleControl,
         lcc.setSkipRegionInitialization(false);
         lcc.setContextObject(null);
         lcc.setDroppedFKConstraints(null);
+        lcc.setDefaultPersistent(false);
         tc.setDDLId(0);
       }
     } catch (Exception ex) {
@@ -1945,6 +1964,10 @@ public final class FabricDatabase implements ModuleControl,
    */
   public boolean disableStatementOptimizationToGenericPlan() {
     return disableStatementOptimization;
+  }
+
+  public void setdisableStatementOptimizationToGenericPlan() {
+    this.disableStatementOptimization = true;
   }
 
   /**

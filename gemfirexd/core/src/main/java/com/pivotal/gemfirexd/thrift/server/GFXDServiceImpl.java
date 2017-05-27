@@ -234,6 +234,11 @@ public final class GFXDServiceImpl extends LocatorServiceImpl implements
         clientId = arguments.getClientID();
       }
 
+      // default route-query to true on client connections
+      if (Misc.getMemStoreBooting().isSnappyStore() &&
+          !props.containsKey(Attribute.ROUTE_QUERY)) {
+        props.setProperty(Attribute.ROUTE_QUERY, "true");
+      }
       EmbedConnection conn = (EmbedConnection)InternalDriver.activeDriver()
           .connect(Attribute.PROTOCOL, props, Converters
               .getJdbcIsolation(gfxdConstants.DEFAULT_TRANSACTION_ISOLATION));

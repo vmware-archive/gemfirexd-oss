@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import com.gemstone.gemfire.DataSerializer;
 import com.gemstone.gemfire.cache.DataPolicy;
@@ -283,6 +284,7 @@ public final class DistributedPutAllOperation extends AbstractUpdateOperation {
     }
     ev.callbacksInvoked(entry.isCallbacksInvoked());
     ev.setTailKey(entry.getTailKey());
+    ev.setBatchUUID(entry.getBatchUUID());
     return ev;
     } finally {
       if (!returnedEv) {
@@ -333,6 +335,8 @@ public final class DistributedPutAllOperation extends AbstractUpdateOperation {
     // parallel wan is enabled
     private long tailKey = 0L;
 
+    private UUID batchUUID = new UUID(0,0);
+
     public VersionTag versionTag;
 
     // following two are not serialized so they can coincide with
@@ -361,6 +365,7 @@ public final class DistributedPutAllOperation extends AbstractUpdateOperation {
       this.eventID = event.getEventId();
       this.callbackArg = callbackArg;
       this.tailKey = event.getTailKey();
+      this.batchUUID = event.getBatchUUID();
       this.versionTag = event.getVersionTag();
 
       setNotifyOnly(!event.getInvokePRCallbacks());
@@ -420,6 +425,7 @@ public final class DistributedPutAllOperation extends AbstractUpdateOperation {
       if ((this.flags & HAS_TAILKEY) != 0) {
         this.tailKey = InternalDataSerializer.readSignedVL(in);
       }
+      this.batchUUID = InternalDataSerializer.readUUID(in);
     }
 
     @Override
@@ -521,6 +527,7 @@ public final class DistributedPutAllOperation extends AbstractUpdateOperation {
         DataSerializer.writeObject(this.callbackArg, out);
       }
       InternalDataSerializer.writeSignedVL(this.tailKey, out);
+      InternalDataSerializer.writeUUID(this.batchUUID, out);
     }
 
     /**
@@ -553,6 +560,14 @@ public final class DistributedPutAllOperation extends AbstractUpdateOperation {
 
     public void setTailKey(long key) {
       this.tailKey = key;
+    }
+
+    public UUID getBatchUUID() {
+      return this.batchUUID;
+    }
+
+    public void setBatchUUID(UUID uuid) {
+      this.batchUUID = uuid;
     }
 
     /**
@@ -1281,6 +1296,7 @@ public final class DistributedPutAllOperation extends AbstractUpdateOperation {
        * Setting tailKey for the secondary bucket here. Tail key was update by the primary.
        */
       ev.setTailKey(entry.getTailKey());
+      ev.setBatchUUID(entry.getBatchUUID());
       returnedEv = true;
       return ev;
       } finally {

@@ -174,7 +174,7 @@ public class GfxdDistributionLocator extends GfxdServerLauncher {
    */
   public static void main(String[] args) {
     final GfxdDistributionLocator launcher = new GfxdDistributionLocator(
-        "GemFireXD Locator");
+        "SnappyData Locator");
     launcher.run(args);
   }
 

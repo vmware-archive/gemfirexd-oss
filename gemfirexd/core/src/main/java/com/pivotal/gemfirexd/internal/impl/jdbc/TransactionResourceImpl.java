@@ -63,6 +63,7 @@ import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
 import com.pivotal.gemfirexd.internal.engine.access.GemFireTransaction;
 import com.pivotal.gemfirexd.internal.engine.distributed.utils.GemFireXDUtils;
 import com.pivotal.gemfirexd.internal.engine.jdbc.GemFireXDRuntimeException;
+import com.pivotal.gemfirexd.internal.engine.store.GemFireStore;
 import com.pivotal.gemfirexd.internal.iapi.store.access.TransactionController;
 // GemStone changes END
 import com.pivotal.gemfirexd.internal.iapi.db.Database;
@@ -264,6 +265,12 @@ public final class TransactionResourceImpl
 		this.queryHDFS = getPropertyValue(
 		    Attribute.QUERY_HDFS,
 		    GfxdConstants.GFXD_QUERY_HDFS, info, false);
+		this.routeQuery = getPropertyValue(
+				Attribute.ROUTE_QUERY,
+				GfxdConstants.GFXD_ROUTE_QUERY, info, false);
+		this.defaultPersistent = getPropertyValue(
+				Attribute.DEFAULT_PERSISTENT, GfxdConstants.GFXD_PREFIX
+						+ Attribute.DEFAULT_PERSISTENT, info, false);
 		this.enableBulkFkChecks = PropertyUtil.getBooleanProperty(
 		    Attribute.ENABLE_BULK_FK_CHECKS,
 		    GfxdConstants.GFXD_ENABLE_BULK_FK_CHECKS, info, true, null);
@@ -313,6 +320,21 @@ public final class TransactionResourceImpl
                 }
 	}
 
+	private boolean isSnappyStore(String url) {
+		try {
+			GemFireStore store = GemFireStore.getBootingInstance();
+			if (store != null) {
+				return store.isSnappyStore();
+			}
+		} catch (Exception ex) {
+			// probably memstore might not have booted. Check from the URL
+			if (url != null && url.contains("snappydata")) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private final boolean getPropertyValue(String propName,
 	    String sysPropName, Properties info, boolean def) {
 	  return PropertyUtil.getBooleanProperty(propName, sysPropName,
@@ -330,7 +352,11 @@ public final class TransactionResourceImpl
 	private final boolean enableTimeStats;
 	
 	private final boolean queryHDFS;
-	
+
+	private final boolean routeQuery;
+
+	private final boolean defaultPersistent;
+
 	private final boolean skipConstraintChecks;
 	
 	private final boolean enableBulkFkChecks;
@@ -389,6 +415,8 @@ public final class TransactionResourceImpl
 		}
 		this.lcc.setTXFlags(this.txFlags);
 		this.lcc.setQueryHDFS(this.queryHDFS);
+		this.lcc.setQueryRouting(this.routeQuery);
+		this.lcc.setDefaultPersistent(this.defaultPersistent);
 		this.lcc.setEnableBulkFkChecks(this.enableBulkFkChecks);
 		this.lcc.setSkipConstraintChecks(this.skipConstraintChecks);
 		this.lcc.setDefaultQueryTimeOut(this.queryTimeOut);

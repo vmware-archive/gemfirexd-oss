@@ -93,7 +93,7 @@ public abstract class SharedUtils {
    */
   public static final int HA_RETRY_SLEEP_MILLIS = 10;
 
-  public static final String GFXD_PRODUCT_NAME = "Pivotal GemFireXD";
+  public static final String GFXD_PRODUCT_NAME = "SnappyData";
 
   public static final String GFXD_VERSION_PROPERTIES =
       "com/pivotal/gemfirexd/internal/GemFireXDVersion.properties";

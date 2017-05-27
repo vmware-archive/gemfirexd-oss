@@ -33,9 +33,11 @@ import com.gemstone.gemfire.internal.shared.Version;
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
 import com.pivotal.gemfirexd.internal.engine.GfxdDataSerializable;
 import com.pivotal.gemfirexd.internal.engine.GfxdSerializable;
+import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.distributed.utils.GemFireXDUtils;
 import com.pivotal.gemfirexd.internal.engine.store.GemFireStore;
 import com.pivotal.gemfirexd.internal.iapi.services.sanity.SanityManager;
+import com.pivotal.gemfirexd.internal.iapi.sql.conn.LanguageConnectionContext;
 import com.pivotal.gemfirexd.internal.iapi.sql.dictionary.DataDictionary;
 import com.pivotal.gemfirexd.internal.iapi.sql.execute.ConstantAction;
 import com.pivotal.gemfirexd.internal.impl.sql.execute.AlterHDFSStoreConstantAction;
@@ -141,6 +143,7 @@ public final class DDLConflatable extends GfxdDataSerializable implements
   private static final int F_HAS_IMPLICIT_SCHEMA = 0x2;
   private static final int F_IS_DROP_FK_CONSTRAINT = 0x04;
   private static final int F_IS_ADD_FK_CONSTRAINT = 0x08;
+  private static final int F_DEFAULT_PERSISTENT = 0x10;
 
   private String constraintName; 
   private Set<String> droppedFKConstraints = null;
@@ -168,6 +171,11 @@ public final class DDLConflatable extends GfxdDataSerializable implements
       this.implicitSchema = implicitSchema;
       this.additionalFlags = GemFireXDUtils.set(this.additionalFlags,
           F_HAS_IMPLICIT_SCHEMA);
+    }
+    LanguageConnectionContext lcc = Misc.getLanguageConnectionContext();
+    if (lcc != null && lcc.isDefaultPersistent()) {
+      this.additionalFlags = GemFireXDUtils.set(this.additionalFlags,
+          F_DEFAULT_PERSISTENT);
     }
     this.isDropStatement = constantAction.isDropStatement();
     // for ALTER TABLE we need to skip the initialization of regions till
@@ -203,8 +211,7 @@ public final class DDLConflatable extends GfxdDataSerializable implements
     }
     String schemaName = constantAction.getSchemaName();
     this.tableName = constantAction.getTableName();
-    
-    
+
     if (schemaName != null) {
       this.fullTableName = (this.tableName != null ? (this.tableName.indexOf('.') < 0
           ? (schemaName + '.' + this.tableName) : this.tableName) : schemaName);
@@ -338,6 +345,11 @@ public final class DDLConflatable extends GfxdDataSerializable implements
   public final boolean isAlterTableAddFKConstraint() {
     return GemFireXDUtils.isSet(this.additionalFlags, 
         F_IS_ADD_FK_CONSTRAINT);
+  }
+
+  public final boolean defaultPersistent() {
+    return GemFireXDUtils.isSet(this.additionalFlags,
+        F_DEFAULT_PERSISTENT);
   }
 
   public final boolean isCreateIndex() {

@@ -1,6 +1,19 @@
+## Overview
+GemFire XD is a row oriented, transactional, main-memory distributed data store that is designed for applications that have demanding scalability and availability requirements. You can use GemFire XD as a standalone high performance database or as a cache with automatic asynchronous write back to RDBs or as a operational store in "big data" analytic applications. With GemFire XD you can manage data entirely using in-memory tables, or you can persist very large tables to local disk store files or to a Hadoop Distributed File System (HDFS) for big data deployments. GemFire XD provides a low-latency SQL interface to in-memory table data, while seamlessly integrating data that is persisted in HDFS. A single GemFire XD distributed system can be easily scaled out using commodity hardware to support thousands of concurrent clients, and you can also replicate data between distinct GemFire XD clusters over a WAN interface. 
+
+![GemXD_Architecture](http://gemfirexd.docs.pivotal.io/docs-gemfirexd/common/images/esql_at_a_glance.png)
+
+## History
+GemFire XD grew out of [GemFire](http://pivotal.io/big-data/pivotal-gemfire), an in-memory data grid developed over a decade. It adds a SQL processing layer on top of GemFire along with several other extensions to integrate with HDFS for working with extremely large volumes of data. GemFire is deployed in hundreds of enterprises worldwide. 
+GemFire transitioned from a commercial product developed at [Pivotal](www.pivotal.io) (and [VMWare](www.vmware.com) and [GemStone](www.gemstone.com) before that) to a Open source project to support a growing community of developers. 
+
+## Getting started
+See the instructions below to build the product from source. Once built, you can follow the instructions [here](http://gemfirexd.docs.pivotal.io/docs-gemfirexd/getting_started/book_intro.html) to get started with GemFire XD.
+
+
 ## Repository layout
 
-The master branch now mostly mimics the layout of Apache Geode layout for GemFire components and a more structured one for GemFireXD components. It uses gradle based build that can build entire GemFire+GemFireXD+hydra sources and run unit tests (running hydra tests still needs to be added).
+The snappy-store branch now mostly mimics the layout of Apache Geode layout for GemFire components and a more structured one for GemFireXD components. It uses gradle based build that can build entire GemFire+GemFireXD+hydra sources and run unit tests (running hydra tests still needs to be added).
 
 Some details on the directories in GemFire layout are mentioned below:
 
@@ -62,7 +75,7 @@ The GemFireXD layout is divided into separate logical modules namely:
 
 GemFireXD now builds completely using gradle. Due to the repository layout changes, the older ant builds no longer work (unless someone takes the effort to change them). The new scripts are much simpler, cleaner and way faster than old ant scripts but are still missing a bunch of old targets. Plan is to add them progressively as required.
 
-  * Switch to "master" branch if not on that already. Update the branch to the latest version. Then test the build with: ./gradlew clean && ./gradlew assemble testClasses
+  * Switch to "snappy-store" branch if not on that already. Update the branch to the latest version. Then test the build with: ./gradlew clean && ./gradlew assemble testClasses
   * Run a a GemFireXD junit test: ./gradlew :gemfirexd:tools:test -Dtest.single=\*\*/BugsTest
 
 
