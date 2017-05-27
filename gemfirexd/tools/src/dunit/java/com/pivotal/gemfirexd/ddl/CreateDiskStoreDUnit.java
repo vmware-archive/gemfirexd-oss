@@ -30,7 +30,6 @@ import com.gemstone.gemfire.cache.CacheFactory;
 import com.gemstone.gemfire.cache.DataPolicy;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.RegionAttributes;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.pivotal.gemfirexd.Attribute;
@@ -38,9 +37,9 @@ import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.internal.engine.Misc;
 
-import dunit.RMIException;
-import dunit.SerializableRunnable;
-import dunit.VM;
+import io.snappydata.test.dunit.RMIException;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.dunit.VM;
 
 /**
  * Tests for disk store creation and persist-dd configuration
@@ -188,7 +187,7 @@ public class CreateDiskStoreDUnit extends DistributedSQLTestBase {
       serverExecute(serverNum, new SerializableRunnable() {
         @Override
         public void run() {
-          String sysDirName = getSysDirName(getGemFireDescription());
+          String sysDirName = getSysDirName();
           assertTrue(new File(sysDirName, "testdir1").delete());
         }
       });
@@ -353,12 +352,12 @@ public class CreateDiskStoreDUnit extends DistributedSQLTestBase {
     startVMs(0, 1, 0, null, props);
   }
 
-  public static CacheSerializableRunnable createDiskStoreOnServer()
+  public static SerializableRunnable createDiskStoreOnServer()
       throws Exception {
-    CacheSerializableRunnable createDiskStoreOnServer = new CacheSerializableRunnable(
+    SerializableRunnable createDiskStoreOnServer = new SerializableRunnable(
         "createDiskStoreOnServer") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         File file1 = new File(fileSeparator + "a" + fileSeparator + "b"
             + fileSeparator + "c" + fileSeparator);
         File file2 = new File(fileSeparator + "a" + fileSeparator + "b"
@@ -576,9 +575,9 @@ public class CreateDiskStoreDUnit extends DistributedSQLTestBase {
   }
   
   private void checkVMsDown(VM... vms) {
-    CacheSerializableRunnable noGFE = new CacheSerializableRunnable("GFE down") {
+    SerializableRunnable noGFE = new SerializableRunnable("GFE down") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           CacheFactory.getAnyInstance();
           fail("expected the cache to be closed");

@@ -16,16 +16,10 @@
  */
 package com.pivotal.gemfirexd.ddl;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-
 import com.gemstone.gemfire.cache.CacheException;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
-
-import dunit.SerializableRunnable;
+import io.snappydata.test.dunit.SerializableRunnable;
 
 @SuppressWarnings("serial")
 public class DeltaMergeAndIndexUpdateDUnit extends DistributedSQLTestBase {
@@ -50,10 +44,10 @@ public class DeltaMergeAndIndexUpdateDUnit extends DistributedSQLTestBase {
     }
 
     stopVMNums(-1);
-    final SerializableRunnable doUpdates = new CacheSerializableRunnable(
+    final SerializableRunnable doUpdates = new SerializableRunnable(
         "doUpdates") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         for (int i = 0; i < 1000; i++) {
           String updateStmnt = "update ORDERS set SEC_ID='nid"+i+"' where ID=100";
           try {

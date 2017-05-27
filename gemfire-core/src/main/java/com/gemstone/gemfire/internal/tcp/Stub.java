@@ -74,7 +74,7 @@ public class Stub implements Externalizable, DataSerializable
   public int hashCode() {
     // do not use viewID in hashCode because it is changed after creating a stub
     int result = 0;
-    // result += inAddr.hashCode(); // useless
+    result += inAddr.hashCode();
     result += port;
     return result;
   }

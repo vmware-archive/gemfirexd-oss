@@ -33,6 +33,7 @@ import com.gemstone.gemfire.cache.RegionAttributes;
 
 import com.gemstone.gemfire.internal.cache.EvictionAttributesImpl;
 import com.gemstone.gemfire.internal.cache.PartitionAttributesImpl;
+import com.gemstone.gemfire.internal.snappy.StoreCallbacks;
 import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
 import com.pivotal.gemfirexd.internal.engine.ddl.resolver.GfxdPartitionByExpressionResolver;
@@ -701,23 +702,26 @@ public class DistributionDefinitionNode extends TableElementNode {
             newDistributionDescp.getPartitionColumnNames());
       }
       // check in the target table
-      int[] colpositions = targetDistributionDesc.getColumnPositionsSorted();
-      int size = columnNames.length;
-      if (colpositions.length != size) {
-        throw StandardException.newException(
-            SQLState.LANG_INVALID_COLOCATION_DIFFERENT_COL_COUNT, srcTableName,
-            tableName, size, colpositions.length);
-      }
-      for (int i = 0; i < size; i++) {
 
-        TableColumn src = elementList.getColumn(columnNames[i]);
-        ColumnDescriptor tgt = td.getColumnDescriptor(colpositions[i]);
+      if (!(tableName.toUpperCase().endsWith(StoreCallbacks.SHADOW_TABLE_SUFFIX)
+          || srcTableName.toUpperCase().endsWith(StoreCallbacks.SHADOW_TABLE_SUFFIX))) {
+        int[] colpositions = targetDistributionDesc.getColumnPositionsSorted();
+        int size = columnNames.length;
+        if (colpositions.length != size) {
+          throw StandardException.newException(
+              SQLState.LANG_INVALID_COLOCATION_DIFFERENT_COL_COUNT, srcTableName,
+              tableName, size, colpositions.length);
+        }
+        for (int i = 0; i < size; i++) {
 
-        if (!tgt.getType().getTypeName().equals(src.getType().getTypeName())
-            || tgt.getType().getPrecision() != src.getType().getPrecision()
-            || tgt.getType().getScale() != src.getType().getScale()
-            || tgt.getType().getMaximumWidth() != src.getType()
-                .getMaximumWidth()) {
+          TableColumn src = elementList.getColumn(columnNames[i]);
+          ColumnDescriptor tgt = td.getColumnDescriptor(colpositions[i]);
+
+          if (!tgt.getType().getTypeName().equals(src.getType().getTypeName())
+              || tgt.getType().getPrecision() != src.getType().getPrecision()
+              || tgt.getType().getScale() != src.getType().getScale()
+              || tgt.getType().getMaximumWidth() != src.getType()
+              .getMaximumWidth()) {
           /*
           * if( !tgt.getType().equals(src.getType()) ) {
           *
@@ -726,11 +730,12 @@ public class DistributionDefinitionNode extends TableElementNode {
           * Ticket 39873.
           * @see TypeDescriptorImpl#equals
           */
-          throw StandardException.newException(
-              SQLState.LANG_INVALID_COLOCATION_COL_TYPES_MISMATCH,
-              srcTableName, tableName, src.getColumnName(), String.valueOf(src
-                  .getType()), tgt.getColumnName(), String.valueOf(tgt
-                  .getType()));
+            throw StandardException.newException(
+                SQLState.LANG_INVALID_COLOCATION_COL_TYPES_MISMATCH,
+                srcTableName, tableName, src.getColumnName(), String.valueOf(src
+                    .getType()), tgt.getColumnName(), String.valueOf(tgt
+                    .getType()));
+          }
         }
       }
     }

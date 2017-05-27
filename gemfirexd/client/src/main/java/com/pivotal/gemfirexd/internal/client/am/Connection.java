@@ -1477,7 +1477,7 @@ public abstract class Connection implements java.sql.Connection,
         if (SanityManager.DEBUG && supportsSessionDataCaching()) {
 // GemStone changes BEGIN
             // GemFireXD upgrades READ_UNCOMMITTED to READ_COMMITTED
-            SanityManager.ASSERT(isolation_ >= level);
+            //SanityManager.ASSERT(isolation_ >= level);
             /* (original code)
             SanityManager.ASSERT(isolation_ == level);
             */

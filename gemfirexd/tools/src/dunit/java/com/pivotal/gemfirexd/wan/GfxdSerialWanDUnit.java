@@ -32,21 +32,14 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import junit.framework.Assert;
-
-import org.w3c.dom.Element;
-
 import com.gemstone.gemfire.cache.CacheClosedException;
 import com.gemstone.gemfire.cache.CacheException;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.wan.GatewayReceiver;
 import com.gemstone.gemfire.cache.wan.GatewaySender;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePort;
-import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.cache.EntryEventImpl;
-import com.gemstone.gemfire.internal.cache.ForceReattemptException;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.internal.cache.RegionEntry;
@@ -55,17 +48,19 @@ import com.gemstone.gemfire.internal.cache.wan.serial.SerialGatewaySenderImpl;
 import com.gemstone.gemfire.internal.offheap.ByteSource;
 import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.dbsync.DBSynchronizerTestBase;
-import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserver;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverAdapter;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
+import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.distributed.FunctionExecutionException;
 import com.pivotal.gemfirexd.internal.engine.jdbc.GemFireXDRuntimeException;
-
-import dunit.DistributedTestCase;
-import dunit.SerializableCallable;
-import dunit.SerializableRunnable;
-import dunit.VM;
+import io.snappydata.test.dunit.AvailablePortHelper;
+import io.snappydata.test.dunit.DistributedTestBase;
+import io.snappydata.test.dunit.SerializableCallable;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.dunit.VM;
+import junit.framework.Assert;
+import org.w3c.dom.Element;
 
 @SuppressWarnings("serial")
 public class GfxdSerialWanDUnit extends GfxdWanTestBase {
@@ -3554,17 +3549,17 @@ public class GfxdSerialWanDUnit extends GfxdWanTestBase {
     // Test insert propagation by inserting in a data store node of DS.DS0
     // Set a query observer
 
-    serverExecute(3, new CacheSerializableRunnable("install observer") {
+    serverExecute(3, new SerializableRunnable("install observer") {
       @Override
-      public void run2() {
+      public void run() {
         bugtester = new Bug42930Tester("emp.i1", "tid");
         GemFireXDQueryObserverHolder.setInstance(bugtester);
       }
     });
 
-    serverExecute(5, new CacheSerializableRunnable("install observer") {
+    serverExecute(5, new SerializableRunnable("install observer") {
       @Override
-      public void run2() {
+      public void run() {
         bugtester = new Bug42930Tester("emp.i2", "tid");
         GemFireXDQueryObserverHolder.setInstance(bugtester);
       }
@@ -3575,9 +3570,9 @@ public class GfxdSerialWanDUnit extends GfxdWanTestBase {
 
     serverExecute(4, getExecutorToWaitForQueuesToDrain("MYSENDER", 0));
     // Validate call back invoked
-    serverExecute(3, new CacheSerializableRunnable("check callback invoked") {
+    serverExecute(3, new SerializableRunnable("check callback invoked") {
       @Override
-      public void run2() {
+      public void run() {
         assertTrue(bugtester.cbInvoked);
         try {
           bugtester.indxCreator.join();
@@ -3587,9 +3582,9 @@ public class GfxdSerialWanDUnit extends GfxdWanTestBase {
         }
       }
     });
-    serverExecute(5, new CacheSerializableRunnable("check callback invoked") {
+    serverExecute(5, new SerializableRunnable("check callback invoked") {
       @Override
-      public void run2() {
+      public void run() {
         assertTrue(bugtester.cbInvoked);
         try {
           bugtester.indxCreator.join();
@@ -3904,12 +3899,12 @@ public class GfxdSerialWanDUnit extends GfxdWanTestBase {
   }
   
   private static Runnable setOffHeapProperty() {
-    CacheSerializableRunnable csr = new CacheSerializableRunnable("offheap propery setter") {
+    SerializableRunnable csr = new SerializableRunnable("offheap propery setter") {
 
       @Override
-      public void run2() throws CacheException {
-        System.setProperty("gemfire.OFF_HEAP_TOTAL_SIZE", "100M");
-        System.setProperty("gemfire."+DistributionConfig.OFF_HEAP_MEMORY_SIZE_NAME, "50M"); 
+      public void run() throws CacheException {
+        System.setProperty("gemfire.OFF_HEAP_TOTAL_SIZE", "500m");
+        System.setProperty("gemfire."+DistributionConfig.OFF_HEAP_MEMORY_SIZE_NAME, "500m");
         
       }
       
@@ -3917,10 +3912,10 @@ public class GfxdSerialWanDUnit extends GfxdWanTestBase {
     return csr;
   }
   public static Runnable setObserver(final List<?> rcvrKeys) {
-    CacheSerializableRunnable receiverConf = new CacheSerializableRunnable(
+    SerializableRunnable receiverConf = new SerializableRunnable(
         "Configurator") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         GemFireXDQueryObserver sqo = new GemFireXDQueryObserverAdapter() {
           volatile private int k = 0;
 
@@ -3930,7 +3925,7 @@ public class GfxdSerialWanDUnit extends GfxdWanTestBase {
             // else generated one can clash with overridden one from other DS
             if (forRegionKey && k < rcvrKeys.size()) {
               long newID = ((Long)rcvrKeys.get(k++)).longValue();
-              getLogWriter().info(
+              getGlobalLogger().info(
                   "For actual uniqueID=" + actualUniqueID
                       + " overriding with ID=" + newID + ", k=" + k);
               return newID;
@@ -3947,10 +3942,10 @@ public class GfxdSerialWanDUnit extends GfxdWanTestBase {
   }
 
   public static Runnable unsetObserver() {
-    CacheSerializableRunnable receiverConf = new CacheSerializableRunnable(
+    SerializableRunnable receiverConf = new SerializableRunnable(
         "Configurator") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         GemFireXDQueryObserverHolder
             .setInstance(new GemFireXDQueryObserverAdapter());
       }
@@ -3961,10 +3956,10 @@ public class GfxdSerialWanDUnit extends GfxdWanTestBase {
   
   
   public static Runnable createGatewayReceiverDefault() {
-    CacheSerializableRunnable receiverConf = new CacheSerializableRunnable(
+    SerializableRunnable receiverConf = new SerializableRunnable(
         "Receiver Configurator") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           Connection conn = TestUtil.jdbcConn;
           Statement st = conn.createStatement();
@@ -3983,10 +3978,10 @@ public class GfxdSerialWanDUnit extends GfxdWanTestBase {
   
   public static Runnable createGatewayReceiver(final int startPort,
       final int endPort) {
-    CacheSerializableRunnable receiverConf = new CacheSerializableRunnable(
+    SerializableRunnable receiverConf = new SerializableRunnable(
         "Receiver Configurator") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           Connection conn = TestUtil.jdbcConn;
           Statement st = conn.createStatement();
@@ -4017,10 +4012,10 @@ public class GfxdSerialWanDUnit extends GfxdWanTestBase {
   }
   
   public static Runnable createConfiguration1() {
-    CacheSerializableRunnable receiverConf = new CacheSerializableRunnable(
+    SerializableRunnable receiverConf = new SerializableRunnable(
         "Configurator") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           Connection conn = TestUtil.jdbcConn;
           Statement st = conn.createStatement();
@@ -4049,10 +4044,10 @@ public class GfxdSerialWanDUnit extends GfxdWanTestBase {
   }
   
   public static Runnable startSender() {
-    CacheSerializableRunnable receiverConf = new CacheSerializableRunnable(
+    SerializableRunnable receiverConf = new SerializableRunnable(
         "Configurator") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           Connection conn = TestUtil.jdbcConn;
           Statement st = conn.createStatement();
@@ -4070,10 +4065,10 @@ public class GfxdSerialWanDUnit extends GfxdWanTestBase {
   }
 
   public static Runnable createConfiguration2() {
-    CacheSerializableRunnable receiverConf = new CacheSerializableRunnable(
+    SerializableRunnable receiverConf = new SerializableRunnable(
         "Configurator") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           Connection conn = TestUtil.jdbcConn;
           Statement st = conn.createStatement();
@@ -4101,10 +4096,10 @@ public class GfxdSerialWanDUnit extends GfxdWanTestBase {
   }
   
   public static Runnable addListener() {
-    CacheSerializableRunnable listConf = new CacheSerializableRunnable(
+    SerializableRunnable listConf = new SerializableRunnable(
         "LISTENER Configurator") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           Connection conn = TestUtil.jdbcConn;
           Statement st = conn.createStatement();
@@ -4128,10 +4123,10 @@ public class GfxdSerialWanDUnit extends GfxdWanTestBase {
 
   public static Runnable createGatewaySender(final String id,
       final String remoteDs, final String serverGroups) {
-    CacheSerializableRunnable senderConf = new CacheSerializableRunnable(
+    SerializableRunnable senderConf = new SerializableRunnable(
         "Sender Configurator") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         String expectedEx = id.toUpperCase() + ": Could not connect";
         try {
           Connection conn = TestUtil.jdbcConn;
@@ -4154,10 +4149,10 @@ public class GfxdSerialWanDUnit extends GfxdWanTestBase {
   }
 
   public static Runnable createGatewaySenderDefault() {
-    CacheSerializableRunnable senderConf = new CacheSerializableRunnable(
+    SerializableRunnable senderConf = new SerializableRunnable(
         "Sender Configurator") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         String defaultID = "sender_proxy_1";
         String expectedEx = defaultID.toUpperCase() + ": Could not connect";
         try {
@@ -4184,10 +4179,10 @@ public class GfxdSerialWanDUnit extends GfxdWanTestBase {
   }
 
   public static Runnable batchInsert() {
-    CacheSerializableRunnable senderConf = new CacheSerializableRunnable(
+    SerializableRunnable senderConf = new SerializableRunnable(
         "Sender Configurator") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           Connection conn = TestUtil.jdbcConn;
           Statement st = conn.createStatement();
@@ -4204,10 +4199,10 @@ public class GfxdSerialWanDUnit extends GfxdWanTestBase {
   }
   
   public static Runnable inserts() {
-    CacheSerializableRunnable senderConf = new CacheSerializableRunnable(
+    SerializableRunnable senderConf = new SerializableRunnable(
         "Sender Configurator") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           Connection conn = TestUtil.jdbcConn;
           Statement st = conn.createStatement();
@@ -4227,10 +4222,10 @@ public class GfxdSerialWanDUnit extends GfxdWanTestBase {
   }
   
   public static Runnable updates() {
-    CacheSerializableRunnable senderConf = new CacheSerializableRunnable(
+    SerializableRunnable senderConf = new SerializableRunnable(
         "Sender Configurator") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           Connection conn = TestUtil.jdbcConn;
           Statement st = conn.createStatement();
@@ -4250,10 +4245,10 @@ public class GfxdSerialWanDUnit extends GfxdWanTestBase {
   }
 
   public static Runnable batchPrepInsert(final boolean insertId) {
-    CacheSerializableRunnable senderConf = new CacheSerializableRunnable(
+    SerializableRunnable senderConf = new SerializableRunnable(
         "Sender Configurator") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           Connection conn = TestUtil.jdbcConn;
           PreparedStatement pstmt;
@@ -4290,10 +4285,10 @@ public class GfxdSerialWanDUnit extends GfxdWanTestBase {
   }
 
   public static Runnable batchNonPrepInsert(final boolean insertId) {
-    CacheSerializableRunnable senderConf = new CacheSerializableRunnable(
+    SerializableRunnable senderConf = new SerializableRunnable(
         "Sender Configurator") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           Connection conn = TestUtil.jdbcConn;
           Statement stmt = conn.createStatement();
@@ -4323,10 +4318,10 @@ public class GfxdSerialWanDUnit extends GfxdWanTestBase {
   }
 
   public static Runnable doInserts() {
-    CacheSerializableRunnable senderConf = new CacheSerializableRunnable(
+    SerializableRunnable senderConf = new SerializableRunnable(
         "Sender Configurator") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           Connection conn = TestUtil.jdbcConn;
           Statement st = conn.createStatement();
@@ -4345,10 +4340,10 @@ public class GfxdSerialWanDUnit extends GfxdWanTestBase {
   }
   
   public static Runnable doUpdates() {
-    CacheSerializableRunnable senderConf = new CacheSerializableRunnable(
+    SerializableRunnable senderConf = new SerializableRunnable(
         "Sender Configurator") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           Connection conn = TestUtil.jdbcConn;
           Statement st = conn.createStatement();
@@ -4364,24 +4359,24 @@ public class GfxdSerialWanDUnit extends GfxdWanTestBase {
     return senderConf;
   }
 
-  private static CacheSerializableRunnable verifyRegionSize(
+  private static SerializableRunnable verifyRegionSize(
       final String regionName, final int regionSize) {
-    CacheSerializableRunnable verifyRegionSize = new CacheSerializableRunnable(
+    SerializableRunnable verifyRegionSize = new SerializableRunnable(
         "waitForQueueToDrain") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         Region r = Misc.getGemFireCache().getRegion(regionName);
         Misc.getGemFireCache().getLogger().fine("YOGS Region " + r.entrySet());
       }
     };
     return verifyRegionSize;
   }
-  private static CacheSerializableRunnable getExecutorToWaitForQueuesToDrain(
+  private static SerializableRunnable getExecutorToWaitForQueuesToDrain(
       final String senderId, final int regionSize) {
-    CacheSerializableRunnable waitForQueueToDrain = new CacheSerializableRunnable(
+    SerializableRunnable waitForQueueToDrain = new SerializableRunnable(
         "waitForQueueToDrain") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
 
         Set<GatewaySender> senders = Misc.getGemFireCache()
             .getAllGatewaySenders();
@@ -4424,7 +4419,7 @@ public class GfxdSerialWanDUnit extends GfxdWanTestBase {
                 + " but actual entries: " + region.keySet().size();
           }
         };
-        DistributedTestCase.waitForCriterion(wc, 60000, 500, true);
+        DistributedTestBase.waitForCriterion(wc, 60000, 500, true);
       }
     };
     return waitForQueueToDrain;

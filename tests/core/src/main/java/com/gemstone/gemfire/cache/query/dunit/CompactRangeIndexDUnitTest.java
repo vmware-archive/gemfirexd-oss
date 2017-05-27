@@ -16,14 +16,14 @@
  */
 package com.gemstone.gemfire.cache.query.dunit;
 
+import java.util.Properties;
+
 import com.gemstone.gemfire.cache.CacheException;
 import com.gemstone.gemfire.cache.query.QueryTestUtils;
 import com.gemstone.gemfire.cache.query.data.Portfolio;
 import com.gemstone.gemfire.cache.query.internal.index.IndexManager;
 import com.gemstone.gemfire.cache.query.internal.index.IndexManager.TestHook;
 import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable.CacheSerializableRunnableException;
-
 import dunit.AsyncInvocation;
 import dunit.DistributedTestCase;
 import dunit.Host;
@@ -49,18 +49,74 @@ public class CompactRangeIndexDUnitTest extends DistributedTestCase{
     Host host = Host.getHost(0);
     vm0 = host.getVM(0);
     utils = new QueryTestUtils();
-    utils.createServer(vm0, null);
-    utils.createReplicateRegion("exampleRegion", vm0);
-    utils.createIndex(vm0,"type", "\"type\"", "/exampleRegion");
+    createServer(vm0, null, utils);
+    createReplicateRegion("exampleRegion", vm0, utils);
+    createIndex(vm0, "type", "\"type\"", "/exampleRegion", utils);
   }
-  
-  
+
+  public static void createServer(VM server, final Properties prop,
+      final QueryTestUtils utils) {
+    SerializableRunnable createCacheServer = new SerializableRunnable(
+        "Create Cache Server") {
+      private static final long serialVersionUID = 1L;
+
+      public void run() throws CacheException {
+        utils.createCache(prop);
+      }
+    };
+    server.invoke(createCacheServer);
+  }
+
+  public static void createIndex(VM vm, final String name, final String field,
+      final String region, final QueryTestUtils utils) throws CacheException {
+    vm.invoke(new SerializableRunnable("Create Index") {
+      public void run() throws CacheException {
+        utils.createIndex(name, field, region);
+      }
+    });
+  }
+
+  public static void createPartitionRegion(final String name,
+      final Class constraint, VM vm, final QueryTestUtils utils) {
+    vm.invoke(new SerializableRunnable("Create Partition region") {
+      private static final long serialVersionUID = 1L;
+
+      public void run() throws CacheException {
+        utils.createPartitionRegion(name, constraint);
+      }
+    });
+  }
+
+  public static void createReplicateRegion(final String name, VM vm,
+      final QueryTestUtils utils) {
+    vm.invoke(new SerializableRunnable("Create Replicated region") {
+      private static final long serialVersionUID = 1L;
+
+      public void run() throws CacheException {
+        utils.getLogger().fine("### Create replicated region. ###");
+        utils.createReplicateRegion(name);
+      }
+    });
+  }
+
+  public static void closeServer(VM server, final QueryTestUtils utils) {
+    server.invoke(new SerializableRunnable("Closing Cache Server") {
+      private static final long serialVersionUID = 1L;
+
+      public void run() throws CacheException {
+        utils.getLogger().fine("### Close Cache Server. ###");
+        utils.closeCache();
+      }
+    });
+  }
+
   /*
    * Tests that the message component of the exception is not null
    */
   public void testIndexInvalidDueToExpressionOnPartitionedRegion() throws Exception {
     Host host = Host.getHost(0);
-    utils.createPartitionRegion("examplePartitionedRegion", Portfolio.class, vm0);
+    createPartitionRegion("examplePartitionedRegion", Portfolio.class,
+        vm0, utils);
 
     vm0.invoke(new CacheSerializableRunnable("Putting values") {
       public void run2() {
@@ -68,7 +124,8 @@ public class CompactRangeIndexDUnitTest extends DistributedTestCase{
       }
     });
     try {
-      utils.createIndex(vm0,"partitionedIndex", "\"albs\"", "/examplePartitionedRegion");
+      createIndex(vm0, "partitionedIndex", "\"albs\"",
+          "/examplePartitionedRegion", utils);
     }
     catch (Exception e) {
       //expected
@@ -161,11 +218,11 @@ public class CompactRangeIndexDUnitTest extends DistributedTestCase{
     });
    
   }
-  
+
   public void tearDown2() throws Exception{
     Thread.sleep(5000);
     removeHook();
-    utils.closeServer(vm0);
+    closeServer(vm0, utils);
   }
 
   public void setHook(){

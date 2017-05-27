@@ -26,7 +26,6 @@ import java.util.Properties;
 import java.util.Set;
 
 import com.gemstone.gemfire.cache.CacheException;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.distributed.DistributedMember;
 import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
@@ -44,7 +43,8 @@ import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedConnection;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedStatement;
 import com.pivotal.gemfirexd.internal.shared.common.ResolverUtils;
 
-import dunit.VM;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.dunit.VM;
 
 /**
  * Tests whether the statementID , connectionID etc are being passed correctly
@@ -89,10 +89,10 @@ public class StatementQueryDUnit extends DistributedSQLTestBase {
 
     VM dataStore1 = this.serverVMs.get(0);
     VM dataStore2 = this.serverVMs.get(1);
-    CacheSerializableRunnable setObserver = new CacheSerializableRunnable(
+    SerializableRunnable setObserver = new SerializableRunnable(
         "Set GemFireXDObserver") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           GemFireXDQueryObserverHolder
               .setInstance(new GemFireXDQueryObserverAdapter() {
@@ -130,10 +130,10 @@ public class StatementQueryDUnit extends DistributedSQLTestBase {
     checkOneResult(rs);
     final long clientConnID = mcon.getConnectionID();
     final long clientStmntID = es.getID();
-    CacheSerializableRunnable validate = new CacheSerializableRunnable(
+    SerializableRunnable validate = new SerializableRunnable(
         "validate") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           GemFireXDQueryObserverHolder
               .setInstance(new GemFireXDQueryObserverAdapter());
@@ -177,7 +177,7 @@ public class StatementQueryDUnit extends DistributedSQLTestBase {
             @Override
             public void beforeGemFireResultSetExecuteOnActivation(
                 AbstractGemFireActivation activation) {
-              StatementQueryDUnit.getLogWriter().info(
+              StatementQueryDUnit.getGlobalLogger().info(
                   "StatementQueryDunit::testRegionGetConversionForCompositeKey: "
                       + "The activation object is = " + activation);
               assertTrue(activation instanceof GemFireSelectActivation);

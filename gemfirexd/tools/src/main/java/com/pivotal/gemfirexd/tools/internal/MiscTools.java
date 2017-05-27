@@ -22,14 +22,11 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 
 import com.gemstone.gemfire.internal.Assert;
 import com.pivotal.gemfirexd.internal.iapi.tools.i18n.LocalizedInput;
@@ -38,6 +35,9 @@ import com.pivotal.gemfirexd.internal.iapi.tools.i18n.LocalizedResource;
 import com.pivotal.gemfirexd.internal.impl.tools.ij.Main;
 import com.pivotal.gemfirexd.internal.impl.tools.ij.utilMain;
 import com.pivotal.gemfirexd.internal.shared.common.SharedUtils;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
 /**
  * Miscellaneous tools for gfxd utility. Currently only "gfxd run <script>".
@@ -61,13 +61,17 @@ public class MiscTools extends ToolsBase {
   public static final String PATH_TOKEN;
   private static final String ENCODING;
   private static final String IGNORE_ERRORS;
+  private static final String PARAM;
+  private static final String NUMTIMESTORUN;
 
   private String scriptURL;
   // GemStone changes BEGIN
   private String scriptPath = null;
+  private Map<String, String> params = new HashMap<>();
   // GemStone changes END
   private String encoding;
   private boolean ignoreErrors;
+  private int numTimesToRun = 1;
 
   static {
     RUN = LocalizedResource.getMessage("MISCTOOLS_RUN");
@@ -79,6 +83,8 @@ public class MiscTools extends ToolsBase {
     PATH_TOKEN = "<" + MiscTools.SCRIPT_PATH + ">";
     ENCODING = LocalizedResource.getMessage("MISCTOOLS_ENCODING");
     IGNORE_ERRORS = LocalizedResource.getMessage("MISCTOOLS_RUN_IGNORE_ERRORS");
+    PARAM = LocalizedResource.getMessage("TOOLS_PARAM_ARG");
+    NUMTIMESTORUN = LocalizedResource.getMessage("TOOLS_NUMTIMESTORUN_ARG");
 
     validCommands = new LinkedHashMap<String, String>();
     validCommands.put(RUN, RUN_DESC_KEY);
@@ -114,6 +120,8 @@ public class MiscTools extends ToolsBase {
           addPathOption(opts);
           addEncodingOption(opts);
           addIgnoreErrorsOption(opts);
+          addParamOption(opts);
+          addNumTimesToRun(opts);
         }
 
         @Override
@@ -139,7 +147,7 @@ public class MiscTools extends ToolsBase {
             um = ijE.getutilMain(1, lo);
           }
           else {
-            um = new utilMain(1, lo, new Hashtable<String, Object>(), scriptPath);
+            um = new utilMain(1, lo, new Hashtable<String, Object>(), scriptPath, params, numTimesToRun);
           }
           um.goScript(conn, li, true);
         }
@@ -189,6 +197,26 @@ public class MiscTools extends ToolsBase {
     opts.addOption(opt);
   }
 
+  protected void addParamOption(final Options opts) {
+    GfxdOption opt;
+
+    opt = new GfxdOptionBuilder().withArgName(LocalizedResource.getMessage(
+        "TOOLS_PARAM_ARG")).hasArg().isRequired(false)
+        .withValueSeparator(':').withDescription(LocalizedResource.getMessage(
+            "MISCTOOLS_PARAM_MESSAGE")).create(PARAM);
+    opts.addOption(opt);
+  }
+
+  protected void addNumTimesToRun(final Options opts) {
+    GfxdOption opt;
+
+    opt = new GfxdOptionBuilder().withArgName(LocalizedResource.getMessage(
+        "TOOLS_NUMTIMESTORUN_ARG")).hasArg().isRequired(false)
+        .withValueSeparator('=').withDescription(LocalizedResource.getMessage(
+            "MISCTOOLS_NUMTIMESTORUN_MESSAGE")).create(NUMTIMESTORUN);
+    opts.addOption(opt);
+  }
+
   protected Connection getConnection(final CommandLine cmdLine,
       final String cmd, final String cmdDescKey)
       throws ParseException, SQLException {
@@ -212,6 +240,23 @@ public class MiscTools extends ToolsBase {
       }
       else if (IGNORE_ERRORS.equals(opt.getOpt())) {
         this.ignoreErrors = true;
+      }
+      else if (PARAM.equals(opt.getOpt())) {
+        final String[] param = opt.getValue().split("=");
+        for (String existingKey : params.keySet()) {
+          if (existingKey.indexOf(param[0]) == 0
+              || param[0].indexOf(existingKey) == 0) {
+            Assert.fail(existingKey + " and " + param[0] + " cannot be subset of each other." +
+                "The parameter names must atleast differ in the first character");
+          }
+        }
+        if (param.length != 2) {
+          Assert.fail("Parameter value not found. Passed in => [" + opt.getValue() + "]");
+        }
+        params.put(param[0], param[1]);
+      }
+      else if (NUMTIMESTORUN.equals(opt.getOpt())) {
+        numTimesToRun = Integer.parseInt(opt.getValue());
       }
       else if (!handleCommonOption(opt, cmd, cmdDescKey)) {
         if (!handleConnectionOption(opt, connOpts)) {

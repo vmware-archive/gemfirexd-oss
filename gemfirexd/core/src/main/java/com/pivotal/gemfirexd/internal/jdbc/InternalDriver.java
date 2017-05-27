@@ -55,6 +55,7 @@ import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gnu.trove.THashMap;
 import com.pivotal.gemfirexd.Attribute;
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
+import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.stats.ConnectionStats;
 import com.pivotal.gemfirexd.internal.engine.store.GemFireStore;
 import com.pivotal.gemfirexd.internal.iapi.db.Database;
@@ -171,8 +172,11 @@ public abstract class InternalDriver implements ModuleControl {
 		//	need to reject network driver's URL's
 		!url.startsWith(Attribute.JCC_PROTOCOL) &&
 		!url.startsWith(Attribute.DNC_PROTOCOL) &&
+		!url.startsWith(Attribute.SNAPPY_DNC_PROTOCOL) &&
 		!url.startsWith(Attribute.THRIFT_PROTOCOL) &&
 		!url.startsWith(Attribute.DRDA_PROTOCOL) &&
+		!url.startsWith(Attribute.SNAPPY_DRDA_PROTOCOL) &&
+		!url.startsWith(Attribute.SNAPPY_THRIFT_PROTOCOL) &&
                 // SQLF:BC
                 !url.startsWith(Attribute.SQLF_DNC_PROTOCOL) &&
 		(url.startsWith(Attribute.PROTOCOL)
@@ -181,6 +185,8 @@ public abstract class InternalDriver implements ModuleControl {
                     // SQLF:BC
 		    || url.startsWith(Attribute.SQLF_PROTOCOL) 
                     || url.equals(Attribute.SQLJ_NESTED_SQLFIRE)
+			|| url.startsWith(Attribute.SNAPPY_PROTOCOL)
+			        || url.equals(Attribute.SQLJ_NESTED_SNAPPYDATA)
 		 );
 // GemStone changes END
 	}
@@ -200,7 +206,8 @@ public abstract class InternalDriver implements ModuleControl {
         if (!(info != null && "true".equalsIgnoreCase(info
             .getProperty(Property.DRDA_CLIENT_CONNECTION)))
             && !(url.equals(Attribute.SQLJ_NESTED) ||
-                 url.equals(Attribute.SQLJ_NESTED_GEMFIREXD)
+                url.equals(Attribute.SQLJ_NESTED_GEMFIREXD)
+                 || url.equals(Attribute.SQLJ_NESTED_SNAPPYDATA)
                    // SQLF:BC
                    || url.equals(Attribute.SQLJ_NESTED_SQLFIRE)
                  )) {
@@ -257,7 +264,8 @@ public abstract class InternalDriver implements ModuleControl {
 		boolean current = url.equals(Attribute.SQLJ_NESTED)
 		    || url.equals(Attribute.SQLJ_NESTED_GEMFIREXD)
 		    // SQLF:BC
-		    || url.equals(Attribute.SQLJ_NESTED_SQLFIRE);
+		    || url.equals(Attribute.SQLJ_NESTED_SQLFIRE)
+			  || url.equals(Attribute.SQLJ_NESTED_SNAPPYDATA);
 
 		/* If jdbc:default:connection, see if user already has a
 		 * connection. All connection attributes are ignored.
@@ -342,7 +350,7 @@ public abstract class InternalDriver implements ModuleControl {
 //                    GemStone changes Begin
                       EmbedConnection conn  =   getNewEmbedConnection(url, finfo,
                           connectionID, isRemote, incomingId);
-                      
+
 //                    GemStone changes END
 			// if this is not the correct driver a EmbedConnection
 			// object is returned in the closed state.
@@ -558,6 +566,7 @@ public abstract class InternalDriver implements ModuleControl {
 //GemStone Changes begin
 		if (url.equals(Attribute.SQLJ_NESTED)
 		    || url.equals(Attribute.SQLJ_NESTED_GEMFIREXD)
+				|| url.equals(Attribute.SQLJ_NESTED_SNAPPYDATA)
                     // SQLF:BC
                     || url.equals(Attribute.SQLJ_NESTED_SQLFIRE)
 		   )
@@ -617,6 +626,14 @@ public abstract class InternalDriver implements ModuleControl {
                     || dbname.equalsIgnoreCase(Attribute.SQLF_DBNAME)) {
                   return Attribute.GFXD_DBNAME;
                 }
+		// Try for snappydata if dbname.length == 0 or dbname = ":"
+		if (dbname.length() == 0 || dbname.equals(":")) {
+			int snappyProto = url.indexOf(Attribute.SNAPPY_PROTOCOL);
+			if (snappyProto >= 0) {
+				return Attribute.SNAPPY_DBNAME;
+			}
+		}
+
                 return ":" + dbname;
 		/* (original derby code) return dbname; */
 // GemStone changes END

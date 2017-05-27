@@ -26,18 +26,14 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import javax.naming.PartialResultException;
-
 import com.gemstone.gemfire.cache.PartitionedRegionStorageException;
 import com.gemstone.gemfire.cache.persistence.PartitionOfflineException;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverAdapter;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
 import com.pivotal.gemfirexd.internal.engine.access.index.OpenMemIndex;
 import com.pivotal.gemfirexd.internal.engine.store.GemFireContainer;
-
-import dunit.SerializableRunnable;
+import io.snappydata.test.dunit.SerializableRunnable;
 
 /**
  * 
@@ -61,10 +57,10 @@ public class PersistentPartitionPreparedStatementDUnit extends
 
   @Override
   public void createDiskStore(boolean useClient, int vmNum) throws Exception {
-    CacheSerializableRunnable csr = getDiskStoreCreator(DISKSTORE);
+    SerializableRunnable csr = getDiskStoreCreator(DISKSTORE);
     if (useClient) {
       if (vmNum == 1) {
-        csr.run2();
+        csr.run();
       }
       else {
         clientExecute(vmNum, csr);

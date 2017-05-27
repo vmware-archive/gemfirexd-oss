@@ -27,14 +27,13 @@ import java.util.Properties;
 
 import com.gemstone.gemfire.cache.CacheClosedException;
 import com.gemstone.gemfire.cache.CacheException;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.pivotal.gemfirexd.Attribute;
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverAdapter;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
 
-import dunit.SerializableRunnable;
+import io.snappydata.test.dunit.SerializableRunnable;
 
 
 @SuppressWarnings("serial")
@@ -109,9 +108,9 @@ public class MultipleInsertsLeveragingPutAllDUnit extends
 
   public void testBug47444() throws Exception {
     startVMs(1, 1);
-    serverExecute(1, new CacheSerializableRunnable("") {
+    serverExecute(1, new SerializableRunnable("") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         GemFireXDQueryObserverHolder.setInstance(new BatchInsertObserver());
       }
     });

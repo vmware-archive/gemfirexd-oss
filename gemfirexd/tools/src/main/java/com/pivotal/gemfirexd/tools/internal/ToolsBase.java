@@ -25,13 +25,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Map;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.MissingArgumentException;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
+import com.gemstone.gemfire.internal.Assert;
 import com.gemstone.gemfire.internal.GemFireTerminateError;
 import com.gemstone.gemfire.internal.shared.StringPrintWriter;
 import com.pivotal.gemfirexd.Attribute;
@@ -39,25 +34,31 @@ import com.pivotal.gemfirexd.FabricService;
 import com.pivotal.gemfirexd.internal.iapi.tools.i18n.LocalizedResource;
 import com.pivotal.gemfirexd.internal.shared.common.sanity.SanityManager;
 import com.pivotal.gemfirexd.tools.GfxdUtilLauncher;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.MissingArgumentException;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import scala.tools.jline.console.ConsoleReader;
 
 /**
  * Base class for command-line launcher tools. Encapsulates the common
  * connection options used by all the new tools.
- * 
+ *
  * @author swale
  * @since 7.0
  */
 public abstract class ToolsBase {
 
   protected Options currentOpts;
-  
+
   public static PrintStream outputStream;
 
   /**
    * Encapsulates values of connection options.
    */
   protected static class ConnectionOptions {
+    String connectionUrl;
     String clientBindAddress;
     int clientPort = -1;
     int mcastPort = -1;
@@ -69,6 +70,7 @@ public abstract class ToolsBase {
   }
 
   // common command arguments
+  protected static final String CONNECTION_URL;
   protected static final String CLIENT_PORT;
   protected static final String CLIENT_BIND_ADDRESS;
   protected static final String MCAST_PORT;
@@ -89,20 +91,21 @@ public abstract class ToolsBase {
    * Interface to be implemented for processing of a command including adding
    * command specific options, and then processing and executing the command.
    */
-  protected static interface ProcessCommand {
+  protected interface ProcessCommand {
     /**
      * Add options specific to the command.
      */
-    public void addCommandOptions(Options opts);
+    void addCommandOptions(Options opts);
 
     /**
      * Execute the command.
      */
-    public void executeCommand(CommandLine cmdLine, String cmd,
+    void executeCommand(CommandLine cmdLine, String cmd,
         String cmdDescKey) throws ParseException, IOException, SQLException;
   }
 
   static {
+    CONNECTION_URL = LocalizedResource.getMessage("TOOLS_CONNECTION_URL");
     CLIENT_PORT = LocalizedResource.getMessage("TOOLS_CLIENT_PORT");
     CLIENT_BIND_ADDRESS = LocalizedResource.getMessage("TOOLS_CLIENT_ADDRESS");
     MCAST_PORT = LocalizedResource.getMessage("TOOLS_MCAST_PORT");
@@ -141,7 +144,6 @@ public abstract class ToolsBase {
           && (args[1].equals(helpFormatter.getOptPrefix() + HELP) || args[1]
               .equals(helpFormatter.getLongOptPrefix() + HELP))) {
         showUsage(null, cmd, cmdDescKey);
-        return;
       }
       else {
         final String errMsg = LocalizedResource
@@ -236,6 +238,12 @@ public abstract class ToolsBase {
 
   protected void addConnectionOptions(final Options opts) {
     GfxdOption opt;
+
+    opt = new GfxdOptionBuilder().withArgName(LocalizedResource.getMessage(
+        "TOOLS_URL_ARG")).hasArg().withValueSeparator('=')
+        .withDescription(LocalizedResource.getMessage(
+            "TOOLS_CONNECTION_URL_MESSAGE")).create(CONNECTION_URL);
+    opts.addOption(opt);
 
     opt = new GfxdOptionBuilder().withArgName(LocalizedResource.getMessage(
         "TOOLS_PORT_ARG")).hasArg().withValueSeparator('=')
@@ -363,6 +371,9 @@ public abstract class ToolsBase {
     else if ((optValue = opt.getOptionValue(CLIENT_BIND_ADDRESS)) != null) {
       connOpts.clientBindAddress = optValue;
     }
+    else if ((optValue = opt.getOptionValue(CONNECTION_URL)) != null) {
+      connOpts.connectionUrl = optValue;
+    }
     else if ((optValue = opt.getOptionValue(CLIENT_PORT)) != null) {
       connOpts.clientPort = Integer.parseInt(optValue);
     }
@@ -434,19 +445,30 @@ public abstract class ToolsBase {
       final String cmd, final String cmdDescKey) throws SQLException {
     handleConnectionOptions(connOpts, cmd, cmdDescKey);
     final StringBuilder urlBuilder = new StringBuilder();
-    if (connOpts.clientPort < 0) {
-      urlBuilder.append(Attribute.PROTOCOL).append(";host-data=false");
+    if (connOpts.connectionUrl != null) {
+      Assert.assertTrue(connOpts.connectionUrl.startsWith("jdbc:"),
+          "url must start with jdbc:. passed url=" + connOpts.connectionUrl);
+      urlBuilder.append(connOpts.connectionUrl);
+    } else if (connOpts.clientPort < 0) {
+      String protocol = GfxdUtilLauncher.isSnappyStore()
+          ? Attribute.SNAPPY_PROTOCOL : Attribute.PROTOCOL;
+      urlBuilder.append(protocol).append(";host-data=false");
     }
     else {
+      String protocol = GfxdUtilLauncher.isSnappyStore()
+          ? Attribute.SNAPPY_DNC_PROTOCOL : Attribute.DNC_PROTOCOL;
       final String hostName = connOpts.clientBindAddress != null
           ? connOpts.clientBindAddress : "localhost";
-      urlBuilder.append(Attribute.DNC_PROTOCOL).append(hostName).append(':')
+      urlBuilder.append(protocol).append(hostName).append(':')
           .append(connOpts.clientPort).append('/');
     }
     if (connOpts.properties.length() > 0) {
       urlBuilder.append(connOpts.properties);
     }
     if (connOpts.user != null) {
+      if (connOpts.connectionUrl != null) {
+        System.out.println("Using connection url " + urlBuilder.toString());
+      }
       return DriverManager.getConnection(urlBuilder.toString(), connOpts.user,
           connOpts.password);
     }

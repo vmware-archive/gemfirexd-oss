@@ -26,9 +26,8 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Properties;
 
+import io.snappydata.test.util.TestException;
 import org.junit.Assert;
-
-import util.TestException;
 
 /**
  * Split out from BackwardCompatabilityDUnit to avoid timeouts due to long
@@ -48,6 +47,9 @@ public class BackwardCompatabilityPart3DUnit extends
     return "config";
   }
 
+  public void testDummy() {
+  }
+
   /*
    * The reason this test fires DDLs by connecting to different servers
    * in each run of previous and current servers is to try create conditions
@@ -65,7 +67,7 @@ public class BackwardCompatabilityPart3DUnit extends
 
       getLogWriter().info("Testing with SQLFire-" + version);
 
-      String currentDir = getSysDirName(getGemFireDescription());
+      String currentDir = getSysDirName();
       String locatorDir = currentDir + "/locatorDir";
       String serverOneDir = currentDir + "/serverOneDir";
       String serverTwoDir = currentDir + "/serverTwoDir";
@@ -383,10 +385,9 @@ public class BackwardCompatabilityPart3DUnit extends
     }
   }
 
-  public void testBug48761() throws Exception {
+  public void DISABLED_testBug48761() throws Exception {
     // Create a locator working dir.
-    String locatorPath = getSysDirName(getGemFireDescription())
-        + "/locator48761";
+    String locatorPath = getSysDirName() + "/locator48761";
     getLogWriter()
         .info("Creating locator dir for base version: " + locatorPath);
     File rollingVersionLocatorDir = new File(locatorPath);

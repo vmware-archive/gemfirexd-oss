@@ -39,10 +39,10 @@ package com.gemstone.gemfire.internal.concurrent;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import com.gemstone.gnu.trove.HashFunctions;
 import com.gemstone.gnu.trove.HashingStats;
 import com.gemstone.gnu.trove.PrimeFinder;
 import com.gemstone.gnu.trove.THashSet;
-import com.gemstone.gnu.trove.TLongHashingStrategy;
 
 /**
  * Base class for a segment of concurrent hash maps with long keys and
@@ -435,13 +435,11 @@ final class ConcurrentTLongObjectHashSegment<V> extends ReentrantReadWriteLock {
     Object[] oldVals = this.values;
     long[] newKeys = new long[newCapacity];
     Object[] newVals = new Object[newCapacity];
-    final TLongHashingStrategy hashingStrategy =
-        this.params.longHashingStrategy;
 
     for (int i = oldCapacity; i-- > 0;) {
       if (oldVals[i] != null && oldVals[i] != REMOVED) {
         long o = oldKeys[i];
-        int hash = hashingStrategy.computeHashCode(o) & 0x7fffffff;
+        int hash = computeHashCode(o);
         int index = insertionIndex(o, hash, newKeys, newVals);
         if (index < 0) {
           throwObjectContractViolation(newKeys[(-index - 1)], o);
@@ -456,6 +454,10 @@ final class ConcurrentTLongObjectHashSegment<V> extends ReentrantReadWriteLock {
 
   private int capacity() {
     return this.values.length;
+  }
+
+  static int computeHashCode(final long k) {
+    return HashFunctions.hash(k) & 0x7fffffff;
   }
 
   private void removeAt(int index) {

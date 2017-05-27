@@ -26,17 +26,16 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.Iterator;
 import java.util.Set;
+
 import com.gemstone.gemfire.cache.CacheException;
 import com.gemstone.gemfire.cache.EntryNotFoundException;
 import com.gemstone.gemfire.cache.execute.FunctionException;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.distributed.DistributedMember;
 import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverAdapter;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
-import com.pivotal.gemfirexd.internal.engine.distributed.GfxdConnectionWrapper;
 import com.pivotal.gemfirexd.internal.engine.distributed.metadata.QueryInfo;
 import com.pivotal.gemfirexd.internal.engine.sql.execute.AbstractGemFireActivation;
 import com.pivotal.gemfirexd.internal.engine.sql.execute.GemFireUpdateDistributionActivation;
@@ -44,8 +43,8 @@ import com.pivotal.gemfirexd.internal.iapi.sql.Activation;
 import com.pivotal.gemfirexd.internal.iapi.types.SQLInteger;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedPreparedStatement;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedStatement;
-
-import dunit.VM;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.dunit.VM;
 
 /**
  * Tests whether the statementID , connectionID etc are being passed correctly
@@ -89,7 +88,7 @@ public class UpdateStatementDUnit extends DistributedSQLTestBase {
       VM dataStore1 = this.serverVMs.get(0);
       VM dataStore2 = this.serverVMs.get(1);
       VM dataStore3 = this.serverVMs.get(2);
-      CacheSerializableRunnable setObserver = getGfxdQueryObserverIntializerForDataStore();
+      SerializableRunnable setObserver = getGfxdQueryObserverIntializerForDataStore();
       dataStore1.invoke(setObserver);
       dataStore2.invoke(setObserver);
       dataStore3.invoke(setObserver);
@@ -112,9 +111,9 @@ public class UpdateStatementDUnit extends DistributedSQLTestBase {
       Set allNodes = ((PartitionedRegion)(qi[0].getRegion())).getRegionAdvisor()
           .adviseDataStore();
 
-      CacheSerializableRunnable validateNoQuerySend = getQueryNonExecutionValidator();
+      SerializableRunnable validateNoQuerySend = getQueryNonExecutionValidator();
 
-      CacheSerializableRunnable validateQuerySend =getQueryExecutionValidator();
+      SerializableRunnable validateQuerySend =getQueryExecutionValidator();
       executeOnVMs(expectedNodesToUpdate, validateQuerySend);
       allNodes.removeAll(expectedNodesToUpdate);
       executeOnVMs(allNodes, validateNoQuerySend);
@@ -165,7 +164,7 @@ public class UpdateStatementDUnit extends DistributedSQLTestBase {
       VM dataStore1 = this.serverVMs.get(0);
       VM dataStore2 = this.serverVMs.get(1);
       VM dataStore3 = this.serverVMs.get(2);
-      CacheSerializableRunnable setObserver = getGfxdQueryObserverIntializerForDataStore();
+      SerializableRunnable setObserver = getGfxdQueryObserverIntializerForDataStore();
       dataStore1.invoke(setObserver);
       dataStore2.invoke(setObserver);
       dataStore3.invoke(setObserver);
@@ -186,9 +185,9 @@ public class UpdateStatementDUnit extends DistributedSQLTestBase {
       Set allNodes = ((PartitionedRegion)qi[0].getRegion()).getRegionAdvisor()
           .adviseDataStore();
 
-      CacheSerializableRunnable validateNoQuerySend = getQueryNonExecutionValidator();
+      SerializableRunnable validateNoQuerySend = getQueryNonExecutionValidator();
 
-      CacheSerializableRunnable validateQuerySend =  getQueryExecutionValidator();
+      SerializableRunnable validateQuerySend =  getQueryExecutionValidator();
       this.executeOnVMs(expectedNodesToUpdate, validateQuerySend);      
       allNodes.removeAll(expectedNodesToUpdate);
       this.executeOnVMs(allNodes, validateNoQuerySend);
@@ -243,7 +242,7 @@ public class UpdateStatementDUnit extends DistributedSQLTestBase {
       VM dataStore1 = this.serverVMs.get(0);
       VM dataStore2 = this.serverVMs.get(1);
       VM dataStore3 = this.serverVMs.get(2);
-      CacheSerializableRunnable setObserver = getGfxdQueryObserverIntializerForDataStore();
+      SerializableRunnable setObserver = getGfxdQueryObserverIntializerForDataStore();
       dataStore1.invoke(setObserver);
       dataStore2.invoke(setObserver);
       dataStore3.invoke(setObserver);
@@ -306,7 +305,7 @@ public class UpdateStatementDUnit extends DistributedSQLTestBase {
       VM dataStore1 = this.serverVMs.get(0);
       VM dataStore2 = this.serverVMs.get(1);
       VM dataStore3 = this.serverVMs.get(2);
-      CacheSerializableRunnable setObserver = getGfxdQueryObserverIntializerForDataStoreForPrepStmnt();
+      SerializableRunnable setObserver = getGfxdQueryObserverIntializerForDataStoreForPrepStmnt();
       dataStore1.invoke(setObserver);
       dataStore2.invoke(setObserver);
       dataStore3.invoke(setObserver);
@@ -330,9 +329,9 @@ public class UpdateStatementDUnit extends DistributedSQLTestBase {
       Set allNodes = ((PartitionedRegion)qi[0].getRegion()).getRegionAdvisor()
           .adviseDataStore();
 
-      CacheSerializableRunnable validateNoQuerySend = getQueryNonExecutionValidator();
+      SerializableRunnable validateNoQuerySend = getQueryNonExecutionValidator();
 
-      CacheSerializableRunnable validateQuerySend =  getQueryExecutionValidator();
+      SerializableRunnable validateQuerySend =  getQueryExecutionValidator();
       this.executeOnVMs(expectedNodesToUpdate, validateQuerySend);      
       allNodes.removeAll(expectedNodesToUpdate);
       this.executeOnVMs(allNodes, validateNoQuerySend);
@@ -387,7 +386,7 @@ public class UpdateStatementDUnit extends DistributedSQLTestBase {
       VM dataStore1 = this.serverVMs.get(0);
       VM dataStore2 = this.serverVMs.get(1);
       VM dataStore3 = this.serverVMs.get(2);
-      CacheSerializableRunnable setObserver = getGfxdQueryObserverIntializerForDataStoreForPrepStmnt();
+      SerializableRunnable setObserver = getGfxdQueryObserverIntializerForDataStoreForPrepStmnt();
       dataStore1.invoke(setObserver);
       dataStore2.invoke(setObserver);
       dataStore3.invoke(setObserver);
@@ -411,9 +410,9 @@ public class UpdateStatementDUnit extends DistributedSQLTestBase {
       Set allNodes = ((PartitionedRegion)qi[0].getRegion()).getRegionAdvisor()
           .adviseDataStore();
 
-      CacheSerializableRunnable validateNoQuerySend = getQueryNonExecutionValidator();
+      SerializableRunnable validateNoQuerySend = getQueryNonExecutionValidator();
 
-      CacheSerializableRunnable validateQuerySend =  getQueryExecutionValidator();
+      SerializableRunnable validateQuerySend =  getQueryExecutionValidator();
       this.executeOnVMs(expectedNodesToUpdate, validateQuerySend);      
       allNodes.removeAll(expectedNodesToUpdate);
       this.executeOnVMs(allNodes, validateNoQuerySend);
@@ -496,7 +495,7 @@ public class UpdateStatementDUnit extends DistributedSQLTestBase {
       VM dataStore1 = this.serverVMs.get(0);
       VM dataStore2 = this.serverVMs.get(1);
       VM dataStore3 = this.serverVMs.get(2);
-      CacheSerializableRunnable setObserver = getGfxdQueryObserverIntializerForDataStore();
+      SerializableRunnable setObserver = getGfxdQueryObserverIntializerForDataStore();
       dataStore1.invoke(setObserver);
       dataStore2.invoke(setObserver);
       dataStore3.invoke(setObserver);
@@ -518,9 +517,9 @@ public class UpdateStatementDUnit extends DistributedSQLTestBase {
       Set allNodes = ((PartitionedRegion)qi[0].getRegion()).getRegionAdvisor()
           .adviseDataStore();
 
-      CacheSerializableRunnable validateNoQuerySend = getQueryNonExecutionValidator();
+      SerializableRunnable validateNoQuerySend = getQueryNonExecutionValidator();
 
-      CacheSerializableRunnable validateQuerySend =  getQueryExecutionValidator();
+      SerializableRunnable validateQuerySend =  getQueryExecutionValidator();
       this.executeOnVMs(expectedNodesToUpdate, validateQuerySend);      
       allNodes.removeAll(expectedNodesToUpdate);
       this.executeOnVMs(allNodes, validateNoQuerySend);
@@ -572,7 +571,7 @@ public class UpdateStatementDUnit extends DistributedSQLTestBase {
       VM dataStore1 = this.serverVMs.get(0);
       VM dataStore2 = this.serverVMs.get(1);
       VM dataStore3 = this.serverVMs.get(2);
-      CacheSerializableRunnable setObserver = getGfxdQueryObserverIntializerForDataStore();
+      SerializableRunnable setObserver = getGfxdQueryObserverIntializerForDataStore();
       dataStore1.invoke(setObserver);
       dataStore2.invoke(setObserver);
       dataStore3.invoke(setObserver);
@@ -593,9 +592,9 @@ public class UpdateStatementDUnit extends DistributedSQLTestBase {
       Set allNodes = ((PartitionedRegion)qi[0].getRegion()).getRegionAdvisor()
           .adviseDataStore();
 
-      CacheSerializableRunnable validateNoQuerySend = getQueryNonExecutionValidator();
+      SerializableRunnable validateNoQuerySend = getQueryNonExecutionValidator();
 
-      CacheSerializableRunnable validateQuerySend =  getQueryExecutionValidator();
+      SerializableRunnable validateQuerySend =  getQueryExecutionValidator();
       this.executeOnVMs(expectedNodesToUpdate, validateQuerySend);      
       allNodes.removeAll(expectedNodesToUpdate);
       this.executeOnVMs(allNodes, validateNoQuerySend);      
@@ -1071,7 +1070,7 @@ public class UpdateStatementDUnit extends DistributedSQLTestBase {
     isQueryExecutedOnNode = false;
   }
 
-  private void executeOnVMs(Set<DistributedMember> members, CacheSerializableRunnable runnable) {
+  private void executeOnVMs(Set<DistributedMember> members, SerializableRunnable runnable) {
     Iterator itr = members.iterator();
     while (itr.hasNext()) {
       DistributedMember member = (DistributedMember)itr.next();
@@ -1080,11 +1079,11 @@ public class UpdateStatementDUnit extends DistributedSQLTestBase {
     }
   }
   
-  private  CacheSerializableRunnable getGfxdQueryObserverIntializerForDataStore() {
-    return new CacheSerializableRunnable(
+  private  SerializableRunnable getGfxdQueryObserverIntializerForDataStore() {
+    return new SerializableRunnable(
     "Set GemFireXDObserver") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           GemFireXDQueryObserverHolder
               .setInstance(new GemFireXDQueryObserverAdapter() {
@@ -1104,11 +1103,11 @@ public class UpdateStatementDUnit extends DistributedSQLTestBase {
     };
   }
    
-  private  CacheSerializableRunnable getGfxdQueryObserverIntializerForDataStoreForPrepStmnt() {
-    return new CacheSerializableRunnable(
+  private  SerializableRunnable getGfxdQueryObserverIntializerForDataStoreForPrepStmnt() {
+    return new SerializableRunnable(
     "Set GemFireXDObserver") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           GemFireXDQueryObserverHolder
               .setInstance(new GemFireXDQueryObserverAdapter() {
@@ -1128,10 +1127,10 @@ public class UpdateStatementDUnit extends DistributedSQLTestBase {
     };
   }
  
-  private static CacheSerializableRunnable getQueryExecutionValidator() {
-    return new CacheSerializableRunnable("validate Query execution") {
+  private static SerializableRunnable getQueryExecutionValidator() {
+    return new SerializableRunnable("validate Query execution") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           GemFireXDQueryObserverHolder
               .setInstance(new GemFireXDQueryObserverAdapter());
@@ -1145,10 +1144,10 @@ public class UpdateStatementDUnit extends DistributedSQLTestBase {
     };
   }
 
-  private static CacheSerializableRunnable getQueryNonExecutionValidator() {
-    return new CacheSerializableRunnable("validate no query execution") {
+  private static SerializableRunnable getQueryNonExecutionValidator() {
+    return new SerializableRunnable("validate no query execution") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           GemFireXDQueryObserverHolder
               .setInstance(new GemFireXDQueryObserverAdapter());

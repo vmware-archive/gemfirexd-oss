@@ -35,7 +35,6 @@ import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.distributed.DistributedMember;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
-import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.management.internal.MBeanJMXAdapter;
 import com.gemstone.gemfire.management.internal.ManagementConstants;
@@ -50,11 +49,10 @@ import com.pivotal.gemfirexd.internal.engine.management.impl.AggregateMemberMBea
 import com.pivotal.gemfirexd.internal.engine.management.impl.GfxdManagementTestBase;
 import com.pivotal.gemfirexd.internal.engine.management.impl.InternalManagementService;
 import com.pivotal.gemfirexd.internal.engine.management.impl.ManagementUtils;
-import dunit.DistributedTestCase;
-import dunit.SerializableCallable;
-import dunit.SerializableRunnable;
-import dunit.VM;
-
+import io.snappydata.test.dunit.AvailablePortHelper;
+import io.snappydata.test.dunit.SerializableCallable;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.dunit.VM;
 
 /**
  *
@@ -85,7 +83,8 @@ public class AggregateMemberMBeanDUnit extends GfxdManagementTestBase {
     p.setProperty(DistributionConfig.JMX_MANAGER_NAME, "true");
     p.setProperty(DistributionConfig.JMX_MANAGER_START_NAME, String.valueOf(startManager));
     if(startAgent){
-      p.setProperty(DistributionConfig.JMX_MANAGER_PORT_NAME, String.valueOf(AvailablePortHelper.getRandomAvailableTCPPort()));
+      p.setProperty(DistributionConfig.JMX_MANAGER_PORT_NAME,
+          String.valueOf(AvailablePortHelper.getRandomAvailableTCPPort()));
     }else{
       p.setProperty(DistributionConfig.JMX_MANAGER_PORT_NAME, String.valueOf(0));
     }
@@ -249,7 +248,7 @@ public class AggregateMemberMBeanDUnit extends GfxdManagementTestBase {
         
         final Map<ObjectName, NotificationHubListener> hubMap = service.getNotificationHub().getListenerObjectMap();
 
-        DistributedTestCase.waitForCriterion(new WaitCriterion() {
+        waitForCriterion(new WaitCriterion() {
           public String description() {
             return "Waiting for manager to register the listener";
           }
@@ -296,7 +295,7 @@ public class AggregateMemberMBeanDUnit extends GfxdManagementTestBase {
         GemFireCacheImpl cache = Misc.getMemStore().getGemFireCache();
         final String appender = MBeanJMXAdapter.getUniqueIDForMember(notifSendingmember);
 
-        DistributedTestCase.waitForCriterion(new WaitCriterion() {
+        waitForCriterion(new WaitCriterion() {
           public String description() {
             return "Waiting for " + expectedNotifListSize + " notifications to reach the manager while size of notifList = " + notifList.size();
           }

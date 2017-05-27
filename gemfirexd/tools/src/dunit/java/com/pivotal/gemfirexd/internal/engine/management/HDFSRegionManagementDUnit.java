@@ -32,8 +32,8 @@ import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
 import com.pivotal.gemfirexd.internal.engine.Misc;
 
-import dunit.SerializableCallable;
-import dunit.VM;
+import io.snappydata.test.dunit.SerializableCallable;
+import io.snappydata.test.dunit.VM;
 
 /**
  * 
@@ -72,6 +72,9 @@ public class HDFSRegionManagementDUnit extends DistributedSQLTestBase {
     // start a client, register the driver.
     startClientVMs(1, 0, null, info);
 
+    final File homeDirFile = new File(".", "myhdfs");
+    final String homeDir = homeDirFile.getAbsolutePath();
+
     // enable StatementStats for all connections in this VM
     System.setProperty(GfxdConstants.GFXD_ENABLE_STATS, "true");
 
@@ -79,8 +82,9 @@ public class HDFSRegionManagementDUnit extends DistributedSQLTestBase {
     Statement st = conn.createStatement();
     ResultSet rs = null;
 
-    checkDirExistence("./myhdfs");
-    st.execute("create hdfsstore myhdfs namenode 'localhost' homedir './myhdfs' BatchTimeInterval 100 milliseconds ");
+    checkDirExistence(homeDir);
+    st.execute("create hdfsstore myhdfs namenode 'localhost' homedir '" +
+        homeDir + "' BatchTimeInterval 100 milliseconds ");
     st.execute("create table app.bigtable1 (big_id INT NOT NULL PRIMARY KEY , big_date DATE NOT NULL, big_data VARCHAR(2000)) "
         + "PARTITION BY PRIMARY KEY EVICTION BY CRITERIA ( big_id < 300000 ) EVICTION FREQUENCY 180 SECONDS hdfsstore (myhdfs)");
 
@@ -106,7 +110,7 @@ public class HDFSRegionManagementDUnit extends DistributedSQLTestBase {
     
     st.execute("drop table app.bigtable1");
     st.execute("drop hdfsstore myhdfs");
-    delete(new File("./myhdfs"));
+    delete(homeDirFile);
     stopVMNums(1, -1);
   }
 
@@ -152,24 +156,4 @@ public class HDFSRegionManagementDUnit extends DistributedSQLTestBase {
   public void tearDown2() throws Exception {
     super.tearDown2();
   }
-
-  private void delete(File file) {
-    if (!file.exists()) {
-      return;
-    }
-    if (file.isDirectory()) {
-      if (file.list().length == 0) {
-        file.delete();
-      } else {
-        File[] files = file.listFiles();
-        for (File f : files) {
-          delete(f);
-        }
-        file.delete();
-      }
-    } else {
-      file.delete();
-    }
-  }
-
 }

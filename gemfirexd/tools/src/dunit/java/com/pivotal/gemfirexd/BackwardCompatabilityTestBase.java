@@ -19,7 +19,6 @@ package com.pivotal.gemfirexd;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -29,17 +28,14 @@ import java.util.List;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
-import util.TestException;
-
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.shared.NativeCalls;
 import com.pivotal.gemfirexd.BackwardCompatabilityDUnit.ClientRun;
 import com.pivotal.gemfirexd.BackwardCompatabilityDUnit.ProductClient;
-import com.pivotal.gemfirexd.internal.engine.FabricServerTest;
 import com.pivotal.gemfirexd.tools.GfxdUtilLauncher;
-
-import dunit.Host;
-import dunit.SerializableCallable;
+import io.snappydata.test.dunit.Host;
+import io.snappydata.test.dunit.SerializableCallable;
+import io.snappydata.test.util.TestException;
 
 /**
  * Common base methods for BackwardCompatability*DUnit tests.
@@ -106,7 +102,7 @@ public abstract class BackwardCompatabilityTestBase extends
       "get working directory of this JVM") {
     @Override
     public Object call() {
-      return getSysDirName(getGemFireDescription());
+      return getSysDirName();
     }
   };
 
@@ -117,16 +113,12 @@ public abstract class BackwardCompatabilityTestBase extends
     vm2WorkingDir = (String)Host.getHost(0).getVM(1).invoke(getVMWorkingDir);
     vm3WorkingDir = (String)Host.getHost(0).getVM(2).invoke(getVMWorkingDir);
     vm4WorkingDir = (String)Host.getHost(0).getVM(3).invoke(getVMWorkingDir);
-
-    // Begin with clean directories
-    cleanUp(new String[] { vm1WorkingDir, vm2WorkingDir, vm3WorkingDir,
-        vm4WorkingDir });
   }
 
   @Override
   public void tearDown2() throws Exception {
     super.tearDown2();
-    final String workingDir = getSysDirName(getGemFireDescription());
+    final String workingDir = getSysDirName();
     if (currentListIdx >= 0 && currentVersIdx >= 0) {
       try {
         stopVersionedServer(currentListIdx, currentVersIdx, workingDir);
@@ -142,8 +134,6 @@ public abstract class BackwardCompatabilityTestBase extends
         vm2WorkingDir + "/dir1", vm3WorkingDir + "/dir1",
         vm4WorkingDir + "/dir1" };
     cleanUpCustomStoreFiles(customStoreDirs);
-    cleanUp(new String[] { vm1WorkingDir, vm2WorkingDir, vm3WorkingDir,
-        vm4WorkingDir });
   }
 
   public BackwardCompatabilityTestBase(String name) {
@@ -681,7 +671,7 @@ public abstract class BackwardCompatabilityTestBase extends
     javaCommandLine.add(clientJar);
     javaCommandLine.add(Boolean.toString(useSQLFireUrl));
     javaCommandLine.add(doWhat);
-    getLogWriter().info("Starting: " + javaCommandLine);
+    System.out.println("Starting: " + javaCommandLine);
 
     ProcessBuilder builder = new ProcessBuilder(
         javaCommandLine.toArray(new String[javaCommandLine.size()]));
@@ -689,11 +679,10 @@ public abstract class BackwardCompatabilityTestBase extends
     // Redirect error stream to output stream so we can print the error
     builder.redirectErrorStream(true);
     final Process clientProc = builder.start();
-    String clientOut = FabricServerTest.getProcessOutput(clientProc, 0, 90000,
+    String clientOut = TestUtil.getProcessOutput(clientProc, 0, 90000,
         exitValue);
-    getLogWriter().info(
-        "Output from ProductClient using client " + clientJar + " : "
-            + clientOut);
+    System.out.println("Output from ProductClient using client "
+        + clientJar + " : " + clientOut);
     if (exitValue[0] != 0) {
       throw new TestException("Unexpected exit value " + exitValue[0]
           + " while running client version " + version + ", OUTPUT=\n"
@@ -732,7 +721,7 @@ public abstract class BackwardCompatabilityTestBase extends
     final Process clientProc = new ProcessBuilder(
         javaCommandLine.toArray(new String[javaCommandLine.size()])).start();
     final int[] exitValue = new int[] { -1 };
-    String clientOut = FabricServerTest.getProcessOutput(clientProc, 0,
+    String clientOut = TestUtil.getProcessOutput(clientProc, 0,
         maxWaitMillis, exitValue);
     getLogWriter().info(
         "Output from ClientRun using client " + gfxdclientJar + " : "
@@ -883,7 +872,7 @@ public abstract class BackwardCompatabilityTestBase extends
   protected void cleanUp(String[] dirs) {
     // Controller's data stores
     deleteDataDictionaryDir();
-    deleteDefaultDiskStoreFiles(getSysDirName(getGemFireDescription()));
+    deleteDefaultDiskStoreFiles(getSysDirName());
 
     // Individual VM's datastores
     for (String dirName : dirs) {

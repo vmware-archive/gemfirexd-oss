@@ -28,7 +28,6 @@ public class LangScripts_IntersectDUnit extends DistributedSQLTestBase {
 
 	public LangScripts_IntersectDUnit(String name) {
 		super(name);
-		// TODO Auto-generated constructor stub
 	}
 	
 	  public void testLangScript_IntersectTest() throws Exception
@@ -118,7 +117,7 @@ public class LangScripts_IntersectDUnit extends DistributedSQLTestBase {
 		{ "insert into t3 values  (1, cast( 'aa' as clob(64)), cast(X'01' as blob(1M)))", null },
 		{ "create table t4( i1 integer, cl clob(64), bl blob(1M))", null },
 		{ "insert into t4 values  (1, cast( 'aa' as clob(64)), cast(X'01' as blob(1M)))", null },
-		{ "select cl from t3 intersect select cl from t4 order by 1", "X0X67" },
+		{ "select cl from t3 intersect select cl from t4 order by 1", new String[][] { {"aa"} } },
 		{ "select bl from t3 intersect select bl from t4 order by 1", "X0X67" },
 		{ "select tm from t1 intersect select dt from t2", "42X61" },
 		{ "select c30 from t1 intersect select d from t2", "42X61" },
@@ -176,8 +175,7 @@ public class LangScripts_IntersectDUnit extends DistributedSQLTestBase {
 		//{ "insert into r select i1,i2 from t2 except all select i1,i2 from t1", null },
 		//{ "select i1,i2 from r order by 1,2", new String[][] { {"1","2"},{"1","3"},{"5","5"} } },
 		{ "delete from r", null },
-		// TODO : GemFireXD allows LONG VARCHAR as order by, try this in EXCEPT like LOBs below
-		{ "select cl from t3 except select cl from t4 order by 1", "X0X67" },
+		{ "select cl from t3 except select cl from t4 order by 1", new String[][] { } },
 		{ "select bl from t3 except select bl from t4 order by 1", "X0X67" },
 		{ "select tm from t1 except select dt from t2", "42X61" },
 		{ "select c30 from t1 except select d from t2", "42X61" },

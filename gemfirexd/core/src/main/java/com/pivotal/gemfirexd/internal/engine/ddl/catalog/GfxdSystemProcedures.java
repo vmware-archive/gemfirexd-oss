@@ -22,15 +22,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.SortedSet;
+import java.util.*;
 
 import com.gemstone.gemfire.cache.CacheException;
 import com.gemstone.gemfire.cache.EvictionAttributes;
@@ -88,13 +80,13 @@ import com.pivotal.gemfirexd.internal.iapi.types.DataValueDescriptor;
 import com.pivotal.gemfirexd.internal.iapi.types.TypeId;
 import com.pivotal.gemfirexd.internal.iapi.util.IdUtil;
 import com.pivotal.gemfirexd.internal.iapi.util.StringUtil;
-import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedConnection;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedResultSetMetaData;
 import com.pivotal.gemfirexd.internal.impl.jdbc.TransactionResourceImpl;
 import com.pivotal.gemfirexd.internal.impl.jdbc.Util;
 import com.pivotal.gemfirexd.internal.impl.jdbc.authentication.AuthenticationServiceBase;
 import com.pivotal.gemfirexd.internal.impl.jdbc.authentication.LDAPAuthenticationSchemeImpl;
 import com.pivotal.gemfirexd.internal.impl.sql.catalog.GfxdDataDictionary;
+import com.pivotal.gemfirexd.internal.impl.sql.conn.GenericLanguageConnectionContext;
 import com.pivotal.gemfirexd.internal.impl.sql.execute.JarUtil;
 import com.pivotal.gemfirexd.internal.impl.store.raw.data.GfxdJarMessage;
 import com.pivotal.gemfirexd.internal.jdbc.InternalDriver;
@@ -149,7 +141,6 @@ public class GfxdSystemProcedures extends SystemProcedures {
    *          during connection.
    * 
    * @throws SQLException
-   * @throws StandardException
    * @see {@link #DROP_USER(String)}
    */
   public static void CREATE_USER(String userID, String password)
@@ -252,7 +243,8 @@ public class GfxdSystemProcedures extends SystemProcedures {
         try {
           lcc.getDataDictionary().unlockAfterWriting(tc, false);
         } catch (StandardException se) {
-          throw PublicAPI.wrapStandardException(se);
+          SanityManager.DEBUG_PRINT("warning:EXCEPTION",
+              "Failed to unlock DataDictionary for writing", se);
         }
       }
     }
@@ -295,8 +287,7 @@ public class GfxdSystemProcedures extends SystemProcedures {
    *          new connection validation.
    * 
    * @throws SQLException
-   * @throws StandardException
-   * @see {@link #CREATE_USER(String)}
+   * @see {@link #CREATE_USER(String, String)}
    */
   public static void CHANGE_PASSWORD(String userID, String oldPassword,
       String newPassword) throws SQLException {
@@ -449,7 +440,8 @@ public class GfxdSystemProcedures extends SystemProcedures {
         try {
           dd.unlockAfterWriting(tc, false);
         } catch (StandardException se) {
-          throw PublicAPI.wrapStandardException(se);
+          SanityManager.DEBUG_PRINT("warning:EXCEPTION",
+              "Failed to unlock DataDictionary for writing", se);
         }
       }
     }
@@ -457,7 +449,7 @@ public class GfxdSystemProcedures extends SystemProcedures {
 
   /**
    * Drop a distributed system users created via
-   * {@link CREATE_USER(String,String)}.
+   * {@link #CREATE_USER(String,String)}.
    * 
    * @param userID
    *          Existing user ID that must be dropped.
@@ -524,7 +516,8 @@ public class GfxdSystemProcedures extends SystemProcedures {
         try {
           lcc.getDataDictionary().unlockAfterWriting(tc, false);
         } catch (StandardException se) {
-          throw PublicAPI.wrapStandardException(se);
+          SanityManager.DEBUG_PRINT("warning:EXCEPTION",
+              "Failed to unlock DataDictionary for writing", se);
         }
       }
     }
@@ -545,7 +538,7 @@ public class GfxdSystemProcedures extends SystemProcedures {
 
   /**
    * Show all distributed system users using BUILTIN authentication scheme
-   * created via {@link CREATE_USER(String,String)}, or defined via system
+   * created via {@link #CREATE_USER(String,String)}, or defined via system
    * property.
    * 
    * @param users
@@ -735,7 +728,7 @@ public class GfxdSystemProcedures extends SystemProcedures {
       String serverGroups) throws SQLException, StandardException {
 
     // first set the critical-heap-percentage locally if requested
-    final Object[] args = new Object[] { Float.valueOf(heapPercentage),
+    final Object[] args = new Object[] { heapPercentage,
         serverGroups };
     GfxdSystemProcedureMessage.SysProcMethod.setCriticalHeapPercentage
         .processMessage(args, Misc.getMyId());
@@ -750,7 +743,7 @@ public class GfxdSystemProcedures extends SystemProcedures {
       String serverGroups) throws SQLException, StandardException {
 
     // first set the critical-off-heap-percentage locally if requested
-    final Object[] args = new Object[] { Float.valueOf(offHeapPercentage),
+    final Object[] args = new Object[] { offHeapPercentage,
         serverGroups };
     GfxdSystemProcedureMessage.SysProcMethod.setCriticalOffHeapPercentage
         .processMessage(args, Misc.getMyId());
@@ -851,7 +844,7 @@ public class GfxdSystemProcedures extends SystemProcedures {
       String serverGroups) throws SQLException, StandardException {
 
     // first set the eviction-heap-percentage locally if requested
-    final Object[] args = new Object[] { Float.valueOf(heapPercentage),
+    final Object[] args = new Object[] { heapPercentage,
         serverGroups };
     GfxdSystemProcedureMessage.SysProcMethod.setEvictionHeapPercentage
         .processMessage(args, Misc.getMyId());
@@ -866,7 +859,7 @@ public class GfxdSystemProcedures extends SystemProcedures {
       String serverGroups) throws SQLException, StandardException {
 
     // first set the eviction-offheap-percentage locally if requested
-    final Object[] args = new Object[] { Float.valueOf(offHeapPercentage),
+    final Object[] args = new Object[] { offHeapPercentage,
         serverGroups };
     GfxdSystemProcedureMessage.SysProcMethod.setEvictionOffHeapPercentage
         .processMessage(args, Misc.getMyId());
@@ -1028,7 +1021,8 @@ public class GfxdSystemProcedures extends SystemProcedures {
         try {
           lcc.getDataDictionary().unlockAfterWriting(tc, false);
         } catch (StandardException se) {
-          throw PublicAPI.wrapStandardException(se);
+          SanityManager.DEBUG_PRINT("warning:EXCEPTION",
+              "Failed to unlock DataDictionary for writing", se);
         }
       }
     }
@@ -1036,10 +1030,10 @@ public class GfxdSystemProcedures extends SystemProcedures {
 
   /**
    * This procedure sets up per connection query plan generation. Any schema
-   * switch will be tracked and recorded by this connection. To retrieve the 
+   * switch will be tracked and recorded by this connection. To retrieve the
    * query plans, one will have to switch back to individual schemas and execute
    * 'select stmt_id, stmt_text from sys.statementplans';
-   * 
+   *
    * @param enable
    * @throws SQLException
    */
@@ -1051,7 +1045,7 @@ public class GfxdSystemProcedures extends SystemProcedures {
                 + " connection level plan collection ");
       }
     }
-    
+
     LanguageConnectionContext lcc = ConnectionUtil.getCurrentLCC();
 
     if (enable == 0) {
@@ -1061,12 +1055,8 @@ public class GfxdSystemProcedures extends SystemProcedures {
     else {
       lcc.setStatsEnabled(lcc.statsEnabled(), lcc.getStatisticsTiming(),
           true /*enable*/);
-      String currentSchema = lcc.getCurrentSchemaName();
-      if (currentSchema == null) {
-        currentSchema = Property.DEFAULT_USER_NAME;
-      }
     }
-    
+
     final String key = Property.STATEMENT_EXPLAIN_MODE;
     final String value = enable == 0 ? null : "TRUE";
     PropertyInfo.setDatabaseProperty(key, value, (value != null));
@@ -1162,7 +1152,7 @@ public class GfxdSystemProcedures extends SystemProcedures {
               return true;
             }
             else {
-              if (exportAll != null && exportAll.booleanValue()) {
+              if (exportAll != null && exportAll) {
                 final AbstractGfxdReplayableMessage msg =
                     (AbstractGfxdReplayableMessage)val;
                 final String sql = msg.getSQLStatement();
@@ -1453,15 +1443,16 @@ public class GfxdSystemProcedures extends SystemProcedures {
    * 
    * @param args
    *          arguments of the procedure.
-   * @param serverGroups
-   *          if non-null, restricts publish to the serverGroup.
+   * @param lastArgServerGroups
+   *          if true, then last argument in <code>args</code> is taken as a
+   *          serverGroup where the publish will be restricted.
    * @param systemProcedure
    *          procedure method that is remotely invoked.
    * @param persistent whether to include in the DDL queue and replay 
    * @param includeLocators should this message published to locator VMs too.
    * @throws SQLException wrapping any StandardExceptions if is raised.
    */
-  public final static void publishMessage(Object[] args,
+  public static void publishMessage(Object[] args,
       final boolean lastArgServerGroups,
       final GfxdSystemProcedureMessage.SysProcMethod systemProcedure,
       final boolean persistent, final boolean includeLocators)
@@ -1526,9 +1517,8 @@ public class GfxdSystemProcedures extends SystemProcedures {
    * VARCHAR(128), IN REPLACE SMALLINT, IN LOCKTABLE SMALLINT, IN NUMTHREADS
    * INTEGER, IN CASESENSITIVENAMES SMALLINT, IN IMPORTCLASSNAME VARCHAR(32672),
    * IN ERRORFILE VARCHAR(32762))
-   * 
-   * @exception StandardException
-   *              Standard exception policy.
+   *
+   * @exception SQLException a SQL exception
    */
   public static void IMPORT_TABLE_EX(String schemaName, String tableName,
       String fileName, String columnDelimiter, String characterDelimiter,
@@ -1579,9 +1569,8 @@ public class GfxdSystemProcedures extends SystemProcedures {
    * CHARACTERDELIMITER CHAR(1), IN CODESET VARCHAR(128), IN REPLACE SMALLINT,
    * IN LOCKTABLE SMALLINT, IN NUMTHREADS INTEGER, IN CASESENSITIVENAMES
    * SMALLINT, IN IMPORTCLASSNAME VARCHAR(32672), IN ERRORFILE VARCHAR(32762))
-   * 
-   * @exception StandardException
-   *              Standard exception policy.
+   *
+   * @exception SQLException a SQL exception
    */
   public static void IMPORT_DATA_EX(String schemaName, String tableName,
       String insertColumnList, String columnIndexes, String fileName,
@@ -1631,9 +1620,8 @@ public class GfxdSystemProcedures extends SystemProcedures {
    * , IN CODESET VARCHAR(128), IN REPLACE SMALLINT, IN LOCKTABLE SMALLINT, IN
    * NUMTHREADS INTEGER, IN CASESENSITIVENAMES SMALLINT, IN IMPORTCLASSNAME
    * VARCHAR(32672), IN ERRORFILE VARCHAR(32762))
-   * 
-   * @exception StandardException
-   *              Standard exception policy.
+   *
+   * @exception SQLException a SQL exception
    */
   public static void IMPORT_TABLE_LOBS_FROM_EXTFILE(String schemaName,
       String tableName, String fileName, String columnDelimiter,
@@ -1921,8 +1909,11 @@ public class GfxdSystemProcedures extends SystemProcedures {
   }
   
 	/**
-	 * This procedure sets the local execution mode for a particular bucket
+	 * This procedure sets the local execution mode for a particular bucket. To prevent
+     * clearing of lcc in case of thin client connections a flag BUCKET_RENTION_FOR_LOCAL_EXECUTION
+     * is set.
 	 */
+
 	public static void SET_BUCKETS_FOR_LOCAL_EXECUTION(String tableName,
 			int bucket) throws SQLException, StandardException {
 		if (tableName == null) {
@@ -1933,6 +1924,8 @@ public class GfxdSystemProcedures extends SystemProcedures {
 		Region region = Misc.getRegionForTable(tableName, true);
 		LanguageConnectionContext lcc = ConnectionUtil.getCurrentLCC();
 		lcc.setExecuteLocally(bucketSet, region, false, null);
+        if (lcc instanceof GenericLanguageConnectionContext)
+            ((GenericLanguageConnectionContext) lcc).setBucketRetentionForLocalExecution(true);
 	}
   
   /**
@@ -2031,8 +2024,6 @@ public class GfxdSystemProcedures extends SystemProcedures {
    *          GRANT/REVOKE with grantee as "ldapGroup:{group}".
    *          <p>
    *
-   * @throws StandardException
-   *           on error like invalid LDAP group
    * @throws SQLException
    *           on error in distribution to other nodes
    */
@@ -2099,7 +2090,8 @@ public class GfxdSystemProcedures extends SystemProcedures {
         try {
           lcc.getDataDictionary().unlockAfterWriting(tc, false);
         } catch (StandardException se) {
-          throw PublicAPI.wrapStandardException(se);
+          SanityManager.DEBUG_PRINT("warning:EXCEPTION",
+              "Failed to unlock DataDictionary for writing", se);
         }
       }
     }

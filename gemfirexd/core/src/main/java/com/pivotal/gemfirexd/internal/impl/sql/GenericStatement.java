@@ -48,17 +48,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-
-
-//GemStone changes BEGIN
 import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gnu.trove.THashMap;
 import com.gemstone.gnu.trove.THashSet;
-import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserver;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
+import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.ddl.resolver.GfxdPartitionResolver;
 import com.pivotal.gemfirexd.internal.engine.distributed.metadata.DMLQueryInfo;
 import com.pivotal.gemfirexd.internal.engine.distributed.metadata.InsertQueryInfo;
@@ -69,7 +66,9 @@ import com.pivotal.gemfirexd.internal.engine.distributed.utils.GemFireXDUtils;
 import com.pivotal.gemfirexd.internal.engine.management.GfxdManagementService;
 import com.pivotal.gemfirexd.internal.engine.management.GfxdResourceEvent;
 import com.pivotal.gemfirexd.internal.engine.reflect.GemFireActivationClass;
+import com.pivotal.gemfirexd.internal.engine.reflect.SnappyActivationClass;
 import com.pivotal.gemfirexd.internal.engine.sql.conn.GfxdHeapThresholdListener;
+import com.pivotal.gemfirexd.internal.engine.sql.execute.SnappyActivation;
 import com.pivotal.gemfirexd.internal.engine.store.GemFireContainer;
 import com.pivotal.gemfirexd.internal.engine.store.GemFireStore;
 import com.pivotal.gemfirexd.internal.iapi.error.StandardException;
@@ -92,6 +91,7 @@ import com.pivotal.gemfirexd.internal.iapi.sql.dictionary.DataDictionary;
 import com.pivotal.gemfirexd.internal.iapi.sql.dictionary.SchemaDescriptor;
 import com.pivotal.gemfirexd.internal.iapi.sql.dictionary.TableDescriptor;
 import com.pivotal.gemfirexd.internal.iapi.sql.execute.ExecutionContext;
+import com.pivotal.gemfirexd.internal.iapi.store.access.TransactionController;
 import com.pivotal.gemfirexd.internal.iapi.types.DataTypeDescriptor;
 import com.pivotal.gemfirexd.internal.impl.sql.compile.CursorNode;
 import com.pivotal.gemfirexd.internal.impl.sql.compile.ExecSPSNode;
@@ -99,8 +99,9 @@ import com.pivotal.gemfirexd.internal.impl.sql.compile.InsertNode;
 import com.pivotal.gemfirexd.internal.impl.sql.compile.StatementNode;
 import com.pivotal.gemfirexd.internal.impl.sql.conn.GenericLanguageConnectionContext;
 import com.pivotal.gemfirexd.internal.shared.common.ResolverUtils;
-
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+//GemStone changes BEGIN
 
 
 public class GenericStatement
@@ -137,12 +138,13 @@ public class GenericStatement
         //private ProcedureProxy procProxy;
         private final GfxdHeapThresholdListener thresholdListener;
         private THashMap ncjMetaData = null;
+	      private static final String STREAMING_DDL_PREFIX = "STREAMING";
+	      private static final String INSERT_INTO_TABLE_PATTERN = ".*INSERT\\s+INTO\\s+TABLE.*";
 // GemStone changes END
 	/**
 	 * Constructor for a Statement given the text of the statement in a String
 	 * @param compilationSchema schema
 	 * @param statementText	The text of the statement
-	 * @param isForReadOnly if the statement is opened with level CONCUR_READ_ONLY
 	 */
 	public GenericStatement(SchemaDescriptor compilationSchema, String statementText,
 	    short execFlags, THashMap ncjMetaData)
@@ -197,7 +199,30 @@ public class GenericStatement
 		*/
 		return prepMinion(lcc, true, (Object[]) null, (SchemaDescriptor) null, forMetaData);
 	}
-	
+
+	// GemStone changes BEGIN
+	private GenericPreparedStatement getPreparedStatementForSnappy(
+    boolean commitNestedTransaction, StatementContext statementContext,
+    LanguageConnectionContext lcc, boolean isDDL) throws StandardException {
+      GenericPreparedStatement gps = preparedStmt;
+      GeneratedClass ac = new SnappyActivationClass(!isDDL);
+      gps.setActivationClass(ac);
+      if (commitNestedTransaction) {
+        lcc.commitNestedTransaction();
+      }
+      if (statementContext != null) {
+        lcc.popStatementContext(statementContext, null);
+      }
+
+     if (GemFireXDUtils.TraceQuery) {
+        SanityManager.DEBUG_PRINT(GfxdConstants.TRACE_QUERYDISTRIB,
+          "GenericStatement.getPreparedStatementForSnappy: Created SnappyActivation for sql: " + this.getSource()
+           + " ,isDDL=" + isDDL);
+	 }
+     return gps;
+  }
+
+	// GemStone changes END
 	@SuppressFBWarnings(value="ML_SYNC_ON_FIELD_TO_GUARD_CHANGING_THAT_FIELD")
         private final PreparedStatement prepMinion(
             final LanguageConnectionContext lcc, final boolean cacheMe,
@@ -215,6 +240,7 @@ public class GenericStatement
 		Timestamp			endTimestamp = null;
 		StatementContext	statementContext = null;
 // GemStone changes BEGIN
+		boolean routeQuery = Misc.getMemStore().isSnappyStore() && lcc.isQueryRoutingEnabled();
 		GeneratedClass ac = null;
                 QueryInfo qinfo = null;
                 boolean createGFEPrepStmt = false;
@@ -314,8 +340,9 @@ public class GenericStatement
     // will never be true for the former case.
     DataDictionary dataDictionary = lcc.getDataDictionary();
 
-    int ddMode =0 ;
+    int ddMode = 0;
     boolean ddLockAcquired = false;
+    int additionalDDLocks = 0;
     // don't cancel DROP/TRUNCATE TABLE/INDEX statements
     final boolean checkCancellation = !SKIP_CANCEL_STMTS
         .matcher(statementText).find();
@@ -350,7 +377,8 @@ public class GenericStatement
 				if (preparedStmt.upToDate()) {
 				  // GemStone changes BEGIN
                                    foundStats = fetchStatementStats(lcc, null);
-                                   assert foundStats == true: "prepMinion: expected the stats to be present after waiting for compilation.";
+                                   assert foundStats: "prepMinion: expected " +
+				       "the stats to be present after waiting for compilation.";
                                   // GemStone changes END
 				     return preparedStmt;
 				}
@@ -370,9 +398,21 @@ public class GenericStatement
 				        if (dataDictionary != null && ddLockAcquired) {
 				          dataDictionary.doneReading(ddMode, lcc);
 				          ddLockAcquired = false;
+					  // check for any more remaining DD locks
+					  TransactionController tc = lcc.getTransactionExecute();
+					  while (dataDictionary.unlockAfterReading(tc)) {
+					    additionalDDLocks++;
+					  }
 				        }
 // GemStone changes END
 					preparedStmt.wait();
+// GemStone changes BEGIN
+					while (additionalDDLocks > 0) {
+					  dataDictionary.lockForReading(
+					      lcc.getTransactionExecute());
+					  additionalDDLocks--;
+					}
+// GemStone changes END
 					continue outer;
 				} catch (final InterruptedException ie) {
 					throw StandardException.interrupt(ie);
@@ -512,7 +552,31 @@ public class GenericStatement
 				//will invoke this method from other places
 				//GemStone changes BEGIN
 				//StatementNode qt = p.parseStatement(statementText, paramDefaults);
-				StatementNode qt = p.parseStatement(getQueryStringForParse(lcc), paramDefaults);
+				StatementNode qt;
+				try {
+				    qt = p.parseStatement(getQueryStringForParse(lcc), paramDefaults);
+				}
+				catch (StandardException ex) {
+				    //SanityManager.DEBUG_PRINT("DEBUG", "Parse: exception routeQuery=" + routeQuery + " ,sql=" + this.getSource() + " ,flag=" + cc.isDDL4routing());
+				    //System.out.println("Parse: exception routeQuery=" + routeQuery + " ,sql=" + this.getSource() + " ,ex=" + ex.getMessage() +  " ,stack=" + ExceptionUtils.getFullStackTrace(ex));
+          if (routeQuery) {
+            if (getSource().length() >= STREAMING_DDL_PREFIX.length()
+		&& getSource().substring(0, STREAMING_DDL_PREFIX.length()).equalsIgnoreCase(STREAMING_DDL_PREFIX)) {
+              cc.markAsDDLForSnappyUse(true);
+            }
+						if(Pattern.matches(INSERT_INTO_TABLE_PATTERN, getSource().toUpperCase())){
+							cc.markAsDDLForSnappyUse(true);
+						}
+            return getPreparedStatementForSnappy(false, statementContext, lcc, cc.isMarkedAsDDLForSnappyUse());
+          }
+          throw ex;
+				}
+				// DDL Route, even if no exception
+				if (routeQuery && cc.isForcedDDLrouting())
+				{
+					//SanityManager.DEBUG_PRINT("DEBUG","Parse: force routing sql=" + this.getSource());
+				    return getPreparedStatementForSnappy(false, statementContext, lcc, true);
+				}
 				//GemStone changes END
 				parseTime = getCurrentTimeMillis(lcc);
 
@@ -572,7 +636,16 @@ public class GenericStatement
 	                                  Misc.checkMemory(thresholdListener, statementText, -1);
 				        }
 // GemStone changes END
-					qt.bindStatement();
+					try {
+						qt.bindStatement();
+					}
+					catch(StandardException ex) {
+						//System.out.println("Bind: exception routeQuery=" + routeQuery + " ,sql=" + this.getSource() + " ,flag=" + cc.isDDL4routing());
+						if (routeQuery) {
+							return getPreparedStatementForSnappy(true, statementContext, lcc, false);
+						}
+						throw ex;
+					}
 
 					bindTime += getCurrentTimeMillis(lcc);
 
@@ -628,7 +701,15 @@ public class GenericStatement
 						if (foundInCache)
 							((GenericLanguageConnectionContext)lcc).removeStatement(this);
 					}
- 					qt.optimizeStatement();
+					try {
+						qt.optimizeStatement();
+					}
+					catch(StandardException ex) {
+						if (routeQuery) {
+							return getPreparedStatementForSnappy(true, statementContext, lcc, false);
+						}
+						throw ex;
+					}
 
  					optimizeTime += getCurrentTimeMillis(lcc);
 // GemStone changes BEGIN
@@ -656,6 +737,14 @@ public class GenericStatement
                                           final QueryInfoContext qic = new QueryInfoContext(
                                               this.createQueryInfo(),  paramDTDS != null ? paramDTDS.length : 0, isPreparedStatement());
                                           qinfo = qt.computeQueryInfo(qic);
+																					// Only rerouting selects to lead node. Inserts will be handled separately.
+																					// The below should be connection specific.
+																					if (routeQuery && qinfo != null && qinfo.isSelect() && !isPreparedStatement()) {
+																						if (SnappyActivation.isColumnTable((DMLQueryInfo)qinfo, false)) {
+																							return getPreparedStatementForSnappy(true, statementContext, lcc, false);
+																						}
+																					}
+
                                           if (qinfo != null && qinfo.isInsert()) {
                                             qinfo = handleInsertAndInsertSubSelect(qinfo, qt);
                                           }
@@ -747,7 +836,12 @@ public class GenericStatement
 				    cc.setHasOrList(false);
 				    qt = p.parseStatement(getQueryStringForParse(lcc), paramDefaults);
 				    continue;
-				  }
+          } else if (routeQuery &&
+            (messgId.equals(SQLState.NOT_COLOCATED_WITH)
+               || messgId.equals(SQLState.COLOCATION_CRITERIA_UNSATISFIED) ||
+                  messgId.equals(SQLState.REPLICATED_PR_CORRELATED_UNSUPPORTED))) {
+            return getPreparedStatementForSnappy(true, statementContext, lcc, false);
+          }
 // GemStone changes END
 					lcc.commitNestedTransaction();
 
@@ -917,6 +1011,7 @@ public class GenericStatement
 					preparedStmt.completeCompile(qt);
 					preparedStmt.setCompileTimeWarnings(cc.getWarnings());
 // GemStone changes BEGIN
+          preparedStmt.setDynamicTokenList(cc.getDynamicTokenList());
 					preparedStmt.setQueryHDFS(cc.getQueryHDFS());
 					preparedStmt.setHasQueryHDFS(cc.getHasQueryHDFS());
 					preparedStmt.setIsCallableStatement(

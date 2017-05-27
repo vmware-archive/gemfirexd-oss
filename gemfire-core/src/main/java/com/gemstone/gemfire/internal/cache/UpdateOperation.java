@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import com.gemstone.gemfire.DataSerializer;
 import com.gemstone.gemfire.InternalGemFireError;
@@ -163,6 +164,7 @@ public class UpdateOperation extends AbstractUpdateOperation
     static final int IS_PUT_DML = getNextByteMask(HAS_DELTA_WITH_FULL_VALUE);
 
     private long tailKey = 0L;
+    private UUID batchUUID = new UUID(0,0);
     
     public UpdateMessage() {
     }
@@ -239,6 +241,7 @@ public class UpdateOperation extends AbstractUpdateOperation
             .getFilterInfo(rgn.getMyId()));
       }
       ev.setTailKey(tailKey);
+      ev.setBatchUUID(batchUUID);
       ev.setVersionTag(this.versionTag);
       
       ev.setInhibitAllNotifications(this.inhibitAllNotifications);
@@ -366,6 +369,7 @@ public class UpdateOperation extends AbstractUpdateOperation
           this.callbackArg, originRemote, getSender(), generateCallbacks);
       setOldValueInEvent(result);
       result.setTailKey(this.tailKey);
+      result.setBatchUUID(this.batchUUID);
       if (this.versionTag != null) {
         result.setVersionTag(this.versionTag);
       }
@@ -422,6 +426,7 @@ public class UpdateOperation extends AbstractUpdateOperation
         this.eventId = new EventID();
         InternalDataSerializer.invokeFromData(this.eventId, in);
         this.tailKey = InternalDataSerializer.readSignedVL(in);
+        this.batchUUID = InternalDataSerializer.readUUID(in);
       }
       else {
         this.eventId = null;
@@ -488,6 +493,7 @@ public class UpdateOperation extends AbstractUpdateOperation
         else {
           InternalDataSerializer.writeSignedVL(0, out);
         }
+        InternalDataSerializer.writeUUID(this.event.getBatchUUID(), out);
       }
       Object key = this.key;
       if (key instanceof KeyWithRegionContext) {

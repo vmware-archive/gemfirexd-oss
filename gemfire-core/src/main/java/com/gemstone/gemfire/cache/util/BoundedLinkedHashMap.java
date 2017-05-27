@@ -33,7 +33,7 @@ import java.util.Map;
  * to enforce a maximum number of entries.
  */
 @Deprecated
-public class BoundedLinkedHashMap extends LinkedHashMap
+public class BoundedLinkedHashMap extends LinkedHashMap<Object, Object>
 {
   private static final long serialVersionUID = -3419897166186852692L;
 

@@ -31,6 +31,7 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
 import quickstart.ProcessWrapper;
+import com.gemstone.gemfire.internal.process.LocalProcessControllerJUnitTest.Process;
 
 import com.gemstone.gemfire.InternalGemFireError;
 import com.gemstone.gemfire.internal.AvailablePortHelper;
@@ -188,52 +189,6 @@ public class LocalProcessControllerDUnitTest extends DistributedTestCase {
     }
     public void kill() throws RemoteException {
       System.exit(0);
-    }
-  }
-  
-  public static interface ProcessMBean {
-    public int getPid();
-    public boolean isProcess();
-    public void stop();
-  }
-  
-  public static class Process implements ProcessMBean {
-    
-    private final Object object = new Object();
-    private final int pid;
-    private final boolean process;
-    private volatile boolean stop;
-    
-    public Process(int pid, boolean process) {
-      this.pid = pid;
-      this.process = process;
-    }
-    
-    @Override
-    public int getPid() {
-      return this.pid;
-    }
-    
-    public boolean isProcess() {
-      return this.process;
-    }
-    
-    @Override
-    public void stop() {
-      synchronized (this.object) {
-        this.stop = true;
-        this.object.notifyAll();
-      }
-    }
-    
-    public void waitUntilStopped() throws InterruptedException {
-      synchronized (this.object) {
-        System.out.println(TEST_CASE + " process running");
-        while (!this.stop) {
-          this.object.wait();
-        }
-        System.out.println(TEST_CASE + " process stopped");
-      }
     }
   }
 }

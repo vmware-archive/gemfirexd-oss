@@ -40,6 +40,7 @@
 
 package com.pivotal.gemfirexd.jdbc;
 
+import java.util.Properties;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -65,14 +66,19 @@ public class ClientDRDADriver implements java.sql.Driver {
     private transient int traceFileSuffixIndex_ = 0;
 
     // support for older jdbc:sqlfire:// URL scheme has now been dropped
-    protected final static String URL_PREFIX = "jdbc:gemfirexd:";
+    public static String SNAPPY_PROTOCOL =  "jdbc:snappydata:";
+    public static String GEMXD_PROTOCOL =  "jdbc:gemfirexd:";
+    public static String  DRDA_CONNECTION_PROTOCOL = "DRDA_CONNECTION_PROTOCOL";
+
+  protected final static String URL_PREFIX_REGEX = "(" + SNAPPY_PROTOCOL +
+      "|" + GEMXD_PROTOCOL + ")";
     protected final static String URL_SUFFIX_REGEX =
-        "//(([^:]+:[0-9]+)|([^\\[]+\\[[0-9]+\\]))(/(gemfirexd;)?;?(.*)?)?";
+        "//(([^:]+:[0-9]+)|([^\\[]+\\[[0-9]+\\]))(/(gemfirexd;|snappydata;)?;?(.*)?)?";
 
     private final static String DRDA_SUBPROTOCOL = "drda:";
     private final static Pattern DRDA_PROTOCOL_PATTERN = Pattern.compile(
-        URL_PREFIX + DRDA_SUBPROTOCOL + "//.*", Pattern.CASE_INSENSITIVE);
-    private final static Pattern DRDA_URL_PATTERN = Pattern.compile(URL_PREFIX
+        URL_PREFIX_REGEX + DRDA_SUBPROTOCOL + "//.*", Pattern.CASE_INSENSITIVE);
+    private final static Pattern DRDA_URL_PATTERN = Pattern.compile(URL_PREFIX_REGEX
         + DRDA_SUBPROTOCOL + URL_SUFFIX_REGEX, Pattern.CASE_INSENSITIVE);
 
     private static ClientJDBCObjectFactory factoryObject = null;
@@ -173,6 +179,8 @@ public class ClientDRDADriver implements java.sql.Driver {
             String database = "";
             java.util.Properties augmentedProperties = getURLProperties(m,
                 properties);
+            augmentedProperties.put(DRDA_CONNECTION_PROTOCOL , m.group(1));
+
             if (thriftProtocol) {
               return createThriftConnection(server, port[0], augmentedProperties);
             }
@@ -199,8 +207,7 @@ public class ClientDRDADriver implements java.sql.Driver {
                             traceLevel,
                             "_driver",
                             traceFileSuffixIndex_++);
-            
-            
+
             conn = (com.pivotal.gemfirexd.internal.client.net.NetConnection)getFactory().
                     newNetConnection((com.pivotal.gemfirexd.internal.client.net.NetLogWriter) 
                     dncLogWriter,
@@ -209,6 +216,7 @@ public class ClientDRDADriver implements java.sql.Driver {
                     port[0],
                     database,
                     augmentedProperties);
+
         } catch(SqlException se) {
             throw se.getSQLException(null /* GemStoneAddition */);
         }
@@ -564,7 +572,7 @@ public class ClientDRDADriver implements java.sql.Driver {
 
     protected java.util.Properties getURLProperties(Matcher m,
         java.util.Properties properties) throws SqlException {
-      String propsGroup = m.group(7);
+      String propsGroup = m.group(8);
       if (propsGroup != null && propsGroup.length() > 0) {
         return ClientDataSource.tokenizeAttributes(propsGroup, properties);
       }
@@ -578,7 +586,7 @@ public class ClientDRDADriver implements java.sql.Driver {
     }
 
     protected Matcher matchProtocol(String url) {
-      return DRDA_PROTOCOL_PATTERN.matcher(url);
+     return  DRDA_PROTOCOL_PATTERN.matcher(url);
     }
 
     protected java.sql.Connection createThriftConnection(String server, int port,

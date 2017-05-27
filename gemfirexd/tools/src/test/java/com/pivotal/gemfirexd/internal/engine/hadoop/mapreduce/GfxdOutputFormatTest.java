@@ -324,9 +324,13 @@ public class GfxdOutputFormatTest extends JdbcTestBase {
         int.class, PreparedStatement.class)));
     assertTrue(columns.contains(DataObject.class.getMethod("setA", int.class,
         PreparedStatement.class)));
-    
+
     String query = util.createQuery("table", columns);
-    assertEquals("PUT INTO table(col1, a) VALUES (?, ?);", query);
+    // the order of columns seems to be non-deterministic in different runs
+    if (!query.equals("PUT INTO table(col1, a) VALUES (?, ?);") &&
+        !query.equals("PUT INTO table(a, col1) VALUES (?, ?);")) {
+      fail("unexpected query string: " + query);
+    }
   }
 
   public GfxdOutputFormatTest(String name) {

@@ -35,12 +35,12 @@ public class LangScripts_LOBDUnit extends DistributedSQLTestBase {
 	  {
 	    // This is a JUnit conversion of the Derby Lang LOB.sql script
 	    // without any GemFireXD extensions
-		  
+
 	    // Catch exceptions from illegal syntax
 	    // Tests still not fixed marked FIXME
-		  
+
 	    // Array of SQL text to execute and sqlstates to expect
-	    // The first object is a String, the second is either 
+	    // The first object is a String, the second is either
 	    // 1) null - this means query returns no rows and throws no exceptions
 	    // 2) a string - this means query returns no rows and throws expected SQLSTATE
 	    // 3) a String array - this means query returns rows which must match (unordered) given resultset
@@ -77,9 +77,9 @@ public class LangScripts_LOBDUnit extends DistributedSQLTestBase {
 	      { "select 1 from b where X'80' = cast(X'80' as blob(1))", "42818" },
 	      { "select 1 from b where cast(X'80' as blob(1)) = X'80'", "42818" },
 	      { "select 1 from b where cast(X'80' as blob(1)) = cast(X'80' as blob(1))", "42818" },
-	      { "select 1 from b where '1' = cast('1' as clob(1))", "42818" },
-	      { "select 1 from b where cast('1' as clob(1)) = '1'", "42818" },
-	      { "select 1 from b where cast('1' as clob(1)) = cast('1' as clob(1))", "42818" },
+	      { "select 1 from b where '1' = cast('1' as clob(1))", new String[][] { { "1" } } },
+	      { "select 1 from b where cast('1' as clob(1)) = '1'", new String[][] { { "1" } } },
+	      { "select 1 from b where cast('1' as clob(1)) = cast('1' as clob(1))", new String[][] { { "1" } } },
 	      // NCLOB not supported
 	      { "select 1 from b where '1' = cast('1' as nclob(1))", "0A000" },
 	      { "select 1 from b where cast('1' as nclob(1)) = '1'", "0A000" },
@@ -95,7 +95,7 @@ public class LangScripts_LOBDUnit extends DistributedSQLTestBase {
 	      { "select * from b as b1, b as b2 where X'7575'=b1.blob", "42818" },
 	      { "select b.blob, b.clob, b.nclob from b where b.blob = '1' and b.clob = '2' and b.nclob = '3'", "42X04" },
 	      { "select b.blob from b where b.blob = '1'", "42818" },    // On client connection, get 42818, on peer, get 22005
-	      { "select b.clob from b where b.clob = '2'", "42818" },    // db2 cs allows clob->char but not gemfirexd
+	      { "select b.clob from b where b.clob = '2'", new String[][] { { "2" } } },
 	      { "select b.nclob from b where b.nclob = '3'", "42X04" },
 	      // Test insert of null - missing nclob column as not supported though
 	      { "insert into b values (null, null, null)", "42802" },
@@ -108,6 +108,7 @@ public class LangScripts_LOBDUnit extends DistributedSQLTestBase {
 	      // Test insert limitations
 	      { "create table b(b blob(5))", null },
 	      { "create table c(c clob(5))", null },
+	      { "create table d(c string(5))", null },
 	      { "create table n(n nclob(5))", "0A000" },  // NCLOB not supported but tests included if it is ever supported, should succeed
 	      { "insert into b values(cast(X'01020304' as blob(10)))", null },
 	      { "insert into b values(cast(X'0102030405' as blob(10)))", null },
@@ -118,49 +119,62 @@ public class LangScripts_LOBDUnit extends DistributedSQLTestBase {
 	      { "insert into b values(cast(X'010203040506' as blob(5)))", null },
 	      // CLOB/NCLOB
 	      { "insert into c values('1234')", null },       // No cast necessary for char->clob
-	      { "insert into c values('12345')", null },    
-	      { "insert into c values('123456')", "22001" },    
-	      { "insert into n values('1234')", "42X05" },     
-	      { "insert into n values('12345')", "42X05" },    
-	      { "insert into n values('123456')", "42X05" },    
-	      { "insert into c values(cast('1234' as clob(5)))", null },    
-	      { "insert into c values(cast('12345' as clob(5)))", null },    
-	      { "insert into c values(cast('123456' as clob(5)))", null },    
+	      { "insert into c values('12345')", null },
+	      { "insert into c values('123456')", "22001" },
+	      { "insert into n values('1234')", "42X05" },
+	      { "insert into n values('12345')", "42X05" },
+	      { "insert into n values('123456')", "42X05" },
+	      { "insert into c values(cast('1234' as clob(5)))", null },
+	      { "insert into c values(cast('12345' as clob(5)))", null },
+	      { "insert into c values(cast('123456' as clob(5)))", null },
 	      { "insert into n values(cast('1234' as nclob(5)))", "0A000" },     // func-not-supported instead of table-not-found
-	      { "insert into n values(cast('12345' as nclob(5)))", "0A000" },    
-	      { "insert into n values(cast('123456' as nclob(5)))", "0A000" },    
+	      { "insert into d values('1234')", null },       // No cast necessary for char->clob
+	      { "insert into d values('12345')", null },
+	      { "insert into d values('123456')", "22001" },
+	      { "insert into d values(cast('1234' as string(5)))", null },
+	      { "insert into d values(cast('12345' as string(5)))", null },
+	      { "insert into d values(cast('123456' as string(5)))", null },
+	      { "insert into n values(cast('12345' as nclob(5)))", "0A000" },
+	      { "insert into n values(cast('123456' as nclob(5)))", "0A000" },
 	      { "select * from b", new String[][]{ {"01020304"},{"0102030405"},{"01020304"},{"0102030405"},{"0102030405"} } },
 	      { "select * from c", new String[][]{ {"1234"},{"12345"},{"1234"},{"12345"},{"12345"} } },
+	      { "select * from d", new String[][]{ {"1234"},{"12345"},{"1234"},{"12345"},{"12345"} } },
 	      { "select * from n", "42X05" },
 	      { "values cast('12' as clob(2)) || cast('34' as clob(2))", new String[][]{ {"1234"} } },
 	      { "values cast('12' as nclob(2)) || cast('34' as nclob(2))", "0A000" },
-	      { "select 1 from b where cast('12' as clob(2)) || cast('34' as clob(2)) = '1234'", "42818" },
+	      { "select 1 from b where cast('12' as clob(2)) || cast('34' as clob(2)) = '1234'", new String[][] { { "1" }, { "1" }, { "1" }, { "1" }, { "1" } } },
 	      { "select 1 from b where cast('12' as nclob(2)) || cast('34' as nclob(2)) = '1234'", "0A000" },
-	      { "select 1 from b where cast('12' as clob(2)) || cast('34' as clob(2)) = cast('1234' as clob(4))", "42818" },
+	      { "select 1 from b where cast('12' as clob(2)) || cast('34' as clob(2)) = cast('1234' as clob(4))", new String[][] { { "1" }, { "1" }, { "1" }, { "1" }, { "1" } } },
 	      { "select 1 from b where cast('12' as nclob(2)) || cast('34' as nclob(2)) = cast('1234' as nclob(4))", "0A000" },
 	      // LIKE
 	      { "select * from b where b like '0102%'", "42884" },
 	      { "select * from c where c like '12%'", new String[][]{ {"1234"},{"12345"},{"1234"},{"12345"},{"12345"} } },
+	      { "select * from d where c like '12%'", new String[][]{ {"1234"},{"12345"},{"1234"},{"12345"},{"12345"} } },
 	      { "select * from n where n like '12%'", "42X05" },
 	      { "select * from b where b like cast('0102%' as blob(10))", "42846" },
+	      { "select * from c where c like cast('12%' as clob(10))", new String[][]{ {"1234"},{"12345"},{"1234"},{"12345"},{"12345"} } },
 	      { "select * from c where c like cast('12%' as clob(10))", new String[][]{ {"1234"},{"12345"},{"1234"},{"12345"},{"12345"} } },
 	      { "select * from n where n like cast('12%' as nclob(10))", "0A000" },
 	      { "drop table b", null },
 	      { "drop table c", null },
+	      { "drop table d", null },
 	      { "drop table n", "42Y55" },
 	      // Test syntax of using long type names
 	      { "create table a(a binary large object(3K))", null },
 	      { "create table b(a character large object(3K))", null },
 	      { "create table c(a national character large object(3K))", "0A000" },
 	      { "create table d(a char large object(204K))", null },
+	      { "create table e(a string(204K))", null },
 	      // Create index (not allowed)
 	      { "create index ia on a(a)", "X0X67" },
-	      { "create index ib on b(a)", "X0X67" },
+	      { "create index ib on b(a)", null },
 	      { "create index ic on c(a)", "42Y55" },
-	      { "create index id on d(a)", "X0X67" },
+	      { "create index id on d(a)", null },
+	      { "create index ie on e(a)", null },
 	      { "drop table a", null },
 	      { "drop table c", "42Y55" },
 	      { "drop table d", null },
+	      { "drop table e", null },
 	      // Relops (not allowed)
 	      { "select 1 from b where cast(X'e0' as blob(5))=cast(X'e0' as blob(5))", "42818" },
 	      { "select 1 from b where cast(X'e0' as blob(5))!=cast(X'e0' as blob(5))", "42818" },
@@ -168,23 +182,33 @@ public class LangScripts_LOBDUnit extends DistributedSQLTestBase {
 	      { "select 1 from b where cast(X'e0' as blob(5))>cast(X'e0' as blob(5))", "42818" },
 	      { "select 1 from b where cast(X'e0' as blob(5))<=cast(X'e0' as blob(5))", "42818" },
 	      { "select 1 from b where cast(X'e0' as blob(5))>=cast(X'e0' as blob(5))", "42818" },
-	      { "select 1 from b where cast('fish' as clob(5))=cast('fish' as clob(5))", "42818" },
-	      { "select 1 from b where cast('fish' as clob(5))!=cast('fish' as clob(5))", "42818" },
-	      { "select 1 from b where cast('fish' as clob(5))<cast('fish' as clob(5))", "42818" },
-	      { "select 1 from b where cast('fish' as clob(5))>cast('fish' as clob(5))", "42818" },
-	      { "select 1 from b where cast('fish' as clob(5))<=cast('fish' as clob(5))", "42818" },
-	      { "select 1 from b where cast('fish' as clob(5))>=cast('fish' as clob(5))", "42818" },
+	      { "select 1 from b where cast('fish' as clob(5))=cast('fish' as clob(5))", new String[0][0] },
+	      { "select 1 from b where cast('fish' as clob(5))!=cast('fish' as clob(5))", new String[0][0] },
+	      { "select 1 from b where cast('fish' as clob(5))<cast('fish' as clob(5))", new String[0][0] },
+	      { "select 1 from b where cast('fish' as clob(5))>cast('fish' as clob(5))", new String[0][0] },
+	      { "select 1 from b where cast('fish' as clob(5))<=cast('fish' as clob(5))", new String[0][0] },
+	      { "select 1 from b where cast('fish' as clob(5))>=cast('fish' as clob(5))", new String[0][0] },
 	      { "select 1 from b where cast('fish' as nclob(5))=cast('fish' as nclob(5))", "0A000" },
 	      { "select 1 from b where cast('fish' as nclob(5))!=cast('fish' as nclob(5))", "0A000" },
 	      { "select 1 from b where cast('fish' as nclob(5))<cast('fish' as nclob(5))", "0A000" },
 	      { "select 1 from b where cast('fish' as nclob(5))>cast('fish' as nclob(5))", "0A000" },
 	      { "select 1 from b where cast('fish' as nclob(5))<=cast('fish' as nclob(7))", "0A000" },
 	      { "select 1 from b where cast('fish' as nclob(5))>=cast('fish' as nclob(7))", "0A000" },
+	      { "select 1 from b where cast('fish' as string(5))=cast('fish' as string(5))", new String[0][0] },
+	      { "select 1 from b where cast('fish' as string(5))!=cast('fish' as string(5))", new String[0][0] },
+	      { "select 1 from b where cast('fish' as string(5))<cast('fish' as string(5))", new String[0][0] },
+	      { "select 1 from b where cast('fish' as string(5))>cast('fish' as string(5))", new String[0][0] },
+	      { "select 1 from b where cast('fish' as string(5))<=cast('fish' as string(5))", new String[0][0] },
+	      { "select 1 from b where cast('fish' as string(5))>=cast('fish' as string(5))", new String[0][0] },
 	      // Test operands on auto-cast
 	      { "create table testoperatorclob (colone clob(1K))", null },
 	      { "insert into testoperatorclob values (CAST('50' as clob(1K)))", null },
 	      { "insert into testoperatorclob values (CAST(cast('50' as varchar(80)) as clob(1K)))", null },
 	      { "select * from testoperatorclob", new String[][]{ {"50"},{"50"} } },
+	      { "create table testoperatorstring (colone string(1K))", null },
+	      { "insert into testoperatorstring values (CAST('50' as string(1K)))", null },
+	      { "insert into testoperatorstring values (CAST(cast('50' as varchar(80)) as string(1K)))", null },
+	      { "select * from testoperatorstring", new String[][]{ {"50"},{"50"} } },
 	      // These selects should raise an error (but DB2 autocasts)
 	      { "select * from testoperatorclob where colone > 10", "42818" },
 	      { "select * from testoperatorclob where colone > 5", "42818" },
@@ -194,16 +218,18 @@ public class LangScripts_LOBDUnit extends DistributedSQLTestBase {
 	      { "select * from testoperatorclob where colone <= 70", "42818" },
 	      { "select * from testoperatorclob where colone >= 10", "42818" },
 	      { "select * from testoperatorclob where colone <> 10", "42818" },
-	      // NOTE : because of this failure, a partitioning range on CLOB should not be comparable - test this FIXME
-	      { "select * from testoperatorclob where colone > '10'", "42818" },
-	      { "select * from testoperatorclob where colone > '5'", "42818" },
-	      { "select * from testoperatorclob where colone < '70'", "42818" },
-	      { "select * from testoperatorclob where colone = '50'", "42818" },
-	      { "select * from testoperatorclob where colone != '10'", "42818" },
-	      { "select * from testoperatorclob where colone <= '70'", "42818" },
-	      { "select * from testoperatorclob where colone >= '10'", "42818" },
-	      { "select * from testoperatorclob where colone <> '10'", "42818" },
+	      { "select * from testoperatorstring where colone > 10", "42818" },
+	      { "select * from testoperatorclob where colone > '10'", new String[][] { { "50" }, { "50" } } },
+	      { "select * from testoperatorclob where colone > '5'", new String[][] { { "50" }, { "50" } } },
+	      { "select * from testoperatorclob where colone < '70'", new String[][] { { "50" }, { "50" } } },
+	      { "select * from testoperatorclob where colone = '50'", new String[][] { { "50" }, { "50" } } },
+	      { "select * from testoperatorclob where colone != '10'", new String[][] { { "50" }, { "50" } } },
+	      { "select * from testoperatorclob where colone <= '70'", new String[][] { { "50" }, { "50" } } },
+	      { "select * from testoperatorclob where colone >= '10'", new String[][] { { "50" }, { "50" } } },
+	      { "select * from testoperatorclob where colone <> '10'", new String[][] { { "50" }, { "50" } } },
+	      { "select * from testoperatorclob where colone > '10'", new String[][] { { "50" }, { "50" } } },
 	      { "drop table testoperatorclob", null },
+	      { "drop table testoperatorstring", null },
 	      // BLOB testing (inserts fail, otherwise results identical to clob)
 	      { "create table testoperatorblob (colone blob(1K))", null },
 	      { "insert into testoperatorblob values (CAST('50' as blob(1K)))", "42846" },
@@ -231,7 +257,7 @@ public class LangScripts_LOBDUnit extends DistributedSQLTestBase {
 	      { "create table testoperatornclob (colone nclob(1K))", "0A000" },
 	      { "insert into testoperatornclob values (CAST('50' as nclob(1K)))", "0A000" },
 	      { "insert into testoperatornclob values (CAST(cast('50' as varchar(80)) as nclob(1K)))", "0A000" },
-	      { "select * from testoperatornclob", "42X05" },  
+	      { "select * from testoperatornclob", "42X05" },
 	      { "select * from testoperatornclob where colone > 10", "42X05" },
 	      { "select * from testoperatornclob where colone > 5", "42X05" },
 	      { "select * from testoperatornclob where colone < 70", "42X05" },
@@ -254,12 +280,16 @@ public class LangScripts_LOBDUnit extends DistributedSQLTestBase {
 	      { "create table b(b blob(77))", null },
 	      { "insert into b values(cast('33' as blob(77)))", "42846" },
 	      { "create table c(c clob(77))", null },
+	      { "create table d(c string(77))", null },
 	      { "insert into c values(cast('33' as clob(77)))", null },
+	      { "insert into d values(cast('33' as string(77)))", null },
 	      { "values (cast('1' as blob(1M)))->toString()", "42846" },
-	      { "values (cast('1' as clob(1M)))->toString()", "XJ082" },
+	      { "values (cast('1' as clob(1M)))->toString()", "42X01" },
 	      { "values (cast('1' as nclob(1M)))->toString()", "0A000" },
+	      { "values (cast('1' as string(1M)))->toString()", "42X01" },
 	      { "drop table b", null },
 	      { "drop table c", null },
+	      { "drop table d", null },
 	      // Test length functions on LOBs
 	      { "values length(cast('foo' as blob(10)))", "42846" },
 	      { "values {fn length(cast('foo' as blob(10)))}", "42846" },
@@ -267,20 +297,22 @@ public class LangScripts_LOBDUnit extends DistributedSQLTestBase {
 	      { "values {fn length(cast('foo' as char(10)))}", new String[][]{ {"3"} } },  // fn length is notrailingblanks
 	      { "values length(cast('foo' as clob(10)))", new String[][]{ {"3"} } },       // clobs have no trailingblanks
 	      { "values {fn length(cast('foo' as clob(10)))}", new String[][]{ {"3"} } },  // fn length is notrailingblanks
-	      { "values length(cast('foo' as nclob(10)))", "0A000" },      
-	      { "values {fn length(cast('foo' as nclob(10)))}", "0A000" },  
+	      { "values length(cast('foo' as string(10)))", new String[][]{ {"3"} } },       // clobs have no trailingblanks
+	      { "values {fn length(cast('foo' as string(10)))}", new String[][]{ {"3"} } },  // fn length is notrailingblanks
+	      { "values length(cast('foo' as nclob(10)))", "0A000" },
+	      { "values {fn length(cast('foo' as nclob(10)))}", "0A000" },
 	      // Long Varchar negative tests
-	      { "create table testPredicate1 (c1 long varchar)", null },
+	      { "create table testPredicate1 (c1 long varchar) replicate", null },
 	      { "create table testPredicate2 (c1 long varchar)", null },
 	      { "insert into testPredicate1 (c1) values 'a'", null },
 	      { "insert into testPredicate2 (c1) values 'a'", null },
 	      { "select * from testPredicate1 union select * from testPredicate2", new String[][]{ {"a"} } },  //GFXD allows LONG VARCHAR in UNION statements
-	      { "select c1 from testPredicate1 where c1 in (select c1 from testPredicate2)", "42818" },
-	      { "select c1 from testPredicate1 where c1 not in (select c1 from testPredicate2)", "42818" },
+	      { "select c1 from testPredicate1 where c1 in (select c1 from testPredicate2)", new String[][]{ {"a"} } },
+	      { "select c1 from testPredicate1 where c1 not in (select c1 from testPredicate2)", new String[0][0] },
 	      { "select * from testPredicate1 order by c1", new String[][]{ {"a"} } },   // GFXD allows LV in ORDER BY
 	      { "select substr(c1,1,2) from testPredicate1 group by c1", new String[][]{ {"a"} } },   // and in GROUP BY
-	      { "select * from testPredicate1 t1, testPredicate2 t2 where t1.c1=t2.c1", "42818" },
-	      { "select * from testPredicate1 left outer join testPredicate2 on testPredicate1.c1=testPredicate2.c1", "42818" },
+	      { "select * from testPredicate1 t1, testPredicate2 t2 where t1.c1=t2.c1", new String[][]{ { "a", "a" } } },
+	      { "select * from testPredicate1 left outer join testPredicate2 on testPredicate1.c1=testPredicate2.c1", new String[][]{ { "a", "a" } } },
 	      { "create table testConst1(c1 long varchar not null primary key)", null },    // GemFireXD allows this!
 	      { "create table testConst2(col1 long varchar not null, constraint uk unique(col1))", null },
 	      { "create table testConst3(c1 char(10) not null, primary key(c1))", null },
@@ -315,6 +347,10 @@ public class LangScripts_LOBDUnit extends DistributedSQLTestBase {
 	      { "create table DB2LIM.FC2(FC2C CLOB(2049M))", "42X44" },
 	      { "create table DB2LIM.FC3(FC3C CLOB(2097153K))", "42X44" },
 	      { "create table DB2LIM.FC4(FC4C CLOB(2147483648))", "42X44" },
+	      { "create table DB2LIM.FC1(FC1C STRING(3G))", "42X44" },
+	      { "create table DB2LIM.FC2(FC2C STRING(2049M))", "42X44" },
+	      { "create table DB2LIM.FC3(FC3C STRING(2097153K))", "42X44" },
+	      { "create table DB2LIM.FC4(FC4C STRING(2147483648))", "42X44" },
 	      { "create table DB2LIM.GC1(GC1C CLOB(2G))", null },
 	      { "create table DB2LIM.GC2(GC2C CLOB(2048M))", null },
 	      { "create table DB2LIM.GC3(GC3C CLOB(2097152K))", null },
@@ -336,7 +372,7 @@ public class LangScripts_LOBDUnit extends DistributedSQLTestBase {
 	      // Catalog check
 	      { "SELECT CAST (TABLENAME AS CHAR(10)) AS T, CAST (COLUMNNAME AS CHAR(10)) AS C, "
 	        +"  CAST (COLUMNDATATYPE AS CHAR(30)) AS Y FROM SYS.SYSTABLES T, SYS.SYSSCHEMAS S, SYS.SYSCOLUMNS C "
-	        +"  WHERE S.SCHEMAID = T.SCHEMAID AND CAST(S.SCHEMANAME AS VARCHAR(128))= 'DB2LIM'" 
+	        +"  WHERE S.SCHEMAID = T.SCHEMAID AND CAST(S.SCHEMANAME AS VARCHAR(128))= 'DB2LIM'"
 	        +"  AND C.REFERENCEID = T.TABLEID ORDER BY 1",
 	        new String[][]{   {"GB1","GB1C","BLOB(2147483647)"},
 	                          {"GB2","GB2C","BLOB(2147483647)"},
@@ -346,6 +382,27 @@ public class LangScripts_LOBDUnit extends DistributedSQLTestBase {
 	                          {"GC2","GC2C","CLOB(2147483647)"},
 	                          {"GC3","GC3C","CLOB(2147483647)"},
 	                          {"GC4","GC4C","CLOB(2147483647)"} } },
+	      { "create table DB2LIM2.SGC1(GC1C STRING(2G))", null },
+	      { "create table DB2LIM2.SGC2(GC2C STRING(2048M))", null },
+	      { "create table DB2LIM2.SGC3(GC3C STRING(2097152K))", null },
+	      { "create table DB2LIM2.SGC4(GC4C STRING(2147483647))", null },
+	      { "create table DB2LIM2.SGC5(GC5C STRING(1G))", null },
+	      { "create table DB2LIM2.SGC6(GC6C STRING(2047M))", null },
+	      { "create table DB2LIM2.SGC7(GC7C STRING(2097151K))", null },
+	      { "create table DB2LIM2.SGC8(GC8C STRING(2147483646))", null },
+	      // Catalog check
+	      { "SELECT CAST (TABLENAME AS CHAR(10)) AS T, CAST (COLUMNNAME AS CHAR(10)) AS C, "
+	          +"  CAST (COLUMNDATATYPE AS CHAR(30)) AS Y FROM SYS.SYSTABLES T, SYS.SYSSCHEMAS S, SYS.SYSCOLUMNS C "
+	          +"  WHERE S.SCHEMAID = T.SCHEMAID AND CAST(S.SCHEMANAME AS VARCHAR(128))= 'DB2LIM2'"
+	          +"  AND C.REFERENCEID = T.TABLEID ORDER BY 1",
+	          new String[][]{   {"SGC1","GC1C","CLOB(2147483647)"},
+	              {"SGC2","GC2C","CLOB(2147483647)"},
+	              {"SGC3","GC3C","CLOB(2147483647)"},
+	              {"SGC4","GC4C","CLOB(2147483647)"},
+	              {"SGC5","GC5C","CLOB(1073741824)"},
+	              {"SGC6","GC6C","CLOB(2146435072)"},
+	              {"SGC7","GC7C","CLOB(2147482624)"},
+	              {"SGC8","GC8C","CLOB(2147483646)"} } },
 	      { "create table b (colone blob(1K))", null },
 	      { "insert into b values '50'", "42821" },
 	      { "insert into b values cast('50' as varchar(80))", "42821" },
@@ -357,7 +414,9 @@ public class LangScripts_LOBDUnit extends DistributedSQLTestBase {
 	      { "values cast('50' as blob(1K))", "42846" },
 	      { "insert into b values (cast('50' as blob(1K)))", "42846" },
 	      { "values cast('50' as clob(1K))", new String[][]{ {"50"} } },
+	      { "values cast('50' as string(1K))", new String[][]{ {"50"} } },
 	      { "insert into b values (cast('50' as clob(1K)))", "42821" },
+	      { "insert into b values (cast('50' as string(1K)))", "42821" },
 	      { "values cast('50' as nclob(1K))", "0A000" },
 	      { "insert into b values (cast('50' as nclob(1K)))", "0A000" },
 	      { "drop table b", null },
@@ -373,6 +432,25 @@ public class LangScripts_LOBDUnit extends DistributedSQLTestBase {
 	      { "insert into c values (cast('50' as clob(1K)))", null },
 	      { "values (cast('50' as nclob(1K)))", "0A000" },
 	      { "insert into c values (cast('50' as nclob(1K)))", "0A000" },
+	      { "drop table c", null },
+	      { "create table c (colone string(1K))", null },
+	      { "insert into c values '50'", null },
+	      { "insert into c values cast('50' as varchar(80))", null },
+	      { "insert into c values cast('50' as  string(1K))", null },
+	      { "values (CAST(cast('50' as varchar(80)) as  string(1K)))", new String[][]{ {"50"} } },
+	      { "values cast('50' as long varchar)", new String[][]{ {"50"} } },
+	      { "insert into c values cast('50' as long varchar)", null },
+	      { "values (cast('50' as blob(1K)))", "42846" },
+	      { "insert into c values (cast('50' as  string(1K)))", null },
+	      { "drop table c", null },
+	      { "create table c (colone string)", null },
+	      { "insert into c values '50'", null },
+	      { "insert into c values cast('50' as varchar(80))", null },
+	      { "insert into c values cast('50' as string)", null },
+	      { "values (CAST(cast('50' as varchar(80)) as string))", new String[][]{ {"50"} } },
+	      { "values cast('50' as long varchar)", new String[][]{ {"50"} } },
+	      { "insert into c values cast('50' as long varchar)", null },
+	      { "insert into c values (cast('50' as string))", null },
 	      { "drop table c", null }
 	    };
 
