@@ -155,8 +155,9 @@ public final class InternalDistributedSystem
   private static Set connectListeners = new LinkedHashSet(); // needs to be ordered
 
   /** auto-reconnect listeners */
-  private static List<ReconnectListener> reconnectListeners = new ArrayList<ReconnectListener>();
-  
+  private static final List<ReconnectListener> reconnectListeners =
+      new ArrayList<ReconnectListener>();
+
   /** gemfirexd disconnect listener */
   private DisconnectListener gfxdDisconnectListener;
   /**
@@ -832,7 +833,7 @@ public final class InternalDistributedSystem
   {
     LogWriterImpl logger = null;
     File logFile = config.getLogFile();
-    String logFileName = null;
+    String logFilePath = null;
     PrintStream out = null;
     String firstMsg = null;
     boolean firstMsgWarning = false;
@@ -862,7 +863,7 @@ public final class InternalDistributedSystem
         }
         }
       }
-      logFileName = logFile.getName();
+      logFilePath = logFile.getPath();
       if (!useSLF4JBridge) {
         FileOutputStream fos = null;
         try {
@@ -898,10 +899,10 @@ public final class InternalDistributedSystem
 
     if (useSLF4JBridge) {
       if (isSecurityLog) {
-        logger = new GFToSlf4jBridge(config.getName(), logFileName,
+        logger = new GFToSlf4jBridge(config.getName(), logFilePath,
             config.getSecurityLogLevel());
       } else {
-        logger = new GFToSlf4jBridge(config.getName(), logFileName,
+        logger = new GFToSlf4jBridge(config.getName(), logFilePath,
             config.getLogLevel());
       }
       if (logger.infoEnabled()
@@ -2761,7 +2762,7 @@ public final class InternalDistributedSystem
     if (log != null) {
       logLevel = ((LogWriterImpl)log).getLevel();
     }
-    if (log == null || ((PureLogWriter)log).isClosed()) {
+    if (log == null || ((LogWriterImpl)log).isClosed()) {
       log = new ManagerLogWriter(logLevel, System.out);
     }
 

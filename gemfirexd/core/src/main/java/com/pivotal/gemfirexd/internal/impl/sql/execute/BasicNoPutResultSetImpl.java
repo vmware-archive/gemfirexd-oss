@@ -1363,9 +1363,8 @@ implements NoPutResultSet
             StandardException
 	{
 // GemStone changes BEGIN
-	  final Activation act = this.activation;
-	  if (act != null && act.isQueryCancelled()) {
-	    act.checkCancellationFlag();
+	  if (activation.isQueryCancelled()) {
+	    activation.checkCancellationFlag();
 	  }
 //	  final StatementContext ctx = this.statementContext;
 //	  if (ctx != null && ctx.isCancelled()) {

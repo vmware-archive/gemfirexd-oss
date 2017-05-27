@@ -102,6 +102,7 @@ public final class ClientService extends ReentrantLock {
   private GFXDService.Client clientService;
   volatile boolean isOpen;
   private HostConnection currentHostConnection;
+  private HostAddress currentHostAddress;
   final OpenConnectionArgs connArgs;
   final List<HostAddress> connHosts;
   final boolean loadBalance;
@@ -184,6 +185,7 @@ public final class ClientService extends ReentrantLock {
 
     HostAddress hostAddr = ThriftUtils.getHostAddress(host, port);
     this.currentHostConnection = null;
+    this.currentHostAddress = null;
     this.connArgs = connArgs;
 
     Map<String, String> props = connArgs.getProperties();
@@ -268,16 +270,16 @@ public final class ClientService extends ReentrantLock {
     while (true) {
       super.lock();
       try {
+        this.currentHostAddress = hostAddr;
         if (this.loadBalance) {
           ControlConnection controlService = ControlConnection
               .getOrCreateControlConnection(this.connHosts.get(0), this);
           // at this point query the control service for preferred server
-          hostAddr = controlService.getPreferredServer(failedServers,
-              this.serverGroups, false);
+          this.currentHostAddress = hostAddr = controlService
+              .getPreferredServer(failedServers, this.serverGroups, false);
         }
 
-        final SystemProperties sysProps = SystemProperties
-            .getClientInstance();
+        final SystemProperties sysProps = SystemProperties.getClientInstance();
         final SocketTimeout currentSocket;
         final int readTimeout;
         if (this.clientService != null) {
@@ -315,14 +317,14 @@ public final class ClientService extends ReentrantLock {
         GFXDService.Client service = new GFXDService.Client(inProtocol,
             outProtocol);
 
-        ConnectionProperties connProps = service
-            .openConnection(this.connArgs);
+        ConnectionProperties connProps = service.openConnection(this.connArgs);
         if (currentSocket != null) {
           currentSocket.close();
         }
         this.clientService = service;
         this.currentHostConnection = new HostConnection(hostAddr,
             connProps.connId, connProps.token);
+        this.currentHostAddress = hostAddr;
         if (SanityManager.TraceClientStatementHA
             | SanityManager.TraceClientConn) {
           if (SanityManager.TraceClientHA) {
@@ -414,7 +416,10 @@ public final class ClientService extends ReentrantLock {
       Set<HostAddress> servers = new THashSet(2);
       failedServers = servers;
     }
-    failedServers.add(currentHostConnection.hostAddr);
+    final HostAddress hostAddress = this.currentHostAddress;
+    if (hostAddress != null) {
+      failedServers.add(hostAddress);
+    }
     return failedServers;
   }
 
@@ -422,6 +427,7 @@ public final class ClientService extends ReentrantLock {
       Set<HostAddress> failedServers, boolean tryFailover,
       boolean createNewConnection, String op) throws GFXDException {
     final HostConnection source = this.currentHostConnection;
+    final HostAddress sourceAddr = this.currentHostAddress;
     if (!this.isOpen && createNewConnection) {
       if (t instanceof GFXDException) {
         throw (GFXDException)t;
@@ -429,7 +435,7 @@ public final class ClientService extends ReentrantLock {
       else {
         throw ThriftExceptionUtil.newGFXDException(
             SQLState.NO_CURRENT_CONNECTION, t,
-            source != null ? source.hostAddr.toString() : null);
+            sourceAddr != null ? sourceAddr.toString() : null);
       }
     }
     final int isolationLevel = this.isolationLevel;
@@ -473,7 +479,7 @@ public final class ClientService extends ReentrantLock {
     }
     else {
       throw ThriftExceptionUtil.newGFXDException(SQLState.JAVA_EXCEPTION, t,
-          source != null ? source.hostAddr.toString() : null, t.getClass(),
+          sourceAddr != null ? sourceAddr.toString() : null, t.getClass(),
           t.getMessage());
     }
     // need to do failover to new server, so get the next one

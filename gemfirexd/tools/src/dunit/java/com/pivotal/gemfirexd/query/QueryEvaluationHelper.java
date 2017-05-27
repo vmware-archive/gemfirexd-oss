@@ -27,7 +27,6 @@ import java.util.Set;
 import java.util.Vector;
 
 import com.gemstone.gemfire.cache.CacheException;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.distributed.DistributedMember;
 import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
 import com.gemstone.gemfire.internal.cache.PartitionedRegion;
@@ -45,9 +44,10 @@ import com.pivotal.gemfirexd.internal.iapi.types.DataValueDescriptor;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedPreparedStatement;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedStatement;
 import com.pivotal.gemfirexd.internal.impl.sql.GenericPreparedStatement;
-
-import dunit.DistributedTestCase;
-import dunit.VM;
+import io.snappydata.test.dunit.DistributedTestBase;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.dunit.VM;
+import org.apache.log4j.Logger;
 
 public class QueryEvaluationHelper {
   
@@ -150,7 +150,7 @@ public class QueryEvaluationHelper {
          try {
          valueOccurance = new ArrayList< Map<Object, Integer> >(queries[qry][2].length);
          for( int rw = 1; rw <= rows; rw++) {
-           DistributedTestCase.assertTrue("More rows are expected got " + rw + " required " + rows, rs.next());
+           DistributedTestBase.assertTrue("More rows are expected got " + rw + " required " + rows, rs.next());
            
            if(verifyOutputFromArray) {
              for(int out=1; out < queries[qry][2].length; out++) {
@@ -163,7 +163,7 @@ public class QueryEvaluationHelper {
                  expected = (expected == null) ? new String(" null ") : expected;
                  getLogWriter().info("RS col[" + colIdx + "] : "
                      + "checking object " + expected.toString() + " contained in results " + rslts);
-                 DistributedTestCase.assertTrue(rslts.contains( rs.getObject(colIdx) ));
+                 DistributedTestBase.assertTrue(rslts.contains( rs.getObject(colIdx) ));
                  
                }
                else if( (verificationType & 0xFFFF) == TimesOccur) {
@@ -200,14 +200,14 @@ public class QueryEvaluationHelper {
                  if( expected != null ) {
                    if( expected instanceof Double ) {
                      Object received = rs.getObject(colIdx);
-                     DistributedTestCase.assertTrue( "expected Double got " + received.getClass()
+                     DistributedTestBase.assertTrue( "expected Double got " + received.getClass()
                                                     , received instanceof Double );
                      double recdDbl = ((Double)received).doubleValue();
                      double expcDbl = ((Double)expected).doubleValue();
                      double absDiff = java.lang.Math.abs(recdDbl - expcDbl);
                      /*
                      String msg = " recdDbl=" + recdDbl + " expcDbl=" + expcDbl + " Diff("+(recdDbl - expcDbl)+")" + " absDiff(" + absDiff + ") < 1.0e-4="+Boolean.valueOf(absDiff < 1.0e-4);
-                     DistributedTestCase.assertTrue( msg, absDiff < 1.0e-4);
+                     DistributedTestBase.assertTrue( msg, absDiff < 1.0e-4);
                      */
                      // tolerate upto .0005% difference
                     String msg = " recdDbl=" + recdDbl + " expcDbl=" + expcDbl
@@ -215,24 +215,24 @@ public class QueryEvaluationHelper {
                         + " absDiff/expcDbl(" + (absDiff / expcDbl)
                         + ") < 1.0e-5="
                         + Boolean.valueOf((absDiff / expcDbl) < 1.0e-5);
-                     DistributedTestCase.assertTrue( msg, (absDiff / expcDbl) < 1.0e-5);
+                     DistributedTestBase.assertTrue( msg, (absDiff / expcDbl) < 1.0e-5);
                    }
                    else if( expected instanceof Float ) {
                      Object received = rs.getObject(colIdx);
-                     DistributedTestCase.assertTrue( "expected Float got " + received.getClass()
+                     DistributedTestBase.assertTrue( "expected Float got " + received.getClass()
                                                     , received instanceof Float );
                      float recdFl = ((Float)received).floatValue();
                      float expcFl = ((Float)expected).floatValue();
                      float absDiff = java.lang.Math.abs(recdFl - expcFl);
                      String msg = " recdFl=" + recdFl + " expcFl=" + expcFl + " Diff("+(recdFl - expcFl)+")" + " absDiff(" + absDiff + ") < 1.0e-3="+Boolean.valueOf(absDiff < 1.0e-3); 
-                     DistributedTestCase.assertTrue( msg, absDiff < 1.0e-3);
+                     DistributedTestBase.assertTrue( msg, absDiff < 1.0e-3);
                    }
                    else {
-                      DistributedTestCase.assertEquals(expected.toString(), rs.getObject(colIdx).toString());
+                      DistributedTestBase.assertEquals(expected.toString(), rs.getObject(colIdx).toString());
                    }
                  } else {
                    Object v = rs.getObject(colIdx);
-                   DistributedTestCase.assertNull("expected null, got: " + v
+                   DistributedTestBase.assertNull("expected null, got: " + v
                                                   + ";queryString=" + queryString
                                                   + ";colIdx=" + colIdx,
                                                   v);
@@ -241,10 +241,10 @@ public class QueryEvaluationHelper {
              } //end of columns check
            } else {
              getLogWriter().info("got object - " + rs.getObject("id").toString());
-             DistributedTestCase.assertTrue(rslts.contains( rs.getObject("id") ));
+             DistributedTestBase.assertTrue(rslts.contains( rs.getObject("id") ));
            }
          } //end of rows check
-         DistributedTestCase.assertFalse("No more rows should have existed, expected only " + rows, rs.next());
+         DistributedTestBase.assertFalse("No more rows should have existed, expected only " + rows, rs.next());
          } finally {
            rs.close();
          }
@@ -261,7 +261,7 @@ public class QueryEvaluationHelper {
                Integer recdCount = valueMap.get( Values[outVal] );
                getLogWriter().info("sb: " + Values[outVal] + " count recevied " + recdCount);
                assert recdCount != null: "recdCount cannot be null ";
-               DistributedTestCase.assertTrue( "Value " + (Values[outVal]==null?"null":Values[outVal]) 
+               DistributedTestBase.assertTrue( "Value " + (Values[outVal]==null?"null":Values[outVal]) 
                                              + " exptd " + exptdCounts[outVal] + " recd " + recdCount, 
                                     recdCount.intValue() == exptdCounts[outVal].intValue() );
              }
@@ -299,10 +299,10 @@ public class QueryEvaluationHelper {
 
     // set up a sql query observer in server VM to keep track of whether the
     // query got executed on the node or not
-    CacheSerializableRunnable setObserver = new CacheSerializableRunnable(
+    SerializableRunnable setObserver = new SerializableRunnable(
         "Set GemFireXDObserver on DataStore Node for query " + queryStr) {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           GemFireXDQueryObserverHolder
               .setInstance(new GemFireXDQueryObserverAdapter() {
@@ -336,10 +336,10 @@ public class QueryEvaluationHelper {
 
   public static void setObserver(VM[] dataStores, String node, String queryStr, final GemFireXDQueryObserver queryObserver) {
     
-    CacheSerializableRunnable setObserver = new CacheSerializableRunnable(
+    SerializableRunnable setObserver = new SerializableRunnable(
         "Set GemFireXDObserver on "+node+" Node for query " + queryStr) {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           GemFireXDQueryObserverHolder
               .setInstance(queryObserver);
@@ -375,10 +375,10 @@ public class QueryEvaluationHelper {
   public static void verifyExecutionOnDMs(final SelectQueryInfo sqi, Set<DistributedMember> prunedNodes, int noOfPrunedNodes, int noOfNoExecQueryNodes, String query
       ,final DistributedSQLTestBase test) {
 
-    CacheSerializableRunnable validateQueryExecution = new CacheSerializableRunnable(
+    SerializableRunnable validateQueryExecution = new SerializableRunnable(
         "validate node has executed the query " + query) {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           GemFireXDQueryObserverHolder
               .setInstance(new GemFireXDQueryObserverAdapter());
@@ -392,10 +392,10 @@ public class QueryEvaluationHelper {
         }
       }
     };
-    CacheSerializableRunnable validateNoQueryExecution = new CacheSerializableRunnable(
+    SerializableRunnable validateNoQueryExecution = new SerializableRunnable(
         "validate node has NOT executed the query " + query) {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           GemFireXDQueryObserverHolder
               .setInstance(new GemFireXDQueryObserverAdapter());
@@ -539,11 +539,11 @@ if(noOfNoExecQueryNodes > -1)
    
    rs = ps.executeQuery();
    for( ; rows > 0; rows--) {
-      DistributedTestCase.assertTrue(rs.next());
+      DistributedTestBase.assertTrue(rs.next());
       getLogWriter().info("got object - " + rs.getObject("id").toString());
-      DistributedTestCase.assertTrue(rslts.contains( rs.getObject("id") ));
+      DistributedTestBase.assertTrue(rslts.contains( rs.getObject("id") ));
    }
-   DistributedTestCase.assertFalse(rs.next());
+   DistributedTestBase.assertFalse(rs.next());
    //Identify all the nodes of the PR
    PartitionedRegion pr = (PartitionedRegion)sqiArray[0].getRegion();
    //Identify the nodes which should see the query based on partition resolver
@@ -553,16 +553,13 @@ if(noOfNoExecQueryNodes > -1)
    
    rslts.clear();
    rs.close();
-   
   }
 
-  public static com.gemstone.gemfire.LogWriter getLogWriter() {
+  public static Logger getLogWriter() {
     return TestUtil.getLogger();
   }
 
   public static void reset() {
     isQueryExecutedOnNode = false;
   }
-  
-
 }

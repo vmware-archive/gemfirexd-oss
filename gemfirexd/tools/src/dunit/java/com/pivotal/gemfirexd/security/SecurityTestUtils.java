@@ -16,8 +16,6 @@
  */
 package com.pivotal.gemfirexd.security;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -35,8 +33,7 @@ import java.util.Set;
 import com.gemstone.gemfire.cache.GemFireCache;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
-import com.gemstone.gemfire.internal.AvailablePort;
-import com.gemstone.gemfire.internal.SocketCreator;
+import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.pivotal.gemfirexd.Attribute;
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
@@ -50,9 +47,9 @@ import com.pivotal.gemfirexd.internal.iapi.services.monitor.Monitor;
 import com.pivotal.gemfirexd.internal.impl.jdbc.authentication.AuthenticationServiceBase;
 import com.pivotal.gemfirexd.internal.shared.common.SharedUtils;
 import com.pivotal.gemfirexd.internal.shared.common.sanity.SanityManager;
-import dunit.SerializableRunnable;
-import dunit.impl.DUnitBB;
-import hydra.HostHelper;
+import io.snappydata.test.dunit.AvailablePortHelper;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.dunit.standalone.DUnitBB;
 
 /**
  * 
@@ -78,13 +75,13 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
           String u = GemFireXDUtils.getRandomString(false);
           sysUser = "SYSTEM_" + u;
           sysPwd = pwdPrefix + sysUser;
-          DUnitBB.getBB().getSharedMap().put(sysMapKey, sysUser);
+          DUnitBB.getBB().put(sysMapKey, sysUser);
 
-          getLogWriter().info(
+          getGlobalLogger().info(
               "generating only a new sys user " + sysUser + " pwd " + sysPwd);
 
-          String userlist = (String)DUnitBB.getBB().getSharedMap().get(csMapKey);
-          getLogWriter().info(
+          String userlist = (String)DUnitBB.getBB().get(csMapKey);
+          getGlobalLogger().info(
               "dist-sys users present in " + csMapKey + " = " + userlist);
         }
         else if (forStartup) {
@@ -92,8 +89,8 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
           String u = GemFireXDUtils.getRandomString(false);
           sysUser = "SYSTEM_" + u;
           sysPwd = pwdPrefix + sysUser;
-          DUnitBB.getBB().getSharedMap().put(sysMapKey, sysUser);
-          getLogWriter()
+          DUnitBB.getBB().put(sysMapKey, sysUser);
+          getGlobalLogger()
               .info("recorded sys user " + sysUser + " pwd " + sysPwd);
 
           StringBuilder sb = new StringBuilder();
@@ -109,7 +106,7 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
           }
           String userlist = sb.toString();
 
-          getLogWriter().info("Creating dist-sys users  " + userlist);
+          getGlobalLogger().info("Creating dist-sys users  " + userlist);
 
           clusterUsers = new String[10];
           clusterUsers = (String[])SharedUtils.toSortedSet(userlist, false)
@@ -117,12 +114,12 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
 
           assertTrue(clusterUsers.length == 10);
 
-          getLogWriter()
+          getGlobalLogger()
               .info(
                   "putting into shared map with key " + csMapKey + " = "
                       + userlist);
 
-          DUnitBB.getBB().getSharedMap().put(csMapKey, userlist);
+          DUnitBB.getBB().put(csMapKey, userlist);
         }
 
         Properties props = new Properties();
@@ -153,14 +150,16 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
          * AuthenticationSchemes.clear() will clean up this every time.
          */
         if (sysUser == null) {
-          sysUser = (String)DUnitBB.getBB().getSharedMap().get(sysMapKey);
+          sysUser = (String)DUnitBB.getBB().get(sysMapKey);
           sysPwd = pwdPrefix + sysUser;
-          getLogWriter().info(
+          getGlobalLogger().info(
               "boot credentials sysUser " + sysUser);
         }
         
         Properties props = new Properties();
-        props.setProperty(AvailablePort.rand.nextBoolean() ? com.pivotal.gemfirexd.Attribute.USERNAME_ATTR : com.pivotal.gemfirexd.Attribute.USERNAME_ALT_ATTR, sysUser);
+        props.setProperty(PartitionedRegion.rand.nextBoolean()
+            ? com.pivotal.gemfirexd.Attribute.USERNAME_ATTR
+            : com.pivotal.gemfirexd.Attribute.USERNAME_ALT_ATTR, sysUser);
         props.setProperty(com.pivotal.gemfirexd.Attribute.PASSWORD_ATTR, sysPwd);
         return props;
       }
@@ -170,9 +169,9 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
           boolean randomizeUsers) {
         Properties props = new Properties();
         if (clusterUsers == null) {
-          String userlist = (String)DUnitBB.getBB().getSharedMap().get(csMapKey);
+          String userlist = (String)DUnitBB.getBB().get(csMapKey);
 
-          getLogWriter().info(
+          getGlobalLogger().info(
               "read from shared map with key " + csMapKey + " = " + userlist);
           assertTrue(userlist != null);
 
@@ -185,14 +184,16 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
 
         String usr = null;
         if (randomizeUsers) {
-          usr = clusterUsers[AvailablePort.rand.nextInt(clusterUsers.length)];
+          usr = clusterUsers[PartitionedRegion.rand.nextInt(clusterUsers.length)];
         }
         else {
           usr = clusterUsers[disUsrIdx++];
         }
 
         assert usr != null;
-        props.setProperty(AvailablePort.rand.nextBoolean() ? com.pivotal.gemfirexd.Attribute.USERNAME_ALT_ATTR : com.pivotal.gemfirexd.Attribute.USERNAME_ATTR, usr);
+        props.setProperty(PartitionedRegion.rand.nextBoolean()
+            ? com.pivotal.gemfirexd.Attribute.USERNAME_ALT_ATTR
+            : com.pivotal.gemfirexd.Attribute.USERNAME_ATTR, usr);
         props.setProperty(com.pivotal.gemfirexd.Attribute.PASSWORD_ATTR, pwdPrefix + usr);
         return props;
 
@@ -264,30 +265,12 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
         Properties props = new Properties();
         setCommonProperties(props, withAuthorization, readOnlyDistUser);
 
-        props.setProperty(Property.GFXD_AUTH_PROVIDER,
-            com.pivotal.gemfirexd.Constants.AUTHENTICATION_PROVIDER_LDAP);
-
-        // from build.xml
-        String ldapServer = System.getProperty("gf.ldap.server");
-        String ldapBaseDN = System.getProperty("gf.ldap.basedn");
-        String ldapUseSSL = System.getProperty("gf.ldap.usessl");
-
-        // ldapsearch -h ldap.gemstone.com -p 389 -b ou=ldapTesting,dc=pune,dc=gemstone,dc=com -D uid=gemfire1,ou=ldapTesting,dc=pune,dc=gemstone,dc=com -w gemfire1
-        props.setProperty("gemfirexd.auth-ldap-search-base",
-            ldapBaseDN); // ou=ldapTesting,dc=pune,dc=gemstone,dc=com
-
-        if (Boolean.parseBoolean(ldapUseSSL)) {
-          assertTrue("we will prefix 'ldaps:' to gf.ldap.server property ",
-              !ldapServer.startsWith("ldap:"));
-
-          if (ldapServer.startsWith("//")) {
-            ldapServer = "ldaps:" + ldapServer;
-          }
-          else {
-            ldapServer = "ldaps://" + ldapServer;
-          }
+        try {
+          setLdapServerBootProperties(LdapTestServer.getInstance(), -1, -1,
+              sysUser, props);
+        } catch (Exception e) {
+          fail("failed to get LDAP server instance", e);
         }
-        props.setProperty(com.pivotal.gemfirexd.Property.AUTH_LDAP_SERVER, ldapServer); // =ldap
 
         if (setExplicitPeerAuth) {
           props.setProperty(Property.GFXD_SERVER_AUTH_PROVIDER,
@@ -338,7 +321,7 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
 
         String usr = null;
         if (randomizeUsers) {
-          usr = clusterUsers[AvailablePort.rand.nextInt(clusterUsers.length)];
+          usr = clusterUsers[PartitionedRegion.rand.nextInt(clusterUsers.length)];
         }
         else {
           usr = clusterUsers[disUsrIdx++];
@@ -389,9 +372,9 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
     public void CreateUsers(Connection conn) throws SQLException {
 
       if (clusterUsers == null) {
-        String userlist = (String)DUnitBB.getBB().getSharedMap().get(csMapKey);
+        String userlist = (String)DUnitBB.getBB().get(csMapKey);
 
-        getLogWriter().info(
+        getGlobalLogger().info(
             "Won't need to create users ... initializing existing cluster users "
                 + csMapKey + " = " + userlist);
         assertTrue(userlist != null);
@@ -401,7 +384,7 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
         return;
       }
 
-      getLogWriter().info("about to create distributed sys users ");
+      getGlobalLogger().info("about to create distributed sys users ");
 
       CallableStatement cusr = conn.prepareCall("call sys.create_user(?,?)");
       CallableStatement cpwd = conn.prepareCall("call sys.change_password(?,?,?)");
@@ -412,7 +395,7 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
           cusr.setString(1, u);
           cusr.setString(2, "random_" + u);
           cusr.execute();
-          getLogWriter().info("created distributed system user with random password " + u);
+          getGlobalLogger().info("created distributed system user with random password " + u);
 
           try {
             cusr.setString(1, u);
@@ -431,7 +414,7 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
             cpwd.setString(2, "random_" + u);
             cpwd.setString(3, pwdPrefix + u);
             cpwd.execute();
-            getLogWriter().info(
+            getGlobalLogger().info(
                 "changed password of distributed system user " + u);
           }
         }
@@ -439,7 +422,7 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
           cusr.setString(1, u);
           cusr.setString(2, pwdPrefix + u);
           cusr.execute();
-          getLogWriter().info("created distributed system user " + u);
+          getGlobalLogger().info("created distributed system user " + u);
         }
           
       }
@@ -449,6 +432,8 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
       props.setProperty(Property.REQUIRE_AUTHENTICATION_PARAMETER, Boolean
           .toString(true));
 
+      props.setProperty(DistributionConfig.GEMFIRE_PREFIX
+          + DistributionConfig.LOG_LEVEL_NAME, "fine");
       props.setProperty(DistributionConfig.GEMFIRE_PREFIX
           + DistributionConfig.SECURITY_LOG_LEVEL_NAME, "finest");
 
@@ -469,8 +454,7 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
 
         props.setProperty(com.pivotal.gemfirexd.Property.AUTHZ_FULL_ACCESS_USERS, sysUser);
         if(readOnly) {
-            String clusterUserList = (String)DUnitBB.getBB().getSharedMap().get(
-                csMapKey);
+            String clusterUserList = (String)DUnitBB.getBB().get(csMapKey);
             props.setProperty(com.pivotal.gemfirexd.Property.AUTHZ_READ_ONLY_ACCESS_USERS,
                 clusterUserList);
         }
@@ -493,30 +477,22 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
 
     public void DropUsers(Connection conn) throws SQLException {
 
-      getLogWriter().info("Dropping distributed sys users ");
-      DUnitBB.getBB().getSharedMap().remove(csMapKey);
+      getGlobalLogger().info("Dropping distributed sys users ");
+      DUnitBB.getBB().remove(csMapKey);
 
       CallableStatement cusr = conn.prepareCall("call sys.drop_user(?)");
       for (String u : clusterUsers) {
         cusr.setString(1, u);
         cusr.execute();
-        getLogWriter().info("dropped distributed system user " + u);
+        getGlobalLogger().info("dropped distributed system user " + u);
       }
 
     }
 
     public String getLocatorString() {
-      InetAddress addr;
-      try {
-        addr = SocketCreator.getLocalHost();
-      } catch (UnknownHostException uhe) {
-        addr = HostHelper.getIPAddress();
-      }
-      String available_port = String.valueOf(AvailablePort
-          .getRandomAvailablePort(AvailablePort.JGROUPS, addr));
-      String host = HostHelper.getHostAddress(addr);
-
-      return host + "[" + available_port + "]";
+      String available_port = String.valueOf(AvailablePortHelper
+          .getRandomAvailableTCPPort());
+      return "localhost[" + available_port + "]";
     }
   }
 
@@ -557,16 +533,16 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
     for (Enumeration<?> e = sysprop.propertyNames(); e.hasMoreElements();) {
       String k = (String)e.nextElement();
       System.setProperty(k, sysprop.getProperty(k));
-      getLogWriter().info("setting " + k + " = " + sysprop.getProperty(k));
+      getGlobalLogger().info("setting " + k + " = " + sysprop.getProperty(k));
     }
 
     Properties connAtt = scheme.bootCredentials();
     TestUtil.bootUserName = connAtt.getProperty(com.pivotal.gemfirexd.Attribute.USERNAME_ATTR);
     TestUtil.bootUserName = TestUtil.bootUserName == null ? connAtt.getProperty(com.pivotal.gemfirexd.Attribute.USERNAME_ALT_ATTR) : TestUtil.bootUserName;
     TestUtil.bootUserPassword = connAtt.getProperty(com.pivotal.gemfirexd.Attribute.PASSWORD_ATTR);
-    getLogWriter().info("Recorded bootUserName " + TestUtil.bootUserName);
+    getGlobalLogger().info("Recorded bootUserName " + TestUtil.bootUserName);
 
-    getLogWriter().info("System properties definition done .... ");
+    getGlobalLogger().info("System properties definition done .... ");
   }
 
   public static void clearAuthenticationSetUp(final Properties sysprop,
@@ -580,22 +556,22 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
         TestUtil.bootUserName = null;
         for (Enumeration<?> e = sysprop.propertyNames(); e.hasMoreElements();) {
           String k = (String)e.nextElement();
-          getLogWriter().info("clearing " + k);
+          getGlobalLogger().info("clearing " + k);
           System.clearProperty(k);
         }
-        getLogWriter().info("System user definition cleared on VM.... ");
+        getGlobalLogger().info("System user definition cleared on VM.... ");
       }
     });
 
     TestUtil.bootUserName = null;
     for (Enumeration<?> e = sysprop.propertyNames(); e.hasMoreElements();) {
       String k = (String)e.nextElement();
-      getLogWriter().info("clearing " + k);
+      getGlobalLogger().info("clearing " + k);
       System.clearProperty(k);
     }
 
     scheme.clear();
-    getLogWriter().info("System user definition cleared on local VM ");
+    getGlobalLogger().info("System user definition cleared on local VM ");
   }
   
   public final static String commonSchemaName = "shared_TestSchema".toUpperCase();
@@ -635,7 +611,7 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
             query += s + (s.equals(valueList[valueList.length - 1]) ? "" : ",");
           }
 
-          getLogWriter().info("executing " + query);
+          getGlobalLogger().info("executing " + query);
           stmts.execute(query);
 
         }
@@ -712,7 +688,7 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
 
         String regionPath = Misc.getRegionPath(tableschema, tabnm
             .toUpperCase(), null);
-        getLogWriter().info("getting region " + regionPath);
+        getGlobalLogger().info("getting region " + regionPath);
 
         Region<?,?> reg = Misc.getGemFireCache().getRegion(regionPath);
         
@@ -747,7 +723,7 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
         query.append(" from ");
         query.append(tabnm);
 
-        getLogWriter().info(query.toString());
+        getGlobalLogger().info(query.toString());
         ResultSet rs = stmts.executeQuery(query.toString());
         int rows = 0;
         while(rs.next()) rows++;
@@ -985,7 +961,7 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
         sb.append(")");
       }
       String priv = sb.toString();
-      getLogWriter().info("GRANTING " + priv + " to " + dist_user);
+      getGlobalLogger().info("GRANTING " + priv + " to " + dist_user);
       stmts.execute("grant " + priv + " on " + schema + "."
           + tables.SharedTable.name() + " to " + dist_user);
       rightsGranted |= p.priv_bit;
@@ -997,7 +973,7 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
   public static void checkDistUser(final Properties dist_user_conn_props,
       final String sharedSchemaName, final int privileges, boolean readOnlyConnection) throws SQLException {
 
-    getLogWriter().info(
+    getGlobalLogger().info(
         "Got privileges " + priv_set.privString(privileges) + " (" + privileges
             + ") schemaName " + sharedSchemaName + " dist_user props "
             + dist_user_conn_props);
@@ -1008,19 +984,19 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
     connectionProp.putAll(dist_user_conn_props);
     String currentUser = connectionProp.getProperty(com.pivotal.gemfirexd.Attribute.USERNAME_ATTR);
     currentUser = currentUser == null ? connectionProp.getProperty(com.pivotal.gemfirexd.Attribute.USERNAME_ALT_ATTR) : currentUser;
-    getLogWriter().info(
+    getGlobalLogger().info(
         "getting local connection using distributed system user "
             + connectionProp);
     Connection conn;
     conn = TestUtil.getConnection(connectionProp);
-    getLogWriter().info("connection successfull. ");
+    getGlobalLogger().info("connection successfull. ");
 
     Statement stmts = conn.createStatement();
 
     // do sanity check of the current user's current schema rights.
     {
       final String distTable = "dist_table_1";
-      getLogWriter()
+      getGlobalLogger()
           .info(
               "Check table " + distTable + " in " + currentUser
                   + " current schema");
@@ -1031,7 +1007,7 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
       if (tabexist.next()) {
         String tab = tabexist.getString(1);
         if (tab != null) {
-          getLogWriter().info(
+          getGlobalLogger().info(
               tab + " exists in " + currentUser + " current schema");
         }
       }
@@ -1040,7 +1016,7 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
       } catch (SQLException sqe_ignore) { }
 
       try {
-        getLogWriter().info(
+        getGlobalLogger().info(
             "creating tables in OWN schema (" + currentUser + ")");
         stmts.execute("create table " + distTable
             + " ( col1 int, col2 int, primary key (col1))");
@@ -1059,12 +1035,12 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
 
     // now lets do the DML operations
     {
-      getLogWriter().info("switching to schema " + sharedSchemaName);
+      getGlobalLogger().info("switching to schema " + sharedSchemaName);
       stmts.execute("SET SCHEMA " + sharedSchemaName);
 
       assertCurrentSchema(stmts, sharedSchemaName);
 
-      getLogWriter().info("browsing " + tables.SharedTable);
+      getGlobalLogger().info("browsing " + tables.SharedTable);
       tables.SharedTable.rowCount(conn.createStatement(), privileges);
 
       checkSelect(tables.SharedTable, conn, stmts, privileges,
@@ -1085,10 +1061,10 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
   static void checkSelect(tables tab, Connection conn, Statement stmts,
       int privileges, Properties props) throws SQLException {
 
-    getLogWriter().info("executing row count on " + tab);
+    getGlobalLogger().info("executing row count on " + tab);
     final int rows = tab.rowCount(stmts, privileges);
 
-    getLogWriter().info("Checking select of ALL columns in " + tab);
+    getGlobalLogger().info("Checking select of ALL columns in " + tab);
     try {
       int rowsSelected = tab.doSelect(stmts, tab.columns());
       
@@ -1112,7 +1088,7 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
         ;
     }
 
-    getLogWriter().info("Checking select of few columns in " + tab);
+    getGlobalLogger().info("Checking select of few columns in " + tab);
     try {
       int rowsSelected = tab.doSelect(stmts, priv_set.SELECT_ST_1.getAllowedColumnList().toArray(
           new String[] {}));
@@ -1141,7 +1117,7 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
       }
     }
 
-    getLogWriter().info("Checking select of few other columns in " + tab);
+    getGlobalLogger().info("Checking select of few other columns in " + tab);
     try {
       int rowsSelected = tab.doSelect(stmts, priv_set.SELECT_ST_1_ST_2.getAllowedColumnList()
           .toArray(new String[] {}));
@@ -1176,7 +1152,7 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
       int privileges, Properties props, boolean readOnlyConnection) throws SQLException {
     try {
 
-      getLogWriter().info("Checking insert into " + tab);
+      getGlobalLogger().info("Checking insert into " + tab);
 
       tab.doInsert(stmts, "(4,4,4)", "(5,5,5)", "(6,6,6)");
 
@@ -1200,7 +1176,7 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
       int privileges, Properties props, boolean readOnlyConnection) throws SQLException {
     try {
 
-      getLogWriter().info("Checking update into " + tab);
+      getGlobalLogger().info("Checking update into " + tab);
 
       tab.doUpdate(stmts, null);
 
@@ -1243,7 +1219,7 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
           + expected);
     }
     else
-      getLogWriter().info("Ignoring " + targetPriv + " exeception " + expected);
+      getGlobalLogger().info("Ignoring " + targetPriv + " exeception " + expected);
       // okay. we didn't had the privilege and hence this is expected.
 
   }
@@ -1271,21 +1247,39 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
 
   public static Properties startLdapServerAndGetBootProperties(
       int locatorPort, int mcastPort, String sysUser) throws Exception {
-    final LdapTestServer server = LdapTestServer.getInstance();
+    return startLdapServerAndGetBootProperties(locatorPort, mcastPort,
+        sysUser, null);
+  }
+
+  public static Properties startLdapServerAndGetBootProperties(
+      int locatorPort, int mcastPort, String sysUser,
+      String ldifFilePath) throws Exception {
+    final LdapTestServer server;
+    if (ldifFilePath != null) {
+      server = LdapTestServer.getInstance(ldifFilePath);
+    } else {
+      server = LdapTestServer.getInstance();
+    }
     if (!server.isServerStarted()) {
       server.startServer();
     }
-
-    int serverPort = server.getServerPort();
     Properties bootProps = new Properties();
+    setLdapServerBootProperties(server, locatorPort, mcastPort,
+        sysUser, bootProps);
+    return bootProps;
+  }
+
+  public static void setLdapServerBootProperties(LdapTestServer server,
+      int locatorPort, int mcastPort, String sysUser, Properties bootProps) {
+    int serverPort = server.getServerPort();
     if (locatorPort > 0) {
       bootProps.setProperty(DistributionConfig.LOCATORS_NAME,
           "localhost[" + locatorPort + ']');
-    } else {
+    } else if (mcastPort > 0) {
       bootProps.setProperty(DistributionConfig.MCAST_PORT_NAME,
           Integer.toString(mcastPort));
     }
-    bootProps.setProperty(DistributionConfig.SECURITY_LOG_LEVEL_NAME, "fine");
+    bootProps.setProperty(DistributionConfig.SECURITY_LOG_LEVEL_NAME, "finest");
     bootProps.setProperty(Monitor.DEBUG_TRUE,
         GfxdConstants.TRACE_AUTHENTICATION + ","
             + GfxdConstants.TRACE_SYS_PROCEDURES + ","
@@ -1301,8 +1295,6 @@ public class SecurityTestUtils extends DistributedSQLTestBase {
     bootProps.setProperty(com.pivotal.gemfirexd.Property.AUTH_LDAP_SERVER,
         "ldap://localhost:" + serverPort);
     setUserProps(sysUser, bootProps);
-
-    return bootProps;
   }
 
   public static void setUserProps(String user, Properties props) {

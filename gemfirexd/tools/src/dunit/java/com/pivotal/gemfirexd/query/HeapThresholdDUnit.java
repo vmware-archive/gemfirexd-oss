@@ -27,11 +27,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import dunit.impl.DUnitBB;
-
 import com.gemstone.gemfire.cache.CacheClosedException;
 import com.gemstone.gemfire.cache.CacheException;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
+import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
+import com.gemstone.gemfire.internal.cache.control.ResourceAdvisor;
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.execute.CallbackStatement;
@@ -44,20 +43,24 @@ import com.pivotal.gemfirexd.internal.engine.sql.execute.GemFireDistributedResul
 import com.pivotal.gemfirexd.internal.iapi.sql.execute.ExecRow;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedConnection;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedResultSet;
-
-import dunit.DistributedTestCase;
-import dunit.SerializableRunnable;
-import dunit.VM;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.dunit.VM;
+import io.snappydata.test.dunit.standalone.DUnitBB;
 
 @SuppressWarnings("serial")
 public class HeapThresholdDUnit extends DistributedSQLTestBase {
-  
-  private volatile static Map<String,String> queryExecutionErrorStatus =
-      new HashMap<String,String>();
-  String netUrl;
+
+  private static final Map<String, String> queryExecutionErrorStatus =
+      new HashMap<>();
 
   public HeapThresholdDUnit(String name) {
     super(name);
+  }
+
+  @Override
+  protected void vmTearDown() throws Exception {
+    queryExecutionErrorStatus.clear();
+    super.vmTearDown();
   }
 
   @Override
@@ -77,7 +80,7 @@ public class HeapThresholdDUnit extends DistributedSQLTestBase {
 
       TestUtil.jdbcConn = conn;
 
-      DistributedTestCase.assertTrue("Connection shouldn't be null", conn != null);
+      assertTrue("Connection shouldn't be null", conn != null);
       
       HeapThresholdHelper.prepareTables(conn);
       conn.close();
@@ -94,7 +97,7 @@ public class HeapThresholdDUnit extends DistributedSQLTestBase {
 
       TestUtil.jdbcConn = conn;
 
-      DistributedTestCase.assertTrue("Connection shouldn't be null", conn != null);
+      assertTrue("Connection shouldn't be null", conn != null);
 
       HeapThresholdHelper.prepareTables(conn);
       conn.close();
@@ -140,7 +143,10 @@ public class HeapThresholdDUnit extends DistributedSQLTestBase {
         dumpSharedMap("Done Waiting for compilation ");
         getLogWriter().info("About to raise CRITICAL_UP event in VM " + pausevm.getPid());
         pausevm.invoke(HeapThresholdHelper.class, "raiseMemoryEvent", new Object[] {true, false});
-        
+
+        // wait for memory event to be propagated
+        waitForCriticalUpMembers(10000);
+
         for(QueryExecutor exec1 : executors) {
           exec1.notifyMemoryEvent();
         }
@@ -169,10 +175,10 @@ public class HeapThresholdDUnit extends DistributedSQLTestBase {
         }
     }
     finally {
-      pausevm.invoke(new CacheSerializableRunnable("reset observer") 
+      pausevm.invoke(new SerializableRunnable("reset observer") 
                 {
                     @Override
-                    public void run2() throws CacheException {
+                    public void run() throws CacheException {
                       try {
                         GemFireXDQueryObserverHolder
                             .setInstance(new GemFireXDQueryObserverAdapter());
@@ -198,7 +204,7 @@ public class HeapThresholdDUnit extends DistributedSQLTestBase {
     
     TestUtil.jdbcConn = conn;
 
-    DistributedTestCase.assertTrue("Connection shouldn't be null", conn != null);
+    assertTrue("Connection shouldn't be null", conn != null);
     
     HeapThresholdHelper.prepareTables(conn);
     
@@ -234,11 +240,14 @@ public class HeapThresholdDUnit extends DistributedSQLTestBase {
         for(QueryExecutor executor : executors) {
           executor.waitForCompilation();
         }
-        
+
         dumpSharedMap("Done Waiting for compilation ");
         getLogWriter().info("About to raise CRITICAL_UP event in VM " + pausevm.getPid());
         pausevm.invoke(HeapThresholdHelper.class, "raiseMemoryEvent", new Object[] {true, false});
-        
+
+        // wait for memory event to be propagated
+        waitForCriticalUpMembers(5000);
+
         for(QueryExecutor exec1 : executors) {
           exec1.notifyMemoryEvent();
         }
@@ -267,10 +276,10 @@ public class HeapThresholdDUnit extends DistributedSQLTestBase {
         }
     }
     finally {
-      pausevm.invoke(new CacheSerializableRunnable("reset observer") 
+      pausevm.invoke(new SerializableRunnable("reset observer") 
                 {
                     @Override
-                    public void run2() throws CacheException {
+                    public void run() throws CacheException {
                       try {
                         GemFireXDQueryObserverHolder
                             .setInstance(new GemFireXDQueryObserverAdapter());
@@ -498,7 +507,7 @@ public class HeapThresholdDUnit extends DistributedSQLTestBase {
 
        notifyCompilation();
        TestUtil.getLogger().info("Start waiting for memory event from " +
-           DUnitBB.getBB().getSharedMap().get(queryStr) + " state " + queryStr);
+           DUnitBB.getBB().get(queryStr) + " state " + queryStr);
        
        waitForQueryStatus(QueryStatus.EXECUTING, queryStr);
        
@@ -514,42 +523,46 @@ public class HeapThresholdDUnit extends DistributedSQLTestBase {
   }
 
   public static void updateQueryStatus(String qs, String queryStr) {
-    DUnitBB.getBB().getSharedMap().put(queryStr, qs);
+    DUnitBB.getBB().put(queryStr, qs);
   }
 
   public static void waitForQueryStatus(String expectedStatus, String queryStr) {
+    final long maxWait = System.currentTimeMillis() + 30000;
     Thread t = Thread.currentThread();
-    if(t.getName().startsWith("DRDA")) {
+    if (t.getName().startsWith("DRDA")) {
       return;
     }
-    Object val = null;
+    Object val;
     try {
-        do {
-          Thread.sleep(500);
-          val = DUnitBB.getBB().getSharedMap().get(queryStr);
-          DistributedTestCase.assertTrue("val not instance of String", (val == null || val instanceof String) );
-        } while (val == null || ! ((String)val).equals(expectedStatus) );
-    }
-    catch (InterruptedException e) {
+      do {
+        Thread.sleep(500);
+        if (System.currentTimeMillis() > maxWait) {
+          break;
+        }
+        val = DUnitBB.getBB().get(queryStr);
+        assertTrue("val not instance of String", (val == null || val instanceof String));
+      } while (val == null || !val.equals(expectedStatus));
+    } catch (InterruptedException e) {
       e.printStackTrace();
     }
   }
 
   private static Thread executeQueryInVM(final VM vm, final HeapThresholdHelper.QueryExecutor executor) throws SQLException, InterruptedException {
         //install the observer in remote VM 
-        getLogWriter().info("Installing observer for " + executor.query() +  
-                            " on VM " + vm.getPid() + " Host " + vm.getHost());
-        vm.invoke(new CacheSerializableRunnable("set observer") {
+        getGlobalLogger().info("Installing observer for " + executor.query() +
+            " on VM " + vm.getPid() + " Host " + vm.getHost());
+        vm.invoke(new SerializableRunnable("set observer") {
           @Override
-          public void run2() {
-            getLogWriter().info("Setting the observer for variant " + executor.variant().name() + " query " + executor.query());
+          public void run() {
+            getGlobalLogger().info("Setting the observer for variant " +
+                executor.variant().name() + " query " + executor.query());
             GemFireXDQueryObserverHolder.putInstance(executor.observer());
           }
           
         });
         
         //now, normally execute the query in local vm. 
-        getLogWriter().info("Executing Query ..." + executor.query());
+        getGlobalLogger().info("Executing Query ..." + executor.query());
         Thread t = HeapThresholdHelper.executeQueryInThread(executor);
         
         return t;
@@ -568,14 +581,31 @@ public class HeapThresholdDUnit extends DistributedSQLTestBase {
     }
   }
 
+  private static void waitForCriticalUpMembers(long maxWait) throws Exception {
+    final GemFireCacheImpl cache = GemFireCacheImpl.getInstance();
+    if (cache == null) {
+      Thread.sleep(maxWait);
+    } else {
+      ResourceAdvisor adviser = cache.getResourceAdvisor();
+      long start = System.currentTimeMillis();
+      while (adviser.adviseCriticalMembers().size() == 0) {
+        Thread.sleep(100);
+        if (maxWait >= 0 && (System.currentTimeMillis() - start) > maxWait) {
+          break;
+        }
+      }
+    }
+  }
+
   private static void dumpSharedMap(String msg) {
+    Map<Object, Object> map = DUnitBB.getBB().getMapCopy();
     TestUtil.getLogger().info(
         "dumpSharedMap: " + msg + "Dumping shared map of size "
-            + DUnitBB.getBB().getSharedMap().size());
-    Iterator<?> iter = DUnitBB.getBB().getSharedMap().getMap().entrySet().iterator();
+            + map.size());
+    Iterator<?> iter = map.entrySet().iterator();
     while (iter.hasNext()) {
       Map.Entry<?, ?> entry = (Map.Entry<?, ?>)iter.next();
-      getLogWriter().info("dumpSharedMap: Key=" + entry.getKey() + " value="
+      getGlobalLogger().info("dumpSharedMap: Key=" + entry.getKey() + " value="
           + entry.getValue());
     }
   }

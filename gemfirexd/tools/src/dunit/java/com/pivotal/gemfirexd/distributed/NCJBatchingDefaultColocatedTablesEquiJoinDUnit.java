@@ -18,7 +18,7 @@ package com.pivotal.gemfirexd.distributed;
 
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
 
-import dunit.SerializableRunnable;
+import io.snappydata.test.dunit.SerializableRunnable;
 
 /*
  * Set Batching Size of 5 for every test. Using either

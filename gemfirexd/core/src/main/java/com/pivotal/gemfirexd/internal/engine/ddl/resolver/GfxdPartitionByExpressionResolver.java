@@ -110,13 +110,15 @@ public final class GfxdPartitionByExpressionResolver extends
 
   private int[] typeFormatIdArray;
 
+  private boolean snappyStore = Misc.getMemStore().isSnappyStore();
+
   public GfxdPartitionByExpressionResolver() {
     this.defaultPartitioning = true;
     this.exprCompiler = null;
   }
 
   public GfxdPartitionByExpressionResolver(ValueNode node) {
-    if (node instanceof ColumnReference) {
+    if (node instanceof ColumnReference && !snappyStore) {
       String columnName = ((ColumnReference)node).getColumnName();
       this.partColsOrigOrder = new String[1];
       this.partColsOrigOrder[0] = columnName;
@@ -129,6 +131,8 @@ public final class GfxdPartitionByExpressionResolver extends
           "PARTITION BY");
     }
   }
+
+
 
   public GfxdPartitionByExpressionResolver(Object[] columns) {
     this.partColsOrigOrder = new String[columns.length];
@@ -462,7 +466,13 @@ public final class GfxdPartitionByExpressionResolver extends
     }
     else {
       // case of partitioning by general expression
-      return invokeExpressionEvaluator(dvd, null, lcc);
+      if(snappyStore){
+        return Integer.valueOf(Misc.getHashCodeSnappy(dvd));
+      }else{
+        return invokeExpressionEvaluator(dvd, null, lcc);
+      }
+
+
     }
   }
 
@@ -485,7 +495,13 @@ public final class GfxdPartitionByExpressionResolver extends
     }
     else {
       // case of partitioning by general expression
-      return invokeExpressionEvaluator(null, dvds, lcc);
+      if(snappyStore){
+        return Integer.valueOf(Misc.getHashCodeSnappy(dvds));
+      }else{
+        return invokeExpressionEvaluator(null, dvds, lcc);
+      }
+
+
     }
   }
 
@@ -670,6 +686,9 @@ public final class GfxdPartitionByExpressionResolver extends
       // Minimal check do determine if both have them have expr node at least
       if (this.exprCompiler != null && passed.exprCompiler == null
           || this.exprCompiler == null && passed.exprCompiler != null) {
+        if(snappyStore){ //escaping the check for snappystore.
+          return true;
+        }
         return false;
       }
 
@@ -714,7 +733,7 @@ public final class GfxdPartitionByExpressionResolver extends
       String newCol = refNewColMap.get(partCol);
       assert newCol != null;
       this.partColsOrigOrder[index] = newCol;
-      this.columnToIndexMap.put(newCol, Integer.valueOf(index));
+      this.columnToIndexMap.put(newCol, Integer.valueOf(index))
     }
     this.partitionColumnNames = this.partColsOrigOrder.clone();
     */
@@ -745,9 +764,11 @@ public final class GfxdPartitionByExpressionResolver extends
     }
     if (this.isSubSetOfPrimary) {
       if (gfkey == null) { // generated key case
+        System.out.println(" Calling my hash9");
         routingObject = getGeneratedKeyRoutingObject(key);
       }
       else if (this.requiresSerializedHash) {
+        System.out.println(" Calling my hash****");
         assert this.exprCompiler == null;
         // calculate hashCode directly from serialized bytes
         final RowFormatter rf;

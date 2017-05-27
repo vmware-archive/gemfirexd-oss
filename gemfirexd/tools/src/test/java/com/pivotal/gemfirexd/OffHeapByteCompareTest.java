@@ -74,9 +74,9 @@ public class OffHeapByteCompareTest extends ByteCompareTest {
   @Override
   public void setUp() throws Exception {
     super.setUp();   
-     System.setProperty("gemfire.OFF_HEAP_TOTAL_SIZE", "1G");
+     System.setProperty("gemfire.OFF_HEAP_TOTAL_SIZE", "500m");
     System.setProperty("gemfire."
-        + DistributionConfig.OFF_HEAP_MEMORY_SIZE_NAME, "1G");
+        + DistributionConfig.OFF_HEAP_MEMORY_SIZE_NAME, "500m");
     System.setProperty(GfxdManagementService.DISABLE_MANAGEMENT_PROPERTY,
         "true");
   }

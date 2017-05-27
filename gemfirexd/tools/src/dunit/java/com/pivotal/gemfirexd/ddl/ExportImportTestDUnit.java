@@ -25,7 +25,6 @@ import java.sql.Statement;
 import java.util.Properties;
 
 import com.gemstone.gemfire.cache.CacheException;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserver;
@@ -33,7 +32,7 @@ import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverAdapter;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
 
-import dunit.SerializableRunnable;
+import io.snappydata.test.dunit.SerializableRunnable;
 
 public class ExportImportTestDUnit extends DistributedSQLTestBase {
 
@@ -783,10 +782,10 @@ public class ExportImportTestDUnit extends DistributedSQLTestBase {
   /**
    * Runnable to set the Observer for importLockTable
    */
-  SerializableRunnable importLockTableObserverSet = new CacheSerializableRunnable(
+  SerializableRunnable importLockTableObserverSet = new SerializableRunnable(
     "Set importLockTableObserver") {
     @Override
-    public void run2() throws CacheException {
+    public void run() throws CacheException {
       GemFireXDQueryObserverHolder.setInstance(importLockTableObserver);
     }
   };

@@ -649,8 +649,7 @@ public class IndexConsistencyTest extends JdbcTestBase {
     expectedAttrs.setHasDiskWriteAttributes(false);
     PartitionAttributesFactory pattrsFact = new PartitionAttributesFactory();
     if(getSuffix().toLowerCase().indexOf("offheap") != -1) {
-      pattrsFact.setLocalMaxMemory(50);
-     
+      pattrsFact.setLocalMaxMemory(500);
     }
     pattrsFact.setPartitionResolver(new GfxdPartitionByExpressionResolver());
     PartitionAttributes< ?, ?> pattrs = pattrsFact.create();

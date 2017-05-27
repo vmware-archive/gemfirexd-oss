@@ -26,6 +26,7 @@ import java.util.TreeSet;
 import com.gemstone.gemfire.InternalGemFireError;
 import com.gemstone.gemfire.internal.GemFireTerminateError;
 import com.gemstone.gemfire.internal.GemFireUtilLauncher;
+import com.gemstone.gemfire.internal.GemFireUtilLauncher.CommandEntry;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.pivotal.gemfirexd.internal.iapi.tools.i18n.LocalizedResource;
 import com.pivotal.gemfirexd.internal.shared.common.sanity.SanityManager;
@@ -34,6 +35,7 @@ import com.pivotal.gemfirexd.tools.internal.JarTools;
 import com.pivotal.gemfirexd.tools.internal.MiscTools;
 import com.pivotal.gemfirexd.tools.internal.GfxdServerLauncher;
 import scala.tools.jline.console.ConsoleReader;
+import scala.tools.jline.console.history.FileHistory;
 
 /**
  * Extends GemFireUtilLauncher to map the GemFireXD utilities to their
@@ -59,6 +61,12 @@ public class GfxdUtilLauncher extends GemFireUtilLauncher {
    */
   static final String GET_CANONICAL_PATH_ARG = "--get-canonical-path";
 
+  protected static boolean snappyStore;
+
+  public static boolean isSnappyStore() {
+    return snappyStore;
+  }
+
   /**
    * Returns a mapping of utility names to the class used to spawn them for
    * GemFireXD.
@@ -73,7 +81,8 @@ public class GfxdUtilLauncher extends GemFireUtilLauncher {
     m.put("locator", new CommandEntry(GfxdDistributionLocator.class,
         LocalizedResource.getMessage("UTIL_Locator_Usage"), false));
     m.put("agent", new CommandEntry(GfxdAgentLauncher.class, LocalizedStrings
-            .GemFireUtilLauncher_Agent_Usage.toLocalizedString(), false));
+            .GemFireUtilLauncher_Agent_Usage.toString(new Object[] { LocalizedResource
+            .getMessage("FS_PRODUCT")  }), false));
     m.put(SCRIPT_NAME, new CommandEntry(ij.class, LocalizedResource
         .getMessage("UTIL_GFXD_Usage"), false));
     //m.put("gemfire", SystemAdmin.class);
@@ -191,7 +200,18 @@ public class GfxdUtilLauncher extends GemFireUtilLauncher {
         // use jline to go into the character reading mode
         if (!"scala.tools.jline.UnsupportedTerminal".equals(System
             .getProperty("jline.terminal"))) {
-          return new ConsoleReader();
+          final ConsoleReader reader = new ConsoleReader();
+          Runtime.getRuntime().addShutdownHook(new Thread() {
+            public  void run() {
+              try {
+                reader.getTerminal().restore();
+                ((FileHistory)reader.getHistory()).flush();
+              } catch (Exception e) {
+                // restoration failed!
+              }
+            }
+          });
+          return reader;
         }
       } catch (IOException ioe) {
       }
@@ -259,7 +279,8 @@ public class GfxdUtilLauncher extends GemFireUtilLauncher {
     final String indent = "   ";
     final Map<String, CommandEntry> types = getTypes();
 
-    final String[] selfHelp = types.remove(SCRIPT_NAME).usage.split("\\r?\\n");
+    final String[] selfHelp = types.remove(scriptName()).usage.split("\\r?\\n");
+    types.remove(SCRIPT_NAME); // Remove gfxd usage either way.
     for (String helpLine : selfHelp) {
       splitLine(helpLine, width, 0, result);
     }
@@ -301,7 +322,7 @@ public class GfxdUtilLauncher extends GemFireUtilLauncher {
     }
     result.append(indent);
     result.append(LocalizedResource.getMessage("UTIL_GFXD_Tools_Usage",
-        SCRIPT_NAME, sb.toString()));
+        scriptName(), sb.toString()));
     result.append(lineSep);
 
     printUsage(result.toString(), SanityManager.DEFAULT_MAX_OUT_LINES, reader);

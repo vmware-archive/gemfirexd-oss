@@ -34,10 +34,8 @@ import com.gemstone.gemfire.cache.PartitionedRegionStorageException;
 import com.gemstone.gemfire.cache.control.RebalanceOperation;
 import com.gemstone.gemfire.cache.control.ResourceManager;
 import com.gemstone.gemfire.cache.execute.FunctionException;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.distributed.DistributedSystemDisconnectedException;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
-import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.EntryEventImpl;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.internal.cache.PRHARedundancyProvider;
@@ -55,11 +53,10 @@ import com.pivotal.gemfirexd.internal.iapi.error.ShutdownException;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedConnection;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedPreparedStatement;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedStatement;
-
-import dunit.AsyncInvocation;
-import dunit.Host;
-import dunit.SerializableRunnable;
-import dunit.VM;
+import io.snappydata.test.dunit.AsyncInvocation;
+import io.snappydata.test.dunit.Host;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.dunit.VM;
 
 @SuppressWarnings({ "serial" })
 public class GemFireXDHADUnit extends DistributedSQLTestBase {
@@ -70,7 +67,7 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
 
   public static void joinAsyncInvocation(AsyncInvocation async, long ms) {
     if (async.isAlive()) {
-      join(async, ms, getLogWriter());
+      join(async, ms, getGlobalLogger());
     }
   }
 
@@ -362,7 +359,7 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
     // no close message is sent rather only closed on client which maybe
     // detected by server after sometime during the read
     assertNumConnections(-2, -2, 2);
-    assertNumConnections(-1, -1, 1);
+    assertNumConnections(-1, -2, 1);
 
     sop(testName + " part1 ended");
 
@@ -384,8 +381,8 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
     assertNumConnections(-2, 0, 4);
     assertNumConnections(-2, -2, 2);
     // 1 control connection + 1 data connection + data connection closed
-    assertNumConnections(-2, -2, 1);
-    assertNumConnections(-1, -1, 3);
+    assertNumConnections(-3, -3, 1);
+    assertNumConnections(-1, -2, 3);
 
     sop(testName + " part2 ended");
 
@@ -399,7 +396,7 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
     // we expect connection close to be detected now that server is down
     assertNumConnections(-2, -2, 2);
     // 1 data connection
-    assertNumConnections(-4, -3, 1, 3);
+    assertNumConnections(-5, -5, 1, 3);
 
     sop(testName + " part3 ended");
 
@@ -422,13 +419,13 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
     // number of closed connections can be 3 or 4 depending on whether the
     // close was registered on the server going down
     // negative value indicates that number of connections should be <= limit
-    assertNumConnections(-8, -4, 1, 3);
+    assertNumConnections(-9, -6, 1, 3);
 
     // closing a now "invalid" connection should be fine and cause no failover
     conn.close();
     assertNumConnections(-2, 0, 4);
     assertNumConnections(-2, -2, 2);
-    assertNumConnections(-8, -5, 1, 3);
+    assertNumConnections(-9, -7, 1, 3);
 
     sop(testName + " part4 ended");
 
@@ -888,14 +885,14 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
       boolean doClose = false;
       if (conn == null) {
         if (clientPort != null && clientPort.intValue() > 0) {
-          getLogWriter().info("creating new client connection for current VM");
+          getGlobalLogger().info("creating new client connection for current VM");
           conn = TestUtil.getNetConnection(clientPort.intValue(), null, null);
-          getLogWriter().info("created new client connection for current VM");
+          getGlobalLogger().info("created new client connection for current VM");
         }
         else {
-          getLogWriter().info("creating new server connection for current VM");
+          getGlobalLogger().info("creating new server connection for current VM");
           conn = TestUtil.getConnection();
-          getLogWriter().info("created new server connection for current VM");
+          getGlobalLogger().info("created new server connection for current VM");
         }
         // TODO: TX: only valid for non-transactional ops for now
         conn.setTransactionIsolation(Connection.TRANSACTION_NONE);
@@ -904,9 +901,9 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
       }
       assertEquals(Connection.TRANSACTION_NONE, conn.getTransactionIsolation());
       assertFalse(conn.getAutoCommit());
-      getLogWriter().info("Executing DML: " + dmlStmt);
+      getGlobalLogger().info("Executing DML: " + dmlStmt);
       // choose randomly between a prepared statement or normal one
-      final boolean usePrepStatement = AvailablePort.rand.nextBoolean();
+      final boolean usePrepStatement = PartitionedRegion.rand.nextBoolean();
       int cnt = -1;
       PreparedStatement ps;
       final Statement stmt = conn.createStatement();
@@ -927,7 +924,7 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
       }
       // verify that change has actually taken place correctly
       if (verifyStmt != null) {
-        getLogWriter().info("Verifying with DML: " + verifyStmt);
+        getGlobalLogger().info("Verifying with DML: " + verifyStmt);
         ProcessResultSet<Object> verifyResult = new ProcessResultSet<Object>() {
           @Override
           public Object process(final ResultSet rs) throws SQLException {
@@ -966,9 +963,9 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
       // cleanup stuff
       stmt.close();
       if (doClose) {
-        getLogWriter().info("closing the new connection");
+        getGlobalLogger().info("closing the new connection");
         conn.close();
-        getLogWriter().info("closed the new connection");
+        getGlobalLogger().info("closed the new connection");
       }
     } catch (SQLException e) {
       fail("unexpected exception occured in fireOps: ", e);
@@ -996,7 +993,7 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
       Integer startCnt, java.sql.Connection conn) {
     StringBuilder insertStmt = new StringBuilder("insert into Account values");
     // one or two inserts at a time to test both put and putAll
-    final int numInserts = AvailablePort.rand.nextInt(2) + 1;
+    final int numInserts = PartitionedRegion.rand.nextInt(2) + 1;
     for (int i = startCnt; i < startCnt + numInserts; ++i) {
       if (i > startCnt) {
         insertStmt.append(',');
@@ -1081,10 +1078,10 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
   }
 
   public static void selectQueryAndExecute(VM vm, List<AsyncInvocation> ainvoke) {
-    final SerializableRunnable createSelects = new CacheSerializableRunnable(
+    final SerializableRunnable createSelects = new SerializableRunnable(
         "createSelects") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         doSelects(1000);
         //assertEquals(20, doSelects(1000));
       }
@@ -1104,14 +1101,14 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
   }
 
   private static void sop(String s) {
-    getLogWriter().info(s);
+    getGlobalLogger().info(s);
   }
 
   public static void disconnectVMs(List<VM> vms, List<AsyncInvocation> ainvoke) {
-    SerializableRunnable disconnect = new CacheSerializableRunnable(
+    SerializableRunnable disconnect = new SerializableRunnable(
         "disconnect") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           TestUtil.shutDown();
         } catch (SQLException e) {
@@ -1132,7 +1129,7 @@ public class GemFireXDHADUnit extends DistributedSQLTestBase {
 
   @SuppressWarnings("deprecation")
   public static void assertEquals(int expected, int actual) {
-    getLogWriter().info("comparing " + expected + " with actual " + actual);
+    getGlobalLogger().info("comparing " + expected + " with actual " + actual);
     junit.framework.Assert.assertEquals(expected, actual);
   }
 }

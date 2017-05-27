@@ -158,7 +158,6 @@ public final class GenericLanguageConnectionContext
 	private final static int NON_XA = 0;
 	private final static int XA_ONE_PHASE = 1;
 	private final static int XA_TWO_PHASE = 2;
-
 	/*
 		fields
 	 */
@@ -4124,6 +4123,12 @@ public final class GenericLanguageConnectionContext
 
   private static final int ENABLE_BULK_FK_CHECKS = 0x1000;
 
+	private static final int ROUTE_QUERY = 0x2000;
+
+	private static final int DEFAULT_PERSISTENT = 0x4000;
+
+	private static final int BUCKET_RETENTION_FOR_LOCAL_EXECUTION = 0x8000;
+
   private static final int FLAGS_DEFAULT = 0x0;
 
   /** flags that cannot be changed via {@link #setFlags(int)} */
@@ -4463,7 +4468,13 @@ public final class GenericLanguageConnectionContext
     return connFactory.getStatement(getDefaultSchema(), sqlText, execFlags,false, null);
   }
 
-  public static class TriggerActionPSMap implements Dependent {
+	public void setBucketRetentionForLocalExecution(boolean bucketRetentionForLocalExecution) {
+		this.gfxdFlags = GemFireXDUtils.set(this.gfxdFlags, BUCKET_RETENTION_FOR_LOCAL_EXECUTION,
+				bucketRetentionForLocalExecution);
+	}
+
+
+	public static class TriggerActionPSMap implements Dependent {
 
     private final HashMap<TriggerDescriptor, PreparedStatement> map;
 
@@ -4826,9 +4837,20 @@ public final class GenericLanguageConnectionContext
     return this.sendSingleHopInfo;
   }
 
+	/**
+	 * This method is used to  set/clear the bucketId's and bucketSet for the region. If the
+	 * BUCKET_RETENTION_FOR_LOCAL_EXECUTION is set then do not clear the bucketId's for local execution
+	 * as next statement should be executed on current sets of buckets.
+	 */
+
   @Override
   public void setExecuteLocally(Set<Integer> bucketIds, Region<?, ?> region,
       boolean dbSync, Checkpoint cp) {
+
+	  if (bucketIds == null && GemFireXDUtils.isSet(this.gfxdFlags, BUCKET_RETENTION_FOR_LOCAL_EXECUTION) ) {
+		  return;
+	  }
+
     if (SanityManager.TraceSingleHop) {
       SanityManager.DEBUG_PRINT(SanityManager.TRACE_SINGLE_HOP,
           "GenericLanguageConnectionContext::"
@@ -4840,6 +4862,7 @@ public final class GenericLanguageConnectionContext
     this.dbSyncToBeDone = dbSync;
     this.chkPoint = cp;
   }
+
 
   @Override
   public Set<Integer> getBucketIdsForLocalExecution() {
@@ -4930,7 +4953,28 @@ public final class GenericLanguageConnectionContext
   public Set<String> getDroppedFKConstraints() {
     return this.droppedFKConstraints;
   }
-  
+
+	@Override
+	public void setQueryRouting(boolean routeQuery) {
+		this.gfxdFlags = GemFireXDUtils.set(this.gfxdFlags, ROUTE_QUERY,
+				routeQuery);
+	}
+
+	@Override
+	public boolean isQueryRoutingEnabled() {
+		return GemFireXDUtils.isSet(this.gfxdFlags, ROUTE_QUERY);
+	}
+
+	@Override
+	public void setDefaultPersistent(boolean b) {
+		this.gfxdFlags = GemFireXDUtils.set(this.gfxdFlags, DEFAULT_PERSISTENT, b);
+	}
+
+	@Override
+	public boolean isDefaultPersistent() {
+		return GemFireXDUtils.isSet(this.gfxdFlags, DEFAULT_PERSISTENT);
+	}
+
   /**
    * {@inheritDoc}
    */

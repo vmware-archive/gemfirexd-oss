@@ -33,12 +33,9 @@ import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
 
-import org.junit.Test;
-
 import com.gemstone.gemfire.Statistics;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
-import com.gemstone.gemfire.internal.AvailablePortHelper;
 import com.gemstone.gemfire.internal.cache.CachePerfStats;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.management.EvictionAttributesData;
@@ -46,20 +43,20 @@ import com.gemstone.gemfire.management.internal.MBeanJMXAdapter;
 import com.gemstone.gemfire.management.internal.ManagementConstants;
 import com.gemstone.gemfire.management.internal.beans.RegionMBeanCompositeDataFactory;
 import com.pivotal.gemfirexd.TestUtil;
-import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
+import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.diag.MemoryAnalyticsVTI;
 import com.pivotal.gemfirexd.internal.engine.distributed.GfxdConnectionWrapper;
 import com.pivotal.gemfirexd.internal.engine.management.TableMXBean.TableMetadata;
+import com.pivotal.gemfirexd.internal.engine.management.impl.GfxdManagementTestBase;
 import com.pivotal.gemfirexd.internal.engine.management.impl.InternalManagementService;
 import com.pivotal.gemfirexd.internal.engine.management.impl.ManagementUtils;
-import com.pivotal.gemfirexd.internal.engine.management.impl.GfxdManagementTestBase;
 import com.pivotal.gemfirexd.internal.engine.management.impl.TableMBean;
 import com.pivotal.gemfirexd.internal.impl.sql.catalog.SYSTABLESRowFactory;
-
-import dunit.Host;
-import dunit.VM;
+import io.snappydata.test.dunit.AvailablePortHelper;
+import io.snappydata.test.dunit.Host;
+import io.snappydata.test.dunit.VM;
 
 public class GfxdTableMBeanDUnit extends GfxdManagementTestBase {
 
@@ -817,7 +814,8 @@ public class GfxdTableMBeanDUnit extends GfxdManagementTestBase {
 
     p.setProperty(DistributionConfig.JMX_MANAGER_NAME, "true");
     p.setProperty(DistributionConfig.JMX_MANAGER_START_NAME, String.valueOf(startManager));
-    p.setProperty(DistributionConfig.JMX_MANAGER_PORT_NAME, String.valueOf(AvailablePortHelper.getRandomAvailableTCPPort()));
+    p.setProperty(DistributionConfig.JMX_MANAGER_PORT_NAME, String.valueOf(
+        AvailablePortHelper.getRandomAvailableTCPPort()));
 
     return p;
   }
@@ -841,11 +839,7 @@ public class GfxdTableMBeanDUnit extends GfxdManagementTestBase {
     VM vm = Host.getHost(0).getVM(0);
     vm.invoke(GfxdTableMBeanDUnit.class, "commitTx"); // auto-commit is false by default for test
   }
-  
 
-  
-
-  @Test
   public void testGetIndexInfo() throws Exception {
     final String SPACE            = " ";
     final String TABLE_SCHEMA     = "APP";

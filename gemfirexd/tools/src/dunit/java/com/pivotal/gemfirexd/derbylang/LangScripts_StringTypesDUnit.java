@@ -133,7 +133,7 @@ public class LangScripts_StringTypesDUnit extends DistributedSQLTestBase {
 			{"","22","222"},
 			{"3","33333","333333333333333333333333333333"},
 			{null,"77777",null} } },
-		{ "insert into ct select c3, c2, c1 from vt", "22001" },
+		{ "insert into ct select c3, c2, c1 from vt where c3 is not null", "22001" },
 		{ "select * from ct", new String[][] {
 			{"1","11111","111111111111111111111111111111"},
 			{"","22","222"},
@@ -143,7 +143,7 @@ public class LangScripts_StringTypesDUnit extends DistributedSQLTestBase {
 			{"","22","222"},
 			{"3","33333","333333333333333333333333333333"},
 			{null,"77777",null} } },
-		{ "insert into vt select c3, c2, c1 from ct", "22001" },
+		{ "insert into vt select c3, c2, c1 from ct where c3 is not null", "22001" },
 		{ "select * from vt", new String[][] {
 			{"1","11111","111111111111111111111111111111"},
 			{"","22","222"},

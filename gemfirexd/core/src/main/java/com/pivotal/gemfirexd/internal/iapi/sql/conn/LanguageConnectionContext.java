@@ -1490,7 +1490,22 @@ public interface LanguageConnectionContext extends Context {
    * while creating the table or adding FK (#50116)  
    */
   public Set<String> getDroppedFKConstraints();
-  
-// GemStone changes END  
+
+	/**
+   * Query routing will be attempted only when this flag is true
+   * @param routeQuery
+   */
+   void setQueryRouting(boolean routeQuery);
+
+   boolean isQueryRoutingEnabled();
+
+	/**
+	 * Query routing will be attempted only when this flag is true
+	 * @param routeQuery
+	 */
+	void setDefaultPersistent(boolean b);
+
+	boolean isDefaultPersistent();
+// GemStone changes END
 
 }

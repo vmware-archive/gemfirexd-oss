@@ -172,6 +172,8 @@ public final class GemFireService implements PersistentService {
       if (Attribute.GFXD_DBNAME.equals(name)
               || Attribute.SQLF_DBNAME.equals(name)) {
           return Attribute.GFXD_DBNAME;
+      } else if (Attribute.SNAPPY_DBNAME.equals(name)) {
+          return Attribute.SNAPPY_DBNAME;
       }
       else {
         throw StandardException.newException(SQLState.DATABASE_NOT_FOUND, name);

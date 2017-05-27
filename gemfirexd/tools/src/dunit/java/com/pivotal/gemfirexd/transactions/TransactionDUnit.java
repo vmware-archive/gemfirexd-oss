@@ -16,8 +16,6 @@
  */
 package com.pivotal.gemfirexd.transactions;
 
-import hydra.blackboard.AnyCyclicBarrier;
-
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -32,41 +30,16 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import javax.sql.XAConnection;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
-import org.apache.derbyTesting.junit.JDBC;
-
-import util.TestException;
-
 import com.gemstone.gemfire.Statistics;
 import com.gemstone.gemfire.StatisticsType;
-import com.gemstone.gemfire.cache.AttributesFactory;
-import com.gemstone.gemfire.cache.CacheException;
-import com.gemstone.gemfire.cache.CacheTransactionManager;
-import com.gemstone.gemfire.cache.ConflictException;
-import com.gemstone.gemfire.cache.DataPolicy;
-import com.gemstone.gemfire.cache.EntryExistsException;
-import com.gemstone.gemfire.cache.PartitionAttributesFactory;
-import com.gemstone.gemfire.cache.Region;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
+import com.gemstone.gemfire.cache.*;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.internal.SocketCreator;
-import com.gemstone.gemfire.internal.cache.BucketRegion;
-import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
-import com.gemstone.gemfire.internal.cache.PartitionedRegion;
-import com.gemstone.gemfire.internal.cache.PartitionedRegionDataStore;
-import com.gemstone.gemfire.internal.cache.RegionEntry;
-import com.gemstone.gemfire.internal.cache.TXEntryState;
-import com.gemstone.gemfire.internal.cache.TXId;
-import com.gemstone.gemfire.internal.cache.TXManagerImpl;
-import com.gemstone.gemfire.internal.cache.TXStateProxy;
-import com.gemstone.gemfire.internal.cache.TransactionObserver;
-import com.gemstone.gemfire.internal.cache.TransactionObserverAdapter;
+import com.gemstone.gemfire.internal.cache.*;
 import com.gemstone.gemfire.internal.cache.control.InternalResourceManager;
 import com.gemstone.gemfire.internal.cache.control.ResourceManagerStats;
 import com.gemstone.gemfire.internal.cache.locks.ExclusiveSharedSynchronizer;
@@ -88,10 +61,12 @@ import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedPreparedStatement;
 import com.pivotal.gemfirexd.internal.jdbc.ClientXADataSource;
 import com.pivotal.gemfirexd.internal.jdbc.EmbeddedXADataSource;
 import com.pivotal.gemfirexd.internal.shared.common.sanity.SanityManager;
-
-import dunit.AsyncInvocation;
-import dunit.SerializableRunnable;
-import dunit.VM;
+import io.snappydata.test.dunit.AsyncInvocation;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.dunit.VM;
+import io.snappydata.test.dunit.standalone.AnyCyclicBarrier;
+import io.snappydata.test.util.TestException;
+import org.apache.derbyTesting.junit.JDBC;
 
 @SuppressWarnings("serial")
 public class TransactionDUnit extends DistributedSQLTestBase {
@@ -116,7 +91,8 @@ public class TransactionDUnit extends DistributedSQLTestBase {
     Statement st = conn.createStatement();
     st.execute("Create table t1 (c1 int not null , c2 int not null, "
         + "primary key(c1)) partition by primary key" + getSuffix());
-    st.execute("create table t2 (c1 int, c2 int, primary key(c1)) partition by primary key" + getSuffix());
+    st.execute("create table t2 (c1 int, c2 int, primary key(c1)) " +
+        "partition by primary key" + getSuffix());
     st.execute("insert into t1 values (1,1)");
     st.execute("insert into t1 values (2,2)");
     st.execute("insert into t2 select * from t1");
@@ -133,10 +109,10 @@ public class TransactionDUnit extends DistributedSQLTestBase {
     assertTrue((rs.getInt(2) == 1) || (rs.getInt(2) == 2));
     assertTrue(rs.next());
     assertTrue((rs.getInt(1) == 1) || (rs.getInt(1) == 2));
-    assertTrue((rs.getInt(2) == 1) || (rs.getInt(2) == 2));
+    assertTrue("rs.getInt(2)=" + rs.getInt(2), (rs.getInt(2) == 1) || (rs.getInt(2) == 2));
     assertFalse(rs.next());
   }
-  
+
   public void testTransactionalInsertAsSubSelects() throws Exception {
     startVMs(1, 2);
     java.sql.Connection conn = TestUtil.jdbcConn;
@@ -145,7 +121,8 @@ public class TransactionDUnit extends DistributedSQLTestBase {
     Statement st = conn.createStatement();
     st.execute("Create table t1 (c1 int not null , c2 int not null, "
         + "primary key(c1)) partition by primary key" + getSuffix());
-    st.execute("create table t2 (c1 int, c2 int not null, primary key(c1)) partition by primary key" + getSuffix());
+    st.execute("create table t2 (c1 int, c2 int not null, primary key(c1)) " +
+        "partition by primary key" + getSuffix());
     st.execute("insert into t1 values (1,1)");
     st.execute("insert into t1 values (2,2)");
     st.execute("insert into t2 select * from t1");
@@ -329,7 +306,7 @@ public class TransactionDUnit extends DistributedSQLTestBase {
    * 
    * @param regionName
    *          region name.
-   * @param numEntires
+   * @param numEntries
    *          number of entries expected.
    */
   public static void checkData(String regionName, long numEntries) {
@@ -664,7 +641,8 @@ public class TransactionDUnit extends DistributedSQLTestBase {
         conn.rollback();
       }
     }
-    
+
+    TXManagerImpl.waitForPendingCommitForTest();
     // approx. 240 commits/rollbacks gets distributed across 2 nodes. adjust these numbers to a little lower value
     // if unbalanced commits/rollbacks happen.
     checkTxStatistics("commit-afterInserts", 240, 240, 240, 240, 500, 501); 
@@ -680,6 +658,7 @@ public class TransactionDUnit extends DistributedSQLTestBase {
     st.close();
     conn.commit();
     conn.close();
+    TXManagerImpl.waitForPendingCommitForTest();
     checkTxStatistics("commit-afterSelects", 240, 240, 240, 240, 500, 501);
   }
   
@@ -689,10 +668,10 @@ public class TransactionDUnit extends DistributedSQLTestBase {
 
     final int[] isRemoteCheck = new int[] {-1};
     
-    final CacheSerializableRunnable checkStats = new CacheSerializableRunnable(
+    final SerializableRunnable checkStats = new SerializableRunnable(
         "check transaction counts") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         final InternalDistributedSystem dsys = Misc.getDistributedSystem();
         final StatisticsType stType = dsys.findType("CachePerfStats");
         Statistics[] stats = dsys.findStatisticsByType(stType);
@@ -1586,12 +1565,8 @@ public class TransactionDUnit extends DistributedSQLTestBase {
     conn.commit();
   }
 
-  /**
-   * Jag's simple test case.
-   * 
-   * @throws Exception
-   */
-  public void testJagsUseCase_timeInserts() throws Exception {
+  /** Simple test case of timing inserts. */
+  public void testUseCase_timeInserts() throws Exception {
     // reduce logs
     reduceLogLevelForTest("warning");
 
@@ -1602,7 +1577,7 @@ public class TransactionDUnit extends DistributedSQLTestBase {
     Statement s = conn.createStatement();
     try {
       s.executeUpdate("drop table securities");
-    } catch (Exception e) {
+    } catch (Exception ignored) {
     }
 
     s.executeUpdate("create table securities ( sec_id integer not null "
@@ -3260,18 +3235,19 @@ public class TransactionDUnit extends DistributedSQLTestBase {
       ps.setInt(2, 2);
       ps.setInt(3, i);
       ps.setInt(4, i);
-      
+
       ps.addBatch();
     }
     ps.executeBatch();
     getLogWriter().info("commiting batch");
     conn.commit();
+    TXManagerImpl.waitForPendingCommitForTest();
     getLogWriter().info("verifying");
-    for (dunit.VM vm : serverVMs) {
+    for (VM vm : serverVMs) {
       vm.invoke(TransactionDUnit.class, "verifyNumEntries", new Object[] {
           Integer.valueOf(1), Integer.valueOf(10), "APP/T1" });
     }
-    for (dunit.VM vm : serverVMs) {
+    for (VM vm : serverVMs) {
       vm.invoke(TransactionDUnit.class, "verifyNumEntries", new Object[] {
           Integer.valueOf(10), Integer.valueOf(2), "APP/T1" });
     }
@@ -3279,7 +3255,7 @@ public class TransactionDUnit extends DistributedSQLTestBase {
 
   public static void verifyNumEntries(int expectedNum, int bucketid,
       String regionName) {
-    getLogWriter().info("executing verifyNumEntries");
+    getGlobalLogger().info("executing verifyNumEntries");
     Region<?, ?> r = Misc.getRegion(regionName, true, false);
     PartitionedRegion pr = (PartitionedRegion)r;
     PartitionedRegionDataStore ds = pr.getDataStore();
@@ -3289,7 +3265,7 @@ public class TransactionDUnit extends DistributedSQLTestBase {
         continue;
       }
       int entryCnt = b.entryCount();
-      getLogWriter().info(
+      getGlobalLogger().info(
           "executing verifyNumEntries for bucket region: " + b
               + " entry count is: " + entryCnt);
       assertEquals(expectedNum, entryCnt);
@@ -3621,37 +3597,6 @@ public class TransactionDUnit extends DistributedSQLTestBase {
     newConn.commit();
   }
 
-  static class AnyCyclicBarrierTimed extends AnyCyclicBarrier {
-
-    protected AnyCyclicBarrierTimed(int parties, String lockName) {
-      super(parties, lockName);
-    }
-
-    public static AnyCyclicBarrierTimed lookup(int parties, String name) {
-      return new AnyCyclicBarrierTimed(parties, name);
-    }
-
-    public void await(long timeoutInMillis) throws InterruptedException,
-        TimeoutException {
-      final AtomicBoolean done = new AtomicBoolean(false);
-      Thread t = new Thread(new Runnable() {
-        @Override
-        public void run() {
-          await();
-          done.set(true);
-        }
-      });
-      t.start();
-      t.join(timeoutInMillis);
-      if (!done.get()) {
-        t.interrupt();
-        t.join(5000);
-        throw new TimeoutException("exceeded timeout of " + timeoutInMillis
-            + "ms waiting on barrier");
-      }
-    }
-  }
-
   public void testFKWithBatching_49371() throws Throwable {
     startVMs(1, 2);
 
@@ -3680,8 +3625,8 @@ public class TransactionDUnit extends DistributedSQLTestBase {
       @Override
       public void run() {
         try {
-          final AnyCyclicBarrierTimed barrier = AnyCyclicBarrierTimed
-              .lookup(2, "fk_barrier");
+          final AnyCyclicBarrier barrier = new AnyCyclicBarrier(
+              2, "fk_barrier");
           final long waitMillis = 10000L;
           Connection conn = TestUtil.getConnection();
           conn.setTransactionIsolation(getIsolationLevel());
@@ -3749,8 +3694,8 @@ public class TransactionDUnit extends DistributedSQLTestBase {
       @Override
       public void run() {
         try {
-          final AnyCyclicBarrierTimed barrier = AnyCyclicBarrierTimed
-              .lookup(2, "fk_barrier");
+          final AnyCyclicBarrier barrier = new AnyCyclicBarrier(
+              2, "fk_barrier");
           final long waitMillis = 10000L;
           Connection conn = TestUtil.getConnection();
           conn.setTransactionIsolation(getIsolationLevel());
@@ -3859,6 +3804,8 @@ public class TransactionDUnit extends DistributedSQLTestBase {
 
     asyncServer.join();
     asyncChild.join();
+
+    AnyCyclicBarrier.destroy("fk_barrier");
 
     Throwable failure = null;
     if (asyncServer.exceptionOccurred()) {
@@ -4275,6 +4222,7 @@ public class TransactionDUnit extends DistributedSQLTestBase {
           // check successful commit the second time with new store
           barrier.await();
           conn.commit();
+          TXManagerImpl.waitForPendingCommitForTest();
         } catch (Throwable t) {
           failEx[0] = t;
           getLogWriter().error("unexpected exception", t);
@@ -4311,6 +4259,7 @@ public class TransactionDUnit extends DistributedSQLTestBase {
     if (failEx[0] != null) {
       throw failEx[0];
     }
+    TXManagerImpl.waitForPendingCommitForTest();
 
     // check the final values
     SerializableRunnable checkRS = new SerializableRunnable() {
@@ -4713,10 +4662,10 @@ public class TransactionDUnit extends DistributedSQLTestBase {
   }
 
   public void createDiskStore(boolean useClient, int vmNum) throws Exception {
-    CacheSerializableRunnable csr = getDiskStoreCreator(DISKSTORE);
+    SerializableRunnable csr = getDiskStoreCreator(DISKSTORE);
     if (useClient) {
       if (vmNum == 1) {
-        csr.run2();
+        csr.run();
       }
       else {
         clientExecute(vmNum, csr);

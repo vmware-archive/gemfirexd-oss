@@ -239,6 +239,11 @@ public interface ClientAttribute {
   String SKIP_LOCKS = com.pivotal.gemfirexd.Attribute.SKIP_LOCKS;
 
   /**
+   * A connection level property to disable query routing.
+   */
+  String ROUTE_QUERY = com.pivotal.gemfirexd.Attribute.ROUTE_QUERY;
+
+  /**
    * The GemFireXD log file path property.
    * 
    * added by GemStone

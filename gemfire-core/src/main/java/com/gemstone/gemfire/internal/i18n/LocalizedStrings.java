@@ -1704,8 +1704,7 @@ public class LocalizedStrings extends ParentLocalizedStrings {
   public static final StringId GatewayImpl_GATEWAY_SOCKET_READ_TIMEOUT_DISABLED = new StringIdImpl(5124, "Setting the socket read timeout on a gateway is currently disabled. Please contact VMware support for assistance.");
   public static final StringId EXECUTE_FUNCTION_NO_HAS_RESULT_RECEIVED_EXCEPTION = new StringIdImpl(5125, "Function execution without result encountered an Exception on server.");
   public static final StringId ConnectionFactoryImpl_POOL_0_IS_NOT_AVAILABLE = new StringIdImpl(5126, "Pool {0} is not available");
-  public static final StringId GemFireUtilLauncher_Agent_Usage = new StringIdImpl(
-      5127, "Starts/stops a GemFire JMX Agent, or provides status of a running one");
+  public static final StringId GemFireUtilLauncher_Agent_Usage = new StringIdImpl(5127, "Starts/stops a {0} JMX Agent, or provides status of a running one");
   public static final StringId CreateRegionProcessor_CANNOT_CREATE_REGION_0_WITH_OFF_HEAP_EQUALS_1_BECAUSE_ANOTHER_CACHE_2_HAS_SAME_THE_REGION_WITH_OFF_HEAP_EQUALS_3 = new StringIdImpl(5128, "Cannot create region {0} with off-heap={1} because another cache ({2}) has the same region with off-heap={3}.");
   
   public static final StringId ConnectionTable_OUT_OF_FILE_DESCRIPTORS_USING_SHARED_CONNECTION = new StringIdImpl(5129, "This process is out of file descriptors.\nThis will hamper communications and slow down the system.\nAny conserve-sockets setting is now being ignored.\nPlease consider raising the descriptor limit.\nThis alert is only issued once per process.");
@@ -1946,7 +1945,7 @@ public class LocalizedStrings extends ParentLocalizedStrings {
 
   public static final StringId TCPConduit_EXCEPTION_PARSING_TCPPORTRANGESTART = new StringIdImpl(5434, "Exception parsing membership-port-range start port.");
   public static final StringId TCPConduit_EXCEPTION_PARSING_TCPPORTRANGEEND = new StringIdImpl(5435, "Exception parsing membership-port-range end port.");
-  public static final StringId TCPConduit_UNABLE_TO_FIND_FREE_PORT = new StringIdImpl(5436, "Unable to find a free port in the membership-port-range");
+  public static final StringId TCPConduit_UNABLE_TO_FIND_FREE_PORT = new StringIdImpl(5436, "Unable to find a free port in the membership-port-range {0}-{1}");
   public static final StringId AbstractDistributionConfig_COULD_NOT_SET_0_TO_1_BECAUSE_ITS_DIFF_CAN_NOT_BE_LESS_THAN_2 = new StringIdImpl(5437, "Could not set \"{0}\" to \"{1}\" because a minimum of \"{2}\" values are required in the range.");
 
   public static final StringId Snapshot_INVALID_EXPORT_FILE = new StringIdImpl(5438, "File is invalid or is a directory: {0}");
@@ -1985,6 +1984,11 @@ public class LocalizedStrings extends ParentLocalizedStrings {
   public static final StringId DistributionManager_PR_META_DATA_CLEANUP_MESSAGE_PROCESSOR = new StringIdImpl(5462, "PrMetaData cleanup Message Processor ");
   public static final StringId RegionCreation_REGION_DESTROYED_DURING_INITIALIZATION = new StringIdImpl(5463, "Region was globally destroyed during cache initialization: {0}");
   public static final StringId SnappyCompressor_UNABLE_TO_LOAD_NATIVE_SNAPPY_LIBRARY = new StringIdImpl(5464, "Unable to load native Snappy library. Common causes include unsupported host OS or insufficient file permissions.");
+
+  public static final StringId PERCENTAGE_MOVE_DIRECTORY_SOURCE_NOT_DATA_STORE = new StringIdImpl(5465, "Source member does not exist or is not a data store for the partitioned region {0}: {1}");
+  public static final StringId PERCENTAGE_MOVE_DIRECTORY_TARGET_NOT_DATA_STORE = new StringIdImpl(5466, "Target member does not exist or is not a data store for the partitioned region {0}: {1}");
+  public static final StringId PERCENTAGE_MOVE_TARGET_SAME_AS_SOURCE = new StringIdImpl(5467, "Target member is the same as source member for the partitioned region {0}: {1}");
+
 
   /** HOPLOG STRINGS, 5500 - 5600 **/
   public static final StringId HOPLOG_FAILED_TO_READ_HDFS_FILE = new StringIdImpl(5500, "Exception while reading file on HDFS: {0}");
@@ -2027,9 +2031,13 @@ public class LocalizedStrings extends ParentLocalizedStrings {
   public static final StringId DiskStoreImpl_PREVENTING_COMPACTION_LOOP = new StringIdImpl(5807,
       "Not rescheduling compaction because the list of compactable oplogs has not changed. "
           + "Compactable oplogs are {0}");
+
+
   public static final StringId HDFSSTORE_IS_USED_IN_NONHDFS_REGION = new StringIdImpl(5808, "Only regions with HDFS_PARTITION or HDFS_PERSISTENT_PARTITION data policies can specify a HDFS Store");
   public static final StringId EVICTORSERVICE_CAUGHT_EXCEPTION_0 = new StringIdImpl(5809, "Evictor Service caught following exception : {0}");
   public static final StringId HDFSSTORE_IS_USED_IN_REPLICATED_TABLE = new StringIdImpl(5810, "HDFS Store cannot be used for REPLICATED TABLE");
+
+  public static final StringId GemFireCache_ENFORCE_UNIQUE_HOST_NOT_APPLICABLE_FOR_LONER = new StringIdImpl(5606, "enforce-unique-host and redundancy-zone properties have no effect for a LonerDistributedSystem.");
   public static final StringId HDFS_USER_IS_SAME_AS_GFXD_USER = new StringIdImpl(5611, "Gemfire XD user is the same as HDFS user, may cause security risks: {0}");
   public static final StringId GFXD_KERBEROS_KEYTAB_FILE_ABSENT = new StringIdImpl(5612, "Gemfire XD kerberos keytab file is missing: {0}");
   public static final StringId GFXD_KERBEROS_NAMENODE_PRINCIPAL_UNDEF = new StringIdImpl(5613, "Namenode principal must be configured when using kerberos authentication");

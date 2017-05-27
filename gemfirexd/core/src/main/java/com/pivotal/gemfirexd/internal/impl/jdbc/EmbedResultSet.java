@@ -54,6 +54,7 @@ import com.pivotal.gemfirexd.internal.engine.procedure.coordinate.ProcedureProce
 import com.pivotal.gemfirexd.internal.engine.sql.execute.UpdatableResultSet;
 import com.pivotal.gemfirexd.internal.engine.store.AbstractCompactExecRow;
 import com.pivotal.gemfirexd.internal.engine.store.ResultWasNull;
+import com.pivotal.gemfirexd.internal.iapi.sql.execute.ExecutionContext;
 import com.pivotal.gemfirexd.procedure.OutgoingResultSet;
 // GemStone changes END
 import com.pivotal.gemfirexd.internal.iapi.error.ExceptionSeverity;
@@ -387,7 +388,8 @@ public abstract class EmbedResultSet extends ConnectionChild
 		final LanguageConnectionContext lcc = conn.getLanguageConnection();
 		this.requireContext =
 		  !this.theResults.isDistributedResultSet()
-		  || (lcc.streamingEnabled() && lcc.getStatementDepth() > 0);
+		  || (lcc.streamingEnabled() && lcc.getStatementDepth() > 0)
+		  || lcc.getCurrentIsolationLevel() != ExecutionContext.UNSPECIFIED_ISOLATION_LEVEL;
 		// add reference to this ResultSet for locking (#47193, #47121)
 		final GemFireTransaction tran = (GemFireTransaction)lcc
 		    .getTransactionExecute();
@@ -5313,12 +5315,14 @@ public abstract class EmbedResultSet extends ConnectionChild
 
 	private final SQLException dataTypeConversion(String targetType, int column) {
 		return newSQLException(SQLState.LANG_DATA_TYPE_GET_MISMATCH, targetType,
-                getColumnSQLType(column));
+                getColumnSQLType(column),
+	        resultDescription.getColumnDescriptor(column).getName());
 	}
 
 	private final SQLException dataTypeConversion(int column, String targetType) {
 		return newSQLException(SQLState.LANG_DATA_TYPE_GET_MISMATCH,
-                getColumnSQLType(column), targetType);
+                getColumnSQLType(column), targetType,
+	        resultDescription.getColumnDescriptor(column).getName());
 	}
     
     /**

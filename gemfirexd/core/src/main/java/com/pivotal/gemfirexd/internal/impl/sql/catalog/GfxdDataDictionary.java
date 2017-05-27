@@ -219,6 +219,17 @@ public final class GfxdDataDictionary extends DataDictionaryImpl {
       { SYSFUN_MODE, SYSFUN_MODE }, { SYSFUN_MODE, SYSFUN_MODE, SYSFUN_MODE },
       { SYSFUN_MODE, SYSFUN_MODE, SYSFUN_MODE, SYSFUN_MODE } };
 
+  /**
+   * This allows a thread to skip acquiring read lock on GfxdDataDictionary
+   * and/or GemFireContainer. Used at the time of checking if a table is
+   * columnar or not while setting its tabletype.
+   */
+  public static final ThreadLocal<Boolean> SKIP_LOCKS = new ThreadLocal<Boolean>() {
+    public Boolean initialValue() {
+      return Boolean.FALSE;
+    }
+  };
+
   /** static block */
   static {
     // populate the set of system schemas
@@ -391,7 +402,7 @@ public final class GfxdDataDictionary extends DataDictionaryImpl {
   public final boolean lockForReadingNoThrow(TransactionController tc,
       long maxWaitMillis) {
     try {
-      return GemFireXDUtils.lockObjectNoThrow(ddLockObject, null, false, false,
+      return SKIP_LOCKS.get() || GemFireXDUtils.lockObjectNoThrow(ddLockObject, null, false, false,
           tc, maxWaitMillis) != GfxdLockSet.LOCK_FAIL;
     } catch (StandardException se) {
       // unexpected
@@ -447,8 +458,12 @@ public final class GfxdDataDictionary extends DataDictionaryImpl {
    * after reading is done.
    */
   @Override
-  public final void unlockAfterReading(TransactionController tc) {
-    GemFireXDUtils.unlockObject(ddLockObject, null, false, false, tc);
+  public final boolean unlockAfterReading(TransactionController tc) {
+    if (!SKIP_LOCKS.get()) {
+      return GemFireXDUtils.unlockObject(ddLockObject, null, false, false, tc);
+    } else {
+      return false;
+    }
   }
 
   /**
@@ -502,7 +517,6 @@ public final class GfxdDataDictionary extends DataDictionaryImpl {
       throws StandardException {
 
     checkForPendingTxChanges(lcc);
-    
     // Don't allow DDL if we're binding a SQL statement.
     if (lcc.getBindCount() != 0) {
       throw StandardException.newException(SQLState.LANG_DDL_IN_BIND);
@@ -586,7 +600,7 @@ public final class GfxdDataDictionary extends DataDictionaryImpl {
   @Override
   public final boolean lockForWriting(TransactionController tc,
       boolean localOnly) throws StandardException {
-    return GemFireXDUtils.lockObject(ddLockObject, null, true, localOnly, tc,
+    return SKIP_LOCKS.get() || GemFireXDUtils.lockObject(ddLockObject, null, true, localOnly, tc,
         GfxdLockSet.MAX_LOCKWAIT_VAL);
   }
 
@@ -618,7 +632,9 @@ public final class GfxdDataDictionary extends DataDictionaryImpl {
   @Override
   public final void unlockAfterWriting(TransactionController tc,
       boolean localOnly) {
-    GemFireXDUtils.unlockObject(ddLockObject, null, true, localOnly, tc);
+    if (!SKIP_LOCKS.get()) {
+      GemFireXDUtils.unlockObject(ddLockObject, null, true, localOnly, tc);
+    }
   }
 
   /**
@@ -721,7 +737,8 @@ public final class GfxdDataDictionary extends DataDictionaryImpl {
     SanityManager.DEBUG_PRINT("DataDictionary DEBUG", strbuf.toString());
     // also dump all GfxdDRWLockService locks
     GfxdDRWLockService ddlService = Misc.getMemStore().getDDLLockService();
-    ddlService.dumpAllRWLocks("LOCK TABLE at the time of failure", true, false);
+    ddlService.dumpAllRWLocks("LOCK TABLE at the time of failure",
+        true, false, true);
   }
 
   /**
@@ -1221,6 +1238,23 @@ public final class GfxdDataDictionary extends DataDictionaryImpl {
       // out ResultSet SHOW_USERS()
       super.createSystemProcedureOrFunction("SHOW_USERS", sysUUID, null, null,
           0, 1, RoutineAliasInfo.NO_SQL, null, newlyCreatedRoutines, tc,
+          GFXD_SYS_PROC_CLASSNAME, false);
+    }
+
+    {
+      // CHECK_TABLE_EX
+
+      // procedure argument names
+      String[] arg_names = { "SCHEMA", "TABLE" };
+
+      // procedure argument types
+      TypeDescriptor[] argTypes = new TypeDescriptor[] {
+          DataTypeDescriptor.getCatalogType(Types.VARCHAR),
+          DataTypeDescriptor.getCatalogType(Types.VARCHAR) };
+
+      super.createSystemProcedureOrFunction("CHECK_TABLE_EX", sysUUID, arg_names,
+          argTypes, 0, 0, RoutineAliasInfo.NO_SQL,
+          DataTypeDescriptor.getCatalogType(Types.INTEGER), newlyCreatedRoutines, tc,
           GFXD_SYS_PROC_CLASSNAME, false);
     }
 

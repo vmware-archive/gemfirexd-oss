@@ -42,7 +42,7 @@ import com.pivotal.gemfirexd.internal.engine.ddl.wan.GfxdGatewayEventListener;
 import com.pivotal.gemfirexd.jdbc.GfxdJarInstallationTest;
 import com.pivotal.gemfirexd.tools.internal.JarTools;
 
-import dunit.VM;
+import io.snappydata.test.dunit.VM;
 
 @SuppressWarnings("serial")
 public class GfxdJarInstallationDUnit extends DistributedSQLTestBase {
@@ -354,7 +354,7 @@ public class GfxdJarInstallationDUnit extends DistributedSQLTestBase {
 
     Connection conn = TestUtil.getConnection();
     Statement stmt = conn.createStatement();
-    String sql = null;
+    String sql;
     CallableStatement mergeCS = null;
     // try with both procedures and "gfxd install-jar/replace-jar" tool
     for (int i = 1; i <= 4; i++) {
@@ -486,7 +486,6 @@ public class GfxdJarInstallationDUnit extends DistributedSQLTestBase {
     GfxdJarInstallationTest.udtTypeTest(conn, true, false, true, true, false);
   }
 
-  
   public void testUDTINJarFromClientWithLocator() throws Exception {
     // Allow test when bug #51551 is fixed
     if (isTransactional) {
@@ -568,7 +567,6 @@ public class GfxdJarInstallationDUnit extends DistributedSQLTestBase {
         + " SECONDID int not null, THIRDID varchar(10) not null, CB CLOB, "
         + "DT BLOB, PRIMARY KEY (SECONDID, THIRDID)) PARTITION BY COLUMN (ID)";
 
-    stmt.execute(ddl);
     netStmt.execute(ddl);
 
     // create a custom DBSynchronizer
@@ -701,7 +699,6 @@ public class GfxdJarInstallationDUnit extends DistributedSQLTestBase {
         + "PARTITION BY COLUMN (ID) PERSISTENT";
 
     stmt.execute(ddl);
-    netStmt.execute(ddl);
 
     // create a custom DBSynchronizer
     stmt.execute("create asynceventlistener SECTSYNC("
@@ -895,7 +892,6 @@ public class GfxdJarInstallationDUnit extends DistributedSQLTestBase {
         .getAsyncEventListener();
     com.pivotal.gemfirexd.callbacks.AsyncEventListener alis = lis
         .getAsyncEventListenerForTest();
-    Class<?> c = alis.getClass();
     try {
       assertNull(alis);
       return true;

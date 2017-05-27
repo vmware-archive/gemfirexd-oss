@@ -21,7 +21,7 @@ package com.pivotal.gemfirexd.internal.engine.distributed;
 
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
 
-import dunit.SerializableRunnable;
+import io.snappydata.test.dunit.SerializableRunnable;
 
 /**
  * Non Collocated Join Functional Test.

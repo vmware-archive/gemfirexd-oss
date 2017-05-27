@@ -40,10 +40,19 @@ public interface Attribute {
   String SQLF_PROTOCOL = "jdbc:sqlfire:";
 
   /**
+   * [SnappyData] The default SnappyData protocol for data store or peer client.
+   */
+  String SNAPPY_PROTOCOL = "jdbc:snappydata:";
+
+  /**
    * The dummy name used for GemFireXD database.
    */
   String GFXD_DBNAME = "gemfirexd";
 
+  /**
+   * The dummy name used for GemFireXD booted with snappy url.
+   */
+  String SNAPPY_DBNAME = "snappydata";
   /**
    * [SQLFire] The dummy name used for old SQLFire database.
    */
@@ -57,6 +66,9 @@ public interface Attribute {
   String SQLJ_NESTED_GEMFIREXD = "jdbc:default:gemfirexd:connection";
 
   String SQLJ_NESTED_SQLFIRE = "jdbc:default:sqlfire:connection";
+
+  // @TODO why is SQLJ there? Just making it like above for now
+  String SQLJ_NESTED_SNAPPYDATA = "jdbc:default:snappydata:connection";
 
   /**
    * The attribute that is used to request a shutdown.
@@ -171,8 +183,6 @@ public interface Attribute {
 
   /**
    * The GemFireXD log file path property.
-   * 
-   * added by GemStone
    */
   String LOG_FILE = "log-file";
 
@@ -359,15 +369,27 @@ public interface Attribute {
    */
   String DNC_PROTOCOL = "jdbc:gemfirexd://";
 
+  String SNAPPY_DNC_PROTOCOL = "jdbc:snappydata://";
+
   /**
    * The protocol for Derby DRDA Client.
    */
   String DRDA_PROTOCOL = "jdbc:gemfirexd:drda://";
 
   /**
+   * The protocol for Derby DRDA Client.
+   */
+  String SNAPPY_DRDA_PROTOCOL = "jdbc:snappydata:drda://";
+
+  /**
    * The protocol for GemFireXD Thrift Client.
    */
   String THRIFT_PROTOCOL = "jdbc:gemfirexd:thrift://";
+
+  /**
+   * The protocol for Derby DRDA Client.
+   */
+  String SNAPPY_THRIFT_PROTOCOL = "jdbc:snappydata:thrift://";
 
   /**
    * [SQLFire] The protocol for Derby Network Client for old SQLFire product.
@@ -396,7 +418,7 @@ public interface Attribute {
 
   /**
    * The attribute that is used for the database name, from the JDBC notion of
-   * jdbc:<subprotocol>:<subname>
+   * jdbc:&lt;subprotocol&gt;:&lt;subname&gt;
    */
   String DBNAME_ATTR = "databaseName";
 
@@ -432,6 +454,17 @@ public interface Attribute {
    * Connection property to set cache size for NCJ
    */
   String NCJ_CACHE_SIZE = "ncj-cache-size";
+
+  /**
+   * Connection property to enable/disable query routing for Spark.
+   */
+  String ROUTE_QUERY = "route-query";
+
+  /**
+   * Embedded connection property to create tables as persistent by default
+   * for the connection.
+   */
+  String DEFAULT_PERSISTENT = "default-persistent";
 
   /**
    * Property to enable bulk foreign keys checks for put all.
@@ -503,9 +536,35 @@ public interface Attribute {
   /**
    * A comma-separate SSL property key,value pairs. The available property
    * values are:
-   * 
-   * <li>
-   * protocol: TODO: SW:</li>
+   *
+   * <ul>
+   * <li><i>protocol</i>: default "TLS", see
+   * <a href="https://docs.oracle.com/javase/7/docs/technotes/guides/security/StandardNames.html#SSLContext">
+   *   JCA docs</a></li>
+   * <li><i>enabled-protocols</i>: enabled protocols separated by ":"</li>
+   * <li><i>cipher-suites</i>: enabled cipher suites separated by ":", see
+   * <a href="https://docs.oracle.com/javase/7/docs/technotes/guides/security/StandardNames.html#ciphersuites">
+   *   JCA docs</a></li>
+   * <li><i>client-auth=(true|false)</i>: if client also needs to be authenticated, see
+   * <a href="https://docs.oracle.com/javase/7/docs/api/javax/net/ssl/SSLServerSocket.html#setNeedClientAuth(boolean)">
+   *   JCA docs</a></li>
+   * <li><i>keystore</i>: path to key store file</li>
+   * <li><i>keystore-type</i>: the type of key-store (default "JKS"), see
+   * <a href="https://docs.oracle.com/javase/7/docs/technotes/guides/security/StandardNames.html#KeyStore">
+   *   JCA docs</a></li>
+   * <li><i>keystore-password</i>: password for the key store file</li>
+   * <li><i>keymanager-type</i>: the type of key manager factory, see
+   * <a href="https://docs.oracle.com/javase/7/docs/technotes/guides/security/jsse/JSSERefGuide.html#KeyManagerFactory">
+   *   JSSE docs</a></li>
+   * <li><i>truststore</i>: path to trust store file</li>
+   * <li><i>truststore-type</i>: the type of trust-store (default "JKS"), see
+   * <a href="https://docs.oracle.com/javase/7/docs/technotes/guides/security/StandardNames.html#KeyStore">
+   *   JCA docs</a></li>
+   * <li><i>truststore-password</i>: password for the trust store file</li>
+   * <li><i>trustmanager-type</i>: the type of trust manager factory, see
+   * <a href="https://docs.oracle.com/javase/7/docs/technotes/guides/security/jsse/JSSERefGuide.html#TrustManagerFactory">
+   *   JSSE docs</a></li>
+   * </ul>
    * 
    * <p>
    * If this is not specified then default java SSL properties as per

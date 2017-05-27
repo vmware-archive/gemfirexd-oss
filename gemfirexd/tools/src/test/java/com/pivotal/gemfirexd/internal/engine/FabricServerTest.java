@@ -16,11 +16,9 @@
  */
 package com.pivotal.gemfirexd.internal.engine;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.URI;
@@ -37,10 +35,6 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.gemstone.junit.UnitTest;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
-
 import com.gemstone.gemfire.distributed.internal.AbstractDistributionConfig;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
@@ -48,17 +42,12 @@ import com.gemstone.gemfire.distributed.internal.InternalLocator;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.SocketCreator;
 import com.gemstone.gemfire.internal.cache.CacheServerLauncher;
+import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.shared.NativeCalls;
-import com.pivotal.gemfirexd.Attribute;
-import com.pivotal.gemfirexd.DistributedSQLTestBase;
-import com.pivotal.gemfirexd.FabricLocator;
-import com.pivotal.gemfirexd.FabricServer;
-import com.pivotal.gemfirexd.FabricService;
-import com.pivotal.gemfirexd.FabricServiceManager;
-import com.pivotal.gemfirexd.NetworkInterface;
-import com.pivotal.gemfirexd.TestUtil;
-import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
+import com.gemstone.junit.UnitTest;
+import com.pivotal.gemfirexd.*;
 import com.pivotal.gemfirexd.internal.engine.jdbc.GemFireXDRuntimeException;
+import com.pivotal.gemfirexd.internal.engine.store.GemFireStore;
 import com.pivotal.gemfirexd.internal.iapi.reference.Property;
 import com.pivotal.gemfirexd.internal.iapi.services.monitor.Monitor;
 import com.pivotal.gemfirexd.internal.impl.io.DirFile;
@@ -66,8 +55,9 @@ import com.pivotal.gemfirexd.internal.shared.common.sanity.SanityManager;
 import com.pivotal.gemfirexd.jdbc.ClientDriver;
 import com.pivotal.gemfirexd.tools.GfxdUtilLauncher;
 import com.pivotal.gemfirexd.tools.internal.GfxdServerLauncher;
-
-import dunit.DistributedTestCase;
+import io.snappydata.test.dunit.DistributedTestBase;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
 
 public class FabricServerTest extends TestUtil implements UnitTest {
 
@@ -76,10 +66,29 @@ public class FabricServerTest extends TestUtil implements UnitTest {
   }
 
   @Override
+  protected void setUp() throws Exception {
+    try {
+      if (GemFireStore.getBootingInstance() != null) {
+        shutDown();
+      }
+      currentUserName = null;
+      currentUserPassword = null;
+    } finally {
+      super.setUp();
+    }
+  }
+
+  @Override
   protected void tearDown() throws Exception {
-    super.tearDown();
-    // also delete the properties file
-    new File(PROP_FILE_NAME).delete();
+    try {
+      shutDown();
+      currentUserName = null;
+      currentUserPassword = null;
+    } finally {
+      super.tearDown();
+      // also delete the properties file
+      new File(PROP_FILE_NAME).delete();
+    }
   }
 
   public static void main(String[] args) {
@@ -248,8 +257,8 @@ public class FabricServerTest extends TestUtil implements UnitTest {
 
     final String workingdir = file.getAbsolutePath();
 
-    final String osbuildDir = System.getProperty("osbuild.dir");
-    String launcher = osbuildDir + "/product-gfxd/bin/gfxd";
+    final String productDir = System.getProperty("GEMFIREXD");
+    String launcher = productDir + "/bin/gfxd";
     if (System.getProperty("os.name").startsWith("Windows")) {
       launcher += ".bat";
     }
@@ -293,7 +302,7 @@ public class FabricServerTest extends TestUtil implements UnitTest {
           }
         }
       }
-      final InetAddress host = InetAddress.getLocalHost();
+      final InetAddress host = SocketCreator.getLocalHost();
       final ResultSet rs = conn.createStatement().executeQuery(
           "select id from sys.members");
       assertTrue(rs.next());
@@ -329,6 +338,7 @@ public class FabricServerTest extends TestUtil implements UnitTest {
       validateProperties(outProps);
 
     } finally {
+      //noinspection ResultOfMethodCallIgnored
       f.delete();
       try {
         if (jdbcConn != null) {
@@ -377,7 +387,7 @@ public class FabricServerTest extends TestUtil implements UnitTest {
     Properties outProps = new Properties();
 
     //no accidental left out of the properties file.
-    File checkNoFile = new File("." + File.separatorChar + com.pivotal.gemfirexd.Property.PROPERTIES_FILE);
+    File checkNoFile = new File(".", com.pivotal.gemfirexd.Property.PROPERTIES_FILE);
     assertFalse(checkNoFile.exists());
     
     File f = new File(System.getProperty("user.home") + File.separatorChar +  com.pivotal.gemfirexd.Property.PROPERTIES_FILE);
@@ -461,11 +471,13 @@ public class FabricServerTest extends TestUtil implements UnitTest {
     Properties outProps = new Properties();
 
     //no accidental left out of the properties file.
-    File checkLocalFile = new File("." + File.separatorChar + com.pivotal.gemfirexd.Property.PROPERTIES_FILE);
+    File checkLocalFile = new File(".",
+        com.pivotal.gemfirexd.Property.PROPERTIES_FILE);
     assertFalse(checkLocalFile.exists());
-    
-    File f = new File("." + File.separatorChar +  com.pivotal.gemfirexd.Property.PROPERTIES_FILE);
+
+    File f = new File(".", com.pivotal.gemfirexd.Property.PROPERTIES_FILE);
     try {
+      //noinspection ResultOfMethodCallIgnored
       f.createNewFile();
     }
     catch(IOException ioe) {
@@ -474,12 +486,12 @@ public class FabricServerTest extends TestUtil implements UnitTest {
     }
     
     createPropertyFile(outProps, f, null);
-    
+
     try {
       FabricServer fab = FabricServiceManager.getFabricServerInstance();
 
       fab.start(null);
-      
+
       jdbcConn = TestUtil.getConnection();
 
       jdbcConn.createStatement().execute("create table testtable1 ( t int)");
@@ -487,6 +499,7 @@ public class FabricServerTest extends TestUtil implements UnitTest {
       validateProperties(outProps);
 
     } finally {
+      //noinspection ResultOfMethodCallIgnored
       f.delete();
       try {
         if (jdbcConn != null) {
@@ -496,10 +509,8 @@ public class FabricServerTest extends TestUtil implements UnitTest {
         DistributedSQLTestBase.deleteStrayDataDictionaryDir();
       }
     }
-    
     assertFalse(f.exists());
-
-  } // end of -Dgemfirexd.properties=xxx check.  
+  } // end of -Dgemfirexd.properties=xxx check.
 
   public void testConnectionPropOverridingPropertiesFile() throws Exception {
 
@@ -516,7 +527,9 @@ public class FabricServerTest extends TestUtil implements UnitTest {
     connectionProps.setProperty(
         DistributionConfig.STATISTIC_SAMPLING_ENABLED_NAME, "false");
     connectionProps.setProperty(DistributionConfig.STATISTIC_ARCHIVE_FILE_NAME,
-        getTestName() + ".connection_override" + ".gfs");
+        getTestName() + ".connection_override.gfs");
+    connectionProps.setProperty(Attribute.LOG_FILE,
+        getTestName() + ".connection_override.log");
     try {
       loadDriver();
 
@@ -529,6 +542,7 @@ public class FabricServerTest extends TestUtil implements UnitTest {
 
     } finally {
       try {
+        //noinspection ResultOfMethodCallIgnored
         f.delete();
         if (jdbcConn != null) {
           shutDown();
@@ -554,8 +568,10 @@ public class FabricServerTest extends TestUtil implements UnitTest {
     System.setProperty(DistributionConfig.GEMFIRE_PREFIX
         + DistributionConfig.STATISTIC_SAMPLING_ENABLED_NAME, "false");
     System.setProperty(DistributionConfig.GEMFIRE_PREFIX
-        + DistributionConfig.STATISTIC_ARCHIVE_FILE_NAME, getTestName()
-        + ".system_override" + ".gfs");
+        + DistributionConfig.STATISTIC_ARCHIVE_FILE_NAME,
+        getTestName() + ".system_override.gfs");
+    System.setProperty(GfxdConstants.GFXD_LOG_FILE,
+        getTestName() + ".system_override.log");
     try {
       loadDriver();
 
@@ -569,11 +585,14 @@ public class FabricServerTest extends TestUtil implements UnitTest {
         if (key.startsWith(DistributionConfig.GEMFIRE_PREFIX)) {
           outProps.put(key
               .substring(DistributionConfig.GEMFIRE_PREFIX.length()), val);
+        } else if (key.startsWith(GfxdConstants.GFXD_PREFIX)) {
+          outProps.put(key.substring(GfxdConstants.GFXD_PREFIX.length()), val);
         }
       }
       validateProperties(outProps);
 
     } finally {
+      //noinspection ResultOfMethodCallIgnored
       f.delete();
       try {
         if (jdbcConn != null) {
@@ -601,14 +620,18 @@ public class FabricServerTest extends TestUtil implements UnitTest {
     System.setProperty(DistributionConfig.GEMFIRE_PREFIX
         + DistributionConfig.STATISTIC_SAMPLING_ENABLED_NAME, "false");
     System.setProperty(DistributionConfig.GEMFIRE_PREFIX
-        + DistributionConfig.STATISTIC_ARCHIVE_FILE_NAME, getTestName()
-        + ".system_override" + ".gfs");
+        + DistributionConfig.STATISTIC_ARCHIVE_FILE_NAME,
+        getTestName() + ".system_override.gfs");
+    System.setProperty(GfxdConstants.GFXD_LOG_FILE,
+        getTestName() + ".system_override.log");
 
     Properties connectionProps = new Properties();
     connectionProps.setProperty(DistributionConfig.ENABLE_TIME_STATISTICS_NAME,
         "false");
     connectionProps.setProperty(DistributionConfig.STATISTIC_ARCHIVE_FILE_NAME,
-        getTestName() + ".connection_override" + ".gfs");
+        getTestName() + ".connection_override.gfs");
+    connectionProps.setProperty(Attribute.LOG_FILE,
+        getTestName() + ".connection_override.log");
     try {
       loadDriver();
 
@@ -624,11 +647,14 @@ public class FabricServerTest extends TestUtil implements UnitTest {
         if (key.startsWith(DistributionConfig.GEMFIRE_PREFIX)) {
           outProps.put(key
               .substring(DistributionConfig.GEMFIRE_PREFIX.length()), val);
+        } else if (key.startsWith(GfxdConstants.GFXD_PREFIX)) {
+          outProps.put(key.substring(GfxdConstants.GFXD_PREFIX.length()), val);
         }
       }
       validateProperties(outProps);
 
     } finally {
+      //noinspection ResultOfMethodCallIgnored
       f.delete();
       try {
         if (jdbcConn != null) {
@@ -942,7 +968,7 @@ public class FabricServerTest extends TestUtil implements UnitTest {
   public void testConnectionWithAuthentication() throws SQLException,
       InterruptedException {
     final FabricServer fabapi = FabricServiceManager.getFabricServerInstance();
-    final String currentHost = DistributedTestCase.getIPLiteral();
+    final String currentHost = DistributedTestBase.getIPLiteral();
 
     final Properties shutdownProp = new Properties();
     shutdownProp.setProperty("user", "sysUser1");
@@ -1058,11 +1084,12 @@ public class FabricServerTest extends TestUtil implements UnitTest {
           fabapi.stop(shutdownProp);
         }
         catch(Exception ignore) {
-          getLogger().warning("Exception occurred while shutting down with credential " ,ignore);
+          getLogger().warn(
+              "Exception occurred while shutting down with credential ", ignore);
         }
       }
   }
-  
+
   public void testGatewayReceiverHNSCommandLineOptions() throws Exception {
     final DirFile file = new DirFile("utilLauncher");
     file.deleteAll();
@@ -1072,8 +1099,8 @@ public class FabricServerTest extends TestUtil implements UnitTest {
 
     final String workingdir = file.getAbsolutePath();
 
-    final String osbuildDir = System.getProperty("osbuild.dir");
-    String launcher = osbuildDir + "/product-gfxd/bin/gfxd";
+    final String productDir = System.getProperty("GEMFIREXD");
+    String launcher = productDir + "/bin/gfxd";
     if (System.getProperty("os.name").startsWith("Windows")) {
       launcher += ".bat";
     }
@@ -1139,9 +1166,9 @@ public class FabricServerTest extends TestUtil implements UnitTest {
         .toString(true));
     
     props.setProperty(Property.USER_PROPERTY_PREFIX + "sysUser1", "pwd_sysUser1");
-    props.setProperty(
-        AvailablePort.rand.nextBoolean() ? com.pivotal.gemfirexd.Attribute.USERNAME_ATTR
-            : com.pivotal.gemfirexd.Attribute.USERNAME_ALT_ATTR, "sysUser1");
+    props.setProperty(PartitionedRegion.rand.nextBoolean()
+        ? com.pivotal.gemfirexd.Attribute.USERNAME_ATTR
+        : com.pivotal.gemfirexd.Attribute.USERNAME_ALT_ATTR, "sysUser1");
     props.setProperty(com.pivotal.gemfirexd.Attribute.PASSWORD_ATTR, "pwd_sysUser1");
 
     props.setProperty(Property.GFXD_AUTH_PROVIDER,
@@ -1152,6 +1179,7 @@ public class FabricServerTest extends TestUtil implements UnitTest {
 
   private File createPropertyFile(Properties outProps) throws IOException {
     final File file = new File(PROP_FILE_NAME);
+    //noinspection ResultOfMethodCallIgnored
     file.createNewFile();
     createPropertyFile(outProps, file, null);
     return file;
@@ -1176,7 +1204,7 @@ public class FabricServerTest extends TestUtil implements UnitTest {
     // gfe props to be read and passed on in DS.connect. so 'gemfire.' prefix is
     // not necessary
 
-    outProps.setProperty("host-data", "true");
+    outProps.setProperty("gemfirexd.host-data", "true");
     outProps.setProperty(DistributionConfig.MCAST_PORT_NAME, "0");
     outProps.setProperty(DistributionConfig.LOG_LEVEL_NAME, "config");
     outProps.setProperty(DistributionConfig.CONSERVE_SOCKETS_NAME, "false");
@@ -1188,10 +1216,9 @@ public class FabricServerTest extends TestUtil implements UnitTest {
     outProps.setProperty(DistributionConfig.LOCATORS_NAME, locatoradd);
 
     String filename = getTestName();
-    outProps.setProperty(GfxdConstants.GFXD_LOG_FILE, filename + ".log");
+    outProps.setProperty(Attribute.LOG_FILE, filename + ".log");
     outProps.setProperty(DistributionConfig.STATISTIC_ARCHIVE_FILE_NAME,
         filename + ".gfs");
-    
     if(wrongData != null) {
       outProps.putAll(wrongData);
     }
@@ -1211,11 +1238,18 @@ public class FabricServerTest extends TestUtil implements UnitTest {
     for (Map.Entry<Object, Object> e : passedIn.entrySet()) {
       String key = (String)e.getKey();
       if (!gfeProps.contains(key)) {
+        // check host-data separately
+        if (key.equals("gemfirexd.host-data")) {
+          boolean isStore = "true".equalsIgnoreCase((String)e.getValue());
+          GemFireStore.VMKind kind = Misc.getMemStore().getMyVMKind();
+          assertTrue(key + " not present",
+              isStore ? kind.isStore() : kind.isAccessor());
+        }
         continue;
       }
 
       String val = (String)e.getValue();
-      assertTrue(key + " not present ", connectedProps.containsKey(key));
+      assertTrue(key + " not present", connectedProps.containsKey(key));
 
       String connectedval = connectedProps.getProperty(key);
 
@@ -1261,69 +1295,6 @@ public class FabricServerTest extends TestUtil implements UnitTest {
       Thread.sleep(loopWait);
     }
     assertEquals(expectedStatus, status);
-  }
-
-  public static String getProcessOutput(final Process p,
-      final int expectedExitValue, final int maxWaitMillis,
-      final int[] exitValue) throws IOException, InterruptedException {
-    final BufferedReader reader = new BufferedReader(new InputStreamReader(
-        p.getInputStream()));
-    final StringBuilder res = new StringBuilder();
-    final int loopWaitMillis = 100;
-    int maxTries = maxWaitMillis / loopWaitMillis;
-    boolean doExit = false;
-    final char[] cbuf = new char[1024];
-    while (maxTries-- > 0) {
-      if (doExit || reader.ready()) {
-        int readChars;
-        if (reader.ready() && (readChars = reader.read(cbuf)) > 0) {
-          res.append(cbuf, 0, readChars);
-          if (doExit) {
-            // check for any remaining data
-            while ((readChars = reader.read(cbuf)) > 0) {
-              res.append(cbuf, 0, readChars);
-            }
-            break;
-          }
-        }
-        else {
-          if (doExit) {
-            break;
-          }
-          try {
-            if (exitValue != null) {
-              exitValue[0] = p.exitValue();
-            }
-            else {
-              assertEquals(expectedExitValue, p.exitValue());
-            }
-            doExit = true;
-            // try one more time for any remaining data
-            continue;
-          } catch (IllegalThreadStateException itse) {
-            // continue in the loop
-            Thread.sleep(loopWaitMillis);
-          }
-        }
-      }
-      else {
-        try {
-          if (exitValue != null) {
-            exitValue[0] = p.exitValue();
-          }
-          else {
-            assertEquals(expectedExitValue, p.exitValue());
-          }
-          doExit = true;
-          // try one more time for any remaining data
-          continue;
-        } catch (IllegalThreadStateException itse) {
-          // continue in the loop
-          Thread.sleep(loopWaitMillis);
-        }
-      }
-    }
-    return res.toString();
   }
 
   private int waitForProcess(final Process p, final int maxWaitMillis)

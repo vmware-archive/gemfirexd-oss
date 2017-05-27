@@ -21,9 +21,6 @@ import java.util.Properties;
 
 import com.gemstone.gemfire.LogWriter;
 import com.gemstone.gemfire.internal.AvailablePort;
-import com.gemstone.gemfire.internal.LocalLogWriter;
-import com.gemstone.gemfire.internal.LogWriterImpl;
-
 import junit.framework.TestCase;
 
 /**
@@ -35,14 +32,12 @@ import junit.framework.TestCase;
  */
 public abstract class QuickstartTestCase extends TestCase {
 
-  private static final boolean ENABLE_TRACING = Boolean.getBoolean("quickstart.test.ENABLE_TRACING");
-  private static final LogWriter logWriter = new LocalLogWriter(LogWriterImpl.INFO_LEVEL);
   private final int mcastPort = AvailablePort.getRandomAvailablePort(AvailablePort.JGROUPS);
 
   public QuickstartTestCase(String name) {
     super(name);
-    if (ENABLE_TRACING) {
-      logWriter.info("quickstart.test.ENABLE_TRACING is " + ENABLE_TRACING);
+    if (ProcessWrapper.ENABLE_TRACING) {
+      getLogWriter().info("quickstart.test.ENABLE_TRACING is " + ProcessWrapper.ENABLE_TRACING);
     }
   }
 
@@ -82,13 +77,11 @@ public abstract class QuickstartTestCase extends TestCase {
   }
 
   protected static LogWriter getLogWriter() {
-    return logWriter;
+    return ProcessWrapper.getLogWriter();
   }
   
   protected static void trace(String message) {
-    if (ENABLE_TRACING) {
-      getLogWriter().info(message);
-    }
+    ProcessWrapper.trace(message);
   }
   
   protected Properties createProperties() {

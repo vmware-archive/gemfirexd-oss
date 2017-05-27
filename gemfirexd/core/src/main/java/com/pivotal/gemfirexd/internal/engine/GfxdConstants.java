@@ -183,6 +183,22 @@ public interface GfxdConstants {
   final String GFXD_LOG_FILE = GFXD_PREFIX + Attribute.LOG_FILE;
 
   /**
+   * @see Attribute#GFXD_HOST_DATA
+   */
+  final String GFXD_HOST_DATA = GFXD_PREFIX + Attribute.GFXD_HOST_DATA;
+
+  /**
+   * @see Attribute#SERVER_GROUPS
+   */
+  final String GFXD_SERVER_GROUPS = GFXD_PREFIX + Attribute.SERVER_GROUPS;
+
+  /**
+   * @see Attribute#STAND_ALONE_LOCATOR
+   */
+  final String GFXD_STAND_ALONE_LOCATOR = GFXD_PREFIX +
+      Attribute.STAND_ALONE_LOCATOR;
+
+  /**
    * The prefix for client driver system properties.
    */
   final String GFXD_CLIENT_PREFIX = Attribute.CLIENT_JVM_PROPERTY_PREFIX;
@@ -478,6 +494,7 @@ public interface GfxdConstants {
           Attribute.NCJ_CACHE_SIZE,
           Attribute.ENABLE_BULK_FK_CHECKS,
           Attribute.SKIP_CONSTRAINT_CHECKS,
+          Attribute.ROUTE_QUERY,
           Attribute.AUTHZ_FULL_ACCESS_USERS,
           Attribute.AUTHZ_READ_ONLY_ACCESS_USERS
         }));
@@ -724,6 +741,7 @@ public interface GfxdConstants {
 
   final String GFXD_QUERY_HDFS = GFXD_PREFIX + Attribute.QUERY_HDFS;
 
+  final String GFXD_ROUTE_QUERY = GFXD_PREFIX + Attribute.ROUTE_QUERY;
   /*
    * @see Attribute.NCJ_BATCH_SIZE
    */

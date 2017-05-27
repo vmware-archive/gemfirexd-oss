@@ -42,11 +42,11 @@ import com.pivotal.gemfirexd.internal.iapi.types.DataValueDescriptor;
  *  So the IO writes/read the undrlying data contained in the 
  *  DataValueDescriptor rather than  the DataValueDescriptor 
  *  itself.
- *  <p>
- *  This is utilized by the {@link ResultHolder} and  {@link PrepStatementQueryExecutorFunction}
+ * <p>
+ * This is utilized by the {@link ResultHolder} and {@link StatementQueryExecutor}
+ *
  * @author Asif
  * @since Sql Fabric
- *
  */
 public class DVDIOUtil
 {
@@ -69,11 +69,10 @@ public class DVDIOUtil
       final ByteArrayDataInput dis, final int numEightColGrps,
       final int numPartialCols) throws IOException, ClassNotFoundException {
     int groupNum = 0;
-    for(;groupNum <numEightColGrps-1;++groupNum) {        
-      readAGroup(groupNum,8, dvds,dis) ;
+    for (; groupNum < numEightColGrps - 1; ++groupNum) {
+      readAGroup(groupNum, 8, dvds, dis);
     }
     readAGroup(groupNum, numPartialCols, dvds, dis); 
-    
   }
 
   public static void writeDVDArray(DataValueDescriptor[] dvdArr,

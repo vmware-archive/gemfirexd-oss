@@ -24,8 +24,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
-import com.gemstone.gemfire.internal.AvailablePort;
-import com.pivotal.gemfirexd.internal.iapi.reference.Attribute;
+import com.gemstone.gemfire.internal.cache.PartitionedRegion;
+import com.pivotal.gemfirexd.TestUtil;
 
 /**
  * Connection factory using DriverManager.
@@ -79,11 +79,12 @@ public class DriverManagerConnector implements Connector {
 // GemStone changes BEGIN
           Properties props = new Properties();
           if (user != null) {
-            props.setProperty(
-                AvailablePort.rand.nextBoolean() ? com.pivotal.gemfirexd.Attribute.USERNAME_ATTR
-                    : com.pivotal.gemfirexd.Attribute.USERNAME_ALT_ATTR, user);
+            props.setProperty(PartitionedRegion.rand.nextBoolean()
+                ? com.pivotal.gemfirexd.Attribute.USERNAME_ATTR
+                : com.pivotal.gemfirexd.Attribute.USERNAME_ALT_ATTR, user);
             props.setProperty(com.pivotal.gemfirexd.Attribute.PASSWORD_ATTR, password);
           }
+          props = TestUtil.doMinimalSetup(props);
           return DriverManager.getConnection(url, props);
             /* return DriverManager.getConnection(url, user, password); */
 // GemStone changes END

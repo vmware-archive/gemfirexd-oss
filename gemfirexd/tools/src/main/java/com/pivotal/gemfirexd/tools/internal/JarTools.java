@@ -33,6 +33,7 @@ import org.apache.commons.cli.ParseException;
 import com.gemstone.gemfire.internal.Assert;
 import com.pivotal.gemfirexd.internal.iapi.tools.i18n.LocalizedResource;
 import com.pivotal.gemfirexd.internal.shared.common.SharedUtils;
+import com.pivotal.gemfirexd.tools.internal.ToolsBase.ProcessCommand;
 
 /**
  * Command-line tools to install/replace/remove JARs in a running GemFireXD

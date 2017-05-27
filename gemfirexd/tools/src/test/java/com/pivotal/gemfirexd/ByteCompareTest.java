@@ -22,14 +22,13 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Random;
 
-import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.HeapDataOutputStream;
+import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.pivotal.gemfirexd.internal.engine.store.RowFormatter;
 import com.pivotal.gemfirexd.internal.iapi.types.SQLChar;
 import com.pivotal.gemfirexd.internal.shared.common.sanity.SanityManager;
 import com.pivotal.gemfirexd.jdbc.JdbcTestBase;
 import com.pivotal.gemfirexd.query.SingleTablePredicatesCheckDUnit;
-
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
@@ -212,7 +211,7 @@ public class ByteCompareTest extends JdbcTestBase {
     final Connection conn = TestUtil.getConnection();
     final Statement stmt = jdbcConn.createStatement();
     boolean isOffHeap = getOffHeapSuffix().toLowerCase().indexOf("offheap") != -1;
-    Double dblPrice = AvailablePort.rand.nextDouble();
+    Double dblPrice = PartitionedRegion.rand.nextDouble();
     SingleTablePredicatesCheckDUnit.prepareTable(dblPrice, false, false, conn, isOffHeap);
 
     ResultSet rs = stmt.executeQuery("select ID, DESCRIPTION from TESTTABLE "
@@ -308,7 +307,7 @@ public class ByteCompareTest extends JdbcTestBase {
     }
     
     for (int i = rstrs.length - spaceRatio; i < rstrs.length; i++) {
-      int randPick = AvailablePort.rand.nextInt(rstrs.length - spaceRatio);
+      int randPick = PartitionedRegion.rand.nextInt(rstrs.length - spaceRatio);
       StringBuilder sb = new StringBuilder(rstrs[randPick]);
       for(int spaces = 0; spaces < randPick + 10; spaces++)
         sb.append(" ");
@@ -452,7 +451,9 @@ public class ByteCompareTest extends JdbcTestBase {
      int rdts[] = new int[10000]; 
      byte[][] rdtsbytes = new byte[rdts.length][4]; 
      for (int i = 0; i < rdts.length; i++) {
-       rdts[i] = (AvailablePort.rand.nextInt(9999) << 16) | (AvailablePort.rand.nextInt(12) << 8) | AvailablePort.rand.nextInt(31);
+       rdts[i] = (PartitionedRegion.rand.nextInt(9999) << 16) |
+           (PartitionedRegion.rand.nextInt(12) << 8) |
+           PartitionedRegion.rand.nextInt(31);
        RowFormatter.writeInt(rdtsbytes[i], rdts[i], 0);
      }
      
@@ -525,7 +526,7 @@ public class ByteCompareTest extends JdbcTestBase {
     double rdbs[] = new double[10000];
     byte[][] rdbsbytes = new byte[rdbs.length][];
     for (int i = 0; i < rdbs.length; i++) {
-      rdbs[i] = AvailablePort.rand.nextDouble();
+      rdbs[i] = PartitionedRegion.rand.nextDouble();
       rdbsbytes[i] = getBytes(rdbs[i]);
     }
     
@@ -911,7 +912,7 @@ public class ByteCompareTest extends JdbcTestBase {
 
   public static String getRandomAlphaNumericString(int pureAscii) {
 
-    final Random rand = AvailablePort.rand;
+    final Random rand = PartitionedRegion.rand;
 
       final int strlen = rand.nextInt(65) + 20;
       

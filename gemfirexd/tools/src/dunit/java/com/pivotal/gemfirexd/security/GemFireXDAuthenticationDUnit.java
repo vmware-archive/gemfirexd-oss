@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Properties;
 
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.security.AuthenticationFailedException;
@@ -39,6 +38,7 @@ import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverAdapter;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
+import com.pivotal.gemfirexd.internal.engine.store.GemFireStore;
 import com.pivotal.gemfirexd.internal.iapi.error.StandardException;
 import com.pivotal.gemfirexd.internal.iapi.reference.Property;
 import com.pivotal.gemfirexd.internal.iapi.services.monitor.Monitor;
@@ -46,12 +46,10 @@ import com.pivotal.gemfirexd.internal.iapi.services.sanity.SanityManager;
 import com.pivotal.gemfirexd.internal.impl.services.monitor.FileMonitor;
 import com.pivotal.gemfirexd.security.SecurityTestUtils.AuthenticationSchemes;
 import com.pivotal.gemfirexd.security.SecurityTestUtils.priv_set;
-
-import dunit.DistributedTestCase;
-import dunit.Host;
-import dunit.SerializableCallable;
-import dunit.SerializableRunnable;
-import dunit.VM;
+import io.snappydata.test.dunit.Host;
+import io.snappydata.test.dunit.SerializableCallable;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.dunit.VM;
 
 /**
  * 
@@ -62,17 +60,43 @@ public class GemFireXDAuthenticationDUnit extends DistributedSQLTestBase {
 
   String origdebugtrue;
   String origmonitorverbose;
+
   public GemFireXDAuthenticationDUnit(String name) {
     super(name);
-    if (getDUnitLogLevel().startsWith("fine")) {
-      origdebugtrue = System.setProperty("gemfirexd.debug.true", "TraceAuthentication,TraceFabricServerBoot");
-      origmonitorverbose = System.setProperty("gemfirexd.monitor.verbose", "true");
+    if (getLogLevel().startsWith("fine")) {
+      origdebugtrue = System.setProperty("gemfirexd.debug.true",
+          "TraceAuthentication,TraceFabricServerBoot");
+      origmonitorverbose = System.setProperty("gemfirexd.monitor.verbose",
+          "true");
     }
   }
-  
+
+  @Override
+  public void beforeClass() throws Exception {
+    final LdapTestServer server = LdapTestServer.getInstance();
+    if (!server.isServerStarted()) {
+      server.startServer();
+    }
+  }
+
+  @Override
+  public void afterClass() throws Exception {
+    final LdapTestServer server = LdapTestServer.getInstance();
+    if (server.isServerStarted()) {
+      server.stopService();
+    }
+  }
+
   @Override
   public void tearDown2() throws Exception {
-    if (getDUnitLogLevel().startsWith("fine")) {
+    Connection conn = TestUtil.jdbcConn;
+    if (conn == null && GemFireStore.getBootedInstance() != null) {
+      conn = TestUtil.getConnection();
+    }
+    if (conn != null) {
+      TestUtil.dropAllUsers(conn);
+    }
+    if (getLogLevel().startsWith("fine")) {
       if(origdebugtrue == null)
         System.clearProperty("gemfirexd.debug.true");
       else
@@ -109,10 +133,10 @@ public class GemFireXDAuthenticationDUnit extends DistributedSQLTestBase {
         locatorConnectionCredentials.getProperty(com.pivotal.gemfirexd.Attribute.PASSWORD_ATTR));
     diffSystemProps.putAll(locatorConnectionCredentials);
 
-    getLogWriter().info("diffSystem" + diffSystemProps);
+    getLogWriter().info("diffSystem " + diffSystemProps);
     final Properties locatorBootProperties = new Properties();
     locatorBootProperties.putAll(diffSystemProps);
-    
+
     SerializableCallable startlocator = new SerializableCallable(
         "starting locator") {
 
@@ -122,7 +146,7 @@ public class GemFireXDAuthenticationDUnit extends DistributedSQLTestBase {
         String currentHost = getIPLiteral();
         try {
           TestUtil.doCommonSetup(locatorBootProperties);
-          String sysDirName = getSysDirName(getGemFireDescription());
+          String sysDirName = getSysDirName();
           locatorBootProperties.setProperty(com.pivotal.gemfirexd.Attribute.SYS_PERSISTENT_DIR, sysDirName);
 
           FabricLocator locator = FabricServiceManager
@@ -161,10 +185,10 @@ public class GemFireXDAuthenticationDUnit extends DistributedSQLTestBase {
 
       VM vm2 = Host.getHost(0).getVM(1);
 
-      final CacheSerializableRunnable expectedException = new CacheSerializableRunnable(
+      final SerializableRunnable expectedException = new SerializableRunnable(
           "GemFireXDAuthenticationDUnit: add expected exception") {
         @Override
-        public void run2() {
+        public void run() {
           // needed for VM that will fail authentication as log file gets
           // created during boot
           // and we want this line between log creation and ds.connect(...)
@@ -250,11 +274,11 @@ public class GemFireXDAuthenticationDUnit extends DistributedSQLTestBase {
           @Override
           public Object call() {
 
-            expectedException.run2();
+            expectedException.run();
             String currentHost = getIPLiteral();
             try {
               TestUtil.doCommonSetup(serverprops);
-              String sysDirName = getSysDirName(getGemFireDescription());
+              String sysDirName = getSysDirName();
               serverprops.setProperty(com.pivotal.gemfirexd.Attribute.SYS_PERSISTENT_DIR, sysDirName);
 
               FabricServer server = FabricServiceManager
@@ -319,11 +343,11 @@ public class GemFireXDAuthenticationDUnit extends DistributedSQLTestBase {
           @Override
           public Object call() {
 
-            expectedException.run2();
+            expectedException.run();
             String currentHost = getIPLiteral();
             try {
               TestUtil.doCommonSetup(serverprops);
-              String sysDirName = getSysDirName(getGemFireDescription());
+              String sysDirName = getSysDirName();
               serverprops.setProperty(com.pivotal.gemfirexd.Attribute.SYS_PERSISTENT_DIR, sysDirName);
 
               FabricServer server = FabricServiceManager
@@ -362,9 +386,10 @@ public class GemFireXDAuthenticationDUnit extends DistributedSQLTestBase {
         if (isSuccess)
           SanityManager.THROWASSERT("server start failure is expected.... ");
       }
-      
+
       TestUtil.doCommonSetup(diffSystemProps);
-      
+      diffSystemProps.setProperty("locators", locator);
+
       //attempt failure of connection because system user id is not passed to the locator
       //instead locally exception is raised.
       try {
@@ -383,11 +408,11 @@ public class GemFireXDAuthenticationDUnit extends DistributedSQLTestBase {
           @Override
           public Object call() {
 
-            expectedException.run2();
+            expectedException.run();
             String currentHost = getIPLiteral();
             try {
               TestUtil.doCommonSetup(noUser);
-              String sysDirName = getSysDirName(getGemFireDescription());
+              String sysDirName = getSysDirName();
               noUser.setProperty(com.pivotal.gemfirexd.Attribute.SYS_PERSISTENT_DIR, sysDirName);
 
               FabricServer server = FabricServiceManager
@@ -445,7 +470,7 @@ public class GemFireXDAuthenticationDUnit extends DistributedSQLTestBase {
           "Attempt 5 to start server " + vminfo + " with properties .... " + diffSystemProps);
       
       //now attempt a successful connection on VM 2
-      String sysDirName = getSysDirName(getGemFireDescription());
+      String sysDirName = getSysDirName();
       diffSystemProps.setProperty(com.pivotal.gemfirexd.Attribute.SYS_PERSISTENT_DIR, sysDirName);
       startVMs(0, 1, 0, null, diffSystemProps);
     } finally {
@@ -656,16 +681,14 @@ public class GemFireXDAuthenticationDUnit extends DistributedSQLTestBase {
                 true, true, 0);
             systemconn.close();
           } catch (Exception e) {
-            getLogWriter().severe("unexpected exception in close", e);
+            getLogWriter().error("unexpected exception in close", e);
           }
         }
       }
     }
   }
 
-  /**
-   */
-  public void testSchemaSharedBetweenUsersWithoutAuthorization() throws Exception {
+  public void DISABLED_GEMXD11_testSchemaSharedBetweenUsersWithoutAuthorization() throws Exception {
     Properties extraServerProps = new Properties();
 
     final AuthenticationSchemes scheme = AuthenticationSchemes.BUILTIN;
@@ -687,7 +710,7 @@ public class GemFireXDAuthenticationDUnit extends DistributedSQLTestBase {
     commonProps.setProperty("start-locator", locator);
     commonProps.setProperty("locators", locator);
     commonProps.setProperty("host-data", "true");
-    commonProps.setProperty("log-level", getDUnitLogLevel());
+    commonProps.setProperty("log-level", getLogLevel());
     //lets get back what we will loose in shutdown.
 
     final String sharedSchemaName = SecurityTestUtils.commonSchemaName;
@@ -1487,10 +1510,10 @@ public class GemFireXDAuthenticationDUnit extends DistributedSQLTestBase {
   }
   
   public void testClientFailoverWithAuthentication() throws Exception {
-    final CacheSerializableRunnable expectedException = new CacheSerializableRunnable(
+    final SerializableRunnable expectedException = new SerializableRunnable(
         "GemFireXDAuthenticationDUnit: add expected exception") {
       @Override
-      public void run2() {
+      public void run() {
         // needed for VM that will fail authentication as log file gets
         // created during boot
         // and we want this line between log creation and ds.connect(...)
@@ -1512,7 +1535,7 @@ public class GemFireXDAuthenticationDUnit extends DistributedSQLTestBase {
     
     final Properties locatorSystemProps = scheme.startupProps(false, true, false, false, false);
     locatorSystemProps.setProperty(com.pivotal.gemfirexd.Attribute.GFXD_PREFIX
-        + DistributionConfig.LOG_LEVEL_NAME, getDUnitLogLevel());
+        + DistributionConfig.LOG_LEVEL_NAME, getLogLevel());
     locatorSystemProps.remove("SYS-USER");
     
     final Properties locatorConnectionCredentials = scheme.bootCredentials();
@@ -1554,7 +1577,7 @@ public class GemFireXDAuthenticationDUnit extends DistributedSQLTestBase {
             }
           }
           TestUtil.doCommonSetup(locatorSystemProps);
-          String sysDirName = getSysDirName(getGemFireDescription());
+          String sysDirName = getSysDirName();
           locatorSystemProps.setProperty(com.pivotal.gemfirexd.Attribute.SYS_PERSISTENT_DIR, sysDirName);
 
           FabricLocator locator = FabricServiceManager
@@ -1770,8 +1793,7 @@ public class GemFireXDAuthenticationDUnit extends DistributedSQLTestBase {
       }
 
       // create dist-sys level users
-      DistributedTestCase.getLogWriter().info(
-          "about to create distributed sys users ");
+      getLogWriter().info("about to create distributed sys users ");
 
       CallableStatement cusr = systemconn
           .prepareCall("call SYSCS_UTIL.SYSCS_SET_DATABASE_PROPERTY(?,?)");
@@ -1779,7 +1801,7 @@ public class GemFireXDAuthenticationDUnit extends DistributedSQLTestBase {
         cusr.setString(1, "derby.user." + u);
         cusr.setString(2, "PWD_" + u);
         cusr.execute();
-        DistributedTestCase.getLogWriter().info("created database user " + u);
+        getLogWriter().info("created database user " + u);
       }
       systemconn.close();
 

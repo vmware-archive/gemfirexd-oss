@@ -23,8 +23,6 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 
-import util.TestException;
-
 import com.gemstone.gemfire.cache.Cache;
 import com.gemstone.gemfire.cache.CacheFactory;
 import com.gemstone.gemfire.cache.PartitionResolver;
@@ -39,9 +37,9 @@ import com.pivotal.gemfirexd.internal.engine.ddl.resolver.GfxdRangePartitionReso
 import com.pivotal.gemfirexd.internal.iapi.types.DataTypeDescriptor;
 import com.pivotal.gemfirexd.internal.iapi.types.DataValueDescriptor;
 import com.pivotal.gemfirexd.internal.iapi.types.SQLInteger;
-
-import dunit.SerializableRunnable;
-import dunit.VM;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.dunit.VM;
+import io.snappydata.test.util.TestException;
 
 @SuppressWarnings("serial")
 public class GfxdAllPartitionResolversAPIDUnit extends DistributedSQLTestBase {

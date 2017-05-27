@@ -148,6 +148,7 @@ public class ConnectionURLTest extends JdbcTestBase {
     Connection conn = null;
     Properties prop = new Properties();
     prop.setProperty("host-data", "true");
+    prop.setProperty("mcast-port", "0");
 
     conn = DriverManager.getConnection(protocol, prop);
 
@@ -176,6 +177,7 @@ public class ConnectionURLTest extends JdbcTestBase {
     Connection conn = null;
     Properties props = new Properties();
     props.setProperty("host-data", "true");
+    props.setProperty("mcast-port", "0");
 
     conn = DriverManager.getConnection(protocol, props);
 
@@ -228,7 +230,8 @@ public class ConnectionURLTest extends JdbcTestBase {
       DriverManager.getConnection(url, props);
       fail("exception is expected!");
     } catch (SQLException ex) {
-      if (!"XJ040".equals(ex.getSQLState())) {
+      if (!"XJ040".equals(ex.getSQLState()) &&
+          !"XJ004".equals(ex.getSQLState())) {
         throw ex;
       }
       // pass, expected

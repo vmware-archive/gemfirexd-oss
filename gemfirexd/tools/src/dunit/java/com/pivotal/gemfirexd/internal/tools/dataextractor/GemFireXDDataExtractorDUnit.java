@@ -16,14 +16,11 @@
  */
 package com.pivotal.gemfirexd.internal.tools.dataextractor;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.StringReader;
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -40,15 +37,14 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.commons.io.FileUtils;
-
 import com.gemstone.gemfire.cache.CacheException;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.internal.tools.dataextractor.extractor.GemFireXDDataExtractorImpl;
 import com.pivotal.gemfirexd.internal.tools.dataextractor.snapshot.GFXDSnapshotExportStat;
 import com.pivotal.gemfirexd.internal.tools.dataextractor.utils.ExtractorUtils;
+import io.snappydata.test.dunit.SerializableRunnable;
+import org.apache.commons.io.FileUtils;
 
 
 public class GemFireXDDataExtractorDUnit  extends DistributedSQLTestBase {
@@ -121,8 +117,8 @@ public class GemFireXDDataExtractorDUnit  extends DistributedSQLTestBase {
     updateData(tableName, 300, 600);
     deleteData(tableName, 600, 900);
    
-    String server1Directory = getVM(-1).getSystem().getSystemDirectory() + "_" + getVM(-1).getPid();
-    String server2Directory = getVM(-2).getSystem().getSystemDirectory() + "_" + getVM(-2).getPid();
+    String server1Directory = getVM(-1).getWorkingDirectory().getAbsolutePath();
+    String server2Directory = getVM(-2).getWorkingDirectory().getAbsolutePath();
     
     this.serverExecute(1, this.getCopyDataDictionary(server1Directory));
     this.serverExecute(2,  this.getCopyDataDictionary(server2Directory));
@@ -188,8 +184,8 @@ public class GemFireXDDataExtractorDUnit  extends DistributedSQLTestBase {
     updateData(secondTableName, 300, 600);
     deleteData(secondTableName, 600, 900);
 
-    String server1Directory = getVM(-1).getSystem().getSystemDirectory() + "_" + getVM(-1).getPid();
-    String server2Directory = getVM(-2).getSystem().getSystemDirectory() + "_" + getVM(-2).getPid();
+    String server1Directory = getVM(-1).getWorkingDirectory().getAbsolutePath();
+    String server2Directory = getVM(-2).getWorkingDirectory().getAbsolutePath();
     
     this.serverExecute(1, this.getCopyDataDictionary(server1Directory));
     this.serverExecute(2,  this.getCopyDataDictionary(server2Directory));
@@ -309,8 +305,8 @@ public class GemFireXDDataExtractorDUnit  extends DistributedSQLTestBase {
     updateData(tableName, 30, 60);
     deleteData(tableName, 60, 90);
    
-    String server1Directory = getVM(-1).getSystem().getSystemDirectory() + "_" + getVM(-1).getPid();
-    String server2Directory = getVM(-2).getSystem().getSystemDirectory() + "_" + getVM(-2).getPid();
+    String server1Directory = getVM(-1).getWorkingDirectory().getAbsolutePath();
+    String server2Directory = getVM(-2).getWorkingDirectory().getAbsolutePath();
     
     this.serverExecute(1, this.getCopyDataDictionary(server1Directory));
     this.serverExecute(2,  this.getCopyDataDictionary(server2Directory));
@@ -366,8 +362,8 @@ public class GemFireXDDataExtractorDUnit  extends DistributedSQLTestBase {
     updateData(tableName, 30, 60);
     deleteData(tableName, 60, 90);
    
-    String server1Directory = getVM(-1).getSystem().getSystemDirectory() + "_" + getVM(-1).getPid();
-    String server2Directory = getVM(-2).getSystem().getSystemDirectory() + "_" + getVM(-2).getPid();
+    String server1Directory = getVM(-1).getWorkingDirectory().getAbsolutePath();
+    String server2Directory = getVM(-2).getWorkingDirectory().getAbsolutePath();
     
     this.serverExecute(1, this.getCopyDataDictionary(server1Directory));
     this.serverExecute(2,  this.getCopyDataDictionary(server2Directory));
@@ -424,8 +420,8 @@ public class GemFireXDDataExtractorDUnit  extends DistributedSQLTestBase {
     insertData(tableName, 0, 100);
     updateData(tableName, 30, 60);
     deleteData(tableName, 60, 90);
-    String server1Directory = getVM(-1).getSystem().getSystemDirectory() + "_" + getVM(-1).getPid();
-    String server2Directory = getVM(-2).getSystem().getSystemDirectory() + "_" + getVM(-2).getPid();
+    String server1Directory = getVM(-1).getWorkingDirectory().getAbsolutePath();
+    String server2Directory = getVM(-2).getWorkingDirectory().getAbsolutePath();
     
     this.serverExecute(1, this.getCopyDataDictionary(server1Directory));
     this.serverExecute(2,  this.getCopyDataDictionary(server2Directory));
@@ -481,8 +477,8 @@ public class GemFireXDDataExtractorDUnit  extends DistributedSQLTestBase {
     insertData(tableName, 0, 100);
     updateData(tableName, 30, 60);
     deleteData(tableName, 60, 90);
-    String server1Directory = getVM(-1).getSystem().getSystemDirectory() + "_" + getVM(-1).getPid();
-    String server2Directory = getVM(-2).getSystem().getSystemDirectory() + "_" + getVM(-2).getPid();
+    String server1Directory = getVM(-1).getWorkingDirectory().getAbsolutePath();
+    String server2Directory = getVM(-2).getWorkingDirectory().getAbsolutePath();
     
     //Don't copy the data dictionary for this test
     this.serverExecute(1, this.getCopyDataDictionary(server1Directory));
@@ -533,12 +529,12 @@ public class GemFireXDDataExtractorDUnit  extends DistributedSQLTestBase {
       String server1Name = "server1";
       String server2Name = "server2";
       String server3Name = "server3";
-      
+
       startVMs(1, 3);
-      String server1Directory = getVM(-1).getSystem().getSystemDirectory() + "_" + getVM(-1).getPid();
-      String server2Directory = getVM(-2).getSystem().getSystemDirectory() + "_" + getVM(-2).getPid();
-      String server3Directory = getVM(-3).getSystem().getSystemDirectory() + "_" + getVM(-3).getPid();
-      
+      String server1Directory = getVM(-1).getWorkingDirectory().getAbsolutePath();
+      String server2Directory = getVM(-2).getWorkingDirectory().getAbsolutePath();
+      String server3Directory = getVM(-3).getWorkingDirectory().getAbsolutePath();
+
       clientCreateDiskStore(1, diskStoreName);
       clientCreatePersistentReplicateTable(1, tableName, diskStoreName);
       //create table
@@ -618,9 +614,9 @@ public class GemFireXDDataExtractorDUnit  extends DistributedSQLTestBase {
       String server3Name = "server3";
       
       startVMs(1, 3);
-      String server1Directory = getVM(-1).getSystem().getSystemDirectory() + "_" + getVM(-1).getPid();
-      String server2Directory = getVM(-2).getSystem().getSystemDirectory() + "_" + getVM(-2).getPid();
-      String server3Directory = getVM(-3).getSystem().getSystemDirectory() + "_" + getVM(-3).getPid();
+      String server1Directory = getVM(-1).getWorkingDirectory().getAbsolutePath();
+      String server2Directory = getVM(-2).getWorkingDirectory().getAbsolutePath();
+      String server3Directory = getVM(-3).getWorkingDirectory().getAbsolutePath();
       
       clientCreateHDFSSTORE(1, hdfsStoreName);
       clientCreateBookingTableWithHDFS(1, hdfsStoreName);
@@ -688,8 +684,8 @@ public class GemFireXDDataExtractorDUnit  extends DistributedSQLTestBase {
     insertData(tableName, 0, 100);
     updateData(tableName, 30, 60);
     deleteData(tableName, 60, 90);
-    String server1Directory = getVM(-1).getSystem().getSystemDirectory() + "_" + getVM(-1).getPid();
-    String server2Directory = getVM(-2).getSystem().getSystemDirectory() + "_" + getVM(-2).getPid();
+    String server1Directory = getVM(-1).getWorkingDirectory().getAbsolutePath();
+    String server2Directory = getVM(-2).getWorkingDirectory().getAbsolutePath();
     
     //Don't copy the data dictionary for this test
     //this.serverExecute(1, this.getCopyDataDictionary(server1Directory));
@@ -942,8 +938,8 @@ public class GemFireXDDataExtractorDUnit  extends DistributedSQLTestBase {
   }
   
   private Runnable getCopyDataDictionary(final String testDirectory) {
-    return new CacheSerializableRunnable("copying data dictionary") {
-      public void run2() throws CacheException {
+    return new SerializableRunnable("copying data dictionary") {
+      public void run() throws CacheException {
         try {
           copyDataDictionary(testDirectory + File.separator);
         }
@@ -959,8 +955,8 @@ public class GemFireXDDataExtractorDUnit  extends DistributedSQLTestBase {
   }
   
   private Runnable getCopyOplogsRunnable(final String testDirectory, final String testDiskStoreName) {
-    return new CacheSerializableRunnable("copying Oplogs") {
-      public void run2() throws CacheException {
+    return new SerializableRunnable("copying Oplogs") {
+      public void run() throws CacheException {
         try {
           copyOplogs(testDirectory, testDiskStoreName);
         }
@@ -990,8 +986,8 @@ public class GemFireXDDataExtractorDUnit  extends DistributedSQLTestBase {
   }
   
   private Runnable getDeleteOplogsRunnable(final String testDirectory, final String testDiskStoreName, final String[] suffix) {
-    return new CacheSerializableRunnable("delete Oplogs") {
-      public void run2() throws CacheException {
+    return new SerializableRunnable("delete Oplogs") {
+      public void run() throws CacheException {
         try {
           deleteOplogs(testDirectory, testDiskStoreName, suffix);
         }
@@ -1022,8 +1018,8 @@ public class GemFireXDDataExtractorDUnit  extends DistributedSQLTestBase {
   }
   
   private Runnable getCorruptOplogsRunnable(final String testDirectory, final String testDiskStoreName, final String[] suffix, final int lengthToPreserve) {
-    return new CacheSerializableRunnable("corrupt Oplogs") {
-      public void run2() throws CacheException {
+    return new SerializableRunnable("corrupt Oplogs") {
+      public void run() throws CacheException {
         try {
           corruptOplogs(testDirectory, testDiskStoreName, suffix, lengthToPreserve);
         }
@@ -1035,8 +1031,8 @@ public class GemFireXDDataExtractorDUnit  extends DistributedSQLTestBase {
   }
   
   private Runnable getCorruptIfRunnable(final String testDirectory, final String testDiskStoreName) {
-    return new CacheSerializableRunnable("corrupt IF files") {
-      public void run2() throws CacheException {
+    return new SerializableRunnable("corrupt IF files") {
+      public void run() throws CacheException {
         try {
           corruptOplogsWithRightShifting(testDirectory, testDiskStoreName, new String[] {".if"});
         }
@@ -1086,8 +1082,8 @@ public class GemFireXDDataExtractorDUnit  extends DistributedSQLTestBase {
   
   
   private Runnable getCheckDDLSizeRunnable(final String directory, final int size) {
-    return new CacheSerializableRunnable("check ddl size") {
-      public void run2() throws CacheException {
+    return new SerializableRunnable("check ddl size") {
+      public void run() throws CacheException {
         try {
           checkDDLSize(directory, size);
         }
@@ -1103,9 +1099,9 @@ public class GemFireXDDataExtractorDUnit  extends DistributedSQLTestBase {
   public static void corruptFile(File file) throws IOException {
     byte[] fileBytes = FileUtils.readFileToByteArray(file);
     if (fileBytes != null && fileBytes.length > 0) {
-      getLogWriter().info("#SB Corrupting the file : " + file.getCanonicalPath());
+      getGlobalLogger().info("#SB Corrupting the file : " + file.getCanonicalPath());
 
-      for (int i=0; i<fileBytes.length; i++) {
+      for (int i =0; i<fileBytes.length; i++) {
         fileBytes[i] = (byte) (fileBytes[i]>>2);
       }
     }

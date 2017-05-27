@@ -19,15 +19,7 @@ package com.pivotal.gemfirexd;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.net.InetAddress;
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.SQLNonTransientConnectionException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -38,45 +30,29 @@ import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.derby.drda.NetworkServerControl;
-import org.apache.derbyTesting.junit.JDBC;
-
-import util.TestException;
-
-import com.gemstone.gemfire.cache.CacheClosedException;
-import com.gemstone.gemfire.cache.CacheException;
-import com.gemstone.gemfire.cache.CacheFactory;
-import com.gemstone.gemfire.cache.DataPolicy;
-import com.gemstone.gemfire.cache.PartitionAttributes;
-import com.gemstone.gemfire.cache.PartitionAttributesFactory;
-import com.gemstone.gemfire.cache.PartitionedRegionStorageException;
-import com.gemstone.gemfire.cache.Scope;
+import com.gemstone.gemfire.cache.*;
 import com.gemstone.gemfire.cache.execute.Function;
 import com.gemstone.gemfire.cache.execute.FunctionContext;
 import com.gemstone.gemfire.cache.execute.FunctionException;
 import com.gemstone.gemfire.cache.execute.FunctionService;
 import com.gemstone.gemfire.cache.execute.ResultCollector;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
 import com.gemstone.gemfire.distributed.DistributedMember;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
-import com.gemstone.gemfire.distributed.internal.membership.
-    InternalDistributedMember;
+import com.gemstone.gemfire.distributed.internal.membership.InternalDistributedMember;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.SocketCreator;
+import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.xmlcache.RegionAttributesCreation;
 import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
-
-import com.pivotal.gemfirexd.DistributedSQLTestBase;
-import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.execute.CallbackStatement;
 import com.pivotal.gemfirexd.internal.client.am.DisconnectException;
-import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserver;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverAdapter;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
+import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.ddl.resolver.GfxdPartitionByExpressionResolver;
 import com.pivotal.gemfirexd.internal.engine.distributed.GfxdListResultCollector;
 import com.pivotal.gemfirexd.internal.engine.jdbc.GemFireXDRuntimeException;
@@ -90,12 +66,14 @@ import com.pivotal.gemfirexd.internal.iapi.sql.dictionary.SchemaDescriptor;
 import com.pivotal.gemfirexd.internal.iapi.util.StringUtil;
 import com.pivotal.gemfirexd.internal.impl.jdbc.EmbedStatement;
 import com.pivotal.gemfirexd.internal.impl.jdbc.authentication.AuthenticationServiceBase;
-
-import dunit.RMIException;
-import dunit.SerializableCallable;
-import dunit.SerializableRunnable;
-import dunit.VM;
-import dunit.Host;
+import io.snappydata.test.dunit.Host;
+import io.snappydata.test.dunit.RMIException;
+import io.snappydata.test.dunit.SerializableCallable;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.dunit.VM;
+import io.snappydata.test.util.TestException;
+import org.apache.derby.drda.NetworkServerControl;
+import org.apache.derbyTesting.junit.JDBC;
 
 /**
  * Test that client and server are being correctly configured with different
@@ -177,9 +155,9 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
   }
 
   private void checkVMsDown(VM... vms) {
-    CacheSerializableRunnable noGFE = new CacheSerializableRunnable("GFE down") {
+    SerializableRunnable noGFE = new SerializableRunnable("GFE down") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           CacheFactory.getAnyInstance();
           fail("expected the cache to be closed");
@@ -202,14 +180,25 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
   }
 
   // Try some metadata calls
-  private void checkDBMetadata(Connection conn, String url) throws Exception {
+  private void checkDBMetadata(Connection conn, String url)
+      throws SQLException {
+    checkDBMetadata(conn, url, null);
+  }
+
+  private void checkDBMetadata(Connection conn, String url,
+      String url2) throws SQLException {
     DatabaseMetaData dbmd = conn.getMetaData();
     String actualUrl = dbmd.getURL();
     // remove any trailing slash
     getLogWriter().info("Got DB " + dbmd.getDatabaseProductName() + ' '
         + dbmd.getDatabaseProductVersion() + " using URL " + actualUrl);
-    assertEquals("Expected the provided URL to match", url.replaceFirst("/$",
-        ""), actualUrl.replaceFirst("/$", ""));
+    url = url.replaceFirst("/$", "");
+    actualUrl = actualUrl.replaceFirst("/$", "");
+    if (!url.equals(actualUrl)) {
+      if (url2 == null || !url2.replaceFirst("/$", "").equals(actualUrl)) {
+        assertEquals("Expected the provided URL to match", url, actualUrl);
+      }
+    }
     ResultSet rs = dbmd.getCatalogs();
     while (rs.next()) {
       getLogWriter().info("Got DB catalog: " + rs.getString(1));
@@ -552,14 +541,14 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
         if (!stmt.getSQLText().startsWith("call SYSIBM.SQLCAMESSAGE")
             && !stmt.getSQLText().startsWith("SET ")) {
           // try on a random batch element
-          if (AvailablePort.rand.nextBoolean()) {
+          if (PartitionedRegion.rand.nextBoolean()) {
             throw PublicAPI.wrapStandardException(StandardException
                 .newException("X0Z02", new Throwable(
                     "simulating a conflict exception")));
           }
           else {
             this.batchElement = Integer
-                .valueOf(AvailablePort.rand.nextInt(numOps - 5) + 1);
+                .valueOf(PartitionedRegion.rand.nextInt(numOps - 5) + 1);
           }
         }
       }
@@ -855,9 +844,9 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
       }
     });
     // attach an observer that will always throw an index not found exception
-    serverExecute(2, new CacheSerializableRunnable("attach observer") {
+    serverExecute(2, new SerializableRunnable("attach observer") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         GemFireXDQueryObserverHolder.setInstance(errorGen);
       }
     });
@@ -893,9 +882,9 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
           ex.getLocalizedMessage().contains(expectedMessage));
     }
     // remove the observer
-    serverExecute(2, new CacheSerializableRunnable("remove observer") {
+    serverExecute(2, new SerializableRunnable("remove observer") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         GemFireXDQueryObserverHolder.clearInstance();
       }
     });
@@ -1026,9 +1015,9 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
     });
 
     // now check behaviour in exception during execution using an observer
-    serverExecute(1, new CacheSerializableRunnable("attach error generator") {
+    serverExecute(1, new SerializableRunnable("attach error generator") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         GemFireXDQueryObserverHolder.setInstance(errorGen);
       }
     });
@@ -1124,7 +1113,7 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
               pstmt.clearBatch();
             } catch (SQLException sqle) {
               // just log a warning here
-              getLogWriter().warning(sqle);
+              getLogWriter().warn(sqle);
             }
           }
         } catch (Throwable t) {
@@ -1325,9 +1314,9 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
     });
 
     // remove the observer
-    serverVM.invoke(new CacheSerializableRunnable("remove observer") {
+    serverVM.invoke(new SerializableRunnable("remove observer") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         GemFireXDQueryObserverHolder.clearInstance();
         batchExecutions.clear();
         hasQueryObservers = false;
@@ -1595,23 +1584,15 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
   }
 
   /**
-   * Test if multiple connections from network clients failover successfully
-   * even when no GemFireXD locator is available.
+   * Test if multiple connections from network clients failover successfully.
    */
   public void testNetworkClientFailover() throws Exception {
-	  // BUG# 
-	  if(isTransactional) {
-		  return;
-	  }
     // start some servers not using locator
-    int mcastPort = AvailablePort.getRandomAvailablePort(AvailablePort.JGROUPS);
-    startVMs(0, 3, mcastPort, null, null);
-    // Start a couple of network servers
+    startVMs(0, 3);
+    // Start a network server
     final int netPort = startNetworkServer(1, null, null);
-    startNetworkServer(2, null, null);
 
     attachConnectionListener(1, connListener);
-    attachConnectionListener(2, connListener);
 
     // Use this VM as the network client
     TestUtil.loadNetDriver();
@@ -1619,11 +1600,12 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
     final InetAddress localHost = SocketCreator.getLocalHost();
     String url = TestUtil.getNetProtocol(localHost.getCanonicalHostName(),
         netPort);
-    Connection conn = TestUtil.getNetConnection(localHost.getCanonicalHostName(), netPort, null, new Properties());
+    Connection conn = TestUtil.getNetConnection(
+        localHost.getCanonicalHostName(), netPort, null, new Properties());
 
     // check new connections opened on first server (control+data connections)
-    assertNumConnections(2, 0, 1);
-    assertNumConnections(0, -1, 2);
+    assertNumConnections(-2, -1, 1);
+    assertNumConnections(0, 0, 2);
 
     // Some sanity checks for DB meta-data
     checkDBMetadata(conn, url);
@@ -1656,18 +1638,25 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
     assertEquals(s, resultStr);
     assertFalse(rs.next());
 
-    assertNumConnections(2, 0, 1);
-    assertNumConnections(0, -1, 2);
+    assertNumConnections(-2, -1, 1);
+    assertNumConnections(0, 0, 2);
+
+    // start another network server
+    final int netPort2 = startNetworkServer(2, null, null);
+    String url2 = TestUtil.getNetProtocol(localHost.getCanonicalHostName(),
+        netPort2);
+    attachConnectionListener(2, connListener);
 
     // now open another connection
-    final Connection conn2 = TestUtil.getNetConnection(localHost.getCanonicalHostName(), netPort, null, new Properties());
+    final Connection conn2 = TestUtil.getNetConnection(
+        localHost.getCanonicalHostName(), netPort, null, new Properties());
 
-    // check new connection opened on first server since it is available
-    assertNumConnections(3, 0, 1);
-    assertNumConnections(0, -1, 2);
+    // check new connection opened on second server
+    assertNumConnections(-2, -1, 1);
+    assertNumConnections(1, -1, 2);
 
     // Some sanity checks for DB meta-data
-    checkDBMetadata(conn2, url);
+    checkDBMetadata(conn2, url2);
 
     stmt = conn2.createStatement();
     rs = stmt.executeQuery("select * from TESTTABLE");
@@ -1683,28 +1672,29 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
     assertEquals(s, resultStr);
     assertFalse(rs.next());
 
-    assertNumConnections(3, 0, 1);
-    assertNumConnections(0, -1, 2);
+    assertNumConnections(-2, -1, 1);
+    assertNumConnections(1, -1, 2);
 
     // now a third connection
-    final Connection conn3 = TestUtil.getNetConnection(localHost.getCanonicalHostName(), netPort, null, new Properties());
+    final Connection conn3 = TestUtil.getNetConnection(
+        localHost.getCanonicalHostName(), netPort, null, new Properties());
 
     // Some sanity checks for DB meta-data
-    checkDBMetadata(conn3, url);
+    checkDBMetadata(conn3, url, url2);
 
-    assertNumConnections(4, 0, 1);
-    assertNumConnections(0, -1, 2);
+    assertNumConnections(-3, -1, 1);
+    assertNumConnections(-2, -1, 2);
 
     // close the first connection
     conn.close();
 
     // check connection closed on first server
-    assertNumConnections(4, 1, 1);
-    assertNumConnections(0, -1, 2);
+    assertNumConnections(-3, -2, 1);
+    assertNumConnections(-2, -1, 2);
 
     PreparedStatement pstmt3 = conn3
         .prepareStatement("select * from sys.members where kind <> ?");
-    pstmt3.setString(1, "admin");
+    pstmt3.setString(1, "locator(normal)");
     rs = pstmt3.executeQuery();
     assertTrue("expected three rows in meta-data query", rs.next());
     assertEquals("datastore(normal)", rs.getString(2));
@@ -1727,7 +1717,7 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
     // after failover
     PreparedStatement pstmt31 = conn3
         .prepareStatement("select * from sys.members where kind <> ?");
-    pstmt31.setString(1, "admin");
+    pstmt31.setString(1, "locator(normal)");
     // add expected exception for server connection failure
     addExpectedException(new int[] { 1 }, new int[] { 1, 2, 3 }, new Object[] {
         java.net.ConnectException.class,
@@ -1745,12 +1735,12 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
     pstmt.execute();
 
     // check connections opened on second server
-    assertNumConnections(4, 1, 1);
+    assertNumConnections(-3, -2, 1);
     // no failover for conn3 yet since no operation has been performed
-    assertNumConnections(2, -1, 2);
+    assertNumConnections(-2, -1, 2);
 
     // check failover for conn3 too
-    checkDBMetadata(conn3, url);
+    checkDBMetadata(conn3, url, url2);
 
     stmt = conn3.createStatement();
     rs = stmt.executeQuery("select * from TESTTABLE where ID = 1");
@@ -1793,8 +1783,8 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
     assertFalse(rs.next());
 
     // check connections opened on second server
-    assertNumConnections(4, 1, 1);
-    assertNumConnections(3, -1, 2);
+    assertNumConnections(-3, -2, 1);
+    assertNumConnections(-3, -1, 2);
 
     removeExpectedException(new int[] { 1 }, new int[] { 1, 2, 3 },
         new Object[] { java.net.ConnectException.class,
@@ -1803,7 +1793,8 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
         SQLNonTransientConnectionException.class });
 
     // create another connection and run a query to check results
-    conn = TestUtil.getNetConnection(localHost.getCanonicalHostName(), netPort, null, new Properties());
+    conn = TestUtil.getNetConnection(
+        localHost.getCanonicalHostName(), netPort2, null, new Properties());
 
     rs = conn.createStatement().executeQuery(
         "select * from TESTTABLE order by ID");
@@ -1830,26 +1821,26 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
     assertFalse(rs.next());
 
     // check connection opened on second server
-    assertNumConnections(4, 1, 1);
-    assertNumConnections(4, -1, 2);
+    assertNumConnections(-3, -2, 1);
+    assertNumConnections(-4, -1, 2);
 
     // now drop the table and close the connections
     stmt.execute("drop table TESTTABLE");
     stmt.close();
     conn2.close();
 
-    assertNumConnections(4, 1, 1);
-    assertNumConnections(4, -2, 2);
+    assertNumConnections(-3, -2, 1);
+    assertNumConnections(-4, -2, 2);
 
     conn.close();
 
-    assertNumConnections(4, 1, 1);
-    assertNumConnections(4, -3, 2);
+    assertNumConnections(-3, -2, 1);
+    assertNumConnections(-4, -3, 2);
 
     conn3.close();
 
-    assertNumConnections(4, 1, 1);
-    assertNumConnections(4, -4, 2);
+    assertNumConnections(-3, -2, 1);
+    assertNumConnections(-4, -4, 2);
   }
 
   /**
@@ -2014,9 +2005,6 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
    * multiple servers using GFE's ServerLocator. Also check for the failover.
    */
   public void testNetworkClientLoadBalancing() throws Exception {
-	  if(isTransactional) {
-		  return;
-	  }
     // start the GemFireXD locator
     final VM locator = Host.getHost(0).getVM(3);
     final int netPort = AvailablePort
@@ -2727,7 +2715,7 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
 
   /**
    * Test for checking routing using server groups
-   * {@link ServerGroupUtils#onServerGroups(java.util.Set)}.
+   * {@link ServerGroupUtils#onServerGroups}.
    */
   public void testServerGroupsRouting() throws Exception {
     // start some servers in different server groups and a client
@@ -2739,10 +2727,10 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
     joinVMs(true, async1, async2, async3);
 
     // register the function on all the VMs
-    CacheSerializableRunnable registerFn = new CacheSerializableRunnable(
+    SerializableRunnable registerFn = new SerializableRunnable(
         "register function") {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         FunctionService.registerFunction(new TestFunction());
       }
     };
@@ -3153,7 +3141,7 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
     final Properties stopProps = doSecuritySetup(new Properties(), false);
 
     final Properties userProps = new Properties();
-    userProps.setProperty(AvailablePort.rand.nextBoolean()
+    userProps.setProperty(PartitionedRegion.rand.nextBoolean()
         ? com.pivotal.gemfirexd.Attribute.USERNAME_ATTR
         : com.pivotal.gemfirexd.Attribute.USERNAME_ALT_ATTR, "sysUser1");
     userProps.setProperty(com.pivotal.gemfirexd.Attribute.PASSWORD_ATTR,
@@ -3234,13 +3222,30 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
         serverExecute(1, new SerializableRunnable() {
           @Override
           public void run() {
+            TestException te = null;
+            try {
+              userProps.setProperty(
+                  com.pivotal.gemfirexd.Attribute.USERNAME_ATTR, "sysUser1");
+              userProps.setProperty(
+                  com.pivotal.gemfirexd.Attribute.PASSWORD_ATTR, "pwd_sysUser1");
+              final Connection conn = TestUtil.getConnection(userProps);
+              final Statement stmt = conn.createStatement();
+              stmt.execute("call sys.drop_user('gem1')");
+              stmt.close();
+              conn.close();
+            } catch (SQLException sqle) {
+              te = new TestException("unexpected exception");
+              te.initCause(sqle);
+            }
             try {
               FabricServiceManager.getFabricServerInstance()
                   .stopAllNetworkServers();
               TestUtil.shutDown(stopProps);
             } catch (SQLException sqle) {
-              final TestException te = new TestException("unexpected exception");
+              te = new TestException("unexpected exception");
               te.initCause(sqle);
+            }
+            if (te != null) {
               throw te;
             }
           }
@@ -3267,6 +3272,8 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
     File authFile = new File(authDir, "gfxd-security.properties");
     FileOutputStream fos = new FileOutputStream(authFile);
     authProps.store(fos, null);
+    Connection conn2 = null;
+    Statement systemUser_stmt = null;
     try {
       // start a locator and some severs with auth enabled
       final int locPort = AvailablePort
@@ -3293,8 +3300,8 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
       // connect as system user 'root'
       props2.setProperty("user", "root");
       props2.setProperty("password", "root");
-      Connection conn2 = TestUtil.getConnection(props2);
-      Statement systemUser_stmt = conn2.createStatement();
+      conn2 = TestUtil.getConnection(props2);
+      systemUser_stmt = conn2.createStatement();
 
       // create a new user
       systemUser_stmt.execute("call sys.create_user('user1', 'a')");
@@ -3327,15 +3334,23 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
       }
 
       conn1.close();
-      conn2.close();
       conn3.close();
     } finally {
-      fos.close();
-      if (!authFile.delete()) {
-        authFile.deleteOnExit();
-      }
-      if (!authDir.delete()) {
-        authDir.deleteOnExit();
+      try {
+        if (conn2 != null) {
+          if (systemUser_stmt != null) {
+            systemUser_stmt.execute("call sys.drop_user('user1')");
+          }
+          conn2.close();
+        }
+      } finally {
+        fos.close();
+        if (!authFile.delete()) {
+          authFile.deleteOnExit();
+        }
+        if (!authDir.delete()) {
+          authDir.deleteOnExit();
+        }
       }
     }
   }
@@ -3374,9 +3389,9 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
   public static void executeForUser(String userName, String sql)
       throws SQLException {
     final Properties userProps = new Properties();
-    userProps.setProperty(
-        AvailablePort.rand.nextBoolean() ? com.pivotal.gemfirexd.Attribute.USERNAME_ATTR
-            : com.pivotal.gemfirexd.Attribute.USERNAME_ALT_ATTR, userName);
+    userProps.setProperty(PartitionedRegion.rand.nextBoolean()
+        ? com.pivotal.gemfirexd.Attribute.USERNAME_ATTR
+        : com.pivotal.gemfirexd.Attribute.USERNAME_ALT_ATTR, userName);
     userProps.setProperty(com.pivotal.gemfirexd.Attribute.PASSWORD_ATTR, userName);
     final Connection userConn = TestUtil.getConnection(userProps);
     userConn.createStatement().execute(sql);
@@ -3384,10 +3399,10 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
 
   private void executeOnServerForUser(int serverNum, final String userName,
       final String sql) throws Exception {
-    serverExecute(serverNum, new CacheSerializableRunnable("executing " + sql
+    serverExecute(serverNum, new SerializableRunnable("executing " + sql
         + " with userName " + userName) {
       @Override
-      public void run2() throws CacheException {
+      public void run() throws CacheException {
         try {
           executeForUser(userName, sql);
         } catch (SQLException ex) {
@@ -3399,7 +3414,7 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
   }
 
   public static void procTest(Integer arg) {
-    getLogWriter().info("Invoked procTest with arg: " + arg);
+    getGlobalLogger().info("Invoked procTest with arg: " + arg);
   }
 
   private Properties doSecuritySetup(final Properties props,
@@ -3420,9 +3435,9 @@ public class ClientServerDUnit extends DistributedSQLTestBase {
       props.setProperty(com.pivotal.gemfirexd.Attribute.AUTH_PROVIDER,
           com.pivotal.gemfirexd.Constants.AUTHENTICATION_PROVIDER_BUILTIN);
     }
-    props.setProperty(
-        AvailablePort.rand.nextBoolean() ? com.pivotal.gemfirexd.Attribute.USERNAME_ATTR
-            : com.pivotal.gemfirexd.Attribute.USERNAME_ALT_ATTR, "sysUser1");
+    props.setProperty(PartitionedRegion.rand.nextBoolean()
+        ? com.pivotal.gemfirexd.Attribute.USERNAME_ATTR
+        : com.pivotal.gemfirexd.Attribute.USERNAME_ALT_ATTR, "sysUser1");
     props.setProperty(com.pivotal.gemfirexd.Attribute.PASSWORD_ATTR, "pwd_sysUser1");
 
     return props;

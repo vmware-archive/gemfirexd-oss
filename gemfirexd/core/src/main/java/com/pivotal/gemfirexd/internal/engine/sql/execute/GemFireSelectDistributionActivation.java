@@ -34,7 +34,7 @@ import com.pivotal.gemfirexd.internal.iapi.types.DataValueDescriptor;
  * 
  * @author Asif
  */
-public final class GemFireSelectDistributionActivation extends
+public class GemFireSelectDistributionActivation extends
     AbstractGemFireDistributionActivation {
 
   private final ExecRow projExecRow;

@@ -20,19 +20,20 @@
 package org.apache.derbyTesting.junit;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.PrintWriter;
-import java.net.InetAddress;
-import java.security.*;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.security.PrivilegedActionException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Properties;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Properties;
 
+import com.pivotal.gemfirexd.TestUtil;
 import com.pivotal.gemfirexd.internal.drda.NetworkServerControl;
-
 import junit.extensions.TestSetup;
 import junit.framework.Assert;
 import junit.framework.AssertionFailedError;
@@ -153,6 +154,7 @@ public class TestConfiguration {
         runningInDerbyHarness = assumeHarness;
         
         if (!assumeHarness) {
+            /*
             final   File dsh = new File("system");
 
             AccessController.doPrivileged
@@ -163,7 +165,8 @@ public class TestConfiguration {
                     return null;
                 }
             }
-             );            
+             );
+            */
         }
      }
     
@@ -1151,9 +1154,6 @@ public class TestConfiguration {
            /*
              return url.concat(name);
             */
-           // concat role=server (remove this once this is the default)
-           // [sumedh] now using host-data=true which is true by default
-           //url = url.concat(";role=server");
            // concat mcast port 0 to run in local mode as standalone VM
            url = url.concat(";mcast-port=0");
            return url;
@@ -1177,8 +1177,8 @@ public class TestConfiguration {
 
     // assumes ODBC datasource named gemfirexd
     private static final String odbcProtocol = "jdbc:odbc:gemfirexd";
-    public static final File odbcIni = new File(
-        System.getProperty("EXTRA_JTESTS") + "/odbc/odbc.ini");
+    public static final File odbcIni = new File(TestUtil.getResourcesDir(),
+        "/odbc/odbc.ini");
 
     public static String getNetProtocol(String hostName, int port) {
       if (USE_ODBC_BRIDGE) {

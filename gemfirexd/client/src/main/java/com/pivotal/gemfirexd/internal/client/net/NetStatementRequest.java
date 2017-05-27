@@ -39,6 +39,7 @@
  */
 package com.pivotal.gemfirexd.internal.client.net;
 
+import com.gemstone.gemfire.internal.shared.ClientSharedData;
 import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
 import com.gemstone.gemfire.internal.shared.JdkHelper;
 import com.pivotal.gemfirexd.internal.client.am.Blob;
@@ -1267,8 +1268,8 @@ public class NetStatementRequest extends NetPackageRequest implements StatementR
                         // Flow the data as CLOB data if the data too large to for LONGVARCHAR
                         java.io.ByteArrayInputStream bais = null;
                         byte[] ba = null;
-                        try {
-                            ba = s.getBytes("UTF-8");
+                        // try {
+                            ba = s.getBytes(ClientSharedData.UTF8);
                             bais = new java.io.ByteArrayInputStream(ba);
                             Clob c = new Clob(netAgent_, bais, "UTF-8", ba.length,
                                 parameterMetaData.getColumnLabelX(i + 1) /* GemStoneAddition */);
@@ -1294,13 +1295,14 @@ public class NetStatementRequest extends NetPackageRequest implements StatementR
                                 lidAndLengths[i][1] = buildPlaceholderLength(c.length());
                                 
                             }
-                            
+                        /*
                         } catch (java.io.UnsupportedEncodingException e) {
                             throw new SqlException(netAgent_.logWriter_, 
                                 new ClientMessageId(SQLState.UNSUPPORTED_ENCODING),
                                 "byte array", "Clob",
-                                parameterMetaData.getColumnLabelX(i + 1) /* GemStoneAddition */, e);
+                                parameterMetaData.getColumnLabelX(i + 1) /* GemStoneAddition *, e);
                         }
+                        */
                     }
                     break;
                 case java.sql.Types.INTEGER:
@@ -1403,8 +1405,8 @@ public class NetStatementRequest extends NetPackageRequest implements StatementR
                         // Flow the data as CLOB data if the data too large to for LONGVARCHAR
                         java.io.ByteArrayInputStream bais = null;
                         byte[] ba = null;
-                        try {
-                            ba = s.getBytes("UTF-8");
+                        // try {
+                            ba = s.getBytes(ClientSharedData.UTF8);
                             bais = new java.io.ByteArrayInputStream(ba);
                             Clob c = new Clob(netAgent_, bais, "UTF-8", ba.length,
                                 parameterMetaData.getColumnLabelX(i + 1) /* GemStoneAddition */);
@@ -1422,12 +1424,14 @@ public class NetStatementRequest extends NetPackageRequest implements StatementR
 
                             lidAndLengths[i][0] = DRDAConstants.DRDA_TYPE_NLOBCMIXED;
                             lidAndLengths[i][1] = buildPlaceholderLength(c.length());
+                        /*
                         } catch (java.io.UnsupportedEncodingException e) {
                             throw new SqlException(netAgent_.logWriter_, 
                                 new ClientMessageId(SQLState.UNSUPPORTED_ENCODING),
                                 "byte array", "Clob",
-                                parameterMetaData.getColumnLabelX(i + 1) /* GemStoneAddition */);
+                                parameterMetaData.getColumnLabelX(i + 1) /* GemStoneAddition *);
                         }
+                        */
                     }
                     break;
                 case java.sql.Types.BINARY:

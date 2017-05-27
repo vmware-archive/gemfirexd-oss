@@ -178,7 +178,7 @@ public class TPCCDUnit extends DistributedSQLTestBase {
 
         } while (o_id != -1 && !rowsEffected);
         if (rowsEffected == false) {
-          getLogWriter().severe("DELETE never returned non-zero rows effected");
+          getLogWriter().error("DELETE never returned non-zero rows effected");
         }
       }
 

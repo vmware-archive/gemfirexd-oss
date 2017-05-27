@@ -24,16 +24,10 @@ import java.sql.Statement;
 import java.util.Properties;
 import java.util.concurrent.CyclicBarrier;
 
-import util.TestException;
-import junit.framework.AssertionFailedError;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
-
 import com.gemstone.gemfire.cache.CacheException;
-import com.gemstone.gemfire.cache30.CacheSerializableRunnable;
-import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
+import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.TXManagerImpl;
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
@@ -41,13 +35,16 @@ import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserver;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverAdapter;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
+import com.pivotal.gemfirexd.internal.engine.access.index.GfxdIndexManager;
 import com.pivotal.gemfirexd.internal.engine.access.index.OpenMemIndex;
 import com.pivotal.gemfirexd.internal.engine.access.index.SortedMap2IndexScanController;
-import com.pivotal.gemfirexd.internal.engine.access.index.GfxdIndexManager;
 import com.pivotal.gemfirexd.internal.engine.store.GemFireContainer;
 import com.pivotal.gemfirexd.internal.iapi.store.access.conglomerate.Conglomerate;
-
-import dunit.SerializableRunnable;
+import io.snappydata.test.dunit.SerializableRunnable;
+import io.snappydata.test.util.TestException;
+import junit.framework.AssertionFailedError;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
 
 /**
  * 
@@ -105,12 +102,12 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
         pstmt.executeUpdate();
 
       }
-      CacheSerializableRunnable fieldInitializer = getFieldInitializer(schema,
+      SerializableRunnable fieldInitializer = getFieldInitializer(schema,
           connID, baseTable);
       serverExecute(1, fieldInitializer);
-      serverExecute(1, new CacheSerializableRunnable("validator1") {
+      serverExecute(1, new SerializableRunnable("validator1") {
         @Override
-        public void run2() throws CacheException
+        public void run() throws CacheException
         {
           assertTrue(gft.isLocalIndexImpacted(baseContainer, indexCols));
 
@@ -118,9 +115,9 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
       });
 
       conn.commit();
-      serverExecute(1, new CacheSerializableRunnable("validator2") {
+      serverExecute(1, new SerializableRunnable("validator2") {
         @Override
-        public void run2() throws CacheException
+        public void run() throws CacheException
         {
           // Now the local index should not be impacted as commit happened
           assertFalse(gft.isLocalIndexImpacted(baseContainer, indexCols));
@@ -132,9 +129,9 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
       // this should impact local index
       assertEquals(3, st.executeUpdate("update t1 set c5 = 10 where "
           + "c1 > 3 and c1 <7 "));
-      serverExecute(1, new CacheSerializableRunnable("validator3") {
+      serverExecute(1, new SerializableRunnable("validator3") {
         @Override
-        public void run2() throws CacheException
+        public void run() throws CacheException
         {
           assertTrue(gft.isLocalIndexImpacted(baseContainer, indexCols));
         }
@@ -143,9 +140,9 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
       conn.commit();
       // Check behaviour for PK based delete
       assertEquals(1, st.executeUpdate("delete from t1 where c1 = 31 "));
-      serverExecute(1, new CacheSerializableRunnable("validator4") {
+      serverExecute(1, new SerializableRunnable("validator4") {
         @Override
-        public void run2() throws CacheException
+        public void run() throws CacheException
         {
           assertTrue(gft.isLocalIndexImpacted(baseContainer, indexCols));
         }
@@ -155,9 +152,9 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
       // Check behaviour for bulk delete
       assertEquals(3, st
           .executeUpdate("delete from t1 where c3 > 31  and c3 < 35 "));
-      serverExecute(1, new CacheSerializableRunnable("validator5") {
+      serverExecute(1, new SerializableRunnable("validator5") {
         @Override
-        public void run2() throws CacheException
+        public void run() throws CacheException
         {
           assertTrue(gft.isLocalIndexImpacted(baseContainer, indexCols));
         }
@@ -168,18 +165,18 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
       // Now do Pk based update which modifies index column.
       // this should impact local index
       assertEquals(1, st.executeUpdate("update t1 set c5 = 10 where c1 = 15 "));
-      serverExecute(1, new CacheSerializableRunnable("validator6") {
+      serverExecute(1, new SerializableRunnable("validator6") {
         @Override
-        public void run2() throws CacheException
+        public void run() throws CacheException
         {
           assertTrue(gft.isLocalIndexImpacted(baseContainer, indexCols));
         }
       });
 
       conn.commit();
-      serverExecute(1, new CacheSerializableRunnable("validator7") {
+      serverExecute(1, new SerializableRunnable("validator7") {
         @Override
-        public void run2() throws CacheException
+        public void run() throws CacheException
         {
           // Now the local index should not be impacted as commit happened
           assertFalse(gft.isLocalIndexImpacted(baseContainer, indexCols));
@@ -191,9 +188,9 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
       // this should not impact local index
       assertEquals(3, st.executeUpdate("update t1 set c4 = 10 where "
           + "c1 > 3 and c1 <7 "));
-      serverExecute(1, new CacheSerializableRunnable("validator8") {
+      serverExecute(1, new SerializableRunnable("validator8") {
         @Override
-        public void run2() throws CacheException
+        public void run() throws CacheException
         {
           assertFalse(gft.isLocalIndexImpacted(baseContainer, indexCols));
         }
@@ -204,18 +201,18 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
       // Now do PK based update which does not modify index column.
       // this should not impact local index
       assertEquals(1, st.executeUpdate("update t1 set c4 = 10 where c1 = 18 "));
-      serverExecute(1, new CacheSerializableRunnable("validator9") {
+      serverExecute(1, new SerializableRunnable("validator9") {
         @Override
-        public void run2() throws CacheException
+        public void run() throws CacheException
         {
           assertFalse(gft.isLocalIndexImpacted(baseContainer, indexCols));
         }
       });
 
       conn.commit();
-      serverExecute(1, new CacheSerializableRunnable("validator10") {
+      serverExecute(1, new SerializableRunnable("validator10") {
         @Override
-        public void run2() throws CacheException
+        public void run() throws CacheException
         {
           assertFalse(gft.isLocalIndexImpacted(baseContainer, indexCols));
         }
@@ -229,9 +226,9 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
         pstmt.setInt(5, i);
         pstmt.executeUpdate();
       }
-      serverExecute(1, new CacheSerializableRunnable("validator11") {
+      serverExecute(1, new SerializableRunnable("validator11") {
         @Override
-        public void run2() throws CacheException
+        public void run() throws CacheException
         {
           assertTrue(gft.isLocalIndexImpacted(baseContainer, indexCols));
         }
@@ -239,9 +236,9 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
 
       assertEquals(3, st.executeUpdate("update t1 set c4 = 10 where "
           + "c1 > 3 and c1 <7 "));
-      serverExecute(1, new CacheSerializableRunnable("validator12") {
+      serverExecute(1, new SerializableRunnable("validator12") {
         @Override
-        public void run2() throws CacheException
+        public void run() throws CacheException
         {
           // follow it with update which is on different col,
           // this should not impact local index affected
@@ -295,10 +292,10 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
 
     }
     conn.commit();
-    CacheSerializableRunnable csr = getObserverInitializer(schema, baseTable,
+    SerializableRunnable csr = getObserverInitializer(schema, baseTable,
         "I1");
     try {
-      csr.run2();
+      csr.run();
       serverExecute(1, csr);
       assertEquals(1, st.executeUpdate("update t1 set c5 =5 where c5 =1"));
       // Two rows should get modified . one in commited c5 = 5 and the other in
@@ -318,7 +315,7 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
     }
     finally {
       csr = clearObserver();
-      csr.run2();
+      csr.run();
       serverExecute(1, csr);
     }
   }
@@ -358,11 +355,11 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
     }
     conn.commit();
 
-    CacheSerializableRunnable csr = getObserverInitializer(schema, baseTable,
+    SerializableRunnable csr = getObserverInitializer(schema, baseTable,
         "I1");
 
     try {
-      csr.run2();
+      csr.run();
       serverExecute(1, csr);
       assertEquals(11, st
           .executeUpdate("update t1 set c5 = 25 where c5  > 9 and c5 < 21"));
@@ -383,12 +380,12 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
         serverExecute(1, csr);
       }
       csr = clearObserver();
-      csr.run2();
+      csr.run();
       serverExecute(1, csr);
       assertEquals(4, st
           .executeUpdate("update t1 set c5 = 10  where c1 > 15 and c1 < 20"));
       csr = getObserverInitializer(schema, baseTable, "I1");
-      csr.run2();
+      csr.run();
       serverExecute(1, csr);
       assertEquals(4, st
           .executeUpdate("update t1 set c2 = 1   where c5 > 9 and c5 < 13"));
@@ -407,7 +404,7 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
     }
     finally {
       csr = clearObserver();
-      csr.run2();
+      csr.run();
       serverExecute(1, csr);
     }
   }
@@ -455,9 +452,9 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
       
     }    
     
-    CacheSerializableRunnable csr = getObserverInitializer(schema,baseTable,"I1");
+    SerializableRunnable csr = getObserverInitializer(schema,baseTable,"I1");
     try {
-    csr.run2();
+    csr.run();
     serverExecute(1, csr);
     assertEquals(1,st.executeUpdate("update t1 set c5 =5 where c5 =1"));
     //Two rows should get modified . one in commited c5 = 5 and the other in tx area c5 =1
@@ -477,7 +474,7 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
     }
     finally {
       csr = clearObserver();
-      csr.run2();
+      csr.run();
       serverExecute(1, csr);
     }  
   }
@@ -532,10 +529,10 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
       pstmt.setInt(5, i);
       pstmt.executeUpdate();
     }
-    CacheSerializableRunnable csr = getObserverInitializer(schema, baseTable,
+    SerializableRunnable csr = getObserverInitializer(schema, baseTable,
         "I1");
     try {
-      csr.run2();
+      csr.run();
       serverExecute(1, csr);
 
       // Make c5 = 5 for commited and non commited insert
@@ -554,7 +551,7 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
       }
     } finally {
       csr = clearObserver();
-      csr.run2();
+      csr.run();
       serverExecute(1, csr);
     }
   }
@@ -582,7 +579,7 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
     conn.commit();
 
     // do ops from server to check batching
-    serverExecute(AvailablePort.rand.nextInt(3) + 1,
+    serverExecute(PartitionedRegion.rand.nextInt(3) + 1,
         new SerializableRunnable() {
 
       @Override
@@ -743,10 +740,10 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
     }
 
     conn.commit();
-    CacheSerializableRunnable csr = getObserverInitializer(schema, baseTable,
+    SerializableRunnable csr = getObserverInitializer(schema, baseTable,
         "I1");
     try {
-      csr.run2();
+      csr.run();
       serverExecute(1, csr);
 
       assertEquals(6, st
@@ -765,7 +762,7 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
     }
     finally {
       csr = clearObserver();
-      csr.run2();
+      csr.run();
       serverExecute(1, csr);
     }
 
@@ -811,10 +808,10 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
     conn.commit();
 
     assertEquals(1, st.executeUpdate("Delete from t1  where c1 = 10"));
-    CacheSerializableRunnable csr = getObserverInitializer(schema, baseTable,
+    SerializableRunnable csr = getObserverInitializer(schema, baseTable,
         "I1");
     try {
-      csr.run2();
+      csr.run();
       serverExecute(1, csr);
 
       // Make c5 = 5 for commited and non commited insert
@@ -832,7 +829,7 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
     }
     finally {
       csr = clearObserver();
-      csr.run2();
+      csr.run();
       serverExecute(1, csr);
     }
 
@@ -878,10 +875,10 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
     conn.commit();
 
     assertEquals(1, st.executeUpdate("update t1 set c5 = 20   where c1 = 15"));
-    CacheSerializableRunnable csr = getObserverInitializer(schema, baseTable,
+    SerializableRunnable csr = getObserverInitializer(schema, baseTable,
         "I1");
     try {
-      csr.run2();
+      csr.run();
       serverExecute(1, csr);
 
       // c2 would be set to 8 for 1 to 10 and then 15 to 20
@@ -894,7 +891,7 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
     }
     finally {
       csr = clearObserver();
-      csr.run2();
+      csr.run();
       serverExecute(1, csr);
     }
   }
@@ -997,10 +994,10 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
     t.join();
     assertNull(failEx[0]);
 
-    CacheSerializableRunnable csr = getObserverInitializer(schema, tableName,
+    SerializableRunnable csr = getObserverInitializer(schema, tableName,
         "I1");
     try {
-      csr.run2();
+      csr.run();
       serverExecute(1, csr);
 
       // c2 would be set to 8 for 1 to 10 and then 15 to 20
@@ -1011,14 +1008,14 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
       serverExecute(1, csr);
     } finally {
       csr = clearObserver();
-      csr.run2();
+      csr.run();
       serverExecute(1, csr);
     }
 
     // now check correct values using index scan and table scan
     csr = getObserverInitializer(schema, tableName, "I1");
     try {
-      csr.run2();
+      csr.run();
       serverExecute(1, csr);
 
       ResultSet rs = st.executeQuery("select c1, c2 from " + table
@@ -1038,7 +1035,7 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
       serverExecute(1, csr);
     } finally {
       csr = clearObserver();
-      csr.run2();
+      csr.run();
       serverExecute(1, csr);
     }
 
@@ -1060,7 +1057,7 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
     // check for value from other transaction
     csr = getObserverInitializer(schema, tableName, "I1");
     try {
-      csr.run2();
+      csr.run();
       serverExecute(1, csr);
 
       rs = st.executeQuery("select c1, c2 from " + table + " where c5 = 100");
@@ -1073,7 +1070,7 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
       serverExecute(1, csr);
     } finally {
       csr = clearObserver();
-      csr.run2();
+      csr.run();
       serverExecute(1, csr);
     }
 
@@ -1086,12 +1083,12 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
   }
 
   /*
-  private CacheSerializableRunnable getFieldInitializer(final String schema,
+  private SerializableRunnable getFieldInitializer(final String schema,
       final long connID, final String baseTable)
   {
-    return new CacheSerializableRunnable("Field Initializer") {
+    return new SerializableRunnable("Field Initializer") {
       @Override
-      public void run2() throws CacheException
+      public void run() throws CacheException
       {
         try {
           GfxdConnectionWrapper wrapper = GfxdConnectionHolder.getHolder()
@@ -1119,12 +1116,12 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
     return Connection.TRANSACTION_READ_COMMITTED;
   }
 
-  private CacheSerializableRunnable getObserverInitializer(final String schema, 
+  private SerializableRunnable getObserverInitializer(final String schema, 
       final String baseTable, final String indexName)
   {
-    return new CacheSerializableRunnable("Observer Initializer") {
+    return new SerializableRunnable("Observer Initializer") {
       @Override
-      public void run2() throws CacheException
+      public void run() throws CacheException
       {
         try {
           GemFireXDQueryObserver observer = new IndexInvocationObserver(schema, baseTable, indexName);
@@ -1143,11 +1140,11 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
      private final String qualifiedIndexName;
      private volatile int numInvocations;
      
-     IndexInvocationObserver(String schema, String baseTable, String indexName ) {       
+     IndexInvocationObserver(String schema, String baseTable, String indexName ) {
        qualifiedIndexName = schema.toUpperCase()+"."+indexName.toUpperCase() + ":base-table:"+
-      schema.toUpperCase()+"."+baseTable.toUpperCase();
-       getLogWriter().info("Qualified index name to compare="+qualifiedIndexName);
-     }
+     schema.toUpperCase()+"."+baseTable.toUpperCase();
+     getGlobalLogger().info("Qualified index name to compare="+qualifiedIndexName);
+    }
     
     @Override
     public double overrideDerbyOptimizerIndexUsageCostForHash1IndexScan(
@@ -1186,11 +1183,11 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
 
   }
 
-  private CacheSerializableRunnable clearObserver( )
+  private SerializableRunnable clearObserver( )
   {
-    return new CacheSerializableRunnable("clear Observer") {
+    return new SerializableRunnable("clear Observer") {
       @Override
-      public void run2() throws CacheException
+      public void run() throws CacheException
       {
         try {          
           GemFireXDQueryObserverHolder.clearInstance();
@@ -1207,11 +1204,11 @@ public class LocalIndexTransactionDUnit extends DistributedSQLTestBase {
       }
     };
   }
-  private CacheSerializableRunnable verifyIndexScan( final int minimumINumInvocation)
+  private SerializableRunnable verifyIndexScan( final int minimumINumInvocation)
   {
-    return new CacheSerializableRunnable("verify and clear Observer") {
+    return new SerializableRunnable("verify and clear Observer") {
       @Override
-      public void run2() throws CacheException
+      public void run() throws CacheException
       {
         try {
           

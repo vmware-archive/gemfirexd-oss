@@ -139,10 +139,16 @@ implements Serializable {
       }
       if ( hd.getGemFireHome() != null ) {
         classPath.add(hd.getGemFireHome() + hd.getFileSep() + "lib"
-                                          + hd.getFileSep() + "gemfire.jar");
-      }
+                                          + hd.getFileSep() + "gemfirexd-" +
+                ProductVersionHelper.getInfo().getProperty(ProductVersionHelper.SNAPPYRELEASEVERSION) + ".jar");
+       }
+
       //Needed to run DUnit on multiple hosts
       classPath.add(hd.getTestDir() + hd.getFileSep() + "junit.jar");
+
+      //Needed to run hydra tests on multiple hosts
+      classPath.add(hd.getTestDir() + hd.getFileSep() + ".." + hd.getFileSep() + ".." + hd.getFileSep() + "libs" + hd.getFileSep() + "gemfirexd-hydra-tests-" +
+              ProductVersionHelper.getInfo().getProperty(ProductVersionHelper.SNAPPYRELEASEVERSION) + "-all.jar");
       had.setClassPath(EnvHelper.asPath(classPath, hd));
 
       // libPath

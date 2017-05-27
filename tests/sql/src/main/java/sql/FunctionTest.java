@@ -112,39 +112,4 @@ public class FunctionTest {
     c.setTime(since);
     return c.get(Calendar.MONTH);    
   }
-  
-  public static int getMaxCidForBug41005(int tid) throws SQLException
-  {
-    int cid = 0;
-    Connection conn = DriverManager.getConnection("jdbc:default:connection");
-    PreparedStatement ps1 = conn
-        .prepareStatement("select max(cid) as lastcid from trade.networth where tid= ? ");
-    ps1.setInt(1, tid);
-    ResultSet rs = ps1.executeQuery();
-    if (rs.next()) {
-      cid = rs.getInt("LASTCID");
-    }
-    rs.close();
-    conn.close();
-
-    return cid;
-  }
-  
-  public static int getMaxCidBug41222() throws SQLException
-  {
-    int cid = 0;
-    Connection conn = DriverManager.getConnection("jdbc:default:connection");
-    PreparedStatement ps1 = conn
-        .prepareStatement("select ID  from EMP.TESTTABLE ");
-
-    ResultSet rs = ps1.executeQuery();
-    rs.next();
-    int val =rs.getInt(1);
-    rs.close();
-    conn.close();
-    return val;
-
-    
-  }
-    
 }
