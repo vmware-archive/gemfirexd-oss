@@ -95,6 +95,7 @@ import com.pivotal.gemfirexd.internal.impl.jdbc.Util;
 import com.pivotal.gemfirexd.internal.impl.jdbc.authentication.AuthenticationServiceBase;
 import com.pivotal.gemfirexd.internal.impl.jdbc.authentication.LDAPAuthenticationSchemeImpl;
 import com.pivotal.gemfirexd.internal.impl.sql.catalog.GfxdDataDictionary;
+import com.pivotal.gemfirexd.internal.impl.sql.conn.GenericLanguageConnectionContext;
 import com.pivotal.gemfirexd.internal.impl.sql.execute.JarUtil;
 import com.pivotal.gemfirexd.internal.impl.store.raw.data.GfxdJarMessage;
 import com.pivotal.gemfirexd.internal.jdbc.InternalDriver;
@@ -1921,8 +1922,11 @@ public class GfxdSystemProcedures extends SystemProcedures {
   }
   
 	/**
-	 * This procedure sets the local execution mode for a particular bucket
+	 * This procedure sets the local execution mode for a particular bucket. To prevent
+     * clearing of lcc in case of thin client connections a flag BUCKET_RENTION_FOR_LOCAL_EXECUTION
+     * is set.
 	 */
+
 	public static void SET_BUCKETS_FOR_LOCAL_EXECUTION(String tableName,
 			int bucket) throws SQLException, StandardException {
 		if (tableName == null) {
@@ -1933,6 +1937,8 @@ public class GfxdSystemProcedures extends SystemProcedures {
 		Region region = Misc.getRegionForTable(tableName, true);
 		LanguageConnectionContext lcc = ConnectionUtil.getCurrentLCC();
 		lcc.setExecuteLocally(bucketSet, region, false, null);
+        if (lcc instanceof GenericLanguageConnectionContext)
+            ((GenericLanguageConnectionContext) lcc).setBucketRetentionForLocalExecution(true);
 	}
   
   /**

@@ -1,4 +1,4 @@
-rootProject.name = 'gemfirexd-oss'
+rootProject.name = 'snappy-store'
 
 include ':gemfire-jgroups'
 include ':gemfire-trove'

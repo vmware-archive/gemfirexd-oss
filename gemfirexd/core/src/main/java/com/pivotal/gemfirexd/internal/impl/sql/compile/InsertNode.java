@@ -62,6 +62,7 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
+import com.pivotal.gemfirexd.internal.engine.Misc;
 import org.apache.hadoop.mapreduce.jobhistory.NormalizedResourceEvent;
 
 import com.gemstone.gnu.trove.THashSet;
@@ -380,9 +381,13 @@ public final class InsertNode extends DMLModStatementNode
 		}
 		else 
 		{
-			if (targetTableDescriptor != null &&
+			// TODO: For shadow table validation can be avoided
+			// as we know the last column is added by us
+			if (!Misc.getMemStore().isSnappyStore()) {
+				if (targetTableDescriptor != null &&
 						targetTableDescriptor.getNumberOfColumns() != resCols)
-				throw StandardException.newException(SQLState.LANG_DB2_INVALID_COLS_SPECIFIED); 
+					throw StandardException.newException(SQLState.LANG_DB2_INVALID_COLS_SPECIFIED);
+			}
 		}
 
 		/* See if the ResultSet's RCL needs to be ordered to match the target

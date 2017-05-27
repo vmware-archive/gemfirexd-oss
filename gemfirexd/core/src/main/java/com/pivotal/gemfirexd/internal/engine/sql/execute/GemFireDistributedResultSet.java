@@ -786,7 +786,7 @@ public final class GemFireDistributedResultSet extends AbstractGemFireResultSet
       long memory = 0L;
       while(iterator.hasNext()) {
         Object res = iterator.next();
-        if (res instanceof ResultHolder) {
+        if (res instanceof  ResultHolder) {
           memory += ((ResultHolder)res).estimateMemoryUsage();
         }
       }

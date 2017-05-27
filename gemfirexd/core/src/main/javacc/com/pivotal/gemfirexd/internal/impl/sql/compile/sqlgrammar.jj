@@ -413,6 +413,10 @@ public class SQLParser
       }
 
 	  //////////////////////////////////////////////
+	  if (getLanguageConnectionContext().isDefaultPersistent() && !repPartPersFlags[2]) {
+	    repPartPersFlags[2] = true;
+		  afact.setDiskStoreName(GfxdConstants.GFXD_DEFAULT_DISKSTORE_NAME);
+	  }
 	  if (repPartPersFlags[1] && repPartPersFlags[2]) {
 	    afact.setDataPolicy(DataPolicy.PERSISTENT_PARTITION);
 	    distributionNode.setPersistence(true);
@@ -934,7 +938,7 @@ public class SQLParser
 //		GemStone changes end
 		parameterNumber++;
 		parameterList.addElement(parm);
-
+		getCompilerContext().addDynamicTokenToList(getToken(0));
 		return parm;
 	}
 
@@ -3745,12 +3749,15 @@ createStatements() throws StandardException :
 	int tokKind;
 	//GemStone changes BEGIN
 	//[sb] disabling globally literal optimization for 'create view/trigger' etc.
-	getCompilerContext().allowOptimizeLiteral(false);
-	//getCompilerContext().setPreparedStatement();
+	CompilerContext cc = getCompilerContext();
+	cc.allowOptimizeLiteral(false);
+	//cc.setPreparedStatement();
 	//GemStone changes END
 }
 {
-	beginToken = <CREATE> (
+	beginToken = <CREATE>
+		{ cc.markAsDDLForSnappyUse(true);}
+	(
 		(
             statementNode = schemaDefinition() |
             statementNode = viewDefinition(beginToken) |
@@ -3778,7 +3785,7 @@ createStatements() throws StandardException :
 		statementNode = indexDefinition()
         {
         }
-		)
+	)
 	{
 		return statementNode;
 	}
@@ -11496,11 +11503,14 @@ tableDefinition() throws StandardException :
         (DistributionDefinitionNode) nodeFactory.getNode(C_NodeTypes.DISTRIBUTION_DEFINTION_NODE,
                                                          Integer.valueOf(DistributionDescriptor.NONE),
                                                          getContextManager());
-
+     CompilerContext cc = getCompilerContext();
     // GemStone changes END 
 }
 {
 	<TABLE> tableName = qualifiedName(Limits.MAX_IDENTIFIER_LENGTH)
+		{
+  	  cc.setForcedDDLrouting(true);
+  	}
 			// Lookahead needed to choose between
 			// tableElementList and tableColumnList
 	(		LOOKAHEAD({getToken(1).kind == LEFT_PAREN && 
@@ -16717,11 +16727,16 @@ dropTableStatement() throws StandardException :
 	TableName tableName;
 // GemStone changes BEGIN
 	Boolean onlyIfExists = Boolean.FALSE;
+	CompilerContext cc = getCompilerContext();
 // GemStone changes END
 }
 {
 // GemStone changes BEGIN
 	<TABLE>
+	{
+	  cc.markAsDDLForSnappyUse(true);
+	  cc.setForcedDDLrouting(true);
+	}
 	[ <IF> <EXISTS> { onlyIfExists = Boolean.TRUE; } ]
 	tableName = qualifiedName(Limits.MAX_IDENTIFIER_LENGTH)
 	/* (original code)

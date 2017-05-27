@@ -1704,8 +1704,7 @@ public class LocalizedStrings extends ParentLocalizedStrings {
   public static final StringId GatewayImpl_GATEWAY_SOCKET_READ_TIMEOUT_DISABLED = new StringIdImpl(5124, "Setting the socket read timeout on a gateway is currently disabled. Please contact VMware support for assistance.");
   public static final StringId EXECUTE_FUNCTION_NO_HAS_RESULT_RECEIVED_EXCEPTION = new StringIdImpl(5125, "Function execution without result encountered an Exception on server.");
   public static final StringId ConnectionFactoryImpl_POOL_0_IS_NOT_AVAILABLE = new StringIdImpl(5126, "Pool {0} is not available");
-  public static final StringId GemFireUtilLauncher_Agent_Usage = new StringIdImpl(
-      5127, "Starts/stops a GemFire JMX Agent, or provides status of a running one");
+  public static final StringId GemFireUtilLauncher_Agent_Usage = new StringIdImpl(5127, "Starts/stops a {0} JMX Agent, or provides status of a running one");
   public static final StringId CreateRegionProcessor_CANNOT_CREATE_REGION_0_WITH_OFF_HEAP_EQUALS_1_BECAUSE_ANOTHER_CACHE_2_HAS_SAME_THE_REGION_WITH_OFF_HEAP_EQUALS_3 = new StringIdImpl(5128, "Cannot create region {0} with off-heap={1} because another cache ({2}) has the same region with off-heap={3}.");
   
   public static final StringId ConnectionTable_OUT_OF_FILE_DESCRIPTORS_USING_SHARED_CONNECTION = new StringIdImpl(5129, "This process is out of file descriptors.\nThis will hamper communications and slow down the system.\nAny conserve-sockets setting is now being ignored.\nPlease consider raising the descriptor limit.\nThis alert is only issued once per process.");

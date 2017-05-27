@@ -932,8 +932,10 @@ public final class GemFireXDUtils {
       final Properties props = new Properties();
       props.putAll(AuthenticationServiceBase.getPeerAuthenticationService()
           .getBootCredentials());
+      boolean isSnappy = Misc.getMemStore().isSnappyStore();
+      String protocol = isSnappy ? Attribute.SNAPPY_PROTOCOL : Attribute.PROTOCOL;
       final EmbedConnection conn = (EmbedConnection)InternalDriver
-          .activeDriver().connect(GfxdConstants.PROTOCOL, props,
+          .activeDriver().connect(protocol, props,
               EmbedConnection.CHILD_NOT_CACHEABLE,
               EmbedConnection.CHILD_NOT_CACHEABLE, remoteConnection, Connection.TRANSACTION_NONE);
       if (conn != null) {

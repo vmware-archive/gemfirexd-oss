@@ -67,6 +67,7 @@ import com.pivotal.gemfirexd.internal.engine.store.GemFireStore.VMKind;
 import com.pivotal.gemfirexd.internal.engine.store.ServerGroupUtils;
 import com.pivotal.gemfirexd.internal.shared.common.SharedUtils;
 import com.pivotal.gemfirexd.internal.shared.common.sanity.SanityManager;
+import com.pivotal.gemfirexd.internal.snappy.CallbackFactoryProvider;
 import com.pivotal.gemfirexd.thrift.HostAddress;
 import com.pivotal.gemfirexd.thrift.ServerType;
 import com.pivotal.gemfirexd.thrift.common.ThriftUtils;
@@ -197,7 +198,7 @@ public final class GfxdDistributionAdvisor extends DistributionAdvisor {
         }
       }
       if (logger.configEnabled()) {
-        logger.config("This JVM is setup with GemFireXD " + kind.toString()
+        logger.config("This JVM is setup with SnappyData " + kind.toString()
             + " role.");
         if (!groups.isEmpty()) {
           logger.config("Server groups this JVM is member of: "
@@ -250,7 +251,7 @@ public final class GfxdDistributionAdvisor extends DistributionAdvisor {
   @Override
   protected final GfxdProfile instantiateProfile(
       InternalDistributedMember memberId, int version) {
-    return new GfxdProfile(memberId, version);
+    return new GfxdProfile(memberId, version, CallbackFactoryProvider.getClusterCallbacks().getDriverURL());
   }
 
   /**
@@ -1290,6 +1291,8 @@ public final class GfxdDistributionAdvisor extends DistributionAdvisor {
     private static final byte F_PERSISTDD = 0x1;
     /** for a consistent locale of the database across DS */
     private static final byte F_HASLOCALE = 0x2;
+
+    private static final byte F_HAS_SPARK_DRIVERURL = 0x4;
     // end bitmasks
 
     /** OR of various bitmasks above */
@@ -1306,15 +1309,23 @@ public final class GfxdDistributionAdvisor extends DistributionAdvisor {
      */
     private String dbLocaleStr;
 
+    /**
+     * Driver port for spark. Is set only if this node is the primary lead node.
+     */
+    private String sparkDriverUrl;
+
     /** for deserialization */
     public GfxdProfile() {
       this.initialized = true;
     }
 
     /** construct a new instance for given member and with given version */
-    public GfxdProfile(InternalDistributedMember memberId, int version) {
+    public GfxdProfile(InternalDistributedMember memberId, int version, String sparkUrl) {
       super(memberId, version);
       this.initialized = true;
+      this.sparkDriverUrl = sparkUrl;
+      boolean hasURL = sparkDriverUrl != null && !sparkDriverUrl.equals("");
+      setHasSparkURL(hasURL);
       initFlags();
     }
 
@@ -1355,6 +1366,19 @@ public final class GfxdDistributionAdvisor extends DistributionAdvisor {
       return (this.flags & F_PERSISTDD) != 0;
     }
 
+    public final void setHasSparkURL(boolean hasSparkURL) {
+      if (hasSparkURL) {
+        this.flags |= F_HAS_SPARK_DRIVERURL;
+      }
+      else if (hasSparkURL()) {
+        this.flags &= ~F_HAS_SPARK_DRIVERURL;
+      }
+    }
+
+    public final boolean hasSparkURL() {
+      return (this.flags & F_HAS_SPARK_DRIVERURL) != 0;
+    }
+
     public final void setInitialized(boolean initialized) {
       this.initialized = initialized;
     }
@@ -1374,6 +1398,10 @@ public final class GfxdDistributionAdvisor extends DistributionAdvisor {
       final GemFireStore memStore = GemFireStore.getBootedInstance();
       final GemFireCacheImpl cache;
       if (memStore != null) {
+        if (hasSparkURL() && (memStore.getMyVMKind() != VMKind.LOCATOR)) {
+          CallbackFactoryProvider.getClusterCallbacks().
+              launchExecutor(this.sparkDriverUrl, this.peerMemberId);
+        }
         if ((cache = memStore.getGemFireCache()) != null) {
           if (cache.updateNodeStatus(getDistributedMember(), this.initialized)) {
             if (logger.fineEnabled()) {
@@ -1396,6 +1424,7 @@ public final class GfxdDistributionAdvisor extends DistributionAdvisor {
         }
       }
     }
+    public String getSparkDriverURL() { return sparkDriverUrl; }
 
     @Override
     public byte getGfxdID() {
@@ -1435,6 +1464,9 @@ public final class GfxdDistributionAdvisor extends DistributionAdvisor {
       if (!isPre12Version) {
         DataSerializer.writeString(dbLocaleStr, out);
       }
+      if (hasSparkURL()) {
+        DataSerializer.writeString(sparkDriverUrl, out);
+      }
     }
 
     @Override
@@ -1460,6 +1492,9 @@ public final class GfxdDistributionAdvisor extends DistributionAdvisor {
       }
       // initialize the flags for possible further serializations
       initFlags();
+      if (hasSparkURL()) {
+        this.sparkDriverUrl = DataSerializer.readString(in);
+      }
     }
 
     @Override
@@ -1472,6 +1507,7 @@ public final class GfxdDistributionAdvisor extends DistributionAdvisor {
       super.fillInToString(sb);
       sb.append("; vmKind=").append(this.vmKind);
       sb.append("; serverGroups=").append(this.serverGroups);
+      sb.append("; sparkDriverUrl=").append(this.sparkDriverUrl);
       sb.append("; flags=0x").append(Integer.toHexString(this.flags));
       sb.append("; initialized=").append(this.initialized);
       sb.append("; dbLocaleStr=").append(this.dbLocaleStr);
@@ -1513,7 +1549,7 @@ public final class GfxdDistributionAdvisor extends DistributionAdvisor {
 
     @Override
     public String getFullPath() {
-      return "GemFireXD.DummyCacheDistributionAdvisee";
+      return "SnappyData.DummyCacheDistributionAdvisee";
     }
 
     @Override

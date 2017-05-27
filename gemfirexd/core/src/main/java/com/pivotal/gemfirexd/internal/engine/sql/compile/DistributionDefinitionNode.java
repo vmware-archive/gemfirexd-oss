@@ -701,23 +701,25 @@ public class DistributionDefinitionNode extends TableElementNode {
             newDistributionDescp.getPartitionColumnNames());
       }
       // check in the target table
-      int[] colpositions = targetDistributionDesc.getColumnPositionsSorted();
-      int size = columnNames.length;
-      if (colpositions.length != size) {
-        throw StandardException.newException(
-            SQLState.LANG_INVALID_COLOCATION_DIFFERENT_COL_COUNT, srcTableName,
-            tableName, size, colpositions.length);
-      }
-      for (int i = 0; i < size; i++) {
 
-        TableColumn src = elementList.getColumn(columnNames[i]);
-        ColumnDescriptor tgt = td.getColumnDescriptor(colpositions[i]);
+      if (!(tableName.toUpperCase().endsWith("_SHADOW_") || srcTableName.toUpperCase().endsWith("_SHADOW_"))) {
+        int[] colpositions = targetDistributionDesc.getColumnPositionsSorted();
+        int size = columnNames.length;
+        if (colpositions.length != size) {
+          throw StandardException.newException(
+              SQLState.LANG_INVALID_COLOCATION_DIFFERENT_COL_COUNT, srcTableName,
+              tableName, size, colpositions.length);
+        }
+        for (int i = 0; i < size; i++) {
 
-        if (!tgt.getType().getTypeName().equals(src.getType().getTypeName())
-            || tgt.getType().getPrecision() != src.getType().getPrecision()
-            || tgt.getType().getScale() != src.getType().getScale()
-            || tgt.getType().getMaximumWidth() != src.getType()
-                .getMaximumWidth()) {
+          TableColumn src = elementList.getColumn(columnNames[i]);
+          ColumnDescriptor tgt = td.getColumnDescriptor(colpositions[i]);
+
+          if (!tgt.getType().getTypeName().equals(src.getType().getTypeName())
+              || tgt.getType().getPrecision() != src.getType().getPrecision()
+              || tgt.getType().getScale() != src.getType().getScale()
+              || tgt.getType().getMaximumWidth() != src.getType()
+              .getMaximumWidth()) {
           /*
           * if( !tgt.getType().equals(src.getType()) ) {
           *
@@ -726,11 +728,12 @@ public class DistributionDefinitionNode extends TableElementNode {
           * Ticket 39873.
           * @see TypeDescriptorImpl#equals
           */
-          throw StandardException.newException(
-              SQLState.LANG_INVALID_COLOCATION_COL_TYPES_MISMATCH,
-              srcTableName, tableName, src.getColumnName(), String.valueOf(src
-                  .getType()), tgt.getColumnName(), String.valueOf(tgt
-                  .getType()));
+            throw StandardException.newException(
+                SQLState.LANG_INVALID_COLOCATION_COL_TYPES_MISMATCH,
+                srcTableName, tableName, src.getColumnName(), String.valueOf(src
+                    .getType()), tgt.getColumnName(), String.valueOf(tgt
+                    .getType()));
+          }
         }
       }
     }

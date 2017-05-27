@@ -428,6 +428,20 @@ public class NetConnection extends com.pivotal.gemfirexd.internal.client.am.Conn
           this.queryHDFS_ = "true".equalsIgnoreCase(queryHDFS);
         }
 
+        // Using the queryHDFS flag for query routing property
+        // by default query-routing will be true
+        boolean toRouteQuery = false;
+        String routeQuery = properties.getProperty(
+            ClientAttribute.ROUTE_QUERY, "true");
+        if (routeQuery != null) {
+          toRouteQuery = "true".equalsIgnoreCase(routeQuery);
+        }
+
+        if (this.queryHDFS_ && toRouteQuery) {
+          throw new SqlException(agent_.logWriter_,
+              new ClientMessageId(SQLState.PROPERTY_INVALID_VALUE), ClientAttribute.QUERY_HDFS, "true");
+        }
+        this.queryHDFS_ = toRouteQuery;
         String skipConstraints = properties.getProperty(
             ClientAttribute.SKIP_CONSTRAINT_CHECKS, "false");
         if (skipConstraints != null) {

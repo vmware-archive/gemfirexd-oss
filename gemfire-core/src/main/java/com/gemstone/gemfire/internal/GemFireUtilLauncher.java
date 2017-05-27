@@ -68,7 +68,7 @@ public class GemFireUtilLauncher {
     m.put(SCRIPT_NAME, new CommandEntry(SystemAdmin.class, LocalizedStrings
             .GemFireUtilLauncher_SystemAdmin_Usage.toLocalizedString(), false));
     m.put("agent", new CommandEntry(AgentLauncher.class, LocalizedStrings
-            .GemFireUtilLauncher_Agent_Usage.toLocalizedString(), false));
+        .GemFireUtilLauncher_Agent_Usage.toString(new Object[] { SCRIPT_NAME }), false));
     return m;
   }
 

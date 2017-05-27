@@ -128,6 +128,7 @@ import com.gemstone.gemfire.internal.size.SingleObjectSizer;
 import com.gemstone.gemfire.internal.util.ArrayUtils;
 import com.gemstone.gemfire.pdx.internal.unsafe.UnsafeWrapper;
 import com.gemstone.gnu.trove.THashSet;
+import com.pivotal.gemfirexd.internal.catalog.ExternalCatalog;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserver;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
@@ -5549,6 +5550,19 @@ public final class GemFireContainer extends AbstractGfxdLockable implements
         if (senderIds != null) {
           senderIdsStr = SharedUtils.toCSV(senderIds);
         }
+
+        final DataValueDescriptor tType = dvds[SYSTABLESRowFactory.SYSTABLES_TABLETYPE - 1];
+        if (tType != null && "T".equalsIgnoreCase(tType.toString())) {
+          ExternalCatalog ec = Misc.getMemStore().getExternalCatalog();
+          LanguageConnectionContext lcc = Misc.getLanguageConnectionContext();
+          if (ec != null && lcc != null && lcc.isQueryRoutingEnabled() &&
+              Misc.initialDDLReplayDone()) {
+            if (ec.isColumnTable(table.toString(), true)) {
+              dvds[SYSTABLESRowFactory.SYSTABLES_TABLETYPE - 1] = new SQLChar("C");
+            }
+          }
+        }
+
         dvds[SYSTABLESRowFactory.SYSTABLES_DATAPOLICY - 1] = new SQLVarchar(
             dataPolicy);
         dvds[SYSTABLESRowFactory.SYSTABLES_PARTITIONATTRS - 1] =
@@ -6208,6 +6222,9 @@ public final class GemFireContainer extends AbstractGfxdLockable implements
             GemFireXDUtils.TraceLock ? new Throwable() : null);
       }
       final GfxdLockSet lockSet = t.getLockSpace();
+      if (GfxdDataDictionary.SKIP_LOCKS.get()) {
+        return true;
+      }
       if (lockSet.acquireLock(lockObject,
           waitForLock ? GfxdLockSet.MAX_LOCKWAIT_VAL : 0, forUpdate,
           this.isLocal, forUpdate) != GfxdLockSet.LOCK_FAIL) {

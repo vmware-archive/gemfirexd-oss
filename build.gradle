@@ -51,8 +51,7 @@ allprojects {
     //hadoopVersion = '2.4.1-gphd-3.2.0.0-54'
 
     // product and release properties
-    PRODUCT_NAME = 'GemFireXD'
-    PRODUCT_NAME_FULL = "Pivotal ${PRODUCT_NAME}"
+    PRODUCT_NAME = 'SnappyData'
 
     GEMFIRE_PRODUCT = 'Pivotal GemFire'
     GEMFIRE_VERSION = '7.5.Beta'
@@ -64,12 +63,12 @@ allprojects {
     PRODUCT_VENDOR = 'Pivotal Software, Inc.'
     COPYRIGHT = "Copyright 1997-2015, ${PRODUCT_VENDOR} All rights reserved."
 
-    if (rootProject.name == 'gemfirexd-oss') {
+    if (rootProject.name == 'snappy-store') {
       subprojectBase = ':'
       gitCmd = "git --git-dir=${rootDir}/.git --work-tree=${rootDir}"
     } else {
-      subprojectBase = ':gemfirexd-oss:'
-      gitCmd = "git --git-dir=${project(':gemfirexd-oss').projectDir}/.git --work-tree=${project(':gemfirexd-oss').projectDir}"
+      subprojectBase = ':snappy-store:'
+      gitCmd = "git --git-dir=${project(':snappy-store').projectDir}/.git --work-tree=${project(':snappy-store').projectDir}"
     }
 
     gitBranch = "${gitCmd} rev-parse --abbrev-ref HEAD".execute().text.trim()
@@ -93,10 +92,10 @@ allprojects {
   }
 
   ext {
-    if (rootProject.name == 'gemfirexd-oss') {
+    if (rootProject.name == 'snappy-store') {
       testResultsBase = "${rootProject.buildDir}/tests"
     } else {
-      testResultsBase = "${rootProject.buildDir}/tests/gfxd"
+      testResultsBase = "${rootProject.buildDir}/tests/store"
     }
   }
 
@@ -134,7 +133,7 @@ def getManifest(def symname, def imports, def exports, def otherAttrs) {
   def attrs = [
     "Manifest-Version"        : "1.0",
     "Title"                   : PRODUCT_NAME,
-    "Bundle-Name"             : "${PRODUCT_NAME_FULL} ${PRODUCT_VERSION}",
+    "Bundle-Name"             : "${PRODUCT_NAME} ${PRODUCT_VERSION}",
     "Bundle-Version"          : PRODUCT_VERSION,
     "Bundle-Vendor"           : PRODUCT_VENDOR,
     "Bundle-SymbolicName"     : symname,
@@ -369,7 +368,7 @@ subprojects {
           'jline.terminal'                 : 'scala.tools.jline.UnsupportedTerminal',
           'gemfiretest.sourceDir'          : "${projectDir}/src/test/resources"
 
-        if (rootProject.name == 'gemfirexd-oss') {
+        if (rootProject.name == 'snappy-store') {
           def eol = System.getProperty('line.separator')
           beforeTest { desc ->
             def now = new Date().format('yyyy-MM-dd HH:mm:ss.SSS Z')
@@ -436,7 +435,7 @@ task product(dependsOn: [ subprojectBase + 'gemfirexd:client:jar',
     subprojectBase + 'gemfirexd:shared:javadoc',
     subprojectBase + 'gemfirexd:core:javadoc' ]) << {
 
-  def productDir = file("${rootProject.buildDir}/gfxd")
+  def productDir = file("${rootProject.buildDir}/store")
   delete productDir
 
   def sharedProject = project(subprojectBase + 'gemfirexd:shared')

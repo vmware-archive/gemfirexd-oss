@@ -22,6 +22,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import com.gemstone.gemfire.DataSerializer;
 import com.gemstone.gemfire.cache.CacheEvent;
@@ -75,6 +76,7 @@ public class UpdateEntryVersionOperation extends DistributedCacheOperation {
     protected EventID eventId = null;
     protected EntryEventImpl event = null;    
     private long tailKey = 0L; // Used for Parallel Gateway Senders
+    private UUID batchUUID = null; // Used for Parallel Gateway Senders
 
     public UpdateEntryVersionMessage() {
     }
@@ -101,6 +103,7 @@ public class UpdateEntryVersionOperation extends DistributedCacheOperation {
       ev.setEventId(this.eventId);
       ev.setVersionTag(this.versionTag);
       ev.setTailKey(this.tailKey);
+      ev.setBatchUUID(this.batchUUID);
       
       return ev;
     }
@@ -161,6 +164,7 @@ public class UpdateEntryVersionOperation extends DistributedCacheOperation {
       this.eventId = (EventID)DataSerializer.readObject(in);
       this.key = DataSerializer.readObject(in);
       this.tailKey = InternalDataSerializer.readSignedVL(in);
+      this.batchUUID = InternalDataSerializer.readUUID(in);
     }
 
     @Override
@@ -186,6 +190,7 @@ public class UpdateEntryVersionOperation extends DistributedCacheOperation {
       else{
         InternalDataSerializer.writeSignedVL(0, out);
       }
+      InternalDataSerializer.writeUUID(this.event.getBatchUUID(),out);
     }
   }
 }

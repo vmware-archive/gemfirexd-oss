@@ -37,6 +37,7 @@ import com.pivotal.gemfirexd.internal.engine.sql.execute.FunctionUtils;
 import com.pivotal.gemfirexd.internal.engine.sql.execute.FunctionUtils.GetFunctionMembers;
 import com.pivotal.gemfirexd.internal.engine.store.GemFireStore.VMKind;
 import com.pivotal.gemfirexd.internal.iapi.error.StandardException;
+import com.pivotal.gemfirexd.internal.iapi.sql.conn.LanguageConnectionContext;
 import com.pivotal.gemfirexd.internal.iapi.sql.dictionary.TableDescriptor;
 import com.pivotal.gemfirexd.internal.shared.common.SharedUtils;
 import com.pivotal.gemfirexd.internal.shared.common.sanity.SanityManager;
@@ -73,6 +74,17 @@ public final class ServerGroupUtils {
     // distribute the updated profile to this and other VMs
     memStore.getDistributionAdvisor().distributeProfileUpdate();
   }
+
+  /**
+   * Set the GFXD VM server groups of this VM to the given set and distribute to
+   * other VMs.
+   */
+  public static void sendUpdateProfile() {
+    final GemFireStore memStore = Misc.getMemStore();
+    // distribute the updated profile to this and other VMs
+    memStore.getDistributionAdvisor().distributeProfileUpdate();
+  }
+
 
   /** get the server groups of this VM as a comma-separated string */
   public static String getMyGroups() {
@@ -157,16 +169,20 @@ public final class ServerGroupUtils {
     }
     if (GemFireXDUtils.TraceConglom || !table.startsWith("SYSSTAT")) {
       if (isDataStore) {
+        LanguageConnectionContext lcc = Misc.getLanguageConnectionContext();
         SanityManager.DEBUG_PRINT("info:" + GfxdConstants.TRACE_CONGLOM,
             "Using the JVM as an GemFireXD datastore for table [" + table
                 + "] with table-default-partitioned="
-                + Misc.getMemStore().isTableDefaultPartitioned());
+                + Misc.getMemStore().isTableDefaultPartitioned() + (lcc != null
+                    ? " default-persistent=" + lcc.isDefaultPersistent() : ""));
       }
       else {
+        LanguageConnectionContext lcc = Misc.getLanguageConnectionContext();
         SanityManager.DEBUG_PRINT("info:" + GfxdConstants.TRACE_CONGLOM,
             "Using the JVM as an GemFireXD accessor for table [" + table
                 + "] with table-default-partitioned="
-                + Misc.getMemStore().isTableDefaultPartitioned());
+                + Misc.getMemStore().isTableDefaultPartitioned() + (lcc != null
+                ? " default-persistent=" + lcc.isDefaultPersistent() : ""));
       }
     }
     return isDataStore;
