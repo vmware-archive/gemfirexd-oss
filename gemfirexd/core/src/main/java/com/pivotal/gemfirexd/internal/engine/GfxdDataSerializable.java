@@ -50,23 +50,14 @@ import com.pivotal.gemfirexd.internal.engine.ddl.wan.messages.GfxdCBArgForSynchP
 import com.pivotal.gemfirexd.internal.engine.ddl.wan.messages.GfxdGatewaySenderStartMessage;
 import com.pivotal.gemfirexd.internal.engine.ddl.wan.messages.GfxdGatewaySenderStopMessage;
 import com.pivotal.gemfirexd.internal.engine.distributed.QueryCancelFunction.QueryCancelFunctionArgs;
+import com.pivotal.gemfirexd.internal.engine.distributed.SnappyResultHolder;
 import com.pivotal.gemfirexd.internal.engine.distributed.StatementCloseExecutorMessage;
 import com.pivotal.gemfirexd.internal.engine.distributed.ReferencedKeyCheckerMessage;
 import com.pivotal.gemfirexd.internal.engine.distributed.ResultHolder;
 import com.pivotal.gemfirexd.internal.engine.distributed.GfxdCallbackArgument;
 import com.pivotal.gemfirexd.internal.engine.distributed.GfxdDistributionAdvisor;
 import com.pivotal.gemfirexd.internal.engine.distributed.GfxdDumpLocalResultMessage;
-import com.pivotal.gemfirexd.internal.engine.distributed.message.ContainsKeyBulkExecutorMessage;
-import com.pivotal.gemfirexd.internal.engine.distributed.message.ContainsUniqueKeyBulkExecutorMessage;
-import com.pivotal.gemfirexd.internal.engine.distributed.message.GetAllExecutorMessage;
-import com.pivotal.gemfirexd.internal.engine.distributed.message.GetAllLocalIndexExecutorMessage;
-import com.pivotal.gemfirexd.internal.engine.distributed.message.GetExecutorMessage;
-import com.pivotal.gemfirexd.internal.engine.distributed.message.PrepStatementExecutorMessage;
-import com.pivotal.gemfirexd.internal.engine.distributed.message.ProjectionRow;
-import com.pivotal.gemfirexd.internal.engine.distributed.message.GfxdConfigMessage;
-import com.pivotal.gemfirexd.internal.engine.distributed.message.GfxdFunctionMessage;
-import com.pivotal.gemfirexd.internal.engine.distributed.message.GfxdShutdownAllRequest;
-import com.pivotal.gemfirexd.internal.engine.distributed.message.StatementExecutorMessage;
+import com.pivotal.gemfirexd.internal.engine.distributed.message.*;
 import com.pivotal.gemfirexd.internal.engine.distributed.metadata.RegionAndKey;
 import com.pivotal.gemfirexd.internal.engine.jdbc.GemFireXDRuntimeException;
 import com.pivotal.gemfirexd.internal.engine.locks.GfxdDRWLockReleaseProcessor.GfxdDRWLockReleaseMessage;
@@ -86,6 +77,7 @@ import com.pivotal.gemfirexd.internal.engine.store.CompactExecRowWithLobs;
 import com.pivotal.gemfirexd.internal.engine.store.GemFireContainer.BulkKeyLookupResult;
 import com.pivotal.gemfirexd.internal.engine.store.GemFireContainer.SerializableDelta;
 import com.pivotal.gemfirexd.internal.impl.store.raw.data.GfxdJarMessage;
+import com.pivotal.gemfirexd.internal.snappy.LeadNodeExecutionContext;
 import com.pivotal.gemfirexd.tools.planexporter.ExecutionPlanMessage;
 
 /**
@@ -195,6 +187,9 @@ public abstract class GfxdDataSerializable implements GfxdSerializable {
     registerSqlSerializable(BulkKeyLookupResult.class);
     registerSqlSerializable(ContainsUniqueKeyBulkExecutorMessage.class);
     registerSqlSerializable(QueryCancelFunctionArgs.class);
+    registerSqlSerializable(LeadNodeExecutionContext.class);
+    registerSqlSerializable(LeadNodeExecutorMsg.class);
+    registerSqlSerializable(SnappyResultHolder.class);
     // ProjectionRow is registered without creating an instance since it
     // requires GemFireCacheImpl instance in RawValue statics
     DSFIDFactory.registerGemFireXDClass(PROJECTION_ROW, ProjectionRow.class);

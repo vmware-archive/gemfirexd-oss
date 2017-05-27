@@ -287,6 +287,10 @@ public abstract class FabricServiceImpl implements FabricService {
 
       // safe as only 1 thread is expected to come in.
       final String protocol = getProtocol();
+      // we dont  want query routing to happen from these connections
+      if (!startupProps.contains(Attribute.ROUTE_QUERY)) {
+        startupProps.setProperty(Attribute.ROUTE_QUERY, "false");
+      }
       DriverManager.getDriver(protocol);
 
       jdbcConn = new AutoloadedDriver().connect(protocol, startupProps);

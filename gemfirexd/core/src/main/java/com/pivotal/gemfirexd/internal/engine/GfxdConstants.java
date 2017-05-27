@@ -478,6 +478,7 @@ public interface GfxdConstants {
           Attribute.NCJ_CACHE_SIZE,
           Attribute.ENABLE_BULK_FK_CHECKS,
           Attribute.SKIP_CONSTRAINT_CHECKS,
+          Attribute.ROUTE_QUERY,
           Attribute.AUTHZ_FULL_ACCESS_USERS,
           Attribute.AUTHZ_READ_ONLY_ACCESS_USERS
         }));
@@ -724,6 +725,7 @@ public interface GfxdConstants {
 
   final String GFXD_QUERY_HDFS = GFXD_PREFIX + Attribute.QUERY_HDFS;
 
+  final String GFXD_ROUTE_QUERY = GFXD_PREFIX + Attribute.ROUTE_QUERY;
   /*
    * @see Attribute.NCJ_BATCH_SIZE
    */

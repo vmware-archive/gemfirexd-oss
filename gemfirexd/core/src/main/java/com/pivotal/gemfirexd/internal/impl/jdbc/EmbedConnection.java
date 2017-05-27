@@ -95,6 +95,7 @@ import com.pivotal.gemfirexd.internal.engine.sql.conn.ConnectionSignaller;
 import com.pivotal.gemfirexd.internal.engine.sql.conn.ConnectionState;
 import com.pivotal.gemfirexd.internal.engine.stats.ConnectionStats;
 // GemStone changes END
+import com.pivotal.gemfirexd.internal.engine.store.GemFireStore;
 import com.pivotal.gemfirexd.internal.iapi.db.Database;
 import com.pivotal.gemfirexd.internal.iapi.error.ExceptionSeverity;
 import com.pivotal.gemfirexd.internal.iapi.error.SQLWarningFactory;
@@ -2721,6 +2722,13 @@ public abstract class EmbedConnection implements EngineConnection
 
 		case java.sql.Connection.TRANSACTION_SERIALIZABLE:
 // GemStone changes BEGIN
+			GemFireStore store = Misc.getMemStoreBootingNoThrow();
+			if (store != null && store.isSnappyStore()) {
+				iLevel = ExecutionContext.REPEATABLE_READ_ISOLATION_LEVEL;
+				setAutoCommit(true);
+				break;
+			}
+
 		  throw newSQLException(SQLState.UNIMPLEMENTED_ISOLATION_LEVEL, Integer.valueOf(level));
 		  //iLevel = ExecutionContext.SERIALIZABLE_ISOLATION_LEVEL;
 		  //break;
@@ -3321,7 +3329,8 @@ public abstract class EmbedConnection implements EngineConnection
 			}
 			
 			// try to start the service if it doesn't already exist
-			if (!Monitor.startPersistentService(dbname, info)) {
+			GemFireStore store = Misc.getMemStoreBootingNoThrow();
+			if (store == null && !Monitor.startPersistentService(dbname, info)) {
 				// a false indicates the monitor cannot handle a service
 				// of the type indicated by the protocol within the name.
 				// If that's the case then we are the wrong driver
@@ -3335,6 +3344,12 @@ public abstract class EmbedConnection implements EngineConnection
 
 			Database database = (Database) Monitor.findService(Property.DATABASE_MODULE, dbname);
 			tr.setDatabase(database);
+			if (store == null) {
+				store = Misc.getMemStoreBootingNoThrow();
+				if (store != null) {
+					store.setDBName(dbname);
+				}
+			}
 
 		} catch (StandardException mse) {
 

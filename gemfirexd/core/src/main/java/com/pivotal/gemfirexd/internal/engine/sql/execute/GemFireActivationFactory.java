@@ -18,16 +18,24 @@
 package com.pivotal.gemfirexd.internal.engine.sql.execute;
 
 import com.gemstone.gemfire.internal.cache.PartitionedRegion;
+import com.pivotal.gemfirexd.internal.catalog.ExternalCatalog;
+import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
+import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.distributed.metadata.DMLQueryInfo;
 import com.pivotal.gemfirexd.internal.engine.distributed.metadata.InsertQueryInfo;
 import com.pivotal.gemfirexd.internal.engine.distributed.metadata.SelectQueryInfo;
+import com.pivotal.gemfirexd.internal.engine.distributed.metadata.TableQueryInfo;
+import com.pivotal.gemfirexd.internal.engine.distributed.utils.GemFireXDUtils;
 import com.pivotal.gemfirexd.internal.engine.reflect.GemFireActivationClass;
 import com.pivotal.gemfirexd.internal.iapi.error.StandardException;
+import com.pivotal.gemfirexd.internal.iapi.services.sanity.SanityManager;
 import com.pivotal.gemfirexd.internal.iapi.sql.conn.LanguageConnectionContext;
 import com.pivotal.gemfirexd.internal.iapi.sql.execute.ExecPreparedStatement;
 import com.pivotal.gemfirexd.internal.iapi.sql.execute.ExecutionContext;
 import com.pivotal.gemfirexd.internal.impl.sql.GenericPreparedStatement;
 import com.pivotal.gemfirexd.internal.impl.sql.execute.BaseActivation;
+
+import java.util.List;
 
 /**
  * @author Asif
@@ -60,7 +68,23 @@ public class GemFireActivationFactory {
       }
     }
 
-    if (qi.isPrimaryKeyBased()) {
+    boolean doRoute = false;
+    if (qi.isSelect() && qi.isPreparedStatementQuery()) {
+      boolean routeQuery = Misc.getMemStore().isSnappyStore() && _lcc.isQueryRoutingEnabled();
+      if (routeQuery) {
+        doRoute = SnappyActivation.isColumnTable((DMLQueryInfo) qi, false);
+        if (GemFireXDUtils.TraceQuery) {
+          SanityManager.DEBUG_PRINT(GfxdConstants.TRACE_QUERYDISTRIB,
+              "GemFireActivationFactory. Not prepared statement. SQL=" + st.getSource()
+                  + " ,doRoute=" + doRoute);
+        }
+      }
+    }
+
+    if (doRoute) {
+      actvn = new PrepStatementSnappyActivation(st, _lcc, qi, true);
+    }
+    else if (qi.isPrimaryKeyBased()) {
       if (qi.isSelect() || qi.isSelectForUpdateQuery()) {
         actvn = new GemFireSelectActivation(st, _lcc, qi, gc,
             qi.isSelectForUpdateQuery());

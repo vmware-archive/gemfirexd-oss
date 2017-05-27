@@ -39,9 +39,9 @@ import com.pivotal.gemfirexd.thrift.internal.ClientConnection;
 public class ClientDriver extends ClientDRDADriver {
 
   private final static String SUBPROTOCOL = "(drda:|thrift:)?";
-  private final static Pattern PROTOCOL_PATTERN = Pattern.compile(URL_PREFIX +
+  private final static Pattern PROTOCOL_PATTERN = Pattern.compile(URL_PREFIX_REGEX +
       SUBPROTOCOL + "//.*", Pattern.CASE_INSENSITIVE);
-  private final static Pattern URL_PATTERN = Pattern.compile(URL_PREFIX +
+  private final static Pattern URL_PATTERN = Pattern.compile(URL_PREFIX_REGEX +
       SUBPROTOCOL + URL_SUFFIX_REGEX, Pattern.CASE_INSENSITIVE);
 
   static {

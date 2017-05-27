@@ -1688,7 +1688,7 @@ public class DistributedSQLTestBase extends DistributedTestCase {
 
   /**
    * Start a network server on given VM number (1-based) started with
-   * {@link #startServerVMs(int)} and return the TCP port being used by the
+   * {@link #startServerVMs} and return the TCP port being used by the
    * server that is chosen randomly based on availability.
    */
   public int startNetworkServer(int vmNum, String serverGroups,
@@ -1700,7 +1700,7 @@ public class DistributedSQLTestBase extends DistributedTestCase {
 
   /**
    * Start a network server on given VM number (1-based) started with
-   * {@link #startServerVMs(int)} given the TCP port to be used.
+   * {@link #startServerVMs} given the TCP port to be used.
    */
   protected void startNetworkServer(int vmNum, String serverGroups,
       Properties extraProps, int netPort) throws Exception {
@@ -2818,7 +2818,7 @@ public class DistributedSQLTestBase extends DistributedTestCase {
   /**
    * 
    * @param sqi
-   * @param routingObjects
+   * @param prunedNodes
    * @param noOfPrunedNodes
    * @param noOfNoExecQueryNodes
    *          Query shouldn't get executed on exculding client nodes.

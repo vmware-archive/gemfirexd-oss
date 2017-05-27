@@ -20,7 +20,7 @@ task generatePropertiesFiles(dependsOn: 'processResources') {
         'gemfirexd.version.maint'           : PRODUCT_MAINT,
         'gemfirexd.build.number'            : '1',
         'gemfirexd.product.technology.name' : "${PRODUCT_NAME} Thrift Server",
-        'gemfirexd.product.external.name'   : PRODUCT_NAME_FULL,
+        'gemfirexd.product.external.name'   : PRODUCT_NAME,
         'gemfirexd.product.external.version': PRODUCT_VERSION,
         'gemfirexd.version.beta'            : 'true',
         'gemfirexd.product.vendor'          : PRODUCT_VENDOR,

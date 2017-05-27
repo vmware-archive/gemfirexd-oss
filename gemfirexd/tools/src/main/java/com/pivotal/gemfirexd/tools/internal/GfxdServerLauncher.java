@@ -156,7 +156,7 @@ public class GfxdServerLauncher extends CacheServerLauncher {
     final String name = LocalizedResource.getMessage("FS_NAME");
     final String usageOutput = LocalizedResource.getMessage("SERVER_HELP",
         script, name, LocalizedResource.getMessage("FS_ADDRESS_ARG"),
-        LocalizedResource.getMessage("FS_EXTRA_HELP"));
+        LocalizedResource.getMessage("FS_EXTRA_HELP" ,  LocalizedResource.getMessage("FS_PRODUCT")));
     printUsage(usageOutput, SanityManager.DEFAULT_MAX_OUT_LINES);
   }
 
@@ -622,9 +622,9 @@ public class GfxdServerLauncher extends CacheServerLauncher {
       }
       
       if (!map.containsKey(EVICTION_HEAP_PERCENTAGE)) {
-        // reduce the critical-heap-percentage by 20% to get
+        // reduce the critical-heap-percentage by 10% to get
         // eviction-heap-percentage
-        evictPercent = (criticalPercent * 4) / 5;
+        evictPercent = (criticalPercent * 9) / 10;
         map.put(EVICTION_HEAP_PERCENTAGE, "-" + EVICTION_HEAP_PERCENTAGE + '='
             + evictPercent);
       }
@@ -707,7 +707,7 @@ public class GfxdServerLauncher extends CacheServerLauncher {
    * method of the launched fabric server VM ("server" mode).
    */
   public static void main(String[] args) {
-    GfxdServerLauncher launcher = new GfxdServerLauncher("GemFireXD Server");
+    GfxdServerLauncher launcher = new GfxdServerLauncher("SnappyData Server");
     launcher.run(args);
   }
 
@@ -989,7 +989,7 @@ public class GfxdServerLauncher extends CacheServerLauncher {
 
       System.out.println(LocalizedStrings.GfxdServerLauncher_STARTING_NET_SERVER
           .toLocalizedString(new Object[] { this.useThriftServerDefault
-              ? thriftDisplay : "DRDA", "GemFireXD", listenAddr, port }));
+              ? thriftDisplay : "DRDA", "SnappyData", listenAddr, port }));
     }
     // check for thrift server arguments
     if ((port = (String)options.get(getThriftPortArgName())) != null) {

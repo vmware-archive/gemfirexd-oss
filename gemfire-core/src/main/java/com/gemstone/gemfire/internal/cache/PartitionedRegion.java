@@ -2369,6 +2369,7 @@ public class PartitionedRegion extends LocalRegion implements
     final long startTime = PartitionedRegionStats.startTime();
     // build all the msgs by bucketid
     THashMap prMsgMap = putallO.createPRMessages();
+
     final PutAllPartialResult partialKeys = new PutAllPartialResult(
         putallO.putAllDataSize);
 
@@ -2475,6 +2476,7 @@ public class PartitionedRegion extends LocalRegion implements
         }
       }
     }
+
     } finally {
       for (PutAllPRMessage.PutAllResponse resp : responses) {
         PutAllPRMessage.PRMsgResponseContext ctx = resp.getContextObject();
@@ -2485,6 +2487,22 @@ public class PartitionedRegion extends LocalRegion implements
           }
         }
       }
+    }
+  }
+
+
+  public boolean needsBatching() {
+    // Find all the child region and see if they anyone of them has name ending
+    // with _SHADOW_
+    if (this.getName().toUpperCase().endsWith("_SHADOW_")) {
+      return false;
+    } else {
+      boolean needsBatching = false;
+      List<PartitionedRegion> childRegions = ColocationHelper.getColocatedChildRegions(this);
+      for (PartitionedRegion pr : childRegions) {
+        needsBatching |= pr.getName().toUpperCase().endsWith("_SHADOW_");
+      }
+      return needsBatching;
     }
   }
 
@@ -7166,6 +7184,8 @@ public class PartitionedRegion extends LocalRegion implements
               this.currentEntry = val;
             }
             if (this.currentEntry != null) {
+              // check if
+
               this.moveNext = false;
               return true;
             }

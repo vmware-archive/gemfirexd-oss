@@ -32,28 +32,26 @@ import com.gemstone.gemfire.cache.execute.ResultCollector;
 import com.gemstone.gemfire.distributed.DistributedMember;
 import com.gemstone.gemfire.distributed.internal.ReplyException;
 import com.gemstone.gemfire.distributed.internal.ReplyProcessor21;
-import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
+import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.access.GemFireTransaction;
 import com.pivotal.gemfirexd.internal.engine.distributed.utils.GemFireXDUtils;
 import com.pivotal.gemfirexd.internal.engine.jdbc.GemFireXDRuntimeException;
 import com.pivotal.gemfirexd.internal.engine.store.GemFireContainer;
 import com.pivotal.gemfirexd.internal.engine.store.GemFireStore;
 import com.pivotal.gemfirexd.internal.iapi.error.StandardException;
-import com.pivotal.gemfirexd.internal.iapi.reference.SQLState;
 import com.pivotal.gemfirexd.internal.iapi.services.sanity.SanityManager;
 
 /**
  * {@link ResultCollector} used for query executions in GemFireXD. This allows
  * for streaming of results on the query node by returning a
- * {@link BlockingQueue} that will wait for just one result. The iterator
+ * <code>BlockingQueue</code> that will wait for just one result. The iterator
  * returned by this queue is a one time only (i.e. only one iteration allowed
  * which will consume all results) blocking iterator that will wait for all
  * results to arrive. Consequently proper HA functionality cannot be provided
  * when streaming is enabled since a member may go down during the next() call
- * of the iterator. This will then throw an {@link SQLException} with state
- * "X0Z01" ({@link SQLState#GFXD_NODE_SHUTDOWN} which the application will need
- * to handle and re-execute the query if required.
+ * of the iterator. This will then throw a {@link CancelException} which the
+ * application will need to handle and re-execute the query if required.
  * 
  * @author swale
  */
@@ -131,7 +129,7 @@ public final class GfxdQueryStreamingResultCollector extends
    * Adds a single function execution result from a remote node to the
    * ResultCollector
    * 
-   * @param resultOfSingleExecution
+   * @param resultOfSingleExecution the result of one execution
    */
   // !!ezoerner added argument member, but not yet used in implementation
   // [sumedh] now using member argument
@@ -370,22 +368,21 @@ public final class GfxdQueryStreamingResultCollector extends
     }
 
     public Object next() {
-      if (this.current == EOF) {
+      final Object current = this.current;
+      if (current == EOF) {
         throw new NoSuchElementException();
-      }      
-      Object next = this.current;
+      }
       boolean ok = false;
       try {
         moveNext();
         ok = true;
-        return next;
+        return current;
       } finally {
-        if(!ok && GemFireXDUtils.isOffHeapEnabled()) {
-        // release the current result holder
-          OffHeapReleaseUtil.freeOffHeapReference(next);
-        }        
+        if (!ok && GemFireXDUtils.isOffHeapEnabled()) {
+          // release the current result holder
+          OffHeapReleaseUtil.freeOffHeapReference(current);
+        }
       }
-     
     }
 
     public void remove() {
