@@ -517,6 +517,7 @@ public class InternalManagementService {
     try {
       Properties props = new Properties();      
       props.setProperty(Attribute.QUERY_HDFS, Boolean.toString(connection.getLanguageConnectionContext().getQueryHDFS()));
+      props.setProperty(Attribute.ROUTE_QUERY, Boolean.toString(connection.getLanguageConnectionContext().isQueryRoutingEnabled()));
       connectionWrapper = holder.createWrapper(connection.getSchema(), GemFireXDUtils.newUUID(), false, props);
     } catch (SQLException e) {
       logInfo("Error creating EmbedConnection for Management. Reason: " + e.getMessage());

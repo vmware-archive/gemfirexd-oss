@@ -187,7 +187,12 @@ class CreateTableConstantAction extends DDLConstantAction
 
 		if (SanityManager.DEBUG)
 		{
+			//GemStone changes BEGIN
+			/* original code
 			if (tableType == TableDescriptor.BASE_TABLE_TYPE && lockGranularity != TableDescriptor.TABLE_LOCK_GRANULARITY &&
+			 */
+			if ((tableType == TableDescriptor.BASE_TABLE_TYPE || tableType == TableDescriptor.COLUMN_TABLE_TYPE) && lockGranularity != TableDescriptor.TABLE_LOCK_GRANULARITY &&
+			//GemStone changes END
 				lockGranularity != TableDescriptor.ROW_LOCK_GRANULARITY)
 			{
 				SanityManager.THROWASSERT(
@@ -716,7 +721,7 @@ class CreateTableConstantAction extends DDLConstantAction
 
   /** true if this table is a user created normal table */
   public boolean isReplayable() {
-    return (this.tableType == TableDescriptor.BASE_TABLE_TYPE);
+    return (this.tableType == TableDescriptor.BASE_TABLE_TYPE/*GemStone changes BEGIN*/ || this.tableType == TableDescriptor.COLUMN_TABLE_TYPE/*GemStone changes END*/);
   }
 
   @Override

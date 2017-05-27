@@ -146,7 +146,8 @@ public class PrivilegeNode extends QueryTreeNode
                 throw StandardException.newException(SQLState.LANG_OPERATION_NOT_ALLOWED_ON_SESSION_SCHEMA_TABLES);
 
             if (td.getTableType() != TableDescriptor.BASE_TABLE_TYPE &&
-            		td.getTableType() != TableDescriptor.VIEW_TYPE)
+            		td.getTableType() != TableDescriptor.VIEW_TYPE /*GemStone changes BEGIN*/&&
+            		td.getTableType() != TableDescriptor.COLUMN_TABLE_TYPE/*GemStone changes END*/)
                 throw StandardException.newException(SQLState.AUTH_GRANT_REVOKE_NOT_ALLOWED, tableName.getFullTableName());
 
 			// Can not grant/revoke permissions from self

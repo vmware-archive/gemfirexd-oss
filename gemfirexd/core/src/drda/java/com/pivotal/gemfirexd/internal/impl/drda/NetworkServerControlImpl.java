@@ -4457,6 +4457,7 @@ public final class NetworkServerControlImpl {
         cs.disableStreaming = db.disableStreaming;
         cs.skipListeners = db.skipListeners;
         cs.queryHDFS = db.queryHDFS;
+        cs.routeQuery = db.routeQuery;
         cs.skipConstraintChecks = db.skipConstraintChecks;
         cs.syncCommits = db.syncCommits;
         cs.disableTXBatching = db.disableTXBatching;
@@ -4502,6 +4503,7 @@ public final class NetworkServerControlImpl {
         cs.disableStreaming = db.disableStreaming;
         cs.skipListeners = db.skipListeners;
         cs.queryHDFS = db.queryHDFS;
+        cs.routeQuery = db.routeQuery;
         cs.skipConstraintChecks = db.skipConstraintChecks;
         cs.syncCommits = db.syncCommits;
         cs.disableTXBatching = db.disableTXBatching;

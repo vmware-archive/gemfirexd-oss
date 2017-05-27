@@ -34,6 +34,7 @@ import com.gemstone.gemfire.internal.util.ArrayUtils;
 import com.gemstone.gnu.trove.THashMap;
 import com.gemstone.gnu.trove.TLongObjectHashMap;
 import com.gemstone.gnu.trove.TLongObjectProcedure;
+import com.pivotal.gemfirexd.Attribute;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserver;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
@@ -44,6 +45,7 @@ import com.pivotal.gemfirexd.internal.engine.distributed.metadata.NcjHashMapWrap
 import com.pivotal.gemfirexd.internal.engine.distributed.utils.GemFireXDUtils;
 import com.pivotal.gemfirexd.internal.engine.jdbc.GemFireXDRuntimeException;
 import com.pivotal.gemfirexd.internal.engine.stats.ConnectionStats;
+import com.pivotal.gemfirexd.internal.engine.store.GemFireStore;
 import com.pivotal.gemfirexd.internal.iapi.error.PublicAPI;
 import com.pivotal.gemfirexd.internal.iapi.error.StandardException;
 import com.pivotal.gemfirexd.internal.iapi.reference.Property;
@@ -171,8 +173,11 @@ public final class GfxdConnectionWrapper {
     final Properties props = new Properties(prop);
     props.putAll(AuthenticationServiceBase.getPeerAuthenticationService()
         .getBootCredentials());
+    GemFireStore store = Misc.getMemStoreBootingNoThrow();
+    boolean isStoreSnappy = store != null ? store.isSnappyStore() : false;
+    String protocol = !isStoreSnappy ? Attribute.PROTOCOL : Attribute.SNAPPY_PROTOCOL;
     final EmbedConnection conn = (EmbedConnection)InternalDriver.activeDriver()
-        .connect(GfxdConstants.PROTOCOL, props,
+        .connect(protocol, props,
             EmbedConnection.CHILD_NOT_CACHEABLE, this.incomingConnId, true, Connection.TRANSACTION_NONE);
     conn.setInternalConnection();
     if (isRemote) {

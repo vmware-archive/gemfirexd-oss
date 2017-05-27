@@ -1790,9 +1790,15 @@ public class EmbedDatabaseMetaData extends ConnectionChild
 		// parameter to the metadata statement and handle it here.
 		
 		// Array for type parameters
+		//GemStone changes BEGIN
+		/* Original code
 		final int numberOfTableTypesInDerby = 4;
+		*/
+		final int numberOfTableTypesInDerby = 5;
+		//GemStone changes END
+
 		if (types == null)  {// null means all types 
-			types = new String[] {"TABLE","VIEW","SYNONYM","SYSTEM TABLE"};
+			types = new String[] {"TABLE","VIEW","SYNONYM","SYSTEM TABLE"/*GemStone changes BEGIN*/, "COLUMN TABLE"/*GemStone changes END*/};
 		}
 		String[] typeParams = new String[numberOfTableTypesInDerby];
 		for (int i=0; i < numberOfTableTypesInDerby;i++)
@@ -1808,6 +1814,11 @@ public class EmbedDatabaseMetaData extends ConnectionChild
 			else if ("SYSTEM TABLE".equals(types[i]) ||
 					"SYSTEM_TABLE".equals(types[i])) // Keep SYSTEM_TABLE since this is how we have been testing
 					typeParams[3] = "S";
+			//GemStone changes BEGIN
+			else if ("COLUMN TABLE".equals(types[i]) ||
+			    "COLUMN_TABLE".equals(types[i])) // In case we treat it like SYSTEM_TABLE
+			    typeParams[4] = "C";
+			//GemStone changes END
 			// If user puts in other types we simply ignore.
 			}
 		

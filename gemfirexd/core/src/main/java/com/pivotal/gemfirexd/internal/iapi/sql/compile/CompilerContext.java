@@ -733,6 +733,16 @@ public interface CompilerContext extends Context
          * @param true to turn it on otherwise false.  
          */
         public void setConvertCharConstToVarchar(boolean flag);
+
+		/**
+		 *  Snappy Specific
+		 */
+        public boolean isMarkedAsDDLForSnappyUse();
+        public void markAsDDLForSnappyUse(boolean flag);
+        public boolean isForcedDDLrouting();
+        public void setForcedDDLrouting(boolean flag);
+        public void addDynamicTokenToList(com.pivotal.gemfirexd.internal.impl.sql.compile.Token token);
+        public ArrayList<com.pivotal.gemfirexd.internal.impl.sql.compile.Token> getDynamicTokenList();
 // GemStone changes END
 
 }

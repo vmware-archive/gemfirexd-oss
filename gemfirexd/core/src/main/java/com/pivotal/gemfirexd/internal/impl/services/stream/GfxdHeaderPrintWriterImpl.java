@@ -84,7 +84,7 @@ public final class GfxdHeaderPrintWriterImpl extends BasicHeaderPrintWriter
     if (PropertyUtil.getSystemBoolean(
         InternalDistributedSystem.ENABLE_SLF4J_LOG_BRIDGE, true)) {
       this.usingSLF4JBridge = true;
-      this.logger = new GFToSlf4jBridge("GEMXD", fileName);
+      this.logger = new GFToSlf4jBridge("SNAPPY", fileName);
     }
   }
 

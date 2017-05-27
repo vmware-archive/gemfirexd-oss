@@ -99,7 +99,8 @@ public abstract class StatementQueryExecutor {
 
       // Get the connection from the holder
       Properties props = new Properties();
-      props.setProperty(Attribute.QUERY_HDFS, Boolean.toString(msg.getQueryHDFS()));
+      props.setProperty(Attribute.QUERY_HDFS,
+          Boolean.toString(msg.getQueryHDFS()));
       final GfxdConnectionWrapper wrapper = GfxdConnectionHolder
           .getOrCreateWrapper(defaultSchema, connId, false, props);
       final EmbedConnection conn = wrapper.getConnectionForSynchronization();
