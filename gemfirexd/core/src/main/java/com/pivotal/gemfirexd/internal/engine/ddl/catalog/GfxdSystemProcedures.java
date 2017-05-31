@@ -2424,9 +2424,10 @@ public class GfxdSystemProcedures extends SystemProcedures {
     long memberId = Long.parseLong(st.nextToken());
     int uniqId = Integer.parseInt(st.nextToken());
     TXId txId1 = TXId.valueOf(memberId, uniqId);
-    TXStateInterface txState = tc.getTransactionManager().getHostedTXState(txId1);
+
     LanguageConnectionContext lcc = ConnectionUtil.getCurrentLCC();
     GemFireTransaction tc = (GemFireTransaction)lcc.getTransactionExecute();
+    TXStateInterface txState = tc.getTransactionManager().getHostedTXState(txId1);
     tc.clearActiveTXState(false, true);
     tc.getTransactionManager().masqueradeAs(txState);
     tc.getTransactionManager().commit();
