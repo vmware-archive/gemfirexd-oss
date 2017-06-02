@@ -1514,8 +1514,8 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
   }
 
   public void waitOnRowScanTestHook() {
-    if (null != this.testHook) {
-      this.testHook.waitOnOperationLock();
+    if (null != this.rowScanTestHook) {
+      this.rowScanTestHook.waitOnOperationLock();
     }
   }
 
