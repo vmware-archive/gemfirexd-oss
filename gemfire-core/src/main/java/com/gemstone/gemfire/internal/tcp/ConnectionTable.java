@@ -827,8 +827,10 @@ public final class ConnectionTable  {
     if (conn.isPooled() && this.connectionPool != null) {
       try {
         this.connectionPool.returnObject(new ConnKey(conn.remoteId), conn);
-      } catch (RuntimeException ignored) {
-        // ignore any exception in returning to pool
+      } catch (RuntimeException re) {
+        // log any exception in returning to pool and move on
+        getLogger().warning(LocalizedStrings.DEBUG,
+            "Unexpected exception in returning connection to pool " + re);
       }
     }
   }
