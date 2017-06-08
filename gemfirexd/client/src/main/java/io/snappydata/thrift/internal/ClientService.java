@@ -462,14 +462,20 @@ public final class ClientService extends ReentrantLock implements LobService {
 
         TTransport inTransport, outTransport;
         TProtocol inProtocol, outProtocol;
-        final SnappyTSocket socket = new SnappyTSocket(
-            hostAddr.resolveHost(), hostAddr.getPort(), connArgs.clientID,
-            getServerType().isThriftSSL(), true, ThriftUtils
-            .isThriftSelectorServer(), readTimeout, socketParams);
-        if (this.framedTransport) {
-          inTransport = outTransport = new TFramedTransport(socket);
+        final TTransport transport;
+        if (getServerType().isThriftSSL()) {
+          transport = new SnappyTSSLSocket(hostAddr.resolveHost(),
+              hostAddr.getPort(), readTimeout, socketParams);
         } else {
-          inTransport = outTransport = socket;
+          transport = new SnappyTSocket(
+              hostAddr.resolveHost(), hostAddr.getPort(), connArgs.clientID,
+              false, true, ThriftUtils.isThriftSelectorServer(),
+              readTimeout, socketParams);
+        }
+        if (this.framedTransport) {
+          inTransport = outTransport = new TFramedTransport(transport);
+        } else {
+          inTransport = outTransport = transport;
         }
         if (getServerType().isThriftBinaryProtocol()) {
           inProtocol = new TBinaryProtocolDirect(inTransport,
