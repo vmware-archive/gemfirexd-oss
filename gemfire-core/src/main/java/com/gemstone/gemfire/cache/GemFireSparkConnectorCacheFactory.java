@@ -243,6 +243,8 @@ public class GemFireSparkConnectorCacheFactory extends CacheFactory {
     val = this.gfeGridPoolProps.get(gfeGridPropsPrefix + propPRSingleHopEnabled );
     if (val != null) {
       pf.setPRSingleHopEnabled(Boolean.parseBoolean(val.trim()));
+    } else {
+      pf.setPRSingleHopEnabled(true);
     }
   }
 
