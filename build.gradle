@@ -369,6 +369,7 @@ subprojects {
       links = [ 'http://docs.oracle.com/javase/7/docs/api/' ]
       // verbose = true
     }
+    options.addBooleanOption("-allow-script-in-comments", true)
   }
 
   configurations {
