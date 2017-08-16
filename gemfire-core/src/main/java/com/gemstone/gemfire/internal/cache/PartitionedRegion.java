@@ -8525,8 +8525,6 @@ public class PartitionedRegion extends LocalRegion implements
   }
 
   public void checkForColocatedChildren(boolean skipShadowPRs) {
-    // TODO: SW: check with Yogesh as to how destroy region handles colocated
-    // shadow region
     List<PartitionedRegion> listOfChildRegions = ColocationHelper
         .getColocatedChildRegions(this);
     if (listOfChildRegions.size() != 0) {
