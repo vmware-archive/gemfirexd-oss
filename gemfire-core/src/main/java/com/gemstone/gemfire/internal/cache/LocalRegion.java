@@ -3141,7 +3141,7 @@ public class LocalRegion extends AbstractRegion
   /**
    * @return size after considering imageState and TX uncommitted entries
    */
-  protected int getRegionSize() {
+  public int getRegionSize() {
     int result;
     final ReentrantLock regionLock = getSizeGuard();
     if (regionLock == null) {
