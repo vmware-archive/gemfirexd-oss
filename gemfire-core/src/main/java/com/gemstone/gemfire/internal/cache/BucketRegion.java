@@ -2804,6 +2804,12 @@ public class BucketRegion extends DistributedRegion implements Bucket {
       this.partitionedRegion.getPrStats().incDataStoreEntryCount(-sizeBeforeClear);
       prDs.updateMemoryStats(-oldMemValue);
     }
+    // explicitly clear overflow counters if no diskRegion is present
+    // (for latter the counters are cleared by DiskRegion.statsClear)
+    if (getDiskRegion() == null) {
+      this.numOverflowOnDisk.set(0);
+      this.numOverflowBytesOnDisk.set(0);
+    }
   }
 
   
