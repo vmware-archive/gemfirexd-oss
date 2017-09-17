@@ -1711,7 +1711,7 @@ public abstract class AbstractRegionEntry extends ExclusiveSharedSynchronizer
     }
     final StaticSystemCallbacks sysCb =
         GemFireCacheImpl.FactoryStatics.systemCallbacks;
-    if (sysCb == null) {
+    if (sysCb == null || (owner != null && !owner.keyRequiresRegionContext())) {
       // nothing by default
       return;
     }

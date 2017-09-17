@@ -624,7 +624,8 @@ public interface DiskEntry extends RegionEntry {
           incrementBucketStats(r, 0/*InVM*/, 1/*OnDisk*/, did.getValueLength());
         }
         else {
-          entry.setValueWithContext(drv, entry.prepareValueForCache((RegionEntryContext) r,
+          RegionEntryContext context = (RegionEntryContext)r;
+          entry.setValueWithContext(context, entry.prepareValueForCache(context,
               re.getValue(), false, false));
           drv.incNumEntriesInVM(1L);
           incrementBucketStats(r, 1/*InVM*/, 0/*OnDisk*/, 0);

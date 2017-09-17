@@ -362,15 +362,12 @@ abstract class AbstractRegionMap implements RegionMap {
       // index manager or owner changed so we need to update the indexes
       // [sumedh] indexes are now updated by IndexRecoveryTask
     }
-    if (r.keyRequiresRegionContext()) {
-      // iterate over the entries of the map
-      // set ExtraTableInfo in the CompositeCompactRegionKey
-      final Iterator<RegionEntry> iter = r.getRegionMap().regionEntries()
-          .iterator();
-      while (iter.hasNext()) {
-        final RegionEntry re = iter.next();
-        re.setOwner(r, currentOwner);
-      }
+    // iterate over the entries of the map to call setOwner for each RegionEntry
+    final Iterator<RegionEntry> iter = r.getRegionMap().regionEntries()
+        .iterator();
+    while (iter.hasNext()) {
+      final RegionEntry re = iter.next();
+      re.setOwner(r, currentOwner);
     }
   }
 
