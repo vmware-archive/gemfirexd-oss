@@ -464,7 +464,7 @@ subprojects {
 
   test {
     dependsOn "${subprojectBase}storeProduct"
-    maxParallelForks = Runtime.getRuntime().availableProcessors()
+    maxParallelForks = (Runtime.getRuntime().availableProcessors() * 3) / 2
     minHeapSize = '1g'
     maxHeapSize = '1g'
 
