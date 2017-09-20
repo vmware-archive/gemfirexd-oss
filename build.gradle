@@ -83,7 +83,8 @@ allprojects {
     PRODUCT_CLASSIFIER = ''
     PRODUCT_RELEASE_STAGE = ''
     PRODUCT_VERSION = "${PRODUCT_MAJOR}.${PRODUCT_MINOR}.${PRODUCT_MAINT}${PRODUCT_CLASSIFIER}"
-    PRODUCT_VENDOR = 'SnappyData, Inc.'
+    vendorName = 'SnappyData, Inc.'
+    PRODUCT_VENDOR = vendorName
     COPYRIGHT = "Copyright 2017, ${PRODUCT_VENDOR} All rights reserved."
 
     if (rootProject.name == 'snappy-store') {
@@ -126,7 +127,7 @@ allprojects {
     buildDir = 'build-artifacts/' + osDir
   }
   if (rootProject.hasProperty('enablePublish')) {
-    buildIdPrefix = 'SnappyData, Inc. '
+    buildIdPrefix = "${vendorName} "
   }
 
   ext {
