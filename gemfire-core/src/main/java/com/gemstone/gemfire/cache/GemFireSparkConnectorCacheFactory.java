@@ -1,8 +1,11 @@
 package com.gemstone.gemfire.cache;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Properties;
 
+import com.gemstone.gemfire.GemFireConfigException;
 import com.gemstone.gemfire.distributed.DistributedSystem;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.internal.cache.GemFireSparkConnectorCacheImpl;
@@ -24,6 +27,7 @@ public class GemFireSparkConnectorCacheFactory extends CacheFactory {
     super(props);
     this.gfeGridMappings = gfeGridMappings;
     this.gfeGridPoolProps = gfeGridPoolProps;
+
   }
 
 
@@ -31,6 +35,19 @@ public class GemFireSparkConnectorCacheFactory extends CacheFactory {
       throws TimeoutException, CacheWriterException,
       GatewayException,
       RegionExistsException {
+
+
+      try {
+        Class connClass = Class.forName(
+         "io.snappydata.spark.gemfire.connector.dsinit.internal.DistributedSystemInitializerHelper");
+        Constructor c = connClass.getConstructor(new Class[]{CacheFactory.class});
+        Object obj = c.newInstance(new Object[]{this});
+        Method m = connClass.getMethod("configure", new Class[0]);
+        m.invoke(obj, new Object[0]);
+      } catch(Exception e) {
+         throw new GemFireConfigException("Problem configuring distributed system",e);
+      }
+
     synchronized (CacheFactory.class) {
       DistributedSystem ds = null;
       if (this.dsProps.isEmpty()) {
