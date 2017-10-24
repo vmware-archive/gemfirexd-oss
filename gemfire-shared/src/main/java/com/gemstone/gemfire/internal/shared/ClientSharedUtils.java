@@ -1336,7 +1336,7 @@ public abstract class ClientSharedUtils {
   }
 
   // Convert log4j.Level to java.util.logging.Level
-  public static Level converToJavaLogLevel(org.apache.log4j.Level log4jLevel) {
+  public static Level convertToJavaLogLevel(org.apache.log4j.Level log4jLevel) {
     Level javaLevel = Level.INFO;
     if (log4jLevel != null) {
       if (log4jLevel == org.apache.log4j.Level.ERROR) {
@@ -1354,6 +1354,26 @@ public abstract class ClientSharedUtils {
       }
     }
     return javaLevel;
+  }
+
+  public static String convertToLog4LogLevel(Level level) {
+    String levelStr = "INFO";
+    // convert to log4j level
+    if (level == Level.SEVERE) {
+      levelStr = "ERROR";
+    } else if (level == Level.WARNING) {
+      levelStr = "WARN";
+    } else if (level == Level.INFO || level == Level.CONFIG) {
+      levelStr = "INFO";
+    } else if (level == Level.FINE || level == Level.FINER ||
+        level == Level.FINEST) {
+      levelStr = "TRACE";
+    } else if (level == Level.ALL) {
+      levelStr = "DEBUG";
+    } else if (level == Level.OFF) {
+      levelStr = "OFF";
+    }
+    return levelStr;
   }
 
   public static void initLog4J(String logFile,
@@ -1375,22 +1395,7 @@ public abstract class ClientSharedUtils {
 
     // override file location and level
     if (level != null) {
-      String levelStr = "INFO";
-      // convert to log4j level
-      if (level == Level.SEVERE) {
-        levelStr = "ERROR";
-      } else if (level == Level.WARNING) {
-        levelStr = "WARN";
-      } else if (level == Level.INFO || level == Level.CONFIG) {
-        levelStr = "INFO";
-      } else if (level == Level.FINE || level == Level.FINER ||
-          level == Level.FINEST) {
-        levelStr = "TRACE";
-      } else if (level == Level.ALL) {
-        levelStr = "DEBUG";
-      } else if (level == Level.OFF) {
-        levelStr = "OFF";
-      }
+      final String levelStr = convertToLog4LogLevel(level);
       if (logFile != null) {
         props.setProperty("log4j.rootCategory", levelStr + ", file");
       } else {
