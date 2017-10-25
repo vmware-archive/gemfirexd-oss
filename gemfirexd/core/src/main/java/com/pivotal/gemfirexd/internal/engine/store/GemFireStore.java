@@ -1298,7 +1298,6 @@ public final class GemFireStore implements AccessFactory, ModuleControl,
         service = FabricServiceManager.getFabricServerInstance();
       }
       assert service instanceof FabricServiceImpl;
-      ((FabricServiceImpl)service).notifyRunning();
 
       this.isShutdownAll = false;
 
@@ -1635,6 +1634,14 @@ public final class GemFireStore implements AccessFactory, ModuleControl,
   
   public String getBootProperty(String propName) {
     return this.serviceProperties.getProperty(propName);
+  }
+
+  public void setBootProperty(String propName, String propValue) {
+    if (propValue != null) {
+      this.serviceProperties.setProperty(propName, propValue);
+    } else {
+      this.serviceProperties.remove(propName);
+    }
   }
 
   public Map<Object, Object> getBootProperties() {

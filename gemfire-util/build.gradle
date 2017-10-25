@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2015 Pivotal Software, Inc. All rights reserved.
+ * Copyright (c) 2017 SnappyData, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you
  * may not use this file except in compliance with the License. You
@@ -14,28 +14,17 @@
  * permissions and limitations under the License. See accompanying
  * LICENSE file.
  */
-package com.pivotal.gemfirexd.internal.engine.distributed.offheap;
 
-import com.pivotal.gemfirexd.internal.engine.distributed.StatementNodesPrunningDUnit;
+plugins {
+  id "net.ltgt.apt" version "0.12"
+}
 
-public class OffHeapStatementNodesPrunningDUnit extends StatementNodesPrunningDUnit {
+apply plugin: 'net.ltgt.apt-eclipse'
+apply plugin: 'net.ltgt.apt-idea'
 
-
-
-  public OffHeapStatementNodesPrunningDUnit(String name) {
-    super(name);    
-  }
-  
-  @Override
-  public void setUp() throws Exception {
-    super.setUp();
-    this.configureDefaultOffHeap(true);  
-  }
-  
-  @Override
-  public String getSuffix() {
-    return  " offheap ";
-  }
-
-
+dependencies {
+  compile "com.koloboke:koloboke-api-jdk8:${kolobokeVersion}"
+  compile "com.koloboke:koloboke-impl-common-jdk8:${kolobokeVersion}"
+  // for classes using koloboke annotations
+  compileOnly "com.koloboke:koloboke-compile:${kolobokeCompileVersion}"
 }
