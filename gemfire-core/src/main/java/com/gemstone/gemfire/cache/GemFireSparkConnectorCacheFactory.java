@@ -14,7 +14,11 @@ import com.gemstone.gemfire.internal.cache.GemFireSparkConnectorCacheImpl;
 public class GemFireSparkConnectorCacheFactory extends CacheFactory {
   private final Map<String, String> gfeGridMappings;
   private final Map<String, String> gfeGridPoolProps;
+  private static final String initHelperClass =
+          "io.snappydata.spark.gemfire.connector.dsinit.internal.DistributedSystemInitializerHelper";
 
+  private static final String disconnectListenerClass =
+          "io.snappydata.spark.gemfire.connector.dsinit.internal.DisconnectListener";
 
   public GemFireSparkConnectorCacheFactory() {
     super();
@@ -38,8 +42,7 @@ public class GemFireSparkConnectorCacheFactory extends CacheFactory {
 
 
       try {
-        Class connClass = Class.forName(
-         "io.snappydata.spark.gemfire.connector.dsinit.internal.DistributedSystemInitializerHelper");
+        Class connClass = Class.forName(initHelperClass);
         Constructor c = connClass.getConstructor(new Class[]{CacheFactory.class});
         Object obj = c.newInstance(new Object[]{this});
         Method m = connClass.getMethod("configure", new Class[0]);
@@ -57,7 +60,14 @@ public class GemFireSparkConnectorCacheFactory extends CacheFactory {
       if (ds == null) {
         ds = DistributedSystem.connect(this.dsProps);
       }
-
+      try {
+        InternalDistributedSystem.DisconnectListener disconnectListener =
+                (InternalDistributedSystem.DisconnectListener)Class.forName(disconnectListenerClass).
+                        newInstance();
+        ((InternalDistributedSystem)ds).addDisconnectListener(disconnectListener);
+      } catch(Exception e) {
+        throw new GemFireConfigException("Problem configuring distributed system",e);
+      }
       Cache cache = GemFireSparkConnectorCacheImpl.create(gfeGridMappings, this.gfeGridPoolProps,
           ds, cacheConfig);
 
