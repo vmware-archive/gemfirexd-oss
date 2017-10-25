@@ -1544,7 +1544,7 @@ public class ClientServerDUnit extends ClientServerTestBase {
 
     // check new connection opened on second server
     assertNumConnections(-3, -1, 1);
-    assertNumConnections(1, -1, 2);
+    assertNumConnections(-1, -1, 2);
 
     // Some sanity checks for DB meta-data
     // URL remains the first control connection one for thrift
@@ -1565,7 +1565,7 @@ public class ClientServerDUnit extends ClientServerTestBase {
     assertFalse(rs.next());
 
     assertNumConnections(-3, -1, 1);
-    assertNumConnections(1, -1, 2);
+    assertNumConnections(-1, -1, 2);
 
     // now a third connection
     final Connection conn3 = TestUtil.getNetConnection(
