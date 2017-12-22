@@ -531,6 +531,7 @@ public class DistributedSQLTestBase extends DistributedTestBase {
     if (vmCount >= 8) {
       System.setProperty("p2p.discoveryTimeout", "1000");
       System.setProperty("p2p.joinTimeout", "2000");
+      System.setProperty("p2p.minJoinTries", "1");
       setGFXDProperty(props, "member-timeout", "2000");
       System.setProperty("p2p.leaveTimeout", "1000");
       System.setProperty("p2p.socket_timeout", "4000");

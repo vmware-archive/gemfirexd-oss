@@ -1421,7 +1421,7 @@ public final class JGroupMembershipManager implements MembershipManager {
     burstLimit = Long.getLong("p2p.retransmit-burst-limit", burstLimit);
     properties = replaceStrings(properties, "RETRANSMIT_BURST_LIMIT", String.valueOf(burstLimit));
 
-    long discoveryTimeout = Long.getLong("p2p.discoveryTimeout", 5000).longValue();
+    long discoveryTimeout = Long.getLong("p2p.discoveryTimeout", 3000).longValue();
     properties = replaceStrings(properties, "DISCOVERY_TIMEOUT", ""+discoveryTimeout);
 
     int defaultJoinTimeout = 17000;
@@ -1431,7 +1431,10 @@ public final class JGroupMembershipManager implements MembershipManager {
     }
     int joinTimeout = Integer.getInteger("p2p.joinTimeout", defaultJoinTimeout).intValue();
     int numPings = Integer.getInteger("p2p.discoveryProbes", defaultNumPings);
+    int minJoinTries = Integer.getInteger("p2p.minJoinTries", 2);
     properties = replaceStrings(properties, "JOIN_TIMEOUT", ""+joinTimeout);
+    properties = replaceStrings(properties, "MIN_JOIN_TRIES",
+        Integer.toString(minJoinTries));
     properties = replaceStrings(properties, "NUM_PING_REQUESTS", ""+numPings);
     properties = replaceStrings(properties, "LEAVE_TIMEOUT", System.getProperty("p2p.leaveTimeout", "5000"));
     properties = replaceStrings(properties, "SOCKET_TIMEOUT", System.getProperty("p2p.socket_timeout", "60000"));
@@ -3668,8 +3671,9 @@ public final class JGroupMembershipManager implements MembershipManager {
           @Override
           public void run() {
             try {
-              Thread.sleep(
-                  Integer.getInteger("p2p.disconnectDelay", 3000).intValue());
+              if (member != myMemberId) {
+                Thread.sleep(Integer.getInteger("p2p.disconnectDelay", 3000));
+              }
             }
             catch (InterruptedException ie) {
               Thread.currentThread().interrupt();
