@@ -148,6 +148,7 @@ import com.gemstone.gemfire.internal.shared.BufferAllocator;
 import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
 import com.gemstone.gemfire.internal.shared.HeapBufferAllocator;
 import com.gemstone.gemfire.internal.shared.NativeCalls;
+import com.gemstone.gemfire.internal.shared.OpenHashSet;
 import com.gemstone.gemfire.internal.shared.SystemProperties;
 import com.gemstone.gemfire.internal.shared.Version;
 import com.gemstone.gemfire.internal.shared.unsafe.DirectBufferAllocator;
@@ -173,6 +174,7 @@ import com.gemstone.gemfire.pdx.internal.PdxInstanceFactoryImpl;
 import com.gemstone.gemfire.pdx.internal.PdxInstanceImpl;
 import com.gemstone.gemfire.pdx.internal.TypeRegistry;
 import com.gemstone.gnu.trove.THashSet;
+import io.snappydata.collection.ObjectObjectHashMap;
 
 // @todo somebody Come up with more reasonable values for {@link #DEFAULT_LOCK_TIMEOUT}, etc.
 /**
@@ -617,15 +619,16 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
   // For each entry this should be in sync
 
   public void addOldEntry(NonLocalRegionEntry oldRe, RegionEntry newEntry,
-      LocalRegion region) {
+      LocalRegion region, EntryEventImpl event) {
     if (!snapshotEnabled()) {
       return;
     }
 
     // Insert specific case
     // just add the newEntry in TXState for rollback.
-    if (region.getTXState() != null) {
-      TXState txState = region.getTXState().getLocalTXState();
+    TXStateInterface tx = event.getTXState(region);
+    if (tx != null) {
+      TXState txState = tx.getLocalTXState();
       if (txState != null) {
         txState.addCommittedRegionEntryReference(oldRe == null ? Token.TOMBSTONE : oldRe, newEntry, region);
       }
@@ -1549,8 +1552,10 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
     try {
       // Wait for all the regions to get initialized before taking snapshot.
       lockForSnapshotRvv.readLock().lock();
-      Map<String, Map> snapshot = new HashMap();
-      for (LocalRegion region : getApplicationRegions()) {
+      Set<LocalRegion> regions = getApplicationRegions();
+      ObjectObjectHashMap<String, Map> snapshot =
+          ObjectObjectHashMap.withExpectedSize(regions.size());
+      for (LocalRegion region : regions) {
         if (region.getPartitionAttributes() != null && ((PartitionedRegion)region).isDataStore()
             && ((PartitionedRegion)region).concurrencyChecksEnabled) {
           region.waitForData();
@@ -3485,7 +3490,7 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
   }
 
   public final Set<LocalRegion> getApplicationRegions() {
-    Set<LocalRegion> result = new HashSet<LocalRegion>();
+    OpenHashSet<LocalRegion> result = new OpenHashSet<>();
     synchronized (this.rootRegions) {
       for (Object r : this.rootRegions.values()) {
         LocalRegion rgn = (LocalRegion) r;

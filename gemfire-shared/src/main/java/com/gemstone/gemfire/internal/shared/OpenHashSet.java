@@ -221,15 +221,21 @@ public class OpenHashSet<E> extends AbstractSet<E>
     }
   }
 
-  public final Object getKey(final Object key, final int hash,
-      final TObjectHashingStrategy hashingStrategy) {
+  public final Object getKey(final Object key) {
+    final TObjectHashingStrategy hashingStrategy = this.hashingStrategy;
     final Object[] data = this.data;
-    final int pos = index(data, key, hash, hashingStrategy);
+    final int pos = index(data, key, keyHash(key, hashingStrategy),
+        hashingStrategy);
     if (pos >= 0) return data[pos];
     else return null;
   }
 
-  public Object removeKey(final Object key, final int hash,
+  public final Object removeKey(final Object key) {
+    final TObjectHashingStrategy hashingStrategy = this.hashingStrategy;
+    return removeKey(key, keyHash(key, hashingStrategy), hashingStrategy);
+  }
+
+  private Object removeKey(final Object key, final int hash,
       final TObjectHashingStrategy hashingStrategy) {
     final Object[] data = this.data;
     final int pos = index(data, key, hash, hashingStrategy);

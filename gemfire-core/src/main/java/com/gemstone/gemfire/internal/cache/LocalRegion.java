@@ -210,6 +210,7 @@ import com.gemstone.gemfire.internal.offheap.annotations.Released;
 import com.gemstone.gemfire.internal.offheap.annotations.Retained;
 import com.gemstone.gemfire.internal.offheap.annotations.Unretained;
 import com.gemstone.gemfire.internal.sequencelog.EntryLogger;
+import com.gemstone.gemfire.internal.shared.OpenHashSet;
 import com.gemstone.gemfire.internal.shared.Version;
 import com.gemstone.gemfire.internal.size.ReflectionObjectSizer;
 import com.gemstone.gemfire.internal.size.ReflectionSingleObjectSizer;
@@ -11952,7 +11953,7 @@ public class LocalRegion extends AbstractRegion
       successfulPuts.clear();
       putallOp.fillVersionedObjectList(successfulPuts);
     }
-    Set successfulKeys = new HashSet(successfulPuts.size());
+    OpenHashSet<Object> successfulKeys = new OpenHashSet<>(successfulPuts.size());
     for (Object key: successfulPuts.getKeys()) {
       successfulKeys.add(key);
     }
