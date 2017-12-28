@@ -139,9 +139,6 @@ import com.gemstone.gemfire.internal.cache.wan.parallel.ParallelGatewaySenderQue
 import com.gemstone.gemfire.internal.cache.xmlcache.CacheXmlParser;
 import com.gemstone.gemfire.internal.cache.xmlcache.CacheXmlPropertyResolver;
 import com.gemstone.gemfire.internal.cache.xmlcache.PropertyResolver;
-import com.gemstone.gemfire.internal.concurrent.AI;
-import com.gemstone.gemfire.internal.concurrent.CFactory;
-import com.gemstone.gemfire.internal.concurrent.CM;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.internal.jndi.JNDIInvoker;
 import com.gemstone.gemfire.internal.jta.TransactionManagerImpl;
@@ -312,7 +309,8 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
    */
   private Pool defaultPool;
 
-  private final CM pathToRegion = CFactory.createCM();
+  private final ConcurrentHashMap<String, LocalRegion> pathToRegion =
+      new ConcurrentHashMap<>();
 
   protected volatile boolean isClosing = false;
   protected volatile boolean closingGatewayHubsByShutdownAll = false;
@@ -910,7 +908,8 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
   // ////////////////////// Constructors /////////////////////////
 
   /** Map of Futures used to track Regions that are being reinitialized */
-  private final CM reinitializingRegions = CFactory.createCM();
+  private final ConcurrentHashMap<String, FutureResult> reinitializingRegions =
+      new ConcurrentHashMap<>();
 
   /** Returns the last created instance of GemFireCache */
   public static GemFireCacheImpl getInstance() {
@@ -3285,7 +3284,7 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
 
           if (!isReinitCreate) { // fix bug 33523
             String fullPath = Region.SEPARATOR + name;
-            future = (Future) this.reinitializingRegions.get(fullPath);
+            future = this.reinitializingRegions.get(fullPath);
           }
           if (future == null) {
             HDFSIntegrationUtil.createAndAddAsyncQueue(regionPath, attrs, this);
@@ -3534,7 +3533,7 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
         return result;
       }
     }
-    return (LocalRegion) this.pathToRegion.get(path);
+    return this.pathToRegion.get(path);
   }
   public final LocalRegion getRegionByPathForProcessing(String path) {
     LocalRegion result = getRegionByPath(path, false);
@@ -3822,7 +3821,7 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
    */
   LocalRegion getReinitializingRegion(String fullPath, final boolean returnUnInitializedRegion) {
     LogWriterI18n logger = getLoggerI18n();
-    Future future = (Future) this.reinitializingRegions.get(fullPath);
+    Future future = this.reinitializingRegions.get(fullPath);
     if (future == null) {
       // if (logger.fineEnabled()) {
       // logger.fine("getReinitializingRegion: No initialization future for: "
@@ -3878,7 +3877,7 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
    */
   void regionReinitialized(Region region) {
     String regionName = region.getFullPath();
-    FutureResult future = (FutureResult) this.reinitializingRegions.get(regionName);
+    FutureResult future = this.reinitializingRegions.get(regionName);
     if (future == null) {
       throw new IllegalStateException(LocalizedStrings.GemFireCache_COULD_NOT_FIND_A_REINITIALIZING_REGION_NAMED_0
           .toLocalizedString(regionName));
@@ -4584,11 +4583,11 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
   }
 
   private TreeMap<String, PartitionedRegion> getPartitionedRegionMap() {
-    TreeMap<String, PartitionedRegion> prMap = new TreeMap();
-    for (Map.Entry<String, Region> entry : ((Map<String,Region>)pathToRegion).entrySet()) {
-      String regionName = (String) entry.getKey();
-      Region region = entry.getValue();
-      
+    TreeMap<String, PartitionedRegion> prMap = new TreeMap<>();
+    for (Map.Entry<String, LocalRegion> entry : pathToRegion.entrySet()) {
+      String regionName = entry.getKey();
+      LocalRegion region = entry.getValue();
+
       //Don't wait for non partitioned regions
       if(!(region instanceof PartitionedRegion)) {
         continue;
@@ -4897,7 +4896,7 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
   // //////////////////// Inner Classes //////////////////////
 
   // TODO make this a simple int guarded by riWaiters and get rid of the double-check
-  private final AI registerInterestsInProgress = CFactory.createAI();
+  private final AtomicInteger registerInterestsInProgress = new AtomicInteger();
 
   private final ArrayList<SimpleWaiter> riWaiters = new ArrayList<SimpleWaiter>();
 
