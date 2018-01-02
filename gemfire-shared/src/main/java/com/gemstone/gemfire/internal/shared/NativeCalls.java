@@ -290,10 +290,18 @@ public abstract class NativeCalls {
    * Check whether a process with given ID is still running.
    * 
    * @throws UnsupportedOperationException
-   *           if no native API to determine the process status could be invoked
+   *           if no known API to determine the process status could be invoked
    */
-  public abstract boolean isProcessActive(int processId)
-      throws UnsupportedOperationException;
+  public boolean isProcessActive(int processId)
+      throws UnsupportedOperationException {
+    java.io.File procDir = new java.io.File("/proc");
+    if (procDir.exists() && procDir.isDirectory()) {
+      return new java.io.File(procDir, processId + "/status").exists();
+    } else {
+      throw new UnsupportedOperationException(
+          "/proc not available for base isProcessActive() implementation");
+    }
+  }
 
   /**
    * Kill the process with given process ID immediately (i.e. without giving it
@@ -606,16 +614,6 @@ public abstract class NativeCalls {
         }
       }
       return 0;
-    }
-
-    /**
-     * @see NativeCalls#isProcessActive(int)
-     */
-    @Override
-    public boolean isProcessActive(int processId)
-        throws UnsupportedOperationException {
-      throw new UnsupportedOperationException(
-          "isProcessActive() not available in generic implementation");
     }
 
     /**
