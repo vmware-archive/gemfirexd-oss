@@ -60,7 +60,7 @@ public class OpenHashSet<E> extends AbstractSet<E>
 
   @SuppressWarnings("unused")
   public OpenHashSet() {
-    this(32, 0.7f);
+    this(16, 0.7f);
   }
 
   public OpenHashSet(int initialCapacity) {
@@ -377,14 +377,16 @@ public class OpenHashSet<E> extends AbstractSet<E>
   protected static int checkCapacity(int capacity) {
     if (capacity > 0 && capacity <= MAX_CAPACITY) {
       return capacity;
+    } else if (capacity == 0) {
+      return 2;
     } else {
-      throw new IllegalStateException("Can't contain more than " +
-          MAX_CAPACITY + " elements");
+      throw new IllegalStateException("Capacity (" + capacity +
+          ") can't be more than " + MAX_CAPACITY + " elements or negative");
     }
   }
 
   public static int nextPowerOf2(int n) {
-    final int highBit = Integer.highestOneBit(n);
+    final int highBit = Integer.highestOneBit(n > 0 ? n : 2);
     return checkCapacity(highBit == n ? n : highBit << 1);
   }
 
