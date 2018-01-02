@@ -126,7 +126,8 @@ namespace client {
         const char** possibleValues, const char* defaultValue, const int flags);
 
     static void addProperty_(const std::string& propName,
-        const char* helpMessage, const char** possibleValues, const int flags);
+        const char* helpMessage, const char** possibleValues,
+        const char* defaultValue, const int flags);
 
     static const std::unordered_set<std::string>& getValidPropertyNames();
 
