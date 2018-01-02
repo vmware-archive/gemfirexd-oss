@@ -69,9 +69,9 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 
 import com.gemstone.gemfire.internal.shared.unsafe.DirectBufferAllocator;
+import com.gemstone.gemfire.internal.shared.unsafe.UnsafeHolder;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.PropertyConfigurator;
-import org.apache.spark.unsafe.Platform;
 
 /**
  * Some shared methods now also used by GemFireXD clients so should not have any
@@ -110,8 +110,7 @@ public abstract class ClientSharedUtils {
 
   private static final Object[] staticZeroLenObjectArray = new Object[0];
 
-  public static final boolean isLittleEndian =
-      ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN;
+  public static final boolean isLittleEndian = UnsafeHolder.littleEndian;
 
   /**
    * all classes should use this variable to determine whether to use IPv4 or
@@ -1809,11 +1808,11 @@ public abstract class ClientSharedUtils {
     final boolean sameOrder = ByteOrder.nativeOrder() == buffer.order();
     // round off to nearest factor of 8 to read in longs
     final int endRound8Pos = (len % 8) != 0 ? (endPos - 8) : endPos;
-    long indexPos = Platform.BYTE_ARRAY_OFFSET;
+    long indexPos = UnsafeHolder.getByteArrayOffset();
     while (pos < endRound8Pos) {
       // splitting into longs is faster than reading one byte at a time even
       // though it costs more operations (about 20% in micro-benchmarks)
-      final long s = Platform.getLong(bytes, indexPos);
+      final long s = UnsafeHolder.getUnsafe().getLong(bytes, indexPos);
       final long v = buffer.getLong(pos);
       if (sameOrder) {
         if (s != v) {
@@ -1826,7 +1825,7 @@ public abstract class ClientSharedUtils {
       indexPos += 8;
     }
     while (pos < endPos) {
-      if (Platform.getByte(bytes, indexPos) != buffer.get(pos)) {
+      if (UnsafeHolder.getUnsafe().getByte(bytes, indexPos) != buffer.get(pos)) {
         return false;
       }
       pos++;

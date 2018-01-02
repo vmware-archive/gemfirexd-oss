@@ -106,8 +106,9 @@ public abstract class NativeCalls {
   @SuppressWarnings("unchecked")
   protected static final Map<String, String> getModifiableJavaEnvWIN() {
     try {
-      final Field envField = Class.forName("java.lang.ProcessEnvironment")
-          .getDeclaredField("theCaseInsensitiveEnvironment");
+      final Field envField = Class.forName("java.lang.ProcessEnvironment",
+          false, ClassLoader.getSystemClassLoader()).getDeclaredField(
+          "theCaseInsensitiveEnvironment");
       envField.setAccessible(true);
       return (Map<String, String>)envField.get(null);
     } catch (Exception ex) {
@@ -675,8 +676,8 @@ final class NativeCallsInst {
         // using reflection to get the implementation based on OSProcess
         // since this is also used by GemFireXD client; at some point all the
         // functionality of OSProcess should be folded into the JNA impl
-        final Class<?> c = Class
-            .forName("com.gemstone.gemfire.internal.OSProcess$NativeOSCalls");
+        final Class<?> c = Class.forName(
+            "com.gemstone.gemfire.internal.OSProcess$NativeOSCalls");
         inst = (NativeCalls)c.newInstance();
         // never catch Throwable or Error blindly because JVM only
         // guarantees OutOfMemoryError will be seen at least once
