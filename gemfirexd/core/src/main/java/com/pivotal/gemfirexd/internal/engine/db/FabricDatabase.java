@@ -527,6 +527,7 @@ public final class FabricDatabase implements ModuleControl,
                 GemFireStore.externalCatalogInitThread.set(Boolean.TRUE);
                 EmbedConnection embedConnection = null;
                 try {
+                  GemFireXDUtils.waitForNodeInitialization();
                   embedConnection = GemFireXDUtils.createNewInternalConnection(
                       false);
                   checkSnappyCatalogConsistency(embedConnection);
@@ -589,7 +590,7 @@ public final class FabricDatabase implements ModuleControl,
     }
   }
 
-  public void publishColumnStats() {
+  private void publishColumnStats() {
     if (this.memStore.isSnappyStore() && (this.memStore.getMyVMKind() ==
         GemFireStore.VMKind.DATASTORE || Misc.getDistributedSystem().isLoner())) {
       GemFireXDUtils.waitForNodeInitialization();

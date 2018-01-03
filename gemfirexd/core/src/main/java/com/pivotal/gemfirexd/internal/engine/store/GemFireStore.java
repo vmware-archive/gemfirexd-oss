@@ -60,6 +60,7 @@ import com.gemstone.gemfire.admin.jmx.Agent;
 import com.gemstone.gemfire.admin.jmx.AgentConfig;
 import com.gemstone.gemfire.admin.jmx.AgentFactory;
 import com.gemstone.gemfire.cache.*;
+import com.gemstone.gemfire.cache.TimeoutException;
 import com.gemstone.gemfire.cache.execute.FunctionService;
 import com.gemstone.gemfire.cache.util.ObjectSizer;
 import com.gemstone.gemfire.distributed.DistributedMember;
@@ -82,6 +83,7 @@ import com.gemstone.gemfire.internal.cache.*;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
 import com.gemstone.gemfire.internal.shared.FinalizeObject;
+import com.gemstone.gemfire.internal.shared.LauncherBase;
 import com.gemstone.gemfire.internal.shared.StringPrintWriter;
 import com.gemstone.gnu.trove.THashMap;
 import com.gemstone.gnu.trove.TLongHashSet;
@@ -926,16 +928,16 @@ public final class GemFireStore implements AccessFactory, ModuleControl,
       evictionHeapPercent = Float.parseFloat(propValue);
     }
     propValue = PropertyUtil.findAndGetProperty(props,
-        CacheServerLauncher.CRITICAL_OFF_HEAP_PERCENTAGE,
+        LauncherBase.CRITICAL_OFF_HEAP_PERCENTAGE,
         GfxdConstants.GFXD_PREFIX
-            + CacheServerLauncher.CRITICAL_OFF_HEAP_PERCENTAGE);
+            + LauncherBase.CRITICAL_OFF_HEAP_PERCENTAGE);
     if (propValue != null) {
       criticalOffHeapPercent = Float.parseFloat(propValue);
     }
     propValue = PropertyUtil.findAndGetProperty(props,
-        CacheServerLauncher.EVICTION_OFF_HEAP_PERCENTAGE,
+        LauncherBase.EVICTION_OFF_HEAP_PERCENTAGE,
         GfxdConstants.GFXD_PREFIX
-            + CacheServerLauncher.EVICTION_OFF_HEAP_PERCENTAGE);
+            + LauncherBase.EVICTION_OFF_HEAP_PERCENTAGE);
     if (propValue != null) {
       evictionOffHeapPercent = Float.parseFloat(propValue);
     }
@@ -2438,6 +2440,34 @@ public final class GemFireStore implements AccessFactory, ModuleControl,
       throw new RuntimeException(e.getCause());
     } catch (Exception e) {
       throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * Get the {@link ExternalCatalog} or wait for it to be initialized, or else
+   * throw a {@link TimeoutException} if wait failed unsuccessfully but never
+   * return a null.
+   */
+  public ExternalCatalog getExistingExternalCatalog() {
+    ExternalCatalog catalog;
+    int cnt = 0;
+    // retry catalog get after some sleep
+    while ((catalog = getExternalCatalog()) == null && ++cnt < 10) {
+      Throwable t = null;
+      try {
+        Thread.sleep(2);
+      } catch (InterruptedException ie) {
+        Thread.currentThread().interrupt();
+        t = ie;
+      }
+      // check for JVM going down
+      Misc.checkIfCacheClosing(t);
+    }
+    if (catalog != null) {
+      return catalog;
+    } else {
+      throw new TimeoutException(
+          "The SnappyData catalog in hive meta-store is not accessible");
     }
   }
 
