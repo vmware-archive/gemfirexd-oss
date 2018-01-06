@@ -1567,17 +1567,18 @@ public final class FabricDatabase implements ModuleControl,
       // line of logs which are of no use. Once the hive meta tables are
       // done, restore the logging level.
       if (previousLevel == Integer.MAX_VALUE &&
-          Misc.isSnappyHiveMetaTable(currentSchema))
-      {
+          Misc.isSnappyHiveMetaTable(currentSchema)) {
         GFToSlf4jBridge bridgeLogger = ((GFToSlf4jBridge)logger);
-        bridgeLogger.info("Starting hive meta-store initialization");
-        previousLevel = bridgeLogger.getLevel();
-        bridgeLogger.setLevel(LogWriterImpl.WARNING_LEVEL);
+        int currentLevel = bridgeLogger.getLevel();
+        if (currentLevel == LogWriterImpl.CONFIG_LEVEL ||
+            currentLevel == LogWriterImpl.INFO_LEVEL) {
+          previousLevel = currentLevel;
+          bridgeLogger.setLevel(LogWriterImpl.WARNING_LEVEL);
+        }
       } else if (previousLevel != Integer.MAX_VALUE &&
             Misc.isSnappyHiveMetaTable(lastCurrentSchema)) {
           GFToSlf4jBridge bridgeLogger = ((GFToSlf4jBridge)logger);
           bridgeLogger.setLevel(previousLevel);
-          bridgeLogger.info("Done hive meta-store initialization");
           previousLevel = Integer.MAX_VALUE;
       }
       // set the default schema masquerading as the user

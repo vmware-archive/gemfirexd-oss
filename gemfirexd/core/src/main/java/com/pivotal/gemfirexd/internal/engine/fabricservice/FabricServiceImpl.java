@@ -733,12 +733,12 @@ public abstract class FabricServiceImpl implements FabricService {
         netImpl.internalStart(networkProperties);
         retry = false;
       } catch (GemFireXDRuntimeException e) {
-        if (retry && numTries <= 10) {
+        if (retry && numTries <= 50) {
           // retry with an incremented port.
           netImpl.setPort(++port);
         } else throw e;
       }
-    } while (retry && numTries <= 10);
+    } while (retry && numTries <= 50);
 
     if (netImpl.getServerType().isThrift()) {
       serverType += (" (" + netImpl.getServerType().getProtocolString() + ')');
