@@ -916,14 +916,14 @@ public final class GemFireStore implements AccessFactory, ModuleControl,
       this.hdfsRootDir = propValue;
     }
     propValue = PropertyUtil.findAndGetProperty(props,
-        CacheServerLauncher.CRITICAL_HEAP_PERCENTAGE, GfxdConstants.GFXD_PREFIX
-            + CacheServerLauncher.CRITICAL_HEAP_PERCENTAGE);
+        LauncherBase.CRITICAL_HEAP_PERCENTAGE, GfxdConstants.GFXD_PREFIX
+            + LauncherBase.CRITICAL_HEAP_PERCENTAGE);
     if (propValue != null) {
       criticalHeapPercent = Float.parseFloat(propValue);
     }
     propValue = PropertyUtil.findAndGetProperty(props,
-        CacheServerLauncher.EVICTION_HEAP_PERCENTAGE, GfxdConstants.GFXD_PREFIX
-            + CacheServerLauncher.EVICTION_HEAP_PERCENTAGE);
+        LauncherBase.EVICTION_HEAP_PERCENTAGE, GfxdConstants.GFXD_PREFIX
+            + LauncherBase.EVICTION_HEAP_PERCENTAGE);
     if (propValue != null) {
       evictionHeapPercent = Float.parseFloat(propValue);
     }

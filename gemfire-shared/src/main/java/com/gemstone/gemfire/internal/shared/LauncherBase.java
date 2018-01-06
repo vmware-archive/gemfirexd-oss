@@ -274,26 +274,26 @@ public abstract class LauncherBase {
     }
     final String maxHeapStr = this.maxHeapSize;
     if (maxHeapStr != null && maxHeapStr.equals(this.initialHeapSize)) {
-      if (!map.containsKey(CRITICAL_HEAP_PERCENTAGE)) {
+      String criticalHeapStr = (String)map.get(CRITICAL_HEAP_PERCENTAGE);
+      if (criticalHeapStr == null) {
         // for larger heaps, keep critical as 95% and 90% for smaller ones
         long heapSize = ClientSharedUtils.parseMemorySize(maxHeapStr, 0L, 0);
         criticalPercent = heapSize >= (2L * 1024L * 1024L * 1024L) ? 95 : 90;
         map.put(CRITICAL_HEAP_PERCENTAGE, "-" + CRITICAL_HEAP_PERCENTAGE +
             '=' + criticalPercent);
       } else {
-        String criticalHeapStr = (String)map.get(CRITICAL_HEAP_PERCENTAGE);
         criticalPercent = Integer.parseInt(criticalHeapStr.substring(
             criticalHeapStr.indexOf('=') + 1).trim());
       }
 
-      if (!map.containsKey(EVICTION_HEAP_PERCENTAGE)) {
+      String evictHeapStr = (String)map.get(EVICTION_HEAP_PERCENTAGE);
+      if (evictHeapStr == null) {
         // reduce the critical-heap-percentage by 10% to get
         // eviction-heap-percentage
         evictPercent = (criticalPercent * 9) / 10;
         map.put(EVICTION_HEAP_PERCENTAGE, "-" + EVICTION_HEAP_PERCENTAGE +
             '=' + evictPercent);
       } else {
-        String evictHeapStr = (String)map.get(EVICTION_HEAP_PERCENTAGE);
         evictPercent = Integer.parseInt(evictHeapStr.substring(
             evictHeapStr.indexOf('=') + 1).trim());
       }

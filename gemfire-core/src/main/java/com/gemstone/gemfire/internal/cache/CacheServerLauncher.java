@@ -270,14 +270,6 @@ public class CacheServerLauncher extends LauncherBase {
   public static final String SERVER_PORT = "server-port";
   public static final String SERVER_BIND_ADDRESS = "server-bind-address";
   public static final String DISABLE_DEFAULT_SERVER = "disable-default-server";
-  public static final String CRITICAL_HEAP_PERCENTAGE =
-    "critical-heap-percentage";
-  public static final String EVICTION_HEAP_PERCENTAGE =
-      "eviction-heap-percentage";
-  public static final String CRITICAL_OFF_HEAP_PERCENTAGE =
-        "critical-off-heap-percentage";
-  public static final String EVICTION_OFF_HEAP_PERCENTAGE =
-      "eviction-off-heap-percentage";
   protected static final String LOCK_MEMORY = "lock-memory";
 
   protected void initKnownOptions() {

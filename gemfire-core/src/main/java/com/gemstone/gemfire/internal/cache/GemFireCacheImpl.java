@@ -1177,7 +1177,7 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
               "memory-size) is not supported in SnappyData OSS version.");
         }
         try {
-          Class clazz = Class.forName("com.gemstone.gemfire.internal.cache.store.ManagedDirectBufferAllocator");
+          Class<?> clazz = Class.forName("com.gemstone.gemfire.internal.cache.store.ManagedDirectBufferAllocator");
           Method method = clazz.getDeclaredMethod("instance");
           this.bufferAllocator = (DirectBufferAllocator)method.invoke(null);
         } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException |
@@ -1844,6 +1844,9 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
       sysCb.emergencyClose();
     }
 
+    // reset the DirectBufferAllocator before marking as closed
+    DirectBufferAllocator.resetInstance();
+
     GemFireCacheImpl.instance = null;
     GemFireCacheImpl.pdxInstance = null;
     // leave the PdxSerializer set if we have one to prevent 43412
@@ -2246,6 +2249,9 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
         this.system.removeResourceListener(listener);
         this.listener = null;
       }
+
+      // reset the DirectBufferAllocator before marking as closed
+      DirectBufferAllocator.resetInstance();
 
       isClosing = true;
 
