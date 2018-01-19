@@ -784,6 +784,15 @@ public class DistributionAdvisor  {
     }
   }
 
+
+  public final synchronized void resetPrevOpCount(){
+    if (VERBOSE || StateFlushOperation.DEBUG) {
+      getLogWriter().info(LocalizedStrings.DEBUG,
+          "resetPrevOpcount op count is " + currentVersionOpCount
+              + " in view version " + membershipVersion + " previous op count is " + previousVersionOpCount.get());
+    }
+    this.previousVersionOpCount.set(0);
+  }
   /**
    * this method must be invoked at the start of every operation
    * that can modify the state of resource.  The return value must be
