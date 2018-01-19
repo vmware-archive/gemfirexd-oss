@@ -29,7 +29,9 @@ public class ExternalTableMetaData {
       String compressionCodec,
       String baseTable,
       String dml,
-      String[] dependents) {
+      String[] dependents,
+      String dataSourcePath,
+      String driverClass) {
     this.entityName = entityName;
     this.schema = schema;
     this.tableType = tableType;
@@ -40,6 +42,8 @@ public class ExternalTableMetaData {
     this.baseTable = baseTable;
     this.dml = dml;
     this.dependents = dependents;
+    this.dataSourcePath = dataSourcePath;
+    this.driverClass = driverClass;
   }
 
   public String entityName;
@@ -54,6 +58,8 @@ public class ExternalTableMetaData {
   public String dml;
   public String[] dependents;
   public String provider;
+  public String dataSourcePath;
+  public String driverClass;
   // columns for metadata queries
   public List<Column> columns;
 
