@@ -58,6 +58,7 @@ public class ExternalTableMetaData {
   public String dml;
   public String[] dependents;
   public String provider;
+  public String shortProvider;
   public String dataSourcePath;
   public String driverClass;
   // columns for metadata queries
