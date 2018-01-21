@@ -245,7 +245,7 @@ public final class DistributedMembers extends UpdateVTITemplate {
     else if (STATUS.equals(columnName)) {
       final FabricService service = FabricServiceManager.currentFabricServiceInstance();
       if(service != null) {
-        res = service.status().name();
+        res = service.serviceStatus().name();
       }
       else {
         res = "UNKNOWN";

@@ -649,7 +649,7 @@ public abstract class FabricServiceImpl implements FabricService {
    * This method invoked from GemFireStore to notify booting up through
    * DriverManager.getConnection() instead of FabricServer api.
    */
-  public final void notifyStop(boolean reconnecting) {
+  public void notifyStop(boolean reconnecting) {
     if (GemFireXDUtils.TraceFabricServiceBoot) {
       logger.info("Accepting STOPPED notification");
     }

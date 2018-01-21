@@ -678,6 +678,10 @@ public class CacheServerLauncher extends LauncherBase {
     }
   }
 
+  public String getServerStartupMessage() {
+    return this.serverStartupMessage;
+  }
+
   public void setServerStartupMessage(String message) {
     this.serverStartupMessage = message;
   }
