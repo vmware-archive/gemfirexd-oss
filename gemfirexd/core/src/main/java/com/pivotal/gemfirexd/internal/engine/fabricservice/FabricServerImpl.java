@@ -23,7 +23,6 @@ import java.util.Set;
 
 import com.gemstone.gemfire.SystemFailure;
 import com.gemstone.gemfire.cache.CacheFactory;
-import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.persistence.PersistentMemberID;
 import com.pivotal.gemfirexd.FabricServer;
 import com.pivotal.gemfirexd.internal.engine.distributed.utils.GemFireXDUtils;
@@ -36,8 +35,8 @@ import com.pivotal.gemfirexd.internal.engine.distributed.utils.GemFireXDUtils;
  */
 public class FabricServerImpl extends FabricServiceImpl implements FabricServer {
 
-  Object initializationNotification = new Object();
-  boolean notified = false;
+  private final Object initializationNotification = new Object();
+  private boolean notified;
 
   @Override
   public boolean isServer() {
@@ -89,7 +88,7 @@ public class FabricServerImpl extends FabricServiceImpl implements FabricServer 
   /**
    * This method invoked from GemFire to notify waiting for another JVM to
    * initialize for disk GII.
-   *
+   * <p>
    * NOTE: It is deliberately not synchronized since it can be invoked by a
    * thread other than the booting thread itself which may be stuck waiting for
    * disk region initialization.
@@ -113,21 +112,21 @@ public class FabricServerImpl extends FabricServiceImpl implements FabricServer 
   public void notifyTableInitialized() {
     synchronized (initializationNotification) {
       notified = true;
-      initializationNotification.notify();
+      initializationNotification.notifyAll();
     }
   }
 
-  public void notifyTableWait() {
+  private void notifyTableWait() {
     synchronized (initializationNotification) {
       notified = true;
-      initializationNotification.notify();
+      initializationNotification.notifyAll();
     }
   }
 
   public void waitTableInitialized() throws InterruptedException {
     synchronized (initializationNotification) {
       while (!notified) {
-        initializationNotification.wait();
+        initializationNotification.wait(500);
       }
       notified = false;
     }
