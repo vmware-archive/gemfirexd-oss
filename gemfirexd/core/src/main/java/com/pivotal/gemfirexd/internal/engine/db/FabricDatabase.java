@@ -49,13 +49,9 @@ import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.util.*;
-import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import com.gemstone.gemfire.CancelException;
 import com.gemstone.gemfire.LogWriter;
@@ -63,7 +59,6 @@ import com.gemstone.gemfire.cache.DataPolicy;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.distributed.internal.DistributionManager;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
-import com.gemstone.gemfire.i18n.LogWriterI18n;
 import com.gemstone.gemfire.internal.ClassPathLoader;
 import com.gemstone.gemfire.internal.GFToSlf4jBridge;
 import com.gemstone.gemfire.internal.LogWriterImpl;
@@ -79,17 +74,17 @@ import com.pivotal.gemfirexd.FabricServiceManager;
 import com.pivotal.gemfirexd.internal.catalog.ExternalCatalog;
 import com.pivotal.gemfirexd.internal.catalog.SystemProcedures;
 import com.pivotal.gemfirexd.internal.catalog.UUID;
-import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserver;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
 import com.pivotal.gemfirexd.internal.engine.GfxdConstants;
+import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.engine.access.GemFireTransaction;
 import com.pivotal.gemfirexd.internal.engine.access.index.GfxdIndexManager;
 import com.pivotal.gemfirexd.internal.engine.access.index.MemIndex;
 import com.pivotal.gemfirexd.internal.engine.ddl.DDLConflatable;
-import com.pivotal.gemfirexd.internal.engine.ddl.ReplayableConflatable;
 import com.pivotal.gemfirexd.internal.engine.ddl.GfxdDDLQueueEntry;
 import com.pivotal.gemfirexd.internal.engine.ddl.GfxdDDLRegionQueue;
+import com.pivotal.gemfirexd.internal.engine.ddl.ReplayableConflatable;
 import com.pivotal.gemfirexd.internal.engine.ddl.catalog.messages.GfxdSystemProcedureMessage;
 import com.pivotal.gemfirexd.internal.engine.ddl.wan.messages.AbstractGfxdReplayableMessage;
 import com.pivotal.gemfirexd.internal.engine.distributed.GfxdMessage;
@@ -131,8 +126,8 @@ import com.pivotal.gemfirexd.internal.iapi.sql.conn.LanguageConnectionContext;
 import com.pivotal.gemfirexd.internal.iapi.sql.conn.LanguageConnectionFactory;
 import com.pivotal.gemfirexd.internal.iapi.sql.dictionary.DataDictionary;
 import com.pivotal.gemfirexd.internal.iapi.sql.dictionary.FileInfoDescriptor;
-import com.pivotal.gemfirexd.internal.iapi.sql.dictionary.SchemaDescriptor;
 import com.pivotal.gemfirexd.internal.iapi.sql.dictionary.GfxdDiskStoreDescriptor;
+import com.pivotal.gemfirexd.internal.iapi.sql.dictionary.SchemaDescriptor;
 import com.pivotal.gemfirexd.internal.iapi.sql.execute.ExecutionFactory;
 import com.pivotal.gemfirexd.internal.iapi.store.access.AccessFactory;
 import com.pivotal.gemfirexd.internal.iapi.store.access.FileResource;
@@ -1279,23 +1274,10 @@ public final class FabricDatabase implements ModuleControl,
                 + container);
           }
         }
-      }
-      else {
-        ExecutorService execService = Executors
-            .newCachedThreadPool(new ThreadFactory() {
-              AtomicInteger threadNum = new AtomicInteger(0);
-
-              public Thread newThread(final Runnable r) {
-                LogWriterI18n logger = InternalDistributedSystem.getLoggerI18n();
-                Thread result = new Thread(LogWriterImpl.createThreadGroup(
-                    "RegionInitializerExecutionThreadGroup", logger), r,
-                    "RegionInitializer Thread-" + threadNum.incrementAndGet());
-                result.setDaemon(true);
-                return result;
-              }
-            });
-
-        List<Future<Object>> results = new LinkedList<>();
+      } else {
+        ExecutorService execService = cache.getDistributionManager()
+            .getWaitingThreadPool();
+        List<Future<Boolean>> results = new ArrayList<>();
         for (GemFireContainer container : uninitializedContainers) {
           if (logger.infoEnabled() &&
               !Misc.isSnappyHiveMetaTable(container.getSchemaName())) {
@@ -1303,18 +1285,18 @@ public final class FabricDatabase implements ModuleControl,
                 + container);
           }
           // do 1 at a time
-          // check if one is done then submit next
+          // check if one is done or goes into WAITING, then submit next
           final FabricService service = FabricServiceManager
               .currentFabricServiceInstance();
-          Future f = execService.submit(new Callable<Boolean>() {
-            @Override
-            public Boolean call() throws Exception {
+          Future<Boolean> f = execService.submit(() -> {
+            try {
               container.initializeRegion();
+            } finally {
               if (service instanceof FabricServerImpl) {
                 ((FabricServerImpl)service).notifyTableInitialized();
               }
-              return true;
             }
+            return true;
           });
           results.add(f);
 
@@ -1330,14 +1312,43 @@ public final class FabricDatabase implements ModuleControl,
           }
         }
 
-        for (Future f : results) {
-          f.get();
+        List<GemFireContainer> failed = new ArrayList<>(1);
+        int index = 0;
+        for (Future<Boolean> f : results) {
+          try {
+            f.get();
+          } catch (ExecutionException failure) {
+            // ignore at this point and retry once more
+            GemFireContainer container = uninitializedContainers.get(index);
+            if (logger.warningEnabled()) {
+              logger.warning(
+                  "FabricDatabase: error in initialization of container: " +
+                      container + ". Will retry.", failure);
+            }
+            failed.add(container);
+          }
+          index++;
+        }
+
+        // retry failed initializations
+        if (!failed.isEmpty()) {
+          for (GemFireContainer container : failed) {
+            if (logger.infoEnabled() &&
+                !Misc.isSnappyHiveMetaTable(container.getSchemaName())) {
+              logger.info("FabricDatabase: start initializing container: "
+                  + container);
+            }
+
+            container.initializeRegion();
+
+            if (logger.infoEnabled() &&
+                !Misc.isSnappyHiveMetaTable(container.getSchemaName())) {
+              logger.info("FabricDatabase: end initializing container: "
+                  + container);
+            }
+          }
         }
       }
-
-
-
-      //container.initializeRegion();
 
       ddlStmtQueue.clearQueue();
       String currentSchema = lcc.getCurrentSchemaName();
