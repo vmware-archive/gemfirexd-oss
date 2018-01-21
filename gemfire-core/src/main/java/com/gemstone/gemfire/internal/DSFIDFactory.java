@@ -721,7 +721,7 @@ public final class DSFIDFactory implements DataSerializableFixedID {
         () -> new MissingPersistentIDsResponse());
     registerDSFID(REVOKE_PERSISTENT_ID_REQUEST,
         () -> new RevokePersistentIDRequest());
-    registerDSFID(WAITING_PERSISTENT_IDS_REQUEST, 
+    registerDSFID(WAITING_PERSISTENT_IDS_REQUEST,
         () -> new WaitingPersistentIDRequest());
     registerDSFID(REVOKE_PERSISTENT_ID_RESPONSE,
         () -> new RevokePersistentIDResponse());
