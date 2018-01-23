@@ -506,7 +506,7 @@ public abstract class LauncherBase {
     final long end = clock + SHUTDOWN_WAIT_TIME;
     while (clock < end) {
       try {
-        this.status = Status.read(this.baseName, statusFile);
+        this.status = spinReadStatus(statusFile);
         if (this.status.state == Status.SHUTDOWN) {
           break;
         }
