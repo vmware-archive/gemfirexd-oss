@@ -1166,7 +1166,11 @@ public class CacheServerLauncher extends LauncherBase {
    */
   protected Status readStatus(boolean starting)
       throws InterruptedException, IOException {
-    return Status.read(this.baseName, getStatusPath());
+    if (starting) {
+      return spinReadStatus(getStatusPath());
+    } else {
+      return Status.read(this.baseName, getStatusPath());
+    }
   }
 
   protected String getLogFilePath(final Properties props) {
