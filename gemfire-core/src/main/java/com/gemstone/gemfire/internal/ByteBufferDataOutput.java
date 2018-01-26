@@ -116,8 +116,10 @@ public final class ByteBufferDataOutput extends SerializedDiskBuffer
   @Override
   protected synchronized void releaseBuffer() {
     final ByteBuffer buffer = this.buffer;
-    this.buffer = null;
-    this.allocator.release(buffer);
+    if (buffer != null) {
+      this.allocator.release(buffer);
+      this.buffer = null;
+    }
   }
 
   @Override
