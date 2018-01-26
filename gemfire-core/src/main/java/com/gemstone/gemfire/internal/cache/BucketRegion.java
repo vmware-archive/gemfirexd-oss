@@ -1283,7 +1283,7 @@ public class BucketRegion extends DistributedRegion implements Bucket {
         if (logger.fineEnabled()) {
           logger.fine("Taking readonly snapshotGIILock on bucket " + this);
         }
-        snapshotGIILock.attemptLock(LockMode.READ_ONLY, -1, giiReadLockForSIOwner);
+        snapshotGIILock.attemptLock(LockMode.SH, -1, giiReadLockForSIOwner);
       }
     }
   }
@@ -1300,7 +1300,7 @@ public class BucketRegion extends DistributedRegion implements Bucket {
         if (logger.fineEnabled()) {
           logger.fine("Releasing readonly snapshotGIILock on bucket " + this.getName());
         }
-        snapshotGIILock.releaseLock(LockMode.READ_ONLY, false, giiReadLockForSIOwner);
+        snapshotGIILock.releaseLock(LockMode.SH, false, giiReadLockForSIOwner);
       }
     }
   }
