@@ -774,7 +774,7 @@ public class CacheServerLauncher extends LauncherBase {
     while(true) {
       serverConnector.join(500);
       if (serverConnector.isAlive()) {
-        Status s = readStatus(true);
+        Status s = readStatus();
         if (s.state == SHUTDOWN_PENDING || s.state == SHUTDOWN) {
           InternalDistributedSystem ids = InternalDistributedSystem.getConnectedInstance();
           if (ids != null) {
@@ -827,32 +827,20 @@ public class CacheServerLauncher extends LauncherBase {
       lastModified = getLastModifiedStatusNanos();
       if (lastModified != oldModified || count++ == FORCE_STATUS_FILE_READ_ITERATION_COUNT) {
         count = 0;
-        Thread.sleep(100); // allow for it to finish writing
-        //Sometimes the status file is partially written causing readObject to
-        //fail, sleep and retry.
         try {
-          status = readStatus(false);
-        } catch(IOException ioeSecondChance) {
-          Thread.sleep(1000);
+          status = readStatus();
+        } catch (FileNotFoundException ignored) {
+          // See bug 44627.
+          // The cache server used to just shutdown at this point. Instead,
+          // recreate the status file if possible and continue.
+          status = createStatus(RUNNING, originalStatus.pid);
           try {
-            status = readStatus(false);
-          } catch(IOException ioeThirdChance) {
-            Thread.sleep(5000);
-            try {
-              status = readStatus(false);
-            } catch (FileNotFoundException fnfe) {
-              // See bug 44627.
-              // The cache server used to just shutdown at this point. Instead,
-              // recreate the status file if possible and continue.
-              status = createStatus(RUNNING, originalStatus.pid);
-              try {
-                setRunningStatus(status, system);
-              } catch (FileNotFoundException e) {
-                if (!loggedWarning) {
-                  logger.warning(LocalizedStrings.CacheServerLauncher_CREATE_STATUS_EXCEPTION_0, e.toString());
-                  loggedWarning = true;
-                }
-              }
+            setRunningStatus(status, system);
+          } catch (FileNotFoundException e) {
+            if (!loggedWarning) {
+              logger.warning(LocalizedStrings.CacheServerLauncher_CREATE_STATUS_EXCEPTION_0,
+                  e.toString());
+              loggedWarning = true;
             }
           }
         }
@@ -866,11 +854,10 @@ public class CacheServerLauncher extends LauncherBase {
             writeStatus(status);
             externalShutDown = false;
         } else {
-          Thread.sleep( 250 );
+          Thread.sleep(150);
         }
-
       } else {
-        Thread.sleep(250);
+        Thread.sleep(150);
       }
       if (!system.isConnected()) {
 //        System.out.println("System is disconnected.  isReconnecting = " + system.isReconnecting());
@@ -1164,10 +1151,10 @@ public class CacheServerLauncher extends LauncherBase {
   /**
    * Reads a cache server's status from a file in its working directory.
    */
-  protected Status readStatus(boolean starting)
-      throws InterruptedException, IOException {
-    if (starting) {
-      return spinReadStatus(getStatusPath());
+  protected Status readStatus() throws InterruptedException, IOException {
+    Status status = spinReadStatus(getStatusPath());
+    if (status != null) {
+      return status;
     } else {
       return Status.read(this.baseName, getStatusPath());
     }
