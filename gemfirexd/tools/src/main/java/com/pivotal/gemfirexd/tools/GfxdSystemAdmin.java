@@ -36,6 +36,7 @@ import com.gemstone.gemfire.distributed.internal.DistributionConfig;
 import com.gemstone.gemfire.distributed.internal.DistributionConfigImpl;
 import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.internal.GemFireTerminateError;
+import com.gemstone.gemfire.internal.GemFireUtilLauncher;
 import com.gemstone.gemfire.internal.SystemAdmin;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
@@ -80,10 +81,12 @@ public class GfxdSystemAdmin extends SystemAdmin {
   protected final static HashMap<String, String> modifiedHelpInfo =
     new HashMap<String, String>();
 
+  // keep the commands here in sorted order since Arrays.binarySearch is used
   final static String[] commandsWithDSProps = new String[] { "backup",
       "compact-all-disk-stores", "encrypt-password",
-      "list-missing-disk-stores", "print-stacks", "revoke-missing-disk-store", "unblock-disk-store",
-      "shut-down-all" };
+      "list-missing-disk-stores", "print-stacks", "revoke-missing-disk-store",
+      "shut-down-all", "unblock-disk-store"
+  };
 
   private static final String INCLUDE_ADMINS = "-include-admins";
   private static final String SKIP_ACCESSORS = "-skip-accessors";
@@ -216,7 +219,7 @@ public class GfxdSystemAdmin extends SystemAdmin {
   @Override
   protected String getUsageString(String cmd) {
     final StringBuilder result = new StringBuilder(80);
-    result.append(GfxdUtilLauncher.SCRIPT_NAME).append(' ');
+    result.append(GemFireUtilLauncher.SCRIPT_NAME).append(' ');
     result.append(this.usageMap.get(cmd.toLowerCase()));
     return result.toString();
   }

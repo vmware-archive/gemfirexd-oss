@@ -932,8 +932,9 @@ public class GfxdServerLauncher extends CacheServerLauncher {
         configProps.put(entry.getKey(), entry.getValue());
       }
     }
-    DistributionConfig config = printDiscoverySettings(options, configProps);
+    printDiscoverySettings(options, configProps);
 
+    /*
     // check and print starting message for network server
     String runNetServer = (String)options.get(RUN_NETSERVER);
     String bindAddress = (String)options.get(getNetworkAddressArgName());
@@ -973,6 +974,7 @@ public class GfxdServerLauncher extends CacheServerLauncher {
           .toLocalizedString(new Object[] { "DRDA", this.baseName,
               listenAddr, availablePort(port) }));
     }
+    */
   }
 
   protected DistributionConfig printDiscoverySettings(
