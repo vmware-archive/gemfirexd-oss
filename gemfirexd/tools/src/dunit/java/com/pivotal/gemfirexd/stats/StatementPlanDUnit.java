@@ -287,8 +287,8 @@ public class StatementPlanDUnit extends DistributedSQLTestBase {
 
         Connection conn = TestUtil.getNetConnection(netPort, null, p);
         
-        final ResultSet rs = conn.getMetaData().getTables((String)null, null,
-            "course".toUpperCase(), new String[] { "TABLE" });
+        final ResultSet rs = conn.getMetaData().getTables(null, null,
+            "course".toUpperCase(), new String[] { "ROW TABLE" });
         final boolean found = rs.next();
         rs.close();
 

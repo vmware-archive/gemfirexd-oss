@@ -1798,7 +1798,7 @@ public class EmbedDatabaseMetaData extends ConnectionChild
 		//GemStone changes END
 
 		if (types == null)  {// null means all types 
-			types = new String[] {"TABLE","VIEW","SYNONYM","SYSTEM TABLE"
+			types = new String[] {"ROW TABLE","VIEW","SYNONYM","SYSTEM TABLE"
 			/* GemStone changes BEGIN */, "COLUMN TABLE",
 			"EXTERNAL TABLE", "STREAM TABLE", "SAMPLE TABLE", "TOPK TABLE"
 			/* GemStone changes END */};

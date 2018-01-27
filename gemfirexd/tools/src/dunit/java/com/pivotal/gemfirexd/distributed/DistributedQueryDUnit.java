@@ -947,8 +947,8 @@ public class DistributedQueryDUnit extends DistributedSQLTestBase {
 
           Statement st = conn.createStatement();
 
-          ResultSet rs = conn.getMetaData().getTables((String)null, null,
-              "course".toUpperCase(), new String[] { "TABLE" });
+          ResultSet rs = conn.getMetaData().getTables(null, null,
+              "course".toUpperCase(), new String[] { "ROW TABLE" });
           final boolean found = rs.next();
           rs.close();
 
