@@ -19,7 +19,8 @@ package com.gemstone.gemfire.internal.shared;
 import java.nio.ByteBuffer;
 
 import com.gemstone.gemfire.internal.shared.unsafe.DirectBufferAllocator;
-import com.gemstone.gemfire.internal.shared.unsafe.UnsafeHolder;
+import org.apache.spark.unsafe.Platform;
+import org.apache.spark.unsafe.memory.MemoryAllocator;
 
 /**
  * Heap ByteBuffer implementation of {@link BufferAllocator}.
@@ -36,14 +37,24 @@ public final class HeapBufferAllocator extends BufferAllocator {
   private HeapBufferAllocator() {
   }
 
+  private void fill(ByteBuffer buffer, byte b) {
+    int pos = buffer.position();
+    Platform.setMemory(buffer.array(), Platform.BYTE_ARRAY_OFFSET +
+        buffer.arrayOffset() + pos, buffer.capacity() - pos, b);
+  }
+
   @Override
   public ByteBuffer allocate(int size, String owner) {
-    return ByteBuffer.allocate(size);
+    return allocateForStorage(size);
   }
 
   @Override
   public ByteBuffer allocateForStorage(int size) {
-    return ByteBuffer.allocate(size);
+    ByteBuffer buffer = ByteBuffer.allocate(size);
+    if (MemoryAllocator.MEMORY_DEBUG_FILL_ENABLED) {
+      fill(buffer, MemoryAllocator.MEMORY_DEBUG_FILL_CLEAN_VALUE);
+    }
+    return buffer;
   }
 
   @Override
@@ -58,7 +69,7 @@ public final class HeapBufferAllocator extends BufferAllocator {
 
   @Override
   public long baseOffset(ByteBuffer buffer) {
-    return UnsafeHolder.getByteArrayOffset() + buffer.arrayOffset();
+    return Platform.BYTE_ARRAY_OFFSET + buffer.arrayOffset();
   }
 
   @Override
@@ -71,6 +82,12 @@ public final class HeapBufferAllocator extends BufferAllocator {
       final int newLength = BufferAllocator.expandedSize(currentUsed, required);
       final byte[] newBytes = new byte[newLength];
       System.arraycopy(bytes, buffer.arrayOffset(), newBytes, 0, currentUsed);
+      if (MemoryAllocator.MEMORY_DEBUG_FILL_ENABLED) {
+        // fill the remaining bytes
+        ByteBuffer buf = ByteBuffer.wrap(newBytes, currentUsed,
+            newLength - currentUsed);
+        fill(buf, MemoryAllocator.MEMORY_DEBUG_FILL_CLEAN_VALUE);
+      }
       return ByteBuffer.wrap(newBytes).order(buffer.order());
     } else {
       buffer.limit(currentUsed + required);
@@ -102,6 +119,8 @@ public final class HeapBufferAllocator extends BufferAllocator {
       // release the incoming direct buffer eagerly
       if (buffer.isDirect()) {
         DirectBufferAllocator.instance().release(buffer);
+      } else {
+        release(buffer);
       }
       return newBuffer;
     }
@@ -109,6 +128,10 @@ public final class HeapBufferAllocator extends BufferAllocator {
 
   @Override
   public void release(ByteBuffer buffer) {
+    if (MemoryAllocator.MEMORY_DEBUG_FILL_ENABLED) {
+      buffer.rewind();
+      fill(buffer, MemoryAllocator.MEMORY_DEBUG_FILL_FREED_VALUE);
+    }
   }
 
   @Override

@@ -44,7 +44,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.LockSupport;
 import java.util.function.BiConsumer;
 
@@ -54,6 +53,7 @@ import com.gemstone.gemfire.internal.shared.ChannelBufferInputStream;
 import com.gemstone.gemfire.internal.shared.ChannelBufferOutputStream;
 import com.gemstone.gemfire.internal.shared.InputStreamChannel;
 import com.gemstone.gemfire.internal.shared.OutputStreamChannel;
+import org.apache.spark.unsafe.Platform;
 
 /**
  * Holder for static sun.misc.Unsafe instance and some convenience methods. Use
@@ -67,7 +67,6 @@ public abstract class UnsafeHolder {
   private static final class Wrapper {
 
     static final sun.misc.Unsafe unsafe;
-    static final int byteArrayOffset;
     static final boolean unaligned;
     static final Constructor<?> directBufferConstructor;
     static final Field cleanerField;
@@ -127,7 +126,6 @@ public abstract class UnsafeHolder {
             "DirectByteBuffer cleaner thunk runnable field not found");
       }
       unsafe = v;
-      byteArrayOffset = v.arrayBaseOffset(byte[].class);
       directBufferConstructor = dbConstructor;
       cleanerField = cleaner;
       cleanerRunnableField = runnableField;
@@ -156,7 +154,6 @@ public abstract class UnsafeHolder {
   private static final boolean hasUnsafe;
   // Limit to the chunk copied per Unsafe.copyMemory call to allow for
   // safepoint polling by JVM.
-  private static final long UNSAFE_COPY_THRESHOLD = 1L << 20;
   public static final boolean littleEndian =
       ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN;
 
@@ -180,34 +177,6 @@ public abstract class UnsafeHolder {
     return hasUnsafe;
   }
 
-  @SuppressWarnings("serial")
-  public static abstract class FreeMemory extends AtomicLong implements Runnable {
-
-    protected FreeMemory(long address) {
-      super(address);
-    }
-
-    protected final long tryFree() {
-      // try hard to ensure freeMemory call happens only once
-      final long address = get();
-      return (address != 0 && compareAndSet(address, 0L)) ? address : 0L;
-    }
-
-    protected abstract String objectName();
-
-    @Override
-    public void run() {
-      final long address = tryFree();
-      if (address != 0) {
-        getUnsafe().freeMemory(address);
-      }
-    }
-  }
-
-  public interface FreeMemoryFactory {
-    FreeMemory newFreeMemory(long address, int size);
-  }
-
   public static int getAllocationSize(int size) {
     // round to word size
     size = ((size + 7) >>> 3) << 3;
@@ -216,7 +185,7 @@ public abstract class UnsafeHolder {
   }
 
   public static ByteBuffer allocateDirectBuffer(int size,
-      FreeMemoryFactory factory) {
+      FreeMemory.Factory factory) {
     final int allocSize = getAllocationSize(size);
     final ByteBuffer buffer = allocateDirectBuffer(
         getUnsafe().allocateMemory(allocSize), allocSize, factory);
@@ -225,7 +194,7 @@ public abstract class UnsafeHolder {
   }
 
   public static ByteBuffer allocateDirectBuffer(long address, int size,
-      FreeMemoryFactory factory) {
+      FreeMemory.Factory factory) {
     try {
       ByteBuffer buffer = (ByteBuffer)Wrapper.directBufferConstructor
           .newInstance(address, size);
@@ -246,7 +215,7 @@ public abstract class UnsafeHolder {
   }
 
   public static ByteBuffer reallocateDirectBuffer(ByteBuffer buffer,
-      int newSize, Class<?> expectedClass, FreeMemoryFactory factory) {
+      int newSize, Class<?> expectedClass, FreeMemory.Factory factory) {
     sun.nio.ch.DirectBuffer directBuffer = (sun.nio.ch.DirectBuffer)buffer;
     final long address = directBuffer.address();
     long newAddress = 0L;
@@ -277,8 +246,8 @@ public abstract class UnsafeHolder {
         throw new IllegalStateException("Expected class to be " +
             expectedClass.getName() + " in reallocate but was non-runnable");
       }
-      newAddress = Wrapper.unsafe.allocateMemory(newSize);
-      copyMemory(null, address, null, newAddress,
+      newAddress = getUnsafe().allocateMemory(newSize);
+      Platform.copyMemory(null, address, null, newAddress,
           Math.min(newSize, buffer.limit()));
     }
     // clean only after copying is done
@@ -301,7 +270,7 @@ public abstract class UnsafeHolder {
    */
   public static void changeDirectBufferCleaner(
       ByteBuffer buffer, int size, Class<? extends FreeMemory> from,
-      Class<? extends FreeMemory> to, FreeMemoryFactory factory,
+      Class<? extends FreeMemory> to, FreeMemory.Factory factory,
       final BiConsumer<String, Object> changeOwner) throws IllegalAccessException {
     sun.nio.ch.DirectBuffer directBuffer = (sun.nio.ch.DirectBuffer)buffer;
     final sun.misc.Cleaner cleaner = directBuffer.cleaner();
@@ -367,41 +336,6 @@ public abstract class UnsafeHolder {
 
   public static sun.misc.Unsafe getUnsafe() {
     return Wrapper.unsafe;
-  }
-
-  public static int getByteArrayOffset() {
-    return Wrapper.byteArrayOffset;
-  }
-
-  /**
-   * Copy memory in blocks for large chunks rather than one-shot.
-   * Taken from Spark's Platform.copyMemory and java.nio.Bits.copy* methods.
-   * For JVM safepoint polling (e.g. see discussion
-   * <a href="https://groups.google.com/forum/#!topic/mechanical-sympathy/f3g8pry-o1A">here</a>)
-   */
-  public static void copyMemory(Object src, long srcOffset,
-      Object dst, long dstOffset, long length) {
-    // Check if dstOffset is before or after srcOffset to determine if we should copy
-    // forward or backwards. This is necessary in case src and dst overlap.
-    if (dstOffset < srcOffset) {
-      while (length > 0) {
-        long size = Math.min(length, UNSAFE_COPY_THRESHOLD);
-        Wrapper.unsafe.copyMemory(src, srcOffset, dst, dstOffset, size);
-        length -= size;
-        srcOffset += size;
-        dstOffset += size;
-      }
-    } else {
-      srcOffset += length;
-      dstOffset += length;
-      while (length > 0) {
-        long size = Math.min(length, UNSAFE_COPY_THRESHOLD);
-        srcOffset -= size;
-        dstOffset -= size;
-        Wrapper.unsafe.copyMemory(src, srcOffset, dst, dstOffset, size);
-        length -= size;
-      }
-    }
   }
 
   public static boolean tryMonitorEnter(Object obj, boolean checkSelf) {

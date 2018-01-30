@@ -44,6 +44,7 @@ import javax.annotation.Nonnull;
 import com.gemstone.gemfire.internal.shared.ChannelBufferOutputStream;
 import com.gemstone.gemfire.internal.shared.ClientSharedUtils;
 import com.gemstone.gemfire.internal.shared.OutputStreamChannel;
+import org.apache.spark.unsafe.Platform;
 
 /**
  * A somewhat more efficient implementation of {@link ChannelBufferOutputStream}
@@ -145,14 +146,14 @@ public class ChannelBufferUnsafeOutputStream extends OutputStreamChannel {
       final long addrPos = this.addrPosition;
       final int remaining = (int)(this.addrLimit - addrPos);
       if (len <= remaining) {
-        UnsafeHolder.copyMemory(b, UnsafeHolder.getByteArrayOffset() + off,
+        Platform.copyMemory(b, Platform.BYTE_ARRAY_OFFSET + off,
             null, addrPos, len);
         this.addrPosition += len;
         return;
       } else {
         // copy b to buffer and flush
         if (remaining > 0) {
-          UnsafeHolder.copyMemory(b, UnsafeHolder.getByteArrayOffset() + off,
+          Platform.copyMemory(b, Platform.BYTE_ARRAY_OFFSET + off,
               null, addrPos, remaining);
           this.addrPosition += remaining;
           len -= remaining;
@@ -175,7 +176,7 @@ public class ChannelBufferUnsafeOutputStream extends OutputStreamChannel {
     if (this.addrPosition >= this.addrLimit) {
       flushBufferBlocking(this.buffer);
     }
-    UnsafeHolder.getUnsafe().putByte(null, this.addrPosition++, b);
+    Platform.putByte(null, this.addrPosition++, b);
   }
 
   /**
@@ -297,9 +298,9 @@ public class ChannelBufferUnsafeOutputStream extends OutputStreamChannel {
   /** Write an integer in big-endian format on given off-heap address. */
   protected static long putInt(long addrPos, final int v) {
     if (UnsafeHolder.littleEndian) {
-      UnsafeHolder.getUnsafe().putInt(null, addrPos, Integer.reverseBytes(v));
+      Platform.putInt(null, addrPos, Integer.reverseBytes(v));
     } else {
-      UnsafeHolder.getUnsafe().putInt(null, addrPos, v);
+      Platform.putInt(null, addrPos, v);
     }
     return addrPos + 4;
   }

@@ -19,7 +19,8 @@ package com.gemstone.gemfire.internal.shared;
 import java.io.Closeable;
 import java.nio.ByteBuffer;
 
-import com.gemstone.gemfire.internal.shared.unsafe.UnsafeHolder;
+import com.gemstone.gemfire.internal.shared.unsafe.FreeMemory;
+import org.apache.spark.unsafe.Platform;
 
 /**
  * Allocate, release and expand ByteBuffers (in-place if possible).
@@ -51,7 +52,7 @@ public abstract class BufferAllocator implements Closeable {
    * Clear the given portion of the buffer setting it with zeros.
    */
   public final void clearBuffer(ByteBuffer buffer, int position, int numBytes) {
-    UnsafeHolder.getUnsafe().setMemory(baseObject(buffer), baseOffset(buffer) +
+    Platform.setMemory(baseObject(buffer), baseOffset(buffer) +
         position, numBytes, (byte)0);
   }
 
@@ -128,7 +129,7 @@ public abstract class BufferAllocator implements Closeable {
    * Only for managed buffer allocator.
    */
   public ByteBuffer allocateCustom(int size,
-      UnsafeHolder.FreeMemoryFactory factory) {
+      FreeMemory.Factory factory) {
     throw new UnsupportedOperationException("Not supported for " + toString());
   }
 

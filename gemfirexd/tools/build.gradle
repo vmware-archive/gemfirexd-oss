@@ -40,7 +40,6 @@ dependencies {
     exclude(group: 'org.slf4j', module: 'slf4j-api')
   }
   compile "com.esotericsoftware:kryo-shaded:${kryoVersion}"
-  compile "org.apache.spark:spark-unsafe_${scalaBinaryVersion}:${sparkVersion}"
 
   // use dunit support from snappydata
   if (subprojectBase == ':') {
