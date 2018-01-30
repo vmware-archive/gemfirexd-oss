@@ -37,12 +37,6 @@ public final class HeapBufferAllocator extends BufferAllocator {
   private HeapBufferAllocator() {
   }
 
-  private void fill(ByteBuffer buffer, byte b) {
-    int pos = buffer.position();
-    Platform.setMemory(buffer.array(), Platform.BYTE_ARRAY_OFFSET +
-        buffer.arrayOffset() + pos, buffer.capacity() - pos, b);
-  }
-
   @Override
   public ByteBuffer allocate(int size, String owner) {
     return allocateForStorage(size);
@@ -59,7 +53,12 @@ public final class HeapBufferAllocator extends BufferAllocator {
 
   @Override
   public void clearPostAllocate(ByteBuffer buffer) {
-    // JVM clears the allocated area
+    // JVM clears the allocated area, so only clear for DEBUG_FILL case
+    if (MemoryAllocator.MEMORY_DEBUG_FILL_ENABLED) {
+      // clear till the capacity and not limit since former will be a factor
+      // of 8 and hence more efficient in Unsafe.setMemory
+      fill(buffer, (byte)0, 0, buffer.capacity());
+    }
   }
 
   @Override

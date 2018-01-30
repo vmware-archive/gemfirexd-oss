@@ -49,11 +49,19 @@ public abstract class BufferAllocator implements Closeable {
   public abstract void clearPostAllocate(ByteBuffer buffer);
 
   /**
-   * Clear the given portion of the buffer setting it with zeros.
+   * Fill the given portion of the buffer setting it with given byte.
    */
-  public final void clearBuffer(ByteBuffer buffer, int position, int numBytes) {
-    Platform.setMemory(baseObject(buffer), baseOffset(buffer) +
-        position, numBytes, (byte)0);
+  public final void fill(ByteBuffer buffer, byte b, int position, int numBytes) {
+    Platform.setMemory(baseObject(buffer), baseOffset(buffer) + position,
+        numBytes, b);
+  }
+
+  /**
+   * Fill the buffer from its current position to full capacity with given byte.
+   */
+  public final void fill(ByteBuffer buffer, byte b) {
+    final int position = buffer.position();
+    fill(buffer, b, position, buffer.capacity() - position);
   }
 
   /**
@@ -139,7 +147,7 @@ public abstract class BufferAllocator implements Closeable {
   @Override
   public abstract void close();
 
-  public static int expandedSize(int currentUsed, int required) {
+  protected static int expandedSize(int currentUsed, int required) {
     final long minRequired = (long)currentUsed + required;
     // increase the size by 50%
     final int newLength = (int)Math.min(Math.max((currentUsed * 3) >>> 1L,

@@ -21,7 +21,6 @@ import java.nio.ByteBuffer;
 import java.util.function.BiConsumer;
 
 import com.gemstone.gemfire.internal.shared.BufferAllocator;
-import org.apache.spark.unsafe.Platform;
 import org.apache.spark.unsafe.memory.MemoryAllocator;
 
 /**
@@ -78,12 +77,6 @@ public class DirectBufferAllocator extends BufferAllocator {
       BiConsumer<String, Object> changeOwner) {
   }
 
-  protected final void fill(ByteBuffer buffer, byte b) {
-    int pos = buffer.position();
-    Platform.setMemory(null, baseOffset(buffer) + pos,
-        buffer.capacity() - pos, b);
-  }
-
   @Override
   public ByteBuffer allocate(int size, String owner) {
     return allocateForStorage(size);
@@ -102,7 +95,7 @@ public class DirectBufferAllocator extends BufferAllocator {
   public void clearPostAllocate(ByteBuffer buffer) {
     // clear till the capacity and not limit since former will be a factor
     // of 8 and hence more efficient in Unsafe.setMemory
-    clearBuffer(buffer, 0, buffer.capacity());
+    fill(buffer, (byte)0, 0, buffer.capacity());
   }
 
   @Override
