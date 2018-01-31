@@ -157,7 +157,7 @@ public class GenericStatement
             Pattern.compile("^\\s*\\{?\\s*(CALL|EXECUTE)\\s+",
                 Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
         private static final Pattern FUNCTION_DDL_PREFIX =
-            Pattern.compile("^\\s?(CREATE|DROP)\\s+FUNCTION\\s+",
+            Pattern.compile("^\\s*(CREATE|DROP)\\s+FUNCTION\\s+",
                Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
         private static final Pattern ALTER_TABLE_COLUMN =
             Pattern.compile("^\\s*ALTER\\s+TABLE?.*\\s+(ADD|DROP)\\s+",
