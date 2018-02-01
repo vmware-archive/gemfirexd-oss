@@ -538,9 +538,6 @@ public class GfxdJarInstallationDUnit extends DistributedSQLTestBase {
 
   public void testBug47783_47824() throws Exception {
     Properties props = new Properties();
-    // don't skip SPS pre-compilation for this test since it tests for
-    // deadlock which is fixed precisely by SPS precompilation (#47824)
-    props.setProperty("SKIP_SPS_PRECOMPILE", "false");
     startClientVMs(1, 0, null, props);
     startServerVMs(2, 0, "DBSYNC", props);
     final int netPort1 = startNetworkServer(2, null, props);

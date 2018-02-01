@@ -247,13 +247,6 @@ public final class FabricDatabase implements ModuleControl,
   // private final DefaultGfxdLockable hiveClientObject = new DefaultGfxdLockable(
   //    "HiveMetaStoreClient", GfxdConstants.TRACE_DDLOCK);
 
-  /**
-   * flag for tests to avoid precompiling SPS descriptors to reduce unit test
-   * running times
-   */
-  public static boolean SKIP_SPS_PRECOMPILE = SystemProperties
-      .getServerInstance().getBoolean("gemfirexd.SKIP_SPS_PRECOMPILE", false);
-
   /** to allow for initial DDL replay even with failures */
   private final boolean allowBootWithFailures = SystemProperties.getServerInstance().getBoolean(
       com.pivotal.gemfirexd.Property.DDLREPLAY_ALLOW_RESTART_WITH_ERRORS, false);
@@ -853,15 +846,6 @@ public final class FabricDatabase implements ModuleControl,
     lcc.setSkipLocks(true);
     lcc.setQueryRoutingFlag(false);
     tc.resetActiveTXState(false);
-    // for admin VM types do not compile here
-    final GemFireStore.VMKind vmKind = this.memStore.getMyVMKind();
-    final boolean skipSPSPrecompile = SKIP_SPS_PRECOMPILE;
-    if (skipSPSPrecompile) {
-      SanityManager.DEBUG_PRINT(GfxdConstants.TRACE_FABRIC_SERVICE_BOOT,
-          "Skipping precompilation of inbuilt procedures");
-    }
-    // dd.createSystemSps(tc, vmKind.isAccessorOrStore() && !skipSPSPrecompile
-    //    && !this.memStore.isHadoopGfxdLonerMode());
 
     // Execute any provided initial SQL scripts first.
     // remote the initial SQL commands

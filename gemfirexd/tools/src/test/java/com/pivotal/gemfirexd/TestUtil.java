@@ -19,7 +19,6 @@ package com.pivotal.gemfirexd;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.net.UnknownHostException;
 import java.security.AccessController;
 import java.sql.Connection;
 import java.sql.Driver;
@@ -46,7 +45,6 @@ import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.internal.AvailablePort;
 import com.gemstone.gemfire.internal.NanoTimer;
 import com.gemstone.gemfire.internal.cache.CacheServerLauncher;
-import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.internal.cache.PartitionAttributesImpl;
 import com.gemstone.gemfire.internal.cache.PartitionedRegion;
@@ -75,7 +73,6 @@ import com.pivotal.gemfirexd.internal.engine.access.index.Hash1IndexScanControll
 import com.pivotal.gemfirexd.internal.engine.access.index.MemIndex;
 import com.pivotal.gemfirexd.internal.engine.access.index.MemIndexScanController;
 import com.pivotal.gemfirexd.internal.engine.access.index.SortedMap2IndexScanController;
-import com.pivotal.gemfirexd.internal.engine.db.FabricDatabase;
 import com.pivotal.gemfirexd.internal.engine.ddl.catalog.messages.GfxdSystemProcedureMessage;
 import com.pivotal.gemfirexd.internal.engine.ddl.resolver.GfxdPartitionResolver;
 import com.pivotal.gemfirexd.internal.engine.distributed.metadata.SelectQueryInfo;
@@ -475,20 +472,6 @@ public class TestUtil extends TestCase {
     if (props == null) {
       props = new Properties();
     }
-    // don't pre-compile SPS descriptors by default to reduce test run times;
-    // tests that explicitly check for deadlock scenarios with SPSDescriptors
-    // should set the property "SKIP_SPS_PRECOMPILE" explicitly to false
-    Object skipSPSPrecompile = props.remove("SKIP_SPS_PRECOMPILE");
-    // do below only if this VM is not yet booted
-    if (GemFireCacheImpl.getInstance() == null) {
-      if (skipSPSPrecompile != null
-          && "false".equalsIgnoreCase(skipSPSPrecompile.toString())) {
-        FabricDatabase.SKIP_SPS_PRECOMPILE = false;
-      } else {
-        FabricDatabase.SKIP_SPS_PRECOMPILE = true;
-      }
-    }
-
     if (currentTestClass != null && currentTest != null) {
       String testName = getTestName();
       if (setPropertyIfAbsent(props, DistributionConfig.LOG_FILE_NAME,

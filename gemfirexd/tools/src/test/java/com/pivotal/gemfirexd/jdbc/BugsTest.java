@@ -8645,7 +8645,6 @@ public class BugsTest extends JdbcTestBase {
     Properties p = new Properties();
     p.setProperty("mcast-port", String.valueOf(AvailablePort
         .getRandomAvailablePort(AvailablePort.JGROUPS)));
-    p.setProperty("SKIP_SPS_PRECOMPILE", "true");
     setupConnection(p);
     int port = TestUtil.startNetserverAndReturnPort();
     

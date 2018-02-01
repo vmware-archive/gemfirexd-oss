@@ -18,6 +18,7 @@
 package io.snappydata.collection;
 
 import java.util.Map;
+import java.util.function.BiPredicate;
 
 import com.koloboke.compile.CustomKeyEquivalence;
 import com.koloboke.compile.KolobokeMap;
@@ -36,6 +37,8 @@ public abstract class ObjectObjectHashMap<K, V> implements Map<K, V> {
     m.putAll(map);
     return m;
   }
+
+  public abstract boolean forEachWhile(BiPredicate<? super K, ? super V> predicate);
 
   /**
    * Mix the hash code of key else for sequential values the hash map becomes

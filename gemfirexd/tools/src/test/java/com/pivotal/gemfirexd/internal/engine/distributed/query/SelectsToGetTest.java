@@ -88,7 +88,6 @@ public class SelectsToGetTest extends JdbcTestBase {
     System.getProperty("optimize-ncj", "true");
     Properties p = new Properties();
     p.setProperty("mcast-port", available_port);
-    p.setProperty("SKIP_SPS_PRECOMPILE", "true");
     setupConnection(p);
     
     Connection conn = getConnection();
