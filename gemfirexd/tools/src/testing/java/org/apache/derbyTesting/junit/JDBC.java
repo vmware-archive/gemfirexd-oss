@@ -2943,7 +2943,10 @@ public class JDBC {
   public void regionSizeOptimizationTriggered2(SelectNode selectNode) {
     // TODO Auto-generated method stub
   }
+      @Override
+  public void regionPreInitialized(GemFireContainer container) {
 
+	}
   }
        
 }
