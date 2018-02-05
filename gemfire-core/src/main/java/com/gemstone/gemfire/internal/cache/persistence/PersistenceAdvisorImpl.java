@@ -1163,7 +1163,8 @@ public class PersistenceAdvisorImpl implements PersistenceAdvisor {
       if (waitThreshold >= 5) {
         waitThreshold = waitThreshold / 5;
       }
-      long warningTime = System.nanoTime() + TimeUnit.SECONDS.toNanos(waitThreshold);
+      final long warningTime = System.currentTimeMillis() +
+          TimeUnit.SECONDS.toMillis(waitThreshold);
       boolean warned = false;
       synchronized(this) {
         try {
@@ -1172,7 +1173,7 @@ public class PersistenceAdvisorImpl implements PersistenceAdvisor {
             checkInterruptedByShutdownAll();
             advisor.getAdvisee().getCancelCriterion().checkCancelInProgress(null);
             this.wait(100);
-            if(!warned && System.nanoTime() > warningTime) {
+            if(!warned && System.currentTimeMillis() > warningTime) {
               logWaitingForMember(allMembersToWaitFor, offlineMembersToWaitFor);
               warned=true;
             }
