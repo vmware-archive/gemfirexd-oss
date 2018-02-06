@@ -763,7 +763,7 @@ public final class TXState implements TXStateInterface {
         if (re != null) {
           // flags are not used by NULL_READER below so can stuff in
           // conflictWithEX without worrying for possible overlaps
-          lockEntryForRead(this.lockPolicy, re, key, region, this.txId, this,
+          lockEntryForRead(this.lockPolicy, re, key, region, txrs, this.txId, this,
               lockFlags, false, false, checkForTXFinish,
               LockingPolicy.NULL_READER);
         }
@@ -1801,7 +1801,7 @@ public final class TXState implements TXStateInterface {
             }
             final RegionEntry entry = (RegionEntry)lockObj;
             addReadLock(entry, entry.getKey(),
-                (LocalRegion)tssLocks[2].get(index), batchingEnabled,
+                (LocalRegion)tssLocks[2].get(index), null, batchingEnabled,
                 Boolean.TRUE);
           }
         }
@@ -2097,7 +2097,7 @@ public final class TXState implements TXStateInterface {
       final Object key, final LocalRegion dataRegion, final int iContext,
       final boolean allowTombstones, final ReadEntryUnderLock reader) {
     final LockingPolicy lockPolicy = getLockingPolicy();
-    return lockEntryForRead(lockPolicy, entry, key, dataRegion, this.txId,
+    return lockEntryForRead(lockPolicy, entry, key, dataRegion, null, this.txId,
         this, iContext, false, allowTombstones, Boolean.TRUE, reader);
   }
 
@@ -2433,7 +2433,7 @@ public final class TXState implements TXStateInterface {
    */
   static final Object lockEntryForRead(final LockingPolicy lockPolicy,
       RegionEntry entry, final Object key, final LocalRegion dataRegion,
-      final TXId txId, final TXState txState, final int iContext,
+      TXRegionState txr, final TXId txId, final TXState txState, int iContext,
       final boolean markPending, final boolean allowTombstones,
       final Boolean checkForTXFinish, final ReadEntryUnderLock reader) {
     final LockMode mode = lockPolicy.getReadLockMode();
@@ -2452,8 +2452,9 @@ public final class TXState implements TXStateInterface {
       return lockResult;
     }
     // adding the lock to the pending list
-    // we need a local TXState; create a TXRegionState and add to that
-    txState.addReadLock(entry, key, dataRegion, markPending, checkForTXFinish);
+    // we need a local TXState; create a TXRegionState if required and add to that
+    txState.addReadLock(entry, key, dataRegion, txr, markPending,
+        checkForTXFinish);
     return reader.readEntry(entry, dataRegion, iContext, allowTombstones);
   }
 
@@ -2474,13 +2475,15 @@ public final class TXState implements TXStateInterface {
   }
 
   final boolean addReadLock(final RegionEntry entry, final Object key,
-      final LocalRegion dataRegion, final boolean markPending,
+      final LocalRegion dataRegion, TXRegionState txr, boolean markPending,
       final Boolean checkForTXFinish) {
     // mark TXStateProxy as having read operations
     this.proxy.markHasReadOps();
     // adding the lock to the pending list
     // we need a local TXState; create a TXRegionState and add to that
-    final TXRegionState txr = writeRegionForRead(dataRegion, checkForTXFinish);
+    if (txr == null) {
+      txr = writeRegionForRead(dataRegion, checkForTXFinish);
+    }
     if (txr == null) {
       return false;
     }
