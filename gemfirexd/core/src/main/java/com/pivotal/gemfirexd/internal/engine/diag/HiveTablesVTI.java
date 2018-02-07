@@ -120,7 +120,8 @@ public class HiveTablesVTI extends GfxdVTITemplate
       case 6: // COMPRESSION
         String compression = this.currentTableMeta.compressionCodec;
         return compression != null ? compression
-            : SystemProperties.SNAPPY_DEFAULT_COMPRESSION_CODEC;
+            : ("COLUMN".equals(this.currentTableMeta.tableType)
+            ? SystemProperties.SNAPPY_DEFAULT_COMPRESSION_CODEC : null);
       case 7: // COLUMN
         return this.currentTableColumn.name;
       case 8: // TYPEID
@@ -183,11 +184,11 @@ public class HiveTablesVTI extends GfxdVTITemplate
       EmbedResultSetMetaData.getResultColumnDescriptor(TYPE,
           Types.VARCHAR, false, 64),
       EmbedResultSetMetaData.getResultColumnDescriptor(PROVIDER,
-          Types.VARCHAR, false, 8192),
+          Types.VARCHAR, true, 8192),
       EmbedResultSetMetaData.getResultColumnDescriptor(SOURCEPATH,
           Types.VARCHAR, false, Limits.DB2_VARCHAR_MAXWIDTH),
       EmbedResultSetMetaData.getResultColumnDescriptor(COMPRESSION,
-          Types.VARCHAR, false, 64),
+          Types.VARCHAR, true, 64),
       EmbedResultSetMetaData.getResultColumnDescriptor(COLUMN,
           Types.VARCHAR, false, 512),
       EmbedResultSetMetaData.getResultColumnDescriptor(TYPEID,
