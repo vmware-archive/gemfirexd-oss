@@ -527,11 +527,11 @@ public class DistributedSQLTestBase extends DistributedTestBase {
 
     //setGFXDProperty(props, "enable-network-partition-detection", "true");
     // reduce timeout properties for faster dunit runs
-    System.setProperty("p2p.discoveryTimeout", "2000");
-    System.setProperty("p2p.joinTimeout", "2000");
+    // System.setProperty("p2p.discoveryTimeout", "2000");
+    // System.setProperty("p2p.joinTimeout", "2000");
     System.setProperty("p2p.minJoinTries", "1");
-    System.setProperty("p2p.disconnectDelay", "1000");
-    System.setProperty("p2p.listenerCloseTimeout", "5000");
+    // System.setProperty("p2p.disconnectDelay", "1000");
+    // System.setProperty("p2p.listenerCloseTimeout", "5000");
 
     if (extraProps != null) {
       Enumeration<?> e = extraProps.propertyNames();

@@ -8,16 +8,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import com.gemstone.gemfire.admin.AdminDistributedSystem;
-import com.gemstone.gemfire.admin.AdminDistributedSystemFactory;
-import com.gemstone.gemfire.admin.AdminException;
-import com.gemstone.gemfire.admin.DistributedSystemConfig;
-import com.gemstone.gemfire.cache.*;
-import com.gemstone.gemfire.cache.persistence.PersistentID;
-import com.gemstone.gemfire.cache.persistence.RevokedPersistentDataException;
-import com.gemstone.gemfire.internal.SocketCreator;
-import com.gemstone.gemfire.internal.cache.DiskRegionStats;
-import com.gemstone.gemfire.internal.cache.DistributedRegion;
+import com.gemstone.gemfire.cache.CacheException;
 import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 import com.gemstone.gemfire.internal.cache.persistence.PersistentMemberID;
@@ -26,13 +17,10 @@ import com.gemstone.gemfire.internal.cache.persistence.PersistentMemberPattern;
 import com.gemstone.gemfire.internal.i18n.LocalizedStrings;
 import com.pivotal.gemfirexd.DistributedSQLTestBase;
 import com.pivotal.gemfirexd.TestUtil;
-import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserver;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverAdapter;
 import com.pivotal.gemfirexd.internal.engine.GemFireXDQueryObserverHolder;
 import com.pivotal.gemfirexd.internal.engine.Misc;
-import com.pivotal.gemfirexd.internal.engine.distributed.MultipleInsertsLeveragingPutAllDUnit;
 import com.pivotal.gemfirexd.internal.engine.store.GemFireContainer;
-import io.snappydata.test.dunit.AsyncInvocation;
 import io.snappydata.test.dunit.SerializableCallable;
 import io.snappydata.test.dunit.SerializableRunnable;
 import io.snappydata.test.dunit.VM;
@@ -501,7 +489,7 @@ public class PersistenceRecoveryOrderDUnit extends DistributedSQLTestBase {
     public void regionPreInitialized(GemFireContainer container) {
       Misc.getGemFireCache().getLoggerI18n().info(LocalizedStrings.DEBUG, "Observer invoked for " + container.getTableName());
       if(container.getTableName().toUpperCase().contains("T1")) {
-        throw new RuntimeException("SKSK");
+        throw new RuntimeException("T1 should not have found");
       }
     }
   }
