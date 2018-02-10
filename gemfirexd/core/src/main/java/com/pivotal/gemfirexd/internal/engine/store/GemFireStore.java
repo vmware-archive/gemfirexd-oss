@@ -2452,10 +2452,10 @@ public final class GemFireStore implements AccessFactory, ModuleControl,
     ExternalCatalog catalog;
     int cnt = 0;
     // retry catalog get after some sleep
-    while ((catalog = getExternalCatalog()) == null && ++cnt < 10) {
+    while ((catalog = getExternalCatalog()) == null && ++cnt < 500) {
       Throwable t = null;
       try {
-        Thread.sleep(2);
+        Thread.sleep(100);
       } catch (InterruptedException ie) {
         Thread.currentThread().interrupt();
         t = ie;
