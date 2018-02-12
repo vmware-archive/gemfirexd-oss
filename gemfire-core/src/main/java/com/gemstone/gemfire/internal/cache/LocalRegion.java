@@ -14524,9 +14524,17 @@ public class LocalRegion extends AbstractRegion
     }
   }
 
-  private void throwLowMemoryException(long size) {
+  public static LowMemoryException lowMemoryException(GemFireCacheImpl cache,
+      long size) {
+    if (cache == null) {
+      cache = GemFireCacheImpl.getExisting();
+    }
     Set<DistributedMember> sm = Collections.singleton(cache.getMyId());
-    throw new LowMemoryException("Could not obtain memory of size " + size, sm);
+    return new LowMemoryException("Could not obtain memory of size " + size, sm);
+  }
+
+  private void throwLowMemoryException(long size) {
+    throw lowMemoryException(cache, size);
   }
 
   public void freePoolMemory(long oldSize, boolean withEntryOverHead) {
