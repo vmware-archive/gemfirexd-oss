@@ -296,6 +296,7 @@ public class HeapLRUCapacityController extends LRUAlgorithm {
         } else {
           cache = GemFireCacheImpl.getInstance();
         }
+        if (cache == null) return false;
         InternalResourceManager resourceManager = cache.getResourceManager();
         
         if (region == null) {
