@@ -2201,13 +2201,12 @@ public class DiskStoreImpl implements DiskStore, ResourceListener<MemoryEvent> {
       IndexRecoveryTask task = new IndexRecoveryTask(allOplogs, recreateIndexes);
       // other disk store threads wait for this task, so use a different
       // thread pool for execution if possible (not in loner VM)
-      ExecutorService waitingPool = getCache().getDistributionManager()
-          .getWaitingThreadPool();
       ThreadPoolExecutor executor;
-      if (waitingPool instanceof ThreadPoolExecutor) {
-        executor = (ThreadPoolExecutor)waitingPool;
+      if (getCache().getDistributionManager().isLoner()) {
+        executor = getCache().getDiskDelayedWritePool();
       } else {
-        executor = getCache().getDiskStoreTaskPool();
+        executor = (ThreadPoolExecutor)getCache().getDistributionManager()
+            .getWaitingThreadPool();
       }
       executeDiskStoreTask(task, executor, true);
     }

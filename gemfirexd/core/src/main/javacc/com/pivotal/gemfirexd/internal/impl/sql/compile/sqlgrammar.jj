@@ -13986,13 +13986,16 @@ viewDefinition(Token beginToken) throws StandardException :
 	Token				endToken;
 }
 {
-	<VIEW> tableName = qualifiedName(Limits.MAX_IDENTIFIER_LENGTH) 
-		[ <LEFT_PAREN> resultColumns = viewColumnList() <RIGHT_PAREN> ]
-		<AS> queryExpression = queryExpression(null, NO_SET_OP)
+	<VIEW>
 	{
 		CompilerContext cc = getCompilerContext();
 		cc.markAsDDLForSnappyUse(true);
 		cc.setForcedDDLrouting(true);
+	}
+	tableName = qualifiedName(Limits.MAX_IDENTIFIER_LENGTH)
+		[ <LEFT_PAREN> resultColumns = viewColumnList() <RIGHT_PAREN> ]
+		<AS> queryExpression = queryExpression(null, NO_SET_OP)
+	{
 		checkOptionType = ViewDescriptor.NO_CHECK_OPTION;
 		endToken = getToken(0);
 		/* Parameters not allowed in create view */
@@ -16938,12 +16941,14 @@ dropIndexStatement() throws StandardException :
 	TableName indexName;
 // GemStone changes BEGIN
 	Boolean onlyIfExists = Boolean.FALSE;
-	CompilerContext cc = getCompilerContext();
-// GemStone changes END
 }
 {
-// GemStone changes BEGIN
-  <INDEX>
+	<INDEX>
+	{
+		CompilerContext cc = getCompilerContext();
+		cc.markAsDDLForSnappyUse(true);
+		cc.setForcedDDLrouting(true);
+	}
 	[ <IF> <EXISTS> { onlyIfExists = Boolean.TRUE; } ]    
   indexName = qualifiedName(Limits.MAX_IDENTIFIER_LENGTH)
 // GemStone changes END
@@ -16951,8 +16956,6 @@ dropIndexStatement() throws StandardException :
 	<INDEX> indexName = qualifiedName(Limits.MAX_IDENTIFIER_LENGTH)
 	*/
 	{
-    cc.markAsDDLForSnappyUse(true);
-    cc.setForcedDDLrouting(true);
 		return (StatementNode) nodeFactory.getNode(
 								C_NodeTypes.DROP_INDEX_NODE,
 								indexName,
@@ -17050,13 +17053,15 @@ dropViewStatement() throws StandardException :
 {
 	<VIEW>
 // GemStone changes BEGIN
-	[ <IF> <EXISTS> { onlyIfExists = Boolean.TRUE; } ]
-// GemStone changes END
-	viewName = qualifiedName(Limits.MAX_IDENTIFIER_LENGTH) 
 	{
 		CompilerContext cc = getCompilerContext();
 		cc.markAsDDLForSnappyUse(true);
 		cc.setForcedDDLrouting(true);
+	}
+	[ <IF> <EXISTS> { onlyIfExists = Boolean.TRUE; } ]
+// GemStone changes END
+	viewName = qualifiedName(Limits.MAX_IDENTIFIER_LENGTH)
+	{
 		return (StatementNode) nodeFactory.getNode(
 								C_NodeTypes.DROP_VIEW_NODE,
 								viewName,
@@ -17099,12 +17104,16 @@ truncateTableStatement() throws StandardException :
 	TableName tableName;
 }
 {
-	<TRUNCATE> <TABLE> tableName = qualifiedName(Limits.MAX_IDENTIFIER_LENGTH) 
+	<TRUNCATE> <TABLE>
+// GemStone changes BEGIN
 	{
-  // GemStone changes BEGIN
-  CompilerContext cc = getCompilerContext();
-  cc.markAsDDLForSnappyUse(true);
-  cc.setForcedDDLrouting(true);
+		CompilerContext cc = getCompilerContext();
+		cc.markAsDDLForSnappyUse(true);
+		cc.setForcedDDLrouting(true);
+	}
+// GemStone changes END
+	tableName = qualifiedName(Limits.MAX_IDENTIFIER_LENGTH)
+	{
 		return (StatementNode) nodeFactory.getNode(
 							C_NodeTypes.ALTER_TABLE_NODE,
 							tableName,

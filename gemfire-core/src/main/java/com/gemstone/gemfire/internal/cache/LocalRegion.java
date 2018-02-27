@@ -211,6 +211,8 @@ import com.gemstone.gemfire.internal.offheap.annotations.Released;
 import com.gemstone.gemfire.internal.offheap.annotations.Retained;
 import com.gemstone.gemfire.internal.offheap.annotations.Unretained;
 import com.gemstone.gemfire.internal.sequencelog.EntryLogger;
+import com.gemstone.gemfire.internal.shared.SystemProperties;
+import com.gemstone.gemfire.management.internal.ManagementConstants;
 import io.snappydata.collection.OpenHashSet;
 import com.gemstone.gemfire.internal.shared.Version;
 import com.gemstone.gemfire.internal.size.ReflectionObjectSizer;
@@ -328,11 +330,7 @@ public class LocalRegion extends AbstractRegion
    */
   private final boolean supportsTX;
 
-
-
-
-  public static final ThreadLocal<String> regionPath =
-      new ThreadLocal<String>() ;
+  private final boolean isReserved;
 
   public static final ReadEntryUnderLock READ_VALUE = new ReadEntryUnderLock() {
     public final Object readEntry(final ExclusiveSharedLockObject lockObj,
@@ -867,6 +865,9 @@ public class LocalRegion extends AbstractRegion
     // prevent internal regions from participating in a TX, bug 38709
     this.supportsTX = !isSecret() && !isUsedForPartitionedRegionAdmin()
         && !isUsedForMetaRegion();
+
+    this.isReserved = isSecret() || isUsedForMetaRegion() ||
+        isUsedForPartitionedRegionAdmin() || isMetaTable(getFullPath());
 
     if (getScope().isLocal()) {
       this.uuidAdvisor = null;
@@ -14549,14 +14550,14 @@ public class LocalRegion extends AbstractRegion
   }
 
   public static boolean isMetaTable(String fullpath) {
-    return fullpath.startsWith("/SNAPPY_HIVE_METASTORE") ||
-        fullpath.startsWith("/__UUID_PERSIST") ||
-        fullpath.startsWith("/_DDL_STMTS_META_REGION");
+    return fullpath.startsWith(SystemProperties.SNAPPY_HIVE_METASTORE_PATH) ||
+        fullpath.startsWith(PersistentUUIDAdvisor.UUID_PERSIST_REGION_PATH) ||
+        fullpath.startsWith(SystemProperties.DDL_STMTS_REGION_PATH) ||
+        fullpath.startsWith(ManagementConstants.MONITORING_REGION_PATH);
   }
 
   public boolean reservedTable() {
-    return isSecret() || isUsedForMetaRegion() || isUsedForPartitionedRegionAdmin()
-        || isMetaTable(this.getFullPath());
+    return this.isReserved;
   }
 
   protected boolean needAccounting(){

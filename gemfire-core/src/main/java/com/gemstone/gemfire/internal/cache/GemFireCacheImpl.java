@@ -642,7 +642,6 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
     // ask for pool memory before continuing
     if (!region.reservedTable() && region.needAccounting()) {
       region.calculateEntryOverhead(oldRe);
-      LocalRegion.regionPath.set(region.getFullPath());
       region.acquirePoolMemory(0, oldRe.getValueSize(), oldRe.isForDelete(), null, true);
     }
 

@@ -126,21 +126,26 @@ public abstract class AbstractLRURegionMap extends AbstractRegionMap {
    * outside party (LocalRegion) has a segment locked... so we'll keep it in a thread
    * local for a callback after the segment is released.
    */
-  private final ThreadLocal lruDelta = new ThreadLocal();
-  private final ThreadLocal mustRemove = new ThreadLocal();
-  private final ThreadLocal callbackDisabled = new ThreadLocal();
-  private final ThreadLocal mustRemoveDebug = debug ? new ThreadLocal() : null;
+  private static final class ThreadLocalEntry {
+    Integer lruDelta;
+    Boolean mustRemove;
+    Boolean callbackDisabled;
+    Exception mustRemoveDebug;
+  }
+  private final ThreadLocal<ThreadLocalEntry> threadLocals =
+      ThreadLocal.withInitial(ThreadLocalEntry::new);
 
   private int getDelta( ) {
-    Object d = lruDelta.get();
-    lruDelta.set(null);         // We only want the delta consumed once
-    if ( d == null ) return 0;
-    return ((Integer)d).intValue();
+    ThreadLocalEntry e = threadLocals.get();
+    Integer d = e.lruDelta;
+    e.lruDelta = null;         // We only want the delta consumed once
+    return d == null ? 0 : d;
   }
 
   private void setDelta( int delta ) {
+    ThreadLocalEntry e = threadLocals.get();
     if (getCallbackDisabled()) {
-      Integer delt = (Integer) lruDelta.get();
+      Integer delt = e.lruDelta;
       if (delt != null) {
 //        _getOwner().getLogWriterI18n().severe(LocalizedStrings.DEBUG, "DEBUG: delta not null", new Exception("stack trace"));
         delta += delt.intValue();
@@ -155,7 +160,7 @@ public abstract class AbstractLRURegionMap extends AbstractRegionMap {
       }
       setMustRemove( true );
     }
-    lruDelta.set( Integer.valueOf( delta ) );
+    e.lruDelta = delta;
   }
 
 
@@ -233,32 +238,34 @@ public abstract class AbstractLRURegionMap extends AbstractRegionMap {
   }
   
   private boolean getMustRemove( ) {
-    Object d = mustRemove.get();
-    if ( d == null ) return false;
-    return ((Boolean)d).booleanValue();
+    ThreadLocalEntry e = threadLocals.get();
+    Boolean d = e.mustRemove;
+    return d != null && d;
   }
 
   private void setMustRemove( boolean b ) {
-    mustRemove.set( b ? Boolean.TRUE : Boolean.FALSE );
+    ThreadLocalEntry e = threadLocals.get();
+    e.mustRemove = b ? Boolean.TRUE : Boolean.FALSE;
      if (b) {
        if (debug) {
          Exception ex = new Exception(LocalizedStrings.AbstractLRURegionMap_SET_MUSTREMOVE_TO_TRUE.toLocalizedString());
          ex.fillInStackTrace();
-         mustRemoveDebug.set(ex);
+         e.mustRemoveDebug = ex;
        }
      } else {
-       mustRemove.set(null);
+       e.mustRemove = null;
      }
   }
   private boolean getCallbackDisabled( ) {
-    Object d = callbackDisabled.get();
-    if ( d == null ) return false;
-    return ((Boolean)d).booleanValue();
+    ThreadLocalEntry e = threadLocals.get();
+    Boolean d = e.callbackDisabled;
+    return d != null && d;
   }
 
   private void setCallbackDisabled( boolean b ) {
-    callbackDisabled.set( b ? Boolean.TRUE : Boolean.FALSE );
+    threadLocals.get().callbackDisabled = b ? Boolean.TRUE : Boolean.FALSE;
   }
+
   /**
    * Returns the size of entries in this entries map
    */
@@ -829,9 +836,10 @@ public abstract class AbstractLRURegionMap extends AbstractRegionMap {
   
   @Override
   public final void resetThreadLocals() {
-    mustRemove.set(null);
-    lruDelta.set(null);
-    callbackDisabled.set(null);
+    ThreadLocalEntry e = threadLocals.get();
+    e.lruDelta = null;
+    e.mustRemove = null;
+    e.callbackDisabled = null;
   }
 
   @Override

@@ -19,8 +19,10 @@ package io.snappydata.collection;
 
 import java.util.Map;
 import java.util.function.ObjLongConsumer;
+import java.util.function.ToLongFunction;
 
 import com.koloboke.compile.KolobokeMap;
+import com.koloboke.function.ObjLongToLongFunction;
 
 @KolobokeMap
 public abstract class ObjectLongHashMap<K> {
@@ -45,13 +47,17 @@ public abstract class ObjectLongHashMap<K> {
 
   public abstract long removeAsLong(K key);
 
+  public abstract long computeIfAbsent(
+      K key, ToLongFunction<? super K> mappingFunction);
+
+  public abstract long computeIfPresent(
+      K key, ObjLongToLongFunction<? super K> mappingFunction);
+
   public abstract void forEach(ObjLongConsumer<? super K> action);
 
   public abstract int size();
 
   public abstract void clear();
 
-  public final long addTo(K key, long delta) {
-    return put(key, getLong(key) + delta);
-  }
+  public abstract long addValue(K key, long delta);
 }

@@ -402,12 +402,7 @@ public final class LeadNodeExecutorMsg extends MemberExecutorMessage<Object> {
   @Override
   public void reset() {
     super.reset();
-    this.schema = null;
-    this.sql = null;
-    this.ctx = null;
-    this.leadNodeFlags = 0;
     this.pvsData = null;
     this.pvsTypes = null;
-    this.pvs = null;
   }
 }

@@ -1939,7 +1939,6 @@ public class EntryEventImpl extends KeyInfo implements
     setNewValueBucketSize(owner, v);
     if(!region.reservedTable() && region.needAccounting()){
       owner.calculateEntryOverhead(reentry);
-      LocalRegion.regionPath.set(region.getFullPath());
       acquireMemory(owner, this, oldValueSize, this.op.isUpdate(), isTombstone);
     }
 
@@ -2005,7 +2004,6 @@ public class EntryEventImpl extends KeyInfo implements
       if (!success && reentry.isOffHeap() && v instanceof Chunk) {
         OffHeapRegionEntryHelper.releaseEntry((OffHeapRegionEntry)reentry, (Chunk)v);
       }
-      LocalRegion.regionPath.remove();
     }
     if (logger.finerEnabled()) {
       if (v instanceof CachedDeserializable) {

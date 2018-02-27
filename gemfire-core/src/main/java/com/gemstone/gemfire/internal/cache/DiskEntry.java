@@ -1407,7 +1407,7 @@ public interface DiskEntry extends RegionEntry {
       // stats after recovery. @TODO fix the PR region Stats.
       int recoveredValueSize = BucketRegion.calcMemSize(preparedValue);
 
-      if (!LocalRegion.isMetaTable(dr.getName())) {
+      if (!dr.isMetaTable()) {
         boolean acquired = CallbackFactoryProvider.getStoreCallbacks().acquireStorageMemory(
                 dr.getName(), recoveredValueSize, null, true, false);
 

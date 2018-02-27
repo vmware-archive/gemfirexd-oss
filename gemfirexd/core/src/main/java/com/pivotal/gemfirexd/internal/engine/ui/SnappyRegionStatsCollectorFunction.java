@@ -103,11 +103,11 @@ public class SnappyRegionStatsCollectorFunction implements Function, Declarable 
 
       if (Misc.reservoirRegionCreated) {
         for (SnappyRegionStats tableStats : otherStats) {
-          String rgnName = tableStats.getTableName();
+          String tableName = tableStats.getTableName();
           StoreCallbacks callback = CallbackFactoryProvider.getStoreCallbacks();
-          String columnBatchTableName = callback.columnBatchTableName(tableStats.getTableName());
+          String columnBatchTableName = callback.columnBatchTableName(tableName);
           if (cachBatchStats.containsKey(columnBatchTableName)) {
-            String reservoirRegionName = Misc.getReservoirRegionNameForSampleTable("APP", rgnName);
+            String reservoirRegionName = Misc.getReservoirRegionNameForSampleTable("APP", tableName);
             PartitionedRegion pr = Misc.getReservoirRegionForSampleTable(reservoirRegionName);
             if (pr != null) {
               RegionMXBean reservoirBean = managementService.getLocalRegionMBean(pr.getFullPath());

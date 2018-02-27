@@ -224,6 +224,8 @@ public class CustomEntryConcurrentHashMap<K, V> extends AbstractMap<K, V>
    */
   final boolean compareValues;
 
+  private String owner;
+
   transient Set<K> keySet;
   transient Set<Map.Entry<K, V>> entrySet;
   transient Set<Map.Entry<K, V>> reusableEntrySet; // GemStone addition
@@ -235,12 +237,17 @@ public class CustomEntryConcurrentHashMap<K, V> extends AbstractMap<K, V>
     return compareValues ? o.hashCode() : System.identityHashCode(o);
   }
 
-  public void postMemAccount(String path){
-    if(segments != null && segments.length > 0){
-      for(Segment s : segments){
-        s.postMemAccount(path);
+  public void setOwner(String owner) {
+    this.owner = owner;
+    /* TODO: fix SnappyMemoryAccountingSuite etc having very small settings
+    if (owner != null) {
+      if (segments != null && segments.length > 0) {
+        for (Segment s : segments) {
+          s.accountMapOverhead(s.table.length, owner);
+        }
       }
     }
+    */
   }
 
   /**
@@ -750,7 +757,8 @@ RETRYLOOP:
     }
 
     final V put(final K key, final int hash, final V value,
-        final boolean onlyIfAbsent, final AtomicLong longSize) {
+        final boolean onlyIfAbsent, final AtomicLong longSize,
+        final String owner) {
       attemptWriteLock(-1);
       int oldCapacity = -1;
       try {
@@ -786,7 +794,7 @@ RETRYLOOP:
         releaseWriteLock();
         // This means rehash has happened
         if (oldCapacity > 0 && oldCapacity < MAXIMUM_CAPACITY) {
-          accountMapOverhead(oldCapacity);
+          accountMapOverhead(oldCapacity, owner);
         }
       }
     }
@@ -796,7 +804,7 @@ RETRYLOOP:
     final <C, P> V create(final K key, final int hash,
         final MapCallback<K, V, C, P> valueCreator, final C context,
         final P createParams, final boolean lockForRead,
-        final AtomicLong longSize) {
+        final AtomicLong longSize, final String owner) {
       int oldCapacity = -1;
       // TODO: This can be optimized by having a special lock implementation
       // that will allow upgrade from read to write lock atomically. This can
@@ -889,7 +897,7 @@ RETRYLOOP:
         releaseWriteLock();
         // This means rehash has happened
         if (oldCapacity > 0 && oldCapacity < MAXIMUM_CAPACITY) {
-          accountMapOverhead(oldCapacity);
+          accountMapOverhead(oldCapacity, owner);
         }
       }
     }
@@ -919,22 +927,14 @@ RETRYLOOP:
       return null;
     }
 
-    final void postMemAccount(String path) {
-      CallbackFactoryProvider.getStoreCallbacks().acquireStorageMemory(path,
-          this.table.length * ReflectionSingleObjectSizer.REFERENCE_SIZE,
-          null, true, false);
-    }
-
-    final void accountMapOverhead(int oldCapacity) {
+    final void accountMapOverhead(int addedCapacity, String owner) {
       // update the acquired memory storage; this will always increase
       // monotonically. Not throwing any exception if memory could not be allocated from
       // memory manager as this is the last step of a region operation.
-      String regionPath = LocalRegion.regionPath.get();
-      if (regionPath != null) {
-        CallbackFactoryProvider.getStoreCallbacks().acquireStorageMemory(regionPath,
-            oldCapacity * ReflectionSingleObjectSizer.REFERENCE_SIZE,
+      if (owner != null) {
+        CallbackFactoryProvider.getStoreCallbacks().acquireStorageMemory(owner,
+            addedCapacity * ReflectionSingleObjectSizer.REFERENCE_SIZE,
             null, true, false);
-        LocalRegion.regionPath.remove();
       }
     }
 
@@ -1667,7 +1667,8 @@ RETRYLOOP:
     }
     // throws NullPointerException if key null
     final int hash = this.entryCreator.keyHashCode(key, this.compareValues);
-    return segmentFor(hash).put(key, hash, value, false, this.longSize);
+    return segmentFor(hash).put(key, hash, value, false,
+        this.longSize, this.owner);
   }
 
   /**
@@ -1684,7 +1685,8 @@ RETRYLOOP:
     }
     // throws NullPointerException if key null
     final int hash = this.entryCreator.keyHashCode(key, this.compareValues);
-    return segmentFor(hash).put(key, hash, value, true, this.longSize);
+    return segmentFor(hash).put(key, hash, value, true,
+        this.longSize, this.owner);
   }
 
 // GemStone addition
@@ -1710,7 +1712,7 @@ RETRYLOOP:
     if (seg.containsKey(key, hash)) {
       return false;
     }
-    return seg.put(key, hash, value, true, this.longSize) == null;
+    return seg.put(key, hash, value, true, this.longSize, this.owner) == null;
   }
 
   /**
@@ -1753,7 +1755,7 @@ RETRYLOOP:
     // throws NullPointerException if key null
     final int hash = this.entryCreator.keyHashCode(key, this.compareValues);
     return segmentFor(hash).create(key, hash, valueCreator, context,
-        createParams, lockForRead, this.longSize);
+        createParams, lockForRead, this.longSize, this.owner);
   }
 
   /**
