@@ -1144,7 +1144,12 @@ public class BucketRegion extends DistributedRegion implements Bucket {
 
   /**
    * lock this bucket and, if present, its colocated "parent"
-   * @param tryLock - whether to use tryLock (true) or a blocking lock (false)
+   *
+   * @param tryLock       whether to use tryLock (true) or a blocking lock (false)
+   * @param moveWriteLock whether to acquire write lock to block bucket move (true),
+   *                      or read lock (true); only bucket maintenance operations
+   *                      should acquire write lock
+   *
    * @return true if locks were obtained and are still held
    */
   public boolean doLockForPrimary(boolean tryLock, boolean moveWriteLock) {

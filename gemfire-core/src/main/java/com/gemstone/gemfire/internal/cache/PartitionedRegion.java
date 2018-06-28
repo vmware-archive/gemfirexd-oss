@@ -11899,8 +11899,13 @@ public class PartitionedRegion extends LocalRegion implements
           }
           lockedRegions.clear();
         }
-        final Set<BucketRegion> primaryBuckets =
+        final Set<BucketRegion> primaryBucketSet =
             getDataStore().getAllLocalPrimaryBucketRegions();
+        // re-arrange to a consistent ordering
+        final BucketRegion[] primaryBuckets = primaryBucketSet.toArray(
+            new BucketRegion[primaryBucketSet.size()]);
+        java.util.Arrays.sort(primaryBuckets,
+            (b1, b2) -> Integer.compare(b1.getId(), b2.getId()));
         // keep trying until all primaries are locked
         done = true;
         for (BucketRegion br : primaryBuckets) {
