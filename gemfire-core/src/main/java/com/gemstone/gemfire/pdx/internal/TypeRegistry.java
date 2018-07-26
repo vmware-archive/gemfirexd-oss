@@ -455,7 +455,9 @@ public class TypeRegistry {
   public void dropRemoteTypeId(int typeId) {
     if(distributedTypeRegistry.isClient())  {
       PdxType pdxTypeDropped = idToType.remove(typeId);
-      typeToId.remove(pdxTypeDropped);
+      if (pdxTypeDropped != null) {
+        typeToId.remove(pdxTypeDropped);
+      }
       idToEnum.remove(typeId);
       Iterator<Map.Entry<EnumInfo, Integer>> iter = enumInfoToId.entrySet().iterator();
       while(iter.hasNext()) {
