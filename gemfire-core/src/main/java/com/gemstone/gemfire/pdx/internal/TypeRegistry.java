@@ -16,6 +16,7 @@
  */
 package com.gemstone.gemfire.pdx.internal;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -449,6 +450,24 @@ public class TypeRegistry {
       localEnumIds.clear();
     }
     
+  }
+
+  public void dropRemoteTypeId(int typeId) {
+    if(distributedTypeRegistry.isClient())  {
+      PdxType pdxTypeDropped = idToType.remove(typeId);
+      typeToId.remove(pdxTypeDropped);
+      idToEnum.remove(typeId);
+      Iterator<Map.Entry<EnumInfo, Integer>> iter = enumInfoToId.entrySet().iterator();
+      while(iter.hasNext()) {
+        Map.Entry<EnumInfo, Integer> entry = iter.next();
+        if (entry.getValue().intValue() == typeId) {
+          iter.remove();
+          break;
+        }
+      }
+
+    }
+
   }
 
   /**
