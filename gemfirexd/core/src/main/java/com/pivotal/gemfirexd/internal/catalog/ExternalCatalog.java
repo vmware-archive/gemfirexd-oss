@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.gemstone.gemfire.internal.cache.ExternalTableMetaData;
+import com.gemstone.gemfire.internal.cache.PolicyTableData;
 
 /**
  * Need to keep GemXD independent of any snappy/spark/hive related
