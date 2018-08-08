@@ -750,6 +750,10 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
     }
   }
 
+  public boolean isGFEConnectorBucketMovedException(Throwable th) {
+    return false;
+  }
+
   public Map getOldEntriesForRegion(String regionName) {
     return oldEntryMap.get(regionName);
   }

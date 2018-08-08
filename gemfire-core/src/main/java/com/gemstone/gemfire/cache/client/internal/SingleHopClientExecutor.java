@@ -41,6 +41,7 @@ import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
 import com.gemstone.gemfire.distributed.internal.ServerLocation;
 import com.gemstone.gemfire.i18n.LogWriterI18n;
 import com.gemstone.gemfire.internal.LogWriterImpl;
+import com.gemstone.gemfire.internal.cache.GemFireCacheImpl;
 import com.gemstone.gemfire.internal.cache.LocalRegion;
 import com.gemstone.gemfire.internal.cache.PutAllPartialResultException;
 import com.gemstone.gemfire.internal.cache.execute.InternalFunctionInvocationTargetException;
@@ -142,7 +143,11 @@ public class SingleHopClientExecutor {
             throw new InternalGemFireException(e.getMessage());
           }
           catch (ExecutionException ee) {
-            if (ee.getCause() instanceof InternalFunctionInvocationTargetException) {
+            boolean isConnectorBucketMovedException = GemFireCacheImpl.getExisting().
+                isGFEConnectorBucketMovedException(ee.getCause());
+            if (ee.getCause() instanceof InternalFunctionInvocationTargetException
+                || isConnectorBucketMovedException
+                ) {
               logger
                   .fine("ExecuteRegionFunctionSingleHopOp#ExecutionException.InternalFunctionInvocationTargetException : "
                       + "Caused by :" + ee.getCause());
@@ -155,8 +160,10 @@ public class SingleHopClientExecutor {
               cms.scheduleGetPRMetaData(region, false);
               cms.removeBucketServerLocation(server);
               reexecute = true;
-              failedNodes.addAll(((InternalFunctionInvocationTargetException)ee
-                  .getCause()).getFailedNodeSet());
+              if (!isConnectorBucketMovedException) {
+                failedNodes.addAll(((InternalFunctionInvocationTargetException)ee
+                    .getCause()).getFailedNodeSet());
+              }
               rc.clearResults();
             }
             else if (ee.getCause() instanceof FunctionException) {
