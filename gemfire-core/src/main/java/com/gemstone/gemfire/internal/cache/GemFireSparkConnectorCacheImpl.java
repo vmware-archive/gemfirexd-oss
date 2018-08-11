@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import com.gemstone.gemfire.GemFireCacheException;
@@ -58,6 +59,7 @@ public class GemFireSparkConnectorCacheImpl extends GemFireCacheImpl {
   private final Map<String, String> gfeGridPoolProps;
   private final String defaultGrid;
   private final Method bucketMovedExceptionChecker;
+  private final Method failedMemberExtractor;
 
   public GemFireSparkConnectorCacheImpl(PoolFactory pf, Map<String, String> gfeGridMappings,
       Map<String, String> gfeGridPoolProps,
@@ -70,6 +72,7 @@ public class GemFireSparkConnectorCacheImpl extends GemFireCacheImpl {
       Class connClass = Class.forName(GemFireSparkConnectorCacheFactory.initHelperClass);
       bucketMovedExceptionChecker  = connClass.getMethod("isConnectorBucketMovedException",
           Throwable.class);
+      failedMemberExtractor = connClass.getMethod("getFailedMember", Throwable.class);
     } catch(Exception e) {
       throw new GemFireConfigException("Problem creating GemFireCache", e);
     }
@@ -135,9 +138,18 @@ public class GemFireSparkConnectorCacheImpl extends GemFireCacheImpl {
   public boolean isGFEConnectorBucketMovedException(Throwable th) {
     try {
       return ((Boolean)bucketMovedExceptionChecker.invoke(null, th)).booleanValue();
-    } catch(Exception e1) {
+    } catch (Exception e1) {
       this.getLogger().warning("Exception in invoking method through reflection", e1);
       return false;
+    }
+  }
+
+  public Set<String> getFailedMember(Throwable th) {
+    try {
+      return (Set<String>)this.failedMemberExtractor.invoke(null, th);
+    } catch (Exception e1) {
+      this.getLogger().warning("Exception in invoking method through reflection", e1);
+      return null;
     }
   }
 
