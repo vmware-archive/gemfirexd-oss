@@ -1945,6 +1945,17 @@ public final class FabricDatabase implements ModuleControl,
     return lctx;
   }
 
+  private static String getSchemaOwner(String in_defaultSchema) {
+    String owner = in_defaultSchema;
+    GemFireStore ms = Misc.getMemStoreBootingNoThrow();
+    if (ms != null) {
+      if (ms.isSnappyStore() && !ms.tableCreationAllowed() && Misc.isSecurityEnabled()) {
+        owner = ms.getDatabase().getDataDictionary().getAuthorizationDatabaseOwner();
+      }
+    }
+    return owner;
+  }
+
   /**
    * Setup the default schema for the given "defaultSchema" creating it if necessary.
    */
@@ -1956,7 +1967,8 @@ public final class FabricDatabase implements ModuleControl,
       defaultSchema = dd.getSchemaDescriptor(in_defaultSchema, tc, false);
     }
     if (defaultSchema == null) {
-      defaultSchema = new SchemaDescriptor(dd, in_defaultSchema, in_defaultSchema, dd
+      String schemaOwner = getSchemaOwner(in_defaultSchema);
+      defaultSchema = new SchemaDescriptor(dd, in_defaultSchema, schemaOwner, dd
           .getUUIDFactory().createUUID(), false);
       try {
         dd.addDescriptor(defaultSchema, null,

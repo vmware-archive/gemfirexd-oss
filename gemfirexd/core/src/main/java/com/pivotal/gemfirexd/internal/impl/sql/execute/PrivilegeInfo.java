@@ -92,8 +92,12 @@ public abstract class PrivilegeInfo
 		String schemaOwner = sd.getAuthorizationId();
 
 		if (!user.equals(schemaOwner) &&
-				!user.equals(dd.getAuthorizationDatabaseOwner()) &&
-				!Misc.checkLDAPGroupOwnership(sd.getSchemaName(), schemaOwner, user)) {
+			!user.equals(dd.getAuthorizationDatabaseOwner()) &&
+			!Misc.checkLDAPGroupOwnership(sd.getSchemaName(), schemaOwner, user)) {
+			if (objectDescriptor == sd) {
+				throw StandardException.newException(SQLState.AUTH_NO_ACCESS_NOT_OWNER,
+					user, sd.getSchemaName());
+		  	}
 			throw StandardException.newException(SQLState.AUTH_NOT_OWNER,
 									  user,
 									  objectDescriptor.getDescriptorType(),
@@ -101,7 +105,7 @@ public abstract class PrivilegeInfo
 									  objectDescriptor.getDescriptorName());
 		}
 	}
-	
+
 	/**
 	 * This method adds a warning if a revoke statement has not revoked 
 	 * any privileges from a grantee.
