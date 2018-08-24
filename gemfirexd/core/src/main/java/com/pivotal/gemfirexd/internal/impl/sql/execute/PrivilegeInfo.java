@@ -42,6 +42,7 @@ package com.pivotal.gemfirexd.internal.impl.sql.execute;
 
 
 import com.pivotal.gemfirexd.internal.catalog.UUID;
+import com.pivotal.gemfirexd.internal.engine.Misc;
 import com.pivotal.gemfirexd.internal.iapi.error.StandardException;
 import com.pivotal.gemfirexd.internal.iapi.reference.SQLState;
 import com.pivotal.gemfirexd.internal.iapi.services.sanity.SanityManager;
@@ -82,19 +83,23 @@ public abstract class PrivilegeInfo
 	 *
 	 * @exception StandardException if user does not own the object
 	 */
-	protected void checkOwnership( String user,
+	public static void checkOwnership( String user,
 								   TupleDescriptor objectDescriptor,
 								   SchemaDescriptor sd,
 								   DataDictionary dd)
 		throws StandardException
 	{
-		if (!user.equals(sd.getAuthorizationId()) &&
-				!user.equals(dd.getAuthorizationDatabaseOwner()))
+		String schemaOwner = sd.getAuthorizationId();
+
+		if (!user.equals(schemaOwner) &&
+				!user.equals(dd.getAuthorizationDatabaseOwner()) &&
+				!Misc.checkLDAPGroupOwnership(sd.getSchemaName(), schemaOwner, user)) {
 			throw StandardException.newException(SQLState.AUTH_NOT_OWNER,
 									  user,
 									  objectDescriptor.getDescriptorType(),
 									  sd.getSchemaName(),
 									  objectDescriptor.getDescriptorName());
+		}
 	}
 	
 	/**
