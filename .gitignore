@@ -15,3 +15,4 @@ build-artifacts/
 # Ignore ldap test server build and runtime directories
 ldap-test-server/apacheds/
 ldap-test-server/build/
+ldap-test-server/dist/
