@@ -1378,7 +1378,7 @@ public abstract class ClientSharedUtils {
 
   // Convert log4j.Level to java.util.logging.Level
   public static Level convertToJavaLogLevel(org.apache.log4j.Level log4jLevel) {
-    Level javaLevel = Level.INFO;
+    Level javaLevel = Level.CONFIG;
     if (log4jLevel != null) {
       if (log4jLevel == org.apache.log4j.Level.ERROR) {
         javaLevel = Level.SEVERE;
