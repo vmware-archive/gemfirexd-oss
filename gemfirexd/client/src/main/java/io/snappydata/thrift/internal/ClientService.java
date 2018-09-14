@@ -133,12 +133,11 @@ public final class ClientService extends ReentrantLock implements LobService {
         }
       }
     };
-    Level level;
+    Level level = null;
     try {
       level = getLogLevel(null);
     } catch (SQLException sqle) {
       // ignore exception during static initialization
-      level = Level.CONFIG;
     }
     initClientLogger(null, null, level);
 
@@ -177,7 +176,7 @@ public final class ClientService extends ReentrantLock implements LobService {
   }
 
   private static Level getLogLevel(Properties props) throws SQLException {
-    Level logLevel = Level.CONFIG;
+    Level logLevel = null;
     String level;
     level = ClientBaseDataSource.readSystemProperty(
         Attribute.CLIENT_JVM_PROPERTY_PREFIX + ClientAttribute.LOG_LEVEL);
@@ -259,6 +258,11 @@ public final class ClientService extends ReentrantLock implements LobService {
       SanityManager.SET_DEBUG_STREAM_IFNULL(logWriter);
     }
     // also set the ClientSharedUtils logger
+    if (logLevel == null) {
+      logLevel = ClientSharedUtils.convertToJavaLogLevel(
+          org.apache.log4j.Logger.getRootLogger().getLevel());
+      if (logLevel == null) logLevel = Level.CONFIG;
+    }
     if (logLevel != null) {
       ClientSharedUtils.initLogger(ClientSharedUtils.LOGGER_NAME,
           gfxdLogFile, true, true, logLevel, new LogHandler(logLevel));
