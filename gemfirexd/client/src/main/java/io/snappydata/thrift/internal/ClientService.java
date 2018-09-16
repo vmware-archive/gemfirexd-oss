@@ -259,8 +259,14 @@ public final class ClientService extends ReentrantLock implements LobService {
     }
     // also set the ClientSharedUtils logger
     if (logLevel == null) {
-      logLevel = ClientSharedUtils.convertToJavaLogLevel(
-          org.apache.log4j.Logger.getRootLogger().getLevel());
+      // preserve existing log4j level if it is higher
+      org.apache.log4j.Level current =
+          org.apache.log4j.Logger.getRootLogger().getLevel();
+      if (current != null && current.isGreaterOrEqual(org.apache.log4j.Level.WARN)) {
+        logLevel = ClientSharedUtils.convertToJavaLogLevel(current);
+      } else {
+        logLevel = Level.CONFIG;
+      }
     }
     if (logLevel != null) {
       ClientSharedUtils.initLogger(ClientSharedUtils.LOGGER_NAME,
