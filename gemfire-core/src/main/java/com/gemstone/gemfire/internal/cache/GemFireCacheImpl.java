@@ -1260,13 +1260,16 @@ public class GemFireCacheImpl implements InternalCache, ClientCache, HasCachePer
   private long getDefaultOffHeapSize() {
     // only set when started via launcher
     CacheServerLauncher launcher = CacheServerLauncher.getCurrentInstance();
-    if (launcher != null && launcher.hostData()) {
+    // a negative value of numLeads indicates that one or more leads have
+    // been started with explicit heap-size/memory-size setting in which case
+    // auto-configuration of memory-size is disabled to keep things simpler
+    int numLeads = Integer.getInteger("snappydata.numLeadsOnNode", 1);
+    if (launcher != null && launcher.hostData() && numLeads >= 0) {
       long ramSize = LauncherBase.getPhysicalRAMSize();
       // use up-to 75% of total RAM for hosts having sufficiently large RAMs
       if (ramSize > LauncherBase.LARGE_RAM_LIMIT) {
         long usableSize = (ramSize - Runtime.getRuntime().maxMemory()) * 3 / 4;
         // reserve space for any leads started on this node
-        int numLeads = Integer.getInteger("snappydata.numLeadsOnNode", 1);
         long reserved = numLeads > 0 ? numLeads * 1048576L *
             LauncherBase.getDefaultHeapSizeMB(ramSize, false) : 0L;
         // round to nearest GB
