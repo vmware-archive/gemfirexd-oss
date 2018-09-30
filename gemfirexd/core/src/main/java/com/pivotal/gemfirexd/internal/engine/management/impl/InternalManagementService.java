@@ -510,6 +510,9 @@ public class InternalManagementService {
   }
 
   private void handleEmbedConnectionInit(EmbedConnection connection) {
+    // don't create another connection during boot
+    GemFireStore store = GemFireStore.getBootingInstance();
+    if (store == null || !store.initialDDLReplayDone()) return;
     GfxdConnectionHolder holder = GfxdConnectionHolder.getHolder();
     GfxdConnectionWrapper connectionWrapper = null;
     try {
