@@ -2154,14 +2154,6 @@ public final class GemFireStore implements AccessFactory, ModuleControl,
         else {
           if (!cache.forcedDisconnect()) {
             cache.close();
-            InternalDistributedSystem sys = InternalDistributedSystem
-                .getAnyInstance();
-                //getConnectedInstance();
-            if (sys != null) {
-              sys.getLogWriter()
-                  .info("Disconnecting GemFire distributed system.");
-              sys.disconnect();
-            }
           }
         }
       }
@@ -2179,6 +2171,15 @@ public final class GemFireStore implements AccessFactory, ModuleControl,
         else {
           cache.close();
         }
+      }
+    }
+    if (cache == null || !cache.forcedDisconnect()) {
+      InternalDistributedSystem sys = InternalDistributedSystem
+          .getAnyInstance(); // getConnectedInstance();
+      if (sys != null && sys.isConnected()) {
+        sys.getLogWriter()
+            .info("Disconnecting GemFire distributed system.");
+        sys.disconnect();
       }
     }
 
