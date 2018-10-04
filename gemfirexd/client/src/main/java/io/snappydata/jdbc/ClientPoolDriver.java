@@ -46,8 +46,11 @@ public class ClientPoolDriver extends ClientDriver {
     private final static Pattern URL_PATTERN = Pattern.compile(URL_PREFIX_REGEX +
             SUBPROTOCOL + URL_SUFFIX_REGEX, Pattern.CASE_INSENSITIVE);
 
+    public static final ThreadLocal<Connection> CURRENT_CONNECTION =
+        new ThreadLocal<>();
+
     private static Map<Properties, TomcatConnectionPool> poolMap =
-            new ConcurrentHashMap<Properties, TomcatConnectionPool>();
+        new ConcurrentHashMap<>();
 
     static {
         try {
@@ -118,7 +121,9 @@ public class ClientPoolDriver extends ClientDriver {
 
         TomcatConnectionPool p = poolMap.get(properties);
         if (p != null) {
-            return p.getConnection();
+            Connection conn = p.getConnection();
+            CURRENT_CONNECTION.set(conn);
+            return conn;
         } else {
             TomcatConnectionPool pool;
             synchronized (ClientPoolDriver.class) {
@@ -129,6 +134,7 @@ public class ClientPoolDriver extends ClientDriver {
                 }
             }
             Connection conn = pool.getConnection();
+            CURRENT_CONNECTION.set(conn);
             return conn;
         }
     }
