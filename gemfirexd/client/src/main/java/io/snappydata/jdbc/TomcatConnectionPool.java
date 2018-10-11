@@ -17,10 +17,6 @@
 
 package io.snappydata.jdbc;
 
-import com.sun.xml.internal.fastinfoset.stax.events.Util;
-import org.apache.tomcat.jdbc.pool.DataSource;
-import org.apache.tomcat.jdbc.pool.PoolProperties;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -28,6 +24,9 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.apache.tomcat.jdbc.pool.DataSource;
+import org.apache.tomcat.jdbc.pool.PoolProperties;
 
 /**
  * A Connection Pool class internally uses the tomcat connection pooling
@@ -84,25 +83,29 @@ class TomcatConnectionPool {
     /**
      * Initializes the Object with passed on properties.
      *
-     * @param prop
+     * @param props set of properties to be used for pool connections that includes
+     *              pool properties as well as connection properties
      */
-    public TomcatConnectionPool(Properties prop) {
-
+    public TomcatConnectionPool(Properties props) {
 
         List<String> listPoolPropKeys = PoolProps.getKeys();
 
-        PoolProperties poolProperties = setPoolProperties(prop);
+        PoolProperties poolProperties = setPoolProperties(props);
 
         // Filtering out the pool properties and creating string of
         // connection properties to pass on.
-        Set<String> keys = prop.stringPropertyNames();
-        String connectionProperties = keys.stream().filter(x -> listPoolPropKeys.contains(x))
-                .map(i -> i.toString() + "=" + prop.getProperty(i.toString()))
+        Set<String> keys = props.stringPropertyNames();
+        String connectionProperties = keys.stream().filter(x -> !listPoolPropKeys.contains(x))
+                .map(i -> i + "=" + props.getProperty(i))
                 .collect(Collectors.joining(";"));
 
         poolProperties.setConnectionProperties(connectionProperties);
         datasource = new DataSource();
         datasource.setPoolProperties(poolProperties);
+    }
+
+    private boolean isEmptyString(String s) {
+        return s == null || s.length() == 0;
     }
 
     /**
@@ -122,12 +125,12 @@ class TomcatConnectionPool {
         poolProperties.setDriverClassName(driverClassName);
 
         String username = prop.getProperty(PoolProps.USER.key);
-        if (!Util.isEmptyString(username)) {
+        if (!isEmptyString(username)) {
             poolProperties.setUsername(username);
         }
 
         String password = prop.getProperty(PoolProps.PASSWORD.key);
-        if (!Util.isEmptyString(password)) {
+        if (!isEmptyString(password)) {
             poolProperties.setPassword(password);
         }
 
