@@ -1,4 +1,4 @@
-## Repository layout
+<h1> VMware has ended active development of this project, this repository will no longer be updated.</h1><br>## Repository layout
 
 The master branch now mostly mimics the layout of Apache Geode layout for GemFire components and a more structured one for GemFireXD components. It uses gradle based build that can build entire GemFire+GemFireXD+hydra sources and run unit tests (running hydra tests still needs to be added).
 
